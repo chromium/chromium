@@ -69,10 +69,10 @@ export class SettingsBluetoothChangeDeviceNameDialogElement extends
       },
     };
   }
-  private device: PairedBluetoothDeviceProperties;
-  private maxInputLength: number;
-  private deviceName_: string;
-  private isInputInvalid_: boolean;
+  declare private device: PairedBluetoothDeviceProperties;
+  declare private maxInputLength: number;
+  declare private deviceName_: string;
+  declare private isInputInvalid_: boolean;
 
   override ready(): void {
     super.ready();

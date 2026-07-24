@@ -87,17 +87,19 @@ export class OsSettingsChangeDeviceLanguageDialogElement extends
   }
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
 
   // Internal state.
-  private lowercaseQueryString_: string;
-  private selectedLanguage_: chrome.languageSettingsPrivate.Language|null;
+  declare private lowercaseQueryString_: string;
+  declare private selectedLanguage_: chrome.languageSettingsPrivate.Language|
+      null;
 
   // Computed properties.
-  private disableActionButton_: boolean;
-  private displayedLanguages_: chrome.languageSettingsPrivate.Language[];
-  private displayedLanguagesEmpty_: boolean;
+  declare private disableActionButton_: boolean;
+  declare private displayedLanguages_:
+      chrome.languageSettingsPrivate.Language[];
+  declare private displayedLanguagesEmpty_: boolean;
 
   private onSearchChanged_(e: CustomEvent<string>): void {
     this.lowercaseQueryString_ = e.detail.toLowerCase();

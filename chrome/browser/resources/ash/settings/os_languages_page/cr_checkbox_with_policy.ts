@@ -71,13 +71,13 @@ export class CrCheckboxWithPolicyElement extends PolymerElement {
   // <cr-checkbox>.
 
   // Public API: Bidirectional data flow.
-  checked: boolean;
+  declare checked: boolean;
 
   // Public API: Downwards data flow.
-  policyTooltip: string;
-  override ariaDescription: string|null;
-  disabled: boolean;
-  override tabIndex: number;
+  declare policyTooltip: string;
+  declare ariaDescription: string|null;
+  declare disabled: boolean;
+  declare tabIndex: number;
 
   /**
    * Focuses the correct element (icon if disabled, otherwise checkbox).

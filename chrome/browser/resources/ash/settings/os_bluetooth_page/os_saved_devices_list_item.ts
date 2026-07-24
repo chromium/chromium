@@ -65,10 +65,10 @@ class SettingsSavedDevicesListItemElement extends
     };
   }
 
-  device: FastPairSavedDevice;
-  itemIndex: number;
-  listSize: number;
-  private shouldShowRemoveSavedDeviceDialog_: boolean;
+  declare device: FastPairSavedDevice;
+  declare itemIndex: number;
+  declare listSize: number;
+  declare private shouldShowRemoveSavedDeviceDialog_: boolean;
 
   private getDeviceNameUnsafe_(device: FastPairSavedDevice): string {
     return device.name;

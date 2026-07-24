@@ -46,8 +46,8 @@ export class SettingsSmbSharesPageElement extends
     };
   }
 
-  prefs: PrefsState;
-  private showAddSmbDialog_: boolean;
+  declare prefs: PrefsState;
+  declare private showAddSmbDialog_: boolean;
 
   /**
    * Overridden from RouteObserverMixin.

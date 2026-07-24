@@ -78,11 +78,11 @@ export class SettingsBluetoothSavedDevicesSubpageElement extends
   }
 
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
-  private savedDevices_: FastPairSavedDevice[];
-  private shouldShowDeviceList_: boolean;
-  private shouldShowNoDevicesLabel_: boolean;
-  private showSavedDevicesErrorLabel_: boolean;
-  private showSavedDevicesLoadingLabel_: boolean;
+  declare private savedDevices_: FastPairSavedDevice[];
+  declare private shouldShowDeviceList_: boolean;
+  declare private shouldShowNoDevicesLabel_: boolean;
+  declare private showSavedDevicesErrorLabel_: boolean;
+  declare private showSavedDevicesLoadingLabel_: boolean;
 
   constructor() {
     super();

@@ -208,8 +208,8 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
   // override prefs: any;  // From PrefsMixin.
 
   // Public API: Upwards data flow.
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
 
   // API proxies.
   private browserProxy_: LanguagesBrowserProxy =
@@ -220,16 +220,16 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       this.browserProxy_.getInputMethodPrivate();
 
   // Internal state.
-  private resolver_: PromiseResolver<undefined>;
-  private supportedLanguageMap_:
+  declare private resolver_: PromiseResolver<undefined>;
+  declare private supportedLanguageMap_:
       Map<string, chrome.languageSettingsPrivate.Language>;
-  private enabledLanguageSet_: Set<string>;
-  private supportedInputMethodMap_:
+  declare private enabledLanguageSet_: Set<string>;
+  declare private supportedInputMethodMap_:
       Map<string, chrome.languageSettingsPrivate.InputMethod>;
-  private languageInputMethods_:
+  declare private languageInputMethods_:
       Map<string, chrome.languageSettingsPrivate.InputMethod[]>;
-  private enabledInputMethodSet_: Set<string>;
-  private originalProspectiveUILanguage_?: string;
+  declare private enabledInputMethodSet_: Set<string>;
+  declare private originalProspectiveUILanguage_?: string;
 
   // Bound methods.
   // Instances of SettingsLanguagesElement below should be replaced with

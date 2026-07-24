@@ -56,9 +56,9 @@ export class SettingsSavedDevicesListElement extends
     };
   }
 
-  devices: FastPairSavedDevice[];
+  declare devices: FastPairSavedDevice[];
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
-  private lastFocused_: HTMLElement;
+  declare private lastFocused_: HTMLElement;
 
   constructor() {
     super();

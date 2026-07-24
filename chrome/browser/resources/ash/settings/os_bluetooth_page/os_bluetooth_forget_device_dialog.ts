@@ -42,7 +42,7 @@ class SettingsBluetoothForgetDeviceDialogElement extends
     };
   }
 
-  private device_: PairedBluetoothDeviceProperties;
+  declare private device_: PairedBluetoothDeviceProperties;
 
   private getForgetDeviceDialogBodyText_(): string {
     return loadTimeData.getStringF(

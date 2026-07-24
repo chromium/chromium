@@ -53,9 +53,9 @@ export class SettingsPairedBluetoothListElement extends
     };
   }
 
-  devices: PairedBluetoothDeviceProperties[];
+  declare devices: PairedBluetoothDeviceProperties[];
   private currentTooltipDeviceAddress_: string|undefined;
-  private lastFocused_: HTMLElement;
+  declare private lastFocused_: HTMLElement;
 
   constructor() {
     super();

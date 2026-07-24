@@ -107,15 +107,15 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
     ];
   }
 
-  systemProperties: BluetoothSystemProperties;
+  declare systemProperties: BluetoothSystemProperties;
 
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
-  private deviceId_: string;
-  private device_: PairedBluetoothDeviceProperties|null;
-  private isDeviceConnected_: boolean;
-  private pageState_: PageState;
-  private shouldShowChangeDeviceNameDialog_: boolean;
-  private shouldShowForgetDeviceDialog_: boolean;
+  declare private deviceId_: string;
+  declare private device_: PairedBluetoothDeviceProperties|null;
+  declare private isDeviceConnected_: boolean;
+  declare private pageState_: PageState;
+  declare private shouldShowChangeDeviceNameDialog_: boolean;
+  declare private shouldShowForgetDeviceDialog_: boolean;
 
   constructor() {
     super();

@@ -50,7 +50,7 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends I18nMixin
   }
 
   // Status that is shown on the page for debugging.
-  status: string;
+  declare status: string;
 
   // Internal properties for mixins.
   // From GlobalScrollTargetMixin.

@@ -40,9 +40,9 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   }
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
-  limitedByPolicy: boolean;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
+  declare limitedByPolicy: boolean;
 
   /**
    * Get suggested input methods based on user's enabled languages and ARC IMEs

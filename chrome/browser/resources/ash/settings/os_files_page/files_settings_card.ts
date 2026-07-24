@@ -118,19 +118,19 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     ];
   }
 
-  private bulkPinningPrefEnabled_: boolean;
-  private mirrorSyncPrefEnabled_: boolean;
-  private driveDisabled_: boolean;
-  private isBulkPinningEnabled_: boolean;
-  private isMirrorSyncEnabled_: boolean;
+  declare private bulkPinningPrefEnabled_: boolean;
+  declare private mirrorSyncPrefEnabled_: boolean;
+  declare private driveDisabled_: boolean;
+  declare private isBulkPinningEnabled_: boolean;
+  declare private isMirrorSyncEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
-  private oneDriveConnectionState_: OneDriveConnectionState;
+  declare private oneDriveConnectionState_: OneDriveConnectionState;
   private oneDriveEmailAddress_: string|null;
   private smbBrowserProxy_: SmbBrowserProxy;
-  private shouldShowAddSmbButton_: boolean;
-  private shouldShowAddSmbDialog_: boolean;
-  private shouldShowOneDriveSettings_: boolean;
-  private shouldShowOfficeSettings_: boolean;
+  declare private shouldShowAddSmbButton_: boolean;
+  declare private shouldShowAddSmbDialog_: boolean;
+  declare private shouldShowOneDriveSettings_: boolean;
+  declare private shouldShowOfficeSettings_: boolean;
 
 
   constructor() {

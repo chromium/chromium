@@ -45,7 +45,7 @@ class SettingsBluetoothRemoveSavedDeviceDialogElement extends
     };
   }
 
-  private device_: FastPairSavedDevice;
+  declare private device_: FastPairSavedDevice;
 
   private getRemoveDeviceDialogBodyText_(): string {
     return this.i18n(

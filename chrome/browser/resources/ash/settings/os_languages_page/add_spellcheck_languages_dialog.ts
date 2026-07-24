@@ -36,8 +36,8 @@ class OsSettingsAddSpellcheckLanguagesDialogElement extends PolymerElement {
   }
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
 
   /**
    * Get suggested languages based on enabled languages and input methods.

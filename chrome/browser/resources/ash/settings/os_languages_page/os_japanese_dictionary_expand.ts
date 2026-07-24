@@ -60,27 +60,34 @@ class OsJapaneseDictionaryExpandElement extends I18nMixin
     };
   }
 
+  constructor() {
+    super();
+    this.showingDeleteDialog_ = false;
+    this.statusMessage_ = '';
+    this.dictIndex = 0;
+  }
+
   override ready(): void {
     super.ready();
     this.addEventListener('dictionary-entry-deleted', this.onEntryDelete_);
   }
 
   // The Japanese Dictionary that this component displays information on.
-  dict: JapaneseDictionary;
+  declare dict: JapaneseDictionary;
 
   // Any entry beyond this index needs to be added to the dictionary rather than
   // "edited" since it does not exist in the file storage at the moment.
-  syncedEntriesCount: number;
+  declare syncedEntriesCount: number;
 
   // Whether or not this container UI is expanded or folded.
   private expanded_ = false;
 
-  private showingDeleteDialog_ = false;
+  declare private showingDeleteDialog_: boolean;
 
   // Used for chromevox announcements.
-  private statusMessage_ = '';
+  declare private statusMessage_: string;
 
-  private dictIndex = 0;
+  declare private dictIndex: number;
 
   private onEntryDelete_(event: EntryDeletedCustomEvent): void {
     this.statusMessage_ = '';

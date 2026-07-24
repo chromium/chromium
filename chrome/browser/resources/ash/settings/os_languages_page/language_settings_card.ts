@@ -49,11 +49,11 @@ export class LanguageSettingsCardElement extends
 
   // Public API: Bidirectional data flow.
   /** Passed down to children. Do not access without using PrefsMixin. */
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper|undefined;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper|undefined;
 
   // Internal properties for mixins.
   // From RouteOriginMixin.

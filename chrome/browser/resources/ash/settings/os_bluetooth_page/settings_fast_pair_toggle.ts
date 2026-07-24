@@ -45,7 +45,7 @@ class SettingsFastPairToggleElement extends SettingsFastPairToggleElementBase {
     };
   }
 
-  bluetoothToggleOnOff: boolean;
+  declare bluetoothToggleOnOff: boolean;
 
   /**
    * When Bluetooth is toggled off, we set the Fast Pair toggle to off

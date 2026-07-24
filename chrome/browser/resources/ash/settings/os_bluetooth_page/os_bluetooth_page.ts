@@ -71,10 +71,10 @@ export class SettingsBluetoothPageElement extends
   }
 
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
-  private section_: Section;
-  private showSavedDevicesLoadingIndicators_: boolean;
-  private shouldShowPairingDialog_: boolean;
-  private systemProperties_: BluetoothSystemProperties;
+  declare private section_: Section;
+  declare private showSavedDevicesLoadingIndicators_: boolean;
+  declare private shouldShowPairingDialog_: boolean;
+  declare private systemProperties_: BluetoothSystemProperties;
   private systemPropertiesObserverReceiver_: SystemPropertiesObserverReceiver;
 
   constructor() {

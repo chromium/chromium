@@ -52,7 +52,7 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
     };
   }
 
-  device: BluetoothDeviceProperties;
+  declare device: BluetoothDeviceProperties;
 
   /**
    * Only show specific battery information if the device is

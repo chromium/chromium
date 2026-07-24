@@ -60,9 +60,9 @@ export class SettingsPairedBluetoothListItemElement extends
     };
   }
 
-  device: PairedBluetoothDeviceProperties;
-  itemIndex: number;
-  listSize: number;
+  declare device: PairedBluetoothDeviceProperties;
+  declare itemIndex: number;
+  declare listSize: number;
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();

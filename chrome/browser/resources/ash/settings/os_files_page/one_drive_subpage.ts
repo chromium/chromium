@@ -56,7 +56,7 @@ export class SettingsOneDriveSubpageElement extends
     this.initPromise = this.updateUserEmailAddress_();
   }
 
-  private connectionState_: OneDriveConnectionState;
+  declare private connectionState_: OneDriveConnectionState;
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
   private allowUserToRemoveOdfs_: boolean = true;

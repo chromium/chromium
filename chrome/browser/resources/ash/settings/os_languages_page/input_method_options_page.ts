@@ -128,11 +128,16 @@ export class SettingsInputMethodOptionsPageElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.optionSections_ = [];
+  }
+
   // Public API: Bidirectional data flow.
   // override prefs: any;  // From PrefsMixin.
 
   // Public API: Downwards data flow.
-  languageHelper: LanguageHelper;
+  declare languageHelper: LanguageHelper;
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
@@ -145,17 +150,17 @@ export class SettingsInputMethodOptionsPageElement extends
   // This property does not have a default value in `static get properties()`,
   // but is set in `currentRouteChanged()`.
   // TODO(b/265556480): Update the initial value to be ''.
-  private id_: string;
+  declare private id_: string;
   // This property does not have a default value in `static get properties()`.
   // TODO(b/265556480): Update the initial value to be false.
-  private showClearPersonalizedData_: boolean;
+  declare private showClearPersonalizedData_: boolean;
 
   // Manually computed properties.
   // TODO(b/238031866): Convert these to be Polymer computed properties.
   /** Computed from id_. */
-  private engineId_: string;
+  declare private engineId_: string;
   /** Computed from engineId_. */
-  private optionSections_: Section[] = [];
+  declare private optionSections_: Section[];
 
   /**
    * RouteObserverMixin override

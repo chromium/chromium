@@ -129,12 +129,17 @@ export class OsSettingsLanguagesPageV2Element extends
     };
   }
 
+  constructor() {
+    super();
+    this.languageSettingsV2Update2Enabled_ = true;
+  }
+
   // Public API: Bidirectional data flow.
   // override prefs: any;  // From PrefsMixin.
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
 
   // API proxies.
   private languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
@@ -148,19 +153,19 @@ export class OsSettingsLanguagesPageV2Element extends
   ]);
 
   // Internal state.
-  private detailLanguage_?: {state: LanguageState, index: number};
+  declare private detailLanguage_?: {state: LanguageState, index: number};
   // This property does not have a default value in `static get properties()`.
   // TODO(b/265556480): Update the initial value to be false.
-  private showAddLanguagesDialog_: boolean;
-  private showChangeDeviceLanguageDialog_: boolean;
+  declare private showAddLanguagesDialog_: boolean;
+  declare private showChangeDeviceLanguageDialog_: boolean;
 
   // loadTimeData flags and strings.
-  private isGuest_: boolean;
-  private isSecondaryUser_: boolean;
-  private primaryUserEmail_: string;
-  private isPerAppLanguageEnabled_: boolean;
+  declare private isGuest_: boolean;
+  declare private isSecondaryUser_: boolean;
+  declare private primaryUserEmail_: string;
+  declare private isPerAppLanguageEnabled_: boolean;
   // TODO: b/263823772 - Inline this variable.
-  private languageSettingsV2Update2Enabled_ = true;
+  declare private languageSettingsV2Update2Enabled_: boolean;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

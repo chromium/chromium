@@ -146,46 +146,54 @@ export class OsSettingsAddItemsDialogElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.items = [];
+    this.suggestedItemIds = [];
+    this.suggestedItems_ = [];
+    this.filteredItems_ = [];
+  }
+
   // Public API: Items to show in the dialog (downwards data flow).
-  items: Item[] = [];
+  declare items: Item[];
   /**
    * Item IDs to show in the "Suggested" section of the dialog.
    * Any items in this array which are disabled by policy, or IDs which do not
    * appear in the items array will be filtered out automatically.
    */
-  suggestedItemIds: string[] = [];
+  declare suggestedItemIds: string[];
 
   // Public API: Strings displayed to the user, in the order a user would see
   // them (downwards data flow).
-  header: string;
-  searchLabel: string;
-  managedByPolicyLabel: string;
-  suggestedItemsLabel: string;
-  allItemsLabel: string;
-  policyTooltip: string;
-  showManagedByPolicy: boolean;
+  declare header: string;
+  declare searchLabel: string;
+  declare managedByPolicyLabel: string;
+  declare suggestedItemsLabel: string;
+  declare allItemsLabel: string;
+  declare policyTooltip: string;
+  declare showManagedByPolicy: boolean;
 
   // Internal state.
-  private itemIdsToAdd_: Set<string>;
+  declare private itemIdsToAdd_: Set<string>;
   // This property does not have a default value in `static get properties()`.
   // TODO(b/265556480): Update the initial value to be ''.
-  private lowercaseQueryString_: string;
+  declare private lowercaseQueryString_: string;
 
   // Computed properties for suggested items.
   /** Mapping from item ID to item for use in computing `suggestedItems_`. */
-  private itemIdsToItems_: Map<string, Item>;
+  declare private itemIdsToItems_: Map<string, Item>;
   /** All items in this array are guaranteed to not be disabled by policy. */
-  private suggestedItems_: Item[] = [];
+  declare private suggestedItems_: Item[];
   /** Whether suggestedItems_ is non-empty. */
-  private showSuggestedList_: boolean;
+  declare private showSuggestedList_: boolean;
 
   // Computed properties for filtered items.
-  private filteredItems_: Item[] = [];
+  declare private filteredItems_: Item[];
   /** Whether filteredItems_ is non-empty. */
-  private showFilteredList_: boolean;
+  declare private showFilteredList_: boolean;
 
   // Other computed properties.
-  private disableActionButton_: boolean;
+  declare private disableActionButton_: boolean;
 
   static get observers() {
     return [

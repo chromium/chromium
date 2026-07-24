@@ -35,8 +35,8 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
   }
 
   // Public API: Downwards data flow.
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
 
   /**
    * @return A list of languages to be displayed in the dialog.

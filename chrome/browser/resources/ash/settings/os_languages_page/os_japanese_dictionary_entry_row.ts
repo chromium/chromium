@@ -112,21 +112,27 @@ class OsJapaneseDictionaryEntryRowElement extends I18nMixin
     };
   }
 
+  constructor() {
+    super();
+    this.locallyAdded = false;
+    this.isLastEntry = false;
+  }
+
   // Whether the entry needs to be added to the storage.
-  locallyAdded = false;
+  declare locallyAdded: boolean;
 
   // Whether this entry is the last entry in the dictionary.
-  isLastEntry = false;
+  declare isLastEntry: boolean;
 
   // The ID of the Japanese User Dictionary that the entry is part of.
-  dictId: bigint;
+  declare dictId: bigint;
 
   // Index of the entry within the dictionary.
-  index: number;
+  declare index: number;
 
   // The JapaneseDictionary entry that represents a key value pair and
   // attributes.
-  entry: JapaneseDictionaryEntry;
+  declare entry: JapaneseDictionaryEntry;
 
   private saveReading_(e: Event): void {
     this.entry.key = (e.target as CrInputElement).value;

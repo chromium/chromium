@@ -90,6 +90,11 @@ export class OsSettingsEditDictionaryPageElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.words_ = [];
+  }
+
   // API proxies.
   private languageSettingsPrivate_ =
       LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
@@ -99,13 +104,13 @@ export class OsSettingsEditDictionaryPageElement extends
   override subpageRoute = routes.OS_LANGUAGES_EDIT_DICTIONARY;
 
   // Internal state.
-  private words_: string[] = [];
-  private newWordValue_: string;
+  declare private words_: string[];
+  declare private newWordValue_: string;
 
   // Computed properties.
-  private hasWords_: boolean;
-  private newWordState_: number;
-  private disableAddButton_: boolean;
+  declare private hasWords_: boolean;
+  declare private newWordState_: number;
+  declare private disableAddButton_: boolean;
 
   override ready(): void {
     super.ready();

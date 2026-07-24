@@ -99,11 +99,11 @@ export class SettingsBluetoothSummaryElement extends
     };
   }
 
-  systemProperties: BluetoothSystemProperties;
+  declare systemProperties: BluetoothSystemProperties;
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
-  private isBluetoothToggleOn_: boolean;
-  private isSecondaryUser_: boolean;
-  private primaryUserEmail_: string;
+  declare private isBluetoothToggleOn_: boolean;
+  declare private isSecondaryUser_: boolean;
+  declare private primaryUserEmail_: string;
 
   constructor() {
     super();

@@ -41,9 +41,15 @@ export class OsSettingsClearPersonalizedDataDialogElement extends
     };
   }
 
-  private clearConversionHistory_ = false;
+  constructor() {
+    super();
+    this.clearConversionHistory_ = false;
+    this.clearSuggestionHistory_ = false;
+  }
 
-  private clearSuggestionHistory_ = false;
+  declare private clearConversionHistory_: boolean;
+
+  declare private clearSuggestionHistory_: boolean;
 
   private onCancelButtonClick_(): void {
     this.$.dialog.close();

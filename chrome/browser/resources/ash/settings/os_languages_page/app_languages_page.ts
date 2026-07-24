@@ -64,12 +64,12 @@ export class OsSettingsAppLanguagesPageElement extends
 
   // Public API: Bidirectional data flow.
   /** Passed down to children. Do not access without using PrefsMixin. */
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // Internal state.
-  private appList_: App[];
-  private selectedApp_?: App;
-  private showSelectLanguageDialog_: boolean;
+  declare private appList_: App[];
+  declare private selectedApp_?: App;
+  declare private showSelectLanguageDialog_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
