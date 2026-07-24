@@ -15198,6 +15198,31 @@
             ]
         }
     ],
+    "Indigo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "indigo_saved_url": "https://www.google.com/saves"
+                    },
+                    "enable_features": [
+                        "ImageReplacement",
+                        "Indigo",
+                        "IndigoComponent",
+                        "IndigoMetadataKeywordHeuristic",
+                        "IndigoOpenGlic"
+                    ]
+                }
+            ]
+        }
+    ],
     "InfiniteTabsFreezingOnMemoryPressureV2": [
         {
             "platforms": [
