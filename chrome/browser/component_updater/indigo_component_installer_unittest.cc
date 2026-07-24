@@ -98,9 +98,6 @@ TEST_F(IndigoComponentInstallerPolicyTest, ComponentRegistered) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
-  ON_CALL(*service, GetSequencedTaskRunner())
-      .WillByDefault(testing::Return(env_.GetMainThreadTaskRunner()));
-
   base::RunLoop run_loop;
   EXPECT_CALL(*service, RegisterComponent(testing::_))
       .WillOnce(testing::DoAll(
@@ -117,9 +114,6 @@ TEST_F(IndigoComponentInstallerPolicyTest,
 
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
-
-  ON_CALL(*service, GetSequencedTaskRunner())
-      .WillByDefault(testing::Return(env_.GetMainThreadTaskRunner()));
 
   EXPECT_CALL(*service, RegisterComponent(testing::_)).Times(0);
   RegisterIndigoComponent(service.get());

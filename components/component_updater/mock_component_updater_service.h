@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "components/component_updater/component_installer.h"
@@ -30,10 +29,6 @@ class MockComponentUpdateService : public ComponentUpdateService {
  public:
   MockComponentUpdateService();
   ~MockComponentUpdateService() override;
-
-  MOCK_METHOD(scoped_refptr<base::SequencedTaskRunner>,
-              GetSequencedTaskRunner,
-              ());
 
   // ComponentUpdateService overrides.
   MOCK_METHOD(void,
