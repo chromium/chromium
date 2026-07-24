@@ -54,6 +54,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       // Custom symbols.
     case SymbolAirplaneUp:
       return {@"airplane_up", SymbolType::kCustom};
+    case SymbolAirplaneUpSpark:
+      return {@"airplane_up_spark", SymbolType::kCustom};
     case SymbolArrowClockWise:
       return {@"arrow_clockwise", SymbolType::kCustom};
     case SymbolBagSpark:

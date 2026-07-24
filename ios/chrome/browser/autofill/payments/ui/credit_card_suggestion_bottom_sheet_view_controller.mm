@@ -118,7 +118,7 @@ CGFloat const kTitleLogoHeight = 32;
   self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
   self.configuration.secondaryActionImage =
-      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolKeyboard, kSymbolActionPointSize);
 
   [super viewDidLoad];
 
@@ -300,18 +300,16 @@ CGFloat const kTitleLogoHeight = 32;
 - (UIImage*)titleImage {
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  NSString* symbol = kMulticolorChromeballSymbol;
+  Symbol symbol = SymbolMulticolorChromeball;
   if (self.showGooglePayLogo) {
     symbol = base::FeatureList::IsEnabled(
                  autofill::features::kAutofillEnableGradientGoogleLogos)
-                 ? kGooglePayV2Symbol
-                 : kGooglePaySymbol;
+                 ? SymbolGooglePayV2
+                 : SymbolGooglePay;
   }
-  image =
-      MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, kTitleLogoHeight));
+  image = MakeSymbolMulticolor(SymbolWithPointSize(symbol, kTitleLogoHeight));
 #else
-  image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
-                                             kTitleLogoHeight);
+  image = SymbolTemplateWithPointSize(SymbolDefaultBrowser, kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   return image;
@@ -356,7 +354,7 @@ CGFloat const kTitleLogoHeight = 32;
     [weakSelf.handler displayPaymentMethods];
   };
   UIImage* creditCardIcon =
-      DefaultSymbolWithPointSize(kCreditCardSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolCreditCard, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS)
@@ -381,7 +379,7 @@ CGFloat const kTitleLogoHeight = 32;
   };
 
   UIImage* infoIcon =
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   return
       [UIAction actionWithTitle:l10n_util::GetNSString(
                                     IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS)

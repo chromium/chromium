@@ -121,16 +121,15 @@ NSString* const kWalletUrlString = @"https://wallet.google.com/";
   NSString* term1String =
       l10n_util::GetNSStringF(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT, displayName);
   item1.text = [[NSAttributedString alloc] initWithString:term1String];
-  item1.icon = DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
-                                                  kBulletIconSize);
+  item1.icon =
+      SymbolTemplateWithPointSize(SymbolPersonCropCircle, kBulletIconSize);
 
   // Term 2 (Eligibility check)
   AutofillBnplTosBulletItem* item2 = [[AutofillBnplTosBulletItem alloc] init];
   NSString* term2String =
       l10n_util::GetNSStringF(IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT, displayName);
   item2.text = [[NSAttributedString alloc] initWithString:term2String];
-  item2.icon =
-      DefaultSymbolTemplateWithPointSize(kTextDocument, kBulletIconSize);
+  item2.icon = SymbolTemplateWithPointSize(SymbolTextDocument, kBulletIconSize);
 
   // Term 3 (Linking benefits)
   AutofillBnplTosBulletItem* item3 = [[AutofillBnplTosBulletItem alloc] init];
@@ -146,11 +145,9 @@ NSString* const kWalletUrlString = @"https://wallet.google.com/";
                             range:linkRange];
   }
   item3.text = term3Attributed;
-  item3.icon =
-      DefaultSymbolTemplateWithPointSize(kWalletBifoldSymbol, kBulletIconSize);
+  item3.icon = SymbolTemplateWithPointSize(SymbolWalletBifold, kBulletIconSize);
   if (!item3.icon) {
-    item3.icon =
-        DefaultSymbolTemplateWithPointSize(kCreditCardSymbol, kBulletIconSize);
+    item3.icon = SymbolTemplateWithPointSize(SymbolCreditCard, kBulletIconSize);
   }
 
   return @[ item1, item2, item3 ];

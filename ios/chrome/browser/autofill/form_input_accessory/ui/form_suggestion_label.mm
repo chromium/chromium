@@ -805,8 +805,8 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE)
-                image:DefaultSymbolWithPointSize(kEditActionSymbol,
-                                                 kSymbolActionPointSize)
+                image:SymbolWithPointSize(SymbolEditAction,
+                                          kSymbolActionPointSize)
            identifier:nil
               handler:^(__kindof UIAction* action) {
                 [weakSelf handleEditTap];
@@ -826,8 +826,8 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
   __weak __typeof(self) weakSelf = self;
   UIAction* settingsAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTEXT_MENU_OPEN_SETTINGS)
-                image:DefaultSymbolWithPointSize(kSettingsSymbol,
-                                                 kSymbolActionPointSize)
+                image:SymbolWithPointSize(SymbolSettings,
+                                          kSymbolActionPointSize)
            identifier:nil
               handler:^(__kindof UIAction* action) {
                 [weakSelf handleOpenSettingsTap];

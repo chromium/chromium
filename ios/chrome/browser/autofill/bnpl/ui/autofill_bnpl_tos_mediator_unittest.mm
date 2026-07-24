@@ -77,10 +77,9 @@ TEST_F(AutofillBnplTosMediatorTest, PopulateConsumerUnlinked) {
         if (list.count != 3) {
           return NO;
         }
-        EXPECT_NSEQ(
-            DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol, 20.0),
-            list[0].icon);
-        EXPECT_NSEQ(DefaultSymbolTemplateWithPointSize(kTextDocument, 20.0),
+        EXPECT_NSEQ(SymbolTemplateWithPointSize(SymbolPersonCropCircle, 20.0),
+                    list[0].icon);
+        EXPECT_NSEQ(SymbolTemplateWithPointSize(SymbolTextDocument, 20.0),
                     list[1].icon);
         return YES;
       }]]);

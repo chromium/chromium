@@ -57,8 +57,8 @@ CGFloat const kCustomFaviconSideLength = 58;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_AUTOFILL_SCAN_CARD_AND_AUTOFILL_PROMPT_PRIMARY_BUTTON_LABEL);
-  self.configuration.primaryActionImage = DefaultSymbolTemplateWithPointSize(
-      kCreditCardFinderActionSymbol, kSymbolActionPointSize);
+  self.configuration.primaryActionImage = SymbolTemplateWithPointSize(
+      SymbolCreditCardFinderAction, kSymbolActionPointSize);
   self.configuration.secondaryActionString = l10n_util::GetNSString(
       IDS_AUTOFILL_SCAN_CARD_AND_AUTOFILL_PROMPT_CANCEL_BUTTON_LABEL);
 
@@ -116,10 +116,9 @@ CGFloat const kCustomFaviconSideLength = 58;
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleWalletIconSymbol, kTitleLogoHeight));
+      SymbolWithPointSize(SymbolGoogleWalletIcon, kTitleLogoHeight));
 #else
-  image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
-                                             kTitleLogoHeight);
+  image = SymbolTemplateWithPointSize(SymbolDefaultBrowser, kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   return image;

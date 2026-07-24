@@ -27,58 +27,41 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
                                             bool is_personal_context,
                                             CGFloat symbol_point_size,
                                             UIColor* tint_color) {
-  // TODO(crbug.com/523320919): Return different icons when is_personal_context
-  // is true.
-  // Identify if the symbol is custom (always true for personal context
-  // entities).
-  bool is_custom_symbol = is_personal_context;
-  NSString* symbol_name = nil;
+  Symbol symbol;
   UIColor* color = tint_color ?: [UIColor colorNamed:kTextPrimaryColor];
 
   switch (entity_type_name) {
     case EntityTypeName::kPassport:
-      symbol_name =
-          is_personal_context ? kPassportSparkSymbol : kPassportSymbol;
-      // Passport symbols are custom symbols.
-      is_custom_symbol = YES;
+      symbol = is_personal_context ? SymbolPassportSpark : SymbolPassport;
       break;
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kNationalIdCard:
-      symbol_name = is_personal_context ? kPersonTextRectangleSparkSymbol
-                                        : kPersonTextRectangleSymbol;
+      symbol = is_personal_context ? SymbolPersonTextRectangleSpark
+                                   : SymbolPersonTextRectangle;
       break;
     case EntityTypeName::kVehicle:
-      symbol_name = is_personal_context ? kCarSparkSymbol : kCarSymbol;
+      symbol = is_personal_context ? SymbolCarSpark : SymbolCar;
       break;
     case EntityTypeName::kKnownTravelerNumber:
     case EntityTypeName::kRedressNumber:
-      symbol_name = is_personal_context ? kPersonTextRectangle2SparkSymbol
-                                        : kPersonTextRectangle2Symbol;
-      // Known travel numbers and redress number symbols are custom symbols.
-      is_custom_symbol = YES;
+      symbol = is_personal_context ? SymbolPersonTextRectangle2Spark
+                                   : SymbolPersonTextRectangle2;
       break;
     case EntityTypeName::kFlightReservation:
-      symbol_name =
-          is_personal_context ? kAirplaneUpSparkSymbol : kAirplaneUpSymbol;
-      // The flight reservation symbol is a custom symbol.
-      is_custom_symbol = YES;
+      symbol = is_personal_context ? SymbolAirplaneUpSpark : SymbolAirplaneUp;
       break;
     case EntityTypeName::kShipment:
-      symbol_name =
-          is_personal_context ? kTruckBoxSparkSymbol : kTruckBoxSymbol;
+      symbol = is_personal_context ? SymbolTruckBoxSpark : SymbolTruckBox;
       break;
     case EntityTypeName::kOrder:
-      symbol_name = is_personal_context ? kBagSparkSymbol : kBagSymbol;
+      symbol = is_personal_context ? SymbolBagSpark : SymbolBag;
       break;
     default:
       return nil;
   }
 
-  return SymbolWithPalette(
-      is_custom_symbol
-          ? CustomSymbolWithPointSize(symbol_name, symbol_point_size)
-          : DefaultSymbolWithPointSize(symbol_name, symbol_point_size),
-      @[ color ]);
+  return SymbolWithPalette(SymbolWithPointSize(symbol, symbol_point_size),
+                           @[ color ]);
 }
 
 NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type) {
@@ -225,14 +208,14 @@ GURL GetGoogleWalletPassesURL() {
 
 UIImage* GetWalletLogo(CGFloat point_size, UIColor* tint_color) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  NSString* symbol =
+  Symbol symbol =
       base::FeatureList::IsEnabled(features::kAutofillEnableGradientGoogleLogos)
-          ? kGoogleWalletIconV2Symbol
-          : kGoogleWalletIconSymbol;
-  return MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, point_size));
+          ? SymbolGoogleWalletIconV2
+          : SymbolGoogleWalletIcon;
+  return MakeSymbolMulticolor(SymbolWithPointSize(symbol, point_size));
 #else
   return SymbolWithPalette(
-      DefaultSymbolWithPointSize(kSparklesSymbol, point_size),
+      SymbolWithPointSize(SymbolSparkles, point_size),
       @[ tint_color ?: [UIColor colorNamed:kBlue600Color] ]);
 #endif
 }

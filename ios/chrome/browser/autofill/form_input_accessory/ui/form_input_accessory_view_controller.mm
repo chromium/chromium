@@ -403,11 +403,10 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 // popover).
 UIImage* GetManualFillSymbol() {
   if ([ManualFillUtil shouldUsePopover]) {
-    return DefaultSymbolWithPointSize(kListBulletSymbol,
-                                      kManualFillSymbolPointSize);
+    return SymbolWithPointSize(SymbolListBullet, kManualFillSymbolPointSize);
   }
 
-  return DefaultSymbolWithPointSize(kExpandSymbol, kSymbolActionPointSize);
+  return SymbolWithPointSize(SymbolExpand, kSymbolActionPointSize);
 }
 
 // Creates formInputAccessoryView if not done yet.
@@ -437,9 +436,8 @@ UIImage* GetManualFillSymbol() {
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
   UIImage* closeButtonSymbol =
-      DefaultSymbolWithPointSize(kKeyboardDownSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolKeyboardDown, kSymbolActionPointSize);
 
-  // TODO(crbug.com/522326512): Verify this parameter.
   UIImage* atMemorySymbol = CustomSymbolWithPointSize(
       kMagnifyingglassSparkSymbol, kSymbolActionPointSize);
 
@@ -447,12 +445,12 @@ UIImage* GetManualFillSymbol() {
             setUpWithLeadingView:self.leadingView
               navigationDelegate:self.navigationDelegate
                 manualFillSymbol:GetManualFillSymbol()
-        passwordManualFillSymbol:CustomSymbolWithPointSize(
-                                     kPasswordSymbol, kSymbolActionPointSize)
-      creditCardManualFillSymbol:DefaultSymbolWithPointSize(
-                                     kCreditCardSymbol, kSymbolActionPointSize)
-         addressManualFillSymbol:CustomSymbolWithPointSize(
-                                     kLocationSymbol, kSymbolActionPointSize)
+        passwordManualFillSymbol:SymbolWithPointSize(SymbolPassword,
+                                                     kSymbolActionPointSize)
+      creditCardManualFillSymbol:SymbolWithPointSize(SymbolCreditCard,
+                                                     kSymbolActionPointSize)
+         addressManualFillSymbol:SymbolWithPointSize(SymbolLocation,
+                                                     kSymbolActionPointSize)
         atMemoryManualFillSymbol:atMemorySymbol
                closeButtonSymbol:closeButtonSymbol
               isTabletFormFactor:isTabletFormFactor];

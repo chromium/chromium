@@ -704,7 +704,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Use the optimized high-resolution iOS symbol for branded builds.
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleWalletSymbol, kGoogleWalletLogoHeight));
+      SymbolWithPointSize(SymbolGoogleWallet, kGoogleWalletLogoHeight));
 #else
   // Fallback to the generic asset for unbranded builds.
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
