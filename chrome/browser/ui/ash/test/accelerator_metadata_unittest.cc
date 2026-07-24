@@ -22,7 +22,7 @@ namespace {
 constexpr int kChromeAcceleratorsTotalNum = 106;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "d06e20b7fabf9838d9a2abfc795d54cd94d90e53a3021b0510a8bc4d7aa9d73c";
+    "37f3d41a36bc43d4c562dcacc45caef29ab0dbec3e25352374c54cbacd8074b6";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 104;
@@ -81,9 +81,8 @@ class ChromeAcceleratorMetadataTest : public testing::Test {
 // 2. Please update the number and hash value of chrome accelerators on the top
 // of this file. The new number and hash value will be provided in the test
 // output.
-// TODO(crbug.com/533957090): Re-enable this test.
 TEST_F(ChromeAcceleratorMetadataTest,
-       DISABLED_ModifyChromeAcceleratorShouldUpdateLayout) {
+       ModifyChromeAcceleratorShouldUpdateLayout) {
   std::vector<AcceleratorMapping> chrome_accelerators;
   for (const auto& accel_mapping : GetAcceleratorList()) {
     chrome_accelerators.emplace_back(accel_mapping);
