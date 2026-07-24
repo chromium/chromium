@@ -780,10 +780,13 @@ public class BookmarkBarCoordinator
             return;
         }
 
-        // If the Android controls are fully invisible (e.g. completely scrolled off screen), we do
+        // If the Android controls are fully invisible AND completely scrolled off screen, we do
         // not need the SceneLayer to be visible. Hiding it here prevents single-frame flashes when
-        // height recalculations mismatch the CC offset.
-        if (mBrowserControlsStateProvider.getAndroidControlsVisibility() == INVISIBLE) {
+        // height recalculations mismatch the CC offset. We also check the hidden ratio because
+        // some features (like Contextual Search) can force Android controls to be INVISIBLE while
+        // leaving the CC layer on screen under a scrim.
+        if (mBrowserControlsStateProvider.getAndroidControlsVisibility() == INVISIBLE
+                && mBrowserControlsStateProvider.getBrowserControlHiddenRatio() == 1.0f) {
             mBookmarkBarSceneLayer.setVisibility(false);
             return;
         }
