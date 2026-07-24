@@ -723,13 +723,13 @@ bool IsGeminiClientMigrationEnabled() {
 BASE_FEATURE(kGeminiMultiTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiMultiTabContextEnabled() {
-  if (!IsPageActionMenuEnabled()) {
+  if (!IsPageActionMenuEnabled() || !IsGeminiScreenContextMigrationEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiMultiTabContext);
 }
 
-BASE_FEATURE(kGeminiScreenContextMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiScreenContextMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiScreenContextMigrationEnabled() {
   if (!IsPageActionMenuEnabled()) {
