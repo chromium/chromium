@@ -5,6 +5,8 @@
 #include "components/facilitated_payments/core/browser/ewallet_account_linking_manager.h"
 
 #include "base/logging.h"
+#include "components/facilitated_payments/core/browser/account_linking_params.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
 namespace payments::facilitated {
 
@@ -21,6 +23,23 @@ void EwalletAccountLinkingManager::DoOnClientTokenReceived(
   InitiateAccountLinkingNetworkCall(client_token);
 }
 
+void EwalletAccountLinkingManager::
+    DoOnGetDetailsForCreatePaymentInstrumentResponse(bool is_eligible) {
+  if (is_eligible) {
+    ShowAccountLinkingPrompt();
+  }
+}
+
+std::optional<AccountLinkingParams>
+EwalletAccountLinkingManager::CreateAccountLinkingParams() {
+  AccountLinkingParams params(FacilitatedPaymentsType::kEwallet);
+  // TODO(b/509694036): Pass actual eWallet name.
+  params.fop_display_name = u"eWallet";
+  // TODO(b/509694036): Plumb strike count when supported.
+  params.strike_count = 0;
+  return params;
+}
+
 void EwalletAccountLinkingManager::DoOnAccountLinkingResult(
     AccountLinkingResult result) {
   DVLOG(1) << "Ewallet account linking result: " << result.is_successful;
@@ -35,6 +54,11 @@ base::DictValue EwalletAccountLinkingManager::
 
 std::string_view EwalletAccountLinkingManager::GetHistogramSuffix() const {
   return "Ewallet";
+}
+
+base::WeakPtr<NativeAccountLinkingHandler>
+EwalletAccountLinkingManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace payments::facilitated

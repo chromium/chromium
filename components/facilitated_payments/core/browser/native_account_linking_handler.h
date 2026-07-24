@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 
 namespace payments::facilitated {
@@ -40,12 +42,27 @@ class NativeAccountLinkingHandler {
   void FetchClientToken();
 
   // Called when the user accepts the account linking prompt.
-  void OnAccepted();
+  virtual void OnAccepted();
 
   // Called when the user declines the account linking prompt.
-  void OnDeclined();
+  virtual void OnDeclined();
+
+  // Called if the user dismisses the prompt (e.g., swiping down or tapping the
+  // scrim).
+  virtual void OnDismissed();
+
+  // Dismisses the prompt UI.
+  virtual void DismissPrompt();
 
  protected:
+  // Virtual hook for subclasses to provide specific prompt configuration data.
+  // Return std::nullopt to prevent the generic prompt from showing (useful
+  // for subclasses that manage their own UI flows entirely).
+  virtual std::optional<AccountLinkingParams> CreateAccountLinkingParams() = 0;
+
+  // Concrete helper to show the prompt. Fetches params and binds base
+  // callbacks.
+  void ShowAccountLinkingPrompt();
   // Virtual hook to handle subclass-specific timing/logic on token reception.
   virtual void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) = 0;
@@ -53,7 +70,7 @@ class NativeAccountLinkingHandler {
   // Virtual hook to handle subclass-specific logic when GDCPI response is
   // received.
   virtual void DoOnGetDetailsForCreatePaymentInstrumentResponse(
-      bool is_eligible) {}
+      bool is_eligible) = 0;
 
   // Virtual hooks for subclass-specific prompt acceptance and decline
   // side-effects.
@@ -79,8 +96,6 @@ class NativeAccountLinkingHandler {
   void InvokeInstrumentManager(CoreAccountInfo primary_account,
                                const std::vector<uint8_t>& action_token);
 
-  // Dismisses the prompt UI.
-  void DismissPrompt();
 
   // Non-virtual helper to handle standard linking completion logic. Calls the
   // DoOnAccountLinkingResult virtual method.
@@ -118,8 +133,9 @@ class NativeAccountLinkingHandler {
 
   // Cached action token used for invoking the instrument manager GMSCore API.
   std::vector<uint8_t> action_token_;
-
-  base::WeakPtrFactory<NativeAccountLinkingHandler> weak_ptr_factory_{this};
+  // Subclasses must provide a WeakPtr to the base class since a WeakPtrFactory
+  // can only exist on the leaf descendant class.
+  virtual base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() = 0;
 };
 
 }  // namespace payments::facilitated

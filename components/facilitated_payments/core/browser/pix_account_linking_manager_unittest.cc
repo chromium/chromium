@@ -897,4 +897,8 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(PixAccountLinkingManagerTest, CreateAccountLinkingParams) {
+  EXPECT_FALSE(test_api().CreateAccountLinkingParams().has_value());
+}
+
 }  // namespace payments::facilitated

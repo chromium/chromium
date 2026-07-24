@@ -33,6 +33,11 @@ class PixAccountLinkingManagerTestApi {
   }
 
   // Network and backend response handlers.
+
+  std::optional<AccountLinkingParams> CreateAccountLinkingParams() {
+    return manager_->CreateAccountLinkingParams();
+  }
+
   void DoOnClientTokenReceived(const std::vector<uint8_t>& client_token) {
     manager_->DoOnClientTokenReceived(client_token);
   }

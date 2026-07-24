@@ -23,6 +23,14 @@ class EwalletAccountLinkingManagerTestApi {
     manager_->DoOnClientTokenReceived(client_token);
   }
 
+  void DoOnGetDetailsForCreatePaymentInstrumentResponse(bool is_eligible) {
+    manager_->DoOnGetDetailsForCreatePaymentInstrumentResponse(is_eligible);
+  }
+
+  std::optional<AccountLinkingParams> CreateAccountLinkingParams() {
+    return manager_->CreateAccountLinkingParams();
+  }
+
   void DoOnAccountLinkingResult(AccountLinkingResult result) {
     manager_->DoOnAccountLinkingResult(result);
   }

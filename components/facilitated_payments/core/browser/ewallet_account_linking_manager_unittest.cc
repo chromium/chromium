@@ -82,5 +82,107 @@ TEST_F(EwalletAccountLinkingManagerTest, DoOnClientTokenReceived) {
   test_api(*manager_).DoOnClientTokenReceived(client_token);
 }
 
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnGetDetailsForCreatePaymentInstrumentResponse) {
+  base::OnceCallback<void()> on_accepted;
+  base::OnceCallback<void()> on_declined;
+  base::OnceCallback<void()> on_dismissed;
+
+  EXPECT_CALL(client_,
+              ShowAccountLinkingPrompt(
+                  testing::AllOf(
+                      testing::Field(&AccountLinkingParams::fop_type,
+                                     FacilitatedPaymentsType::kEwallet),
+                      testing::Field(&AccountLinkingParams::fop_display_name,
+                                     u"eWallet"),
+                      testing::Field(&AccountLinkingParams::strike_count, 0)),
+                  _, _, _))
+      .WillOnce([&](const AccountLinkingParams& p,
+                    base::OnceCallback<void()> accepted,
+                    base::OnceCallback<void()> declined,
+                    base::OnceCallback<void()> dismissed) {
+        on_accepted = std::move(accepted);
+        on_declined = std::move(declined);
+        on_dismissed = std::move(dismissed);
+      });
+
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  // Verify that the callbacks are successfully bound to the manager.
+  ASSERT_TRUE(on_accepted);
+  ASSERT_TRUE(on_declined);
+  ASSERT_TRUE(on_dismissed);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnGetDetailsForCreatePaymentInstrumentResponse_Declined) {
+  base::OnceCallback<void()> on_declined;
+
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _))
+      .WillOnce([&](const AccountLinkingParams& p,
+                    base::OnceCallback<void()> accepted,
+                    base::OnceCallback<void()> declined,
+                    base::OnceCallback<void()> dismissed) {
+        on_declined = std::move(declined);
+      });
+
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  ASSERT_TRUE(on_declined);
+
+  EXPECT_CALL(client_, DismissPrompt());
+  std::move(on_declined).Run();
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnGetDetailsForCreatePaymentInstrumentResponse_Accepted) {
+  base::OnceCallback<void()> on_accepted;
+
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _))
+      .WillOnce([&](const AccountLinkingParams& p,
+                    base::OnceCallback<void()> accepted,
+                    base::OnceCallback<void()> declined,
+                    base::OnceCallback<void()> dismissed) {
+        on_accepted = std::move(accepted);
+      });
+
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  ASSERT_TRUE(on_accepted);
+
+  // Since action_token_ is empty, it should exit with AccountLinkingResult{}
+  // which has kCouldNotInvoke.
+  EXPECT_CALL(client_, DismissPrompt());
+  std::move(on_accepted).Run();
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnGetDetailsForCreatePaymentInstrumentResponse_Dismissed) {
+  base::OnceCallback<void()> on_dismissed;
+
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _))
+      .WillOnce([&](const AccountLinkingParams& p,
+                    base::OnceCallback<void()> accepted,
+                    base::OnceCallback<void()> declined,
+                    base::OnceCallback<void()> dismissed) {
+        on_dismissed = std::move(dismissed);
+      });
+
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  ASSERT_TRUE(on_dismissed);
+
+  EXPECT_CALL(client_, DismissPrompt());
+  std::move(on_dismissed).Run();
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, CreateAccountLinkingParams) {
+  auto params = test_api(*manager_).CreateAccountLinkingParams();
+  ASSERT_TRUE(params.has_value());
+  EXPECT_EQ(params->fop_type, FacilitatedPaymentsType::kEwallet);
+  EXPECT_EQ(params->fop_display_name, u"eWallet");
+  EXPECT_EQ(params->strike_count, 0);
+}
+
 }  // namespace
 }  // namespace payments::facilitated

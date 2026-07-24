@@ -82,6 +82,8 @@ class FacilitatedPaymentsControllerTest
     auto mock_view = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>(
         web_contents(), controller_.get());
     mock_view_ = mock_view.get();
+    ON_CALL(*mock_view_, ShowAccountLinkingPrompt)
+        .WillByDefault(testing::Return(true));
     controller_->SetViewForTesting(std::move(mock_view));
     apps_ = std::make_unique<
         payments::facilitated::MockFacilitatedPaymentsAppInfoList>();

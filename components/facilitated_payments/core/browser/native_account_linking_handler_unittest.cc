@@ -31,6 +31,7 @@ using ::testing::Return;
 class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
  public:
   using NativeAccountLinkingHandler::InitiateAccountLinkingNetworkCall;
+  using NativeAccountLinkingHandler::ShowAccountLinkingPrompt;
 
   TestNativeAccountLinkingHandler(
       FacilitatedPaymentsClient* client,
@@ -46,14 +47,29 @@ class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
               DoOnAccountLinkingResult,
               (AccountLinkingResult result),
               (override));
+  MOCK_METHOD(void,
+              DoOnGetDetailsForCreatePaymentInstrumentResponse,
+              (bool is_eligible),
+              (override));
+  MOCK_METHOD(std::optional<AccountLinkingParams>,
+              CreateAccountLinkingParams,
+              (),
+              (override));
 
   std::string_view GetHistogramSuffix() const override { return "TestFop"; }
 
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override {
-    base::DictValue payload;
-    payload.Set("test_key", "test_value");
-    return payload;
+    return base::DictValue();
   }
+
+  base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  bool is_prompt_showing() const { return is_prompt_showing_; }
+
+ private:
+  base::WeakPtrFactory<TestNativeAccountLinkingHandler> weak_ptr_factory_{this};
 };
 
 class NativeAccountLinkingHandlerTest : public testing::Test {
@@ -170,6 +186,9 @@ TEST_F(NativeAccountLinkingHandlerTest,
                                  std::string>();
       });
 
+  EXPECT_CALL(*handler_, DoOnGetDetailsForCreatePaymentInstrumentResponse(true))
+      .Times(1);
+
   handler_->InitiateAccountLinkingNetworkCall(client_token);
 
   histogram_tester_.ExpectUniqueSample(
@@ -211,6 +230,45 @@ TEST_F(NativeAccountLinkingHandlerTest,
       "FacilitatedPayments.TestFop.AccountLinking."
       "GetDetailsForCreatePaymentInstrument.Latency",
       1);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kGetDetailsFailed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
+       InitiateAccountLinkingNetworkCall_Success_NotEligible) {
+  std::vector<uint8_t> client_token = {1, 2, 3};
+  EXPECT_CALL(payments_network_interface_,
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+      .WillOnce([](long billing_customer_id, const std::vector<uint8_t>& token,
+                   auto callback, const std::string& app_locale) {
+        std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
+                                    PaymentsRpcResult::kSuccess,
+                                /*is_eligible=*/false,
+                                /*action_token=*/std::vector<uint8_t>{});
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      });
+  EXPECT_CALL(*handler_,
+              DoOnAccountLinkingResult(AccountLinkingResult{
+                  false, 0, AccountLinkingResultCode::kCouldNotInvoke}))
+      .Times(1);
+
+  handler_->InitiateAccountLinkingNetworkCall(client_token);
+
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Result",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "FacilitatedPayments.TestFop.AccountLinking."
+      "GetDetailsForCreatePaymentInstrument.Latency",
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kNotEligiblePerPaymentsBackend,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_Success) {
@@ -381,6 +439,65 @@ TEST_F(NativeAccountLinkingHandlerTest, OnDeclined) {
       .Times(1);
 
   handler_->OnDeclined();
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, ShowAccountLinkingPrompt_Success) {
+  base::OnceCallback<void()> on_accepted;
+  base::OnceCallback<void()> on_declined;
+  base::OnceCallback<void()> on_dismissed;
+
+  AccountLinkingParams params(FacilitatedPaymentsType::kEwallet);
+
+  EXPECT_CALL(*handler_, CreateAccountLinkingParams())
+      .WillRepeatedly(Return(params));
+
+  EXPECT_CALL(client_,
+              ShowAccountLinkingPrompt(testing::AllOf(testing::Field(
+                                           &AccountLinkingParams::fop_type,
+                                           FacilitatedPaymentsType::kEwallet)),
+                                       _, _, _))
+      .WillRepeatedly([&](const AccountLinkingParams& p,
+                          base::OnceCallback<void()> accepted,
+                          base::OnceCallback<void()> declined,
+                          base::OnceCallback<void()> dismissed) {
+        on_accepted = std::move(accepted);
+        on_declined = std::move(declined);
+        on_dismissed = std::move(dismissed);
+      });
+
+  // Base class OnAccepted/OnDeclined/Dismiss all trigger client_.DismissPrompt.
+  EXPECT_CALL(client_, DismissPrompt()).Times(3);
+
+  EXPECT_CALL(*handler_,
+              DoOnAccountLinkingResult(AccountLinkingResult{
+                  false, 0, AccountLinkingResultCode::kResultCanceled}))
+      .Times(2);
+
+  EXPECT_CALL(*handler_, DoOnAccountLinkingResult(AccountLinkingResult{}))
+      .Times(1);
+
+  handler_->ShowAccountLinkingPrompt();
+  EXPECT_TRUE(handler_->is_prompt_showing());
+  std::move(on_accepted).Run();
+  EXPECT_FALSE(handler_->is_prompt_showing());
+
+  handler_->ShowAccountLinkingPrompt();
+  EXPECT_TRUE(handler_->is_prompt_showing());
+  std::move(on_declined).Run();
+  EXPECT_FALSE(handler_->is_prompt_showing());
+
+  handler_->ShowAccountLinkingPrompt();
+  EXPECT_TRUE(handler_->is_prompt_showing());
+  std::move(on_dismissed).Run();
+  EXPECT_FALSE(handler_->is_prompt_showing());
+}
+
+TEST_F(NativeAccountLinkingHandlerTest, ShowAccountLinkingPrompt_FopNullopt) {
+  EXPECT_CALL(*handler_, CreateAccountLinkingParams())
+      .WillOnce(Return(std::nullopt));
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _)).Times(0);
+  handler_->ShowAccountLinkingPrompt();
+  EXPECT_FALSE(handler_->is_prompt_showing());
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/facilitated_payments/core/browser/account_linking_result.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
@@ -38,8 +39,15 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
   void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) override;
   void DoOnAccountLinkingResult(AccountLinkingResult result) override;
+  std::optional<AccountLinkingParams> CreateAccountLinkingParams() override;
+  void DoOnGetDetailsForCreatePaymentInstrumentResponse(
+      bool is_eligible) override;
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override;
   std::string_view GetHistogramSuffix() const override;
+  base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<EwalletAccountLinkingManager> weak_ptr_factory_{this};
 };
 
 }  // namespace payments::facilitated

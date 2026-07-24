@@ -42,6 +42,16 @@ PixAccountLinkingManager::GetPayloadForGetDetailsForCreatePaymentInstrument() {
   return base::DictValue();
 }
 
+base::WeakPtr<NativeAccountLinkingHandler>
+PixAccountLinkingManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::optional<AccountLinkingParams>
+PixAccountLinkingManager::CreateAccountLinkingParams() {
+  return std::nullopt;
+}
+
 void PixAccountLinkingManager::DoOnClientTokenReceived(
     const std::vector<uint8_t>& client_token) {
   client_token_ = client_token;
@@ -219,8 +229,6 @@ void PixAccountLinkingManager::DoOnAccepted() {
 }
 
 void PixAccountLinkingManager::DoOnDeclined() {
-  LogAccountLinkingFlowExitedReason(
-      kPixFopSuffix, AccountLinkingFlowExitedReason::kUserDeclined);
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->AddStrike();
   }
