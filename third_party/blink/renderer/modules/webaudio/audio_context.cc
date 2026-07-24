@@ -333,6 +333,10 @@ ScriptPromise<IDLUndefined> AudioContext::SetSinkIdResolver::GetPromise() {
 
 void AudioContext::SetSinkIdResolver::HandleOutputDeviceStatus(
     media::OutputDeviceStatus status) {
+  TRACE_EVENT2(
+      "webaudio", "SetSinkIdResolver::HandleOutputDeviceStatus", "sink_id",
+      audio_utilities::GetSinkIdForTracing(sink_descriptor_), "status",
+      static_cast<int>(status));
   ScriptState* script_state = resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
   switch (status) {
@@ -374,8 +378,9 @@ void AudioContext::SetSinkIdResolver::HandleOutputDeviceStatus(
 
 void AudioContext::SetSinkIdResolver::OnSetSinkIdComplete(
     media::OutputDeviceStatus status) {
-  TRACE_EVENT1("webaudio", "SetSinkIdResolver::OnSetSinkIdComplete", "sink_id",
-               audio_utilities::GetSinkIdForTracing(sink_descriptor_));
+  TRACE_EVENT2("webaudio", "SetSinkIdResolver::OnSetSinkIdComplete", "sink_id",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor_),
+               "status", static_cast<int>(status));
   DCHECK(IsMainThread());
 
   if (!resolver_) {
@@ -1292,7 +1297,6 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
     const V8UnionAudioSinkOptionsOrString* v8_sink_id,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-  TRACE_EVENT0("webaudio", "AudioContext::setSinkId");
 
   // setSinkId invoked from a detached document should throw kInvalidStateError
   // DOMException.
@@ -1302,6 +1306,16 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot proceed setSinkId on a detached document."));
   }
+
+  const auto& frame_token =
+      To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken();
+  WebAudioSinkDescriptor sink_descriptor =
+      v8_sink_id->GetContentType() ==
+              V8UnionAudioSinkOptionsOrString::ContentType::kAudioSinkOptions
+          ? WebAudioSinkDescriptor(frame_token)
+          : WebAudioSinkDescriptor(v8_sink_id->GetAsString(), frame_token);
+  TRACE_EVENT1("webaudio", "AudioContext::setSinkId", "sink_id",
+               audio_utilities::GetSinkIdForTracing(sink_descriptor));
 
   // setSinkId invoked from a closed AudioContext should throw
   // kInvalidStateError DOMException.
@@ -1858,6 +1872,8 @@ void AudioContext::NotifySetSinkIdIsDone(
     ScriptState* script_state,
     SetSinkIdResolver* resolver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+  TRACE_EVENT1("webaudio", "AudioContext::NotifySetSinkIdIsDone", "sink_id",
+               audio_utilities::GetSinkIdForTracing(pending_sink_descriptor));
 
   sink_descriptor_ = pending_sink_descriptor;
 

@@ -530,10 +530,18 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   // the `platform_destination_` with the pending_platform_destination.
   media::OutputDeviceStatus status =
       pending_platform_destination->MaybeCreateSinkAndGetStatus();
+  TRACE_EVENT1("webaudio",
+               "RealtimeAudioDestinationHandler::SetSinkDescriptor_Status",
+               "status", static_cast<int>(status));
   UMA_HISTOGRAM_ENUMERATION(
       "WebAudio.AudioDestination.OutputDeviceStatus", status,
       media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_MAX + 1);
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    TRACE_EVENT_INSTANT2(
+        "webaudio", "RealtimeAudioDestinationHandler::SetSinkDescriptor_Swap",
+        TRACE_EVENT_SCOPE_THREAD, "old_sink_id",
+        audio_utilities::GetSinkIdForTracing(sink_descriptor_), "new_sink_id",
+        audio_utilities::GetSinkIdForTracing(sink_descriptor));
     const bool was_playing = platform_destination_->IsPlaying();
     StopPlatformDestination();
 

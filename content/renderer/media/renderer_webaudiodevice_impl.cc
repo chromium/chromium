@@ -310,6 +310,8 @@ RendererWebAudioDeviceImpl::~RendererWebAudioDeviceImpl() {
 
 void RendererWebAudioDeviceImpl::Start() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Start", "sink_id",
+               sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
 
   // Already started.
@@ -328,6 +330,8 @@ void RendererWebAudioDeviceImpl::Start() {
 
 void RendererWebAudioDeviceImpl::Pause() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Pause", "sink_id",
+               sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
   if (sink_)
     sink_->Pause();
@@ -337,6 +341,8 @@ void RendererWebAudioDeviceImpl::Pause() {
 
 void RendererWebAudioDeviceImpl::Resume() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Resume", "sink_id",
+               sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
   if (sink_)
     sink_->Play();
@@ -344,6 +350,8 @@ void RendererWebAudioDeviceImpl::Resume() {
 
 void RendererWebAudioDeviceImpl::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT1("webaudio", "RendererWebAudioDeviceImpl::Stop", "sink_id",
+               sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
   // If active, pause the silent sink suspender before stopping the sink to
   // ensure no callbacks are executed during teardown.
@@ -438,8 +446,10 @@ void RendererWebAudioDeviceImpl::SendLogMessage(const std::string& message) {
 }
 
 void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
-  TRACE_EVENT0("webaudio",
-               "RendererWebAudioDeviceImpl::CreateAudioRendererSink");
+  TRACE_EVENT2("webaudio",
+               "RendererWebAudioDeviceImpl::CreateAudioRendererSink",
+               "sink_type", static_cast<int>(sink_descriptor_.Type()),
+               "sink_id", sink_descriptor_.SinkId().Utf8());
   DCHECK(thread_checker_.CalledOnValidThread());
   CHECK(!sink_);
 
@@ -478,6 +488,11 @@ RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
   media::OutputDeviceStatus status =
       is_silent_sink ? media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK
                      : sink_->GetOutputDeviceInfo().device_status();
+
+  TRACE_EVENT2("webaudio",
+               "RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus",
+               "sink_id", sink_descriptor_.SinkId().Utf8(),
+               "status", static_cast<int>(status));
 
   // If sink status is not OK, reset `sink_` and `silent_sink_suspender_`
   // because this instance will be destroyed.
