@@ -87,8 +87,13 @@ void VerifyBookmarkNodeWithLabelNotNil(NSString* bookmark_node_label) {
 
 void SearchBookmarksForText(NSString* search_text) {
   // Search and hide keyboard.
+  NSString* text_without_newline = [search_text
+      stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_replaceText(search_text)];
+      performAction:grey_replaceText(text_without_newline)];
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
 }  // namespace
