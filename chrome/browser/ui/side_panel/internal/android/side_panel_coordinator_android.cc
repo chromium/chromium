@@ -211,13 +211,7 @@ void SidePanelCoordinatorAndroid::OnTabClosed(TabAndroid* tab) {
   // Otherwise, when `OnPanelContentReplaced()` is called, the
   // `pending_replaced_entry_` will be an invalid pointer since tab_1 is already
   // destroyed.
-  if (auto* registry = SidePanelRegistry::From(tab)) {
-    if (pending_replaced_entry_ &&
-        registry->GetActiveEntry() == pending_replaced_entry_) {
-      Java_SidePanelCoordinatorAndroidImpl_completePendingContentReplacement(
-          AttachCurrentThread(), java_coordinator());
-    }
-  }
+  CompletePendingContentReplacementForTab(tab);
 }
 
 void SidePanelCoordinatorAndroid::OnTabReparented(TabAndroid* tab) {
@@ -225,6 +219,21 @@ void SidePanelCoordinatorAndroid::OnTabReparented(TabAndroid* tab) {
   CHECK(tab);
 
   ClearDeferredEntryForTab(tab->GetHandle());
+
+  // During a tab switch (tab_1 -> tab_2), if tab_2's side panel View
+  // contains a ThinWebView, the Java side will delay removing tab_1's side
+  // panel View until tab_2's ThinWebView has rendered the first frame. This is
+  // to prevent UI flickers.
+  //
+  // The following logic targets the case where a tab switch is triggered by
+  // _reparenting_ tab_1 to another window.
+  //
+  // In this case, we must _not_ delay removing tab_1's side panel View.
+  // Otherwise, the destination window will activate tab_1 and show its
+  // side panel, only for the async delay in the source window to finish
+  // later and unexpectedly call OnEntryHidden(), permanently freezing tab_1's
+  // UI in the destination window.
+  CompletePendingContentReplacementForTab(tab);
 
   if (auto* registry = SidePanelRegistry::From(tab)) {
     for (auto const& entry : registry->entries()) {
@@ -689,6 +698,17 @@ void SidePanelCoordinatorAndroid::EndAnimations() {
                                                      java_coordinator());
   CHECK(state_ == SidePanelState::kClosed || state_ == SidePanelState::kShown)
       << "Side panel should be in a stable state after ending all animations.";
+}
+
+void SidePanelCoordinatorAndroid::CompletePendingContentReplacementForTab(
+    TabAndroid* tab) {
+  if (auto* registry = SidePanelRegistry::From(tab)) {
+    if (pending_replaced_entry_ &&
+        registry->GetActiveEntry() == pending_replaced_entry_) {
+      Java_SidePanelCoordinatorAndroidImpl_completePendingContentReplacement(
+          AttachCurrentThread(), java_coordinator());
+    }
+  }
 }
 
 void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(

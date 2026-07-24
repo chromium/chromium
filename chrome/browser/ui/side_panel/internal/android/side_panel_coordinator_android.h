@@ -175,6 +175,10 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // animations and ensure the side panel is in a stable state.
   void EndAnimations();
 
+  // Flushes any async view detachments (e.g. from a tab switch) if the given
+  // tab's active entry is currently pending replacement.
+  void CompletePendingContentReplacementForTab(TabAndroid* tab);
+
   bool CanShowEntryForKey(const UniqueKey& key) const;
 
   // The current state of the Side Panel.
