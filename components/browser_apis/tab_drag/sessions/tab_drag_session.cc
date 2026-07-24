@@ -89,7 +89,8 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
       break;
     case TabDragInputEvent::Type::kCaptureChanged: {
       if (drag_mode_ == DragMode::kDetaching ||
-          drag_mode_ == DragMode::kAttaching) {
+          drag_mode_ == DragMode::kAttaching ||
+          drag_mode_ == DragMode::kWaitingToExitMoveLoop) {
         break;
       }
       TabDragWindowAdapter* window = registry()->Get(dragged_window_);
@@ -117,7 +118,9 @@ void TabDragSession::HandleMovedEvent(const gfx::Point& screen_point) {
       break;
     case DragMode::kDetaching:
     case DragMode::kAttaching:
-      // Transient state; ignore move events to prevent reentrancy.
+    case DragMode::kWaitingToExitMoveLoop:
+      // Transient state; ignore move events to prevent reentrancy during loop
+      // exit.
       break;
     case DragMode::kDetachedWindow:
       HandleMoveWhileDetached(screen_point);
@@ -154,6 +157,7 @@ void TabDragSession::HandleMoveWhileDetached(const gfx::Point& screen_point) {
       TabDragWindowAdapter* detached_window = registry()->Get(dragged_window_);
       CHECK(detached_window);
 
+      drag_mode_ = DragMode::kWaitingToExitMoveLoop;
       detached_window->EndWindowMoveLoop();
       drag_mode_ = DragMode::kAttaching;
 

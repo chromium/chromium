@@ -65,6 +65,7 @@ class TabDragSession {
     kDetaching,
     kAttaching,
     kDetachedWindow,
+    kWaitingToExitMoveLoop,
   };
   void set_drag_mode_for_testing(DragMode mode) { drag_mode_ = mode; }
 
