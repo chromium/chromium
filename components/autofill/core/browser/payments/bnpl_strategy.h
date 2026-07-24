@@ -87,6 +87,17 @@ class BnplStrategy {
     kMaxValue = kSwitchToIssuerSelectionScreenOnAndroid,
   };
 
+  // Defines the action to take to dismiss the active BNPL UI.
+  enum class UiDismissalAction {
+    // Dismiss the suggestions popup/accessory.
+    kHideSuggestions = 0,
+
+    // Dismiss the explicit BNPL UI (dialog or sheet) via the delegate.
+    kRemoveBnplUi = 1,
+
+    kMaxValue = kRemoveBnplUi,
+  };
+
   virtual ~BnplStrategy();
 
   // Returns the next action to take after the user has been shown a payment
@@ -108,6 +119,9 @@ class BnplStrategy {
   // finished.
   virtual BnplAiBasedAmountExtractionReturnedNextAction
   GetNextActionOnAiBasedAmountExtractionReturned();
+
+  // Returns the action to take to dismiss the active BNPL UI.
+  virtual UiDismissalAction GetUiDismissalAction();
 
   // Returns whether the existing UI should be removed after a server response.
   // `result` is used by platforms to check if the UI should remain open.

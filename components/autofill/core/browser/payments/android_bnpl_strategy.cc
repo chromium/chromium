@@ -45,6 +45,10 @@ AndroidBnplStrategy::GetNextActionOnAiBasedAmountExtractionReturned() {
       kSwitchToIssuerSelectionScreenOnAndroid;
 }
 
+BnplStrategy::UiDismissalAction AndroidBnplStrategy::GetUiDismissalAction() {
+  return UiDismissalAction::kRemoveBnplUi;
+}
+
 bool AndroidBnplStrategy::ShouldRemoveExistingUiOnServerReturn(
     PaymentsAutofillClient::PaymentsRpcResult result) {
   return result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;

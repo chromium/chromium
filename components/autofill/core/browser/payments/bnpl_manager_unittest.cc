@@ -2641,6 +2641,7 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_TriggersExtractionAfterTermsNotSeen) {
       std::make_pair(1'000'000, "USD"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(BnplManagerTest, OnIssuerAccepted_ShowProgressSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list
@@ -2681,6 +2682,7 @@ TEST_F(BnplManagerTest, OnIssuerAccepted_ShowProgressSuggestion) {
 
   test_api(*bnpl_manager_).OnIssuerAccepted(test::GetTestUnlinkedBnplIssuer());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that `OnIssuerAccepted()` calls with a linked issuer where ToS
 // acceptance is required will call the payments network interface with the
@@ -3150,6 +3152,7 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Success_PayLaterTabs) {
       /*final_checkout_amount=*/std::nullopt,
       /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
 
+  base::OnceCallback<void(BnplIssuer)> selected_issuer_callback;
   std::vector<BnplIssuerContext> issuer_contexts;
   EXPECT_CALL(
       payments_autofill_client(),
@@ -3157,8 +3160,9 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Success_PayLaterTabs) {
                                 /*is_amount_supported_by_any_issuer=*/true,
                                 Optional(Eq(kAppLocale)), _, _))
       .WillOnce([&](base::span<const BnplIssuerContext> contexts, auto, auto,
-                    auto, auto, auto) {
+                    auto, base::OnceCallback<void(BnplIssuer)> callback, auto) {
         issuer_contexts.assign(contexts.begin(), contexts.end());
+        selected_issuer_callback = std::move(callback);
         return true;
       });
 
@@ -3168,6 +3172,11 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Success_PayLaterTabs) {
   EXPECT_THAT(issuer_contexts, ElementsAre(EqualsBnplIssuerContext(
                                    IssuerId::kBnplAffirm,
                                    BnplIssuerEligibilityForPage::kIsEligible)));
+
+  // Simulate user selecting the issuer.
+  // This should not crash even if cached_suggestions_ is empty (as it is in
+  // TTF).
+  std::move(selected_issuer_callback).Run(test::GetTestLinkedBnplIssuer());
 }
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Failure_PayLaterTabs) {

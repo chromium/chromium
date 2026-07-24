@@ -239,7 +239,17 @@ void BnplManager::OnIssuerAccepted(BnplIssuer issuer) {
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
-    ReplaceIssuerSuggestionsWithLoadingThrobber();
+    CHECK(payments_autofill_client().GetBnplStrategy());
+    using enum BnplStrategy::BeforeSwitchingViewAction;
+    switch (payments_autofill_client()
+                .GetBnplStrategy()
+                ->GetBeforeViewSwitchAction()) {
+      case kDoNothing:
+        break;
+      case kCloseCurrentUi:
+        ReplaceIssuerSuggestionsWithLoadingThrobber();
+        break;
+    }
     if (!has_logged_bnpl_suggestion_accepted_) {
       autofill_metrics::LogPayLaterTabSuggestionAccepted(
           ongoing_flow_state_->issuer->issuer_id(),
@@ -1300,14 +1310,20 @@ void BnplManager::ReplaceIssuerSuggestionsWithLoadingThrobber() {
 }
 
 void BnplManager::HideSuggestionsOrRemoveSelectBnplIssuerOrProgressUi() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnablePayNowPayLaterTabs)) {
-    browser_autofill_manager_->client().HideSuggestions(
-        SuggestionHidingReason::kHiddenByCaller, /*product=*/std::nullopt);
-  } else {
-    payments_autofill_client()
-        .GetBnplUiDelegate()
-        ->RemoveSelectBnplIssuerOrProgressUi();
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::UiDismissalAction;
+  switch (
+      payments_autofill_client().GetBnplStrategy()->GetUiDismissalAction()) {
+    case kHideSuggestions:
+      browser_autofill_manager_->client().HideSuggestions(
+          SuggestionHidingReason::kHiddenByCaller, /*product=*/std::nullopt);
+      break;
+    case kRemoveBnplUi:
+      CHECK(payments_autofill_client().GetBnplUiDelegate());
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveSelectBnplIssuerOrProgressUi();
+      break;
   }
 }
 
