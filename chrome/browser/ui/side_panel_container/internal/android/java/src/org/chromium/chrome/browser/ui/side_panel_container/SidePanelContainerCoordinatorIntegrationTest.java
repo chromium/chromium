@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.test.SidePanelContainerCoordinatorIntegrationTestSupport;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -381,6 +382,99 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                                     <= getWindowWidth(activityInNewTheme);
                 },
                 "Browser control container isn't resized to accommodate side panel.");
+    }
+
+    @Test
+    @MediumTest
+    public void changeTheme_retainsWebContentsWidth() {
+        // Arrange:
+        ChromeTabbedActivity activity = mResponsivePageStation.getActivity();
+        var tab = mResponsivePageStation.getTab();
+        var webContents = tab.getWebContents();
+        assertNotNull(webContents);
+
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(tab);
+        int sidePanelWidth = waitForContainerViewOpen(coordinator).getWidth();
+
+        CriteriaHelper.pollUiThread(
+                () -> webContents.getWidth() + sidePanelWidth <= getWindowWidth(activity),
+                "WebContents isn't resized to accommodate side panel.");
+
+        // Act: Change the theme.
+        ChromeTabbedActivity activityInNewTheme = changeTheme(activity);
+
+        // Assert:
+        // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
+        // then
+        // (2) Verify the WebContents's width in the new Activity matches the width before theme
+        // change.
+        var newCoordinator = waitForSidePanelContainerCoordinator(activityInNewTheme);
+        int newSidePanelWidth = waitForContainerViewOpen(newCoordinator).getWidth();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var newTab = activityInNewTheme.getActivityTabProvider().get();
+                    if (newTab == null) {
+                        return false;
+                    }
+
+                    var newWebContents = newTab.getWebContents();
+                    if (newWebContents == null) {
+                        return false;
+                    }
+
+                    return newWebContents.getWidth() + newSidePanelWidth
+                            <= getWindowWidth(activityInNewTheme);
+                },
+                "WebContents isn't resized to accommodate side panel.");
+    }
+
+    @Test
+    @MediumTest
+    public void changeTheme_retainsNativePageWidth() {
+        // Arrange: Open a native page (Bookmarks).
+        ChromeTabbedActivity activity = mResponsivePageStation.getActivity();
+        var bookmarksNativePageStation =
+                mResponsivePageStation.loadPageProgrammatically(
+                        UrlConstantResolver.getOriginalBookmarksUrl(),
+                        WebPageStation.newBuilder().withExpectedUrlSubstring("bookmarks"));
+        var tab = bookmarksNativePageStation.getTab();
+        View nativePageView = tab.getView();
+        assertNotNull(nativePageView);
+
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(tab);
+        int sidePanelWidth = waitForContainerViewOpen(coordinator).getWidth();
+        CriteriaHelper.pollUiThread(
+                () -> nativePageView.getWidth() + sidePanelWidth <= getWindowWidth(activity),
+                "Native page isn't resized to accommodate side panel.");
+
+        // Act: Change the theme.
+        ChromeTabbedActivity activityInNewTheme = changeTheme(activity);
+
+        // Assert:
+        // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
+        // then
+        // (2) Verify the native page view's width in the new Activity matches the width before
+        // theme change.
+        var newCoordinator = waitForSidePanelContainerCoordinator(activityInNewTheme);
+        int newSidePanelWidth = waitForContainerViewOpen(newCoordinator).getWidth();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var newTab = activityInNewTheme.getActivityTabProvider().get();
+                    if (newTab == null) {
+                        return false;
+                    }
+
+                    View newNativePageView = newTab.getView();
+                    if (newNativePageView == null) {
+                        return false;
+                    }
+
+                    return newNativePageView.getWidth() + newSidePanelWidth
+                            <= getWindowWidth(activityInNewTheme);
+                },
+                "Native page isn't resized to accommodate side panel.");
     }
 
     @Test

@@ -1827,7 +1827,7 @@ public class CompositorViewHolder extends FrameLayout
                 (sideUiStateProvider) -> {
                     mSideUiStateProvider = sideUiStateProvider;
                     mSideUiStateProvider.addObserver(this);
-                    updateWebContentsSize(getCurrentTab());
+                    onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
                 });
     }
 

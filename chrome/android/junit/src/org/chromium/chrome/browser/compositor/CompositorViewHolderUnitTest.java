@@ -29,7 +29,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Size;
 import android.view.ContextThemeWrapper;
 import android.view.InputDevice;
@@ -279,6 +281,17 @@ public class CompositorViewHolderUnitTest {
                         org.mockito.Mockito.withSettings()
                                 .useConstructor(mContext, null)
                                 .defaultAnswer(org.mockito.Mockito.CALLS_REAL_METHODS));
+
+        // mCompositorViewHolder is a _mock_, so we need to forward any posted Runnable to the main
+        // thread so that RobolectricUtil.runAllBackgroundAndUi() can drain and run the posted
+        // tasks.
+        doAnswer(
+                        invocation -> {
+                            new Handler(Looper.getMainLooper()).post(invocation.getArgument(0));
+                            return true;
+                        })
+                .when(mCompositorViewHolder)
+                .post(any(Runnable.class));
 
         mCompositorViewHolder.setToolbarThemeColorProvider(mToolbarThemeColorProvider);
         mCompositorViewHolder.setLayoutManager(mLayoutManager);
@@ -1401,11 +1414,13 @@ public class CompositorViewHolderUnitTest {
         int endContainerWidth = 200;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+
+        // Act: Make SideUiStateProvider available.
+        //
+        // Note that onSideUiSpecsChanged() is expected to be called as soon as SideUiStateProvider
+        // is available, so we don't need to explicitly call onSideUiSpecsChanged() here.
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
-
-        // Act.
-        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
 
         // Verify.
         verify(mWebContents, atLeastOnce())
@@ -1434,11 +1449,13 @@ public class CompositorViewHolderUnitTest {
         int rightContainerWidth = 150;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(leftContainerWidth, rightContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+
+        // Act: Make SideUiStateProvider available.
+        //
+        // Note that onSideUiSpecsChanged() is expected to be called as soon as SideUiStateProvider
+        // is available, so we don't need to explicitly call onSideUiSpecsChanged() here.
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
-
-        // Act.
-        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
 
         // Verify that RTL does not affect the offset (i.e. always contentOffsetx == left)
         int expectedContentOffsetX = leftContainerWidth;

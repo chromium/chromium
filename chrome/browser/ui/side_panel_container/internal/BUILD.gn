@@ -115,6 +115,7 @@ android_library("javatests") {
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_panel_container/test:test_support_java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_transit",
     "//chrome/test/android:chrome_java_unit_test_support",
