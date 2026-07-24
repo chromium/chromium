@@ -147,6 +147,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   ToolbarButton* button =
       [[ToolbarButton alloc] initWithImageLoader:imageLoader
                                        incognito:_incognito];
+  button.geminiHandler = self.geminiHandler;
   button.visibilityMask = ToolbarButtonVisibility::kCompactHeight;
   button.accessibilityIdentifier = kToolbarShareButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
@@ -157,6 +158,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
   ToolbarTabGridBadgeButton* button =
       [[ToolbarTabGridBadgeButton alloc] initWithImageLoader:nil
                                                    incognito:_incognito];
+  button.geminiHandler = self.geminiHandler;
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarTabGridButtonIdentifier;
   button.accessibilityHint =
@@ -192,11 +194,13 @@ constexpr CGFloat kDefaultSymbolPointSize = 19;
 
 // Returns a toolbar button with the given symbol.
 - (ToolbarButton*)toolbarButtonForSymbol:(Symbol)symbol {
-  return [[ToolbarButton alloc]
+  ToolbarButton* button = [[ToolbarButton alloc]
       initWithImageLoader:^UIImage* {
         return SymbolWithPointSize(symbol, kDefaultSymbolPointSize);
       }
                 incognito:_incognito];
+  button.geminiHandler = self.geminiHandler;
+  return button;
 }
 
 @end

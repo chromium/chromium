@@ -7,11 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol GeminiCommands;
 @class ToolbarButton;
 @class ToolbarTabGridBadgeButton;
 
 // Factory for creating toolbar buttons.
 @interface ToolbarButtonFactory : NSObject
+
+// Handler for Gemini commands.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 // Initializer for this factory in `incognito`.
 - (instancetype)initWithIncognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;

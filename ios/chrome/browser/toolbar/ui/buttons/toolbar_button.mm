@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/ui/elements/blue_dot_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
@@ -84,6 +87,39 @@ UIColor* NormalTintColor() {
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updateMask];
+}
+
+#pragma mark - ContextMenuInteractionDelegate
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+    willDisplayMenuForConfiguration:(UIContextMenuConfiguration*)configuration
+                           animator:
+                               (id<UIContextMenuInteractionAnimating>)animator {
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:YES
+                         fromSource:gemini::FloatyUpdateSource::ContextMenu];
+  }
+  [super contextMenuInteraction:interaction
+      willDisplayMenuForConfiguration:configuration
+                             animator:animator];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (IsPageActionMenuEnabled()) {
+    __weak __typeof(self) weakSelf = self;
+    [animator addAnimations:^{
+      [weakSelf.geminiHandler
+          updateFloatyVisibilityIfEligibleAnimated:NO
+                                        fromSource:gemini::FloatyUpdateSource::
+                                                       ContextMenu];
+    }];
+  }
+  [super contextMenuInteraction:interaction
+        willEndForConfiguration:configuration
+                       animator:animator];
 }
 
 #pragma mark - UIControl
