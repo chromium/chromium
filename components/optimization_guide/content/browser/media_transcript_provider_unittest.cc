@@ -5,7 +5,6 @@
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"

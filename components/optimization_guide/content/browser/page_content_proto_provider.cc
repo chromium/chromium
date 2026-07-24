@@ -11,8 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/barrier_closure.h"
-#include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature.h"

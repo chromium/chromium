@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 
-#include <algorithm>
 #include <string_view>
 
 #include "base/strings/string_util.h"
