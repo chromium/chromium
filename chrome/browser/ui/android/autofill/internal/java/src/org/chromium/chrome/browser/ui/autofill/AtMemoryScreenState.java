@@ -28,9 +28,6 @@ class AtMemoryScreenState {
      */
     public final boolean isLoading;
 
-    /** Whether the background visual container for suggestions should be displayed. */
-    public final boolean showSuggestionsBackground;
-
     /**
      * Whether the zero-state illustration and prompt should be displayed. Zero state is the initial
      * informational view shown when the search input is empty or returns no results.
@@ -41,12 +38,8 @@ class AtMemoryScreenState {
     public final boolean showAtMemorySuggestions;
 
     private AtMemoryScreenState(
-            boolean isLoading,
-            boolean showSuggestionsBackground,
-            boolean showZeroState,
-            boolean showAtMemorySuggestions) {
+            boolean isLoading, boolean showZeroState, boolean showAtMemorySuggestions) {
         this.isLoading = isLoading;
-        this.showSuggestionsBackground = showSuggestionsBackground;
         this.showZeroState = showZeroState;
         this.showAtMemorySuggestions = showAtMemorySuggestions;
     }
@@ -55,7 +48,6 @@ class AtMemoryScreenState {
     public static final AtMemoryScreenState HIDDEN =
             new AtMemoryScreenState(
                     /* isLoading= */ false,
-                    /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ false,
                     /* showAtMemorySuggestions= */ false);
 
@@ -63,7 +55,6 @@ class AtMemoryScreenState {
     public static final AtMemoryScreenState LOADING =
             new AtMemoryScreenState(
                     /* isLoading= */ true,
-                    /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ true,
                     /* showAtMemorySuggestions= */ true);
 
@@ -71,7 +62,6 @@ class AtMemoryScreenState {
     public static final AtMemoryScreenState ZERO_STATE =
             new AtMemoryScreenState(
                     /* isLoading= */ false,
-                    /* showSuggestionsBackground= */ false,
                     /* showZeroState= */ true,
                     /* showAtMemorySuggestions= */ false);
 
@@ -79,7 +69,6 @@ class AtMemoryScreenState {
     public static final AtMemoryScreenState SUGGESTIONS =
             new AtMemoryScreenState(
                     /* isLoading= */ false,
-                    /* showSuggestionsBackground= */ true,
                     /* showZeroState= */ false,
                     /* showAtMemorySuggestions= */ true);
 }

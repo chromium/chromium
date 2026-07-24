@@ -8,6 +8,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
     android:minHeight="@dimen/at_memory_suggestion_item_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"

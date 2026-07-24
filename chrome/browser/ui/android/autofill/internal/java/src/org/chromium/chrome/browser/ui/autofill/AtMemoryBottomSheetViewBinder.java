@@ -54,9 +54,6 @@ class AtMemoryBottomSheetViewBinder {
             view.setSearchBarDelegate(model.get(HomeProperties.SEARCH_BAR_DELEGATE));
         } else if (propertyKey == HomeProperties.IS_LOADING) {
             view.setIsLoading(model.get(HomeProperties.IS_LOADING));
-        } else if (propertyKey == HomeProperties.SHOW_SUGGESTIONS_BACKGROUND) {
-            view.setShowSuggestionsBackground(
-                    model.get(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND));
         } else if (propertyKey == HomeProperties.SHEET_ITEMS) {
             view.setUpSheetItems(model.get(HomeProperties.SHEET_ITEMS));
         } else {

@@ -52,17 +52,11 @@ class AtMemoryBottomSheetProperties {
         static final ReadableObjectPropertyKey<AtMemorySearchBarView.Delegate> SEARCH_BAR_DELEGATE =
                 new ReadableObjectPropertyKey<>();
 
-        // Indicates whether the bottom sheet dialog should display the suggestions background.
-        static final WritableBooleanPropertyKey SHOW_SUGGESTIONS_BACKGROUND =
-                new WritableBooleanPropertyKey();
-
         // Items to be displayed in the bottom sheet (only for home screen).
         static final ReadableObjectPropertyKey<ModelList> SHEET_ITEMS =
                 new ReadableObjectPropertyKey<>();
 
-        static final PropertyKey[] ALL_KEYS = {
-            IS_LOADING, SEARCH_BAR_DELEGATE, SHOW_SUGGESTIONS_BACKGROUND, SHEET_ITEMS
-        };
+        static final PropertyKey[] ALL_KEYS = {IS_LOADING, SEARCH_BAR_DELEGATE, SHEET_ITEMS};
 
         @IntDef({ItemType.SUGGESTION, ItemType.ZERO_STATE, ItemType.NOTICE})
         @Retention(RetentionPolicy.SOURCE)

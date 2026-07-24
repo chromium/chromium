@@ -271,7 +271,6 @@ public class AtMemoryBottomSheetViewRenderTest {
                             new ListItem(HomeProperties.ItemType.SUGGESTION, searchTileModel));
 
                     mView.getHomeView().setUpSheetItems(modelList);
-                    mView.getHomeView().setShowSuggestionsBackground(false);
 
                     mBottomSheetController.requestShowContent(content, false);
                 });
@@ -307,7 +306,6 @@ public class AtMemoryBottomSheetViewRenderTest {
                             new ListItem(HomeProperties.ItemType.ZERO_STATE, new PropertyModel()));
 
                     mView.getHomeView().setUpSheetItems(modelList);
-                    mView.getHomeView().setShowSuggestionsBackground(false);
 
                     mBottomSheetController.requestShowContent(content, false);
                 });

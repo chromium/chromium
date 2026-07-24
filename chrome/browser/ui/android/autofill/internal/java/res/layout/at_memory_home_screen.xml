@@ -28,8 +28,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/at_memory_suggestions_margin_top"
-            android:background="@drawable/at_memory_suggestions_bg"
-            android:clipToOutline="true"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/at_memory_bottom_sheet_suggestion_item"/>
     </FrameLayout>
