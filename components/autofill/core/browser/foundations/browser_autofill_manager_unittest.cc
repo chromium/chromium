@@ -1667,6 +1667,37 @@ TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
 }
 
 TEST_F(BrowserAutofillManagerTest,
+       WebauthnInlineQrAndSignInWithAnotherDeviceSuggestion) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  ON_CALL(password_delegate(), GetWebauthnInlineQrCodeSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnPasskeyQrCode)));
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Contains(Suggestion(SuggestionType::kWebauthnPasskeyQrCode)));
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      Contains(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       Suggestion(SuggestionType::kWebauthnPasskeyQrCode),
+       Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice),
+       CreateManageAddressesSuggestion()});
+}
+
+TEST_F(BrowserAutofillManagerTest,
        WebauthnSignInWithAnotherDeviceSuggestionInAutocomplete) {
   FormData form = test::GetFormData(
       {.fields = {{.role = USERNAME, .autocomplete_attribute = "webauthn"}}});
@@ -1698,6 +1729,41 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
       {suggestions[0], suggestions[1], Suggestion(SuggestionType::kSeparator),
+       Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)});
+}
+
+TEST_F(
+    BrowserAutofillManagerTest,
+    WebauthnInlineQrAndSignInWithAnotherDeviceSuggestion_NoOtherSuggestions) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = USERNAME, .autocomplete_attribute = "webauthn"}}});
+  FormsSeen({form});
+
+  ON_CALL(password_delegate(), GetWebauthnInlineQrCodeSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnPasskeyQrCode)));
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  std::vector<Suggestion> empty_suggestions = {};
+
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure& form, const FormFieldData& field,
+                          const AutofillField& autofill_field,
+                          const AutofillClient& client,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned)
+            .Run(field.global_id(), empty_suggestions);
+        return true;
+      });
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(SuggestionType::kWebauthnPasskeyQrCode),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)});
 }
 

@@ -34,6 +34,10 @@ class MockPasswordManagerDelegate : public PasswordManagerDelegate {
               GetWebauthnSignInWithAnotherDeviceSuggestion,
               (),
               (const, override));
+  MOCK_METHOD(std::optional<Suggestion>,
+              GetWebauthnInlineQrCodeSuggestion,
+              (),
+              (const, override));
 
   MOCK_METHOD(void,
               SelectSuggestion,

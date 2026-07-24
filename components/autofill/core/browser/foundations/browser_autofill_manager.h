@@ -589,16 +589,17 @@ class BrowserAutofillManager : public AutofillManager {
       bool show_suggestions,
       std::vector<Suggestion> suggestions);
 
-  // Combines passkey suggestion and existing suggestions into a single list,
+  // Combines passkey suggestions and existing suggestions into a single list,
   // prioritizing existing suggestions first.
-  void MergePasskeysAndExistingSuggestions(std::vector<Suggestion>& suggestions,
-                                           Suggestion passkey_suggestions);
+  void MergePasskeysAndExistingSuggestions(
+      std::vector<Suggestion>& suggestions,
+      std::vector<Suggestion> passkey_suggestions);
 
-  // Creates passkey suggestion that will be used in
-  // MergePasskeysIntoExistingSuggestions.
+  // Creates passkey suggestions that will be used in
+  // MergePasskeysAndExistingSuggestions.
   // TODO(crbug.com/409962888): Remove after new suggestion generation logic is
   // launched.
-  std::optional<Suggestion> CreatePasskeySuggestionForMerge(
+  std::vector<Suggestion> CreatePasskeySuggestionsForMerge(
       const FormFieldData& field);
 
   // Combines identity credential suggestions and existing suggestions into a

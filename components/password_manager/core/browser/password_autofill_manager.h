@@ -75,6 +75,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       const AutofillSuggestionDelegate::SuggestionMetadata& metadata) override;
   std::optional<autofill::Suggestion>
   GetWebauthnSignInWithAnotherDeviceSuggestion() const override;
+  std::optional<autofill::Suggestion> GetWebauthnInlineQrCodeSuggestion()
+      const override;
 
   // AutofillSuggestionDelegate implementation.
   std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>

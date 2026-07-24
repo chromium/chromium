@@ -70,6 +70,25 @@ TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
                                   /*trigger_autofill_field=*/nullptr, client(),
                                   generate_cb.Get());
 }
+
+TEST_F(PasskeySuggestionGeneratorTest,
+       FetchCreatesValidInlineQrAndHybridSuggestionsForGenerate) {
+  Suggestion inline_qr(SuggestionType::kWebauthnPasskeyQrCode);
+  Suggestion hybrid_suggestion(
+      SuggestionType::kWebauthnSignInWithAnotherDevice);
+  EXPECT_CALL(password_delegate(), GetWebauthnInlineQrCodeSuggestion)
+      .WillRepeatedly(Return(inline_qr));
+  EXPECT_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillRepeatedly(Return(hybrid_suggestion));
+
+  base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
+  EXPECT_CALL(generate_cb,
+              Run(Pair(SuggestionDataSource::kPasskey,
+                       ElementsAre(inline_qr, hybrid_suggestion))));
+  generator().GenerateSuggestions(form(), field(), /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
+                                  generate_cb.Get());
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

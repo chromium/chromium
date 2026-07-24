@@ -771,38 +771,39 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
 }
 
 // Finds the footer section with "Manage" suggestions or adds a separator to
-// create a new footer section if there is none. Then, it moves the webauthn
-// sign-in fallback item to the footer - before any "Manage" suggestion.
-void ReorderWebauthnFallbackToFooter(std::vector<Suggestion>& suggestions) {
-  const auto old_pos = std::ranges::find(
-      suggestions, SuggestionType::kWebauthnSignInWithAnotherDevice,
-      &Suggestion::type);
-  if (suggestions.size() < 2 || old_pos == suggestions.end()) {
-    return;  // Nothing to reorder.
+// create a new footer section if there is none. Then, it moves any WebAuthn
+// fallback items to the footer - before any "Manage" suggestion, moving them
+// as a block to preserve their relative order from generation.
+void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
+  if (suggestions.size() < 2) {
+    return;
   }
-
   // Points to the first "Manage" item of the footer block due to `base` adding
   // an offset when converting the reverse iterator to the forward iterator.
-  const auto new_pos =
+  const auto manage_pos =
       std::find_if_not(suggestions.rbegin(), suggestions.rend(),
                        &IsManagementFooterOption)
           .base();
-  const bool has_other_management_items =
-      new_pos != suggestions.end() &&
-      new_pos->type != SuggestionType::kWebauthnSignInWithAnotherDevice;
-
-  // Move the webauthn item from `old_pos` to `new_pos`.
-  if (old_pos < new_pos) {
-    std::rotate(old_pos, old_pos + 1, new_pos);
-  } else {
-    std::rotate(new_pos, old_pos, old_pos + 1);
+  auto is_webauthn_fallback_item = [](const Suggestion& s) {
+    return s.type == SuggestionType::kWebauthnSignInWithAnotherDevice ||
+           s.type == SuggestionType::kWebauthnPasskeyQrCode;
+  };
+  // Use stable_partition to move all WebAuthn items as a unified block directly
+  // above any "Manage" options while strictly preserving their relative order
+  // from generation (e.g., QR code before text fallback).
+  auto webauthn_end = std::stable_partition(manage_pos, suggestions.end(),
+                                            is_webauthn_fallback_item);
+  if (webauthn_end == manage_pos) {
+    return;  // Nothing to reorder (no WebAuthn fallback items found).
   }
 
-  // Without "Manage" suggestions, ensure a separator for the footer exists.
-  if (!has_other_management_items &&
+  const bool has_other_management_items = webauthn_end != suggestions.end();
+  // Without "Manage" suggestions, ensure a separator for the footer exists
+  // if standard suggestions precede the WebAuthn items.
+  if (!has_other_management_items && manage_pos != suggestions.begin() &&
       !std::ranges::contains(suggestions, SuggestionType::kSeparator,
                              &Suggestion::type)) {
-    suggestions.emplace(new_pos, SuggestionType::kSeparator);
+    suggestions.emplace(manage_pos, SuggestionType::kSeparator);
   }
 }
 
@@ -1373,9 +1374,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
         // Handle passkeys separately, since they can merge with every
         // suggestion.
         if (!passkey_suggestions.empty()) {
-          CHECK(passkey_suggestions.mapped().size() == 1);
           MergePasskeysAndExistingSuggestions(
-              suggestions, std::move(passkey_suggestions.mapped()[0]));
+              suggestions, std::move(passkey_suggestions.mapped()));
         }
         OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
                                       context, suggestion_generation_start_time,
@@ -1644,32 +1644,38 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       std::move(on_suggestions_returned));
 }
 
-std::optional<Suggestion>
-BrowserAutofillManager::CreatePasskeySuggestionForMerge(
+std::vector<Suggestion>
+BrowserAutofillManager::CreatePasskeySuggestionsForMerge(
     const FormFieldData& field) {
   if (!ShouldShowWebauthnHybridEntryPoint(field)) {
-    return std::nullopt;
+    return {};
   }
   PasswordManagerDelegate* password_delegate =
       client().GetPasswordManagerDelegate(field.global_id());
   if (!password_delegate) {
-    return std::nullopt;
+    return {};
   }
 
   // If any field **on the page** allows starting the hybrid passkey flow,
-  // this suggestion becomes available.
-  std::optional<Suggestion> passkey_suggestion =
-      password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion();
-  if (!passkey_suggestion) {
-    return std::nullopt;
+  // these suggestions become available.
+  std::vector<Suggestion> suggestions;
+  if (std::optional<Suggestion> inline_qr_suggestion =
+          password_delegate->GetWebauthnInlineQrCodeSuggestion()) {
+    suggestions.push_back(*std::move(inline_qr_suggestion));
   }
-  return {passkey_suggestion.value()};
+  if (std::optional<Suggestion> passkey_suggestion =
+          password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
+    suggestions.push_back(*std::move(passkey_suggestion));
+  }
+  return suggestions;
 }
 
 void BrowserAutofillManager::MergePasskeysAndExistingSuggestions(
     std::vector<Suggestion>& suggestions,
-    Suggestion passkey_suggestion) {
-  suggestions.push_back(passkey_suggestion);
+    std::vector<Suggestion> passkey_suggestions) {
+  for (Suggestion& passkey_suggestion : passkey_suggestions) {
+    suggestions.push_back(std::move(passkey_suggestion));
+  }
 }
 
 void BrowserAutofillManager::GenerateFooter(
@@ -1680,11 +1686,11 @@ void BrowserAutofillManager::GenerateFooter(
     base::TimeTicks suggestion_generation_start_time,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
-  std::optional<Suggestion> passkey_suggestion =
-      CreatePasskeySuggestionForMerge(field);
-  if (passkey_suggestion.has_value()) {
+  std::vector<Suggestion> passkey_suggestions =
+      CreatePasskeySuggestionsForMerge(field);
+  if (!passkey_suggestions.empty()) {
     MergePasskeysAndExistingSuggestions(suggestions,
-                                        std::move(passkey_suggestion.value()));
+                                        std::move(passkey_suggestions));
   }
 
   OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
@@ -1728,7 +1734,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     base::TimeTicks suggestion_generation_start_time,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
-  ReorderWebauthnFallbackToFooter(suggestions);
+  ReorderWebAuthnSuggestionsToFooter(suggestions);
 
   if (!suggestions.empty()) {
     base::UmaHistogramTimes(

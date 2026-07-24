@@ -52,9 +52,13 @@ void PasskeySuggestionGenerator::GenerateSuggestions(
     return;
   }
   std::vector<Suggestion> suggestions;
-  if (std::optional<Suggestion> suggestion =
+  if (std::optional<Suggestion> inline_qr_suggestion =
+          password_delegate->GetWebauthnInlineQrCodeSuggestion()) {
+    suggestions.push_back(*std::move(inline_qr_suggestion));
+  }
+  if (std::optional<Suggestion> hybrid_suggestion =
           password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-    suggestions.push_back(*std::move(suggestion));
+    suggestions.push_back(*std::move(hybrid_suggestion));
   }
   std::move(callback).Run(
       {SuggestionDataSource::kPasskey, std::move(suggestions)});

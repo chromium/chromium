@@ -399,10 +399,13 @@ void PasswordSuggestionGenerator::AppendOptionalFooterSection(
       },
       &Suggestion::type);
 
+  std::optional<autofill::Suggestion> inline_qr_suggestion =
+      GetWebauthnInlineQrCodeSuggestion();
   std::optional<autofill::Suggestion> hybrid_suggestion =
       GetWebauthnSignInWithAnotherDeviceSuggestion(is_manual_fallback);
 
-  if (has_no_fillable_suggestions && !hybrid_suggestion) {
+  if (has_no_fillable_suggestions && !inline_qr_suggestion &&
+      !hybrid_suggestion) {
     return;
   }
 
@@ -414,9 +417,13 @@ void PasswordSuggestionGenerator::AppendOptionalFooterSection(
     suggestions->push_back(std::move(separator));
   }
 
+  if (inline_qr_suggestion) {
+    suggestions->push_back(std::move(*inline_qr_suggestion));
+  }
+
   // Add "Use a passkey" or "Use a different passkey" button.
   if (hybrid_suggestion) {
-    suggestions->push_back(std::move(hybrid_suggestion.value()));
+    suggestions->push_back(std::move(*hybrid_suggestion));
   }
 
   Suggestion suggestion(
@@ -693,24 +700,6 @@ PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion(
   if (!delegate) {
     return std::nullopt;
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (password_client_->IsChromeSigninPage() &&
-      switches::IsMagiChromePasskeyAutofillEnabled()) {
-    std::optional<std::string> qr_string = delegate->GetCableQrString();
-    if (qr_string.has_value()) {
-      autofill::Suggestion suggestion(
-          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE),
-          autofill::SuggestionType::kWebauthnPasskeyQrCode);
-      suggestion.payload = autofill::Suggestion::Guid(*qr_string);
-      // Use static filtration policy so that this suggestion is not filtered
-      // out when the user types in the username field. This ensures the QR
-      // code remains visible as the user interacts with the form.
-      suggestion.filtration_policy =
-          autofill::Suggestion::FiltrationPolicy::kStatic;
-      return suggestion;
-    }
-  }
-#endif
   if (!delegate->GetPasskeys().has_value() ||
       !delegate->IsSecurityKeyOrHybridFlowAvailable()) {
     return std::nullopt;
@@ -718,6 +707,33 @@ PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion(
   return CreatePasskeyFromAnotherDeviceEntry(
       /*listed_passkeys=*/delegate->GetPasskeys().value()->size() > 0);
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+std::optional<autofill::Suggestion>
+PasswordSuggestionGenerator::GetWebauthnInlineQrCodeSuggestion() const {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!password_client_->IsChromeSigninPage() ||
+      !switches::IsMagiChromePasskeyAutofillEnabled()) {
+    return std::nullopt;
+  }
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_);
+  if (!delegate) {
+    return std::nullopt;
+  }
+  std::optional<std::string> qr_string = delegate->GetCableQrString();
+  if (qr_string.has_value()) {
+    autofill::Suggestion suggestion(
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE),
+        autofill::SuggestionType::kWebauthnPasskeyQrCode);
+    suggestion.payload = autofill::Suggestion::Guid(*qr_string);
+    suggestion.filtration_policy =
+        autofill::Suggestion::FiltrationPolicy::kStatic;
+    return suggestion;
+  }
+#endif
+  return std::nullopt;
 }
 
 }  // namespace password_manager

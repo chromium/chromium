@@ -247,6 +247,11 @@ PasswordAutofillManager::GetWebauthnSignInWithAnotherDeviceSuggestion() const {
   return suggestion_generator_.GetWebauthnSignInWithAnotherDeviceSuggestion();
 }
 
+std::optional<autofill::Suggestion>
+PasswordAutofillManager::GetWebauthnInlineQrCodeSuggestion() const {
+  return suggestion_generator_.GetWebauthnInlineQrCodeSuggestion();
+}
+
 std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
 PasswordAutofillManager::GetDriver_DoNotUse() {
   return password_manager_driver_.get();

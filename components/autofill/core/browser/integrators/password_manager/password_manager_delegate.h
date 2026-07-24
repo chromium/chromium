@@ -43,6 +43,11 @@ class PasswordManagerDelegate {
   // Returns `std::nullopt` if the suggestion is not available.
   virtual std::optional<Suggestion>
   GetWebauthnSignInWithAnotherDeviceSuggestion() const = 0;
+
+  // Returns an inline QR code suggestion to sign in with a passkey.
+  // Returns `std::nullopt` if the suggestion is not available.
+  virtual std::optional<Suggestion> GetWebauthnInlineQrCodeSuggestion()
+      const = 0;
 };
 
 }  // namespace autofill
