@@ -6,7 +6,9 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -627,6 +630,48 @@ public class BottomSheetUnitTest {
                 "Accessibility pane title should be set to closed on the bottom sheet when"
                         + " closed",
                 expectedClosedTitle,
+                ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+    }
+
+    @Test
+    public void testSheetContentDisplayedAndUnmaskedWhenOpened() {
+        int openStringId = android.R.string.ok;
+        int closedStringId = android.R.string.cancel;
+        setupBottomSheetStrings(openStringId, closedStringId);
+        // Explicitly mock legacy getSheetContentDescription as a negative test verification to
+        // ensure
+        // BottomSheet ignores it and maintains null contentDescription so inner child views are
+        // unmasked.
+        doReturn("Test Sheet Content Description")
+                .when(mSheetContent)
+                .getSheetContentDescription(any());
+        doReturn(true).when(mSheetContent).swipeToDismissEnabled();
+
+        TextView childView = new TextView(mActivity);
+        childView.setText("Non-interactive title text");
+        doReturn(childView).when(mSheetContent).getContentView();
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        assertEquals(
+                "Child content view should be displayed inside the bottom sheet content container.",
+                contentContainer,
+                childView.getParent());
+        assertEquals(
+                "Child content view should be visible on screen when opened.",
+                View.VISIBLE,
+                childView.getVisibility());
+        assertNull(
+                "Root BottomSheet should have null contentDescription so child text is unmasked.",
+                mBottomSheet.getContentDescription());
+        assertNull(
+                "Inner content container should have null contentDescription.",
+                contentContainer.getContentDescription());
+        assertEquals(
+                "Accessibility pane title should still be set when opened.",
+                mActivity.getResources().getString(openStringId),
                 ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
     }
 

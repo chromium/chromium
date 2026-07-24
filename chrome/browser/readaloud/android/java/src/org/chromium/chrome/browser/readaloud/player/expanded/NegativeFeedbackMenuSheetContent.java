@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,8 +27,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @NullMarked
 class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
-    private final Context mContext;
-
     // Contents
     private final FrameLayout mContainer;
     private final Menu mOptionsMenu;
@@ -48,9 +47,8 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
             BottomSheetController bottomSheetController,
             LayoutInflater layoutInflater) {
         super(parent, bottomSheetController);
-        mContext = context;
 
-        Resources res = mContext.getResources();
+        Resources res = context.getResources();
         // Set up options menu
         mOptionsMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
         mOptionsMenu.findViewById(R.id.readaloud_menu_footer).setVisibility(View.VISIBLE);
@@ -152,8 +150,8 @@ class NegativeFeedbackMenuSheetContent extends MenuSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.readaloud_negative_feedback_menu_description);
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        return R.string.readaloud_negative_feedback_menu_description;
     }
 
     private void onOptionsMenuClick(int itemId) {

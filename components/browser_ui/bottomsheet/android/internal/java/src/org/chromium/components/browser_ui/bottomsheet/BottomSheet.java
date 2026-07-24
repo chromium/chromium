@@ -1294,22 +1294,13 @@ class BottomSheet extends FrameLayout
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
             assumeNonNull(getCurrentSheetContent());
 
-            // TalkBack will announce the pane title and shift focus when the state settles.
-            // We set the focusability and content description here so they are ready when
-            // the pane change event is dispatched below.
+            // TalkBack will announce the pane title via sendPaneChangeAccessibilityEvent and
+            // shift focus when the state settles. We set the focusability here so it is ready
+            // when the pane change event is dispatched below. We avoid setting a container-level
+            // contentDescription on BottomSheet so that non-interactive descendant views inside
+            // the sheet remain discoverable to screen readers during linear navigation.
             setFocusable(true);
             setFocusableInTouchMode(true);
-            String contentDescription =
-                    getCurrentSheetContent().getSheetContentDescription(getContext());
-
-            if (getCurrentSheetContent().swipeToDismissEnabled()) {
-                contentDescription +=
-                        ". "
-                                + getResources()
-                                        .getString(R.string.bottom_sheet_accessibility_description);
-            }
-
-            setContentDescription(contentDescription);
             if (getFocusedChild() == null) requestFocus();
         }
 
