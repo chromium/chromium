@@ -23,6 +23,7 @@ source_set("language_tag") {
   public_deps = [
     ":base_i18n_export",
     "//base/i18n/internal",
+    "//third_party/icu",
   ]
   deps = [
     "//base",

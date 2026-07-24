@@ -11,14 +11,18 @@
 #include <type_traits>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/internal/bcp47_parser.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/internal/immutable_string.h"
 #include "base/i18n/language_tag.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace base {
 class Value;
+template <typename T>
+class NoDestructor;
 }
 
 namespace base::i18n_internal {
@@ -63,10 +67,39 @@ class BASE_I18N_EXPORT LanguageTagConverter {
   // Internal usage.
   LanguageTag FromIcu4xLocale(
       const i18n_internal::Icu4xLocale& icu_locale) const;
+  LanguageTag FromIcuLocale(const icu::Locale& icu_locale) const;
 
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
+};
+
+// Helper class for converting type-safe BCP 47 `LanguageTag`s to legacy
+// C++ ICU `icu::Locale` objects.
+//
+// Example usage:
+//   const IcuLocaleConverter& converter = IcuLocaleConverter::GetInstance();
+//   icu::Locale locale = converter.FromLanguageTag(language_tag);
+class BASE_I18N_EXPORT IcuLocaleConverter {
+ public:
+  IcuLocaleConverter(const IcuLocaleConverter&) = delete;
+  IcuLocaleConverter& operator=(const IcuLocaleConverter&) = delete;
+
+  static const IcuLocaleConverter& GetInstance();
+
+  // Converts a type-safe `LanguageTag` into a corresponding `icu::Locale`.
+  //
+  // Returns: An `icu::Locale` instance constructed from the BCP 47 string
+  //            represented by `language_tag`.
+  icu::Locale FromLanguageTag(const LanguageTag& language_tag) const;
+
+ private:
+  IcuLocaleConverter();
+  ~IcuLocaleConverter();
+
+  friend class base::NoDestructor<IcuLocaleConverter>;
+
+  base::flat_map<std::string, icu::Locale> cached_locales_;
 };
 
 // Converts a LanguageTag to a string base::Value.

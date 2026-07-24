@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace base::i18n {
 namespace {
@@ -791,6 +792,77 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<LanguageTestData>& info) {
       return std::string(info.param.name);
     });
+
+TEST(IcuLocaleConverterTest, FromLanguageTag) {
+  const IcuLocaleConverter& converter = IcuLocaleConverter::GetInstance();
+
+  // Test simple locale conversion
+  std::optional<LanguageTag> en_us =
+      LanguageTagConverter::GetInstance().FromString("en-US");
+  ASSERT_TRUE(en_us.has_value());
+  icu::Locale locale_en_us = converter.FromLanguageTag(*en_us);
+  EXPECT_STREQ("en_US", locale_en_us.getName());
+  EXPECT_STREQ("en", locale_en_us.getLanguage());
+  EXPECT_STREQ("US", locale_en_us.getCountry());
+
+  // Test ja-JP locale conversion
+  std::optional<LanguageTag> ja_jp =
+      LanguageTagConverter::GetInstance().FromString("ja-JP");
+  ASSERT_TRUE(ja_jp.has_value());
+  icu::Locale locale_ja_jp = converter.FromLanguageTag(*ja_jp);
+  EXPECT_STREQ("ja_JP", locale_ja_jp.getName());
+  EXPECT_STREQ("ja", locale_ja_jp.getLanguage());
+  EXPECT_STREQ("JP", locale_ja_jp.getCountry());
+
+  // Test language tag with script: zh-Hans-CN
+  std::optional<LanguageTag> zh_hans_cn =
+      LanguageTagConverter::GetInstance().FromString("zh-Hans-CN");
+  ASSERT_TRUE(zh_hans_cn.has_value());
+  icu::Locale locale_zh_hans_cn = converter.FromLanguageTag(*zh_hans_cn);
+  EXPECT_STREQ("zh_Hans_CN", locale_zh_hans_cn.getName());
+  EXPECT_STREQ("zh", locale_zh_hans_cn.getLanguage());
+  EXPECT_STREQ("Hans", locale_zh_hans_cn.getScript());
+  EXPECT_STREQ("CN", locale_zh_hans_cn.getCountry());
+
+  // Test undefined language tag: und
+  std::optional<LanguageTag> und =
+      LanguageTagConverter::GetInstance().FromString("und");
+  ASSERT_TRUE(und.has_value());
+  icu::Locale locale_und = converter.FromLanguageTag(*und);
+  EXPECT_STREQ("", locale_und.getName());
+
+  // Test custom/dynamic language tag (not in the cache) fallback path:
+  // en-US-u-ca-gregory
+  std::optional<LanguageTag> dynamic_tag =
+      LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory");
+  ASSERT_TRUE(dynamic_tag.has_value());
+  icu::Locale locale_dynamic = converter.FromLanguageTag(*dynamic_tag);
+  EXPECT_STREQ("en_US@calendar=gregorian", locale_dynamic.getName());
+}
+
+TEST(LanguageTagConverterTest, FromIcuLocale) {
+  const LanguageTagConverter& converter = LanguageTagConverter::GetInstance();
+
+  // Test simple locale conversion
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale locale_en_us = icu::Locale::forLanguageTag("en-US", status);
+  ASSERT_TRUE(U_SUCCESS(status));
+  LanguageTag en_us = converter.FromIcuLocale(locale_en_us);
+  EXPECT_EQ("en-US", en_us.tag_string());
+
+  // Test custom/dynamic locale conversion
+  status = U_ZERO_ERROR;
+  icu::Locale locale_dynamic =
+      icu::Locale::forLanguageTag("en-US-u-ca-gregory", status);
+  ASSERT_TRUE(U_SUCCESS(status));
+  LanguageTag dynamic_tag = converter.FromIcuLocale(locale_dynamic);
+  EXPECT_EQ("en-US-u-ca-gregory", dynamic_tag.tag_string());
+
+  // Test fallback/failure or undefined
+  icu::Locale locale_und = icu::Locale::getRoot();
+  LanguageTag und = converter.FromIcuLocale(locale_und);
+  EXPECT_EQ("und", und.tag_string());
+}
 
 }  // namespace
 }  // namespace base::i18n
