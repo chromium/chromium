@@ -8,16 +8,20 @@
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 
 #pragma mark - InfobarBannerInteractionHandler
 
 ConfirmInfobarBannerInteractionHandler::ConfirmInfobarBannerInteractionHandler(
-    InfobarType infobar_type)
+    InfobarType infobar_type,
+    CommandDispatcher* dispatcher)
     : InfobarBannerInteractionHandler(
           ConfirmBannerRequestConfig::RequestSupport()),
-      infobar_type_(infobar_type) {}
+      infobar_type_(infobar_type),
+      dispatcher_(dispatcher) {}
 
 ConfirmInfobarBannerInteractionHandler::
     ~ConfirmInfobarBannerInteractionHandler() = default;
@@ -39,6 +43,23 @@ void ConfirmInfobarBannerInteractionHandler::BannerVisibilityChanged(
   }
   if (!visible) {
     GetInfobarDelegate(infobar)->InfoBarDismissed();
+  }
+}
+
+void ConfirmInfobarBannerInteractionHandler::ShowModalButtonTapped(
+    InfoBarIOS* infobar,
+    web::WebState* web_state) {
+  if (infobar->infobar_type() != infobar_type_) {
+    return;
+  }
+  if (infobar->infobar_type() ==
+      InfobarType::kInfobarTypeFormsAiPrivateInference) {
+    id<SettingsCommands> settings_commands_handler =
+        HandlerForProtocol(dispatcher_, SettingsCommands);
+    [settings_commands_handler showAutofillSettings];
+    BannerDismissedByUser(infobar);
+  } else {
+    InfobarBannerInteractionHandler::ShowModalButtonTapped(infobar, web_state);
   }
 }
 

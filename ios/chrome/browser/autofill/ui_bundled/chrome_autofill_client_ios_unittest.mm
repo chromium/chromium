@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -281,6 +282,38 @@ TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPreFetchFailureNotification) {
   // Calling it again should replace the existing one, so count remains 1.
   client().ShowAutofillAiPreFetchFailureNotification();
   EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+}
+
+// Tests that `ShowAutofillAiPrivateInferenceNotice()` successfully adds
+// the private inference notice infobar to the InfoBarManager and sets the
+// first shown timestamp pref.
+TEST_F(ChromeAutofillClientIOSTest, ShowAutofillAiPrivateInferenceNotice) {
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  ASSERT_EQ(infobar_manager->infobars().size(), 0u);
+
+  PrefService* prefs = profile()->GetPrefs();
+  EXPECT_TRUE(
+      prefs
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+          .is_null());
+
+  client().ShowAutofillAiPrivateInferenceNotice();
+
+  ASSERT_EQ(infobar_manager->infobars().size(), 1u);
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
+  EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::
+                FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS);
+
+  EXPECT_FALSE(
+      prefs
+          ->GetTime(prefs::kAutofillAiPrivateInferenceNoticeFirstShownTimestamp)
+          .is_null());
+
+  // Calling it again should replace the existing one, so count remains 1.
+  client().ShowAutofillAiPrivateInferenceNotice();
+  ASSERT_EQ(infobar_manager->infobars().size(), 1u);
 }
 
 // Tests that IsAutofillTypeBlockedByPolicy returns true when a domain

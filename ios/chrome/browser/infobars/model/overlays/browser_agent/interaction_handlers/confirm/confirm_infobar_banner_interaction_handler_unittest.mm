@@ -12,9 +12,13 @@
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/test/mock_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Test fixture for ConfirmInfobarBannerInteractionHandler.
 class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
@@ -57,4 +61,31 @@ TEST_F(ConfirmInfobarBannerInteractionHandlerTest, MainButton) {
 TEST_F(ConfirmInfobarBannerInteractionHandlerTest, Presentation) {
   EXPECT_CALL(mock_delegate(), InfoBarDismissed());
   handler_.BannerVisibilityChanged(infobar_, false);
+}
+
+// Tests that ShowModalButtonTapped() calls showAutofillSettings on the mock
+// settings command dispatcher and dismisses the banner for the private
+// inference notice.
+TEST_F(ConfirmInfobarBannerInteractionHandlerTest,
+       ShowModalButtonTappedForPrivateInferenceNotice) {
+  id settings_commands_mock = OCMProtocolMock(@protocol(SettingsCommands));
+  OCMExpect([settings_commands_mock showAutofillSettings]);
+
+  CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+  [dispatcher startDispatchingToTarget:settings_commands_mock
+                           forProtocol:@protocol(SettingsCommands)];
+
+  ConfirmInfobarBannerInteractionHandler handler(
+      InfobarType::kInfobarTypeFormsAiPrivateInference, dispatcher);
+
+  std::unique_ptr<MockInfobarDelegate> delegate =
+      std::make_unique<MockInfobarDelegate>();
+  MockInfobarDelegate* mock_delegate = delegate.get();
+  InfoBarIOS infobar(InfobarType::kInfobarTypeFormsAiPrivateInference,
+                     std::move(delegate));
+
+  EXPECT_CALL(*mock_delegate, InfoBarDismissed());
+  handler.ShowModalButtonTapped(&infobar, &web_state_);
+
+  EXPECT_OCMOCK_VERIFY(settings_commands_mock);
 }

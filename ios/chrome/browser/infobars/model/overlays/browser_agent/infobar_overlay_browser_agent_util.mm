@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/confirm/confirm_infobar_banner_interaction_handler.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   InfobarOverlayBrowserAgent::CreateForBrowser(browser);
@@ -67,4 +70,12 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       std::make_unique<SaveAddressProfileInfobarBannerInteractionHandler>(),
       std::make_unique<SaveAddressProfileInfobarModalInteractionHandler>()));
+
+  browser_agent->AddInfobarInteractionHandler(
+      std::make_unique<InfobarInteractionHandler>(
+          InfobarType::kInfobarTypeFormsAiPrivateInference,
+          std::make_unique<ConfirmInfobarBannerInteractionHandler>(
+              InfobarType::kInfobarTypeFormsAiPrivateInference,
+              browser->GetCommandDispatcher()),
+          /*modal_handler=*/nullptr));
 }
