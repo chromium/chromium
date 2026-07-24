@@ -72,7 +72,7 @@ bool D3DVideoDecoderWrapper::AppendBitstreamAndSliceDataWithStartCode(
 
     const bool contains_start = data_offset == 0;
     if (contains_start && start_code.size() > 0) {
-      if (bitstream_buffer_->BytesAvailable() < start_code.size()) {
+      if (bitstream_buffer_->BytesAvailable() <= start_code.size()) {
         if (!SubmitAndGetBitstreamBuffer(total_size)) {
           return false;
         }
