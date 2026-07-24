@@ -7,24 +7,12 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
     PrivacyGuideBrowserProxy {
-  private shouldShowAdTopicsCard_ = false;
 
   constructor() {
     super([
       'getPromoImpressionCount',
       'incrementPromoImpressionCount',
-      'privacySandboxPrivacyGuideShouldShowAdTopicsCard',
     ]);
-  }
-
-  // Setters for test.
-  setShouldShowAdTopicsCardForTesting(shouldShow: boolean) {
-    this.shouldShowAdTopicsCard_ = shouldShow;
-  }
-
-  // Getters for test.
-  getShouldShowAdTopicsCardForTesting(): boolean {
-    return this.shouldShowAdTopicsCard_;
   }
 
   // Test Proxy Functions.
@@ -35,10 +23,5 @@ export class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
 
   incrementPromoImpressionCount() {
     this.methodCalled('incrementPromoImpressionCount');
-  }
-
-  privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
-    this.methodCalled('privacySandboxPrivacyGuideShouldShowAdTopicsCard');
-    return Promise.resolve(this.shouldShowAdTopicsCard_);
   }
 }

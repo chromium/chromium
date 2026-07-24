@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import './privacy_guide_ad_topics_fragment.js';
 import './privacy_guide_completion_fragment.js';
 import './privacy_guide_cookies_fragment.js';
 import './privacy_guide_history_sync_fragment.js';
@@ -42,8 +41,6 @@ import {SafeBrowsingSetting} from '../security/safe_browsing_types.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
-import type {PrivacyGuideBrowserProxy} from './privacy_guide_browser_proxy.js';
-import {PrivacyGuideBrowserProxyImpl} from './privacy_guide_browser_proxy.js';
 import {getTemplate} from './privacy_guide_page.html.js';
 import type {StepIndicatorModel} from './step_indicator.js';
 
@@ -66,8 +63,6 @@ function eligibilityToRecord(step: PrivacyGuideStep):
       return PrivacyGuideStepsEligibleAndReached.COOKIES_ELIGIBLE;
     case PrivacyGuideStep.SAFE_BROWSING:
       return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
-    case PrivacyGuideStep.AD_TOPICS:
-      return PrivacyGuideStepsEligibleAndReached.AD_TOPICS_ELIGIBLE;
     case PrivacyGuideStep.COMPLETION:
       return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
     default:
@@ -131,11 +126,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
             'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       },
 
-      shouldShowAdTopicsCard_: {
-        type: Boolean,
-        value: false,
-      },
-
       syncStatus_: Object,
     };
   }
@@ -158,9 +148,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   declare private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
-      PrivacyGuideBrowserProxyImpl.getInstance();
-  declare private shouldShowAdTopicsCard_: boolean;
 
   constructor() {
     super();
@@ -177,13 +164,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.syncBrowserProxy_.getSyncStatus().then(
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
-    this.privacyGuideBrowserProxy_
-        .privacySandboxPrivacyGuideShouldShowAdTopicsCard()
-        .then(state => {
-          this.shouldShowAdTopicsCard_ = state &&
-              !loadTimeData.getBoolean(
-                  'isPrivacySandboxAdPrivacyUxDeprecationEnabled');
-        });
   }
 
   disableAnimationsForTesting() {
@@ -282,7 +262,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       [
         PrivacyGuideStep.COOKIES,
         {
-          nextStep: PrivacyGuideStep.AD_TOPICS,
+          nextStep: PrivacyGuideStep.COMPLETION,
           recordForwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
@@ -298,31 +278,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         },
       ],
       [
-        PrivacyGuideStep.AD_TOPICS,
-        {
-          nextStep: PrivacyGuideStep.COMPLETION,
-          recordForwardNavigationMetrics: () => {
-            this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
-                PrivacyGuideInteractions.AD_TOPICS_NEXT_BUTTON);
-            this.metricsBrowserProxy_.recordAction(
-                'Settings.PrivacyGuide.NextClickAdTopics');
-          },
-          recordBackwardNavigationMetrics: () => {
-            this.metricsBrowserProxy_.recordAction(
-                'Settings.PrivacyGuide.BackClickAdTopics');
-          },
-          previousStep: PrivacyGuideStep.COOKIES,
-          isAvailable: () => this.shouldShowAdTopicsCard_,
-        },
-      ],
-      [
         PrivacyGuideStep.COMPLETION,
         {
           recordBackwardNavigationMetrics: () => {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCompletion');
           },
-          previousStep: PrivacyGuideStep.AD_TOPICS,
+          previousStep: PrivacyGuideStep.COOKIES,
           isAvailable: () => true,
         },
       ],

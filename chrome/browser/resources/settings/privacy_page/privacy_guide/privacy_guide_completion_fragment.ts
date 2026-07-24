@@ -53,22 +53,12 @@ export class PrivacyGuideCompletionFragmentElement extends
       isNoLinkLayout_: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeIsNoLinkLayout_(shouldShowWaa_,' +
-            'shouldShowPrivacySandbox_)',
+        computed: 'computeIsNoLinkLayout_(shouldShowWaa_)',
       },
 
       shouldShowAiSettings_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiPage'),
-      },
-
-      shouldShowPrivacySandbox_: {
-        type: Boolean,
-        value: () => !loadTimeData.getBoolean(
-                         'isPrivacySandboxAdPrivacyUxDeprecationEnabled') &&
-            (!loadTimeData.getBoolean('isPrivacySandboxRestricted') ||
-             loadTimeData.getBoolean(
-                 'isPrivacySandboxRestrictedNoticeEnabled')),
       },
 
       shouldShowWaa_: {
@@ -80,7 +70,6 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   declare private isNoLinkLayout_: boolean;
   declare private shouldShowAiSettings_: boolean;
-  declare private shouldShowPrivacySandbox_: boolean;
   declare private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -112,7 +101,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   private computeIsNoLinkLayout_() {
-    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_;
+    return !this.shouldShowWaa_;
   }
 
   private getSubheader_(): string {
@@ -142,20 +131,6 @@ export class PrivacyGuideCompletionFragmentElement extends
         new CustomEvent('close', {bubbles: true, composed: true}));
   }
 
-  private onPrivacySandboxClick_() {
-    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
-        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK);
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.PrivacyGuide.CompletionPSClick');
-    // Create a MouseEvent directly to avoid Polymer failing to synthesise a
-    // click event if this function was called in response to a touch event.
-    // See crbug.com/40199345 for details.
-    // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy
-    // call.
-    this.shadowRoot!.querySelector<HTMLAnchorElement>('#privacySandboxLink')!
-        .dispatchEvent(new MouseEvent('click'));
-  }
-
   private onAiRowClick_() {
     this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
         PrivacyGuideInteractions.AI_SETTINGS_COMPLETION_LINK);
@@ -174,12 +149,6 @@ export class PrivacyGuideCompletionFragmentElement extends
         'Settings.PrivacyGuide.CompletionSWAAClick');
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('activityControlsUrlInPrivacyGuide'));
-  }
-
-  protected getAdsClickIcon_(): string {
-    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-        'privacy20:ads-click' :
-        'privacy20:ads-click-old';
   }
 }
 

@@ -193,7 +193,7 @@ export enum PrivacyGuideInteractions {
   PRIVACY_SANDBOX_COMPLETION_LINK = 9,
   SEARCH_SUGGESTIONS_NEXT_BUTTON = 10,
   // TRACKING_PROTECTION_COMPLETION_LINK = 11, // OBSOLETE
-  AD_TOPICS_NEXT_BUTTON = 12,
+  // AD_TOPICS_NEXT_BUTTON = 12, // OBSOLETE
   AI_SETTINGS_COMPLETION_LINK = 13,
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 14,
@@ -232,10 +232,10 @@ export enum PrivacyGuideSettingsStates {
   SEARCH_SUGGESTIONS_ON_TO_OFF = 17,
   SEARCH_SUGGESTIONS_OFF_TO_ON = 18,
   SEARCH_SUGGESTIONS_OFF_TO_OFF = 19,
-  AD_TOPICS_ON_TO_ON = 20,
-  AD_TOPICS_ON_TO_OFF = 21,
-  AD_TOPICS_OFF_TO_ON = 22,
-  AD_TOPICS_OFF_TO_OFF = 23,
+  // AD_TOPICS_ON_TO_ON = 20, // OBSOLETE
+  // AD_TOPICS_ON_TO_OFF = 21, // OBSOLETE
+  // AD_TOPICS_OFF_TO_ON = 22, // OBSOLETE
+  // AD_TOPICS_OFF_TO_OFF = 23, // OBSOLETE
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 24,
 }
@@ -264,8 +264,8 @@ export enum PrivacyGuideStepsEligibleAndReached {
   COMPLETION_REACHED = 9,
   SEARCH_SUGGESTIONS_ELIGIBLE = 10,
   SEARCH_SUGGESTIONS_REACHED = 11,
-  AD_TOPICS_ELIGIBLE = 12,
-  AD_TOPICS_REACHED = 13,
+  // AD_TOPICS_ELIGIBLE = 12, // OBSOLETE
+  // AD_TOPICS_REACHED = 13, // OBSOLETE
   // Leave this at the end.
   COUNT = 14,
 }

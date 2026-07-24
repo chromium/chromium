@@ -42824,6 +42824,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacyGuide.AdTopicsPrivacyPolicyLinkClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <owner>rainhard@chromium.org</owner>
@@ -42834,6 +42837,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacyGuide.BackClickAdTopics">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
@@ -42895,12 +42901,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacyGuide.ChangeAdTopicsOff">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>User changes Ad Topics to off in Privacy guide.</description>
 </action>
 
 <action name="Settings.PrivacyGuide.ChangeAdTopicsOn">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>User changes Ad Topics to on in Privacy guide.</description>
@@ -42996,6 +43008,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacyGuide.CompletionPSClick">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -43015,6 +43030,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacyGuide.NextClickAdTopics">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <description>

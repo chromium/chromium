@@ -12,6 +12,5 @@ export enum PrivacyGuideStep {
   HISTORY_SYNC = 'historySync',
   SAFE_BROWSING = 'safeBrowsing',
   COOKIES = 'cookies',
-  AD_TOPICS = 'adTopics',
   COMPLETION = 'completion',
 }
