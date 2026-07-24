@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.ui.toolbar.AdminPolicy;
 import org.chromium.chrome.browser.ui.toolbar.SiteAccess;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -697,6 +698,70 @@ public class ExtensionActionListMediatorTest {
                 .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
 
         // Verify hover card was not shown.
+        verify(action, never()).getHoverCardState();
+    }
+
+    // Tests that requesting a context menu gracefully aborts without throwing an
+    // AssertionError if mActionState transitions away from Idle before the async
+    // layout animation runnable executes.
+    @Test
+    public void testRequestShowContextMenu_StateNotIdleWhenCallbackRuns() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        ListMenuButton buttonView = mock(ListMenuButton.class);
+        doReturn(buttonView).when(mRecyclerViewDelegate).getButtonViewForId(ACTION1_ID);
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+        // Request context menu for ACTION1.
+        mMediator.requestShowContextMenu(ACTION1_ID);
+
+        // Capture the posted runnable waiting for animations/layout to finish.
+        verify(mRecyclerViewDelegate).addOnAnimationsFinishedRunnable(runnableCaptor.capture());
+
+        // Before the runnable executes, state changes to non-Idle (e.g. PopupPending).
+        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION2_ID, 123L);
+
+        // Execute the queued context menu callback while state is not Idle.
+        // With the fix, this safely returns without throwing an AssertionError.
+        runnableCaptor.getValue().run();
+    }
+
+    // Tests that requesting a context menu immediately cancels any pending hover card
+    // delay timer, preventing the hover card from showing after context menu display.
+    @Test
+    public void testHoverCard_CancelsPendingRunnableOnContextMenuRequest() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        mMediator.reconcileActionItems();
+        ListItem item = mModels.get(0);
+        View.OnHoverListener listener =
+                item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
+
+        ExtensionAction action = mock(ExtensionAction.class);
+        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        when(action.getHoverCardState()).thenReturn(state);
+        doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
+
+        View anchorView = new View(activity);
+        when(mRecyclerViewDelegate.getButtonViewForId(ACTION1_ID)).thenReturn(anchorView);
+
+        // Trigger hover enter to start hover card timer.
+        MotionEvent enterEvent = mock(MotionEvent.class);
+        when(enterEvent.getAction()).thenReturn(MotionEvent.ACTION_HOVER_ENTER);
+        listener.onHover(anchorView, enterEvent);
+
+        // Right-click / context menu request arrives while hover card timer is pending.
+        mMediator.requestShowContextMenu(ACTION1_ID);
+
+        // Fast forward looper past the long press timeout.
+        shadowOf(Looper.getMainLooper())
+                .idleFor(ViewConfiguration.getLongPressTimeout(), TimeUnit.MILLISECONDS);
+
+        // Verify the pending hover card runnable was cancelled and never constructed the hover
+        // card.
         verify(action, never()).getHoverCardState();
     }
 

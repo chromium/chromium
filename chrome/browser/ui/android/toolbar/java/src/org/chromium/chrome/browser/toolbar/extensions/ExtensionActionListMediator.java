@@ -595,6 +595,13 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void closeHoverCard() {
+        // Cancel any scheduled hover card delay callback that hasn't executed
+        // yet (e.g. if the user right-clicks or clicks an action before the
+        // hover delay timer fires).
+        if (mShowHoverCardRunnable != null) {
+            mHandler.removeCallbacks(mShowHoverCardRunnable);
+            mShowHoverCardRunnable = null;
+        }
         if (mHoverCard != null) {
             mHoverCard.dismiss();
             mHoverCard = null;
@@ -785,7 +792,16 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        assert mActionState instanceof ActionState.Idle;
+        // Because showContextMenuOnAnchor is invoked asynchronously from the
+        // RecyclerView layout/animation queue, mActionState might no longer be
+        // Idle (e.g., another UI interaction or popup dismissal occurred
+        // while waiting for layout). If so, safely abort opening the context
+        // menu and clean up any popped-out action state to avoid corrupting UI
+        // state.
+        if (!(mActionState instanceof ActionState.Idle)) {
+            undoPopout();
+            return;
+        }
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
                         mTask, mProfile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
