@@ -50,7 +50,6 @@
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_pin_util.h"
-#include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -143,11 +142,6 @@ void StatusAreaWidget::Initialize() {
 
   if (features::IsPhoneHubEnabled()) {
     phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));
-  }
-
-  if (features::IsWmModeEnabled()) {
-    wm_mode_button_tray_ =
-        AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
   }
 
   if (features::IsScalableShelfPodsEnabled()) {
@@ -291,6 +285,9 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
   for (ash::TrayBackgroundView* tray_button : tray_buttons_) {
     switch (tray_button->catalog_name()) {
+      case TrayBackgroundViewCatalogName::kWmMode_DEPRECATED:
+        NOTREACHED();
+
       case TrayBackgroundViewCatalogName::kUnifiedSystem:
       case TrayBackgroundViewCatalogName::kStatusAreaOverflowButton:
       case TrayBackgroundViewCatalogName::kDateTray:
@@ -319,7 +316,6 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kPodsOverflow:
       case TrayBackgroundViewCatalogName::kLogoutButton:
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
-      case TrayBackgroundViewCatalogName::kWmMode:
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
       case TrayBackgroundViewCatalogName::kFocusMode:
       case TrayBackgroundViewCatalogName::kMouseKeysStatusArea:

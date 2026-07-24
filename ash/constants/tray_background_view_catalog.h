@@ -34,7 +34,7 @@ enum class TrayBackgroundViewCatalogName {
   kStatusAreaOverflowButton = 18,
   kVirtualKeyboardStatusArea = 19,
   kVirtualKeyboardAccessibilityWindow = 20,
-  kWmMode = 21,
+  kWmMode_DEPRECATED = 21,
   kVideoConferenceTray = 22,
   kFocusMode = 23,
   kPodsOverflow = 24,

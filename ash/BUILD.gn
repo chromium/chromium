@@ -3253,12 +3253,6 @@ component("ash") {
     "wm/workspace/workspace_window_resizer.h",
     "wm/workspace_controller.cc",
     "wm/workspace_controller.h",
-    "wm_mode/pie_menu_view.cc",
-    "wm_mode/pie_menu_view.h",
-    "wm_mode/wm_mode_button_tray.cc",
-    "wm_mode/wm_mode_button_tray.h",
-    "wm_mode/wm_mode_controller.cc",
-    "wm_mode/wm_mode_controller.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -4548,7 +4542,6 @@ test("ash_unittests") {
     "wm/workspace/workspace_layout_manager_unittest.cc",
     "wm/workspace/workspace_window_resizer_unittest.cc",
     "wm/workspace_controller_unittest.cc",
-    "wm_mode/wm_mode_unittest.cc",
   ]
   configs += [ "//build/config:precompiled_headers" ]
 

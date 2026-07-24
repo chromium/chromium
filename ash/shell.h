@@ -279,7 +279,6 @@ class WindowCycleController;
 class WindowRestoreController;
 class WindowTilingController;
 class WindowTreeHostManager;
-class WmModeController;
 class ArcInputMethodBoundsTracker;
 
 enum class LoginStatus;
@@ -1290,8 +1289,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DockedMagnifierController> docked_magnifier_controller_;
 
   std::unique_ptr<chromeos::SnapController> snap_controller_;
-
-  std::unique_ptr<WmModeController> wm_mode_controller_;
 
   // |native_cursor_manager_| is owned by |cursor_manager_|, but we keep a
   // pointer to vend to test code.

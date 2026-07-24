@@ -55,7 +55,6 @@ struct TrayIconConfiguration;
 class UnifiedSystemTray;
 class VideoConferenceTray;
 class VirtualKeyboardTray;
-class WmModeButtonTray;
 
 // Widget showing the system tray, notification tray, and other tray views in
 // the bottom-right of the screen. Exists separately from ShelfView/ShelfWidget
@@ -156,7 +155,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   MouseKeysTray* mouse_keys_tray() { return mouse_keys_tray_; }
   SelectToSpeakTray* select_to_speak_tray() { return select_to_speak_tray_; }
-  WmModeButtonTray* wm_mode_button_tray() { return wm_mode_button_tray_; }
 
   Shelf* shelf() { return shelf_; }
 
@@ -345,7 +343,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
       nullptr;
   raw_ptr<SelectToSpeakTray, DanglingUntriaged> select_to_speak_tray_ = nullptr;
   raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
-  raw_ptr<WmModeButtonTray, DanglingUntriaged> wm_mode_button_tray_ = nullptr;
   base::flat_set<uint64_t> custom_tray_buttons_ids_;
 
   // Vector of the tray buttons above. The ordering is used to determine which

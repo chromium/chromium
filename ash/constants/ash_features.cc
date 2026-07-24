@@ -1975,10 +1975,6 @@ BASE_FEATURE(kWifiSyncApplyProxyConfigs, base::FEATURE_DISABLED_BY_DEFAULT);
 // over another window.
 BASE_FEATURE(kWindowSplitting, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables an experimental feature that lets users easily layout, resize and
-// position their windows using only mouse and touch gestures.
-BASE_FEATURE(kWmMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables PSM CheckMembership for 28 day device active pings
 // on ChromeOS.
 BASE_FEATURE(kDeviceActiveClient28DayActiveCheckMembership,
@@ -3311,10 +3307,6 @@ bool IsWifiSyncAndroidEnabled() {
 
 bool IsWindowSplittingEnabled() {
   return base::FeatureList::IsEnabled(kWindowSplitting);
-}
-
-bool IsWmModeEnabled() {
-  return base::FeatureList::IsEnabled(kWmMode);
 }
 
 bool IsFeatureAwareDeviceDemoModeEnabled() {

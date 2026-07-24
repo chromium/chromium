@@ -243,7 +243,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_shadow_controller_delegate.h"
 #include "ash/wm/workspace_controller.h"
-#include "ash/wm_mode/wm_mode_controller.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -886,8 +885,6 @@ Shell::~Shell() {
   // Close and destroy all application windows here, so that the window manager
   // related objects, which app windows relies on, can be sefely deleted.
   CloseAllAppWindows();
-
-  wm_mode_controller_.reset();
 
   // `shortcut_input_handler_` must be cleaned up before
   // `event_rewriter_controller_`.
@@ -1787,13 +1784,6 @@ void Shell::Init(
   detachable_base_notification_controller_ =
       std::make_unique<DetachableBaseNotificationController>(
           detachable_base_handler_.get());
-
-  // WmModeController should be created before initializing the window tree
-  // hosts, since the latter will initialize the shelf on each display, which
-  // hosts the WM mode tray button.
-  if (features::IsWmModeEnabled()) {
-    wm_mode_controller_ = std::make_unique<WmModeController>();
-  }
 
   hotspot_icon_animation_ = std::make_unique<HotspotIconAnimation>();
   hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();

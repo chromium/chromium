@@ -2796,7 +2796,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="18" label="Status Area Overflow Button"/>
   <int value="19" label="Virtual Keyboard Tray, Status Area"/>
   <int value="20" label="Virtual Keyboard Tray, Accesibility Window"/>
-  <int value="21" label="WM Mode Button"/>
+  <int value="21" label="WM Mode Button (Deprecated)"/>
   <int value="22" label="Video Conferencing Tray"/>
   <int value="23" label="Focus Mode Tray"/>
   <int value="24" label="Pods Overflow"/>
