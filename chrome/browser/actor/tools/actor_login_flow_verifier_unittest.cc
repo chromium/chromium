@@ -34,7 +34,7 @@ class ActorLoginFlowVerifierTest : public testing::Test {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents_, GURL("https://example.com"));
     verifier_ =
-        std::make_unique<ActorLoginFlowVerifier>(&fake_affiliation_service_);
+        std::make_unique<ActorLoginFlowVerifier>(fake_affiliation_service_);
   }
 
   content::RenderFrameHost* main_rfh() {

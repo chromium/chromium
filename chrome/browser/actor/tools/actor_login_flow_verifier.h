@@ -10,12 +10,12 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
+#include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/origin.h"
 
 namespace affiliations {
 class AffiliationService;
-class DomainRelationChecker;
 }  // namespace affiliations
 
 namespace actor {
@@ -25,7 +25,7 @@ namespace actor {
 class ActorLoginFlowVerifier {
  public:
   explicit ActorLoginFlowVerifier(
-      affiliations::AffiliationService* affiliation_service);
+      affiliations::AffiliationService& affiliation_service);
 
   ActorLoginFlowVerifier(const ActorLoginFlowVerifier&) = delete;
   ActorLoginFlowVerifier& operator=(const ActorLoginFlowVerifier&) = delete;
@@ -52,7 +52,7 @@ class ActorLoginFlowVerifier {
       base::OnceCallback<void(bool)> callback);
 
  private:
-  std::unique_ptr<affiliations::DomainRelationChecker> domain_relation_checker_;
+  affiliations::DomainRelationChecker domain_relation_checker_;
 };
 
 }  // namespace actor

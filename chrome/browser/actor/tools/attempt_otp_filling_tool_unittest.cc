@@ -34,6 +34,7 @@
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -105,8 +106,9 @@ class MockActorOneTimeTokenFillingService
 
 class MockActorLoginFlowVerifier : public ActorLoginFlowVerifier {
  public:
-  MockActorLoginFlowVerifier()
-      : ActorLoginFlowVerifier(/*affiliation_service=*/nullptr) {}
+  explicit MockActorLoginFlowVerifier(
+      affiliations::AffiliationService& affiliation_service)
+      : ActorLoginFlowVerifier(affiliation_service) {}
   ~MockActorLoginFlowVerifier() override = default;
 
   MOCK_METHOD(void,
@@ -234,8 +236,8 @@ class AttemptOtpFillingToolTest : public testing::Test {
           AttemptOtpFillingToolRequest::OtpType::kUnknown,
       std::unique_ptr<ActorLoginFlowVerifier> verifier = nullptr) {
     if (!verifier) {
-      verifier = std::make_unique<ActorLoginFlowVerifier>(
-          /*affiliation_service=*/nullptr);
+      verifier =
+          std::make_unique<ActorLoginFlowVerifier>(fake_affiliation_service_);
     }
     return AttemptOtpFillingTool(TaskId(1), delegate(), mock_tab().GetHandle(),
                                  std::move(trigger_fields), for_signin,
@@ -288,6 +290,7 @@ class AttemptOtpFillingToolTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+  affiliations::FakeAffiliationService fake_affiliation_service_;
   std::unique_ptr<FakeToolDelegate> delegate_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   base::HistogramTester histogram_tester_;
@@ -736,7 +739,8 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   auto verifier =
-      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>();
+      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
+          fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
       .WillOnce(base::test::RunOnceCallback<3>(false));
   PageTarget target(gfx::Point(10, 10));
@@ -767,7 +771,8 @@ TEST_F(AttemptOtpFillingToolTest,
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   auto verifier =
-      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>();
+      std::make_unique<testing::NiceMock<MockActorLoginFlowVerifier>>(
+          fake_affiliation_service_);
   EXPECT_CALL(*verifier, VerifyIsActorLoginFlow)
       .WillOnce(base::test::RunOnceCallback<3>(false));
   PageTarget target(gfx::Point(10, 10));

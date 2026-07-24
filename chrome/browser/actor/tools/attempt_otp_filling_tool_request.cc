@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -46,7 +47,8 @@ ToolRequest::CreateToolResult AttemptOtpFillingToolRequest::CreateTool(
   return {std::make_unique<AttemptOtpFillingTool>(
               task_id, tool_delegate, GetTabHandle(), trigger_fields_,
               for_signin_, predicted_otp_type_,
-              std::make_unique<ActorLoginFlowVerifier>(affiliation_service)),
+              std::make_unique<ActorLoginFlowVerifier>(
+                  CHECK_DEREF(affiliation_service))),
           MakeOkResult()};
 }
 

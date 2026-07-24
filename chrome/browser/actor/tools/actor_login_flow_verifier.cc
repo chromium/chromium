@@ -45,44 +45,11 @@ void OnOtpFrameOriginMatchEvaluated(
   std::move(callback).Run(is_psl && !should_use_strong_matching);
 }
 
-// We need to make sure that we don't skip user confirmation for OTPs that do
-// not belong to actor login flows. Actor login fills credentials in all iframes
-// that it considers trustworthy because it doesn't know which one contains the
-// correct login form. It also uses 2 different trust levels (based on user
-// permission type), both are based on iframe's and main frame's origins.
-// This method needs to match the same trust levels, hence the
-// `should_use_strong_matching` parameter. To avoid checking each filled
-// frame, we try to match the OTP form's origin with the origin of the main
-// frame where actor login flow started and rely on the fact that affiliations
-// are transitive.
-void VerifyOtpFrameOriginMatch(affiliations::DomainRelationChecker* checker,
-                               const url::Origin& login_main_frame_origin,
-                               const url::Origin& otp_origin,
-                               bool should_use_strong_matching,
-                               base::OnceCallback<void(bool)> callback) {
-  if (!checker) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        // Without the affiliation information, only origin equality is checked.
-        base::BindOnce(std::move(callback),
-                       login_main_frame_origin.IsSameOriginWith(otp_origin)));
-    return;
-  }
-  checker->Check(
-      login_main_frame_origin, otp_origin,
-      base::BindOnce(&OnOtpFrameOriginMatchEvaluated,
-                     should_use_strong_matching, std::move(callback)));
-}
-
 }  // namespace
 
 ActorLoginFlowVerifier::ActorLoginFlowVerifier(
-    affiliations::AffiliationService* affiliation_service)
-    : domain_relation_checker_(
-          affiliation_service
-              ? std::make_unique<affiliations::DomainRelationChecker>(
-                    *affiliation_service)
-              : nullptr) {}
+    affiliations::AffiliationService& affiliation_service)
+    : domain_relation_checker_(affiliation_service) {}
 
 ActorLoginFlowVerifier::~ActorLoginFlowVerifier() = default;
 
@@ -119,9 +86,20 @@ void ActorLoginFlowVerifier::VerifyIsActorLoginFlow(
   }
 
   // Last check: verify OTP form origin and main frame origin are related.
-  VerifyOtpFrameOriginMatch(
-      domain_relation_checker_.get(), context->origin, otp_frame_origin,
-      context->should_use_strong_matching, std::move(callback));
+  // We need to make sure that we don't skip user confirmation for OTPs that do
+  // not belong to actor login flows. Actor login fills credentials in all
+  // iframes that it considers trustworthy because it doesn't know which one
+  // contains the correct login form. It also uses 2 different trust levels
+  // (based on user permission type), both are based on iframe's and main
+  // frame's origins. This method needs to match the same trust levels, hence
+  // the `should_use_strong_matching` parameter. To avoid checking each filled
+  // frame, we try to match the OTP form's origin with the origin of the main
+  // frame where actor login flow started and rely on the fact that affiliations
+  // are transitive.
+  domain_relation_checker_.Check(
+      context->origin, otp_frame_origin,
+      base::BindOnce(&OnOtpFrameOriginMatchEvaluated,
+                     context->should_use_strong_matching, std::move(callback)));
 }
 
 }  // namespace actor
