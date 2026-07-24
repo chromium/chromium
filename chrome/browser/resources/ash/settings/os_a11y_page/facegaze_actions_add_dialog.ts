@@ -251,46 +251,54 @@ export class FaceGazeAddActionDialogElement extends
     };
   }
 
-  initialPage: AddDialogPage = AddDialogPage.SELECT_ACTION;
-  commandPairToConfigure: FaceGazeCommandPair|null = null;
-  leftClickGestures: FacialGesture[] = [];
+  declare initialPage: AddDialogPage;
+  declare commandPairToConfigure: FaceGazeCommandPair|null;
+  declare leftClickGestures: FacialGesture[];
   shortcutInput: ShortcutInputElement|null;
 
   // Internal state.
-  private selectedAction_: MacroName;
-  private keyCombination_: KeyCombination|null = null;
-  private selectedGesture_: FacialGesture|null = null;
-  private gestureThresholdValue_: number;
-  private currentPage_: AddDialogPage = AddDialogPage.SELECT_ACTION;
+  declare private selectedAction_: MacroName;
+  declare private keyCombination_: KeyCombination|null;
+  declare private selectedGesture_: FacialGesture|null;
+  declare private gestureThresholdValue_: number;
+  declare private currentPage_: AddDialogPage;
   private pageNavigation_: Record<AddDialogPage, PageNavigation> =
       FACEGAZE_DEFINED_MACRO_FLOW;
-  private detectedGestureCount_ = 0;
-  private disableActionNextButton_: boolean;
-  private disableCustomKeyboardNextButton_: boolean;
-  private disableGestureNextButton_: boolean;
-  private displayGesturePreviousButton_: boolean;
-  private displayThresholdPreviousButton_: boolean;
-  private displayedGestures_: FacialGesture[];
+  declare private detectedGestureCount_: number;
+  declare private disableActionNextButton_: boolean;
+  declare private disableCustomKeyboardNextButton_: boolean;
+  declare private disableGestureNextButton_: boolean;
+  declare private displayGesturePreviousButton_: boolean;
+  declare private displayThresholdPreviousButton_: boolean;
+  declare private displayedGestures_: FacialGesture[];
   private eventTracker_: EventTracker = new EventTracker();
   private holdingGesture_ = false;
-  private keyComboChangeButtonLabel_: string;
-  private localizedGestureCountLabel_: string;
-  private localizedGestureThresholdTitle_: string;
-  private localizedSelectGestureTitle_: string;
-  private shortcutInputLabel_: string;
-  private showCustomKeyboard_: boolean;
-  private showGestureThreshold_: boolean;
-  private showSelectAction_: boolean;
-  private showSelectGesture_: boolean;
+  declare private keyComboChangeButtonLabel_: string;
+  declare private localizedGestureCountLabel_: string;
+  declare private localizedGestureThresholdTitle_: string;
+  declare private localizedSelectGestureTitle_: string;
+  declare private shortcutInputLabel_: string;
+  declare private showCustomKeyboard_: boolean;
+  declare private showGestureThreshold_: boolean;
+  declare private showSelectAction_: boolean;
+  declare private showSelectGesture_: boolean;
   private stream_: MediaStream|null;
   private streamTrack_: MediaStreamTrack|null;
 
-  private displayedActions_: MacroName[] = FaceGazeActions;
+  declare private displayedActions_: MacroName[];
 
   private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
 
   constructor() {
     super();
+    this.initialPage = AddDialogPage.SELECT_ACTION;
+    this.commandPairToConfigure = null;
+    this.leftClickGestures = [];
+    this.keyCombination_ = null;
+    this.selectedGesture_ = null;
+    this.currentPage_ = AddDialogPage.SELECT_ACTION;
+    this.detectedGestureCount_ = 0;
+    this.displayedActions_ = FaceGazeActions;
     this.faceGazeSubpageBrowserProxy_ =
         FaceGazeSubpageBrowserProxyImpl.getInstance();
     this.addWebUiListener(

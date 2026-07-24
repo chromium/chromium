@@ -229,15 +229,15 @@ export class SettingsSwitchAccessSetupGuideDialogElement extends
     ];
   }
 
-  private autoScanSpeedRangeMs_: SliderTick[];
-  private currentPageId_: number;
-  private formatter_: Intl.NumberFormat;
-  private maxScanSpeedLabelSec_: string;
-  private maxScanSpeedMs_: number;
-  private minScanSpeedLabelSec_: string;
-  private minScanSpeedMs_: number;
-  private switchCount_: number;
-  private switchToAssign_: SwitchAccessCommand|null;
+  declare private autoScanSpeedRangeMs_: SliderTick[];
+  declare private currentPageId_: number;
+  declare private formatter_: Intl.NumberFormat;
+  declare private maxScanSpeedLabelSec_: string;
+  declare private maxScanSpeedMs_: number;
+  declare private minScanSpeedLabelSec_: string;
+  declare private minScanSpeedMs_: number;
+  declare private switchCount_: number;
+  declare private switchToAssign_: SwitchAccessCommand|null;
 
   constructor() {
     super();

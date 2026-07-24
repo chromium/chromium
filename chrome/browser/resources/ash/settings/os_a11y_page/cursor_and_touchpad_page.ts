@@ -314,23 +314,23 @@ export class SettingsCursorAndTouchpadPageElement extends
     Setting.kTabletNavigationButtons,
   ]);
 
-  private autoClickDelayOptions_: Option[];
-  private autoClickMovementThresholdOptions_: Option[];
-  private cursorColorOptions_: Option[];
+  declare private autoClickDelayOptions_: Option[];
+  declare private autoClickMovementThresholdOptions_: Option[];
+  declare private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
-  private disableTouchpadOptions_: Option[];
-  private readonly isKioskModeActive_: boolean;
-  private shelfNavigationButtonsImplicitlyEnabled_: boolean;
-  private shelfNavigationButtonsPref_:
+  declare private disableTouchpadOptions_: Option[];
+  declare private readonly isKioskModeActive_: boolean;
+  declare private shelfNavigationButtonsImplicitlyEnabled_: boolean;
+  declare private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
-  private showFaceGazeRow_: boolean;
-  private showShelfNavigationButtonsSettings_: boolean;
-  private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
-  private readonly isAccessibilityMouseKeysEnabled_: boolean;
+  declare private showFaceGazeRow_: boolean;
+  declare private showShelfNavigationButtonsSettings_: boolean;
+  declare private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
+  declare private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
-  private hasMouse_: boolean;
-  private hasTouchpad_: boolean;
-  private hasPointingStick_: boolean;
+  declare private hasMouse_: boolean;
+  declare private hasTouchpad_: boolean;
+  declare private hasPointingStick_: boolean;
 
   constructor() {
     super();

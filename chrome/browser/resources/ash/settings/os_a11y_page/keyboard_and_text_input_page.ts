@@ -167,28 +167,29 @@ export class SettingsKeyboardAndTextInputPageElement extends
     Setting.kStickyKeys,
   ]);
 
-  private dictationLearnMoreUrl_: string;
-  private dictationLocaleMenuSubtitle_: string;
-  private dictationLocaleOptions_: LocaleInfo[];
+  declare private dictationLearnMoreUrl_: string;
+  declare private dictationLocaleMenuSubtitle_: string;
+  declare private dictationLocaleOptions_: LocaleInfo[];
   private dictationLocaleSubtitleOverride_: string;
-  private dictationLocalesList_: LocaleInfo[];
-  private isKioskModeActive_: boolean;
+  declare private dictationLocalesList_: LocaleInfo[];
+  declare private isKioskModeActive_: boolean;
   private focusHighlightEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
-  private focusHighlightEnabledVirtualPref_:
+  declare private focusHighlightEnabledVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private keyboardAndTextInputBrowserProxy_:
       KeyboardAndTextInputPageBrowserProxy;
-  private stickyKeysEnabledVirtualPref_:
+  declare private stickyKeysEnabledVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
-  private showDictationLocaleMenu_: boolean;
+  declare private showDictationLocaleMenu_: boolean;
   private useDictationLocaleSubtitleOverride_: boolean;
-  private caretBlinkIntervalVirtualPref_:
+  declare private caretBlinkIntervalVirtualPref_:
       chrome.settingsPrivate.PrefObject<number>;
   private defaultCaretBlinkRateMs_: number;
   private caretBlinkIntervalOffSliderValue_ = 40;
-  private slowKeysDelayVirtualPref_: chrome.settingsPrivate.PrefObject<number>;
-  private bounceKeysDelayVirtualPref_:
+  declare private slowKeysDelayVirtualPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+  declare private bounceKeysDelayVirtualPref_:
       chrome.settingsPrivate.PrefObject<number>;
   private millisInSec_ = 1000;
   private filterKeysSliderMinMillis_ = 0;

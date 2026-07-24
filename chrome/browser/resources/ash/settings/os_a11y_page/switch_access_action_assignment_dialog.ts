@@ -62,8 +62,8 @@ export class SettingsSwitchAccessActionAssignmentDialogElement extends
     };
   }
 
-  action: SwitchAccessCommand;
-  private dialogTitle_: string;
+  declare action: SwitchAccessCommand;
+  declare private dialogTitle_: string;
   private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
 
   constructor() {

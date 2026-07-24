@@ -104,9 +104,9 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     };
   }
 
-  currentRoute: Route;
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare currentRoute: Route;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -116,10 +116,10 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   ]);
 
   private browserProxy_: OsA11yPageBrowserProxy;
-  private hasScreenReader_: boolean;
-  private isGuest_: boolean;
-  private isKioskOldA11ySettingsRedirectionEnabled_: boolean;
-  private section_: Section;
+  declare private hasScreenReader_: boolean;
+  declare private isGuest_: boolean;
+  declare private isKioskOldA11ySettingsRedirectionEnabled_: boolean;
+  declare private section_: Section;
 
   constructor() {
     super();

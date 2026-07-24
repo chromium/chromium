@@ -54,8 +54,8 @@ export class SettingsAxAnnotationsSectionElement extends
       AxAnnotationsBrowserProxyImpl.getInstance();
 
   private showMainNodeAnnotationsToggle_: boolean;
-  private screenAIProgress_: number;
-  private screenAIStatus_: ScreenAiInstallStatus;
+  declare private screenAIProgress_: number;
+  declare private screenAIStatus_: ScreenAiInstallStatus;
 
   override connectedCallback(): void {
     super.connectedCallback();

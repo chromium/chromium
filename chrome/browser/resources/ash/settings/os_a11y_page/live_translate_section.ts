@@ -61,9 +61,9 @@ export class SettingsLiveTranslateElement extends
     };
   }
 
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private translatableLanguages_: DropdownMenuOptionList;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private translatableLanguages_: DropdownMenuOptionList;
 
   override ready(): void {
     super.ready();

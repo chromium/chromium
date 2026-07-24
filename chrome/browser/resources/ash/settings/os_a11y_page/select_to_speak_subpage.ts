@@ -203,13 +203,14 @@ export class SettingsSelectToSpeakSubpageElement extends
   ]);
 
   private langBrowserProxy_: LanguagesBrowserProxy;
-  private readonly highlightColorOptions_: DropdownMenuOptionList;
-  private isPreviewing_: boolean;
-  private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
-  private languagesMenuOptions_: DropdownMenuOptionList;
-  private localVoicesMenuOptions_: DropdownOptionList;
-  private voicePreviewText_: string;
-  private selectToSpeakLearnMoreUrl_: string;
+  declare private readonly highlightColorOptions_: DropdownMenuOptionList;
+  declare private isPreviewing_: boolean;
+  declare private languageFilterVirtualPref_:
+      chrome.settingsPrivate.PrefObject<string>;
+  declare private languagesMenuOptions_: DropdownMenuOptionList;
+  declare private localVoicesMenuOptions_: DropdownOptionList;
+  declare private voicePreviewText_: string;
+  declare private selectToSpeakLearnMoreUrl_: string;
   private appLocale_ = '';
   private selectToSpeakBrowserProxy_: SelectToSpeakSubpageBrowserProxy;
   private voices_: HandlerVoice[] = [];

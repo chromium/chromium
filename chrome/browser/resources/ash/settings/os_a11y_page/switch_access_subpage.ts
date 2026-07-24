@@ -182,23 +182,23 @@ export class SettingsSwitchAccessSubpageElement extends
     Setting.kSwitchActionAutoScanKeyboard,
   ]);
 
-  private action_: SwitchAccessCommand|null;
-  private autoScanSpeedRangeMs_: number[];
+  declare private action_: SwitchAccessCommand|null;
+  declare private autoScanSpeedRangeMs_: number[];
   private focusAfterDialogClose_: HTMLElement|null;
-  private formatter_: Intl.NumberFormat;
-  private maxPointScanSpeed_: number;
-  private minPointScanSpeed_: number;
-  private maxScanSpeedLabelSec_: string;
-  private maxScanSpeedMs_: number;
-  private minScanSpeedLabelSec_: string;
-  private minScanSpeedMs_: number;
-  private nextAssignments_: KeyAssignment[];
-  private pointScanSpeedRangeDipsPerSecond_: number[];
-  private previousAssignments_: KeyAssignment[];
-  private selectAssignments_: KeyAssignment[];
-  private showSwitchAccessActionAssignmentDialog_: boolean;
-  private showSwitchAccessSetupGuideDialog_: boolean;
-  private showSwitchAccessSetupGuideWarningDialog_: boolean;
+  declare private formatter_: Intl.NumberFormat;
+  declare private maxPointScanSpeed_: number;
+  declare private minPointScanSpeed_: number;
+  declare private maxScanSpeedLabelSec_: string;
+  declare private maxScanSpeedMs_: number;
+  declare private minScanSpeedLabelSec_: string;
+  declare private minScanSpeedMs_: number;
+  declare private nextAssignments_: KeyAssignment[];
+  declare private pointScanSpeedRangeDipsPerSecond_: number[];
+  declare private previousAssignments_: KeyAssignment[];
+  declare private selectAssignments_: KeyAssignment[];
+  declare private showSwitchAccessActionAssignmentDialog_: boolean;
+  declare private showSwitchAccessSetupGuideDialog_: boolean;
+  declare private showSwitchAccessSetupGuideWarningDialog_: boolean;
   private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
 
   constructor() {

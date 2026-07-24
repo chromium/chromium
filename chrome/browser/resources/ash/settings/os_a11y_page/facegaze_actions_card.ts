@@ -99,20 +99,28 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     };
   }
 
+  constructor() {
+    super();
+    this.actionsSpokenFeedbackAlert_ = '';
+    this.commandPairs_ = [];
+    this.commandPairToConfigure_ = null;
+    this.leftClickGestures_ = [];
+  }
+
   static get observers() {
     return [`initFromPrefs_(prefs.settings.a11y.face_gaze.enabled.value)`];
   }
 
-  disabled: boolean;
-  private actionsSpokenFeedbackAlert_ = '';
-  private commandPairs_: FaceGazeCommandPair[] = [];
-  private commandPairToConfigure_: FaceGazeCommandPair|null = null;
-  private dialogPageToShow_: AddDialogPage;
-  private disableConfigureControls_: boolean;
-  private leftClickGestures_: FacialGesture[] = [];
+  declare disabled: boolean;
+  declare private actionsSpokenFeedbackAlert_: string;
+  declare private commandPairs_: FaceGazeCommandPair[];
+  declare private commandPairToConfigure_: FaceGazeCommandPair|null;
+  declare private dialogPageToShow_: AddDialogPage;
+  declare private disableConfigureControls_: boolean;
+  declare private leftClickGestures_: FacialGesture[];
   private rowIdToUpdate_: number;
-  private shouldAnnounceA11yActionFeedback_: boolean;
-  private showAddActionDialog_: boolean;
+  declare private shouldAnnounceA11yActionFeedback_: boolean;
+  declare private showAddActionDialog_: boolean;
 
   private shouldAnnounceAlert_(): boolean {
     return this.actionsSpokenFeedbackAlert_ !== '';

@@ -109,18 +109,18 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     };
   }
 
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
 
-  private availableLanguagePacks_: LiveCaptionLanguageList;
+  declare private availableLanguagePacks_: LiveCaptionLanguageList;
   private browserProxy_: CaptionsBrowserProxy =
       CaptionsBrowserProxyImpl.getInstance();
-  private enableLiveCaptionSubtitle_: string;
-  private enableLiveCaptionMultiLanguage_: boolean;
-  private enableLiveTranslate_: boolean;
-  private installedLanguagePacks_: LiveCaptionLanguageList;
-  private detailLanguage_?: LiveCaptionLanguage;
-  private showAddLanguagesDialog_: boolean;
+  declare private enableLiveCaptionSubtitle_: string;
+  declare private enableLiveCaptionMultiLanguage_: boolean;
+  declare private enableLiveTranslate_: boolean;
+  declare private installedLanguagePacks_: LiveCaptionLanguageList;
+  declare private detailLanguage_?: LiveCaptionLanguage;
+  declare private showAddLanguagesDialog_: boolean;
 
   override ready(): void {
     super.ready();

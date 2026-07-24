@@ -155,19 +155,19 @@ export class SettingsSwitchAccessActionAssignmentPaneElement extends
     };
   }
 
-  action: SwitchAccessCommand;
-  context: AssignmentContext;
-  private alreadyAssignedAction_: SwitchAccessCommand;
-  private assignmentState_: AssignmentState;
-  private assignments_: KeyAssignment[];
-  private currentDeviceType_: SwitchAccessDeviceType;
-  private currentKey_: string;
-  private currentKeyCode_: number|null;
-  private errorText_: string;
-  private keyCodes_:
+  declare action: SwitchAccessCommand;
+  declare context: AssignmentContext;
+  declare private alreadyAssignedAction_: SwitchAccessCommand;
+  declare private assignmentState_: AssignmentState;
+  declare private assignments_: KeyAssignment[];
+  declare private currentDeviceType_: SwitchAccessDeviceType;
+  declare private currentKey_: string;
+  declare private currentKeyCode_: number|null;
+  declare private errorText_: string;
+  declare private keyCodes_:
       {[key in SwitchAccessCommand]: SwitchAccessKeyAssignmentInfoMapping};
-  private noSwitchesLabel_: string;
-  private promptText_: string;
+  declare private noSwitchesLabel_: string;
+  declare private promptText_: string;
   private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
 
   constructor() {

@@ -137,8 +137,8 @@ export class SettingsAudioAndCaptionsPageElement extends
     };
   }
 
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -149,9 +149,10 @@ export class SettingsAudioAndCaptionsPageElement extends
   ]);
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
-  private readonly isAccessibilityFlashNotificationFeatureEnabled_: boolean;
-  private isKioskModeActive_: boolean;
-  private readonly notificationColorOptions_:
+  declare private readonly isAccessibilityFlashNotificationFeatureEnabled_:
+      boolean;
+  declare private isKioskModeActive_: boolean;
+  declare private readonly notificationColorOptions_:
       Array<{value: number, name: string}>;
 
   constructor() {

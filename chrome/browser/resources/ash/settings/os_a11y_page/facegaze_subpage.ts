@@ -56,7 +56,7 @@ export class SettingsFaceGazeSubpageElement extends
     };
   }
 
-  private toggleLabel_: string;
+  declare private toggleLabel_: string;
   private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
 
   constructor() {

@@ -133,16 +133,16 @@ export class ChangeDictationLocaleDialog extends
     };
   }
 
-  options: DictationLocaleOption[];
-  pref: chrome.settingsPrivate.PrefObject<string>;
-  private disableUpdateButton_: boolean;
-  private displayedLocales_: DictationLocaleOption[];
-  private displayedLocalesEmpty_: boolean;
-  private lowercaseQueryString_: string;
-  private recommendedLocales_: DictationLocaleOption[];
-  private recommendedLocalesEmpty_: boolean;
-  private selectedLocale_: DictationLocaleOption|null;
-  private selectedRecommendedLocale_: DictationLocaleOption|null;
+  declare options: DictationLocaleOption[];
+  declare pref: chrome.settingsPrivate.PrefObject<string>;
+  declare private disableUpdateButton_: boolean;
+  declare private displayedLocales_: DictationLocaleOption[];
+  declare private displayedLocalesEmpty_: boolean;
+  declare private lowercaseQueryString_: string;
+  declare private recommendedLocales_: DictationLocaleOption[];
+  declare private recommendedLocalesEmpty_: boolean;
+  declare private selectedLocale_: DictationLocaleOption|null;
+  declare private selectedRecommendedLocale_: DictationLocaleOption|null;
 
   override ready(): void {
     super.ready();

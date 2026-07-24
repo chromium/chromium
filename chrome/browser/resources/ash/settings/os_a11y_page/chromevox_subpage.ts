@@ -346,20 +346,20 @@ export class SettingsChromeVoxSubpageElement extends
     ];
   }
 
-  private capitalStrategyOptions_: DropdownMenuOptionList;
-  private numberReadingStyleOptions_: DropdownMenuOptionList;
-  private punctuationEchoOptions_: DropdownMenuOptionList;
-  private audioStrategyOptions_: DropdownMenuOptionList;
-  private brailleTableTypeOptions_: DropdownMenuOptionList;
-  private brailleTableOptions_: DropdownMenuOptionList;
-  private voiceOptions_: DropdownMenuOptionList;
-  private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
+  declare private capitalStrategyOptions_: DropdownMenuOptionList;
+  declare private numberReadingStyleOptions_: DropdownMenuOptionList;
+  declare private punctuationEchoOptions_: DropdownMenuOptionList;
+  declare private audioStrategyOptions_: DropdownMenuOptionList;
+  declare private brailleTableTypeOptions_: DropdownMenuOptionList;
+  declare private brailleTableOptions_: DropdownMenuOptionList;
+  declare private voiceOptions_: DropdownMenuOptionList;
+  declare private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
   private brailleTables_: BrailleTable[];
-  private developerOptionsExpanded_: boolean;
-  private readonly eventStreamFilters_: string[];
-  private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
-  private readonly japaneseBrailleEnabled_: boolean;
+  declare private developerOptionsExpanded_: boolean;
+  declare private readonly eventStreamFilters_: string[];
+  declare private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
+  declare private readonly japaneseBrailleEnabled_: boolean;
 
   // Regular expressions that will match against a voice name if it contains a
   // speaker ID in it.

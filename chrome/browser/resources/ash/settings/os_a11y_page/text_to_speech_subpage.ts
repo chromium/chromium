@@ -70,7 +70,7 @@ export class SettingsTextToSpeechSubpageElement extends
     };
   }
 
-  hasScreenReader: boolean;
+  declare hasScreenReader: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -79,7 +79,7 @@ export class SettingsTextToSpeechSubpageElement extends
   ]);
 
   private deviceBrowserProxy_: DevicePageBrowserProxy;
-  private hasKeyboard_: boolean;
+  declare private hasKeyboard_: boolean;
   private textToSpeechBrowserProxy_: TextToSpeechSubpageBrowserProxy;
 
   constructor() {

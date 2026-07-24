@@ -152,13 +152,13 @@ export class SettingsTtsVoiceSubpageElement extends
     };
   }
 
-  allVoices: TtsHandlerVoice[];
-  defaultPreviewVoice: string;
+  declare allVoices: TtsHandlerVoice[];
+  declare defaultPreviewVoice: string;
   extensions: TtsHandlerExtension[];
-  hasVoices: boolean;
-  languagesOpened: boolean;
-  languagesToVoices: TtsLanguage[];
-  prefs: PrefsState;
+  declare hasVoices: boolean;
+  declare languagesOpened: boolean;
+  declare languagesToVoices: TtsLanguage[];
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -169,9 +169,9 @@ export class SettingsTtsVoiceSubpageElement extends
     Setting.kTextToSpeechEngines,
   ]);
 
-  private isPreviewing_: boolean;
+  declare private isPreviewing_: boolean;
   private langBrowserProxy_: LanguagesBrowserProxy;
-  private previewText_: string;
+  declare private previewText_: string;
   private ttsBrowserProxy_: TtsVoiceSubpageBrowserProxy;
 
   // Regular expressions that will match against a voice name if it contains a
