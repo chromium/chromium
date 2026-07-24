@@ -7,6 +7,26 @@
 import os
 import re
 
+# BUILD.gn files that are edited by many concurrent CLs. The global
+# CheckPatchFormatted() in the root PRESUBMIT.py only emits a warning, which is
+# easy to miss; when unformatted edits to these large, high-traffic files land
+# close together they cause `gn format` churn and needless merge conflicts.
+# Enforce `git cl format` as an error on these specific files only, to keep the
+# blast radius small.
+_FORMAT_REQUIRED_BUILD_GN = (
+    'chrome/browser/BUILD.gn',
+    'chrome/browser/ui/BUILD.gn',
+)
+
+
+def _CheckHighTrafficBuildGnFormatted(input_api, output_api):
+    return input_api.canned_checks.CheckPatchFormatted(
+        input_api,
+        output_api,
+        result_factory=output_api.PresubmitError,
+        file_filter=lambda f: f.LocalPath() in _FORMAT_REQUIRED_BUILD_GN)
+
+
 # Checks whether an autofill-related browsertest fixture class inherits from
 # either InProcessBrowserTest or AndroidBrowserTest without having a member of
 # type `autofill::test::AutofillBrowserTestEnvironment`. In that case, the
@@ -738,6 +758,7 @@ def _CheckNoNewProfileIDPrefixes(input_api, output_api):
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
+    results.extend(_CheckHighTrafficBuildGnFormatted(input_api, output_api))
     results.extend(_CheckNewDirectoryHasBuildGn(input_api, output_api))
     results.extend(
         _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(
