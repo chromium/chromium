@@ -350,10 +350,9 @@ TEST_F(AccountPreviewDataServiceTest, OnAllFetchesCompleted) {
 TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   // 1. Initially empty.
   {
-    AccountPreviewDataService::AccountPreviewPreference preference =
-        service_->GetPreferredAccountForPromo();
-    EXPECT_TRUE(preference.gaia_id.empty());
-    EXPECT_TRUE(preference.preferred_data_types.empty());
+    std::optional<AccountPreviewDataService::AccountPreviewPreference>
+        preference = service_->GetPreferredAccountForPromo();
+    EXPECT_FALSE(preference.has_value());
   }
 
   // Mock successful fetches.
@@ -377,10 +376,9 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
   // TODO(crbug.com/530144650): When the heuristic is implemented, this test
   // should be updated to expect a non-empty preference.
   {
-    AccountPreviewDataService::AccountPreviewPreference preference =
-        service_->GetPreferredAccountForPromo();
-    EXPECT_TRUE(preference.gaia_id.empty());
-    EXPECT_TRUE(preference.preferred_data_types.empty());
+    std::optional<AccountPreviewDataService::AccountPreviewPreference>
+        preference = service_->GetPreferredAccountForPromo();
+    EXPECT_FALSE(preference.has_value());
   }
 }
 
@@ -674,7 +672,10 @@ TEST_F(AccountPreviewDataServiceTest,
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
   // Verify that account1 is indeed preferred.
-  ASSERT_EQ(service_->GetPreferredAccountForPromo().gaia_id, account1.gaia);
+  std::optional<AccountPreviewDataService::AccountPreviewPreference>
+      preferred_account = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preferred_account.has_value());
+  ASSERT_EQ(preferred_account->gaia_id, account1.gaia);
 
   // Now remove account2 (which is NOT the preferred account).
   // Because it is not the preferred account, OnRefreshTokenRemovedForAccount
@@ -715,9 +716,10 @@ TEST_F(AccountPreviewDataServiceTest,
 
   // Verify that the preferred account in prefs was NOT overwritten or
   // recomputed by OnAllFetchesCompleted() because the feature flag is disabled.
-  AccountPreviewDataService::AccountPreviewPreference preference =
-      service_->GetPreferredAccountForPromo();
-  EXPECT_EQ(kFakeGaiaId, preference.gaia_id);
+  std::optional<AccountPreviewDataService::AccountPreviewPreference>
+      preference = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preference.has_value());
+  EXPECT_EQ(kFakeGaiaId, preference->gaia_id);
 }
 
 TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
@@ -732,12 +734,13 @@ TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
 
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
-  AccountPreviewDataService::AccountPreviewPreference preference =
-      service_->GetPreferredAccountForPromo();
-  EXPECT_EQ(GaiaId("test_gaia_id"), preference.gaia_id);
+  std::optional<AccountPreviewDataService::AccountPreviewPreference>
+      preference = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preference.has_value());
+  EXPECT_EQ(GaiaId("test_gaia_id"), preference->gaia_id);
   std::vector<syncer::DataType> expected_types = {syncer::BOOKMARKS,
                                                   syncer::PASSWORDS};
-  EXPECT_EQ(expected_types, preference.preferred_data_types);
+  EXPECT_EQ(expected_types, preference->preferred_data_types);
 }
 
 }  // namespace signin

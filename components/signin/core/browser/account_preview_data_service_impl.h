@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_SERVICE_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -51,7 +52,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   ~AccountPreviewDataServiceImpl() override;
 
   // AccountPreviewDataService implementation:
-  AccountPreviewPreference GetPreferredAccountForPromo() const override;
+  std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
+      const override;
 
   // Retrieves the cached preview data. Exposed specifically for testing.
   std::optional<AccountPreviewData> GetAccountPreviewData(
@@ -82,9 +84,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
   void CreateAndStartRepeatingTimer();
   void ResetTimer();
-  AccountPreviewPreference ComputePreferredAccount() const;
+  std::optional<AccountPreviewPreference> ComputePreferredAccount() const;
 
-  AccountPreviewPreference ReadPreviewPreferenceFromPrefs() const;
+  std::optional<AccountPreviewPreference> ReadPreviewPreferenceFromPrefs()
+      const;
   void WritePreviewPreferenceToPrefs(
       const AccountPreviewPreference& preference);
 

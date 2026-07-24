@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_SERVICE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_PREVIEW_DATA_SERVICE_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,8 +37,10 @@ class AccountPreviewDataService : public KeyedService {
 
   // From the list of accounts with refresh tokens, get the account that has the
   // most interesting preview data. If the preview data for accounts are not
-  // fetched yet, the first account is returned by default.
-  virtual AccountPreviewPreference GetPreferredAccountForPromo() const = 0;
+  // fetched yet, the first account is returned by default. Returns std::nullopt
+  // if no signed-in accounts exist.
+  virtual std::optional<AccountPreviewPreference> GetPreferredAccountForPromo()
+      const = 0;
 };
 
 }  // namespace signin

@@ -52,7 +52,7 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 
-AccountPreviewDataService::AccountPreviewPreference
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
   return ReadPreviewPreferenceFromPrefs();
 }
@@ -98,9 +98,8 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
     active_fetchers_.erase(gaia_id);
   }
 
-  // Only trigger a new fetch if the removed account is the current preferred
-  // account.
-  if (GetPreferredAccountForPromo().gaia_id == gaia_id) {
+  auto preferred_account = GetPreferredAccountForPromo();
+  if (preferred_account && preferred_account->gaia_id == gaia_id) {
     EnsureAllAccountsFetched(/*is_periodic_refresh=*/false);
   }
 }
@@ -227,14 +226,14 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-AccountPreviewDataService::AccountPreviewPreference
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableAccountPreviewPreferredAccount));
 
   // TODO(crbug.com/530144650): Implement heuristic to compute the preferred
   // account and preferred data types.
-  return AccountPreviewPreference();
+  return std::nullopt;
 }
 
 void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
@@ -243,7 +242,13 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 
   if (base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
-    WritePreviewPreferenceToPrefs(ComputePreferredAccount());
+    std::optional<AccountPreviewPreference> preferred_account =
+        ComputePreferredAccount();
+    if (preferred_account) {
+      WritePreviewPreferenceToPrefs(*preferred_account);
+    } else {
+      pref_service_->ClearPref(prefs::kAccountPreviewPreference);
+    }
   }
 
   if (should_reset_periodic_timer) {
@@ -255,17 +260,18 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
   }
 }
 
-AccountPreviewDataService::AccountPreviewPreference
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::ReadPreviewPreferenceFromPrefs() const {
-  AccountPreviewPreference preference;
-
   const base::DictValue& dict =
       pref_service_->GetDict(prefs::kAccountPreviewPreference);
   const std::string* gaia_id_str =
       dict.FindString(kPreferredAccountDictGaiaIdKey);
-  if (gaia_id_str) {
-    preference.gaia_id = GaiaId(*gaia_id_str);
+  if (!gaia_id_str || gaia_id_str->empty()) {
+    return std::nullopt;
   }
+
+  AccountPreviewPreference preference;
+  preference.gaia_id = GaiaId(*gaia_id_str);
 
   const base::ListValue* data_types_list =
       dict.FindList(kPreferredAccountDictDataTypesKey);
