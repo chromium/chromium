@@ -50,7 +50,7 @@ IncludeCategories:
 # ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeismainregex
 IncludeIsMainRegex: "\
 (_(32|64|android|apple|chromeos|freebsd|fuchsia|fuzzer|ios|linux|mac|openbsd|posix|stubs?|win))?\
-(_(unit|browser|perf)?tests?)?$"
+(_(unit|browser|perf|interactive_ui)?tests?)?$"
 
 # Make sure code like:
 # IPC_BEGIN_MESSAGE_MAP()
