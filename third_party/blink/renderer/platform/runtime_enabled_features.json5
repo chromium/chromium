@@ -3301,12 +3301,6 @@
       status: "experimental",
     },
     {
-      // Respects explicit outline colors for focus rings in dark mode and uses
-      // an off-white default. https://issues.chromium.org/issues/480978106
-      name: "FocusRingRespectExplicitOutlineColorInDarkMode",
-      status: "stable",
-    },
-    {
       name: "FontAccess",
       status: {"Android": "", "default": "stable"},
     },
