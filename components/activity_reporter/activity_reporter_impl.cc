@@ -50,8 +50,6 @@ class ActivityReporterImpl : public ActivityReporter {
                     update_client::kDateUnknown) {
       data->SetDateLastActive(std::string(kChromeActivityId),
                               update_client::kDateFirstTime);
-      data->SetDateLastActive(std::string(kChromeActivityId),
-                              update_client::kDateFirstTime);
     }
     update_client_ = update_client::UpdateClientFactory(configurator);
   }
