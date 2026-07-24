@@ -783,4 +783,59 @@ public class WebApkValidatorTest {
             throw new AssertionError("URI is invalid.", e);
         }
     }
+
+    @Test
+    public void testCreateWebApkIntentWithSelector() {
+        String url = "intent:#Intent;action=android.intent.action.VIEW;SEL;package=com.example;end";
+        Intent intent =
+                WebApkValidator.createWebApkIntentForUrlAndOptionalPackage(
+                        url, "org.chromium.webapk.foo");
+        assertNotNull(intent);
+        assertNull(intent.getSelector());
+        assertEquals("org.chromium.webapk.foo", intent.getPackage());
+    }
+
+    @Test
+    public void testCreateWebApkIntentWithoutSelector() {
+        String url = "intent:#Intent;action=android.intent.action.VIEW;end";
+        Intent intent =
+                WebApkValidator.createWebApkIntentForUrlAndOptionalPackage(
+                        url, "org.chromium.webapk.foo");
+        assertNotNull(intent);
+        assertNull(intent.getSelector());
+        assertEquals("org.chromium.webapk.foo", intent.getPackage());
+    }
+
+    @Test
+    public void testCreateWebApkIntentWithSelectorNullPackage() {
+        String url = "intent:#Intent;action=android.intent.action.VIEW;SEL;package=com.example;end";
+        Intent intent = WebApkValidator.createWebApkIntentForUrlAndOptionalPackage(url, null);
+        assertNotNull(intent);
+        assertNull(intent.getSelector());
+        assertNull(intent.getPackage());
+    }
+
+    @Test
+    public void testCanWebApkHandleUrlIgnoresMismatchedPackage() {
+        try {
+            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setPackage(WEBAPK_PACKAGE_NAME);
+
+            String differentPackage = "org.chromium.webapk.different";
+            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(differentPackage));
+            mPackageManager.addPackage(
+                    newPackageInfoWithBrowserSignature(
+                            differentPackage,
+                            new Signature(EXPECTED_SIGNATURE),
+                            TEST_STARTURL,
+                            null));
+
+            assertFalse(
+                    WebApkValidator.canWebApkHandleUrl(
+                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+        } catch (URISyntaxException e) {
+            throw new AssertionError("URI is invalid.", e);
+        }
+    }
 }
