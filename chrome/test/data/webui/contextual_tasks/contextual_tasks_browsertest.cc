@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkFalse) {
           "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
 }
 
-// Run the ForkTrue nested suites as separate browser tests so each group has
-// its own per-test time budget. See crbug.com/480689282.
+// Run each AutoTab arm's nested suites as separate browser tests so each group
+// has its own per-test time budget.
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
                        Composebox_AutoTab_ForkTrue_ChipCreationAndMismatch) {
   RunTest("contextual_tasks/composebox_files_test.js",
@@ -144,12 +144,44 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "SmartTabSharing')");
 }
 
-// TODO(crbug.com/480689282): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       DISABLED_Composebox_AutoTab_ForkFalse) {
+                       Composebox_AutoTab_ForkFalse_ChipCreationAndMismatch) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
-          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "ChipCreationAndMismatch')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkFalse_DeletionSemantics) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "DeletionSemantics')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkFalse_SourcesAndUploadTiming) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "SourcesAndUploadTiming')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkFalse_UserActionsAndLifecycle) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "UserActionsAndLifecycle')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkFalse_SmartTabSharing) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\) "
+          "SmartTabSharing')");
 }
 
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.
