@@ -472,9 +472,6 @@ class StyleBuilderConverter {
                                               const CSSValue&);
   static MaxLinesData ConvertMaxLines(StyleResolverState&, const CSSValue&);
 
-  static ScopedCSSNameList* ConvertTimelineTriggerName(StyleResolverState&,
-                                                       const CSSValue&);
-
   static StyleTriggerScope ConvertTriggerScope(StyleResolverState&,
                                                const CSSValue&);
 };

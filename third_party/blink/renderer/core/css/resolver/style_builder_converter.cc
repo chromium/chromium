@@ -184,18 +184,6 @@ Color ResolveQuirkOrLinkOrFocusRingColor(
   }
 }
 
-ScopedCSSNameList* ConvertNoneOrCustomIdentList(StyleResolverState& state,
-                                                const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
-  DCHECK(value.IsBaseValueList());
-  HeapVector<Member<const ScopedCSSName>> names;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    names.push_back(
-        StyleBuilderConverter::ConvertNoneOrCustomIdent(state, *item));
-  }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
-}
-
 Vector<AtomicString> ConvertNoneOrCustomIdentListUnscoped(
     StyleResolverState& state,
     const CSSValue& value) {
@@ -4326,12 +4314,6 @@ MaxLinesData StyleBuilderConverter::ConvertMaxLines(StyleResolverState& state,
       To<CSSPrimitiveValue>(num_lines_value)
           ->ConvertTo<uint16_t>(state.CssToLengthConversionData());
   return MaxLinesData(num_lines, has_auto);
-}
-
-ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineTriggerName(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return ConvertNoneOrCustomIdentList(state, value);
 }
 
 StyleTriggerScope StyleBuilderConverter::ConvertTriggerScope(

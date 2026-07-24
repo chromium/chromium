@@ -1144,16 +1144,11 @@
     {
       name: "animation-trigger",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      field_group: "*",
-      field_template: "external",
       style_builder_template: "animation",
       style_builder_template_args: {
         attribute: "TriggerAttachments",
       },
       keywords: ["none"],
-      type_name: "HeapVector<Member<StyleTriggerAttachmentVector>>",
-      include_paths: ["third_party/blink/renderer/core/style/style_trigger_attachment.h"],
-      default_value: "{ nullptr }",
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "AnimationTrigger",
@@ -1162,17 +1157,11 @@
     {
       name: "timeline-trigger-name",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
-      field_group: "*",
-      field_template: "external",
       // TODO: maybe define an animation_trigger template?
       style_builder_template: "animation",
       style_builder_template_args: {
         attribute: "TimelineTriggerName",
       },
-      default_value: "nullptr",
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
-      converter: "ConvertTimelineTriggerName",
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
