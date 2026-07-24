@@ -73,15 +73,14 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Not;
-using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::Test;
 using ::testing::Values;
@@ -161,10 +160,10 @@ class AtMemoryManagerTest : public Test,
 
   void SetUp() override {
     InitAutofillClient();
-    mock_personal_context_service_ = std::make_unique<testing::NiceMock<
-        personal_context::MockPersonalContextEligibilityService>>();
+    mock_personal_context_service_ = std::make_unique<
+        NiceMock<personal_context::MockPersonalContextEligibilityService>>();
     ON_CALL(*mock_personal_context_service_, GetEligibilityState())
-        .WillByDefault(testing::Return(
+        .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client().set_personal_context_eligibility_service(
         mock_personal_context_service_.get());
@@ -248,6 +247,20 @@ class AtMemoryManagerTest : public Test,
 
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
 
+  std::pair<FormGlobalId, FieldGlobalId> SeeFormAndShowPopup(
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
+          parent_suggestion_metadata = std::nullopt,
+      bool is_context_secure = true,
+      ukm::SourceId ukm_source_id = ukm::kInvalidSourceId) {
+    auto [form_id, field_id] = SeeForm();
+    manager().OnPopupShown(form_id, field_id, trigger_source,
+                           parent_suggestion_metadata, is_context_secure,
+                           update_callback_.Get(), ukm_source_id);
+    return {form_id, field_id};
+  }
+
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_{
@@ -260,8 +273,8 @@ class AtMemoryManagerTest : public Test,
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<testing::NiceMock<
-      personal_context::MockPersonalContextEligibilityService>>
+  std::unique_ptr<
+      NiceMock<personal_context::MockPersonalContextEligibilityService>>
       mock_personal_context_service_;
 };
 
@@ -323,12 +336,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageAddressFooter(
 // Tests that OnFilterChanged with a non-empty filter generates the search
 // affordance suggestion and does NOT trigger QueryService::Query.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(), Query).Times(0);
 
@@ -361,12 +369,7 @@ TEST_F(AtMemoryManagerTest,
   notifier.mock_network_change_notifier()->SetConnectionType(
       net::NetworkChangeNotifier::CONNECTION_NONE);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
@@ -394,12 +397,7 @@ TEST_F(AtMemoryManagerTest,
 // Tests that OnFilterChanged with a non-empty filter generates an AI disclosure
 // on Desktop when personal context has already been shown/acknowledged.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
@@ -417,32 +415,21 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
 // Tests that OnFilterChanged with a non-empty filter does not generate an AI
 // disclosure on Desktop when the personal context notice is pending.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
-  EXPECT_CALL(
-      update_callback_,
-      Run(Not(Contains(Field("type", &Suggestion::type,
-                             Eq(SuggestionType::kAtMemoryAiDisclosure)))),
-          AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  EXPECT_CALL(update_callback_,
+              Run(Not(Contains(Field("type", &Suggestion::type,
+                                     SuggestionType::kAtMemoryAiDisclosure))),
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
 
   manager().OnFilterChanged(u"query");
 }
 
 // Tests that OnFilterChanged with an empty filter clears all suggestions.
 TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(
       update_callback_,
@@ -456,12 +443,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
 // arrive.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
   EXPECT_CALL(mock_query_service(),
@@ -498,12 +480,7 @@ TEST_F(AtMemoryManagerTest,
 // Tests that when a search result has an empty type name and no metadata, the
 // generated suggestion has no labels.
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -526,12 +503,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 // uses the entry's type name for the label.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_UnknownTypeWithTypeName_UsesTypeNameInLabel) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -555,13 +527,7 @@ TEST_F(AtMemoryManagerTest,
 // (e.g. kManageAddress) and NOT the "Manage enhanced autofill" footer.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_AutofillSource_ShowsLocalManageFooter) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -585,13 +551,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
   base::test::ScopedFeatureList feature_list{
       features::kYourSavedInfoSettingsPage};
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -619,13 +579,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
 // Tests that Autofill-sourced data of unknown type does not display any manage
 // information footer suggestion.
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -648,13 +602,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
 // not local settings).
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_AISource_ShowsManageEnhancedAutofillFooter) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -679,13 +627,7 @@ TEST_F(AtMemoryManagerTest,
 TEST_F(
     AtMemoryManagerTest,
     OnSearchSubmitted_NoSource_ShowsGeminiAttributionAndManageEnhancedAutofillFooter) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      /*parent_suggestion_metadata=*/std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
@@ -707,12 +649,7 @@ TEST_F(
 // suggestion.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_QueryServiceReturnsNoConnectionFailure) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
@@ -738,12 +675,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -821,12 +753,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -850,7 +777,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(Eq(passport), true, _))
+              FetchEntityInstance(passport, true, _))
       .WillOnce([&](EntityInstance entity, bool will_fill,
                     AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                         callback) {
@@ -900,12 +827,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
 // `AtMemoryQueryService`, and fills it.
 TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
   base::HistogramTester histogram_tester;
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -975,12 +897,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
 TEST_F(AtMemoryManagerTest,
        FillSensitivePersonalContextData_PendingFetch_UserClicksAway) {
   base::HistogramTester histogram_tester;
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1045,12 +962,7 @@ TEST_F(AtMemoryManagerTest,
 // manager does not fill any value.
 TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
   base::HistogramTester histogram_tester;
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1070,7 +982,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"1234"), MemoryDataType::kPassportNumber, _, _))
+          std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(base::unexpected(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed)));
 
@@ -1095,12 +1007,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1124,7 +1031,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
       .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
 
   EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(Eq(passport), true, _))
+              FetchEntityInstance(passport, true, _))
       .WillOnce([&](EntityInstance entity, bool will_fill,
                     AutofillAiAccessManager::OnEntityInstanceFetchedCallback
                         callback) {
@@ -1176,12 +1083,7 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   ASSERT_TRUE(added_card);
   size_t initial_use_count = added_card->usage_history().use_count();
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1233,12 +1135,7 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
       .test_payments_data_manager()
       .AddIbanForTest(std::make_unique<Iban>(iban));
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1280,8 +1177,7 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
                                                 final_suggestions[0]),
             IsAsync(true));
 
-  std::u16string unmasked_iban = iban.value();
-  std::move(fetch_callback).Run(unmasked_iban);
+  std::move(fetch_callback).Run(iban.value());
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -1294,12 +1190,9 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the context is insecure.
 TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/false, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                      /*parent_suggestion_metadata=*/std::nullopt,
+                      /*is_context_secure=*/false);
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
   EXPECT_CALL(mock_query_service(),
@@ -1367,12 +1260,7 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
                               std::move(entries));
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(),
               Query(std::u16string_view(u"query"), _, _, _))
@@ -1409,12 +1297,7 @@ TEST_F(AtMemoryManagerTest,
       MemorySearchStatus::kFinalResponseSuccess,
       {MemorySearchResult(MemoryDataType::kIban, u"IBAN", u"1234")});
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(),
               Query(std::u16string_view(u"query"), _, _, _))
@@ -1437,12 +1320,7 @@ TEST_F(AtMemoryManagerTest,
 // Tests that SPII entries and metadata are retained in the search results
 // when the context is secure.
 TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
   EXPECT_CALL(mock_query_service(),
@@ -1501,20 +1379,15 @@ struct AtMemoryManagerFilterTestCase {
 
 class AtMemoryManagerPolicyTest
     : public AtMemoryManagerTest,
-      public testing::WithParamInterface<AtMemoryManagerFilterTestCase> {};
+      public WithParamInterface<AtMemoryManagerFilterTestCase> {};
 
 class AtMemoryManagerPrefTest
     : public AtMemoryManagerTest,
-      public testing::WithParamInterface<AtMemoryManagerFilterTestCase> {};
+      public WithParamInterface<AtMemoryManagerFilterTestCase> {};
 
 // Tests that suggestions are filtered out when blocked by policy.
 TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   // Block payments and identity docs.
   autofill_client().SetAutofillTypeBlockedByPolicy(
@@ -1562,32 +1435,27 @@ TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     AtMemoryManagerPolicyTest,
-    testing::Values(
-        AtMemoryManagerFilterTestCase{MemoryDataType::kAddressFull, u"Address",
-                                      u"Full Address",
-                                      MemoryEntrySourceType::kAutofill, true},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                      u"Credit Card", u"1111",
-                                      MemoryEntrySourceType::kAutofill, false},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                      u"Credit Card", u"2222",
-                                      MemoryEntrySourceType::kGmail, true},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kPassportNumber,
-                                      u"Passport", u"1234",
-                                      MemoryEntrySourceType::kAutofill, false},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kPassportNumber,
-                                      u"Passport", u"5678",
-                                      MemoryEntrySourceType::kGmail, true}));
+    Values(AtMemoryManagerFilterTestCase{MemoryDataType::kAddressFull,
+                                         u"Address", u"Full Address",
+                                         MemoryEntrySourceType::kAutofill,
+                                         true},
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kCreditCardNumber, u"Credit Card", u"1111",
+               MemoryEntrySourceType::kAutofill, false},
+           AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
+                                         u"Credit Card", u"2222",
+                                         MemoryEntrySourceType::kGmail, true},
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kPassportNumber, u"Passport", u"1234",
+               MemoryEntrySourceType::kAutofill, false},
+           AtMemoryManagerFilterTestCase{MemoryDataType::kPassportNumber,
+                                         u"Passport", u"5678",
+                                         MemoryEntrySourceType::kGmail, true}));
 
 // Tests that credit card suggestions are filtered out when the credit card
 // autofill preference is disabled.
 TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   // Disable credit card autofill preference.
   autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
@@ -1633,23 +1501,21 @@ TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     AtMemoryManagerPrefTest,
-    testing::Values(
-        AtMemoryManagerFilterTestCase{MemoryDataType::kAddressFull, u"Address",
-                                      u"Full Address",
-                                      MemoryEntrySourceType::kAutofill, true},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                      u"Credit Card", u"1111",
-                                      MemoryEntrySourceType::kAutofill, false},
-        AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
-                                      u"Credit Card", u"2222",
-                                      MemoryEntrySourceType::kGmail, true}));
-
-// Tests that non-SPII data fills correctly and records the funnel metrics.
+    Values(AtMemoryManagerFilterTestCase{MemoryDataType::kAddressFull,
+                                         u"Address", u"Full Address",
+                                         MemoryEntrySourceType::kAutofill,
+                                         true},
+           AtMemoryManagerFilterTestCase{
+               MemoryDataType::kCreditCardNumber, u"Credit Card", u"1111",
+               MemoryEntrySourceType::kAutofill, false},
+           AtMemoryManagerFilterTestCase{MemoryDataType::kCreditCardNumber,
+                                         u"Credit Card", u"2222",
+                                         MemoryEntrySourceType::kGmail, true}));
 
 // Tests that non-SPII data fills correctly and records the funnel metrics.
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   base::HistogramTester histogram_tester;
-  auto [form_id, field_id] = SeeForm();
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   AutofillProfile profile = test::GetFullProfile();
   profile.set_guid(test::MakeGuid(1));
@@ -1664,11 +1530,6 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   ASSERT_TRUE(added_profile);
   uint64_t initial_use_count = added_profile->usage_history().use_count();
 
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1712,12 +1573,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   base::HistogramTester histogram_tester;
 
   // 1. Show Popup 1.
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -1790,8 +1646,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.SuggestionAccepted", 0);
 
   // 6. Complete the async fill for Popup 1.
-  std::u16string unmasked_iban = u"ES12345678901234567890";
-  std::move(fetch_callback).Run(unmasked_iban);
+  std::move(fetch_callback).Run(u"ES12345678901234567890");
 
   // Now, Popup 1's metrics should also be logged:
   EXPECT_THAT(
@@ -1815,12 +1670,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> suggestions;
   EXPECT_CALL(update_callback_,
@@ -1841,12 +1691,7 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 TEST_F(AtMemoryManagerTest,
        PersonalContext_NoticePositioning_SearchAffordance) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   // Set up expectation for `update_callback_` when the filter text changes.
   std::vector<Suggestion> suggestions;
@@ -1867,12 +1712,7 @@ TEST_F(AtMemoryManagerTest,
 // is prepended at the top (before the search result suggestions).
 TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   autofill_client().set_should_show_personal_context_at_memory_notice(true);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   // Mock search results returned by the query service.
   std::vector<MemorySearchResult> entries;
@@ -1904,12 +1744,7 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> suggestions;
   EXPECT_CALL(update_callback_,
@@ -1929,12 +1764,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   autofill_client().set_is_glic_enabled(true);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
@@ -1956,12 +1786,7 @@ TEST_F(
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_UnsupportedQuery_GlicDisabled_NoDataSuggestion) {
   autofill_client().set_is_glic_enabled(false);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
@@ -1988,12 +1813,7 @@ TEST_F(AtMemoryManagerTest,
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kPartialResponseSuccess,
                                     std::move(entries), final_suggestions);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   manager().OnSearchSubmitted(u"query");
 
@@ -2012,12 +1832,7 @@ TEST_F(AtMemoryManagerTest,
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
                                     std::move(entries), final_suggestions);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   manager().OnSearchSubmitted(u"query");
 
@@ -2031,12 +1846,7 @@ TEST_F(AtMemoryManagerTest,
 // Also verifies that previewing the suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
 TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
   // Create an entry where the primary value is sensitive and metadata is
   // non-sensitive.
   MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
@@ -2082,7 +1892,8 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"987654321"), MemoryDataType::kPassportNumber, _, _))
+          std::u16string_view(u"987654321"), MemoryDataType::kPassportNumber, _,
+          _))
       .WillOnce(RunOnceCallback<5>(u"987654321"));
 
   EXPECT_CALL(autofill_manager(),
@@ -2098,12 +1909,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
 // Tests that CVC (`kCreditCardSecurityCode`) in metadata is excluded from the
 // main suggestion labels.
 TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   // Create a credit card entry with CVC and Name in metadata.
   MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card Number",
@@ -2140,12 +1946,7 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
 // attribute names.
 TEST_F(AtMemoryManagerTest,
        AutofillAiAttribute_UsesEntityNameForMainSuggestionLabel) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   MemorySearchResult entry(MemoryDataType::kFlightReservationFlightNumber,
                            u"Flight number", u"UA123");
@@ -2180,12 +1981,7 @@ TEST_F(AtMemoryManagerTest,
 // Also verifies that previewing the child suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
 TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
   // Create an entry where the primary value is non-sensitive and metadata is
   // sensitive.
   MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
@@ -2238,7 +2034,8 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"987654321"), MemoryDataType::kPassportNumber, _, _))
+          std::u16string_view(u"987654321"), MemoryDataType::kPassportNumber, _,
+          _))
       .WillOnce(
           [&](const AutofillClient& client, const std::u16string& auth_message,
               std::u16string_view masked_value, MemoryDataType data_type,
@@ -2262,12 +2059,7 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   base::HistogramTester histogram_tester;
 
   // 1. Show root popup. This should initialize the metrics recorder.
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   // 2. Show sub-popup. This should NOT reset the recorder.
   AutofillSuggestionDelegate::SuggestionMetadata metadata;
@@ -2289,17 +2081,12 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
 }
 
 TEST_F(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
-  auto [form_id, field_id] = SeeForm();
+  auto [form_id, field_id] = SeeFormAndShowPopup();
   auto [form_structure, autofill_field] =
       autofill_manager().FindFormAndField(form_id, field_id);
   ASSERT_TRUE(form_structure);
   ASSERT_TRUE(autofill_field);
 
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
 
   AtMemoryMetricsRecorder* recorder =
       test_api(manager()).at_memory_metrics_recorder();
@@ -2326,12 +2113,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
   ASSERT_TRUE(added_card);
   size_t initial_use_count = added_card->usage_history().use_count();
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -2382,12 +2164,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
   ASSERT_TRUE(added_passport.has_value());
   int64_t initial_use_count = added_passport->use_count();
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
   {
@@ -2456,12 +2233,7 @@ class AtMemoryManagerIconTest : public AtMemoryManagerTest,
 
 TEST_P(AtMemoryManagerIconTest,
        TransformsResultsIntoSuggestionsWithCorrectIcons) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   struct TestCase {
     MemoryDataType type;
@@ -2529,12 +2301,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                 SourceScenario::kMixed));
 
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(),
               Query(std::u16string_view(u"test query"),
@@ -2547,14 +2314,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
 // Tests that receiving additional `OnPopupShown` events is safe even after
 // starting a fill.
 TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
-  const auto [form_id, field_id] = SeeForm();
-
   // 1. Show root popup to initialize the recorder.
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      /*is_context_secure=*/true, update_callback_.Get(),
-      ukm::kInvalidSourceId);
+  auto [form_id, field_id] = SeeFormAndShowPopup();
   ASSERT_NE(test_api(manager()).at_memory_metrics_recorder(), nullptr);
 
   // 2. Fill a suggestion, which moves out at_memory_metrics_recorder_.
