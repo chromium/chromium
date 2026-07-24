@@ -5,7 +5,9 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_VIDEO_DECODE_TASK_H_
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_DECODE_TASK_H_
 
-#include <d3d12.h>
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <wrl.h>
 
 #include <utility>

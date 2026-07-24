@@ -5,6 +5,9 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 #define MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 
+#include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
+// Windows SDK headers should be included after DirectX headers.
+
 #include <array>
 
 #include "base/containers/span.h"
