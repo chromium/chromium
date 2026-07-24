@@ -4864,6 +4864,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableDownloadEnterpriseScanOnClank)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"enable-content-analysis-clipboard-copy",
+     flag_descriptions::kEnableContentAnalysisClipboardCopyName,
+     flag_descriptions::kEnableContentAnalysisClipboardCopyDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(enterprise_connectors::kContentAnalysisClipboardCopy)},
+
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,
      flag_descriptions::kShowAutofillTypePredictionsDescription, kOsAll,

@@ -1863,6 +1863,11 @@ inline constexpr char
         "allowed "
         "for enterprise users on Android.";
 
+inline constexpr char kEnableContentAnalysisClipboardCopyName[] =
+    "Enable content analysis clipboard copy";
+inline constexpr char kEnableContentAnalysisClipboardCopyDescription[] =
+    "Enables content analysis checks for the clipboard copy action.";
+
 inline constexpr char kEnableDownloadEnterpriseScanName[] =
     "Enable enterprise download scanning on Android";
 inline constexpr char kEnableDownloadEnterpriseScanDescription[] =

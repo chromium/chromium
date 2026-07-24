@@ -8942,6 +8942,7 @@ from previous Chrome versions.
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
   <int value="-1757014990" label="SystemEmojiPickerVariantGrouping:disabled"/>
+  <int value="-1756509749" label="ContentAnalysisClipboardCopy:enabled"/>
   <int value="-1756299290" label="WebSerialAPI:enabled"/>
   <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
@@ -18157,6 +18158,7 @@ from previous Chrome versions.
       label="UseUnexportableKeyServiceInBrowserProcess:disabled"/>
   <int value="1174027589" label="OmniboxNumWebZpsRelatedSearches:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
+  <int value="1174161831" label="ContentAnalysisClipboardCopy:disabled"/>
   <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
