@@ -5,13 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
-#include "components/personal_context/proto/features/common_data.pb.h"
+
+namespace personal_context::proto {
+class AtMemoryQueryResponse;
+class AtMemorySearchResult;
+class Entity;
+enum MemoryDataType : int;
+}  // namespace personal_context::proto
 
 namespace autofill {
 
@@ -34,6 +42,31 @@ MemoryDataType AttributeTypeToMemoryDataType(AttributeType type);
 
 // Returns the localized name of the entry type.
 std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type);
+
+// Converts an `AtMemoryQueryResponse` proto into a list of
+// `MemorySearchResult.`
+std::vector<MemorySearchResult> ExtractRemoteResults(
+    const personal_context::proto::AtMemoryQueryResponse& response);
+
+// The following functions are exposed in the header for testing purposes only:
+
+// Converts a `proto::MemoryDataType` to a local `MemoryDataType`.
+MemoryDataType ToMemoryDataType(
+    personal_context::proto::MemoryDataType data_type);
+
+// Extracts data sources (e.g. Gmail, Photos) from an `AtMemorySearchResult`
+// proto.
+std::vector<MemoryEntrySource> ExtractSources(
+    const personal_context::proto::AtMemorySearchResult& proto_result);
+
+// Extracts secondary metadata attributes from an `AtMemorySearchResult` proto.
+std::vector<EntryMetadata> ExtractMetadata(
+    const personal_context::proto::AtMemorySearchResult& proto_result);
+
+// Converts a single `AtMemorySearchResult` proto into a `MemorySearchResult`
+// struct.
+MemorySearchResult ConvertToMemorySearchResult(
+    const personal_context::proto::AtMemorySearchResult& proto_result);
 
 }  // namespace autofill
 

@@ -6,13 +6,19 @@
 
 #include <vector>
 
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
 // entry attributes and metadata into the corresponding fields of the personal
@@ -93,6 +99,120 @@ TEST(MemoryDataTypeUtilTest, ToPersonalContextEntity) {
   }
 }
 
-}  // namespace
+// Tests mapping of proto MemoryDataType enum values to local MemoryDataType
+// enums.
+TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
+  EXPECT_EQ(
+      ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_UNSPECIFIED),
+      MemoryDataType::kUnknown);
+  EXPECT_EQ(ToMemoryDataType(
+                personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER),
+            MemoryDataType::kPassportNumber);
+  EXPECT_EQ(ToMemoryDataType(
+                personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY),
+            MemoryDataType::kPassportCountry);
+  EXPECT_EQ(
+      ToMemoryDataType(personal_context::proto::
+                           MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER),
+      MemoryDataType::kFlightReservationFlightNumber);
+  EXPECT_EQ(
+      ToMemoryDataType(
+          personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER),
+      MemoryDataType::kDriversLicenseNumber);
+}
 
+// Tests extraction of source references (Gmail, Photos) into MemoryEntrySource
+// structs.
+TEST(MemoryDataTypeUtilTest, ExtractSourcesFromProto) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::SourceReference* source_gmail =
+      proto_result.add_sources();
+  source_gmail->mutable_gmail()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+
+  personal_context::proto::SourceReference* source_photos =
+      proto_result.add_sources();
+  source_photos->mutable_photos()->set_photos_url(
+      "https://photos.google.com/photo/456");
+
+  const std::vector<MemoryEntrySource> sources = ExtractSources(proto_result);
+  ASSERT_EQ(sources.size(), 2u);
+  EXPECT_EQ(sources[0].type, MemoryEntrySourceType::kGmail);
+  EXPECT_EQ(sources[0].deeplink_url,
+            "https://mail.google.com/mail/u/0/#inbox/123");
+  EXPECT_EQ(sources[1].type, MemoryEntrySourceType::kPhotos);
+  EXPECT_EQ(sources[1].deeplink_url, "https://photos.google.com/photo/456");
+}
+
+// Tests conversion of AtMemorySearchResult proto with schemaful primary and
+// secondary attributes.
+TEST(MemoryDataTypeUtilTest,
+     ConvertToMemorySearchResultSchemafulPrimaryAndSecondary) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  proto_result.set_relevance_score(0.85f);
+
+  personal_context::proto::Attribute* primary =
+      proto_result.mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  primary->set_value("A12345678");
+
+  personal_context::proto::Attribute* secondary =
+      proto_result.add_secondary_attributes();
+  secondary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY);
+  secondary->set_value("US");
+
+  MemorySearchResult result = ConvertToMemorySearchResult(proto_result);
+  EXPECT_EQ(result.type, MemoryDataType::kPassportNumber);
+  EXPECT_EQ(result.value, u"A12345678");
+  EXPECT_EQ(result.confidence_score, 0.85f);
+  EXPECT_TRUE(result.is_obfuscated);
+  ASSERT_EQ(result.metadata_list.size(), 1u);
+  EXPECT_EQ(result.metadata_list[0].type, MemoryDataType::kPassportCountry);
+  EXPECT_EQ(result.metadata_list[0].value, u"US");
+}
+
+// Tests conversion of AtMemorySearchResult proto with schemaless key.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultSchemalessKey) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  proto_result.set_relevance_score(0.5f);
+
+  personal_context::proto::Attribute* primary =
+      proto_result.mutable_primary_attribute();
+  primary->set_schemaless_key("custom_passport_key");
+  primary->set_value("CUSTOM_VAL");
+
+  MemorySearchResult result = ConvertToMemorySearchResult(proto_result);
+  EXPECT_EQ(result.type, MemoryDataType::kUnknown);
+  EXPECT_EQ(result.type_name, u"custom_passport_key");
+  EXPECT_EQ(result.value, u"CUSTOM_VAL");
+  EXPECT_FALSE(result.is_obfuscated);
+}
+
+// Tests that ExtractRemoteResults converts response results and filters out
+// empty values.
+TEST(MemoryDataTypeUtilTest, ExtractRemoteResultsFiltersEmptyValues) {
+  personal_context::proto::AtMemoryQueryResponse response;
+
+  personal_context::proto::AtMemorySearchResult* valid_result =
+      response.add_results();
+  valid_result->mutable_primary_attribute()->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_EMAIL);
+  valid_result->mutable_primary_attribute()->set_value("test@example.com");
+
+  personal_context::proto::AtMemorySearchResult* empty_result =
+      response.add_results();
+  empty_result->mutable_primary_attribute()->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PHONE);
+  empty_result->mutable_primary_attribute()->set_value("");
+
+  std::vector<MemorySearchResult> results = ExtractRemoteResults(response);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].type, MemoryDataType::kEmail);
+  EXPECT_EQ(results[0].value, u"test@example.com");
+  EXPECT_EQ(results[0].remote_response_index, 0);
+}
+
+}  // namespace
 }  // namespace autofill
