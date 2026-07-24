@@ -7170,6 +7170,13 @@
       public: true,
     },
     {
+      // Enables "chromium-experimental-sampling-resource-table".
+      name: "WebGPUExperimentalResourceTable",
+      status: "experimental",
+      implied_by: ["WebGPUExperimentalFeatures"],
+      public: true,
+    },
+    {
       name: "WebGPUImmediatesFeature",
       status: "stable",
     },
