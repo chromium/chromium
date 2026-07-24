@@ -50,7 +50,7 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NativeViewHost controls the layers of the native view.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 #else
 BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_DISABLED_BY_DEFAULT);
