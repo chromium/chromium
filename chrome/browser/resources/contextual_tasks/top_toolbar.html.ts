@@ -6,6 +6,7 @@ import '/strings.m.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getHtml as getLogoHtml} from './top_toolbar_logo.html.js';
 import type {TopToolbarElement} from './top_toolbar.js';
 
 // clang-format off
@@ -16,41 +17,11 @@ export function getHtml(this: TopToolbarElement) {
   ${this.isSidePanelRearchitectureEnabled_ ? html`
     <cr-button class="top-toolbar-logo-button clickable"
         @click="${this.onLogoClick_}">
-      <if expr="_google_chrome">
-        <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
-            class="top-toolbar-logo"
-            alt=""
-            aria-hidden="true">
-      </if>
-      <if expr="not _google_chrome">
-        <img class="top-toolbar-logo chrome-logo-light"
-            src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
-            alt=""
-            aria-hidden="true">
-        <img class="top-toolbar-logo chrome-logo-dark"
-            src="chrome://resources/images/chrome_logo_dark.svg"
-            alt=""
-            aria-hidden="true">
-      </if>
+      ${getLogoHtml()}
     </cr-button>
   ` : html`
     <div class="top-toolbar-logo-button">
-      <if expr="_google_chrome">
-        <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
-            class="top-toolbar-logo"
-            alt=""
-            aria-hidden="true">
-      </if>
-      <if expr="not _google_chrome">
-        <img class="top-toolbar-logo chrome-logo-light"
-            src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
-            alt=""
-            aria-hidden="true">
-        <img class="top-toolbar-logo chrome-logo-dark"
-            src="chrome://resources/images/chrome_logo_dark.svg"
-            alt=""
-            aria-hidden="true">
-      </if>
+      ${getLogoHtml()}
     </div>
   `}
 </div>
