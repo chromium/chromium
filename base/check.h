@@ -304,13 +304,16 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #endif  // DCHECK_IS_ON()
 
 // The DUMP_WILL_BE_CHECK() macro provides a convenient way to non-fatally dump
-// in official builds if a condition is false. This is used to more cautiously
-// roll out a new CHECK() (or upgrade a DCHECK) where the caller isn't entirely
-// sure that something holds true in practice (but asserts that it should). This
-// is especially useful for platforms that have a low pre-stable population and
-// code areas that are rarely exercised.
+// in official builds if a condition is false. This is used to
+// more cautiously roll out a new CHECK() (or upgrade a DCHECK) where the caller
+// isn't entirely sure that something holds true in practice (but asserts that
+// it should). This is especially useful for platforms that have a low
+// pre-stable population and code areas that are rarely exercised.
 //
-// On DCHECK builds this macro matches DCHECK behavior.
+// In non-official builds (developer builds) and in official builds with DCHECKs
+// enabled (unless configured to be non-fatal at runtime), this macro is fatal
+// (crashes). It only behaves non-fatally (by dumping without crashing) in
+// official builds.
 //
 // This macro isn't optimized (preserves filename, line number and log messages
 // in official builds), as they are expected to be in product temporarily. When
