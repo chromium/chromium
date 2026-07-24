@@ -430,6 +430,7 @@
 ../../web_tests/images/resources/avif/red-full-range-mode-0-420-8bpc.avif
 ../../web_tests/images/resources/avif/red-full-range-mode-1-420-8bpc.avif
 ../../web_tests/images/resources/avif/red-full-range-unspecified-420-8bpc.avif
+../../web_tests/images/resources/avif/red-icc-version-zero.avif
 ../../web_tests/images/resources/avif/red-limited-range-420-10bpc.avif
 ../../web_tests/images/resources/avif/red-limited-range-420-12bpc.avif
 ../../web_tests/images/resources/avif/red-limited-range-420-8bpc.avif
