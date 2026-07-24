@@ -466,7 +466,8 @@ public class TabListMediator implements TabListNotificationHandler {
                     mNextTabId = tabId;
 
                     TabModel tabModel = getCurrentTabModelChecked();
-                    if (mLayoutType == TabListLayoutType.FLAT) {
+                    if (mLayoutType == TabListLayoutType.FLAT
+                            || mLayoutType == TabListLayoutType.NESTED) {
                         // We filtered the tab switching related metric for components that takes
                         // actions on all related tabs (e.g. GTS) because that component can
                         // switch to different TabModel before switching tabs, while this class
@@ -478,7 +479,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         //     same tab as before entering the component, and we don't have this
                         // information
                         //     here.
-                        recordUserSwitchedTab();
+                        recordTabSelection(tabId);
                     }
                     if (mTabListItemOnClickListenerProvider != null) {
                         mTabListItemOnClickListenerProvider.onTabSelecting(
@@ -500,10 +501,18 @@ public class TabListMediator implements TabListNotificationHandler {
                  * Records MobileTabSwitched for the component. This method only records UMA for
                  * components other than TabSwitcher.
                  */
-                private void recordUserSwitchedTab() {
-                    RecordUserAction.record(
-                            "MobileTabSwitched."
-                                    + TabUiMetricsHelper.getComponentNameForMetrics(mComponentId));
+                private void recordTabSelection(int tabId) {
+                    Tab tab = getCurrentTabModelChecked().getTabById(tabId);
+                    if (tab != null
+                            && tab.getIsPinned()
+                            && mComponentId == TabComponentId.VERTICAL_TABS) {
+                        RecordUserAction.record("MobileTabSwitched.VerticalTabsPinned");
+                    } else {
+                        RecordUserAction.record(
+                                "MobileTabSwitched."
+                                        + TabUiMetricsHelper.getComponentNameForMetrics(
+                                                mComponentId));
+                    }
                 }
             };
 
@@ -1751,7 +1760,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         tabModel.setTabGroupCollapsed(tabGroupId, newCollapsedState, /* animate= */ false);
 
-        if (mMode == TabListMode.VERTICAL) {
+        if (mComponentId == TabComponentId.VERTICAL_TABS) {
             RecordHistogram.recordBooleanHistogram(
                     "Android.VerticalTabs.TabGroupCollapsed", newCollapsedState);
         }

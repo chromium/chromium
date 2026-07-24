@@ -110,6 +110,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
@@ -996,6 +997,49 @@ public class TabListMediatorUnitTest {
 
         verify(mTabListItemOnClickListenerProvider)
                 .onTabSelecting(mModelList.get(1).model.get(TabProperties.TAB_ID), true);
+    }
+
+    @Test
+    public void testTabSelection_LogsUserAction_Vertical() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        UserActionTester userActionTester = new UserActionTester();
+
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(
+                        mItemView1,
+                        mModelList.get(0).model.get(TabProperties.TAB_ID),
+                        /* triggeringMotion= */ null);
+
+        assertTrue(userActionTester.getActions().contains("MobileTabSwitched.VerticalTabs"));
+        userActionTester.tearDown();
+    }
+
+    @Test
+    public void testTabSelection_LogsUserAction_Vertical_Pinned() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        doReturn(true).when(mTab1).getIsPinned();
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        UserActionTester userActionTester = new UserActionTester();
+
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(
+                        mItemView1,
+                        mModelList.get(0).model.get(TabProperties.TAB_ID),
+                        /* triggeringMotion= */ null);
+
+        assertTrue(userActionTester.getActions().contains("MobileTabSwitched.VerticalTabsPinned"));
+        userActionTester.tearDown();
     }
 
     @Test

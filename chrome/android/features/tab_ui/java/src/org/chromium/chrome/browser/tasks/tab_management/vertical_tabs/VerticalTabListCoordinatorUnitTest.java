@@ -62,6 +62,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
@@ -1028,8 +1029,12 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
+        UserActionTester userActionTester = new UserActionTester();
         tabSearchButton.performClick();
         verify(mVerticalTabsActionDelegate).openTabSearch();
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.SearchButtonClicked"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -1039,8 +1044,12 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
+        UserActionTester userActionTester = new UserActionTester();
         tabSearchButton.performClick();
         verify(mVerticalTabsActionDelegate).openHubSearch();
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.SearchButtonClicked"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -1050,9 +1059,12 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         ImageButton newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
         assertNotNull(newTabButton);
+        UserActionTester userActionTester = new UserActionTester();
         newTabButton.performClick();
         verify(mTabModel).commitAllTabClosures();
         verify(mTabCreator).launchNtp(TabLaunchType.FROM_CHROME_UI);
+        assertTrue(userActionTester.getActions().contains("MobileNewTabOpened.VerticalTabs"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -1062,9 +1074,12 @@ public class VerticalTabListCoordinatorUnitTest {
         createCoordinator();
         ImageButton newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
         assertNotNull(newTabButton);
+        UserActionTester userActionTester = new UserActionTester();
         newTabButton.performClick();
         verify(mTabModel, never()).commitAllTabClosures();
         verify(mTabCreator).launchNtp(TabLaunchType.FROM_CHROME_UI);
+        assertTrue(userActionTester.getActions().contains("MobileNewTabOpened.VerticalTabs"));
+        userActionTester.tearDown();
     }
 
     @Test

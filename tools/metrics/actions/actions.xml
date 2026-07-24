@@ -5195,6 +5195,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.SearchButtonClicked">
+  <owner>agazal@google.com</owner>
+  <owner>kije@google.com</owner>
+  <description>
+    Recorded when a user taps the search button/field inside the Vertical Tabs
+    rail.
+  </description>
+</action>
+
 <action name="Android.VerticalTabs.TabAddedToGroup">
   <owner>agazal@google.com</owner>
   <owner>kije@google.com</owner>
@@ -30240,6 +30249,9 @@ should be able to be added at any place in this file.
     <variant name=".TabStrip"
         summary="Users tapped '+' button on the tab strip, causing a new tab
                  to be created in the group."/>
+    <variant name=".VerticalTabs"
+        summary="Users tapped '+' button on the vertical tabs strip, causing
+                 a new tab to be created."/>
   </token>
 </action>
 
@@ -32337,6 +32349,9 @@ should be able to be added at any place in this file.
     <variant name=".TabStrip"
         summary="Users tapped the currently selected tab's favicon on the tab
                  strip, causing a tab to be closed in the group."/>
+    <variant name=".VerticalTabs"
+        summary="Users tapped 'x' button on the tab in the vertical tab
+                 strip, causing a tab to be closed."/>
   </token>
 </action>
 
@@ -33261,6 +33276,10 @@ should be able to be added at any place in this file.
                  switcher."/>
     <variant name=".TabStrip"
         summary="Users switched tabs from the tab strip."/>
+    <variant name=".VerticalTabs"
+        summary="Users switched tabs from the vertical tabs strip."/>
+    <variant name=".VerticalTabsPinned"
+        summary="Users switched to a pinned tab from the vertical tabs strip."/>
   </token>
 </action>
 
