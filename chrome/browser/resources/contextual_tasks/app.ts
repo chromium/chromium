@@ -5,9 +5,9 @@
 // <if expr="not is_android">
 import './banner_promo.js';
 import './lens_search_tooltip.js';
-import type { ContextualActionMenuElement } from '//resources/cr_components/composebox/contextual_action_menu.js';
-import type { ContextualEntrypointAndMenuElement } from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import type { ContextualTasksLensSearchTooltipElement } from './lens_search_tooltip.js';
+import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
+import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {ContextualTasksLensSearchTooltipElement} from './lens_search_tooltip.js';
 // </if>
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
@@ -16,7 +16,7 @@ import './onboarding_tooltip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
-import type { ContextualTasksComposeboxElement } from './composebox.js';
+import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
 
@@ -36,7 +36,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
+import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ComposeboxPosition, InjectedInput} from './contextual_tasks.mojom-webui.js';
@@ -665,12 +667,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
 
-    // <if expr="not is_android">
-    // Handle newwindow events with mock webviews.
-    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
-      new WindowManager(this.$.threadFrame);
-    }
-    // </if>
+    this.configureNewWindowEventHandler();
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.
@@ -1502,6 +1499,25 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.updateBackgroundColor_();
     this.commonSearchParams_ = params;
     this.maybeLoadPendingUrl_();
+  }
+
+  private configureNewWindowEventHandler() {
+    // <if expr="not is_android">
+    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
+      // Handle newwindow events with mock webviews.
+      new WindowManager(this.$.threadFrame);
+      return;
+    }
+    // </if>
+
+    // On platforms without window tracking, register a fallback listener that
+    // routes the URL to the browser process via `openUrl`.
+    this.eventTracker_.add(this.$.threadFrame, 'newwindow', (e: Event) => {
+      const newWindowEvent = e as NewWindowEvent;
+      newWindowEvent.preventDefault();
+      this.browserProxy_.handler.openUrl(
+          newWindowEvent.targetUrl, WindowOpenDisposition.NEW_FOREGROUND_TAB);
+    });
   }
 
   private setupWebviewRequestOverrides() {
