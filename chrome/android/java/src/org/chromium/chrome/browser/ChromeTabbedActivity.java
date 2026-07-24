@@ -5058,7 +5058,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             TabModel tabModel =
-                    mTabModelSelector != null
+                    mTabModelSelector != null && firstTab != null
                             ? mTabModelSelector.getModel(firstTab.isIncognito())
                             : null;
             if (tabModel != null) {
