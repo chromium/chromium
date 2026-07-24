@@ -127,6 +127,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 - (void)tearDownHelper {
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:@"InactiveTabsTestMode"];
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
   [super tearDownHelper];
