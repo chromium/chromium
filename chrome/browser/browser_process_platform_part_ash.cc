@@ -149,7 +149,8 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
       std::make_unique<ash::PolicyUserManagerController>(
           user_manager_.get(), ash::CrosSettings::Get(),
           ash::DeviceSettingsService::Get(),
-          browser_policy_connector_ash()->GetMinimumVersionPolicyHandler());
+          browser_policy_connector_ash()->GetMinimumVersionPolicyHandler(),
+          browser_policy_connector_ash()->GetDeviceLocalAccountPolicyService());
   user_image_manager_registry_ =
       std::make_unique<ash::UserImageManagerRegistry>(
           g_browser_process->local_state(),

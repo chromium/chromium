@@ -199,7 +199,9 @@ class UserManagerTest : public testing::Test {
     policy_user_manager_controller_ =
         std::make_unique<PolicyUserManagerController>(
             user_manager_.get(), ash::CrosSettings::Get(),
-            DeviceSettingsService::Get(), nullptr);
+            DeviceSettingsService::Get(),
+            /*minimum_version_policy_handler=*/nullptr,
+            /*device_local_account_policy_service=*/nullptr);
     user_image_manager_registry_ =
         std::make_unique<ash::UserImageManagerRegistry>(
             TestingBrowserProcess::GetGlobal()->local_state(),

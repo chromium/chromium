@@ -31,11 +31,15 @@ class PolicyUserManagerController
       public policy::MinimumVersionPolicyHandler::Observer,
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
+  // `device_local_account_policy_service` may be null in tests, but if
+  // provided, it must outlive `this`.
   PolicyUserManagerController(
       user_manager::UserManager* user_manager,
       CrosSettings* cros_settings,
       DeviceSettingsService* device_settings_service,
-      policy::MinimumVersionPolicyHandler* minimum_version_policy_handler);
+      policy::MinimumVersionPolicyHandler* minimum_version_policy_handler,
+      policy::DeviceLocalAccountPolicyService*
+          device_local_account_policy_service);
   PolicyUserManagerController(const PolicyUserManagerController&) = delete;
   PolicyUserManagerController& operator=(const PolicyUserManagerController&) =
       delete;
@@ -78,6 +82,8 @@ class PolicyUserManagerController
 
   const raw_ptr<user_manager::UserManager> user_manager_;
   const raw_ptr<CrosSettings> cros_settings_;
+  const raw_ptr<policy::DeviceLocalAccountPolicyService>
+      device_local_account_policy_service_;
 
   std::vector<base::CallbackListSubscription> cros_settings_subscriptions_;
   base::ScopedObservation<DeviceSettingsService,
