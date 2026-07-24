@@ -565,4 +565,70 @@ TEST_F(ActionItemTest, ActionInvocationContextEnumSetProperty) {
                 ActionPinnableState::kPinnable));
 }
 
+TEST_F(ActionItemTest, PopulateChildItemsCallback) {
+  auto action_item = std::make_unique<ActionItem>();
+  EXPECT_FALSE(action_item->HasPopulateChildActionsCallback());
+
+  bool callback_called = false;
+  BaseAction* callback_arg = nullptr;
+  action_item->SetPopulateChildrenCallback(base::BindRepeating(
+      [](bool* called, BaseAction** arg, BaseAction* action) {
+        *called = true;
+        *arg = action;
+      },
+      &callback_called, &callback_arg));
+
+  EXPECT_TRUE(action_item->HasPopulateChildActionsCallback());
+  EXPECT_FALSE(callback_called);
+
+  action_item->PopulateChildItems();
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(callback_arg, action_item.get());
+}
+
+TEST_F(ActionItemTest, PopulateChildItemsRecursive) {
+  auto parent_action = std::make_unique<ActionItem>();
+  auto child_action = std::make_unique<ActionItem>();
+  auto* child_ptr = parent_action->AddChild(std::move(child_action));
+
+  std::vector<std::string> call_order;
+  parent_action->SetPopulateChildrenCallback(base::BindRepeating(
+      [](std::vector<std::string>* order, BaseAction* action) {
+        order->push_back("parent");
+      },
+      &call_order));
+
+  child_ptr->SetPopulateChildrenCallback(
+      base::BindRepeating([](std::vector<std::string>* order,
+                             BaseAction* action) { order->push_back("child"); },
+                          &call_order));
+
+  parent_action->PopulateChildItems();
+  ASSERT_EQ(call_order.size(), 2u);
+  EXPECT_EQ(call_order[0], "child");
+  EXPECT_EQ(call_order[1], "parent");
+}
+
+TEST_F(ActionItemTest, PopulateChildItemsWithoutCallback) {
+  auto action_item = std::make_unique<ActionItem>();
+  EXPECT_FALSE(action_item->HasPopulateChildActionsCallback());
+
+  // Should not crash even if no callback is set.
+  action_item->PopulateChildItems();
+}
+
+TEST_F(ActionItemTest, ActionBuilderSetPopulateChildrenCallback) {
+  bool callback_called = false;
+  auto builder =
+      ActionItem::Builder().SetPopulateChildrenCallback(base::BindRepeating(
+          [](bool* called, BaseAction* action) { *called = true; },
+          &callback_called));
+  auto action_item = std::move(builder).Build();
+  ASSERT_TRUE(action_item);
+  EXPECT_TRUE(action_item->HasPopulateChildActionsCallback());
+
+  action_item->PopulateChildItems();
+  EXPECT_TRUE(callback_called);
+}
+
 }  // namespace actions

@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
       public ui::PropertyHandler {
  public:
   METADATA_HEADER_BASE(BaseAction);
+
+  using PopulateChildActions = base::RepeatingCallback<void(BaseAction*)>;
+
   BaseAction();
   BaseAction(const BaseAction&) = delete;
   BaseAction& operator=(const BaseAction&) = delete;
@@ -77,6 +80,9 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
 
   const ActionList& GetChildren() const { return children_; }
   void ResetActionList();
+  void SetPopulateChildrenCallback(PopulateChildActions callback);
+  bool HasPopulateChildActionsCallback() const;
+  void PopulateChildItems();
 
  protected:
   void ActionListChanged() override;
@@ -84,6 +90,7 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
  private:
   raw_ptr<BaseAction> parent_ = nullptr;
   ActionList children_{this};
+  PopulateChildActions populate_child_callback_;
 };
 
 // Class returned from ActionItem::BeginUpdate() in order to allow a "batch"
@@ -153,6 +160,9 @@ class BaseActionItemBuilderT {
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
   using InvokeActionCallback =
       base::RepeatingCallback<void(ActionItem*, ActionInvocationContext)>;
+
+  using PopulateChildActions = base::RepeatingCallback<void(BaseAction*)>;
+
   BaseActionItemBuilderT() {
     action_item_ = std::make_unique<ActionItemClass>();
   }
@@ -322,6 +332,15 @@ class BaseActionItemBuilderT {
     return std::move(this->SetInvokeActionCallback(std::move(callback)));
   }
 
+  BuilderT& SetPopulateChildrenCallback(PopulateChildActions callback) & {
+    action_item_->SetPopulateChildrenCallback(std::move(callback));
+    return static_cast<BuilderT&>(*this);
+  }
+
+  BuilderT&& SetPopulateChildrenCallback(PopulateChildActions callback) && {
+    return std::move(this->SetPopulateChildrenCallback(std::move(callback)));
+  }
+
   BuilderT& SetIsShowingBubble(bool showing_bubble) & {
     action_item_->SetIsShowingBubble(showing_bubble);
     return static_cast<BuilderT&>(*this);
@@ -367,7 +386,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
   using InvokeActionCallback =
       base::RepeatingCallback<void(ActionItem*, ActionInvocationContext)>;
-
   class COMPONENT_EXPORT(ACTIONS) ActionItemBuilder
       : public BaseActionItemBuilderT<ActionItemBuilder, ActionItem> {
     // TODO: possibly construct a Core class of

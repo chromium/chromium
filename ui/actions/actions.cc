@@ -101,6 +101,26 @@ void BaseAction::ResetActionList() {
   children_.Reset();
 }
 
+void BaseAction::SetPopulateChildrenCallback(PopulateChildActions callback) {
+  if (populate_child_callback_ == callback) {
+    return;
+  }
+  populate_child_callback_ = std::move(callback);
+}
+
+bool BaseAction::HasPopulateChildActionsCallback() const {
+  return !populate_child_callback_.is_null();
+}
+
+void BaseAction::PopulateChildItems() {
+  for (auto& child : GetChildren().children()) {
+    child->PopulateChildItems();
+  }
+  if (populate_child_callback_) {
+    populate_child_callback_.Run(this);
+  }
+}
+
 BEGIN_METADATA_BASE(BaseAction)
 END_METADATA
 
