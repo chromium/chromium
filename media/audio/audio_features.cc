@@ -29,8 +29,7 @@ BASE_FEATURE(kUseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 //
 // Requires `UseAAudioDriver` and `UseAAudioInput`, otherwise it will have no
 // effect.
-BASE_FEATURE(kAAudioPerStreamDeviceSelection,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAAudioPerStreamDeviceSelection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
 // optimal output frame size.
@@ -90,4 +89,3 @@ BASE_FEATURE(kMacCatapRestartAudioProcessOnTimeout,
 #endif
 
 }  // namespace features
-
