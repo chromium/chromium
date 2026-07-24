@@ -169,11 +169,13 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const tabs::TabHandle tab_handle,
     const url::Origin& otp_frame_origin,
     const std::vector<FieldGlobalId>& trigger_field_ids,
+    bool is_login_flow,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
   using enum ActorOneTimeTokenFillingServiceRetrieveOtp;
   RecordActorOneTimeTokenFillingServiceRetrieveOtp(kStart);
   otp_frame_origin_ = otp_frame_origin;
+  is_login_flow_ = is_login_flow;
 
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
@@ -318,10 +320,19 @@ void ActorOneTimeTokenFillingServiceImpl::CheckCachedTokenMatch(
 
 bool ActorOneTimeTokenFillingServiceImpl::IsMatchTypeAllowed(
     std::optional<affiliations::MatchType> match_type) const {
-  return match_type.has_value() &&
-         ((*match_type == affiliations::MatchType::kExact) ||
-          (static_cast<int>(*match_type) &
-           static_cast<int>(affiliations::MatchType::kAffiliated)));
+  if (!match_type.has_value()) {
+    return false;
+  }
+  bool is_exact_or_affiliated =
+      (*match_type == affiliations::MatchType::kExact) ||
+      (static_cast<int>(*match_type) &
+       static_cast<int>(affiliations::MatchType::kAffiliated));
+  if (is_exact_or_affiliated) {
+    return true;
+  }
+  bool is_psl = static_cast<int>(*match_type) &
+                static_cast<int>(affiliations::MatchType::kPSL);
+  return is_psl && is_login_flow_;
 }
 
 void ActorOneTimeTokenFillingServiceImpl::OnCachedTokenMatchChecked(
