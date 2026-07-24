@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <string>
 
 #include "base/sanitizer_buildflags.h"
@@ -52,8 +48,8 @@ static_assert(kNumBrokerPortals < kNumNonBrokerPortals,
               "Test requires fewer broker portals than non-broker portals");
 
 MULTINODE_TEST_NODE(ConnectTestNode, SurplusPortalsClient) {
-  IpczHandle portals[kNumNonBrokerPortals];
-  ConnectToBroker(portals);
+  std::array<IpczHandle, kNumNonBrokerPortals> portals;
+  ConnectToBroker(absl::Span<IpczHandle>(portals));
 
   // All of the surplus portals should observe peer closure.
   for (size_t i = kNumBrokerPortals; i < kNumNonBrokerPortals; ++i) {
@@ -64,8 +60,8 @@ MULTINODE_TEST_NODE(ConnectTestNode, SurplusPortalsClient) {
 }
 
 MULTINODE_TEST(ConnectTest, SurplusPortals) {
-  IpczHandle portals[kNumBrokerPortals];
-  SpawnTestNode<SurplusPortalsClient>(portals);
+  std::array<IpczHandle, kNumBrokerPortals> portals;
+  SpawnTestNode<SurplusPortalsClient>(absl::Span<IpczHandle>(portals));
   CloseAll(portals);
 }
 

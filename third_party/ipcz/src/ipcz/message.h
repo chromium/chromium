@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #ifndef IPCZ_SRC_IPCZ_MESSAGE_H_
 #define IPCZ_SRC_IPCZ_MESSAGE_H_
@@ -249,7 +245,7 @@ class IPCZ_ALIGN(8) Message {
   absl::Span<uint8_t> data_view() { return data_; }
 
   absl::Span<uint8_t> params_data_view() {
-    return absl::MakeSpan(&data_[header().size], data_.size() - header().size);
+    return data_.subspan(header().size);
   }
   absl::Span<DriverObject> driver_objects() {
     return absl::MakeSpan(driver_objects_);
@@ -315,17 +311,6 @@ class IPCZ_ALIGN(8) Message {
   absl::Span<DriverObject> GetDriverObjectArrayView(
       const internal::DriverObjectArrayData& data);
 
-  // Returns the address of the first element of an array whose header begins
-  // at `offset` bytes from the beginning of this message.
-  void* GetArrayData(size_t offset) {
-    // NOTE: Any offset plugged into this method must be validated ahead of
-    // time.
-    ABSL_ASSERT(CheckAdd(offset, sizeof(internal::ArrayHeader)) <=
-                data_.size());
-    auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
-    return &header + 1;
-  }
-
   // Template helper which returns a view into a serialized array's contents,
   // given an array whose header begins at `offset` bytes from the beginning of
   // this message. If `offset` is zero, this returns an empty span.
@@ -346,7 +331,8 @@ class IPCZ_ALIGN(8) Message {
     // time.
     ABSL_ASSERT(CheckAdd(offset, sizeof(internal::ArrayHeader)) <=
                 data_.size());
-    auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
+    auto& header = *reinterpret_cast<internal::ArrayHeader*>(
+        data_.subspan(offset, sizeof(internal::ArrayHeader)).data());
 
     // The ArrayHeader itself must also have been validated already to ensure
     // that the span of array contents will not exceed the bounds of `data_`.
@@ -356,7 +342,9 @@ class IPCZ_ALIGN(8) Message {
         data_.size());
     ABSL_ASSERT(CheckMul(sizeof(ElementType), size_t{header.num_elements}) <=
                 header.num_bytes);
-    return absl::MakeSpan(reinterpret_cast<ElementType*>(&header + 1),
+    auto sub = data_.subspan(offset + sizeof(internal::ArrayHeader),
+                             sizeof(ElementType) * header.num_elements);
+    return absl::MakeSpan(reinterpret_cast<ElementType*>(sub.data()),
                           header.num_elements);
   }
 
@@ -383,7 +371,7 @@ class IPCZ_ALIGN(8) Message {
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
     ABSL_ASSERT(CheckAdd(param_offset, sizeof(T)) <= params_data_view().size());
-    return GetValueAt<T>(GetDataOffset(&params_data_view()[param_offset]));
+    return GetValueAt<T>(header().size + param_offset);
   }
 
   // Checks and indicates whether this message can be transmitted over

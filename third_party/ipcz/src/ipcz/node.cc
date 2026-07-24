@@ -458,10 +458,8 @@ bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
   absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.v0()->data);
   msg::AcceptRelayedMessage accept;
   accept.v0()->source = from_node;
-  accept.v0()->data = accept.AllocateArray<uint8_t>(data.size());
+  accept.v0()->data = accept.AllocateAndSetArray<uint8_t>(data);
   accept.v0()->padding = 0;
-  IPCZ_UNSAFE_TODO(
-      memcpy(accept.GetArrayData(accept.v0()->data), data.data(), data.size()));
   accept.v0()->driver_objects =
       accept.AppendDriverObjects(relay.driver_objects());
   link->Transmit(accept);
