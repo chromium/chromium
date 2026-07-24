@@ -141,7 +141,6 @@ static_library("session") {
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
-    "//chromeos/ash/components/dbus/arc:arcvm_data_migrator_proto_lib",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/session_manager",
