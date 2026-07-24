@@ -936,7 +936,7 @@ InterpolableValue* CSSShapeInterpolationType::CreateNeutralValue(
         WriteLength(2);
         values.push_back(*MakeGarbageCollected<InterpolableNumber>(
             0, CSSPrimitiveValue::UnitType::kDegrees));
-        WriteLength(2);
+        WriteLength(3);
         values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
         values.push_back(*MakeGarbageCollected<InterpolableNumber>(0));
         break;
