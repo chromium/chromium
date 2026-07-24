@@ -2667,10 +2667,13 @@ const FeatureEntry::FeatureParam kNtpAurora_MediumPadding[] = {
 const FeatureEntry::FeatureParam kNtpAurora_LargePadding[] = {
     {"change_button_color", "true"},
     {"padding_style", "3"}};
+const FeatureEntry::FeatureParam kNtpAurora_ChangeButtonColor[] = {
+    {"change_button_color", "true"}};
 const FeatureEntry::FeatureVariation kNtpAuroraVariations[] = {
     {"Tight padding", kNtpAurora_TightPadding, nullptr},
     {"Medium padding", kNtpAurora_MediumPadding, nullptr},
-    {"Large padding", kNtpAurora_LargePadding, nullptr}};
+    {"Large padding", kNtpAurora_LargePadding, nullptr},
+    {"Composeplate new styling", kNtpAurora_ChangeButtonColor, nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
