@@ -617,6 +617,7 @@ source_set("tests") {
     ":network_service",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//components/enterprise/buildflags",
     "//components/network_session_configurator/browser",
     "//components/os_crypt/async/browser:test_support",

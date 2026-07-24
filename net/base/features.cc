@@ -882,6 +882,8 @@ BASE_FEATURE(kDrainSpdySessionSynchronouslyOnRemoteEndpointDisconnect,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogicalClearHttpCache, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kLogicalClearHttpCacheUserVisiblePriority{
+    &kLogicalClearHttpCache, "UserVisiblePriority", true};
 
 BASE_FEATURE(kSQLitePersistentCookieStoreEarlyInit,
              base::FEATURE_DISABLED_BY_DEFAULT);

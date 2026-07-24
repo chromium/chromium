@@ -127,6 +127,7 @@
 #include "services/network/ignore_errors_cert_verifier.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/known_legacy_scope_domains_delegate.h"
+#include "services/network/logical_invalidation_store.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
 #include "services/network/network_service_network_delegate.h"
@@ -663,6 +664,7 @@ void RemoveInvalidationFilterCallback(
   if (cache) {
     cache->RemoveInvalidationFilter(filter);
   }
+  context->OnLogicalFilterRemoved(filter);
 }
 
 }  // namespace
@@ -900,6 +902,28 @@ NetworkContext::NetworkContext(
   device_bound_session_manager_ = DeviceBoundSessionManager::Create(
       url_request_context_->device_bound_session_service(),
       cookie_manager_.get());
+
+  if (params_->file_paths &&
+      params_->file_paths->logical_invalidation_directory) {
+    base::TaskPriority priority =
+        base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache) &&
+                net::features::kLogicalClearHttpCacheUserVisiblePriority.Get()
+            ? base::TaskPriority::USER_VISIBLE
+            : base::TaskPriority::BEST_EFFORT;
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), priority,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    logical_invalidation_store_ = std::make_unique<LogicalInvalidationStore>(
+        params_->file_paths->logical_invalidation_directory->path(),
+        file_task_runner);
+    // Start loading persisted invalidation filters asynchronously on startup.
+    logical_invalidation_store_->Load(
+        base::BindOnce(&NetworkContext::OnInvalidationFiltersLoaded,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    initial_filters_loaded_ = true;
+  }
 }
 
 NetworkContext::NetworkContext(
@@ -1487,9 +1511,9 @@ void NetworkContext::ClearHttpCacheInternal(base::Time start_time,
       filter_for_callback = invalidation_filter;
 
       cache->AddInvalidationFilter(std::move(invalidation_filter));
-      if (callback) {
-        std::move(callback).Run();
-      }
+      // Queue the filter for disk persistence and invoke `callback` once
+      // LogicalInvalidationStore::Save() finishes saving to disk.
+      OnLogicalFilterAdded(filter_for_callback, std::move(callback));
     } else {
       if (callback) {
         std::move(callback).Run();
@@ -1497,29 +1521,24 @@ void NetworkContext::ClearHttpCacheInternal(base::Time start_time,
     }
 
     // Step 2: Trigger the slow physical cleanup in the background.
-    // When it completes, we remove the logical filter since the data is
+    // When it completes, the logical filter is removed since the data is
     // physically gone.
     auto logical_cleanup_done_callback = base::BindOnce(
         &RemoveInvalidationFilterCallback, weak_factory_.GetWeakPtr(),
         std::move(filter_for_callback));
 
-    http_cache_data_removers_.push_back(HttpCacheDataRemover::CreateAndStart(
-        url_request_context_, std::move(filter), start_time, end_time,
-        base::BindOnce(&NetworkContext::OnHttpCacheCleared,
-                       base::Unretained(this),
-                       std::move(logical_cleanup_done_callback))));
+    StartHttpCacheDataRemover(std::move(filter), start_time, end_time,
+                              std::move(logical_cleanup_done_callback));
 
-    // Step 3: Respond to the caller immediately is omitted because we wait for
+    // Step 3: Responding to the caller immediately is omitted to wait for
     // persistence.
     return;
   }
 
   // It's safe to use Unretained below as the HttpCacheDataRemover is owned by
   // |this| and guarantees it won't call its callback if deleted.
-  http_cache_data_removers_.push_back(HttpCacheDataRemover::CreateAndStart(
-      url_request_context_, std::move(filter), start_time, end_time,
-      base::BindOnce(&NetworkContext::OnHttpCacheCleared,
-                     base::Unretained(this), std::move(callback))));
+  StartHttpCacheDataRemover(std::move(filter), start_time, end_time,
+                            std::move(callback));
 }
 
 void NetworkContext::ComputeHttpCacheSize(
@@ -4002,6 +4021,118 @@ bool NetworkContext::HasCookieAccessForDeviceBoundSession(
       // TODO(crbug.com/353772143): update once partitioned cookies are
       // supported. DBSC does not support cookie partition yet.
       /*cookie_partition_key=*/std::nullopt);
+}
+
+void NetworkContext::OnInvalidationFiltersLoaded(
+    LogicalInvalidationStore::LoadResult result,
+    std::vector<net::HttpCache::InvalidationFilter> loaded_filters) {
+  net::HttpCache* cache =
+      url_request_context_->http_transaction_factory()->GetCache();
+  if (!cache) {
+    return;
+  }
+
+  // 1. Determine and save the final list of filters in O(N log N) time.
+  if (logical_invalidation_store_) {
+    std::vector<net::HttpCache::InvalidationFilter> filters_to_save(
+        loaded_filters);
+    filters_to_save.append_range(pending_additions_);
+    std::erase_if(filters_to_save, [&](const auto& filter) {
+      return std::ranges::contains(pending_removals_, filter);
+    });
+    std::ranges::sort(filters_to_save, std::less<>());
+    auto [first, last] =
+        std::ranges::unique(filters_to_save, std::equal_to<>());
+    filters_to_save.erase(first, last);
+    logical_invalidation_store_->Save(std::move(filters_to_save));
+  }
+
+  // 2. Determine which loaded filters need to be registered logically in
+  // memory.
+  std::vector<net::HttpCache::InvalidationFilter> filters_to_register_logically;
+  for (auto& filter : loaded_filters) {
+    if (!std::ranges::contains(pending_removals_, filter) &&
+        !std::ranges::contains(pending_additions_, filter)) {
+      filters_to_register_logically.push_back(std::move(filter));
+    }
+  }
+
+  // 4. Register the logical filters in memory before starting physical purges.
+  for (auto& filter : filters_to_register_logically) {
+    filter.was_loaded_from_disk = true;
+    cache->AddInvalidationFilter(filter);
+  }
+
+  // 5. Start background physical purges for newly registered filters.
+  for (const auto& filter : filters_to_register_logically) {
+    mojom::ClearDataFilterPtr filter_ptr = mojom::ClearDataFilter::New();
+    filter_ptr->type =
+        (filter.filter_type == net::UrlFilterType::kTrueIfMatches)
+            ? mojom::ClearDataFilter_Type::DELETE_MATCHES
+            : mojom::ClearDataFilter_Type::KEEP_MATCHES;
+    filter_ptr->origins.assign_range(filter.origins);
+    filter_ptr->domains.assign_range(filter.domains);
+
+    auto logical_cleanup_done_callback = base::BindOnce(
+        &RemoveInvalidationFilterCallback, weak_factory_.GetWeakPtr(), filter);
+
+    StartHttpCacheDataRemover(std::move(filter_ptr), filter.begin_time,
+                              filter.end_time,
+                              std::move(logical_cleanup_done_callback));
+  }
+
+  // 6. Set state to loaded and clear queues.
+  initial_filters_loaded_ = true;
+  pending_additions_.clear();
+  pending_removals_.clear();
+}
+
+void NetworkContext::StartHttpCacheDataRemover(
+    mojom::ClearDataFilterPtr filter,
+    base::Time start_time,
+    base::Time end_time,
+    base::OnceClosure done_callback) {
+  http_cache_data_removers_.push_back(HttpCacheDataRemover::CreateAndStart(
+      url_request_context_, std::move(filter), start_time, end_time,
+      base::BindOnce(&NetworkContext::OnHttpCacheCleared,
+                     base::Unretained(this), std::move(done_callback))));
+}
+
+void NetworkContext::UpdatePersistenceQueueOrSave(
+    const net::HttpCache::InvalidationFilter& filter,
+    std::vector<net::HttpCache::InvalidationFilter>* pending_queue,
+    base::OnceClosure callback) {
+  if (!initial_filters_loaded_) {
+    pending_queue->push_back(filter);
+    if (callback) {
+      std::move(callback).Run();
+    }
+    return;
+  }
+  if (logical_invalidation_store_) {
+    net::HttpCache* cache =
+        url_request_context_->http_transaction_factory()->GetCache();
+    if (cache) {
+      logical_invalidation_store_->Save(cache->invalidation_filters(),
+                                        std::move(callback));
+      return;
+    }
+  }
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
+void NetworkContext::OnLogicalFilterAdded(
+    const net::HttpCache::InvalidationFilter& filter,
+    base::OnceClosure callback) {
+  UpdatePersistenceQueueOrSave(filter, &pending_additions_,
+                               std::move(callback));
+}
+
+void NetworkContext::OnLogicalFilterRemoved(
+    const net::HttpCache::InvalidationFilter& filter) {
+  UpdatePersistenceQueueOrSave(filter, &pending_removals_);
 }
 
 }  // namespace network
