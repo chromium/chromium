@@ -240,11 +240,6 @@ void PersonalContextEligibilityServiceImpl::RemoveObserver(
 
 PersonalContextEligibilityState
 PersonalContextEligibilityServiceImpl::GetEligibilityState() {
-  if (base::FeatureList::IsEnabled(
-          features::debug::kPersonalContextForceEnablementState)) {
-    return GetForcedEligibilityState().value_or(eligibility_state_);
-  }
-
   return eligibility_state_;
 }
 
@@ -257,11 +252,20 @@ std::pair<PersonalContextEligibilityState,
           std::optional<PersonalContextNonEligibilityReason>>
 PersonalContextEligibilityServiceImpl::ComputeEligibilityState() {
   using enum PersonalContextEligibilityState;
-
   if (auto [satisfied, reason] =
           SatisfiesAccountRequirements(identity_manager_.get());
       !satisfied) {
     return std::pair{kDisabledNotEligible, reason};
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::debug::kPersonalContextForceEnablementState)) {
+    std::optional<PersonalContextEligibilityState> state =
+        GetForcedEligibilityState();
+    if (state) {
+      return std::pair{state.value(),
+                       PersonalContextNonEligibilityReason::kEligible};
+    }
   }
 
   if (auto [satisfied, reason] =

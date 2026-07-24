@@ -1709,7 +1709,6 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorTest.java",
     "src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",
     "src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelperTest.java",
-    "src/org/chromium/chrome/browser/personal_context/first_run/PersonalContextFirstRunServiceBridgeTest.java",
     "src/org/chromium/chrome/browser/policy/CombinedPolicyProviderTest.java",
     "src/org/chromium/chrome/browser/policy/PolicyAuditorBridgeTest.java",
     "src/org/chromium/chrome/browser/previewtab/PreviewTabTest.java",

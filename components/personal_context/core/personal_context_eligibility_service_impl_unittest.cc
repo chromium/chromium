@@ -125,6 +125,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest, ForcedEnablementState) {
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "0"}});
+    test_api(service()).UpdateEligibilityState();
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kDisabledNotEligible);
   }
@@ -134,6 +135,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest, ForcedEnablementState) {
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "2"}});
+    test_api(service()).UpdateEligibilityState();
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
   }
@@ -150,6 +152,23 @@ TEST_F(PersonalContextEligibilityServiceImplTest, EnabledWhenAllFeaturesAreOn) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       ForcedEnablementState_SignOut) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "2"}});
+
+    // The force enablement feature should not override the account
+    // requirements.
+    identity_test_env_.ClearPrimaryAccount();
+    test_api(service()).UpdateEligibilityState();
+    EXPECT_EQ(service().GetEligibilityState(),
+              PersonalContextEligibilityState::kDisabledNotEligible);
+  }
+}
+
 // Verifies that the service is disabled when the user is not signed in.
 TEST_F(PersonalContextEligibilityServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();

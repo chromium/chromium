@@ -21,9 +21,16 @@ class PersonalContextEligibilityServiceImplTestApi {
     return service_->ComputeEligibilityState().first;
   }
 
+  void UpdateEligibilityState() { service_->UpdateEligibilityState(); }
+
  private:
   const raw_ref<PersonalContextEligibilityServiceImpl> service_;
 };
+
+inline PersonalContextEligibilityServiceImplTestApi test_api(
+    PersonalContextEligibilityServiceImpl& service) {
+  return PersonalContextEligibilityServiceImplTestApi(&service);
+}
 
 }  // namespace personal_context
 
