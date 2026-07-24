@@ -458,7 +458,6 @@ if (is_android) {
     ]
   }
 
-
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.app") {
     sources = [
       "src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateUnitTest.java",
@@ -1280,6 +1279,7 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.tabmodel") {
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/NextTabSelectionUtilUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/PinnedTabClosureManagerUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/SettableLookAheadObservableSupplierUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabCollectionTabModelImplUnitTest.java",

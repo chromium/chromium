@@ -528,10 +528,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assertOnUiThread();
         Tab tab = getTabById(id);
         if (tab == null) return mCurrentTabSupplier.get();
-        return TabModelImplUtil.getNextTabIfClosed(
+        return NextTabSelectionUtil.getNextTabIfClosed(
                 this,
                 mModelDelegate,
-                mCurrentTabSupplier,
                 mNextTabPolicySupplier,
                 Collections.singletonList(tab),
                 uponExit,
@@ -2118,10 +2117,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         Tab nextTab =
                 recommendedNextTab != null
                         ? recommendedNextTab
-                        : TabModelImplUtil.getNextTabIfClosed(
+                        : NextTabSelectionUtil.getNextTabIfClosed(
                                 this,
                                 mModelDelegate,
-                                mCurrentTabSupplier,
                                 mNextTabPolicySupplier,
                                 tabsToRemove,
                                 /* uponExit= */ false,
@@ -2134,7 +2132,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         boolean nextIsInOtherModel = nextIsIncognito != isIncognito();
         if ((nextTab == null || nextIsInOtherModel) && closeType != TabCloseType.ALL) {
             nearbyTab =
-                    TabModelImplUtil.findNearbyNotClosingTab(
+                    NextTabSelectionUtil.findNearbyNotClosingTab(
                             this, tabsToRemove.indexOf(currentTabInModel), tabsToRemove);
         }
 
@@ -2706,7 +2704,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (!tabsToExclude.contains(lastShownTab)) return lastShownTab;
 
         int indexInGroup = tabsInGroup.indexOf(lastShownTab);
-        return TabModelImplUtil.findNearbyNotClosingTab(tabsInGroup, indexInGroup, tabsToExclude);
+        return NextTabSelectionUtil.findNearbyNotClosingTab(
+                tabsInGroup, indexInGroup, tabsToExclude);
     }
 
     private void notifyOnFinishingMultipleTabClosure(
