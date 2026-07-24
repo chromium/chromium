@@ -384,78 +384,107 @@ BASE_FEATURE(kWebUIAvatarButton, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsWebUIReloadButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIReloadButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIReloadButton));
 }
 
 bool IsWebUIHomeButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIHomeButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIHomeButton));
 }
 
 bool IsWebUIBatterySaverButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIBatterySaverButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIBatterySaverButton));
 }
 
 bool IsWebUIAppMenuButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIAppMenuButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIAppMenuButton));
 }
 
 bool IsWebUIBackForwardButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIBackForwardButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIBackForwardButton));
 }
 
 bool IsWebUIPinnedToolbarActionsEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIPinnedToolbarActions);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIPinnedToolbarActions));
 }
 
 bool IsWebUIExtensionsContainerEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIExtensionsContainer);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIExtensionsContainer));
 }
 
 bool IsWebUISplitTabsButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUISplitTabsButton));
 }
 
 bool IsWebUIAvatarButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUIAvatarButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIAvatarButton));
 }
 
 bool IsWebUIPerformanceInterventionButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(
-             features::kWebUIPerformanceInterventionButton);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(
+              features::kWebUIPerformanceInterventionButton));
 }
 
 bool IsWebUILocationBarEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-         base::FeatureList::IsEnabled(features::kWebUILocationBar);
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUILocationBar));
 }
 
 bool IsWebUIToolbarEnabled() {
+  // Checking IsProcessOverheadExperimentActive() and features::kInitialWebUI
+  // first is a minor optimization, since all other methods return false, if the
+  // first is enabled or the second is disabled.
   return !IsProcessOverheadExperimentActive() &&
+         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          (IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
           IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
           IsWebUIBackForwardButtonEnabled() ||
           IsWebUIPinnedToolbarActionsEnabled() ||
           IsWebUIExtensionsContainerEnabled() || IsWebUIAvatarButtonEnabled() ||
           IsWebUIAppMenuButtonEnabled() || IsWebUIBatterySaverButtonEnabled() ||
+          IsWebUIPerformanceInterventionButtonEnabled());
+}
+
+bool IsWebUIToolbarFullyEnabled() {
+  // The first block is an optimization, and is not needed for correctness.
+  return (base::FeatureList::IsEnabled(features::kWebUIToolbar) &&
+          !IsProcessOverheadExperimentActive() &&
+          base::FeatureList::IsEnabled(features::kInitialWebUI)) ||
+         (IsWebUIReloadButtonEnabled() && IsWebUISplitTabsButtonEnabled() &&
+          IsWebUIHomeButtonEnabled() && IsWebUILocationBarEnabled() &&
+          IsWebUIBackForwardButtonEnabled() &&
+          IsWebUIPinnedToolbarActionsEnabled() &&
+          IsWebUIExtensionsContainerEnabled() && IsWebUIAvatarButtonEnabled() &&
+          IsWebUIAppMenuButtonEnabled() && IsWebUIBatterySaverButtonEnabled() &&
           IsWebUIPerformanceInterventionButtonEnabled());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
