@@ -136,6 +136,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -502,6 +503,9 @@ bool AppHasSupportedLinks(apps::AppServiceProxy* proxy,
   bool has_intent_filters = false;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&](const apps::AppUpdate& update) {
+        if (!apps_util::IsInstalled(update.Readiness())) {
+          return;
+        }
         for (auto& intent_filter : update.IntentFilters()) {
           if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
             has_intent_filters = true;
@@ -905,6 +909,14 @@ apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
     webapps::WebappUninstallSource uninstall_source) {
   auto app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   app->readiness = ConvertWebappUninstallSourceToReadiness(uninstall_source);
+
+  // As per the comment for `App::intent_filters`, setting this to an empty
+  // vector "resets" the intent filters for this app instead of assigning its
+  // default value, which leads to incorrect behavior when the app is
+  // reinstalled, as AppService treats this app as if it used to capture links
+  // before, and prevents it from being set as the preferred app for capturing
+  // links anymore.
+  app->intent_filters = apps::IntentFilters();
 
   return app;
 }

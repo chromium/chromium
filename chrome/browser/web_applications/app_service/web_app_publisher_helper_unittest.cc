@@ -597,6 +597,42 @@ TEST_F(WebAppPublisherHelperNavigationCapturingTest,
   EXPECT_EQ(proxy->PreferredAppsList().FindPreferredAppForUrl(extended_url),
             app_id_a);
 }
+
+TEST_F(WebAppPublisherHelperNavigationCapturingTest,
+       AppReinstallShowsLinkCapturingPreference) {
+  SetUpFeature(apps::test::LinkCapturingFeatureVersion::kV2DefaultOn);
+
+  const GURL start_url("https://example.com/start");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Reinstall Test App";
+  info->scope = start_url.GetWithoutFilename();
+
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  EXPECT_TRUE(
+      proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id));
+
+  // Uninstall the app.
+  test::UninstallWebApp(profile(), app_id);
+
+  EXPECT_FALSE(
+      proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id));
+
+  // Reinstall the same app.
+  auto reinstall_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  reinstall_info->title = u"Reinstall Test App";
+  reinstall_info->scope = start_url.GetWithoutFilename();
+
+  webapps::AppId reinstalled_app_id =
+      test::InstallWebApp(profile(), std::move(reinstall_info));
+  EXPECT_EQ(reinstalled_app_id, app_id);
+
+  // The reinstalled app should be set to preferred for supported links.
+  EXPECT_TRUE(proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(
+      reinstalled_app_id));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
