@@ -10,8 +10,10 @@
 #import <ostream>
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_panel.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -230,16 +232,18 @@ BOOL _keyboardShown;
 - (void)bottomSheetDidPresent {
   [self.panTracker startTracking];
 
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(keyboardWillHide:)
-             name:UIKeyboardWillHideNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(keyboardWillShow:)
-             name:UIKeyboardWillShowNotification
-           object:nil];
+  if (!base::FeatureList::IsEnabled(kLensFollowupsFullHeightEnabled)) {
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardWillHide:)
+               name:UIKeyboardWillHideNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardWillShow:)
+               name:UIKeyboardWillShowNotification
+             object:nil];
+  }
 }
 
 - (void)dismissAnimated:(BOOL)animated completion:(ProceduralBlock)completion {

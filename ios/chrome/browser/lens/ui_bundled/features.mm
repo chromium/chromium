@@ -81,3 +81,5 @@ BASE_FEATURE(kLensStreamServiceWebChannelTransportEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensFilterToggleEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensFollowupsFullHeightEnabled, base::FEATURE_ENABLED_BY_DEFAULT);

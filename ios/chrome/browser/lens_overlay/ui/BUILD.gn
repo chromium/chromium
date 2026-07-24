@@ -99,6 +99,7 @@ source_set("view_controller") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/lens/ui_bundled:features",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/public",
     "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",

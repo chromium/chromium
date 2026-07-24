@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/lens/ui_bundled/features.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_bottom_sheet_detents_interactor.h"
 
 namespace {
@@ -65,6 +67,9 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 // The height of the base window of the presentation
 - (CGFloat)windowHeight;
+
+// The height of the status bar.
+- (CGFloat)statusBarHeight;
 
 // Reports to the delegate and logs metrics as necessary.
 // Pass `isUserGestureInitiated` when the change is due to a user gesture.
@@ -305,6 +310,10 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
   return _window.safeAreaLayoutGuide.layoutFrame.size.height;
 }
 
+- (CGFloat)statusBarHeight {
+  return _window.safeAreaInsets.top;
+}
+
 // Reports to the delegate and logs metrics as necessary.
 - (void)reportDimensionChangeIfNeeded:(BOOL)isUserGestureInitiated {
   // Maintain a strong reference to self throughout this method to prevent
@@ -329,6 +338,11 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
   return [self.sheetDetentInteractor
       detentWithIdentifier:kCustomLargeDetentIdentifier
             heightResolver:^{
+              if (base::FeatureList::IsEnabled(
+                      kLensFollowupsFullHeightEnabled)) {
+                return [weakSelf windowHeight] - [weakSelf statusBarHeight];
+              }
+
               CGFloat obstruction =
                   weakSelf.sheetDetentInteractor.usesSystemPresentation
                       ? kHUDObstructionAmmountSystemDetents

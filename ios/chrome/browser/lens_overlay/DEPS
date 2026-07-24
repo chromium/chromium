@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/lens/ui_bundled/features.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/ntp/model",

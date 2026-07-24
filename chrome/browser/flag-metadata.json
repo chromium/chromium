@@ -6536,6 +6536,13 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-followups-full-height-enabled",
+    "owners": [
+      "cmyang@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "lens-gesture-text-selection-disabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 145

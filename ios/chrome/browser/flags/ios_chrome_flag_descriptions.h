@@ -1253,6 +1253,11 @@ inline constexpr char kLensFiltersAblationModeEnabledName[] =
 inline constexpr char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+inline constexpr char kLensFollowupsFullHeightEnabledName[] =
+    "Lens followups full height enabled";
+inline constexpr char kLensFollowupsFullHeightEnabledDescription[] =
+    "Enables followups full height in the Lens overlay.";
+
 inline constexpr char kLensGestureTextSelectionDisabledName[] =
     "Disable Lens gesture text selection";
 inline constexpr char kLensGestureTextSelectionDisabledDescription[] =

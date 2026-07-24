@@ -82,4 +82,7 @@ BASE_DECLARE_FEATURE(kLensStreamServiceWebChannelTransportEnabled);
 // Whether to enable the filter toggle in the Lens overlay.
 BASE_DECLARE_FEATURE(kLensFilterToggleEnabled);
 
+// Whether to enable followups full height in the Lens overlay.
+BASE_DECLARE_FEATURE(kLensFollowupsFullHeightEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

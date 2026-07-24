@@ -128,6 +128,7 @@ source_set("detents_manager") {
   deps = [
     ":detent_state_header",
     "//base",
+    "//ios/chrome/browser/lens/ui_bundled:features",
     "//ui/base",
   ]
   public_deps = [
