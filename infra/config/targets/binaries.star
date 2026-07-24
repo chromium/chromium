@@ -2688,7 +2688,7 @@ targets.binaries.generated_script(
     name = "webdriver_bidi_unittests",
     label = "//third_party/chromium-bidi:webdriver_bidi_unittests",
     skip_usage_check = True,
-    module_scheme = "single",
+    module_scheme = "mocha",
 )
 
 targets.binaries.generated_script(

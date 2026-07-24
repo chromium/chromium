@@ -2372,7 +2372,7 @@
   "webdriver_bidi_unittests": {
     "label": "//third_party/chromium-bidi:webdriver_bidi_unittests",
     "type": "generated_script",
-    "module_scheme": "single",
+    "module_scheme": "mocha",
     "skip_usage_check": True,
   },
   "webgpu_blink_web_tests": {
