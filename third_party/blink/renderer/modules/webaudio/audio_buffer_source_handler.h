@@ -69,6 +69,11 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   void HandleStoppableSourceNode() override;
 
  private:
+  struct ProcessResult {
+    unsigned write_index;
+    double virtual_read_index;
+  };
+
   AudioBufferSourceHandler(AudioNode&,
                            float sample_rate,
                            AudioParamHandler& playback_rate,
@@ -99,40 +104,28 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
                         uint32_t number_of_frames,
                         double start_time_offset);
 
-  // Handles wrapping the virtual_read_index around the loop boundaries if
-  // necessary. Returns true if rendering has finished (because we reached the
-  // end of the buffer and are not looping), in which case the caller should
-  // stop processing. Returns false if rendering should continue.
-  bool HandleLoopWrapping(double virtual_start_frame,
-                          double virtual_end_frame,
-                          double virtual_delta_frames,
-                          double computed_playback_rate,
-                          unsigned write_index,
-                          uint32_t frames_remaining,
-                          double& virtual_read_index);
+  ProcessResult ProcessFastPath(double virtual_delta_frames,
+                                double virtual_end_frame,
+                                uint32_t buffer_length,
+                                size_t destination_length,
+                                unsigned number_of_channels,
+                                int frames_to_process,
+                                unsigned write_index,
+                                double virtual_read_index);
 
-  void ProcessFastPath(double virtual_delta_frames,
-                       double virtual_end_frame,
-                       uint32_t buffer_length,
-                       size_t destination_length,
-                       unsigned number_of_channels,
-                       int& frames_to_process,
-                       unsigned& write_index,
-                       double& virtual_read_index);
+  ProcessResult ProcessInterpolatedPath(double virtual_start_frame,
+                                        double virtual_delta_frames,
+                                        double virtual_end_frame,
+                                        uint32_t buffer_length,
+                                        unsigned number_of_channels,
+                                        double computed_playback_rate,
+                                        int frames_to_process,
+                                        unsigned write_index,
+                                        double virtual_read_index);
 
-  void ProcessInterpolatedPath(double virtual_start_frame,
-                               double virtual_delta_frames,
-                               double virtual_end_frame,
-                               uint32_t buffer_length,
-                               unsigned number_of_channels,
-                               double computed_playback_rate,
-                               int& frames_to_process,
-                               unsigned& write_index,
-                               double& virtual_read_index);
-
-  // Render silence starting from "index" frame in AudioBus.
-  inline bool RenderSilenceAndFinishIfNotLooping(unsigned index,
-                                                 uint32_t frames_to_process);
+  // Render silence starting from `index` frame in AudioBus, then call
+  // `Finish()`.
+  inline void RenderSilenceAndFinish(size_t index, size_t frames_to_process);
 
   // Clamps grain parameters to the duration of the given AudioBuffer.
   void ClampGrainParameters(const SharedAudioBuffer*)
