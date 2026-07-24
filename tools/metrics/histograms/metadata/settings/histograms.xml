@@ -270,6 +270,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.GlassFrame.Enabled" enum="BooleanEnabled"
+    expires_after="2026-10-30">
+  <owner>dominicaustria@google.com</owner>
+  <owner>dpenning@chromium.org</owner>
+  <summary>
+    Logs whether the glass frame setting is enabled or disabled when it is
+    toggled in chrome://settings/appearance. Record for mac only.
+  </summary>
+</histogram>
+
 <histogram name="Settings.Homepage.HomeButtonStatus" enum="HomeButtonStatus"
     expires_after="2026-12-20">
   <owner>jthiesen@chromium.org</owner>

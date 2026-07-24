@@ -17,6 +17,7 @@ export interface AppearanceBrowserProxy {
 
   openCustomizeChrome(): void;
   openCustomizeChromeToolbarSection(): void;
+  recordGlassFrameEnabledChanged(enabled: boolean): void;
   recordHoverCardImagesEnabledChanged(enabled: boolean): void;
   recordHoverCardMemoryUsageEnabledChanged(enabled: boolean): void;
   recordVerticalTabStripModeChanged(enabled: boolean): void;
@@ -51,6 +52,10 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
 
   openCustomizeChromeToolbarSection() {
     chrome.send('openCustomizeChromeToolbarSection');
+  }
+
+  recordGlassFrameEnabledChanged(enabled: boolean) {
+    chrome.metricsPrivate.recordBoolean('Settings.GlassFrame.Enabled', enabled);
   }
 
   recordHoverCardImagesEnabledChanged(enabled: boolean) {

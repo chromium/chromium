@@ -153,7 +153,8 @@ export function getHtml(this: SettingsAppearancePageElement) {
           <settings-dropdown-menu id="glassEffect"
               label="$i18n{glassEffect}"
               pref-key="glass_frame.enabled"
-              .menuOptions="${this.glassEffectOptions_}">
+              .menuOptions="${this.glassEffectOptions_}"
+              @settings-control-change="${this.onGlassFrameSettingsControlChange_}">
           </settings-dropdown-menu>
         </div>
       ` : ''}

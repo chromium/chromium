@@ -19,6 +19,7 @@ export class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'isChildAccount',
       'openCustomizeChrome',
       'openCustomizeChromeToolbarSection',
+      'recordGlassFrameEnabledChanged',
       'recordHoverCardImagesEnabledChanged',
       'recordHoverCardMemoryUsageEnabledChanged',
       'recordVerticalTabStripModeChanged',
@@ -67,6 +68,10 @@ export class TestAppearanceBrowserProxy extends TestBrowserProxy implements
 
   openCustomizeChromeToolbarSection() {
     this.methodCalled('openCustomizeChromeToolbarSection');
+  }
+
+  recordGlassFrameEnabledChanged(enabled: boolean) {
+    this.methodCalled('recordGlassFrameEnabledChanged', enabled);
   }
 
   recordHoverCardImagesEnabledChanged(enabled: boolean) {

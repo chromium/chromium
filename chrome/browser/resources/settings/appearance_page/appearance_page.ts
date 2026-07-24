@@ -668,6 +668,12 @@ export class SettingsAppearancePageElement extends
     }
   }
 
+  protected onGlassFrameSettingsControlChange_(event: Event) {
+    const dropdown = event.target as SettingsDropdownMenuElement;
+    const enabled = dropdown.getSelectedValue() === 'true';
+    this.appearanceBrowserProxy_.recordGlassFrameEnabledChanged(enabled);
+  }
+
   protected onHoverCardImagesSettingsBooleanControlChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
     this.appearanceBrowserProxy_.recordHoverCardImagesEnabledChanged(enabled);

@@ -108,6 +108,11 @@ async function createAppearancePage() {
       value: true,
     },
     {
+      key: 'glass_frame.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
       key: 'vertical_tabs.enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
@@ -964,3 +969,46 @@ suite('TabStripComboButtonSettings', () => {
         !!appearancePage.shadowRoot.querySelector('#showEverythingMenuButton'));
   });
 });
+
+// <if expr="is_macosx">
+suite('GlassFrameSettings', () => {
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      showGlassEffectEnabled: true,
+    });
+    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    await createAppearancePage();
+    await prefService.setPrefValue('glass_frame.enabled', true);
+    await microtasksFinished();
+  });
+
+  test('Glass frame dropdown records metric', async () => {
+    const dropdown =
+        appearancePage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
+            '#glassEffect');
+    assertTrue(!!dropdown);
+
+    const selectElement = dropdown.$.dropdownMenu;
+    assertTrue(!!selectElement);
+    assertEquals('true', selectElement.value);
+
+    selectElement.value = 'false';
+    selectElement.dispatchEvent(new Event('change'));
+    const glassDisabled = await appearanceBrowserProxy.whenCalled(
+        'recordGlassFrameEnabledChanged');
+    assertFalse(glassDisabled);
+
+    appearanceBrowserProxy.reset();
+
+    selectElement.value = 'true';
+    selectElement.dispatchEvent(new Event('change'));
+    const glassEnabled = await appearanceBrowserProxy.whenCalled(
+        'recordGlassFrameEnabledChanged');
+    assertTrue(glassEnabled);
+  });
+});
+// </if>
