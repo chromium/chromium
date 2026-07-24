@@ -305,7 +305,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288229
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
