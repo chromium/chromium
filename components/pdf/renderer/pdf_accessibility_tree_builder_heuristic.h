@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 
 #include "base/memory/raw_ref.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -52,6 +53,7 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const PdfAccessibilityTreeBuilderHeuristic&) = delete;
   PdfAccessibilityTreeBuilderHeuristic& operator=(
       const PdfAccessibilityTreeBuilderHeuristic&) = delete;
+  ~PdfAccessibilityTreeBuilderHeuristic();
 
   // Main entry point for heuristic tree building. Processes all text runs
   // sequentially, applying heuristics to determine block structure and
@@ -114,6 +116,8 @@ class PdfAccessibilityTreeBuilderHeuristic {
   // Heuristic-specific state for sequential processing and analysis.
   float heading_font_size_threshold_ = 0;
   float paragraph_spacing_threshold_ = 0;
+  // Key: font size, value: heading level (should be in the range [1-6]).
+  std::map<float, int> font_size_heading_mapping_;
 
   // Sequential index tracking for page objects.
   uint32_t current_link_index_ = 0;
