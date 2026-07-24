@@ -2552,6 +2552,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
 
 class ExtensionOnClosedEventSidePanelBrowserTest
     : public ExtensionSidePanelBrowserTest {
+ public:
+  ExtensionOnClosedEventSidePanelBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
+
  protected:
   // Helper to load a test extension configured for the onClosed event tests.
   const Extension* CreateOnClosedTestExtension() {
@@ -2618,6 +2624,7 @@ class ExtensionOnClosedEventSidePanelBrowserTest
 
  private:
   std::vector<extensions::TestExtensionDir> test_dirs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that onClosed fires when the hosting tab is closed.
