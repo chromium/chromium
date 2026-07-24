@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
@@ -33,6 +37,8 @@ import org.chromium.components.browser_ui.widget.StrictButtonPressController.But
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link AutofillDialogController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,6 +59,7 @@ public class AutofillDialogControllerTest {
 
     @Captor private ArgumentCaptor<ConfirmationDialogParams> mDialogParamsCaptor;
     @Captor private ArgumentCaptor<ConfirmationDialogHandler> mDialogHandlerCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
     private Activity mActivity;
     private AutofillDialogController mController;
@@ -120,5 +127,24 @@ public class AutofillDialogControllerTest {
         verify(mModalDialogManager).dismissAllDialogs(DialogDismissalCause.DISMISSED_BY_NATIVE);
         // The onDismissed should only be called if the dialog was dismissed by the user.
         verify(mNativeMock, times(0)).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
+    }
+
+    @Test
+    public void testShowAutofillAiLoadingDialog() {
+        mController.showAutofillAiLoadingDialog(TEST_TITLE);
+
+        verify(mModalDialogManager)
+                .showDialog(
+                        mPropertyModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        PropertyModel dialogModel = mPropertyModelCaptor.getValue();
+
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView titleView = customView.findViewById(R.id.autofill_ai_loading_title);
+        assertEquals(TEST_TITLE, titleView.getText());
+
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialogModel, DialogDismissalCause.UNKNOWN);
+        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_DIALOG_VIEW);
     }
 }

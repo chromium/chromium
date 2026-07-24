@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +18,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogParams;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
@@ -24,6 +28,9 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.LoadingView;
 
 /** Controller that allows the native autofill code to show an {@link ActionConfirmationDialog}. */
 @JNINamespace("autofill")
@@ -84,6 +91,51 @@ public class AutofillDialogController {
                         .withPositiveButton(buttonText)
                         .build(),
                 this::handleDialogAction);
+    }
+
+    /**
+     * Show the loading dialog.
+     *
+     * @param title The title of the loading dialog.
+     */
+    @CalledByNative
+    void showAutofillAiLoadingDialog(@JniType("std::u16string") String title) {
+        View customView =
+                LayoutInflater.from(mContext).inflate(R.layout.autofill_ai_loading_dialog, null);
+
+        LoadingView loadingView = customView.findViewById(R.id.autofill_ai_loading_view);
+        loadingView.showLoadingUi(/* skipDelay= */ true);
+
+        TextView titleView = customView.findViewById(R.id.autofill_ai_loading_title);
+        titleView.setText(title);
+
+        PropertyModel dialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                new ModalDialogProperties.Controller() {
+                                    @Override
+                                    public void onClick(
+                                            PropertyModel model,
+                                            @ModalDialogProperties.ButtonType int buttonType) {}
+
+                                    @Override
+                                    public void onDismiss(
+                                            PropertyModel model,
+                                            @DialogDismissalCause int dismissalCause) {
+                                        loadingView.hideLoadingUi();
+                                        loadingView.destroy();
+                                        if (mNativeAutofillDialogView != 0) {
+                                            AutofillDialogControllerJni.get()
+                                                    .onDismissed(mNativeAutofillDialogView);
+                                            mNativeAutofillDialogView = 0;
+                                        }
+                                    }
+                                })
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .build();
+
+        mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     /** Dismiss the autofill dialog if it's showing. No-op if it's not showing. */

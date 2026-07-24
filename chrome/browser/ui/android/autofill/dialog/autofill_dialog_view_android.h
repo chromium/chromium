@@ -22,6 +22,7 @@ class AutofillDialogViewAndroid : public AutofillDialogView {
   ~AutofillDialogViewAndroid() override;
 
   void Show() override;
+  void ShowLoadingDialog() override;
   void Dismiss() override;
 
   // --------------------------------------------------------------------------
@@ -31,6 +32,8 @@ class AutofillDialogViewAndroid : public AutofillDialogView {
   void OnDismissed(JNIEnv* env);
 
  private:
+  void InitJavaObject();
+
   raw_ref<AutofillDialogController> controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

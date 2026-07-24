@@ -24,6 +24,9 @@ class AutofillDialogView {
   // Show the dialog.
   virtual void Show() = 0;
 
+  // Show a loading dialog.
+  virtual void ShowLoadingDialog() = 0;
+
   // Dismiss the dialog.
   virtual void Dismiss() = 0;
 };

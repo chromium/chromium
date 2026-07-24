@@ -29,6 +29,29 @@ std::unique_ptr<AutofillDialogView> AutofillDialogView::Create(
 }
 
 void AutofillDialogViewAndroid::Show() {
+  InitJavaObject();
+  // Java object might be null if the context associated with the android
+  // window doesn't exist.
+  if (!java_object_.is_null()) {
+    Java_AutofillDialogController_show(
+        base::android::AttachCurrentThread(), java_object_,
+        controller_->GetTitleText(), controller_->GetDescriptionText(),
+        controller_->GetButtonText());
+  }
+}
+
+void AutofillDialogViewAndroid::ShowLoadingDialog() {
+  InitJavaObject();
+  // Java object might be null if the context associated with the android
+  // window doesn't exist.
+  if (!java_object_.is_null()) {
+    Java_AutofillDialogController_showAutofillAiLoadingDialog(
+        base::android::AttachCurrentThread(), java_object_,
+        controller_->GetTitleText());
+  }
+}
+
+void AutofillDialogViewAndroid::InitJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = controller_->GetWebContents().GetNativeView();
   if (!view_android) {
@@ -41,13 +64,6 @@ void AutofillDialogViewAndroid::Show() {
 
   java_object_.Reset(Java_AutofillDialogController_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
-  // Java object might be null if the context associated with the android
-  // window doesn't exist.
-  if (!java_object_.is_null()) {
-    Java_AutofillDialogController_show(
-        env, java_object_, controller_->GetTitleText(),
-        controller_->GetDescriptionText(), controller_->GetButtonText());
-  }
 }
 
 void AutofillDialogViewAndroid::Dismiss() {

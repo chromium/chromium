@@ -16,6 +16,7 @@ class MockAutofillDialogView : public AutofillDialogView {
   ~MockAutofillDialogView() override;
 
   MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, ShowLoadingDialog, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 

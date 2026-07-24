@@ -44,6 +44,26 @@ void AutofillDialogControllerImpl::Show(
   autofill_dialog_view_->Show();
 }
 
+void AutofillDialogControllerImpl::ShowLoadingDialog(
+    const std::u16string& title) {
+  if (autofill_dialog_view_) {
+    // A dialog is already showing. Ignore the new request.
+    return;
+  }
+
+  title_ = title;
+  description_ = u"";
+  button_text_ = u"";
+  on_positive_button_clicked_callback_ = base::DoNothing();
+
+  if (view_factory_for_test_) {
+    autofill_dialog_view_ = view_factory_for_test_.Run();
+  } else {
+    autofill_dialog_view_ = AutofillDialogView::Create(this);
+  }
+  autofill_dialog_view_->ShowLoadingDialog();
+}
+
 void AutofillDialogControllerImpl::OnPositiveButtonClicked() {
   std::move(on_positive_button_clicked_callback_).Run();
 }

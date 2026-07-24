@@ -30,6 +30,8 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
             const std::u16string& description,
             const std::u16string& button_text,
             base::OnceClosure on_positive_button_clicked_callback) override;
+  void ShowLoadingDialog(const std::u16string& title) override;
+
   void OnPositiveButtonClicked() override;
   void OnDismissed() override;
   std::u16string GetTitleText() const override;
