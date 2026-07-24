@@ -251,7 +251,6 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
   virtual bool IsErrorEvent() const;
 
   virtual bool IsPatchEvent() const;
-  virtual bool IsRouteEvent() const;
 
   bool PropagationStopped() const {
     return propagation_stopped_ || immediate_propagation_stopped_;

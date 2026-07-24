@@ -8,10 +8,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -22,7 +22,6 @@ namespace blink {
 
 class Document;
 class Element;
-class JSONValue;
 class Route;
 class URLPattern;
 
@@ -30,37 +29,10 @@ class URLPattern;
 //
 // See;
 // https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching
-class CORE_EXPORT RouteMap final : public ScriptWrappable,
+class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
                                    public Supplement<Document> {
-  DEFINE_WRAPPERTYPEINFO();
-
  public:
   static const char kSupplementName[];
-
-  struct ParseResult final {
-    // TODO(crbug.com/436805487): Error reporting needs to be specced.
-    enum Status {
-      kSuccess,
-      kSyntaxError,
-      kTypeError,
-    };
-
-    Status status;
-    String message;
-
-    // For `kSuccess` cases (which don't have messages).
-    explicit ParseResult(Status status) : status(status) {
-      CHECK_EQ(status, kSuccess);
-    }
-
-    // For error cases.
-    ParseResult(Status status, String message)
-        : status(status), message(message) {
-      CHECK(status != kSuccess);
-    }
-
-    bool IsSuccess() const { return status == kSuccess; }
-  };
 
   using MatchCollection = HeapHashSet<WeakMember<Route>>;
 
@@ -70,8 +42,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   RouteMap();
 
   void Trace(Visitor*) const final;
-
-  Route* get(const String& route_name);
 
   // Supplement support. Document pointers may be null (in which case null will
   // be returned).
@@ -94,8 +64,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   void SetNeedsStyleUpdateOnNavigation() {
     needs_style_update_on_navigation_ = true;
   }
-
-  ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
   void AddRouteFromRule(const String& dashed_ident, URLPattern*);
   void AddAnonymousRoute(const AtomicString& url_pattern_string);
@@ -148,16 +116,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   KURL GetActiveNavigationURL(NavigationPreposition) const;
 
  private:
-  ParseResult AddPatternToRoute(Route&, const JSONValue&);
-
-  // Update the match status of the route, given the current "at", "from",
-  // "with" and "to" URLs. `routes_needing_event`, if set, will be populated by
-  // the routes whose "at" match status changed, which may be used to fire
-  // "activate" or "deactivate" events if the match status changes.
-  bool UpdateMatchStatus(
-      Route&,
-      HeapVector<Member<Route>>* routes_needing_event = nullptr);
-
   void NotifyStyleEngineIfNeeded();
 
   HeapHashMap<String, Member<Route>> routes_;

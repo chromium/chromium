@@ -2,17 +2,10 @@
 <title>Invalid @navigation rule declarations, some parsed successfully, thanks to General Enclosed, but they should never match.</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
-<script type="routemap">
-  {
-    "routes": [
-      {
-        "name": "--rte",
-        "pattern": "/somewhere/"
-      }
-    ]
-  }
-</script>
 <style>
+  @route --rte {
+    pattern: url-pattern("/somewhere/");
+  }
   @navigation incorrect { #canary { height: 1px; } }
   @navigation (at: --rte) incorrect { #canary { height: 2px; } }
   @navigation (at: --rte) (at: --rte) { #canary { height: 3px; } }

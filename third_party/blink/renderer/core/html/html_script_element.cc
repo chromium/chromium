@@ -462,11 +462,6 @@ bool HTMLScriptElement::supports(const AtomicString& type) {
     return true;
   if (type == script_type_names::kImportmap)
     return true;
-
-  if (type == script_type_names::kRoutemap &&
-      RuntimeEnabledFeatures::RouteMatchingEnabled()) {
-    return true;
-  }
   if (type == script_type_names::kSpeculationrules) {
     return true;
   }

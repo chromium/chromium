@@ -2924,10 +2924,6 @@ void Document::UpdateStyleAndLayoutForNode(const Node* node,
   UpdateStyleAndLayout(reason);
 }
 
-RouteMap* Document::routeMap() {
-  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
-  return &RouteMap::Ensure(*this);
-}
 
 void Document::ApplyScrollRestorationLogic() {
   DCHECK(View());

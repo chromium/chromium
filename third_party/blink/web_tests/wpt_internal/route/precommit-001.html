@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <title>@navigation(to) and @navigation(at) in onnavigate, precommitHandler, and handler()</title>
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
-<script type="routemap">
-  {
-    "routes":
-    [
-      { "name": "--rte", "pattern": {"pathname": "/aaaaa" }}
-    ]
-  }
-</script>
 <style>
+  @route --rte {
+    pattern: url-pattern("/aaaaa");
+  }
   @navigation(to: --rte) {
     body {
       background: #00ff00;

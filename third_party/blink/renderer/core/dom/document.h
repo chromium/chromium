@@ -243,7 +243,6 @@ class ResizeObserver;
 class Resource;
 class ResourceFetcher;
 class RootScrollerController;
-class RouteMap;
 class SVGDocumentExtensions;
 class SVGUseElement;
 class ScriptElementBase;
@@ -1795,8 +1794,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // different.  Having it be a distinct method also makes it clearer why
   // callers are using it.
   PopoverStack& MenuStack() { return popover_auto_stack_; }
-
-  RouteMap* routeMap();
 
   void SetHasCaptureListener() { has_capture_listener_ = true; }
   bool HasCaptureListener() const { return has_capture_listener_; }

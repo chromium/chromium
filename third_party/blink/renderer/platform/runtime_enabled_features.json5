@@ -5323,7 +5323,7 @@
       name: "RootScrollbarFollowsBrowserTheme",
       status: {"Linux": "test", "Win": "test"},
     },
-    // Route matching, @route CSS rule, script type="routemap".
+    // Route matching, @route CSS rule.
     // https://chromestatus.com/feature/4771962874363904
     {
       name: "RouteMatching",

@@ -221,8 +221,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
     [RuntimeEnabled=AriaNotify,MeasureAs=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
-    [RuntimeEnabled=RouteMatching] readonly attribute RouteMap routeMap;
-
     // Event handler attributes
     [RuntimeEnabled=AutofillEvent] attribute EventHandler onautofill;
     attribute EventHandler onbeforecopy;

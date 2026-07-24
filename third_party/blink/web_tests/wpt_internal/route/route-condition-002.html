@@ -2,24 +2,17 @@
 <title>if(navigation)</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#navigation-if-function">
-<script type="routemap">
-  {
-    "routes": [
-      {
-        "name": "--r1",
-        "pattern": [ "/matchme/" ]
-      },
-      {
-        "name": "--r2",
-        "pattern": [ "should-not-match" ]
-      },
-      {
-        "name": "--r3",
-        "pattern": { "protocol": "http*" }
-      }
-    ]
+<style>
+  @route --r1 {
+    pattern: url-pattern("/matchme/");
   }
-</script>
+  @route --r2 {
+    pattern: url-pattern("should-not-match");
+  }
+  @route --r3 {
+    protocol: "http*";
+  }
+</style>
 <div class="tests">
   <div id="elm1" style="--match:if(navigation(at:--r1):true; else:false);"></div>
   <div id="elm2" style="--match:if(navigation(at:--r2):true; else:false);" nevermatch></div>

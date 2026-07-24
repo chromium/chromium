@@ -2076,7 +2076,6 @@ interface Document : Node
     getter readyState
     getter referrer
     getter rootElement
-    getter routeMap
     getter scripts
     getter scrollingElement
     getter spellCheckCustomDictionary
@@ -8078,18 +8077,6 @@ interface RestrictionTarget
     static method fromElement
     attribute @@toStringTag
     method constructor
-interface Route : EventTarget
-    attribute @@toStringTag
-    getter matches
-    getter pattern
-    method constructor
-interface RouteEvent : Event
-    attribute @@toStringTag
-    method constructor
-interface RouteMap
-    attribute @@toStringTag
-    method constructor
-    method get
 interface RtcReceivedPacket
     attribute @@toStringTag
     getter payloadByteLength

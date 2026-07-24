@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/cache_hint_attribute_value.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
@@ -471,10 +470,6 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kImportMap;
   }
 
-  if (EqualIgnoringAsciiCase(type, script_type_names::kRoutemap) &&
-      RuntimeEnabledFeatures::RouteMatchingEnabled()) {
-    return ScriptTypeAtPrepare::kRouteMap;
-  }
 
   if (EqualIgnoringAsciiCase(type, script_type_names::kSpeculationrules)) {
     return ScriptTypeAtPrepare::kSpeculationRules;
@@ -575,7 +570,6 @@ PendingScript* ScriptLoader::PrepareScript(
     case ScriptTypeAtPrepare::kClassic:
     case ScriptTypeAtPrepare::kModule:
     case ScriptTypeAtPrepare::kImportMap:
-    case ScriptTypeAtPrepare::kRouteMap:
       break;
   }
 
@@ -761,15 +755,6 @@ PendingScript* ScriptLoader::PrepareScript(
       return nullptr;
     }
 
-    // TODO(crbug.com/436805487): Should the `src` attribute be supported for
-    // routemap?
-    if (GetScriptType() == ScriptTypeAtPrepare::kRouteMap) {
-      element_document.GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE,
-                     blink::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                     WrapPersistent(element_.Get())));
-      return nullptr;
-    }
 
     // <spec step="31.2">Let src be the value of el's src attribute.</spec>
     StringView src =
@@ -825,7 +810,6 @@ PendingScript* ScriptLoader::PrepareScript(
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
       case ScriptTypeAtPrepare::kImportMap:
-      case ScriptTypeAtPrepare::kRouteMap:
         NOTREACHED();
 
       case ScriptTypeAtPrepare::kSpeculationRules:
@@ -952,29 +936,6 @@ PendingScript* ScriptLoader::PrepareScript(
         // https://html.spec.whatwg.org/C#execute-the-script-element step 6.C
         pending_import_map->RegisterImportMap();
 
-        return nullptr;
-      }
-      case ScriptTypeAtPrepare::kRouteMap: {
-        RouteMap::ParseResult result =
-            RouteMap::Ensure(element_document).ParseAndApplyRoutes(source_text);
-        if (script_state->ContextIsValid()) {
-          ScriptState::Scope scope(script_state);
-          v8::Isolate* isolate = script_state->GetIsolate();
-          switch (result.status) {
-            case RouteMap::ParseResult::kSuccess:
-              break;
-            case RouteMap::ParseResult::kSyntaxError:
-              V8ScriptRunner::ReportException(
-                  isolate,
-                  V8ThrowException::CreateSyntaxError(isolate, result.message));
-              break;
-            case RouteMap::ParseResult::kTypeError:
-              V8ScriptRunner::ReportException(
-                  isolate,
-                  V8ThrowException::CreateTypeError(isolate, result.message));
-              break;
-          }
-        }
         return nullptr;
       }
       case ScriptTypeAtPrepare::kWebBundle: {
