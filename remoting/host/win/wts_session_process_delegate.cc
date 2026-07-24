@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,7 +38,6 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/host/base/switches.h"
-#include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/launch_process_with_token.h"
@@ -46,12 +46,12 @@
 #include "remoting/host/worker_process_ipc_delegate.h"
 #include "remoting/host/worker_process_launcher.h"
 
-    using base::win::ScopedHandle;
-
 // Name of the default session desktop.
 const char kDefaultDesktopName[] = "winsta0\\default";
 
 namespace remoting {
+
+using base::win::ScopedHandle;
 
 // A private class actually implementing the functionality provided by
 // |WtsSessionProcessDelegate|. This class is ref-counted and implements
@@ -89,6 +89,9 @@ class WtsSessionProcessDelegate::Core
   void CloseChannel();
   void CrashProcess(const base::Location& location);
   void KillProcess();
+
+  bool AssignProcessToJobForTesting(base::ProcessHandle process);
+  void SetCoreDeletedCallbackForTesting(base::OnceClosure callback);
 
  private:
   friend class base::RefCountedThreadSafe<Core>;
@@ -188,6 +191,13 @@ class WtsSessionProcessDelegate::Core
 
   // True if Stop() has been called.
   bool stopped_ = false;
+
+  // True if a process has been assigned to the job object and the resulting
+  // JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO notification has not yet been delivered
+  // by the I/O thread.
+  bool job_process_assigned_ = false;
+
+  base::OnceClosure deleted_callback_for_testing_;
 };
 
 WtsSessionProcessDelegate::Core::Core(
@@ -320,10 +330,28 @@ void WtsSessionProcessDelegate::Core::KillProcess() {
   worker_process_.Close();
 }
 
+bool WtsSessionProcessDelegate::Core::AssignProcessToJobForTesting(
+    base::ProcessHandle process) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  if (!job_.is_valid() || !::AssignProcessToJobObject(job_.Get(), process)) {
+    return false;
+  }
+  job_process_assigned_ = true;
+  return true;
+}
+
+void WtsSessionProcessDelegate::Core::SetCoreDeletedCallbackForTesting(
+    base::OnceClosure callback) {
+  deleted_callback_for_testing_ = std::move(callback);
+}
+
 WtsSessionProcessDelegate::Core::~Core() {
   DCHECK(!channel_);
   DCHECK(!event_handler_);
   DCHECK(!worker_process_.is_valid());
+  if (deleted_callback_for_testing_) {
+    std::move(deleted_callback_for_testing_).Run();
+  }
 }
 
 void WtsSessionProcessDelegate::Core::OnIOCompleted(
@@ -477,6 +505,7 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
       ReportFatalError();
       return;
     }
+    job_process_assigned_ = true;
   }
 
   if (!ResumeThread(worker_thread.Get())) {
@@ -514,6 +543,15 @@ void WtsSessionProcessDelegate::Core::DrainJobNotificationsCompleted() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   if (job_.is_valid()) {
+    // Closing the last handle to the job destroys the kernel job object only
+    // once every process in the job has terminated. TerminateJobObject() does
+    // not wait for the processes to exit, so defer closing the handle until
+    // OnActiveProcessZero() has run so that no further notifications will be
+    // posted to the completion port after the handle is closed.
+    if (job_process_assigned_) {
+      return;
+    }
+
     job_.Close();
 
     // Drain the completion queue to make sure all job object notifications have
@@ -570,6 +608,26 @@ void WtsSessionProcessDelegate::Core::InitializeJobCompleted(ScopedHandle job) {
 
 void WtsSessionProcessDelegate::Core::OnActiveProcessZero() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (job_.is_valid()) {
+    JOBOBJECT_BASIC_ACCOUNTING_INFORMATION info;
+    if (QueryInformationJobObject(job_.Get(),
+                                  JobObjectBasicAccountingInformation, &info,
+                                  sizeof(info), nullptr)) {
+      if (info.ActiveProcesses > 0) {
+        return;
+      }
+    }
+  }
+
+  job_process_assigned_ = false;
+
+  if (stopped_) {
+    // The I/O thread has now processed all pending job object notifications,
+    // so it is safe to close the job handle and release |self_|.
+    DrainJobNotificationsCompleted();
+    return;
+  }
 
   if (launch_pending_) {
     LOG(ERROR) << "The worker process exited before connecting via IPC.";
@@ -678,6 +736,16 @@ void WtsSessionProcessDelegate::CrashProcess(const base::Location& location) {
 
 void WtsSessionProcessDelegate::KillProcess() {
   core_->KillProcess();
+}
+
+bool WtsSessionProcessDelegate::AssignProcessToJobForTesting(
+    base::ProcessHandle process) {
+  return core_->AssignProcessToJobForTesting(process);  // IN-TEST
+}
+
+void WtsSessionProcessDelegate::SetCoreDeletedCallbackForTesting(
+    base::OnceClosure callback) {
+  core_->SetCoreDeletedCallbackForTesting(std::move(callback));  // IN-TEST
 }
 
 }  // namespace remoting

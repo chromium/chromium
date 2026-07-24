@@ -10,8 +10,10 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/win/windows_process_delegate.h"
 
@@ -48,6 +50,15 @@ class WtsSessionProcessDelegate : public WindowsProcessDelegate {
   void CloseChannel() override;
   void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
+
+  // Assigns |process| to the job object so that tests can exercise the
+  // job-object shutdown path without launching a process in another session.
+  // Returns true on success. The delegate must have been created with
+  // |launch_elevated| and the job must have been initialized.
+  bool AssignProcessToJobForTesting(base::ProcessHandle process);
+
+  // Registers |callback| to be run when the internal Core object is destroyed.
+  void SetCoreDeletedCallbackForTesting(base::OnceClosure callback);
 
  private:
   // The actual implementation resides in WtsSessionProcessDelegate::Core class.
