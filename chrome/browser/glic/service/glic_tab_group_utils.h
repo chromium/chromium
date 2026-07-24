@@ -27,6 +27,8 @@ std::vector<tabs::TabInterface*> GetTabsInTabGroup(
     tab_groups::TabGroupId group_id);
 
 void EnsureTabInGroup(tabs::TabInterface* tab, tab_groups::TabGroupId group_id);
+void EnsureTabNotInGroup(tabs::TabInterface* tab,
+                         tab_groups::TabGroupId group_id);
 
 }  // namespace glic
 

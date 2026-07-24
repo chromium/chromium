@@ -63,4 +63,18 @@ void EnsureTabInGroup(tabs::TabInterface* tab,
   }
 }
 
+void EnsureTabNotInGroup(tabs::TabInterface* tab,
+                         tab_groups::TabGroupId group_id) {
+  if (tab->GetGroup() != group_id) {
+    return;
+  }
+  BrowserWindowInterface* window = tab->GetBrowserWindowInterface();
+  if (!window) {
+    return;
+  }
+  if (TabListInterface* tab_list = TabListInterface::From(window)) {
+    tab_list->Ungroup({tab->GetHandle()});
+  }
+}
+
 }  // namespace glic

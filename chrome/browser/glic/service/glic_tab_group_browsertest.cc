@@ -157,4 +157,125 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest, UnbindTabRemovesTabFromGroup) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_list->CreateTabGroup({tab1->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+
+  ASSERT_TRUE(coordinator().ShowInstanceForTabGroup(group_id.value()));
+  GlicInstanceImpl* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  EXPECT_NE(tab2->GetGroup(), group_id.value());
+
+  // Bind the ungrouped tab. It should automatically be added to the tab group
+  // associated with the instance.
+  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+
+  EXPECT_EQ(tab2->GetGroup(), group_id.value());
+
+  // Unbind tab2 from the instance.
+  instance->UnbindTab(tab2);
+
+  // Tab 2 should be removed from the tab group.
+  EXPECT_NE(tab2->GetGroup(), group_id.value());
+  EXPECT_FALSE(tab2->GetGroup().has_value());
+
+  tabs::TabInterface* glic_tab = instance->GetGlicTab();
+  if (glic_tab) {
+    tab_list->CloseTab(glic_tab->GetHandle());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
+                       UnbindTabDoesNotRemoveTabFromOtherGroup) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab3 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+  ASSERT_TRUE(tab3);
+
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_list->CreateTabGroup({tab1->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+
+  std::optional<tab_groups::TabGroupId> other_group_id =
+      tab_list->CreateTabGroup({tab2->GetHandle(), tab3->GetHandle()});
+  ASSERT_TRUE(other_group_id.has_value());
+
+  ASSERT_TRUE(coordinator().ShowInstanceForTabGroup(group_id.value()));
+  GlicInstanceImpl* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  // Bind the ungrouped tab. It should automatically be added to the tab group
+  // associated with the instance.
+  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  EXPECT_EQ(tab2->GetGroup(), group_id.value());
+
+  // Manually move the tab back to the other group
+  tab_list->AddTabsToGroup(other_group_id.value(), {tab2->GetHandle()});
+  EXPECT_EQ(tab2->GetGroup(), other_group_id.value());
+
+  // Unbind tab2 from the instance.
+  instance->UnbindTab(tab2);
+
+  // Tab 2 should NOT be removed from its current group since it's different.
+  EXPECT_EQ(tab2->GetGroup(), other_group_id.value());
+
+  tabs::TabInterface* glic_tab = instance->GetGlicTab();
+  if (glic_tab) {
+    tab_list->CloseTab(glic_tab->GetHandle());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
+                       UnbindTabGroupDoesNotRemoveTabs) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_list->CreateTabGroup({tab1->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+
+  ASSERT_TRUE(coordinator().ShowInstanceForTabGroup(group_id.value()));
+  GlicInstanceImpl* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  EXPECT_EQ(tab2->GetGroup(), group_id.value());
+
+  // Calling UnbindTabGroup on the instance should clean up the instance
+  // bindings but it should NOT remove the tabs from the actual browser tab
+  // group.
+  instance->UnbindTabGroup();
+
+  EXPECT_EQ(tab1->GetGroup(), group_id.value());
+  EXPECT_EQ(tab2->GetGroup(), group_id.value());
+
+  tabs::TabInterface* glic_tab = instance->GetGlicTab();
+  if (glic_tab) {
+    tab_list->CloseTab(glic_tab->GetHandle());
+  }
+}
+
 }  // namespace glic
