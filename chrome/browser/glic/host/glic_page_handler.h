@@ -97,9 +97,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   // Cleared when the page handler unregisters.
   raw_ptr<Host> host_;
-  // There should at most one WebClientHandler at a time. A new one is created
-  // each time the webview loads a page.
-  std::unique_ptr<GlicWebClientAccess> web_client_handler_;
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;

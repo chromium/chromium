@@ -22,7 +22,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_web_client_handler.h"
+#include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -76,8 +77,6 @@ GlicPageHandler::~GlicPageHandler() {
   VLOG(1) << "Glic [PageHandler] Destructor";
   host_->instance().RemoveStateObserver(this);
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
-  // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
-  web_client_handler_.reset();
   // Clear `host_` before unregistering so the Host can be deleted
   // synchronously without leaving a dangling raw_ptr during teardown.
   Host* host = host_;
@@ -100,8 +99,7 @@ GlicKeyedService* GlicPageHandler::GetGlicService() {
 void GlicPageHandler::CreateWebClient(
     ::mojo::PendingReceiver<glic::mojom::WebClientHandler>
         web_client_receiver) {
-  web_client_handler_ = MakeGlicWebClient(host_, browser_context_,
-                                          std::move(web_client_receiver));
+  host_->CreateWebClient(std::move(web_client_receiver));
 }
 
 void GlicPageHandler::PrepareForClient(

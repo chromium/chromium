@@ -369,12 +369,14 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         window_controller_(&glic_service_->instance_coordinator()),
         pref_service_(profile_->GetPrefs()),
-        active_state_calculator_(host_),
+        active_state_calculator_(host),
         browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
         annotation_manager_(
-            std::make_unique<GlicAnnotationManager>(glic_service_, host_)) {
+            std::make_unique<GlicAnnotationManager>(glic_service_, host)) {
     VLOG(1) << "Glic [WebClientHandler] Constructor";
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &Host::UnsetWebClient, base::Unretained(host_.get()), this));
     active_state_calculator_.AddObserver(this);
   }
 
@@ -434,7 +436,7 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
     VLOG(1) << "Glic [WebClientHandler] WebClientCreated";
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
-        &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
+        &Host::UnsetWebClient, base::Unretained(host_.get()), this));
 
     page_metadata_manager_ =
         std::make_unique<PageMetadataManager>(profile_, web_client_.get());
@@ -558,7 +560,7 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
 
   void WebClientInitialized() override {
     VLOG(1) << "Glic [WebClientHandler] WebClientInitialized";
-    host().SetWebClient(this);
+    host().SetWebClient();
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
     if (!base::FeatureList::IsEnabled(features::kGlicTabGroups) &&
@@ -1562,7 +1564,6 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
     host().SetInvocationSource(mojom::InvocationSource::kUnsupported);
     page_metadata_manager_.reset();
     SetAudioDucking(false, base::DoNothing());
-    host().UnsetWebClient(this);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
     host().instance().RemoveStateObserver(this);
@@ -1576,7 +1577,7 @@ class GlicWebClientHandler : public mojom::WebClientHandler,
 
   void WebClientDisconnected() {
     VLOG(1) << "Glic [WebClientHandler] WebClientDisconnected";
-    Uninstall();
+    host().UnsetWebClient(this);
   }
 
   void OnUserEnabledActuationOnWebChanged() {

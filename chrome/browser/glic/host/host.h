@@ -38,6 +38,7 @@ class GlicInstanceMetricsBackwardsCompatibility;
 class GlicPinCandidateProvider;
 class GlicSkillsManager;
 class GlicExperimentalTriggeringManager;
+class GlicWebClientAccess;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -266,6 +267,9 @@ class Host : public GlicSharingManagerProvider {
   // TODO(b/409332639): Hide direct access to the web client.
   GlicWebClientAccess* GetPrimaryWebClient();
 
+  void CreateWebClient(
+      mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);
+
   void ManualResizeChanged(bool resizing);
 
   // Whether the primary client is alive and has returned from PanelWillOpen().
@@ -324,7 +328,7 @@ class Host : public GlicSharingManagerProvider {
   void LoginPageCommitted(GlicPageHandler* page_handler);
 
   // Called when a page handler's web client is created or destroyed.
-  void SetWebClient(GlicWebClientAccess* web_client);
+  void SetWebClient();
   void UnsetWebClient(GlicWebClientAccess* web_client);
   void WebClientInitializeFailed(GlicWebClientAccess* web_client);
 
@@ -408,7 +412,6 @@ class Host : public GlicSharingManagerProvider {
     // PanelWasClosed() is called.
     bool open_complete = false;
     bool context_access_indicator_enabled = false;
-    raw_ptr<GlicWebClientAccess> web_client = nullptr;
   };
 
   void PanelWillOpenComplete(GlicWebClientAccess* client,
@@ -417,7 +420,6 @@ class Host : public GlicSharingManagerProvider {
   const PageHandlerInfo* FindInfo(GlicPageHandler* handler) const {
     return const_cast<Host*>(this)->FindInfo(handler);
   }
-  PageHandlerInfo* FindInfoForClient(GlicWebClientAccess* client);
   PageHandlerInfo* FindInfoForWebUiContents(content::WebContents* web_contents);
   const PageHandlerInfo* FindInfoForWebUiContents(
       content::WebContents* web_contents) const {
@@ -451,6 +453,13 @@ class Host : public GlicSharingManagerProvider {
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
   std::optional<PageHandlerInfo> handler_info_;
+  // Host owns at most one web client access. If a new access is created,
+  // the old one is destroyed synchronously.
+  std::unique_ptr<GlicWebClientAccess> web_client_access_;
+  // Points to `web_client_access_` once the Javascript WebUI has completed
+  // initialization and called `WebClientInitialized()`. Null before then or
+  // after the web client disconnects.
+  raw_ptr<GlicWebClientAccess> web_client_ = nullptr;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
 
