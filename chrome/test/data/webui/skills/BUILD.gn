@@ -11,6 +11,7 @@ build_webui_tests("build") {
     "skills_dialog_test.ts",
     "skills_emoji_picker_test.ts",
     "skills_test.ts",
+    "skills_webview_test.ts",
     "test_skills_browser_proxy.ts",
     "user_skills_page_test.ts",
     "webview_bridge_test.ts",

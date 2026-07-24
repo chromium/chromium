@@ -84,4 +84,8 @@ IN_PROC_BROWSER_TEST_F(SkillsV2BrowserTest, WebviewBridge) {
   RunTest("skills/webview_bridge_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsV2BrowserTest, Webview) {
+  RunTest("skills/skills_webview_test.js", "mocha.run();");
+}
+
 }  // namespace

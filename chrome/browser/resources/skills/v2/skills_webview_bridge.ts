@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ToastType} from '../skills.mojom-webui.js';
 
-import {HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, PRIMARY_SKILLS_ORIGIN, SKILLS_API_ALLOWED_ORIGINS, SKILLS_CLOSE_DIALOG, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
+import {HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, PRIMARY_SKILLS_ORIGIN, SKILLS_API_ALLOWED_ORIGINS, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
 
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
@@ -217,6 +217,17 @@ export class SkillsWebviewBridge {
   private handleInvokeSkillMessage(data: {skillId: string}) {
     if (data.skillId) {
       this.delegate_.onInvokeSkill(data.skillId);
+    }
+  }
+
+  sendGeminiPrompt(prompt: string) {
+    if (this.webview_.contentWindow && this.targetOrigin_) {
+      this.webview_.contentWindow.postMessage(
+          {
+            type: SKILLS_GEMINI_PROMPT_TYPE,
+            prompt: prompt,
+          },
+          this.targetOrigin_);
     }
   }
 

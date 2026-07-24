@@ -17,6 +17,13 @@ export const SKILLS_INVOKE_SKILL = 'invoke-skill';
 /** Message type used by the guest to close the dialog. */
 export const SKILLS_CLOSE_DIALOG = 'close-dialog';
 
+/** Message type used by the host to send the Gemini prompt. */
+export const SKILLS_GEMINI_PROMPT_TYPE = 'skills-gemini-prompt';
+
+/** Query parameter key used to indicate the prompt needs to be saved. */
+export const IS_SAVING_GEMINI_QUERY_PARAMETER = 'isSavingGeminiPrompt';
+
+
 /**
  * Interval in milliseconds between successive handshake pings sent by the
  * host.

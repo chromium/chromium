@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/global_features.h"
@@ -193,6 +194,17 @@ void SkillsUI::InitializeDialog(base::WeakPtr<SkillsDialogDelegate> delegate,
   initial_skill_ = std::move(skill);
   entrypoint_ = entrypoint;
   dialog_type_ = dialog_type;
+
+  if (base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
+    base::DictValue update =
+        base::DictValue()
+            .Set("dialogType", static_cast<int>(dialog_type))
+            .Set("skillId", initial_skill_.id)
+            .Set("skillPrompt", initial_skill_.prompt);
+    content::WebUIDataSource::Update(Profile::FromWebUI(web_ui()),
+                                     chrome::kChromeUISkillsHost,
+                                     std::move(update));
+  }
 }
 
 void SkillsUI::BindInterface(
