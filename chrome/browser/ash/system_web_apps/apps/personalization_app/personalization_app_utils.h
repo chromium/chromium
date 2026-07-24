@@ -41,16 +41,16 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
 // that there is a valid profile and user that has opened personalization app.
 // When calling this function outside of one of the personalization app
 // providers, be aware that it may return nullptr.
-const user_manager::User* GetUser(const Profile* profile);
+const user_manager::User* GetUser(Profile* profile);
 
 // This is also generally called after a user with a regular profile has opened
 // personalization app. In the case where this profile has no associated user
 // and account id, returns a special |EmptyAccountId| singleton.
-AccountId GetAccountId(const Profile* profile);
+AccountId GetAccountId(Profile* profile);
 
 // Controls whether the profile can see and open personalization app. Most
 // profiles can, but kiosk and guest cannot.
-bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
+bool CanSeeWallpaperOrPersonalizationApp(Profile* profile);
 
 // Verifies if the current language settings are supported.
 bool IsSystemInSupportedLanguage();

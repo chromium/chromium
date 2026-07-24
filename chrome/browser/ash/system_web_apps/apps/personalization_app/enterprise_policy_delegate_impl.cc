@@ -18,7 +18,7 @@ namespace ash::personalization_app {
 
 namespace {
 
-ash::UserImageManagerImpl* GetUserImageManager(const Profile* profile) {
+ash::UserImageManagerImpl* GetUserImageManager(Profile* profile) {
   return ash::UserImageManagerRegistry::Get()->GetManager(
       GetAccountId(profile));
 }

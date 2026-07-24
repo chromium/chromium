@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
@@ -102,14 +101,11 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
       std::move(wallpaper_provider));
 }
 
-const user_manager::User* GetUser(const Profile* profile) {
-  auto* profile_helper = ProfileHelper::Get();
-  DCHECK(profile_helper);
-  const user_manager::User* user = profile_helper->GetUserByProfile(profile);
-  return user;
+const user_manager::User* GetUser(Profile* profile) {
+  return ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
 }
 
-AccountId GetAccountId(const Profile* profile) {
+AccountId GetAccountId(Profile* profile) {
   const auto* user = GetUser(profile);
   if (!user) {
     return EmptyAccountId();
@@ -117,7 +113,7 @@ AccountId GetAccountId(const Profile* profile) {
   return user->GetAccountId();
 }
 
-bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
+bool CanSeeWallpaperOrPersonalizationApp(Profile* profile) {
   const auto* user = GetUser(profile);
   if (!user) {
     return false;

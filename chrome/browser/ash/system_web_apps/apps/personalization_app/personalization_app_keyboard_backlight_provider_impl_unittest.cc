@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -96,6 +97,8 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     ChromeAshTestBase::SetUp();
 
     ASSERT_TRUE(profile_manager_.SetUp());
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                            account_id);
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
 
     ash::FakeChromeUserManager* user_manager =
