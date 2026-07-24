@@ -381,7 +381,7 @@ AutofillAiPersonalContextAccessManagerImpl::GetPrefetchStatusByEntityType(
   return RequestStatus::kNotStarted;
 }
 
-bool AutofillAiPersonalContextAccessManagerImpl::ServerHasDataAvailable(
+bool AutofillAiPersonalContextAccessManagerImpl::ServerHasSpiiPresenceSignal(
     EntityType type) const {
   return spii_presence_signal_cache_.contains(type);
 }

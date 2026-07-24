@@ -70,7 +70,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   void GetUnmaskedSpiiEntity(const EntityInstance::EntityId& id,
                              GetUnmaskedSpiiEntityCallback callback) override;
   bool IsTypePrefetched(EntityType type) const override;
-  bool ServerHasDataAvailable(EntityType type) const override;
+  bool ServerHasSpiiPresenceSignal(EntityType type) const override;
   void AddObserver(
       AutofillAiPersonalContextAccessManager::Observer* observer) override;
   void RemoveObserver(

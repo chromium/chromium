@@ -773,7 +773,7 @@ DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
   for (EntityType entity_type : DenseSet<EntityType>::all()) {
     if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
-      if (access_manager->ServerHasDataAvailable(entity_type) &&
+      if (access_manager->ServerHasSpiiPresenceSignal(entity_type) &&
           access_manager->GetPrefetchStatusByEntityType(entity_type) ==
               RequestStatus::kPending) {
         types.insert(entity_type);

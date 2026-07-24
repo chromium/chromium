@@ -36,7 +36,7 @@ class MockAutofillAiPersonalContextAccessManager
               (EntityType type),
               (const, override));
   MOCK_METHOD(bool,
-              ServerHasDataAvailable,
+              ServerHasSpiiPresenceSignal,
               (EntityType type),
               (const, override));
 };

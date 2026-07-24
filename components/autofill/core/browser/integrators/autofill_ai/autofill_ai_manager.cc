@@ -212,7 +212,6 @@ void PrefetchAmbientAutofillContext(AutofillClient& client,
   }
 }
 
-
 }  // namespace
 
 AutofillAiManager::EntityImportPromptCandidate::EntityImportPromptCandidate(

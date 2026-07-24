@@ -1513,8 +1513,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest, ShowFetchingSuggestionWhenPending) {
   SetEntities({});
 
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kPassport)))
@@ -1534,8 +1534,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetEntities({});
 
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(false));
   // We mock pending to ensure the test fails if the existence check is missing.
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
@@ -1553,8 +1553,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest, NoFetchingSuggestionWhenNotPending) {
   SetEntities({});
 
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kPassport)))
@@ -1575,15 +1575,15 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetEntities({test::GetPassportEntityInstance()});
 
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(RequestStatus::kSuccess));
 
   // National ID is fetching, but the focused field (Passport) is not pending.
-  EXPECT_CALL(access_manager, ServerHasDataAvailable(
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
                                   EntityType(EntityTypeName::kNationalIdCard)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
@@ -1960,8 +1960,8 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
   SetEntities({});
 
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kPassport)))
@@ -1988,20 +1988,20 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
   // types. The suggestion generator checks the status of all compatible
   // types, so we define catch-all default expectations first to prevent
   // GMock from reporting unexpected call failures on other types.
-  EXPECT_CALL(access_manager, ServerHasDataAvailable)
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal)
       .WillRepeatedly(Return(false));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType)
       .WillRepeatedly(Return(RequestStatus::kNotStarted));
 
-  EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(access_manager, ServerHasSpiiPresenceSignal(
+                                  EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(RequestStatus::kPending));
 
   EXPECT_CALL(access_manager,
-              ServerHasDataAvailable(EntityType(EntityTypeName::kVehicle)))
+              ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kVehicle)))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
                                   EntityType(EntityTypeName::kVehicle)))

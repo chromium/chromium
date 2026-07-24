@@ -87,8 +87,7 @@ class AutofillAiPersonalContextAccessManager : public KeyedService {
   virtual bool IsTypePrefetched(EntityType type) const = 0;
 
   // Returns true if a presence signal for `type` is currently available.
-  // TODO(crbug.com/516721244): Rename to ServerHasSpiiPresenceSignal.
-  virtual bool ServerHasDataAvailable(EntityType type) const = 0;
+  virtual bool ServerHasSpiiPresenceSignal(EntityType type) const = 0;
 };
 
 }  // namespace autofill

@@ -1005,25 +1005,26 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       test_api(access_manager()).IsPresenceSignalCached(passport_type));
 }
 
-// Tests that ServerHasDataAvailable returns true if presence signals are cached
-// for a type.
-TEST_F(AutofillAiPersonalContextAccessManagerImplTest, ServerHasDataAvailable) {
+// Tests that ServerHasSpiiPresenceSignal returns true if presence signals are
+// cached for a type.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       ServerHasSpiiPresenceSignal) {
   const EntityType passport_type(EntityTypeName::kPassport);
   EntityInstance passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kPersonalContext});
 
   // 1. Initially, no data is available.
-  EXPECT_FALSE(access_manager().ServerHasDataAvailable(passport_type));
+  EXPECT_FALSE(access_manager().ServerHasSpiiPresenceSignal(passport_type));
 
   // 2. Presence signal cached.
   test_api(access_manager()).CachePresenceSignal(passport_type);
-  EXPECT_TRUE(access_manager().ServerHasDataAvailable(passport_type));
+  EXPECT_TRUE(access_manager().ServerHasSpiiPresenceSignal(passport_type));
 }
 
-// Tests that ServerHasDataAvailable remains true even after the masked entity
-// was unmasked (fetched).
+// Tests that ServerHasSpiiPresenceSignal remains true even after the masked
+// entity was unmasked (fetched).
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
-       ServerHasDataAvailable_TrueAfterUnmasking) {
+       ServerHasSpiiPresenceSignal_TrueAfterUnmasking) {
   const EntityType passport_type(EntityTypeName::kPassport);
   // 1. Prefetch (masked) Passport.
   personal_context::proto::ContextMemoryAmbientAutofillResponse
@@ -1044,13 +1045,13 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   ASSERT_TRUE(access_manager().IsTypePrefetched(passport_type));
 
   // Server should have data available after prefetch (presence signal cached).
-  EXPECT_TRUE(access_manager().ServerHasDataAvailable(passport_type));
+  EXPECT_TRUE(access_manager().ServerHasSpiiPresenceSignal(passport_type));
 }
 
 // Tests that if the masked SPII response finishes first (which populates the
 // prefetch cache and sets the status to Success), a subsequent presence signal
 // response (from the first request) still correctly caches the presence signal,
-// so ServerHasDataAvailable() returns true.
+// so ServerHasSpiiPresenceSignal() returns true.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PresenceResponseAfterSpiiResponsePopulatesPresenceCache) {
   const EntityType passport_type(EntityTypeName::kPassport);
@@ -1107,9 +1108,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   presence_callback_future.Take().Run(personal_context::FetchContextResult(
       base::ok(std::move(any_presence_response))));
 
-  // `ServerHasDataAvailable` should now return true even if the presence
+  // `ServerHasSpiiPresenceSignal` should now return true even if the presence
   // signal arrived after the SPII data was cached.
-  EXPECT_TRUE(access_manager().ServerHasDataAvailable(passport_type));
+  EXPECT_TRUE(access_manager().ServerHasSpiiPresenceSignal(passport_type));
 }
 
 // Tests that resetting the state for a type evicts any existing prefetched

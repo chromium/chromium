@@ -2458,8 +2458,8 @@ TEST_F(AutofillAiManagerTest,
                                       EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(
           AutofillAiPersonalContextAccessManager::RequestStatus::kSuccess));
-  EXPECT_CALL(pcontext_manager(),
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(pcontext_manager(), ServerHasSpiiPresenceSignal(
+                                      EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(true));
 
   ukm::SourceId ukm_source_id =
@@ -2631,8 +2631,8 @@ TEST_P(AutofillAiManagerCacheReadinessTest,
   EXPECT_CALL(pcontext_manager(), GetPrefetchStatusByEntityType(
                                       EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(test_case.prefetch_status));
-  EXPECT_CALL(pcontext_manager(),
-              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+  EXPECT_CALL(pcontext_manager(), ServerHasSpiiPresenceSignal(
+                                      EntityType(EntityTypeName::kPassport)))
       .WillRepeatedly(Return(test_case.server_has_spii_data));
 
   if (test_case.has_entity_data) {

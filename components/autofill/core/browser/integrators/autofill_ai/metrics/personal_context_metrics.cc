@@ -42,7 +42,7 @@ PersonalContextCacheReadinessOnFirstInteraction GetCacheReadinessState(
       // Prefetch succeeded. We check if the cache contains either sensitive
       // (SPII) or non-sensitive entity data.
       const bool has_spii_signal =
-          access_manager.ServerHasDataAvailable(entity_type);
+          access_manager.ServerHasSpiiPresenceSignal(entity_type);
       const bool has_entity_data =
           entity_data_manager &&
           std::ranges::any_of(entity_data_manager->GetEntityInstances(),
