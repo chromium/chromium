@@ -36,6 +36,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -55,6 +56,7 @@ import org.chromium.net.test.util.TestWebServer;
 /** Integration tests for the Custom Tab post message support. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class CustomTabPostMessageTest {
     private static final int BEFORE_MAY_LAUNCH_URL = 0;
     private static final int BEFORE_INTENT = 1;
