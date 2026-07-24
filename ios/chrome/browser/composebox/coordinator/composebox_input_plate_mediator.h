@@ -119,6 +119,12 @@ class ContextualSearchSessionHandle;
 // composebox mode and current number of attachments.
 - (NSUInteger)remainingNumberOfImagesAllowed;
 
+// Returns the asset IDs of all currently attached image items.
+- (NSArray<NSString*>*)attachedImageAssetIDs;
+
+// Removes the image item associated with the given `assetID`.
+- (void)removeImageWithAssetID:(NSString*)assetID;
+
 // Records that the plus menu opened with the given visible attachment buttons,
 // and maps dynamically injected Tools and Models to metrics.
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:

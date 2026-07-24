@@ -437,7 +437,9 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results {
-  [_metricsRecorder recordImagesAttached:results.count];
+  if (results.count > 0) {
+    [_metricsRecorder recordImagesAttached:results.count];
+  }
 
   [_mediator processImageItems:results];
 }
@@ -493,6 +495,11 @@ CGFloat const kSheetTopPadding = 40.0f;
     (ComposeboxPickerPresenter*)presenter {
   CHECK(_inputState);
   return _inputState.maxTabAttachmentCount;
+}
+
+- (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator attachedImageAssetIDs];
 }
 
 #pragma mark - Private

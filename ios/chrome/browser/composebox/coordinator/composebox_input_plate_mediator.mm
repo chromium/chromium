@@ -469,6 +469,31 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   return [_stateManager remainingNumberOfImagesAllowed];
 }
 
+- (NSArray<NSString*>*)attachedImageAssetIDs {
+  NSMutableArray<NSString*>* assetIDs = [[NSMutableArray alloc] init];
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
+        item.assetID.length > 0) {
+      [assetIDs addObject:item.assetID];
+    }
+  }
+  return [assetIDs copy];
+}
+
+- (void)removeImageWithAssetID:(NSString*)assetID {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!assetID.length) {
+    return;
+  }
+  for (ComposeboxInputItem* item in [_items.containedItems copy]) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
+        [item.assetID isEqualToString:assetID]) {
+      [self removeItem:item];
+      break;
+    }
+  }
+}
+
 - (ComposeboxAttachmentSelection*)currentAttachmentSelection {
   std::set<web::WebStateID> tabIDs;
   NSMutableArray<ComposeboxPickerImageResult*>* images =
@@ -528,11 +553,28 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
-  for (ComposeboxPickerImageResult* item in attachments.images) {
-    [self processImageItemProvider:item.imageProvider
-                           assetID:item.assetID
-                            source:item.source
-                        completion:nil];
+  if (attachments.images) {
+    NSMutableSet<NSString*>* newAssetIDs = [[NSMutableSet alloc] init];
+    for (ComposeboxPickerImageResult* item in attachments.images) {
+      if (item.assetID.length > 0) {
+        [newAssetIDs addObject:item.assetID];
+      }
+    }
+
+    for (ComposeboxInputItem* item in [_items.containedItems copy]) {
+      if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
+          item.assetID.length > 0 &&
+          ![newAssetIDs containsObject:item.assetID]) {
+        [self removeItem:item];
+      }
+    }
+
+    for (ComposeboxPickerImageResult* item in attachments.images) {
+      [self processImageItemProvider:item.imageProvider
+                             assetID:item.assetID
+                              source:item.source
+                          completion:nil];
+    }
   }
 
   for (NSURL* url in attachments.files) {
@@ -884,7 +926,18 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   BOOL unableToLoadUIImage =
       ![itemProvider canLoadObjectOfClass:[UIImage class]];
 
-  BOOL assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
+  BOOL assetAlreadyLoaded = NO;
+  if (assetID.length > 0) {
+    assetAlreadyLoaded = [_items assetAlreadyLoaded:assetID];
+  } else if (itemProvider) {
+    for (ComposeboxInputItem* item in _items.containedItems) {
+      if (item.imageProvider == itemProvider) {
+        assetAlreadyLoaded = YES;
+        break;
+      }
+    }
+  }
+
   if (unableToLoadUIImage || assetAlreadyLoaded) {
     if (completion) {
       completion();

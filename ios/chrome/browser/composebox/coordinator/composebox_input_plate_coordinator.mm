@@ -769,16 +769,37 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results {
-  if (results.count == 0) {
-    return;
+  // Gallery picker results (PHPickerViewController) return the complete set of
+  // selected gallery items. Reconcile preselected asset IDs so that any gallery
+  // photo deselected by the user is removed from attachments. Camera picker
+  // captures lack asset IDs and represent single new photos, so skip gallery
+  // reconciliation.
+  BOOL isCamera =
+      results.firstObject.source == ComposeboxInputItemSource::kCameraPicker;
+  NSArray<NSString*>* attachedAssetIDs = [_mediator attachedImageAssetIDs];
+  if (!isCamera && attachedAssetIDs.count > 0) {
+    NSMutableSet<NSString*>* returnedAssetIDs = [[NSMutableSet alloc] init];
+    for (ComposeboxPickerImageResult* result in results) {
+      if (result.assetID.length > 0) {
+        [returnedAssetIDs addObject:result.assetID];
+      }
+    }
+
+    for (NSString* assetID in attachedAssetIDs) {
+      if (![returnedAssetIDs containsObject:assetID]) {
+        [_mediator removeImageWithAssetID:assetID];
+      }
+    }
   }
 
-  [_metricsRecorder recordImagesAttached:results.count];
+  if (results.count > 0) {
+    [_metricsRecorder recordImagesAttached:results.count];
 
-  for (ComposeboxPickerImageResult* result in results) {
-    [_mediator processImageItemProvider:result.imageProvider
-                                assetID:result.assetID
-                                 source:result.source];
+    for (ComposeboxPickerImageResult* result in results) {
+      [_mediator processImageItemProvider:result.imageProvider
+                                  assetID:result.assetID
+                                   source:result.source];
+    }
   }
 }
 
@@ -885,6 +906,11 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 - (NSUInteger)maxTabAttachmentCountForPresenter:
     (ComposeboxPickerPresenter*)presenter {
   return [_mediator maxTabAttachmentCount];
+}
+
+- (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
+    (ComposeboxPickerPresenter*)presenter {
+  return [_mediator attachedImageAssetIDs];
 }
 
 #pragma mark - ComposeboxMenuCoordinatorInputPlateDelegate

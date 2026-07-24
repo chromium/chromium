@@ -59,7 +59,17 @@
 - (void)presentGalleryPickerWithLimit:(NSUInteger)limit {
   PHPickerConfiguration* config = [[PHPickerConfiguration alloc]
       initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  config.selectionLimit = limit;
+
+  NSArray<NSString*>* preselectedAssetIDs =
+      [self.dataSource attachedImageAssetIDsForPresenter:self];
+
+  if (preselectedAssetIDs.count > 0) {
+    config.preselectedAssetIdentifiers = preselectedAssetIDs;
+    config.selectionLimit = limit + preselectedAssetIDs.count;
+  } else {
+    config.selectionLimit = limit;
+  }
+
   config.filter = [PHPickerFilter imagesFilter];
   PHPickerViewController* picker =
       [[PHPickerViewController alloc] initWithConfiguration:config];
@@ -176,9 +186,6 @@
 - (void)picker:(PHPickerViewController*)picker
     didFinishPicking:(NSArray<PHPickerResult*>*)results {
   [picker dismissViewControllerAnimated:YES completion:nil];
-  if (results.count == 0) {
-    return;
-  }
 
   // TODO(crbug.com/506955766): Unify metrics recording and record this action.
 

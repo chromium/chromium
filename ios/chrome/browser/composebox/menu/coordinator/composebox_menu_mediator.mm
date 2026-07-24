@@ -63,20 +63,33 @@
 }
 
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems {
-  NSMutableArray<ComposeboxPickerImageResult*>* updatedImageResults =
+  NSMutableArray<ComposeboxPickerImageResult*>* updatedImages =
       [[NSMutableArray alloc] init];
 
-  if (_preselection.images) {
-    updatedImageResults = [_preselection.images mutableCopy];
-  }
+  BOOL isCamera =
+      imageItems.firstObject.source == ComposeboxInputItemSource::kCameraPicker;
 
-  [updatedImageResults addObjectsFromArray:imageItems];
+  if (isCamera) {
+    if (_preselection.images) {
+      updatedImages = [_preselection.images mutableCopy];
+    }
+    [updatedImages addObjectsFromArray:imageItems];
+  } else {
+    // Gallery picker results. Retain existing non-gallery images from
+    // preselection, and replace gallery images with `imageItems`.
+    for (ComposeboxPickerImageResult* imageResult in _preselection.images) {
+      if (imageResult.source != ComposeboxInputItemSource::kGalleryPicker) {
+        [updatedImages addObject:imageResult];
+      }
+    }
+    [updatedImages addObjectsFromArray:imageItems];
+  }
 
   ComposeboxAttachmentSelection* selection =
       [[ComposeboxAttachmentSelection alloc]
              initWithTabIDs:_preselection.tabIDs
           cachedWebStateIDs:_preselection.cachedWebStateIDs
-                     images:updatedImageResults
+                     images:updatedImages
                       files:_preselection.files
                  driveItems:_preselection.driveItems];
 
@@ -145,6 +158,16 @@
 - (NSUInteger)remainingNumberOfImagesAllowed {
   CHECK(_inputState);
   return _inputState.remainingNumberOfImagesAllowed;
+}
+
+- (NSArray<NSString*>*)attachedImageAssetIDs {
+  NSMutableArray<NSString*>* assetIDs = [[NSMutableArray alloc] init];
+  for (ComposeboxPickerImageResult* imageResult in _preselection.images) {
+    if (imageResult.assetID.length > 0) {
+      [assetIDs addObject:imageResult.assetID];
+    }
+  }
+  return [assetIDs copy];
 }
 
 - (void)setConsumer:(id<ComposeboxMenuConsumer>)consumer {

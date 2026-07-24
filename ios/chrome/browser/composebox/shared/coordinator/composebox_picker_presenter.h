@@ -48,7 +48,7 @@
 @end
 
 /// Data source for providing information to the pickers.
-@protocol ComposeboxPickerPresenterDataSource
+@protocol ComposeboxPickerPresenterDataSource <NSObject>
 
 // Returns the associated IDs for currently attached tabs from the current web
 // state context.
@@ -57,6 +57,10 @@
 
 // Returns the max number of tab attachments.
 - (NSUInteger)maxTabAttachmentCountForPresenter:
+    (ComposeboxPickerPresenter*)presenter;
+
+// Returns the asset IDs for currently attached images.
+- (NSArray<NSString*>*)attachedImageAssetIDsForPresenter:
     (ComposeboxPickerPresenter*)presenter;
 
 @end

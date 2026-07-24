@@ -109,6 +109,9 @@ class WebStateList;
 /// composebox mode and current number of attachments.
 - (NSUInteger)remainingNumberOfImagesAllowed;
 
+/// Returns the asset IDs of all currently attached image items.
+- (NSArray<NSString*>*)attachedImageAssetIDs;
+
 /// Returns the associated IDs for all currently attached tabs.
 - (std::set<web::WebStateID>)allAttachedWebStateIDs;
 
