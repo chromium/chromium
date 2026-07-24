@@ -193523,7 +193523,7 @@
         ]
        ],
        "clip-path-transition-allow-discrete-shape.html": [
-        "16f7ec3fbbfd5532ece6f537f5efa2dba868c3b7",
+        "e698cd8038245b9349c64e5f360795f405118b2c",
         [
          null,
          [
@@ -193539,11 +193539,11 @@
             [
              [
               0,
-              32
+              92
              ],
              [
               0,
-              32
+              340
              ]
             ]
            ]
@@ -193744,7 +193744,7 @@
        ]
       ],
       "clip-path-borderBox-1c.html": [
-       "0783cfe0039c7cbcae55f1fbe392a525e39f70f6",
+       "9b37e3bf4b17d8d3c6ecf5103817b84972025dd5",
        [
         null,
         [
@@ -193760,7 +193760,7 @@
            [
             [
              0,
-             65
+             102
             ],
             [
              0,
@@ -195252,7 +195252,7 @@
        ]
       ],
       "clip-path-paddingBox-1c.html": [
-       "c3fc5a90af2e1819ad78bcf3cccba165f5f9aa99",
+       "4fd70e3a4020d968e0e561e7823fe4a373810e00",
        [
         null,
         [
@@ -195268,7 +195268,7 @@
            [
             [
              0,
-             52
+             68
             ],
             [
              0,
@@ -195998,7 +195998,7 @@
        ]
       ],
       "clip-path-strokeBox-1a.html": [
-       "37cec39ff808bc51e837ecc9d03725a22c20a989",
+       "768fd1caeb28c2bf3bbf913b92a32d12b9bc8057",
        [
         null,
         [
@@ -196014,7 +196014,7 @@
            [
             [
              0,
-             65
+             102
             ],
             [
              0,
@@ -196357,7 +196357,7 @@
        ]
       ],
       "clip-path-viewBox-1c.html": [
-       "720b3b587549bc8ec9cd2fe1aa7f87db566dc74b",
+       "c89aebfffd7ef25534b2de2605e1f31b6becf2ce",
        [
         null,
         [
@@ -196373,7 +196373,7 @@
            [
             [
              0,
-             65
+             102
             ],
             [
              0,
@@ -198940,7 +198940,7 @@
        ]
       ],
       "mask-image-inline-sliced-1.html": [
-       "9d09cc00a1f259644125747d1d1d08cbfdce6dd2",
+       "35d74edcd2af43bf3dbb5388e62f498300bed307",
        [
         null,
         [
@@ -198949,7 +198949,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             1450
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mask-image-multi-layer-while-loading.tentative.html": [
@@ -227566,7 +227582,7 @@
       "shape-image": {
        "gradients": {
         "shape-outside-linear-gradient-001.html": [
-         "78ef679d67b2c97e16799c2b51e5401fa29821d4",
+         "b33b345941bc93d6beaedf24b55f95502b4a0238",
          [
           null,
           [
@@ -227586,7 +227602,7 @@
               ],
               [
                0,
-               9600
+               9650
               ]
              ]
             ]
@@ -227595,7 +227611,7 @@
          ]
         ],
         "shape-outside-linear-gradient-002.html": [
-         "6fceedaa3f79578663fc8bba9ab371dd8ca189cd",
+         "0cd75707716e6d60c9e22d9db4f70e05d2fb8809",
          [
           null,
           [
@@ -227615,7 +227631,7 @@
               ],
               [
                0,
-               9600
+               9650
               ]
              ]
             ]
@@ -227624,7 +227640,7 @@
          ]
         ],
         "shape-outside-linear-gradient-003.html": [
-         "9565f37ec06742b9cddf439daca184285658bd94",
+         "64764817bb2dde2fb4145f8c68aaaa208131638b",
          [
           null,
           [
@@ -227644,7 +227660,7 @@
               ],
               [
                0,
-               9600
+               9650
               ]
              ]
             ]
@@ -365873,6 +365889,97 @@
         "timeout": "long"
        }
       ]
+     ],
+     "viewBox-zero-disables-rendering-001.svg": [
+      "14e5b69ad4a4640c1fc9502fc9666508db470964",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-002.svg": [
+      "12bffb23bf406fcaf11ebcd2c44e127fb9cb3048",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-003.svg": [
+      "87fbd909135d092c9f71c10055392c9ef8cf8119",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-contexts.html": [
+      "2e1d65eed9c77fe608f5e794ccdb1bf912068836",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-contexts-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-marker.svg": [
+      "acd259cf9061810397ec205fe47076916d3f4196",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-marker-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-pattern.svg": [
+      "c9612054f4546f14efdf0930ad63d785b2cd8c9f",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-zero-disables-rendering-symbol.svg": [
+      "5ca08c3d0e361699164c867325103e528fe43202",
+      [
+       null,
+       [
+        [
+         "/svg/coordinate-systems/viewBox-zero-disables-rendering-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "embedded": {
@@ -366605,6 +366712,19 @@
         {}
        ]
       ],
+      "circle-006.svg": [
+       "bc95cdfed823e2ffe3e8ccb51ff84f30375de08e",
+       [
+        null,
+        [
+         [
+          "/svg/geometry/reftests/not-rendered-200-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "circle-calc-dynamic-viewport.html": [
        "cff8915d6f0ca9396da0afaaf1c27b86925d8459",
        [
@@ -366703,7 +366823,7 @@
        ]
       ],
       "ellipse-005.svg": [
-       "3506fd4254826061b42d8353ba24add6b926b2c6",
+       "12e3bfd3821dabfc9941a3bb007c55e6aa936dfe",
        [
         null,
         [
@@ -366716,12 +366836,25 @@
        ]
       ],
       "ellipse-006.svg": [
-       "2b96282177325d3fb20fb57a7e5a16f667a6634a",
+       "6247830da9f57dd6cb16f8528cac38f4602188f3",
        [
         null,
         [
          [
           "/svg/geometry/reftests/circle-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "ellipse-007.svg": [
+       "6848cb5b41dc55be3500661e36d1e1ace3bcd5c2",
+       [
+        null,
+        [
+         [
+          "/svg/geometry/reftests/not-rendered-200-ref.svg",
           "=="
          ]
         ],
@@ -366813,6 +366946,45 @@
         [
          [
           "/svg/geometry/reftests/rect-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "rect-005.svg": [
+       "951db13aa794baf03307fa3311939cc2f97cabfe",
+       [
+        null,
+        [
+         [
+          "/svg/geometry/reftests/not-rendered-200-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "rect-006.svg": [
+       "72806169798ecedab3cd78071b082608a710f188",
+       [
+        null,
+        [
+         [
+          "/svg/geometry/reftests/not-rendered-200-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "rect-007.svg": [
+       "b753d7bf50bf48a8692ae4138348b9acbf122c0c",
+       [
+        null,
+        [
+         [
+          "/svg/geometry/reftests/rect-007-ref.svg",
           "=="
          ]
         ],
@@ -370014,7 +370186,7 @@
        ]
       ],
       "pathlength-003.svg": [
-       "45f64eaa5644aade68429e23972bbe2e413ac4db",
+       "20cc34e67f382fbedea64bce070dce0d71bbd04c",
        [
         null,
         [
@@ -370030,11 +370202,11 @@
            [
             [
              0,
-             61
+             125
             ],
             [
              0,
-             4900
+             7315
             ]
            ]
           ]
@@ -493296,19 +493468,11 @@
      []
     ],
     "sanitizer-config-expected.txt": [
-     "5ab75f434e1402e46107ee6c01bf51196c5c2a91",
-     []
-    ],
-    "sanitizer-default-config-expected.txt": [
-     "593c643ed4d3d89e18fd158598af973dc9d602d6",
-     []
-    ],
-    "sanitizer-get-expected.txt": [
-     "bb1ae9d419aa254526009b113225a5e18262df2c",
+     "34dd7f57065a28d35811af4ae95bfbdf6f5ec750",
      []
     ],
     "sanitizer-modifiers-expected.txt": [
-     "fcd205bb688829748342b764a054a4ac3db306f6",
+     "70f46ea9901c5393b289f622d5a875536a565a7f",
      []
     ],
     "sethtml-safety.sub.dat": [
@@ -499730,8 +499894,48 @@
        []
       ]
      },
+     "viewBox-invalid-attribute-baseval.tentative-expected.txt": [
+      "e259e6f294b14f0bd846a65c4e9059aca99b1ccd",
+      []
+     ],
      "viewBox-synthesized-in-img-001-ref.html": [
       "33217ba3d5601a3a7b16d9ac4f664ac6ac33a6e7",
+      []
+     ],
+     "viewBox-zero-disables-rendering-001-expected.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
+      []
+     ],
+     "viewBox-zero-disables-rendering-002-expected.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
+      []
+     ],
+     "viewBox-zero-disables-rendering-003-expected.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
+      []
+     ],
+     "viewBox-zero-disables-rendering-contexts-ref.html": [
+      "0453cfab0f98aa563920298f0d8101ed8c74fc9d",
+      []
+     ],
+     "viewBox-zero-disables-rendering-marker-expected.svg": [
+      "ed4471ae5c80405f3c623837d63856009ab22b0b",
+      []
+     ],
+     "viewBox-zero-disables-rendering-marker-ref.svg": [
+      "ed4471ae5c80405f3c623837d63856009ab22b0b",
+      []
+     ],
+     "viewBox-zero-disables-rendering-pattern-expected.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
+      []
+     ],
+     "viewBox-zero-disables-rendering-ref.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
+      []
+     ],
+     "viewBox-zero-disables-rendering-symbol-expected.svg": [
+      "95a28fbd8eb35417084effc9ff82bf7d2ff39518",
       []
      ]
     },
@@ -499879,6 +500083,10 @@
        "9d3e810c1ae2b52732c98d28542effe99503fb32",
        []
       ],
+      "negative-presentation-attribute-computed-expected.txt": [
+       "81a53d7c3d6e1eb2c12331816a99036fe2091556",
+       []
+      ],
       "r-invalid-expected.txt": [
        "ae796926054049cfd01f9dba8569dbcc9bde7ba0",
        []
@@ -499901,12 +500109,20 @@
       ]
      },
      "reftests": {
+      "circle-006-expected.svg": [
+       "8881b91e20e9c176715d5ffbb88b3e3cde393d23",
+       []
+      ],
       "circle-calc-dynamic-viewport-ref.html": [
        "dfd1f609496d760807e93b4c6e4e90d6f3a383b6",
        []
       ],
       "circle-ref.svg": [
        "36ccde7fce5f82093b4930f314f3a2558a5518f9",
+       []
+      ],
+      "ellipse-007-expected.svg": [
+       "8881b91e20e9c176715d5ffbb88b3e3cde393d23",
        []
       ],
       "ellipse-calc-dynamic-viewport-ref.html": [
@@ -499917,8 +500133,28 @@
        "57e6f4d5e854cd1672f987d5f639bcb1e6186d5e",
        []
       ],
+      "not-rendered-200-ref.svg": [
+       "8881b91e20e9c176715d5ffbb88b3e3cde393d23",
+       []
+      ],
       "percentage-ref.svg": [
        "09fd10f287ba2f0b51f91048ff416d8e03ead34d",
+       []
+      ],
+      "rect-005-expected.svg": [
+       "8881b91e20e9c176715d5ffbb88b3e3cde393d23",
+       []
+      ],
+      "rect-006-expected.svg": [
+       "8881b91e20e9c176715d5ffbb88b3e3cde393d23",
+       []
+      ],
+      "rect-007-expected.svg": [
+       "8d349848bf4548ec6f108bb1875b47a1c4eff4b1",
+       []
+      ],
+      "rect-007-ref.svg": [
+       "8d349848bf4548ec6f108bb1875b47a1c4eff4b1",
        []
       ],
       "rect-calc-dynamic-viewport-ref.html": [
@@ -506170,7 +506406,7 @@
     "resources": {
      "alarms": {
       "background.js": [
-       "ab5eb22227b79b4b7555ee26c167a776300b4115",
+       "1a4d3ab0f35ed299d1f23cef721f25f01e4aae07",
        []
       ],
       "manifest.json": [
@@ -733362,12 +733598,21 @@
         ]
        ],
        "menuitem-activate.html": [
-        "b2bb2d95503135ae6d1ae98a6c5e0403e7e01228",
+        "fef22ab9cb9425e5bfed82e53beb6079b6e1aa66",
         [
          null,
          {
           "testdriver": true,
           "timeout": "long"
+         }
+        ]
+       ],
+       "menuitem-drag-click-event.html": [
+        "884be2bedae4664c5d1e827c550ab2ff2b378662",
+        [
+         null,
+         {
+          "testdriver": true
          }
         ]
        ],
@@ -813922,6 +814167,13 @@
        null,
        {}
       ]
+     ],
+     "viewBox-invalid-attribute-baseval.tentative.html": [
+      "bf626f65995bfef1ff49b0754f06bcf0d4efbd34",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "embedded": {
@@ -814101,6 +814353,13 @@
       ],
       "height-computed.svg": [
        "65fe8e56c547552c521f1d0b9171ca93fb0dae89",
+       [
+        null,
+        {}
+       ]
+      ],
+      "negative-presentation-attribute-computed.svg": [
+       "8c73979dbdceaf075903099cedd50d66efb1cf39",
        [
         null,
         {}

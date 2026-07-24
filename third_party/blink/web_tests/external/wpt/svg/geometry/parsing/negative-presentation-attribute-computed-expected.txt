@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] negative rx presentation attribute computes to auto
+  assert_equals: expected "auto" but got "-20px"
+[FAIL] negative ry presentation attribute computes to auto
+  assert_equals: expected "auto" but got "-20px"
+[FAIL] negative r presentation attribute computes to 0px
+  assert_equals: expected "0px" but got "-20px"
+Harness: the test ran to completion.
+
