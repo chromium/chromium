@@ -17,10 +17,10 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Render tests for Site Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "To be batched in follow-up CL")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
