@@ -416,7 +416,8 @@ class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
   ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kDiskCacheBackendExperiment,
-        {{"backend", GetBackendParamValue()}});
+        {{"backend", GetBackendParamValue()},
+         {"DiskCacheBackendResetCacheOnGroupChange", "true"}});
   }
   ~ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest()
       override = default;
@@ -487,6 +488,27 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     }));
 
+class ProfileNetworkContextServiceDiskCacheBackendExperimentNoResetBrowserTest
+    : public ProfileNetworkContextServiceBrowsertest {
+ public:
+  ProfileNetworkContextServiceDiskCacheBackendExperimentNoResetBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileNetworkContextServiceDiskCacheBackendExperimentNoResetBrowserTest,
+    TestNoCacheResetOnGroupChangeByDefault) {
+  NavigateToCreateHttpCache();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
+  EXPECT_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "None None None None");
+}
+
 class ProfileNetworkContextServiceCacheResetBrowserTestBase
     : public ProfileNetworkContextServiceBrowsertest {
  public:
@@ -552,7 +574,9 @@ class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
     } else {
       // non-PRE test: experiment active (use simple backend)
       feature_list_.InitAndEnableFeatureWithParameters(
-          net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+          net::features::kDiskCacheBackendExperiment,
+          {{"backend", "simple"},
+           {"DiskCacheBackendResetCacheOnGroupChange", "true"}});
     }
   }
 
@@ -567,7 +591,9 @@ class ProfileNetworkContextServiceCacheResetSameBackendBrowserTest
     // Enable the experiment in both PRE and non-PRE runs to keep the backend
     // type same, avoiding forced cache recreation.
     feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+        net::features::kDiskCacheBackendExperiment,
+        {{"backend", "simple"},
+         {"DiskCacheBackendResetCacheOnGroupChange", "true"}});
   }
 
  private:

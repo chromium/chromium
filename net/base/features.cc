@@ -510,6 +510,11 @@ const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     &kDiskCacheBackendOptions};
 
+BASE_FEATURE_PARAM(bool,
+                   kDiskCacheBackendResetCacheOnGroupChange,
+                   &kDiskCacheBackendExperiment,
+                   false);
+
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 BASE_FEATURE_PARAM(int,
                    kSqlDiskCacheForceCheckpointThreshold,

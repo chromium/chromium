@@ -474,8 +474,10 @@ bool GetHttpCacheBackendResetParam(
                                  ? credentials_field_trial->group_name()
                                  : kDiskCacheExperimentNameNone);
 
-  // Add the disk cache backend experiment group if active.
-  if (backend_field_trial) {
+  // Add the disk cache backend experiment group if active, and the
+  // DiskCacheBackendResetCacheOnGroupChange param is true.
+  if (backend_field_trial &&
+      net::features::kDiskCacheBackendResetCacheOnGroupChange.Get()) {
     experiment_parts.push_back(backend_field_trial->group_name());
   }
 

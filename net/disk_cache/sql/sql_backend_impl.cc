@@ -56,10 +56,17 @@ size_t GetShardCount() {
 // Checks the fake index file, creating it if it doesn't exist. Returns an
 // error code if the file is corrupted or cannot be created.
 FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
-  base::FieldTrial* backend_field_trial = base::FeatureList::GetFieldTrial(
-      net::features::kDiskCacheBackendExperiment);
+  // Only include the experiment group in the fake index if reset on group
+  // change is enabled, preventing unintended cache wipes during rollout.
+  base::FieldTrial* backend_field_trial =
+      net::features::kDiskCacheBackendResetCacheOnGroupChange.Get()
+          ? base::FeatureList::GetFieldTrial(
+                net::features::kDiskCacheBackendExperiment)
+          : nullptr;
   const std::string expected_contents = base::StrCat(
-      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount()),
+      {kSqlBackendFakeIndexPrefix,
+       net::features::kSqlDiskCacheWalMode.Get() ? "Wal" : "Truncate",
+       base::NumberToString(GetShardCount()),
        backend_field_trial ? backend_field_trial->group_name() : ""});
   const base::FilePath file_path = path.Append(kSqlBackendFakeIndexFileName);
   const std::optional<int64_t> file_size = base::GetFileSize(file_path);

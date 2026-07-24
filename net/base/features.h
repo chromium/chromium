@@ -595,6 +595,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
 NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
     kDiskCacheBackendParam;
 
+// When true, the disk cache backend experiment group name is included in cache
+// reset logic (GetHttpCacheBackendResetParam() and
+// CheckFakeIndexFileInternal()) so that changing experiment groups resets the
+// HTTP cache for clean A/B comparison. When false (default), cache resets on
+// group changes are bypassed to prevent widespread cache clearing during
+// gradual feature rollouts.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kDiskCacheBackendResetCacheOnGroupChange);
+
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 // If the number of pages recorded in the WAL file of the SQL disk cache's DB
 // exceeds this value, a checkpoint is executed on committing data.
