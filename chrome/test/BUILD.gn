@@ -4653,7 +4653,6 @@ if (!is_android) {
         "../browser/printing/test_print_view_manager.h",
       ]
       deps += [
-        ":print_preview_test_support",
         "//chrome/browser/printing:test_support",
         "//chrome/browser/ui/webui/print_preview",
         "//chrome/browser/ui/webui/print_preview:browser_tests",
@@ -9324,11 +9323,11 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_chromeos) {
       deps += [
-        ":print_preview_test_support",
         "//ash/constants",
         "//chrome/browser/ash/app_list/app_service",
         "//chrome/browser/chromeos:interactive_ui_tests",
         "//chrome/browser/media/router:test_support",
+        "//chrome/browser/printing:test_support",
         "//chrome/browser/smart_card:interactive_ui_tests",
         "//chrome/browser/ui/ash:test_support",
         "//chrome/browser/ui/ash/privacy_hub:interactive_ui_tests",
@@ -9546,7 +9545,6 @@ if (!is_android && !is_chromeos_device) {
 
       if (enable_print_preview) {
         deps += [
-          ":print_preview_test_support",
           "//chrome/browser/printing:test_support",
           "//chrome/browser/ui/webui/print_preview",
           "//printing:test_support",
@@ -10123,27 +10121,6 @@ if (is_linux || is_mac || is_win) {
       "//testing/scripts/variations_smoke_test_data/",
       "//testing/scripts/variations_smoke_test_data/http_server/",
       "//third_party/webdriver/pylib/",
-    ]
-  }
-}
-
-if (!is_android && enable_print_preview) {
-  static_library("print_preview_test_support") {
-    testonly = true
-
-    sources = [
-      "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
-      "../browser/printing/test_print_preview_dialog_cloned_observer.h",
-      "../browser/printing/test_print_view_manager_for_request_preview.cc",
-      "../browser/printing/test_print_view_manager_for_request_preview.h",
-    ]
-
-    deps = [
-      "//base",
-      "//chrome/browser",
-      "//chrome/browser/printing",
-      "//components/printing/common:mojo_interfaces",
-      "//content/public/browser",
     ]
   }
 }

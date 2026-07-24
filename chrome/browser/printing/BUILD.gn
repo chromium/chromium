@@ -389,8 +389,12 @@ if (enable_print_preview) {
     sources = [
       "print_preview_test.cc",
       "print_preview_test.h",
+      "test_print_preview_dialog_cloned_observer.cc",
+      "test_print_preview_dialog_cloned_observer.h",
       "test_print_preview_observer.cc",
       "test_print_preview_observer.h",
+      "test_print_view_manager_for_request_preview.cc",
+      "test_print_view_manager_for_request_preview.h",
     ]
 
     public_deps = [
