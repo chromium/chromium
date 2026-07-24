@@ -10,6 +10,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,8 +62,27 @@ std::optional<FeatureAndService> GetOnDeviceFeatureAndService(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/446260680): Add support for other languages.
-  if (l10n_util::GetLanguage(language) != kEnglishLanguageCode) {
+  if (base::FeatureList::IsEnabled(
+          media::kOnDeviceWebSpeechSmallExpertModelMultiLanguage) &&
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
+    std::string languages_str =
+        media::kOnDeviceWebSpeechSmallExpertModelLanguages.Get();
+    std::vector<std::string> enabled_languages = base::SplitString(
+        languages_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    bool is_language_supported = false;
+    for (const std::string& enabled_language : enabled_languages) {
+      if (l10n_util::GetLanguage(language) ==
+          l10n_util::GetLanguage(enabled_language)) {
+        is_language_supported = true;
+        break;
+      }
+    }
+
+    if (!is_language_supported) {
+      return std::nullopt;
+    }
+  } else if (l10n_util::GetLanguage(language) != kEnglishLanguageCode) {
     return std::nullopt;
   }
 

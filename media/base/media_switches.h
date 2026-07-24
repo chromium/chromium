@@ -265,6 +265,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kInternalMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeech);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeechGeminiNano);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeechSmallExpertModel);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kOnDeviceWebSpeechSmallExpertModelMultiLanguage);
+MEDIA_EXPORT extern const base::FeatureParam<std::string>
+    kOnDeviceWebSpeechSmallExpertModelLanguages;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaption);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPreemptiveSodaDownload);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionAutomaticLanguageDownload);

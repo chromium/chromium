@@ -45,7 +45,6 @@
 
 namespace {
 const char kOnDeviceLanguagesDownloadedKey[] = "ondevice-languages-downloaded";
-const char kEnglishLanguageCodeKey[] = "en-US";
 
 int GetPriority(media::mojom::AvailabilityStatus status) {
   switch (status) {
@@ -187,14 +186,19 @@ void OnDeviceSpeechRecognitionImpl::Available(
 
   std::vector<std::string> valid_language_names;
   for (std::string_view language : languages) {
-    std::optional<speech::SodaLanguagePackComponentConfig> language_config =
-        speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
-    if (!language_config.has_value()) {
-      std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
-      return;
+    std::string_view target_language = language;
+
+    if (quality != media::mojom::SpeechRecognitionQuality::kConversation &&
+        quality != media::mojom::SpeechRecognitionQuality::kDictation) {
+      std::optional<speech::SodaLanguagePackComponentConfig> language_config =
+          speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
+      if (!language_config.has_value()) {
+        std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+        return;
+      }
+      target_language = language_config.value().language_name;
     }
-    valid_language_names.push_back(
-        std::string(language_config.value().language_name));
+    valid_language_names.emplace_back(target_language);
   }
 
   // According to the spec, the status returned by this API should be the
@@ -259,6 +263,54 @@ void OnDeviceSpeechRecognitionImpl::Install(
     return;
   }
 
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
+    for (std::string_view language : languages) {
+      if (GetOnDeviceSpeechRecognitionAvailabilityStatus(
+              render_frame_host().GetBrowserContext(), language, quality) ==
+          media::mojom::AvailabilityStatus::kUnavailable) {
+        std::move(callback).Run(false);
+        return;
+      }
+    }
+
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(
+                render_frame_host().GetBrowserContext()));
+    if (!optimization_guide_keyed_service) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::set<std::string> language_names_key;
+    for (std::string_view language : languages) {
+      language_names_key.insert(std::string(language));
+    }
+
+    language_installation_callbacks_[language_names_key].push_back(
+        std::move(callback));
+
+    model_broker_client_ =
+        optimization_guide_keyed_service->CreateModelBrokerClient();
+
+    optimization_guide::mojom::OnDeviceFeature feature =
+        quality == media::mojom::SpeechRecognitionQuality::kDictation
+            ? optimization_guide::mojom::OnDeviceFeature::
+                  kSpeechRecognitionSmallExpertModel
+            : optimization_guide::mojom::OnDeviceFeature::
+                  kOnDeviceSpeechRecognition;
+
+    // Call `RequestAssetsFor()` to trigger the download and installation of
+    // the model.
+    model_broker_client_->RequestAssetsFor(feature);
+
+    model_broker_client_->GetSubscriber(feature).WaitForClient(
+        base::BindOnce(&OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
+                       weak_ptr_factory_.GetWeakPtr(), language_names_key));
+    return;
+  }
+
   for (std::string_view language : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> language_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
@@ -286,74 +338,41 @@ void OnDeviceSpeechRecognitionImpl::Install(
     return;
   }
 
-  if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
-      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
-    OptimizationGuideKeyedService* optimization_guide_keyed_service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(
-                render_frame_host().GetBrowserContext()));
-    if (!optimization_guide_keyed_service) {
-      std::move(callback).Run(false);
-      return;
+  std::set<std::string> pending_languages;
+
+  const bool binary_installed =
+      speech::SodaInstaller::GetInstance()->IsSodaBinaryInstalled();
+  const std::set<speech::LanguageCode> installed_languages =
+      speech::SodaInstaller::GetInstance()->InstalledLanguages();
+
+  for (std::string_view language : language_names_key) {
+    if (!binary_installed ||
+        !installed_languages.contains(speech::GetLanguageCode(language))) {
+      pending_languages.insert(std::string(language));
     }
+  }
 
-    language_installation_callbacks_[language_names_key].push_back(
-        std::move(callback));
-
-    model_broker_client_ =
-        optimization_guide_keyed_service->CreateModelBrokerClient();
-
-    optimization_guide::mojom::OnDeviceFeature feature =
-        quality == media::mojom::SpeechRecognitionQuality::kDictation
-            ? optimization_guide::mojom::OnDeviceFeature::
-                  kSpeechRecognitionSmallExpertModel
-            : optimization_guide::mojom::OnDeviceFeature::
-                  kOnDeviceSpeechRecognition;
-
-    // Call `RequestAssetsFor()` to trigger the download and installation of
-    // the model.
-    model_broker_client_->RequestAssetsFor(feature);
-
-    model_broker_client_->GetSubscriber(feature).WaitForClient(
-        base::BindOnce(&OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    std::set<std::string> pending_languages;
-
-    const bool binary_installed =
-        speech::SodaInstaller::GetInstance()->IsSodaBinaryInstalled();
-    const std::set<speech::LanguageCode> installed_languages =
-        speech::SodaInstaller::GetInstance()->InstalledLanguages();
-
+  if (pending_languages.empty()) {
     for (std::string_view language : language_names_key) {
-      if (!binary_installed ||
-          !installed_languages.contains(speech::GetLanguageCode(language))) {
-        pending_languages.insert(std::string(language));
-      }
+      SetOnDeviceLanguageDownloaded(language);
     }
+    std::move(callback).Run(true);
+    return;
+  }
 
-    if (pending_languages.empty()) {
-      for (std::string_view language : language_names_key) {
-        SetOnDeviceLanguageDownloaded(language);
-      }
-      std::move(callback).Run(true);
-      return;
-    }
+  language_installation_callbacks_[pending_languages].push_back(
+      std::move(callback));
 
-    language_installation_callbacks_[pending_languages].push_back(
-        std::move(callback));
+  // `InstallSoda` will only install the SODA binary if it is not already
+  // installed.
+  speech::SodaInstaller::GetInstance()->InstallSoda(
+      g_browser_process->local_state());
 
-    // `InstallSoda` will only install the SODA binary if it is not already
-    // installed.
-    speech::SodaInstaller::GetInstance()->InstallSoda(
-        g_browser_process->local_state());
-
-    // `InstallLanguage` will only install languages that are not already
-    // installed.
-    for (std::string_view language : language_names_key) {
-      speech::SodaInstaller::GetInstance()->InstallLanguage(
-          language, g_browser_process->local_state());
-    }
+  // `InstallLanguage` will only install languages that are not already
+  // installed.
+  for (std::string_view language : language_names_key) {
+    speech::SodaInstaller::GetInstance()->InstallLanguage(
+        language, g_browser_process->local_state());
   }
 
   for (std::string_view language : language_names_key) {
@@ -591,8 +610,14 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 }
 
 void OnDeviceSpeechRecognitionImpl::OnModelClientAvailable(
+    std::set<std::string> languages,
     base::WeakPtr<optimization_guide::ModelClient> client) {
-  ProcessLanguageInstallationUpdate(kEnglishLanguageCodeKey, bool(client));
+  for (const std::string& language : languages) {
+    if (client) {
+      SetOnDeviceLanguageDownloaded(language);
+    }
+    ProcessLanguageInstallationUpdate(language, !!client);
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

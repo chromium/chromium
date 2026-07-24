@@ -99,6 +99,7 @@ class OnDeviceSpeechRecognitionImpl
       base::OnceCallback<void(media::mojom::AvailabilityStatus)> callback);
 
   void OnModelClientAvailable(
+      std::set<std::string> languages,
       base::WeakPtr<optimization_guide::ModelClient> client);
 
   // A set of languages that have been downloaded for the current document. This
