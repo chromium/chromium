@@ -66,7 +66,7 @@ def main(argv):
     if not options.out:
         parser.error("No --out")
 
-    result = {"elements": [], "attributes": []}
+    result = {"elements": [], "attributes": [], "processingInstructions": []}
     for arg in args:
         try:
             data = json5.load(open(arg, "r"))

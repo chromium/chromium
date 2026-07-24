@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Sorting of processingInstructions
-  assert_false: If config["processingInstructions"] exists and config["removeProcessingInstructions"] exists, then return false. expected false got true
-Harness: the test ran to completion.
-

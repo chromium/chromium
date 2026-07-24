@@ -83,6 +83,18 @@ def generate_namemap(key, subkey, default_config, output):
     print("  ),", file=output)
 
 
+def generate_stringset(name, default_config, output):
+    if name in default_config:
+        print("  /* %s */" % name, file=output)
+        print("  std::make_unique<HashSet<AtomicString>>(", file=output)
+        print("    std::initializer_list<AtomicString>({", file=output)
+        for item in default_config.get(name):
+            print("      \"%s\"," % item, file=output)
+        print("    })", file=output)
+        print("  ),", file=output)
+    else:
+        print("  /* %s */ nullptr," % name, file=output)
+
 def generate_config(default_config, output):
     generate_nameset("elements", default_config, element, output)
     generate_nameset("removeElements", default_config, element, output)
@@ -92,6 +104,8 @@ def generate_config(default_config, output):
     generate_nameset("removeAttributes", default_config, attribute, output)
     generate_namemap("elements", "attributes", default_config, output)
     generate_namemap("elements", "removeAttributes", default_config, output)
+    generate_stringset("processingInstructions", default_config, output)
+    generate_stringset("removeProcessingInstructions", default_config, output)
     print("  /* comments */ %s," % bool(default_config.get("comments")),
           file=output)
     print("  /* dataAttributes */ %s" %

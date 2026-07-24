@@ -66,6 +66,8 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
             std::unique_ptr<SanitizerNameSet>,
             SanitizerNameMap,
             SanitizerNameMap,
+            std::unique_ptr<HashSet<AtomicString>>,
+            std::unique_ptr<HashSet<AtomicString>>,
             bool,
             bool);
 

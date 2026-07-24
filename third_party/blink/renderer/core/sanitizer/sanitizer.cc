@@ -109,6 +109,8 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
                      std::unique_ptr<SanitizerNameSet> remove_attrs,
                      SanitizerNameMap allow_attrs_per_element,
                      SanitizerNameMap remove_attrs_per_element,
+                     std::unique_ptr<HashSet<AtomicString>> allow_pi,
+                     std::unique_ptr<HashSet<AtomicString>> remove_pi,
                      bool allow_data_attrs,
                      bool allow_comments)
     : allow_elements_(allow_elements.release()),
@@ -118,9 +120,8 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
       remove_attrs_(remove_attrs.release()),
       allow_attrs_per_element_(allow_attrs_per_element),
       remove_attrs_per_element_(remove_attrs_per_element),
-      allow_processing_instructions_(nullptr),
-      remove_processing_instructions_(
-          std::make_unique<HashSet<AtomicString>>()),
+      allow_processing_instructions_(allow_pi.release()),
+      remove_processing_instructions_(remove_pi.release()),
       data_attrs_(allow_data_attrs ? SanitizerBoolWithAbsence::kTrue
                                    : SanitizerBoolWithAbsence::kFalse),
       comments_(allow_comments ? SanitizerBoolWithAbsence::kTrue
@@ -208,6 +209,8 @@ void Sanitizer::removeUnsafe() {
   CHECK(!baseline->replace_elements_);
   CHECK(baseline->allow_attrs_per_element_.empty());
   CHECK(baseline->remove_attrs_per_element_.empty());
+  CHECK(!baseline->allow_processing_instructions_);
+  CHECK(baseline->remove_processing_instructions_->empty());
 
   for (const QualifiedName& name : *(baseline->remove_elements_)) {
     RemoveElement(name);
@@ -1218,7 +1221,7 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
   if (!config->hasAttributes() && !config->hasRemoveAttributes()) {
     remove_attrs_ = std::make_unique<SanitizerNameSet>();
   }
-  if (!remove_processing_instructions_) {
+  if (!allow_processing_instructions_ && !remove_processing_instructions_) {
     remove_processing_instructions_ = std::make_unique<HashSet<AtomicString>>();
   }
 
@@ -1342,63 +1345,65 @@ bool Subset(const SanitizerNameSet& a, const SanitizerNameSet& b) {
 }
 
 bool Sanitizer::isValid() const {
-  // https://wicg.github.io/sanitizer-api/#sanitizerconfig-valid
-  // Step 1: [..] either an elements or a removeElements key, but not both.
+  // https://html.spec.whatwg.org/#dom-sanitizerconfig-valid
+  // Step 1+2: [..] either an elements or a removeElements key, but not both.
+  DCHECK(allow_elements_ || remove_elements_);
   if (allow_elements_ && remove_elements_) {
     return false;
   }
-  // Step 2: [..] either an attributes or a removeAttributes key, but not
+  // Step 3+4: [..] Either PI or removePI, but not both.
+  DCHECK(allow_processing_instructions_ || remove_processing_instructions_);
+  if (allow_processing_instructions_ && remove_processing_instructions_) {
+    return false;
+  }
+  // Step 5+6: [..] either an attributes or a removeAttributes key, but not
   // both.
+  DCHECK(allow_attrs_ || remove_attrs_);
   if (allow_attrs_ && remove_attrs_) {
     return false;
   }
-  // Step 3: Assert. (Not meaningful here, since we use QNames.)
-  // Step 4: None of [...], if they exist, has duplicates.
-  //   (Not meaningful here, since we use sets.)
-  // Step 5: If both config[elements] and config[replaceWithChildrenElements]
-  //   exist, then the intersection of config[elements] and
-  //   config[replaceWithChildrenElements] is empty.
-  if (Intersect(allow_elements_, replace_elements_)) {
-    return false;
-  }
-  // Step 6: If both config[removeElements] and
-  //   config[replaceWithChildrenElements] exist, then the intersection of
-  //   config[removeElements] and config[replaceWithChildrenElements] is
-  //   empty.
-  if (Intersect(remove_elements_, replace_elements_)) {
-    return false;
-  }
-  // https://github.com/WICG/sanitizer-api/issues/365
-  // If config[replaceWithChildrenElements] contains "html"
+
+  // Step 7: Assert. (Not meaningful here, since we use QNames.)
+  // Step 8-14: No duplicates. Not meaningful here, because we use sets.
+  // Step 15.1: non-replaceable elements.
   if (replace_elements_ && replace_elements_->Contains(html_names::kHTMLTag)) {
     return false;
   }
-  // Step 7: If config[attributes] exists:
+  // Step 15.2: Intersection elements + replace elements
+  if (Intersect(allow_elements_, replace_elements_)) {
+    return false;
+  }
+  // Step 15.3: Intersection remove elements + replace elements.
+  if (Intersect(remove_elements_, replace_elements_)) {
+    return false;
+  }
+  // Step 16: If config[attributes] exists:
   if (allow_attrs_) {
-    // Step 7.1: If config[elements] exists:
+    // Step 16.1: Assertion.
+    // Step 16.2: If config[elements] exists:
     if (allow_elements_) {
-      // Step 7.1.1: For each element of config[elements]:
+      // Step 16.2.1: For each element of config[elements]:
       for (const auto& element : *allow_elements_) {
-        // Step 7.1.1.1: [No dupes:] element[attributes] +
+        // Step 16.2.1.1: [No dupes:] element[attributes] +
         //   element[removeAttributes] (Not meaningful here, since we use
         //   sets.)
-        // Step 7.1.1.2: The intersection of config[attributes] and
+        // Step 16.2.1.2: The intersection of config[attributes] and
         //   element[attributes] [..] is empty.
         auto it_allow = allow_attrs_per_element_.find(element);
         if (it_allow != allow_attrs_per_element_.end() &&
             Intersect(allow_attrs_, it_allow->value)) {
           return false;
         }
-        // Step 7.1.1.3: element[removeAttributes] [..] is a subset of
+        // Step 16.2.1.3: element[removeAttributes] [..] is a subset of
         // config[attributes]
         auto it_remove = remove_attrs_per_element_.find(element);
         if (it_remove != remove_attrs_per_element_.end() && allow_attrs_ &&
             !Subset(it_remove->value, *allow_attrs_.get())) {
           return false;
         }
-        // Step 7.1.1.4: If dataAttributes exists and dataAttributes is true:
+        // Step 16.2.1.4: If dataAttributes exists and dataAttributes is true:
         if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
-          // Step 7.1.1.5: element[attributes] does not contain a custom data
+          // Step 16.2.1.5: element[attributes] does not contain a custom data
           // attribute.
           if (it_allow != allow_attrs_per_element_.end()) {
             for (const auto& attr : it_allow->value) {
@@ -1410,10 +1415,9 @@ bool Sanitizer::isValid() const {
         }
       }
     }
-    // Step 7.2: If dataAttributes is true:
+    // Step 16.3: If dataAttributes is true and attributes contains a data
+    // attribute.
     if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
-      // Step 7.2.1: config[attributes] does not contain a custom data
-      // attribute.
       for (const auto& attr : *allow_attrs_) {
         if (attr.LocalName().starts_with("data-")) {
           return false;
@@ -1421,9 +1425,9 @@ bool Sanitizer::isValid() const {
       }
     }
   }
-  // Step 8: If config[removeAttributes] exists:
+  // Step 17: Otherwise (if config[removeAttributes] exists):
   if (remove_attrs_) {
-    // Step 8.1: If config[elements] exists, then for each element of
+    // Step 17.1 + 17.1.1: If config[elements] exists, then for each element of
     // config[elements]:
     if (allow_elements_) {
       for (const auto& element : *allow_elements_) {
@@ -1431,25 +1435,25 @@ bool Sanitizer::isValid() const {
         auto it_remove = remove_attrs_per_element_.find(element);
         bool has_allow = it_allow != allow_attrs_per_element_.end();
         bool has_remove = it_remove != remove_attrs_per_element_.end();
-        // Step 8.1.1: Not both element[attributes] and
+        // Step 17.1.1.1: Not both element[attributes] and
         // element[removeAttributes] exist.
         if (has_allow && has_remove) {
           return false;
         }
-        // Step 8.1.2: [No dupes.] (Not meaningful, since we're using sets.)
-        // Step 8.1.3: The intersection of config[removeAttributes] and
+        // Step 17.1.1.2: [No dupes.] (Not meaningful, since we're using sets.)
+        // Step 17.1.1.3: The intersection of config[removeAttributes] and
         //   element[attributes] [..] is empty.
         if (has_allow && Intersect(remove_attrs_, it_allow->value)) {
           return false;
         }
-        // Step 8.1.4: The intersection of config[removeAttributes] and
+        // Step 17.1.1.4: The intersection of config[removeAttributes] and
         //   element[removeAttributes] [..] is empty.
         if (has_remove && Intersect(remove_attrs_, it_remove->value)) {
           return false;
         }
       }
     }
-    // Step 8.2: config[dataAttributes] does not exist.
+    // Step 17.2: config[dataAttributes] does not exist.
     if (data_attrs_ != SanitizerBoolWithAbsence::kAbsent) {
       return false;
     }

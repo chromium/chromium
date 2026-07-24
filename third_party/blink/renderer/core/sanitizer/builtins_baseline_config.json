@@ -175,5 +175,6 @@
     "onwebkitfullscreenerror",
     "onwebkittransitionend",
     "onwheel"
-  ]
+  ],
+  "removeProcessingInstructions": []
 }

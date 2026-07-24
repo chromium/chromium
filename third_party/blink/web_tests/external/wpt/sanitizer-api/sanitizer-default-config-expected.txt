@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Get the expected default config
-  assert_true: Missing 'processingInstructions' from config expected true got false
-Harness: the test ran to completion.
-
