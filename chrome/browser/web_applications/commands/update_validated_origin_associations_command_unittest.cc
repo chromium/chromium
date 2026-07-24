@@ -70,7 +70,7 @@ class UpdateValidatedOriginAssociationsCommandTest : public WebAppTest {
     WebAppTest::SetUp();
 
     auto origin_association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     fake_origin_association_manager_ = origin_association_manager.get();
     fake_provider().SetOriginAssociationManager(
         std::move(origin_association_manager));

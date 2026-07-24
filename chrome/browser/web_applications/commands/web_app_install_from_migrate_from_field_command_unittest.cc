@@ -41,7 +41,7 @@ class WebAppInstallFromMigrateFromFieldCommandTest : public WebAppTest {
 
     auto* provider = FakeWebAppProvider::Get(profile());
     auto association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     association_manager->set_pass_through(true);
     provider->SetOriginAssociationManager(std::move(association_manager));
 

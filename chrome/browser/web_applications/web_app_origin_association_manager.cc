@@ -7,14 +7,16 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/web_app_origin_association_task.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace web_app {
 
-WebAppOriginAssociationManager::WebAppOriginAssociationManager()
-    : fetcher_(std::make_unique<webapps::WebAppOriginAssociationFetcher>()) {}
+WebAppOriginAssociationManager::WebAppOriginAssociationManager(Profile& profile)
+    : profile_(profile) {}
 
 WebAppOriginAssociationManager::~WebAppOriginAssociationManager() = default;
 
@@ -77,6 +79,11 @@ WebAppOriginAssociationManager::GetFetcherForTest() {
 
 webapps::WebAppOriginAssociationFetcher&
 WebAppOriginAssociationManager::GetFetcher() {
+  if (!fetcher_) {
+    fetcher_ = std::make_unique<webapps::WebAppOriginAssociationFetcher>(
+        profile_->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess());
+  }
   return *fetcher_;
 }
 

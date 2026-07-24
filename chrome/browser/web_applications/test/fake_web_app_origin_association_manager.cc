@@ -10,8 +10,9 @@
 
 namespace web_app {
 
-FakeWebAppOriginAssociationManager::FakeWebAppOriginAssociationManager() =
-    default;
+FakeWebAppOriginAssociationManager::FakeWebAppOriginAssociationManager(
+    Profile& profile)
+    : WebAppOriginAssociationManager(profile) {}
 
 FakeWebAppOriginAssociationManager::~FakeWebAppOriginAssociationManager() =
     default;

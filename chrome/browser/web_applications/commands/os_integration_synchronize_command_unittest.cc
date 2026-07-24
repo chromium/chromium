@@ -60,7 +60,7 @@ class OsIntegrationSynchronizeCommandTest : public WebAppTest {
     }
 
     auto origin_association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     origin_association_manager->set_pass_through(true);
     fake_provider().SetOriginAssociationManager(
         std::move(origin_association_manager));
