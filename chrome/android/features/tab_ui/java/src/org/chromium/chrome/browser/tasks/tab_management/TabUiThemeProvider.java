@@ -26,15 +26,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
 
-    /**
-     * Returns the semantic color value that corresponds to colorPrimaryContainer.
-     *
-     * @param context {@link Context} used to retrieve color.
-     */
-    public static @ColorInt int getDefaultNtbContainerColor(Context context) {
-        return MaterialColors.getColor(context, R.attr.colorPrimaryContainer, TAG);
-    }
-
     public static @ColorInt int getGridTabSwitcherBackgroundColor(
             Context context, boolean isIncognito) {
         return isIncognito
@@ -461,19 +452,10 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Return the size represented by dimension for padding between tab cards.
+     * Return the space represented by dimension for spaces between mini thumbnails in a group tab.
      *
      * @param context {@link Context} to retrieve dimension.
-     * @return The padding between tab cards in float number.
-     */
-    public static float getTabCardPaddingDimension(Context context) {
-        return context.getResources().getDimension(R.dimen.tab_grid_card_between_card_padding);
-    }
-
-    /**
-     * Return the space represented by dimension for spaces between mini thumbnails in a group tab.
-     * @param context {@link Context} to retrieve dimension.
-     * @return The padding between between mini thumbnails in float number.
+     * @return The padding between mini thumbnails in float number.
      */
     public static float getTabMiniThumbnailPaddingDimension(Context context) {
         return context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
@@ -488,15 +470,6 @@ public class TabUiThemeProvider {
      */
     public static float getTabGridCardMargin(Context context) {
         return context.getResources().getDimension(R.dimen.tab_grid_card_margin);
-    }
-
-    /**
-     * Return the size represented by dimension for margin around message cards.
-     * @param context {@link Context} to retrieve dimension.
-     * @return The margin around message cards in float number.
-     */
-    public static float getMessageCardMarginDimension(Context context) {
-        return context.getResources().getDimension(R.dimen.tab_list_selected_inset);
     }
 
     /**
