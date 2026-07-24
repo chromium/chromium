@@ -51,6 +51,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
@@ -249,6 +250,11 @@ SingleFieldFillRouter& ChromeAutofillClientIOS::GetSingleFieldFillRouter() {
 AutocompleteHistoryManager*
 ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
+}
+
+autofill::AtMemoryQueryService*
+ChromeAutofillClientIOS::GetAtMemoryQueryService() {
+  return IOSAtMemoryQueryServiceFactory::GetForProfile(profile_);
 }
 
 void ChromeAutofillClientIOS::GetAiPageContent(

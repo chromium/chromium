@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_at_memory_query_service_factory.h",
+    "ios_at_memory_query_service_factory.mm",
+  ]
+  deps = [
+    "//components/application_locale_storage",
+    "//components/autofill/core/browser",
+    "//components/personal_context/core",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/personal_context/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}

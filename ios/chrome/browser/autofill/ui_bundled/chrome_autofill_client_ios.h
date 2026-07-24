@@ -47,6 +47,7 @@ class WebState;
 
 namespace autofill {
 
+class AtMemoryQueryService;
 class AutofillAiSaveEntityInfoBarDelegateIOS;
 class AutofillSuggestionDelegate;
 class LogRouter;
@@ -102,6 +103,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   GetPasswordManagerFieldClassificationModelHandler() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
+  AtMemoryQueryService* GetAtMemoryQueryService() override;
   void GetAiPageContent(GetAiPageContentCallback callback) override;
   AutofillAiManager* GetAutofillAiManager() override;
   AutofillAiPersonalContextAccessManager*

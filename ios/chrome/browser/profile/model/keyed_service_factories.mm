@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
+#import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
@@ -343,6 +344,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ImpressionLimitServiceFactory::GetInstance();
   InactiveTabsServiceFactory::GetInstance();
   IOSAccountSettingServiceFactory::GetInstance();
+  IOSAtMemoryQueryServiceFactory::GetInstance();
   IOSAutofillAiModelCacheFactory::GetInstance();
   IOSAutofillAiModelExecutorFactory::GetInstance();
   IOSAutofillAiPersonalContextAccessManagerFactory::GetInstance();
