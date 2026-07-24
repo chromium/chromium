@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,6 +19,9 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabSharingUIBridge_jni.h"
 
 namespace {
 // The MediaStreamUI interface specifies returning 0 if no window ID is
@@ -64,6 +70,11 @@ TabSharingUIAndroid::~TabSharingUIAndroid() {
       helper->set_tab_sharing_ui(nullptr);
     }
   }
+  if (java_bridge_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_TabSharingUIBridge_destroy(env, java_bridge_);
+    java_bridge_.Reset();
+  }
 }
 
 void TabSharingUIAndroid::StopSharing(
@@ -79,6 +90,11 @@ void TabSharingUIAndroid::StopSharing() {
   if (stop_callback_) {
     std::move(stop_callback_).Run();
   }
+}
+
+void TabSharingUIAndroid::ChangeSource(content::WebContents* new_source) {
+  // TODO(crbug.com/480747775): implement this by saving the source_callback
+  // provided OnStarted() and run it here.
 }
 
 gfx::NativeViewId TabSharingUIAndroid::OnStarted(
@@ -117,9 +133,19 @@ gfx::NativeViewId TabSharingUIAndroid::OnStarted(
     tab_capture_indicator_ui_->OnStarted(
         base::DoNothing(), content::MediaStreamUI::SourceCallback(),
         std::string(), {}, content::MediaStreamUI::StateChangeCallback());
+    if (capturer_web_contents_ &&
+        base::FeatureList::IsEnabled(
+            chrome::android::kTabSharingToolbarAndroid)) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      java_bridge_ = Java_TabSharingUIBridge_create(
+          env, reinterpret_cast<intptr_t>(this), capturer_web_contents_.get(),
+          web_contents);
+    }
   } else {
     StopSharing();
   }
 
   return kNoWindowId;
 }
+
+DEFINE_JNI(TabSharingUIBridge)
