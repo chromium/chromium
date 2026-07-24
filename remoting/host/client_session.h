@@ -121,9 +121,8 @@ class ClientSession : public protocol::Session::EventHandler,
   // protocol::Session::EventHandler interface.
   void OnSessionStateChange(protocol::Session::State state) override;
 
-  void set_connection_for_testing(
-      std::unique_ptr<protocol::ConnectionToClient> connection) {
-    connection_for_tests_ = std::move(connection);
+  void set_peer_session_for_testing(std::unique_ptr<PeerSession> peer_session) {
+    peer_session_for_tests_ = std::move(peer_session);
   }
 
   bool is_authenticated() const { return is_authenticated_; }
@@ -167,7 +166,7 @@ class ClientSession : public protocol::Session::EventHandler,
 
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  std::unique_ptr<protocol::ConnectionToClient> connection_for_tests_;
+  std::unique_ptr<PeerSession> peer_session_for_tests_;
 
   // The signaling session.
   std::unique_ptr<protocol::Session> session_;

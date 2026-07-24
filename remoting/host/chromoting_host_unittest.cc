@@ -39,6 +39,7 @@
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/peer_session_impl.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/fake_session.h"
@@ -149,7 +150,12 @@ class ChromotingHostTest : public testing::Test {
         DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
         &local_session_policies_provider_));
-    client->set_connection_for_testing(std::move(connection));
+    auto peer_session = std::make_unique<PeerSessionImpl>(
+        client.get(), get_session_jid(connection_index), std::move(connection),
+        desktop_environment_factory_.get(),
+        DesktopEnvironmentOptions::CreateDefault(), nullptr,
+        std::vector<raw_ptr<HostExtension, VectorExperimental>>());
+    client->set_peer_session_for_testing(std::move(peer_session));
     ClientSession* client_ptr = client.get();
 
     get_client(connection_index) = client_ptr;

@@ -153,11 +153,8 @@ void ClientSession::OnConnectionAuthenticated(
       desktop_environment_options_;
   desktop_environment_options.ApplySessionOptions(session_options);
 
-  if (connection_for_tests_) {
-    peer_session_ = std::make_unique<PeerSessionImpl>(
-        this, client_jid_, std::move(connection_for_tests_),
-        desktop_environment_factory_, desktop_environment_options,
-        pairing_registry_, extensions_);
+  if (peer_session_for_tests_) {
+    peer_session_ = std::move(peer_session_for_tests_);
   } else {
     peer_session_ = std::make_unique<PeerSessionImpl>(
         this, client_jid_, std::move(ice_config_fetcher_), audio_task_runner_,

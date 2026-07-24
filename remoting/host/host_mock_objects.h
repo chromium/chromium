@@ -40,6 +40,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/peer_session.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -400,6 +401,105 @@ class MockChromotingHostServicesProvider
   MOCK_METHOD(void,
               set_disconnect_handler,
               (base::OnceClosure disconnect_handler),
+              (override));
+};
+
+class MockPeerSession : public PeerSession {
+ public:
+  MockPeerSession();
+
+  MockPeerSession(const MockPeerSession&) = delete;
+  MockPeerSession& operator=(const MockPeerSession&) = delete;
+
+  ~MockPeerSession() override;
+
+  MOCK_METHOD(void,
+              Start,
+              (const SessionPolicies& session_policies,
+               const SessionOptions& session_options),
+              (override));
+  MOCK_METHOD(void,
+              DisconnectSession,
+              (protocol::ErrorCode error,
+               std::string_view error_details,
+               const SourceLocation& error_location),
+              (override));
+  MOCK_METHOD(
+      void,
+      OnSessionServicesClientConnected,
+      (mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver),
+      (override));
+  MOCK_METHOD(protocol::Transport*, transport, (), (const, override));
+
+  // protocol::HostStub interface.
+  MOCK_METHOD(void,
+              NotifyClientResolution,
+              (const protocol::ClientResolution& resolution),
+              (override));
+  MOCK_METHOD(void,
+              ControlVideo,
+              (const protocol::VideoControl& video_control),
+              (override));
+  MOCK_METHOD(void,
+              ControlAudio,
+              (const protocol::AudioControl& audio_control),
+              (override));
+  MOCK_METHOD(void,
+              ControlPeerConnection,
+              (const protocol::PeerConnectionParameters& parameters),
+              (override));
+  MOCK_METHOD(void,
+              SetCapabilities,
+              (const protocol::Capabilities& capabilities),
+              (override));
+  MOCK_METHOD(void,
+              RequestPairing,
+              (const protocol::PairingRequest& pairing_request),
+              (override));
+  MOCK_METHOD(void,
+              DeliverClientMessage,
+              (const protocol::ExtensionMessage& message),
+              (override));
+  MOCK_METHOD(void,
+              SelectDesktopDisplay,
+              (const protocol::SelectDesktopDisplayRequest& select_display),
+              (override));
+  MOCK_METHOD(void,
+              SetVideoLayout,
+              (const protocol::VideoLayout& video_layout),
+              (override));
+  MOCK_METHOD(void,
+              ControlTerminal,
+              (const protocol::TerminalControl& terminal_control),
+              (override));
+
+  // protocol::ConnectionToClient::EventHandler interface.
+  MOCK_METHOD(void, CreateMediaStreams, (), (override));
+  MOCK_METHOD(void, OnConnectionChannelsConnected, (), (override));
+  MOCK_METHOD(void,
+              OnTransportProtocolChange,
+              (const std::string& protocol),
+              (override));
+  MOCK_METHOD(void,
+              OnRouteChange,
+              (const std::string& channel_name,
+               const protocol::TransportRoute& route),
+              (override));
+  MOCK_METHOD(void,
+              OnIncomingDataChannel,
+              (const std::string& channel_name,
+               std::unique_ptr<protocol::MessagePipe> pipe),
+              (override));
+  MOCK_METHOD(void,
+              OnIncomingAudioFormatChanged,
+              (const protocol::AudioSampleInfo& info,
+               base::OnceCallback<void(bool)> done),
+              (override));
+  MOCK_METHOD(void,
+              OnConnectionClosed,
+              (protocol::ErrorCode error,
+               std::string_view error_details,
+               const SourceLocation& error_location),
               (override));
 };
 

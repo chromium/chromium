@@ -916,6 +916,7 @@ source_set("unit_tests") {
     "mouse_shape_pump_unittest.cc",
     "native_messaging/native_messaging_reader_unittest.cc",
     "native_messaging/native_messaging_writer_unittest.cc",
+    "peer_session_impl_unittest.cc",
     "pin_hash_unittest.cc",
     "policy_watcher_unittest.cc",
     "register_support_host_request_base_unittest.cc",

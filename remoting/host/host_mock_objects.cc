@@ -91,4 +91,8 @@ MockChromotingHostServicesProvider::MockChromotingHostServicesProvider() =
 MockChromotingHostServicesProvider::~MockChromotingHostServicesProvider() =
     default;
 
+MockPeerSession::MockPeerSession() = default;
+
+MockPeerSession::~MockPeerSession() = default;
+
 }  // namespace remoting

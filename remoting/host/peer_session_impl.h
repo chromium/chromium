@@ -124,6 +124,10 @@ class PeerSessionImpl : public PeerSession,
     return extension_manager_.get();
   }
 
+  TerminalSessionManager* terminal_session_manager_for_tests() const {
+    return terminal_session_manager_.get();
+  }
+
   // Returns the set of capabilities negotiated between client and host.
   const std::string& capabilities() const { return capabilities_; }
 
