@@ -232,6 +232,7 @@ public class FuseboxPopupUnitTest {
     @Test
     public void testSetPopupState_Bottom() {
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         verify(mDynamicRectProvider).setPopupState(PopupState.BOTTOM);
         verify(mPopupWindow).show();
     }

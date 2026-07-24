@@ -282,7 +282,7 @@ public class AutocompleteMediatorUnitTest {
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
         mMediator.setOmniboxSuggestionsVisualStateObserver(mVisualStateObserver);
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
     }
 
     /**
@@ -1665,7 +1665,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void onTopResumedActivityChanged_nonZeroSuggest() {
+    public void onWindowFocusChanged_nonZeroSuggest() {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -1680,19 +1680,19 @@ public class AutocompleteMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
 
-        mMediator.onTopResumedActivityChanged(false);
+        mMediator.onWindowFocusChanged(false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
 
         session.getAutocompleteInput().setUserText("test");
 
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
     }
 
     @Test
-    public void onTopResumedActivityChanged_zeroSuggest() {
+    public void onWindowFocusChanged_zeroSuggest() {
 
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
@@ -1702,10 +1702,10 @@ public class AutocompleteMediatorUnitTest {
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
 
-        mMediator.onTopResumedActivityChanged(false);
+        mMediator.onWindowFocusChanged(false);
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
 
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -1851,16 +1851,16 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void onTopResumedActivityChanged_hubSearchContainerVisible() {
+    public void onWindowFocusChanged_hubSearchContainerVisible() {
         var session =
                 createSession(
                         new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
 
         mMediator.beginInput(session);
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
         assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
 
-        mMediator.onTopResumedActivityChanged(false);
+        mMediator.onWindowFocusChanged(false);
         assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
     }
 
@@ -2343,7 +2343,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void onTopResumedActivityChanged_managesObservers() {
+    public void onWindowFocusChanged_managesObservers() {
         var session = createEmptySession();
         mMediator.beginInput(session);
 
@@ -2352,13 +2352,13 @@ public class AutocompleteMediatorUnitTest {
 
         // Deactivate: should remove observers and stop autocomplete.
         clearInvocations(mAutocompleteController);
-        mMediator.onTopResumedActivityChanged(false);
+        mMediator.onWindowFocusChanged(false);
         verify(mAutocompleteController).stop(AutocompleteStopReason.CLOBBERED);
         verify(mAutocompleteController).removeOnSuggestionsReceivedListener(mMediator);
 
         // Re-activate: should install observers and trigger suggestions.
         clearInvocations(mAutocompleteController);
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
         // This will trigger startZeroSuggest because it's a new tab page in setup.
         verify(mAutocompleteController).startZeroSuggest(any(), any());
@@ -2371,11 +2371,11 @@ public class AutocompleteMediatorUnitTest {
 
         assertTrue(mMediator.isInInputSession());
 
-        mMediator.onTopResumedActivityChanged(false);
+        mMediator.onWindowFocusChanged(false);
         // Previously this would return false. Now it should still be true.
         assertTrue(mMediator.isInInputSession());
 
-        mMediator.onTopResumedActivityChanged(true);
+        mMediator.onWindowFocusChanged(true);
         assertTrue(mMediator.isInInputSession());
 
         mMediator.endInput();

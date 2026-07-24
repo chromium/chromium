@@ -98,11 +98,15 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         urlBarElement
                 .typeTextTo(query)
                 .withPossiblyAlreadyFulfilled()
-                .waitFor(new SuggestionsShownCondition(locationBarElement.value()));
+                .waitFor(
+                        new SuggestionsShownCondition(
+                                locationBarElement.value(), /* shown= */ true));
     }
 
     public void checkSuggestionsShown() {
-        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.value()));
+        noopTo().waitFor(
+                        new SuggestionsShownCondition(
+                                locationBarElement.value(), /* shown= */ true));
     }
 
     public void checkSuggestionsNotShown() {

@@ -331,7 +331,7 @@ public class SearchActivityTest {
         Assert.assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
         // Native initialization is finished, but we don't have a DSE elected yet.
-        verify(mAutocompleteController).addOnSuggestionsReceivedListener(any());
+        mOmnibox.checkSuggestionsNotShown();
 
         // Set some text in the search box, then continue startup.
         mOmnibox.requestFocus();
