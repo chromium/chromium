@@ -430,24 +430,6 @@ class AutofillPrivateBulkDeleteAllCvcsFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateSetAutofillSyncToggleEnabledFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateSetAutofillSyncToggleEnabledFunction() = default;
-  AutofillPrivateSetAutofillSyncToggleEnabledFunction(
-      const AutofillPrivateSetAutofillSyncToggleEnabledFunction&) = delete;
-  AutofillPrivateSetAutofillSyncToggleEnabledFunction& operator=(
-      const AutofillPrivateSetAutofillSyncToggleEnabledFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.setAutofillSyncToggleEnabled",
-                             AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED)
-
- protected:
-  ~AutofillPrivateSetAutofillSyncToggleEnabledFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateAddOrUpdateEntityInstanceFunction
     : public AutofillPrivateExtensionFunction {
  public:

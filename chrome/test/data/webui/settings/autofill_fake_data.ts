@@ -15,8 +15,6 @@ export const STUB_USER_ACCOUNT_INFO: chrome.autofillPrivate.AccountInfo = {
   email: 'stub-user@example.com',
   isSyncEnabledForAutofillProfiles: false,
   isEligibleForAddressAccountStorage: false,
-  isAutofillSyncToggleAvailable: false,
-  isAutofillSyncToggleEnabled: false,
 };
 
 /**
@@ -240,7 +238,6 @@ export class TestAutofillManager extends TestBrowserProxy implements
       'removeAddress',
       'removePersonalDataManagerListener',
       'setPersonalDataManagerListener',
-      'setAutofillSyncToggleEnabled',
     ]);
 
     // Set these to have non-empty data.
@@ -250,8 +247,6 @@ export class TestAutofillManager extends TestBrowserProxy implements
         email: 'stub-user@example.com',
         isSyncEnabledForAutofillProfiles: true,
         isEligibleForAddressAccountStorage: false,
-        isAutofillSyncToggleAvailable: false,
-        isAutofillSyncToggleEnabled: false,
       },
     };
 
@@ -284,10 +279,6 @@ export class TestAutofillManager extends TestBrowserProxy implements
 
   removeAddress(_guid: string) {
     this.methodCalled('removeAddress');
-  }
-
-  setAutofillSyncToggleEnabled(_enabled: boolean) {
-    this.methodCalled('setAutofillSyncToggleEnabled');
   }
 
   /**

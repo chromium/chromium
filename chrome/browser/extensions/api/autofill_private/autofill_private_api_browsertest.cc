@@ -373,19 +373,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, RemoveVirtualCard) {
             autofill::VirtualCardEnrollmentRequestType::kUnenroll);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
-                       SetAutofillSyncToggleEnabled) {
-  syncer::TestSyncService test_sync_service;
-  address_data_manager().SetSyncServiceForTest(&test_sync_service);
-  test_sync_service.GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kAutofill, false);
-  EXPECT_FALSE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kAutofill));
-  EXPECT_TRUE(RunAutofillSubtest("setAutofillSyncToggleEnabled"));
-  EXPECT_TRUE(test_sync_service.GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kAutofill));
-}
-
 // TODO(crbug.com/40759629): Fix and re-enable this test.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_EntityInstances DISABLED_EntityInstances

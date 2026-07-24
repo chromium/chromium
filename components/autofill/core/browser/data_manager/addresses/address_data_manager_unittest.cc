@@ -1275,13 +1275,6 @@ TEST_F(AddressDataManagerTest,
   // Account storage is not eligible.
   EXPECT_FALSE(address_data_manager().IsEligibleForAddressAccountStorage());
 }
-
-TEST_F(AddressDataManagerTest, AutofillSyncToggleNotAvailableWithSigninPromos) {
-  base::test::ScopedFeatureList feature_list{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-
-  EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
-}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Tests that any `kAccountNameEmail` is created on construction of

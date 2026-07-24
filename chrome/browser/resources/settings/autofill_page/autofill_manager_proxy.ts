@@ -41,11 +41,6 @@ export interface AutofillManagerProxy {
 
   /** @param guid The guid of the address to remove.  */
   removeAddress(guid: string): void;
-
-  /**
-   * Sets the Sync Autofill toggle value.
-   */
-  setAutofillSyncToggleEnabled(enabled: boolean): void;
 }
 
 /**
@@ -74,10 +69,6 @@ export class AutofillManagerImpl implements AutofillManagerProxy {
 
   removeAddress(guid: string) {
     chrome.autofillPrivate.removeAddress(guid);
-  }
-
-  setAutofillSyncToggleEnabled(enabled: boolean) {
-    chrome.autofillPrivate.setAutofillSyncToggleEnabled(enabled);
   }
 
   static getInstance(): AutofillManagerProxy {

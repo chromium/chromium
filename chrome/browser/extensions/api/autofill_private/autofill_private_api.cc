@@ -1085,31 +1085,6 @@ AutofillPrivateBulkDeleteAllCvcsFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateSetAutofillSyncToggleEnabledFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
-  AddressDataManager* adm = address_data_manager();
-  if (!adm) {
-    return RespondNow(
-        Error(base::StrCat({"Set autofill sync toggle enabled - ",
-                            kErrorAddressDataManagerUnavailable})));
-  }
-  if (!adm->has_initial_load_finished()) {
-    return RespondNow(
-        Error(base::StrCat({"Set autofill sync toggle enabled - ",
-                            kErrorAddressDataManagerLoadingUnfinished})));
-  }
-  std::optional<api::autofill_private::SetAutofillSyncToggleEnabled::Params>
-      parameters =
-          api::autofill_private::SetAutofillSyncToggleEnabled::Params::Create(
-              args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-  adm->SetAutofillSelectableTypeEnabled(parameters->enabled);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAddOrUpdateEntityInstanceFunction
 
 ExtensionFunction::ResponseAction

@@ -15,8 +15,6 @@ declare global {
         email: string;
         isSyncEnabledForAutofillProfiles: boolean;
         isEligibleForAddressAccountStorage: boolean;
-        isAutofillSyncToggleEnabled: boolean;
-        isAutofillSyncToggleAvailable: boolean;
       }
 
       /**
@@ -332,7 +330,6 @@ declare global {
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
-      export function setAutofillSyncToggleEnabled(enabled: boolean): void;
       export function addOrUpdateEntityInstance(entityInstance: EntityInstance):
           Promise<void>;
       export function removeEntityInstance(guid: string): void;

@@ -1,17 +1,5 @@
   <style include="cr-shared-style settings-shared passwords-shared
       your-saved-info-shared">
-    #autofillSyncToggleWrapper {
-      align-items: center;
-      cursor: pointer;
-      display: flex;
-      min-height: var(--cr-section-two-line-min-height);
-      padding: 0 var(--cr-section-padding);
-    }
-
-    #autofillSyncToggleWrapper:hover {
-      background-color: var(--cr-hover-background-color);
-    }
-
     #addressList .start {
       display: flex;
       overflow: hidden;
@@ -71,17 +59,6 @@
             pref="{{prefs.autofill.gmail_otp_filling.enabled}}">
         </settings-toggle-button>
       </template>
-      <div id="autofillSyncToggleWrapper"
-          hidden$="[[!isAutofillSyncToggleVisible_(accountInfo_)]]">
-        <div class="flex">
-          <div class="label">$i18n{autofillSyncToggleLabel}</div>
-          <div class="label cr-secondary-text">[[accountInfo_.email]]</div>
-        </div>
-        <cr-toggle id="autofillSyncToggle"
-            checked="[[accountInfo_.isAutofillSyncToggleEnabled]]"
-            on-change="onAutofillSyncEnabledChange_">
-        </cr-toggle>
-      </div>
       <template is="dom-if"
           if="[[prefs.autofill.profile_enabled.extensionId]]">
         <div class="cr-row continuation">

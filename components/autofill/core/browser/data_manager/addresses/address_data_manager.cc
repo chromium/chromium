@@ -623,24 +623,8 @@ bool AddressDataManager::IsSyncFeatureEnabledForAutofill() const {
   // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   return sync_service_ != nullptr && sync_service_->IsSyncFeatureEnabled() &&
-         IsAutofillUserSelectableTypeEnabled();
-}
-
-bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
-  return sync_service_ != nullptr &&
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kAutofill);
-}
-
-bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
-  return false;
-}
-
-void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
-  if (sync_service_ != nullptr) {
-    sync_service_->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kAutofill, enabled);
-  }
 }
 
 std::optional<CoreAccountInfo> AddressDataManager::GetPrimaryAccountInfo()

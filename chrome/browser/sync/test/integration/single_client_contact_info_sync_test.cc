@@ -447,9 +447,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
   EXPECT_FALSE(GetPersonalDataManager()
                    ->address_data_manager()
                    .IsEligibleForAddressAccountStorage());
-  EXPECT_FALSE(GetPersonalDataManager()
-                   ->address_data_manager()
-                   .IsAutofillSyncToggleAvailable());
 
   // Fix the authentication error, sync is available again.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -462,71 +459,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsEligibleForAddressAccountStorage());
-
-  // The toggle is not available when kReplaceSyncPromosWithSignInPromos is
-  // enabled, and is instead available in the account settings page.
-  const bool is_autofill_sync_toggle_available =
-      !syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
-  EXPECT_EQ(GetPersonalDataManager()
-                ->address_data_manager()
-                .IsAutofillSyncToggleAvailable(),
-            is_autofill_sync_toggle_available);
-}
-
-// Regression test for https://crbug.com/340194452.
-// TODO(crbug.com/40943238): Remove when `kReplaceSyncPromosWithSignInPromos` is
-// enabled.
-IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
-                       IsAutofillSyncToggleAvailable) {
-  // Setup transport mode.
-  ASSERT_TRUE(SignIn());
-  EXPECT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // The toggle is not available when
-    // kReplaceSyncPromosWithSignInPromos is enabled, and is instead
-    // available in the account settings page.
-    EXPECT_FALSE(GetPersonalDataManager()
-                     ->address_data_manager()
-                     .IsAutofillSyncToggleAvailable());
-    return;
-  }
-
-  // The toggle is available.
-  EXPECT_TRUE(GetPersonalDataManager()
-                  ->address_data_manager()
-                  .IsAutofillSyncToggleAvailable());
-
-  // Turn account storage OFF.
-  GetPersonalDataManager()
-      ->address_data_manager()
-      .SetAutofillSelectableTypeEnabled(
-          /*enabled=*/false);
-  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
-                                       /*expect_active=*/false)
-                  .Wait());
-
-  // The toggle is still available.
-  EXPECT_TRUE(GetPersonalDataManager()
-                  ->address_data_manager()
-                  .IsAutofillSyncToggleAvailable());
-
-  // Turn on Sync.
-  ASSERT_TRUE(GetClient(0)->SetupSync());
-  HideAccountNameEmailProfile();
-  // The toggle is no longer available.
-  EXPECT_FALSE(GetPersonalDataManager()
-                   ->address_data_manager()
-                   .IsAutofillSyncToggleAvailable());
-
-  // Sign out.
-  GetClient(0)->SignOutPrimaryAccount();
-
-  // The toggle is not available.
-  EXPECT_FALSE(GetPersonalDataManager()
-                   ->address_data_manager()
-                   .IsAutofillSyncToggleAvailable());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
