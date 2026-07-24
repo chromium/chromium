@@ -37,98 +37,6 @@ namespace blink {
 
 namespace {
 
-// Maps a MonkeyPatchableApi enum value to the corresponding property path
-// to access that API, starting from the context's global object.
-base::span<const char* const> GetApiPropertyPath(
-    AdTracker::MonkeyPatchableApi api) {
-  switch (api) {
-    case AdTracker::MonkeyPatchableApi::kHistoryPushState: {
-      static const char* const kPath[] = {"history", "pushState"};
-      return kPath;
-    }
-    case AdTracker::MonkeyPatchableApi::kHistoryReplaceState: {
-      static const char* const kPath[] = {"history", "replaceState"};
-      return kPath;
-    }
-    case AdTracker::MonkeyPatchableApi::kNodeAppendChild: {
-      static const char* const kPath[] = {"Node", "prototype", "appendChild"};
-      return kPath;
-    }
-    case AdTracker::MonkeyPatchableApi::kNone:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
-
-// A struct to hold the results from `GetApiFunctionInfo`.
-struct ApiFunctionInfo {
-  v8::MaybeLocal<v8::Function> function;
-
-  // True if the API appears to be monkey patched. False if the API appears to
-  // be the native implementation or if an error occurred during the check.
-  bool is_monkey_patched = false;
-};
-
-// Finds the V8 function for a given API, checks if it has been monkey patched,
-// and returns both pieces of information.
-ApiFunctionInfo GetApiFunctionInfo(v8::Isolate* isolate,
-                                   AdTracker::MonkeyPatchableApi api) {
-  v8::EscapableHandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  if (context.IsEmpty()) {
-    return {};
-  }
-
-  v8::Context::Scope context_scope(context);
-
-  // Start with the global object.
-  v8::Local<v8::Value> current_value = context->Global();
-  const base::span<const char* const> property_path = GetApiPropertyPath(api);
-
-  // Prevent script execution (e.g., via author-defined getters or proxy traps)
-  // during prototype chain traversal to avoid evasion, side effects, or DOM
-  // mutation re-entrancy crashes.
-  v8::Isolate::DisallowJavascriptExecutionScope disallow_js(
-      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
-  v8::TryCatch try_catch(isolate);
-
-  // Traverse the property path (e.g., global object -> `history` ->
-  // `pushState`).
-  for (const char* property_name : property_path) {
-    // Each intermediate value in the path must be an object.
-    if (!current_value->IsObject()) {
-      return {};
-    }
-
-    v8::Local<v8::Object> current_object = current_value.As<v8::Object>();
-    v8::Local<v8::String> property_key = V8AtomicString(isolate, property_name);
-
-    v8::MaybeLocal<v8::Value> maybe_next_value =
-        current_object->Get(context, property_key);
-
-    // If the property doesn't exist, the chain is broken.
-    if (maybe_next_value.IsEmpty()) {
-      return {};
-    }
-    current_value = maybe_next_value.ToLocalChecked();
-  }
-
-  // At the end of the path, we expect a function. If it's not a function,
-  // it has been tampered with, and we can't perform our check.
-  if (!current_value->IsFunction()) {
-    return {};
-  }
-
-  v8::Local<v8::Function> api_function = current_value.As<v8::Function>();
-
-  // Native functions will have an invalid script ID. User-defined functions
-  // (monkey patches) will have a valid one.
-  bool is_monkey_patched =
-      api_function->ScriptId() != v8::Message::kNoScriptIdInfo;
-
-  return {handle_scope.Escape(api_function), is_monkey_patched};
-}
-
 bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
   // TODO(jkarlin): Do the same check for worker contexts.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
@@ -632,7 +540,8 @@ bool AdTracker::IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
 
 bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
                                           MonkeyPatchableApi api) const {
-  ApiFunctionInfo api_info = GetApiFunctionInfo(isolate, api);
+  MonkeyPatchableApiFunctionInfo api_info =
+      GetMonkeyPatchableApiFunctionInfo(isolate, api);
   if (!api_info.is_monkey_patched) {
     return false;
   }
@@ -680,24 +589,6 @@ bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
   return false;
 }
 
-bool AdTracker::IsFunctionAMonkeyPatch(v8::Isolate* isolate,
-                                       const v8::Local<v8::Function>& function,
-                                       MonkeyPatchableApi api) const {
-  // 1. Get the implementation of `api` from the v8 context.
-  ApiFunctionInfo api_info = GetApiFunctionInfo(isolate, api);
-  if (!api_info.is_monkey_patched) {
-    return false;
-  }
-
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Function> api_function;
-  if (!api_info.function.ToLocal(&api_function)) {
-    return false;
-  }
-
-  // 2. If the `api` is monkeypatched, see if it matches `function`.
-  return function == api_function;
-}
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
                                 const String& url) {

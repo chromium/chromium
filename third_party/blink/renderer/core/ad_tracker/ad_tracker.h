@@ -12,6 +12,7 @@
 #include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/ad_tracker/lazy_stack_trace.h"
+#include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -40,22 +41,7 @@ class AsyncTaskContext;
 class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
                               public ScriptInitiationMonitor::Observer {
  public:
-  // A list of JavaScript APIs that are frequently monkey patched by ad scripts.
-  // This enum is used as a parameter to `IsAdScriptInStack` to enable a
-  // heuristic that can ignore a top-level ad script, preventing false positives
-  // when the API is called from a non-ad script through an ad script's monkey
-  // patch.
-  enum class MonkeyPatchableApi {
-    // Default setting to disable the heuristic.
-    kNone,
-
-    // history.pushState
-    kHistoryPushState,
-    // history.replaceState
-    kHistoryReplaceState,
-    // Node.prototype.appendChild
-    kNodeAppendChild
-  };
+  using MonkeyPatchableApi = blink::MonkeyPatchableApi;
 
   // Stack scans of `kBottomOnly` will only scan the bottom frame of the sync
   // stack and also include async frames. `kTopOnly` will scan the top
@@ -205,15 +191,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
   bool WasApiCalledByNonAdScript(v8::Isolate* isolate,
                                  MonkeyPatchableApi api) const;
 
-  // Returns true if `api` is a monkeyaptched function and matches `function` in
-  // the `isolate`'s current context.
-  // WARNING: This function executes js and can therefore modify the members of
-  // this class. Consider all iterators obtained before calling
-  // IsFunctionAMonkeyPatch to be invalid.
-  // TODO(jkarlin): This function really wants a context, not an isolate.
-  bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
-                              const v8::Local<v8::Function>& function,
-                              MonkeyPatchableApi api) const;
 
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
