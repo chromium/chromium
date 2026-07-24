@@ -31,7 +31,8 @@ class IsolatedWebAppMetricsHelper {
     kFailureNumberOfSubAppsExceedsLimit = 7,
     kFailureOverlappingScope = 8,
     kFailureRecursiveInstall = 9,
-    kFailureWebAppsNotUserInstallable = 10
+    kFailureWebAppsNotUserInstallable = 10,
+    kFailurePerPromptLimitExceeded = 11
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:SubAppInstallServiceResult)
 

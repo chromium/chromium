@@ -553,6 +553,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Failure overlapping scope"/>
   <int value="9" label="Failure recursive install"/>
   <int value="10" label="Failure web apps not user installable"/>
+  <int value="11" label="Failure limit per prompt is exceeded"/>
 </enum>
 
 <!-- LINT.IfChange(WebAppApplyManifestMigrationResult) -->

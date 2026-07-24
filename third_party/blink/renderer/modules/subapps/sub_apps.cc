@@ -96,10 +96,15 @@ v8::Local<v8::Value> MojoResultCodeToDOMException(
           isolate, DOMExceptionCode::kNotAllowedError,
           "The user declined the installation prompt.");
 
-    case SubAppsServiceResultCode::kLimitExceeded:
+    case SubAppsServiceResultCode::kTotalLimitExceeded:
       return V8ThrowDOMException::CreateOrDie(
           isolate, DOMExceptionCode::kQuotaExceededError,
           "The limit for sub app installs per parent app is exceeded");
+
+    case SubAppsServiceResultCode::kPerPromptLimitExceeded:
+      return V8ThrowDOMException::CreateOrDie(
+          isolate, DOMExceptionCode::kQuotaExceededError,
+          "The limit for sub app installs per single prompt is exceeded");
 
     case SubAppsServiceResultCode::kWebAppsNotUserInstallable:
       return V8ThrowDOMException::CreateOrDie(

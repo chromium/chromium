@@ -81,7 +81,12 @@ namespace web_app {
 BASE_FEATURE(kSubAppsInstallLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kSubAppsInstallLimitParam{&kSubAppsInstallLimit,
-                                                        "limit", 20};
+                                                        "limit", 50};
+
+BASE_FEATURE(kSubAppsPerPromptLimit, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kSubAppsPerPromptLimitParam{
+    &kSubAppsPerPromptLimit, "limit", 20};
 
 namespace {
 
@@ -273,8 +278,10 @@ blink::mojom::SubAppsServiceResultCode MapAddCallErrorCodeToMojo(
     case AddCallErrorCode::kUserDeclined:
     case AddCallErrorCode::kUserDeclinedEmbargo:
       return blink::mojom::SubAppsServiceResultCode::kUserDeclined;
-    case AddCallErrorCode::kLimitExceeded:
-      return blink::mojom::SubAppsServiceResultCode::kLimitExceeded;
+    case AddCallErrorCode::kTotalLimitExceeded:
+      return blink::mojom::SubAppsServiceResultCode::kTotalLimitExceeded;
+    case AddCallErrorCode::kPerPromptLimitExceeded:
+      return blink::mojom::SubAppsServiceResultCode::kPerPromptLimitExceeded;
     case AddCallErrorCode::kWebAppsNotUserInstallable:
       return blink::mojom::SubAppsServiceResultCode::kWebAppsNotUserInstallable;
   }
@@ -289,9 +296,12 @@ IsolatedWebAppMetricsHelper::LogSubAppInstallResult MapAddCallErrorCodeToMetric(
     case AddCallErrorCode::kUserDeclinedEmbargo:
       return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
           kFailureUserDeclinedEmbargo;
-    case AddCallErrorCode::kLimitExceeded:
+    case AddCallErrorCode::kTotalLimitExceeded:
       return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
           kFailureNumberOfSubAppsExceedsLimit;
+    case AddCallErrorCode::kPerPromptLimitExceeded:
+      return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
+          kFailurePerPromptLimitExceeded;
     case AddCallErrorCode::kWebAppsNotUserInstallable:
       return IsolatedWebAppMetricsHelper::LogSubAppInstallResult::
           kFailureWebAppsNotUserInstallable;
@@ -394,6 +404,18 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
     return;
   }
 
+  // Check current limit of sub apps installed.
+  // The reason is to not flood user with huge number of apps
+  // to review in the UI.
+  if (static_cast<int>(install_urls.size()) >
+          kSubAppsPerPromptLimitParam.Get() &&
+      GetSubAppsContentSetting(render_frame_host()) != CONTENT_SETTING_ALLOW) {
+    std::move(add_call_info.mojo_callback)
+        .Run(base::unexpected(AddCallErrorCode::kPerPromptLimitExceeded));
+    return;
+  }
+
+  // Check total limit of sub apps installed.
   size_t current_count = registrar.GetAllSubAppIds(*parent_app_id).size();
 
   // Return all as failed if sub app limit is reached.
@@ -401,13 +423,13 @@ void SubAppsServiceImpl::Add(const std::vector<std::string>& install_paths,
   // limit, however, all sub app installations are rejected to simplify for
   // users reason of failure and to prevent situations of stalling the API if
   // 10000 sub apps were provided.
-  int sub_apps_limit = std::max(0, kSubAppsInstallLimitParam.Get());
+  int sub_apps_total_limit = std::max(0, kSubAppsInstallLimitParam.Get());
   int over_the_limit =
       std::max(0, static_cast<int>(current_count + install_urls.size()) -
-                      sub_apps_limit);
+                      sub_apps_total_limit);
   if (over_the_limit > 0) {
     std::move(add_call_info.mojo_callback)
-        .Run(base::unexpected(AddCallErrorCode::kLimitExceeded));
+        .Run(base::unexpected(AddCallErrorCode::kTotalLimitExceeded));
     return;
   }
 

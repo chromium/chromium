@@ -36,6 +36,11 @@ namespace web_app {
 BASE_DECLARE_FEATURE(kSubAppsInstallLimit);
 extern const base::FeatureParam<int> kSubAppsInstallLimitParam;
 
+// Max number of sub apps that can be installed
+// via single call to add, excluding the enterprose policy case.
+BASE_DECLARE_FEATURE(kSubAppsPerPromptLimit);
+extern const base::FeatureParam<int> kSubAppsPerPromptLimitParam;
+
 namespace {
 
 struct SubAppInstallResult {
@@ -60,7 +65,8 @@ struct SubAppInstallResult {
 enum class AddCallErrorCode {
   kUserDeclined,
   kUserDeclinedEmbargo,
-  kLimitExceeded,
+  kTotalLimitExceeded,
+  kPerPromptLimitExceeded,
   kWebAppsNotUserInstallable,
 };
 
