@@ -1796,9 +1796,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // callers are using it.
   PopoverStack& MenuStack() { return popover_auto_stack_; }
 
-  // https://crbug.com/1453291
-  // The DOM Parts API:
-  // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
   RouteMap* routeMap();
 
   void SetHasCaptureListener() { has_capture_listener_ = true; }
