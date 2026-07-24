@@ -589,50 +589,5 @@ TEST_F(SavedTabGroupBarUnitTest, GroupLoadFromModelInOrder) {
   EXPECT_EQ(uuid1,
             views::AsViewClass<SavedTabGroupButton>(children[2])->guid());
 }
-class SavedTabGroupBarAutofocusTest : public SavedTabGroupBarUnitTest {
- public:
-  SavedTabGroupBarAutofocusTest() : SavedTabGroupBarUnitTest(false) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kTabGroupsFocusing,
-          {{"tab_groups_focusing_default_to_focused", "true"}}},
-         {data_sharing::features::kDataSharingFeature, {}}},
-        {collaboration::features::kCollaborationMessaging});
-  }
-};
-
-TEST_F(SavedTabGroupBarAutofocusTest, OnTabGroupButtonPressedAutofocus) {
-  // Add a group.
-  tab_groups::TabGroupId local_id = CreateNewGroupInBrowser();
-  base::Uuid sync_id = EnforceGroupSaved(
-      SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
-  Wait();
-
-  SavedTabGroupButton* button = nullptr;
-  for (SavedTabGroupButton* b :
-       saved_tab_group_bar()->GetSavedTabGroupButtons()) {
-    if (b->guid() == sync_id) {
-      button = b;
-      break;
-    }
-  }
-  ASSERT_TRUE(button);
-
-  // Focus should be empty initially.
-  EXPECT_FALSE(browser()->tab_strip_model()->GetFocusedGroup().has_value());
-
-  // Press the button.
-  // Open the tab group.
-  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  saved_tab_group_bar()->OnTabGroupButtonPressed(sync_id, event);
-  Wait();
-
-  // Verify the group is focused.
-  std::optional<tab_groups::TabGroupId> focused_group =
-      browser()->tab_strip_model()->GetFocusedGroup();
-  ASSERT_TRUE(focused_group.has_value());
-  EXPECT_EQ(focused_group.value(), local_id);
-}
 
 }  // namespace tab_groups

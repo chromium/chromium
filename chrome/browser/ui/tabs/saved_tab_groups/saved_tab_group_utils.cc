@@ -483,16 +483,6 @@ SavedTabGroupUtils::OpenSavedTabGroup(BrowserWindowInterface* browser,
           saved_group_guid, std::make_unique<TabGroupActionContextDesktop>(
                                 browser_ptr, opening_source));
 
-  if (opened_group_id.has_value() &&
-      base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
-      features::kTabGroupsFocusingDefaultToFocused.Get()) {
-    if (browser) {
-      if (auto* model = browser->GetTabStripModel()) {
-        model->SetFocusedGroup(opened_group_id.value());
-      }
-    }
-  }
-
   return opened_group_id;
 }
 

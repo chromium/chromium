@@ -493,17 +493,6 @@ BASE_FEATURE_PARAM(bool,
                    "tab_groups_focusing_pinned_tabs",
                    false);
 
-BASE_FEATURE_PARAM(bool,
-                   kTabGroupsFocusingAutoClose,
-                   &kTabGroupsFocusing,
-                   "tab_groups_focusing_auto_close",
-                   false);
-
-BASE_FEATURE_PARAM(bool,
-                   kTabGroupsFocusingDefaultToFocused,
-                   &kTabGroupsFocusing,
-                   "tab_groups_focusing_default_to_focused",
-                   false);
 
 BASE_FEATURE(kVerticalTabsGrabHandleRemoval, base::FEATURE_DISABLED_BY_DEFAULT);
 

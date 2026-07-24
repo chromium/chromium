@@ -488,39 +488,6 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_FALSE(tab0->GetGroup().has_value());
 }
 
-class VerticalTabStripControllerFocusingAutoCloseBrowserTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
- public:
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    return {
-        {features::kTabGroupsFocusing,
-         {{"tab_groups_focusing_auto_close", "true"}}},
-        {tabs::kVerticalTabs, {}},
-    };
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerFocusingAutoCloseBrowserTest,
-                       CollapseFocusedGroupTriggersUseAfterFree) {
-  AppendTab();
-
-  TabStripModel* model = browser()->tab_strip_model();
-  ASSERT_EQ(2, model->count());
-
-  tab_groups::TabGroupId group_id = model->AddToNewGroup({0});
-  TabGroup* group = model->group_model()->GetTabGroup(group_id);
-
-  model->SetFocusedGroup(group_id);
-  ASSERT_EQ(0, model->active_index());
-  ASSERT_EQ(group_id, model->GetFocusedGroup());
-
-  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
-      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
-
-  EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
-}
-
 class VerticalTabStripControllerFocusingVisibilityBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:

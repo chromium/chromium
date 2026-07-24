@@ -476,13 +476,6 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
     }
   }
 
-  // Under the kTabGroupsFocusingAutoClose feature, switching the active tab or
-  // adding a new tab can cause the group to be automatically closed and
-  // synchronously destroyed. We must check that the group still exists.
-  if (!model_->group_model()->ContainsTabGroup(group)) {
-    return;
-  }
-
   if (origin != ToggleTabGroupCollapsedStateOrigin::kMenuAction ||
       should_toggle_group) {
     tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
