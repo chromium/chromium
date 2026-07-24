@@ -250,11 +250,16 @@ void ToolbarActionsModelUnitTest::TearDown() {
 
 void ToolbarActionsModelUnitTest::RunEmitUserHistogramsTest(
     int incremented_histogram_count) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+
   base::HistogramTester histograms;
 
   InitToolbarModelAndObserver();
 
   histograms.ExpectTotalCount("Extension.Toolbar.BrowserActionsCount2",
+                              incremented_histogram_count);
+  histograms.ExpectTotalCount("Extensions.Settings.DefaultPinningStartupState",
                               incremented_histogram_count);
 }
 
@@ -1504,6 +1509,50 @@ TEST_F(ToolbarActionsModelUnitTest, InitActionList_NonUserEmitHistograms) {
   ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(
       /*is_guest=*/true));
   RunEmitUserHistogramsTest(/*incremented_histogram_count=*/0);
+}
+
+TEST_F(ToolbarActionsModelUnitTest,
+       InitActionList_DefaultPinningStartupStateHistogram_True) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault, true);
+
+  base::HistogramTester histograms;
+  InitToolbarModelAndObserver();
+  histograms.ExpectUniqueSample(
+      "Extensions.Settings.DefaultPinningStartupState", true, 1);
+}
+
+TEST_F(ToolbarActionsModelUnitTest,
+       InitActionList_DefaultPinningStartupStateHistogram_False) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault, false);
+
+  base::HistogramTester histograms;
+  InitToolbarModelAndObserver();
+  histograms.ExpectUniqueSample(
+      "Extensions.Settings.DefaultPinningStartupState", false, 1);
+}
+
+TEST_F(ToolbarActionsModelUnitTest,
+       InitActionList_DefaultPinningStartupStateHistogram_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kExtensionsPinnedByDefault);
+
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
+
+  base::HistogramTester histograms;
+  InitToolbarModelAndObserver();
+  histograms.ExpectTotalCount("Extensions.Settings.DefaultPinningStartupState",
+                              0);
 }
 
 TEST_F(ToolbarActionsModelUnitTest,

@@ -4447,6 +4447,18 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Settings.DefaultPinningStartupState" enum="Boolean"
+    expires_after="2027-01-01">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged once on profile initialization for non-incognito user profiles when
+    the kExtensionsPinnedByDefault feature is enabled. Emits the boolean value
+    of the kExtensionsPinnedByDefault preference, which tracks whether new
+    extensions should be pinned to the toolbar by default.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Settings.DefaultPinningToggled" enum="Boolean"
     expires_after="2027-01-01">
   <owner>evasu@chromium.org</owner>

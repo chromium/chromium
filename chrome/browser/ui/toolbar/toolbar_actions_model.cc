@@ -563,6 +563,12 @@ void ToolbarActionsModel::InitializeActionList() {
   if (!profile_->IsOffTheRecord()) {
     if (extensions::profile_util::ProfileCanUseNonComponentExtensions(
             profile_)) {
+      if (base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault)) {
+        base::UmaHistogramBoolean(
+            "Extensions.Settings.DefaultPinningStartupState",
+            profile_->GetPrefs()->GetBoolean(
+                prefs::kExtensionsPinnedByDefault));
+      }
       base::UmaHistogramCounts100("Extension.Toolbar.BrowserActionsCount2",
                                   action_ids_.size());
     }
