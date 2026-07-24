@@ -13,10 +13,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -40,6 +42,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
@@ -78,6 +81,8 @@ constexpr char kOpenPopupInactiveWindow[] =
     "Cannot show popup for an inactive window. To show the popup for this "
     "window, first call `chrome.windows.update` with `focused` set to "
     "true.";
+constexpr char kSetBadgeMaximumSizeError[] =
+    "Badge text size is %u bytes which exceeds the limit of %u bytes.";
 
 bool g_report_error_for_invisible_icon = false;
 
@@ -375,17 +380,26 @@ ExtensionActionSetBadgeTextFunction::RunExtensionAction() {
   EXTENSION_FUNCTION_VALIDATE(details_);
 
   const std::string* badge_text = details_->FindString("text");
-  if (badge_text) {
-    extension_action_->SetBadgeText(tab_id_, *badge_text);
-  } else {
-    extension_action_->ClearBadgeText(tab_id_);
-  }
 
   // Log badge text length to determine future length limit.
   // TODO(crbug.com/491158086): After determining suitable length limit, remove
   // histogram and add special case handling of excessively long badges.
   base::UmaHistogramCounts1000("Extensions.Action.SetBadgeTextLength",
                                badge_text ? badge_text->length() : 0);
+
+  if (badge_text) {
+    // The maximum size (in bytes) for values passed to action.setBadgeText().
+    constexpr size_t kMaxBadgeTextSize = 100;
+    if ((badge_text->length() > kMaxBadgeTextSize) &&
+        base::FeatureList::IsEnabled(
+            extensions_features::kApiActionSetBadgeTextByteLimit)) {
+      return RespondNow(Error(base::StringPrintf(
+          kSetBadgeMaximumSizeError, badge_text->length(), kMaxBadgeTextSize)));
+    }
+    extension_action_->SetBadgeText(tab_id_, *badge_text);
+  } else {
+    extension_action_->ClearBadgeText(tab_id_);
+  }
 
   NotifyChange();
   return RespondNow(NoArguments());
