@@ -16,6 +16,14 @@ import sys
 import time
 import unittest
 
+if sys.platform == 'win32':
+  try:
+    import win32api
+    import win32con
+    import win32process
+  except ImportError:
+    win32api = None
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEST_SCRIPT = os.path.join(HERE, 'test_env_user_script.py')
 
@@ -73,6 +81,29 @@ class SignalingWindowsTest(unittest.TestCase):
     # https://crbug.com/1335123 and it is hoped that increasing the timeout will
     # reduce the flakiness.
     self.assertEqual(sig, str(int(signal.SIGBREAK)))  # pylint: disable=no-member
+
+  def test_job_object_kills_leaked_child_process(self):
+    proc = launch_process_windows(['--spawn-leaked-child'])
+    leaked_pid_str = read_subprocess_message(proc, 'Leaked PID:')
+    proc.wait()
+    self.assertIsNotNone(leaked_pid_str)
+    leaked_pid = int(leaked_pid_str)
+    time.sleep(0.2)
+
+    if not win32api:
+      return
+
+    try:
+      hproc = win32api.OpenProcess(win32con.PROCESS_QUERY_LIMITED_INFORMATION,
+                                   False, leaked_pid)
+      if hproc:
+        exit_code = win32process.GetExitCodeProcess(hproc)
+        win32api.CloseHandle(hproc)
+        # 259 is STILL_ACTIVE; process should be terminated.
+        self.assertNotEqual(exit_code, 259)
+    except Exception:  # pylint: disable=broad-except
+      # OpenProcess failing indicates the PID is no longer valid (process dead).
+      pass
 
 
 class SignalingNonWindowsTest(unittest.TestCase):

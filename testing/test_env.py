@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -12,8 +12,60 @@ import subprocess
 import sys
 import time
 
+if sys.platform == 'win32':
+  try:
+    import win32api
+    import win32con
+    import win32job
+  except ImportError:
+    win32job = None
+    print('Warning: Failed to import win32 libraries', file=sys.stderr)
+
 # This is hardcoded to be src/ relative to this script.
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def setup_job_object():
+  """Configures a Windows Job Object for test_env.py and its child processes.
+
+  Assigns the current process to a Job Object configured with
+  JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE. Child and grandchild processes spawned
+  by test executables automatically inherit this Job Object and will be cleanly
+  terminated when test_env.py exits or closes the handle.
+
+  Also includes JOB_OBJECT_LIMIT_BREAKAWAY_OK to allow child processes to
+  break away if explicitly requested via CREATE_BREAKAWAY_FROM_JOB.
+
+  References:
+    https://learn.microsoft.com/en-us/windows/win32/procthread/job-objects
+    https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-jobobject_extended_limit_information
+  """
+  if sys.platform != 'win32' or not win32job:
+    return None
+
+  try:
+    hjob = win32job.CreateJobObject(None, '')
+    info = win32job.QueryInformationJobObject(
+        hjob, win32job.JobObjectExtendedLimitInformation)
+    info['BasicLimitInformation']['LimitFlags'] |= (
+        win32con.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        | win32con.JOB_OBJECT_LIMIT_BREAKAWAY_OK)
+    win32job.SetInformationJobObject(hjob,
+                                     win32job.JobObjectExtendedLimitInformation,
+                                     info)
+    # Assign the current process (test_env.py). Child processes will
+    # automatically inherit this Job Object when spawned
+    try:
+      win32job.AssignProcessToJobObject(hjob, win32api.GetCurrentProcess())
+    except Exception as e:  # pylint: disable=broad-except
+      print('Warning: Failed to assign test_env.py to JobObject: %s' % e,
+            file=sys.stderr)
+      return None
+
+    return hjob
+  except Exception as e:  # pylint: disable=broad-except
+    print('Warning: Failed to set up JobObject: %s' % e, file=sys.stderr)
+    return None
 
 
 def trim_cmd(cmd):
@@ -472,12 +524,16 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
 def _popen(*args, **kwargs):
   assert 'creationflags' not in kwargs
   if sys.platform == 'win32':
-    # Necessary for signal handling. See crbug.com/733612#c6.
+    # Necessary for signal handling (CTRL_BREAK_EVENT). See crbug.com/733612#c6.
+    # Job Objects handle process tree cleanup on exit.
     kwargs['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
   return subprocess.Popen(*args, **kwargs)
 
 
 def main():
+  if sys.platform == 'win32':
+    _job = setup_job_object()
+
   return run_executable(sys.argv[1:], os.environ.copy())
 
 
