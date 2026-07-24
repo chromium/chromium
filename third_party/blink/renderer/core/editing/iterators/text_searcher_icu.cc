@@ -142,8 +142,7 @@ static bool IsWholeWordMatch(base::span<const UChar> text,
   }
   if (word_break_search_start != result.start)
     return false;
-  return result_end == static_cast<wtf_size_t>(
-                           FindWordEndBoundary(text, word_break_search_start));
+  return result_end == FindWordEndBoundary(text, word_break_search_start);
 }
 
 // Grab the single global searcher.
@@ -233,15 +232,13 @@ bool TextSearcherIcu::ShouldSkipCurrentMatch(
   }
 
   if (options_.RequireWordBoundedStart() &&
-      base::checked_cast<wtf_size_t>(
-          FindWordStartBoundary(text_span, result.start)) != result.start) {
+      FindWordStartBoundary(text_span, result.start) != result.start) {
     return true;
   }
 
   if (options_.RequireWordBoundedEnd()) {
     const wtf_size_t last_char_pos = result.start + result.length - 1;
-    if (base::checked_cast<wtf_size_t>(FindWordEndBoundary(
-            text_span, last_char_pos)) != last_char_pos + 1) {
+    if (FindWordEndBoundary(text_span, last_char_pos) != last_char_pos + 1) {
       return true;
     }
   }

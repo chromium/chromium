@@ -273,10 +273,9 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // search for the word end as it will be the end of the next word, which was
     // not included in the selection.
     if (corrected_end_offset !=
-        static_cast<wtf_size_t>(FindWordStartBoundary(
-            end_text.Span16(), static_cast<int>(corrected_end_offset)))) {
-      corrected_end_offset = FindWordEndBoundary(
-          end_text.Span16(), static_cast<int>(corrected_end_offset));
+        FindWordStartBoundary(end_text.Span16(), corrected_end_offset)) {
+      corrected_end_offset =
+          FindWordEndBoundary(end_text.Span16(), corrected_end_offset);
     }
   }
 
