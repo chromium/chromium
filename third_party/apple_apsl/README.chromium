@@ -2,7 +2,7 @@ Name: Darwin configd
 URL: https://github.com/apple-oss-distributions/configd
 Version: 1061.0.2
 Revision: ec7c204acf07ba74de84d990ece345f42eb8f258
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/538354799)
 Security Critical: yes
 Shipped: yes
 License: APSL-2.0
