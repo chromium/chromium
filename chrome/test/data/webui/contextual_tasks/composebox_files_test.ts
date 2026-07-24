@@ -1068,524 +1068,556 @@ function disableAnimationsRecursively(element: Element) {
               searchboxCallbackRouter));
         });
 
-        test('creates the automatic tab chip from a tab update', async () => {
-          await mountApp();
-          const {innerComposebox} = parts;
-          assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+        suite('ChipCreationAndMismatch', () => {
+          test('creates the automatic tab chip from a tab update', async () => {
+            await mountApp();
+            const {innerComposebox} = parts;
+            assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
 
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://auto.example.com')));
-          await settle();
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://auto.example.com')));
+            await settle();
 
-          assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-          assertEquals(1, innerComposebox.files.size);
-          const file =
-              Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
-          assertEquals(1, file.tabId);
-          assertEquals('Auto tab', file.name);
-          assertEquals('https://auto.example.com', file.url);
-        });
-
-        test('updates the chip title in place', async () => {
-          await mountApp();
-          const {innerComposebox} = parts;
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Initial Title', 'https://a.example.com')));
-          await settle();
-
-          // Suggest identical tab but updated title
-          await pushAutoTab(
-              createTabInfo(1, 'Updated Title', 'https://a.example.com'));
-          await settle();
-          assertEquals(1, innerComposebox.files.size);
-          const updatedFile =
-              Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
-          assertEquals('Updated Title', updatedFile.name);
-          assertEquals(AUTO_TOKEN, updatedFile.uuid);
-
-          // Suggest identical tab (same url/tabId), identical title, but
-          // different lastActive
-          await pushAutoTab({
-            ...createTabInfo(1, 'Updated Title', 'https://a.example.com'),
-            lastActive: {internalValue: BigInt(500)},
+            assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+            assertEquals(1, innerComposebox.files.size);
+            const file =
+                Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
+            assertEquals(1, file.tabId);
+            assertEquals('Auto tab', file.name);
+            assertEquals('https://auto.example.com', file.url);
           });
-          await settle();
-          // Reference should be exactly the same (no re-allocation or
-          // modification)
-          assertEquals(
-              updatedFile, Array.from(innerComposebox.files.values())[0]);
+
+          test('updates the chip title in place', async () => {
+            await mountApp();
+            const {innerComposebox} = parts;
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(createTabInfo(
+                    1, 'Initial Title', 'https://a.example.com')));
+            await settle();
+
+            // Suggest identical tab but updated title
+            await pushAutoTab(
+                createTabInfo(1, 'Updated Title', 'https://a.example.com'));
+            await settle();
+            assertEquals(1, innerComposebox.files.size);
+            const updatedFile =
+                Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
+            assertEquals('Updated Title', updatedFile.name);
+            assertEquals(AUTO_TOKEN, updatedFile.uuid);
+
+            // Suggest identical tab (same url/tabId), identical title, but
+            // different lastActive
+            await pushAutoTab({
+              ...createTabInfo(1, 'Updated Title', 'https://a.example.com'),
+              lastActive: {internalValue: BigInt(500)},
+            });
+            await settle();
+            // Reference should be exactly the same (no re-allocation or
+            // modification)
+            assertEquals(
+                updatedFile, Array.from(innerComposebox.files.values())[0]);
+          });
+
+          test(
+              'url mismatch deletes the chip and returns without creating',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+                await addManualTab(
+                    MANUAL_TOKEN, 2, 'Manual tab',
+                    'https://manual.example.com');
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+
+                const addCallCount =
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
+                await pushAutoTab(
+                    createTabInfo(3, 'Other tab', 'https://b.example.com'));
+                await settle();
+
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertFalse(hasFileWithTabId(1));
+                assertTrue(hasFileWithTabId(2));
+                assertEquals(
+                    addCallCount,
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+
+                await expectAddTabContext(
+                    REPLACEMENT_TOKEN,
+                    () => pushAutoTab(createTabInfo(
+                        3, 'Other tab', 'https://b.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertTrue(hasFileWithTabId(3));
+                assertTrue(hasFileWithTabId(2));
+              });
+
+          test(
+              'url mismatch deletes and returns when ask-G is enabled',
+              async () => {
+                loadTimeData.overrideValues({
+                  webUIOmniboxAskGAboutThisPageEnabled: true,
+                });
+                await mountApp();
+                const {innerComposebox} = parts;
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+
+                const addCallCount =
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
+                await pushAutoTab(
+                    createTabInfo(3, 'Other tab', 'https://b.example.com'));
+                await settle();
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(
+                    addCallCount,
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+
+                await expectAddTabContext(
+                    REPLACEMENT_TOKEN,
+                    () => pushAutoTab(createTabInfo(
+                        3, 'Other tab', 'https://b.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+              });
         });
 
-        test(
-            'url mismatch deletes the chip and returns without creating',
-            async () => {
-              await mountApp();
-              const {innerComposebox} = parts;
-              await addManualTab(
-                  MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+        suite('DeletionSemantics', () => {
+          test(
+              'url mismatch deletes and returns in the side panel',
+              async () => {
+                await mountApp();
+                const {innerComposebox, wrapper} = parts;
+                wrapper.isSidePanel = true;
+                await wrapper.updateComplete;
+                await innerComposebox.updateComplete;
 
-              const addCallCount =
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
-              await pushAutoTab(
-                  createTabInfo(3, 'Other tab', 'https://b.example.com'));
-              await settle();
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
 
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertFalse(hasFileWithTabId(1));
-              assertTrue(hasFileWithTabId(2));
-              assertEquals(
-                  addCallCount,
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+                const addCallCount =
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
+                await pushAutoTab(
+                    createTabInfo(3, 'Other tab', 'https://b.example.com'));
+                await settle();
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(
+                    addCallCount,
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
 
-              await expectAddTabContext(
-                  REPLACEMENT_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(3, 'Other tab', 'https://b.example.com')));
-              await settle();
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertTrue(hasFileWithTabId(3));
-              assertTrue(hasFileWithTabId(2));
-            });
-
-        test(
-            'url mismatch deletes and returns when ask-G is enabled',
-            async () => {
-              loadTimeData.overrideValues({
-                webUIOmniboxAskGAboutThisPageEnabled: true,
+                await expectAddTabContext(
+                    REPLACEMENT_TOKEN,
+                    () => pushAutoTab(createTabInfo(
+                        3, 'Other tab', 'https://b.example.com')));
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
               });
-              await mountApp();
-              const {innerComposebox} = parts;
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
 
-              const addCallCount =
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
-              await pushAutoTab(
-                  createTabInfo(3, 'Other tab', 'https://b.example.com'));
-              await settle();
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertEquals(
-                  addCallCount,
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+          test('null update deletes the chip and requeries', async () => {
+            await mountApp();
+            const {innerComposebox} = parts;
+            await addManualTab(
+                MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+            await settle();
 
-              await expectAddTabContext(
-                  REPLACEMENT_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(3, 'Other tab', 'https://b.example.com')));
-              await settle();
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            });
+            const queryCallCount =
+                mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
+            await pushAutoTab(null);
+            await settle();
 
-        test(
-            'url mismatch deletes and returns in the side panel',
-            async () => {
-              await mountApp();
-              const {innerComposebox, wrapper} = parts;
-              wrapper.isSidePanel = true;
-              await wrapper.updateComplete;
-              await innerComposebox.updateComplete;
+            assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+            assertFalse(hasFileWithTabId(1));
+            assertTrue(hasFileWithTabId(2));
+            assertEquals(
+                queryCallCount + 1,
+                mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
+          });
 
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
+          test(
+              'page action without ask-G in the side panel keeps the default ' +
+                  'semantics',
+              async () => {
+                await assertDefaultAutoTabSemantics('OmniboxPageAction', true);
+              });
 
-              const addCallCount =
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
-              await pushAutoTab(
-                  createTabInfo(3, 'Other tab', 'https://b.example.com'));
-              await settle();
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertEquals(
-                  addCallCount,
-                  mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-
-              await expectAddTabContext(
-                  REPLACEMENT_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(3, 'Other tab', 'https://b.example.com')));
-              await settle();
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            });
-
-        test('null update deletes the chip and requeries', async () => {
-          await mountApp();
-          const {innerComposebox} = parts;
-          await addManualTab(
-              MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-          await settle();
-
-          const queryCallCount =
-              mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
-          await pushAutoTab(null);
-          await settle();
-
-          assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-          assertFalse(hasFileWithTabId(1));
-          assertTrue(hasFileWithTabId(2));
-          assertEquals(
-              queryCallCount + 1,
-              mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
+          test(
+              'page action with ask-G outside the side panel keeps the ' +
+                  'default semantics',
+              async () => {
+                loadTimeData.overrideValues({
+                  webUIOmniboxAskGAboutThisPageEnabled: true,
+                });
+                await assertDefaultAutoTabSemantics('OmniboxPageAction', false);
+              });
         });
 
-        test(
-            'page action without ask-G in the side panel keeps the default ' +
-                'semantics',
-            async () => {
-              await assertDefaultAutoTabSemantics('OmniboxPageAction', true);
-            });
-
-        test(
-            'page action with ask-G outside the side panel keeps the default ' +
-                'semantics',
-            async () => {
-              loadTimeData.overrideValues({
-                webUIOmniboxAskGAboutThisPageEnabled: true,
+        suite('SourcesAndUploadTiming', () => {
+          test(
+              'app menu source with ask-G in the side panel keeps the ' +
+                  'default semantics',
+              async () => {
+                loadTimeData.overrideValues({
+                  webUIOmniboxAskGAboutThisPageEnabled: true,
+                });
+                await assertDefaultAutoTabSemantics('AppMenu', true);
               });
-              await assertDefaultAutoTabSemantics('OmniboxPageAction', false);
-            });
 
-        test(
-            'app menu source with ask-G in the side panel keeps the default ' +
-                'semantics',
-            async () => {
-              loadTimeData.overrideValues({
-                webUIOmniboxAskGAboutThisPageEnabled: true,
+          test(
+              'page action with ask-G in the side panel uploads immediately ' +
+                  'and keeps the chip on null',
+              async () => {
+                loadTimeData.overrideValues({
+                  webUIOmniboxAskGAboutThisPageEnabled: true,
+                });
+                await mountApp();
+                const {innerComposebox, wrapper} = parts;
+                wrapper.isSidePanel = true;
+                await wrapper.updateComplete;
+                await innerComposebox.updateComplete;
+
+                const stopCallCount =
+                    mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com'),
+                        'OmniboxPageAction'));
+                await settle();
+
+                const addArgs =
+                    mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
+                assertEquals(false, addArgs[addArgs.length - 1][1]);
+                assertEquals(
+                    stopCallCount,
+                    mockSearchboxPageHandler.getCallCount(
+                        STOP_AUTOCOMPLETE_FN));
+
+                await pushAutoTab(null, 'OmniboxPageAction');
+                await settle();
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(1, innerComposebox.files.size);
               });
-              await assertDefaultAutoTabSemantics('AppMenu', true);
-            });
 
-        test(
-            'page action with ask-G in the side panel uploads immediately ' +
-                'and keeps the chip on null',
-            async () => {
-              loadTimeData.overrideValues({
-                webUIOmniboxAskGAboutThisPageEnabled: true,
+          test('delays the upload outside the side panel', async () => {
+            await mountApp();
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+            await settle();
+            const addArgs =
+                mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
+            assertEquals(true, addArgs[addArgs.length - 1][1]);
+          });
+
+          test(
+              'deferred upload issues one add and adopts the latest title',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+
+                mockSearchboxPageHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+                const {promise, resolve} =
+                    Promise.withResolvers<typeof AUTO_TOKEN>();
+                mockSearchboxPageHandler.setResultFor(
+                    ADD_TAB_CONTEXT_FN, promise);
+
+                await pushAutoTab(
+                    createTabInfo(1, 'First title', 'https://a.example.com'));
+                await mockSearchboxPageHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+
+                await pushAutoTab(
+                    createTabInfo(1, 'Second title', 'https://a.example.com'));
+                await microtasksFinished();
+                assertEquals(
+                    1,
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+
+                resolve(AUTO_TOKEN);
+                await settle();
+                assertEquals(1, innerComposebox.files.size);
+                const file = Array.from(innerComposebox.files.values())[0] as
+                    ComposeboxFile;
+                assertEquals('Second title', file.name);
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
               });
-              await mountApp();
-              const {innerComposebox, wrapper} = parts;
-              wrapper.isSidePanel = true;
-              await wrapper.updateComplete;
-              await innerComposebox.updateComplete;
-
-              const stopCallCount =
-                  mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com'),
-                      'OmniboxPageAction'));
-              await settle();
-
-              const addArgs =
-                  mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
-              assertEquals(false, addArgs[addArgs.length - 1][1]);
-              assertEquals(
-                  stopCallCount,
-                  mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN));
-
-              await pushAutoTab(null, 'OmniboxPageAction');
-              await settle();
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertEquals(1, innerComposebox.files.size);
-            });
-
-        test('delays the upload outside the side panel', async () => {
-          await mountApp();
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-          await settle();
-          const addArgs = mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
-          assertEquals(true, addArgs[addArgs.length - 1][1]);
         });
 
-        test(
-            'deferred upload issues one add and adopts the latest title',
-            async () => {
-              await mountApp();
-              const {innerComposebox} = parts;
+        suite('UserActionsAndLifecycle', () => {
+          test(
+              'tab updates are inert while detached and work after reattach',
+              async () => {
+                await mountApp();
+                const {app, innerComposebox} = parts;
 
-              mockSearchboxPageHandler.resetResolver(ADD_TAB_CONTEXT_FN);
-              const {promise, resolve} =
-                  Promise.withResolvers<typeof AUTO_TOKEN>();
-              mockSearchboxPageHandler.setResultFor(
-                  ADD_TAB_CONTEXT_FN, promise);
+                document.body.removeChild(app);
+                await pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com'));
+                await microtasksFinished();
+                assertEquals(
+                    0,
+                    mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+                assertEquals(0, innerComposebox.files.size);
 
-              await pushAutoTab(
-                  createTabInfo(1, 'First title', 'https://a.example.com'));
-              await mockSearchboxPageHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+                document.body.appendChild(app);
+                await settle();
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertEquals(1, innerComposebox.files.size);
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+              });
 
-              await pushAutoTab(
-                  createTabInfo(1, 'Second title', 'https://a.example.com'));
-              await microtasksFinished();
-              assertEquals(
-                  1, mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+          test(
+              'user deletion of the auto chip reports the auto-suggested flag',
+              async () => {
+                await mountApp();
+                const {app, innerComposebox} = parts;
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
 
-              resolve(AUTO_TOKEN);
-              await settle();
-              assertEquals(1, innerComposebox.files.size);
-              const file = Array.from(innerComposebox.files.values())[0] as
-                  ComposeboxFile;
-              assertEquals('Second title', file.name);
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            });
+                disableAnimationsRecursively(app);
+                const chip = innerComposebox.getAutomaticActiveTabChipElement();
+                assertTrue(!!chip);
+                const chipShadow = chip.shadowRoot;
+                assertTrue(!!chipShadow);
+                const removeButton =
+                    chipShadow.querySelector<HTMLElement>('.remove-button');
+                assertTrue(!!removeButton);
 
-        test(
-            'tab updates are inert while detached and work after reattach',
-            async () => {
-              await mountApp();
-              const {app, innerComposebox} = parts;
+                const queryCallCount = mockSearchboxPageHandler.getCallCount(
+                    QUERY_AUTOCOMPLETE_FN);
+                removeButton.click();
+                await settle();
 
-              document.body.removeChild(app);
-              await pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com'));
-              await microtasksFinished();
-              assertEquals(
-                  0, mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-              assertEquals(0, innerComposebox.files.size);
+                const deleteArgs =
+                    mockSearchboxPageHandler.getArgs('deleteContext');
+                const lastDelete = deleteArgs[deleteArgs.length - 1];
+                assertEquals(AUTO_TOKEN, lastDelete[0]);
+                assertEquals(true, lastDelete[1]);
 
-              document.body.appendChild(app);
-              await settle();
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
-              assertEquals(1, innerComposebox.files.size);
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            });
+                const metricName =
+                    'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
+                    loadTimeData.getString('composeboxSource');
+                assertTrue(recordedUserActions.includes(metricName));
+                assertTrue(recordedBooleans.some(
+                    entry =>
+                        entry.name === metricName && entry.value === true));
 
-        test(
-            'user deletion of the auto chip reports the auto-suggested flag',
-            async () => {
-              await mountApp();
-              const {app, innerComposebox} = parts;
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(
+                    queryCallCount + 1,
+                    mockSearchboxPageHandler.getCallCount(
+                        QUERY_AUTOCOMPLETE_FN));
+              });
 
-              disableAnimationsRecursively(app);
-              const chip = innerComposebox.getAutomaticActiveTabChipElement();
-              assertTrue(!!chip);
-              const chipShadow = chip.shadowRoot;
-              assertTrue(!!chipShadow);
-              const removeButton =
-                  chipShadow.querySelector<HTMLElement>('.remove-button');
-              assertTrue(!!removeButton);
+          test(
+              'deleting a manual tab keeps the auto chip and does not requery',
+              async () => {
+                await mountApp();
+                const {app, innerComposebox} = parts;
+                await addManualTab(
+                    MANUAL_TOKEN, 2, 'Manual tab',
+                    'https://manual.example.com');
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
 
-              const queryCallCount =
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
-              removeButton.click();
-              await settle();
+                disableAnimationsRecursively(app);
+                const carousel =
+                    innerComposebox.shadowRoot
+                        .querySelector<ComposeboxFileCarouselElement>(
+                            '#carousel');
+                assertTrue(!!carousel);
+                const manualChip =
+                    carousel.getThumbnailElementByUuid(MANUAL_TOKEN);
+                assertTrue(!!manualChip);
+                const manualChipShadow = manualChip.shadowRoot;
+                assertTrue(!!manualChipShadow);
+                const removeButton =
+                    manualChipShadow.querySelector<HTMLElement>(
+                        '.remove-button');
+                assertTrue(!!removeButton);
 
-              const deleteArgs =
-                  mockSearchboxPageHandler.getArgs('deleteContext');
-              const lastDelete = deleteArgs[deleteArgs.length - 1];
-              assertEquals(AUTO_TOKEN, lastDelete[0]);
-              assertEquals(true, lastDelete[1]);
+                const queryCallCount = mockSearchboxPageHandler.getCallCount(
+                    QUERY_AUTOCOMPLETE_FN);
+                const stopCallCount =
+                    mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
+                removeButton.click();
+                await settle();
 
-              const metricName =
-                  'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
-                  loadTimeData.getString('composeboxSource');
-              assertTrue(recordedUserActions.includes(metricName));
-              assertTrue(recordedBooleans.some(
-                  entry => entry.name === metricName && entry.value === true));
+                const deleteArgs =
+                    mockSearchboxPageHandler.getArgs('deleteContext');
+                const lastDelete = deleteArgs[deleteArgs.length - 1];
+                assertEquals(MANUAL_TOKEN, lastDelete[0]);
+                assertEquals(false, lastDelete[1]);
 
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertEquals(
-                  queryCallCount + 1,
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
-            });
+                assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertTrue(hasFileWithTabId(1));
+                assertEquals(
+                    queryCallCount,
+                    mockSearchboxPageHandler.getCallCount(
+                        QUERY_AUTOCOMPLETE_FN));
+                assertTrue(
+                    mockSearchboxPageHandler.getCallCount(
+                        STOP_AUTOCOMPLETE_FN) >= stopCallCount + 1);
+                assertFalse(recordedUserActions.some(
+                    name => name.startsWith(
+                        'ContextualSearch.UserAction.' +
+                        'DeleteAutoSuggestedTab.')));
+              });
 
-        test(
-            'deleting a manual tab keeps the auto chip and does not requery',
-            async () => {
-              await mountApp();
-              const {app, innerComposebox} = parts;
-              await addManualTab(
-                  MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
+          test('cancel resets the chip state for a fresh chip', async () => {
+            await mountApp();
+            const {innerComposebox} = parts;
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+            await settle();
+            assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
 
-              disableAnimationsRecursively(app);
-              const carousel =
-                  innerComposebox.shadowRoot
-                      .querySelector<ComposeboxFileCarouselElement>(
-                          '#carousel');
-              assertTrue(!!carousel);
-              const manualChip =
-                  carousel.getThumbnailElementByUuid(MANUAL_TOKEN);
-              assertTrue(!!manualChip);
-              const manualChipShadow = manualChip.shadowRoot;
-              assertTrue(!!manualChipShadow);
-              const removeButton =
-                  manualChipShadow.querySelector<HTMLElement>('.remove-button');
-              assertTrue(!!removeButton);
+            const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
+            assertTrue(!!cancelIcon);
+            cancelIcon.click();
+            await settle();
+            assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+            assertEquals(0, innerComposebox.files.size);
 
-              const queryCallCount =
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
-              const stopCallCount =
-                  mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
-              removeButton.click();
-              await settle();
-
-              const deleteArgs =
-                  mockSearchboxPageHandler.getArgs('deleteContext');
-              const lastDelete = deleteArgs[deleteArgs.length - 1];
-              assertEquals(MANUAL_TOKEN, lastDelete[0]);
-              assertEquals(false, lastDelete[1]);
-
-              assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertTrue(hasFileWithTabId(1));
-              assertEquals(
-                  queryCallCount,
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
-              assertTrue(
-                  mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN) >=
-                  stopCallCount + 1);
-              assertFalse(recordedUserActions.some(
-                  name => name.startsWith(
-                      'ContextualSearch.UserAction.DeleteAutoSuggestedTab.')));
-            });
-
-        test('cancel resets the chip state for a fresh chip', async () => {
-          await mountApp();
-          const {innerComposebox} = parts;
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-          await settle();
-          assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-
-          const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
-          assertTrue(!!cancelIcon);
-          cancelIcon.click();
-          await settle();
-          assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-          assertEquals(0, innerComposebox.files.size);
-
-          // The pending url/title guard must reset too: the same url pushed
-          // again creates a fresh chip instead of being deduped away.
-          await expectAddTabContext(
-              REPLACEMENT_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-          await settle();
-          assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-          assertEquals(1, innerComposebox.files.size);
+            // The pending url/title guard must reset too: the same url pushed
+            // again creates a fresh chip instead of being deduped away.
+            await expectAddTabContext(
+                REPLACEMENT_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+            await settle();
+            assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+            assertEquals(1, innerComposebox.files.size);
+          });
         });
 
         // The searchbox Smart Tab Sharing surface is gated out of the
         // is_android mojom types.
         // <if expr="not is_android">
-        test(
-            'smart tab sharing callback clears manual and auto tabs',
-            async () => {
-              await mountApp();
-              const {innerComposebox} = parts;
-              await addManualTab(
-                  MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
-              assertEquals(2, innerComposebox.files.size);
+        suite('SmartTabSharing', () => {
+          test(
+              'smart tab sharing callback clears manual and auto tabs',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+                await addManualTab(
+                    MANUAL_TOKEN, 2, 'Manual tab',
+                    'https://manual.example.com');
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
+                assertEquals(2, innerComposebox.files.size);
 
-              const queryCallCount =
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
-              searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
-              await searchboxCallbackRouterRemote.$.flushForTesting();
-              await settle();
+                const queryCallCount = mockSearchboxPageHandler.getCallCount(
+                    QUERY_AUTOCOMPLETE_FN);
+                searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
+                await searchboxCallbackRouterRemote.$.flushForTesting();
+                await settle();
 
-              assertEquals(0, innerComposebox.files.size);
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              // Exactly one requery proves the auto tab was excluded from
-              // clearManualTabs_ and deleted through the pointer-first path.
-              assertEquals(
-                  queryCallCount + 1,
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
-            });
+                assertEquals(0, innerComposebox.files.size);
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                // Exactly one requery proves the auto tab was excluded from
+                // clearManualTabs_ and deleted through the pointer-first path.
+                assertEquals(
+                    queryCallCount + 1,
+                    mockSearchboxPageHandler.getCallCount(
+                        QUERY_AUTOCOMPLETE_FN));
+              });
 
-        test(
-            'smart tab sharing visible-change fetch clears the tabs',
-            async () => {
-              await mountApp();
-              const {innerComposebox} = parts;
-              await addManualTab(
-                  MANUAL_TOKEN, 2, 'Manual tab', 'https://manual.example.com');
-              await expectAddTabContext(
-                  AUTO_TOKEN,
-                  () => pushAutoTab(
-                      createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-              await settle();
+          test(
+              'smart tab sharing visible-change fetch clears the tabs',
+              async () => {
+                await mountApp();
+                const {innerComposebox} = parts;
+                await addManualTab(
+                    MANUAL_TOKEN, 2, 'Manual tab',
+                    'https://manual.example.com');
+                await expectAddTabContext(
+                    AUTO_TOKEN,
+                    () => pushAutoTab(
+                        createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+                await settle();
 
-              const queryCallCount =
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
-              mockSearchboxPageHandler.setResultFor(
-                  'getSmartTabSharingActive', Promise.resolve({active: true}));
-              innerComposebox.smartTabSharingVisible = true;
-              await innerComposebox.updateComplete;
-              await settle();
+                const queryCallCount = mockSearchboxPageHandler.getCallCount(
+                    QUERY_AUTOCOMPLETE_FN);
+                mockSearchboxPageHandler.setResultFor(
+                    'getSmartTabSharingActive',
+                    Promise.resolve({active: true}));
+                innerComposebox.smartTabSharingVisible = true;
+                await innerComposebox.updateComplete;
+                await settle();
 
-              assertEquals(0, innerComposebox.files.size);
-              assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-              assertEquals(
-                  queryCallCount + 1,
-                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN));
-            });
+                assertEquals(0, innerComposebox.files.size);
+                assertFalse(
+                    innerComposebox.getHasAutomaticActiveTabChipToken());
+                assertEquals(
+                    queryCallCount + 1,
+                    mockSearchboxPageHandler.getCallCount(
+                        QUERY_AUTOCOMPLETE_FN));
+              });
 
-        test('no chip is created while sharing is active', async () => {
-          await mountApp();
-          const {innerComposebox} = parts;
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com')));
-          await settle();
-          assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+          test('no chip is created while sharing is active', async () => {
+            await mountApp();
+            const {innerComposebox} = parts;
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com')));
+            await settle();
+            assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
 
-          searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
-          await searchboxCallbackRouterRemote.$.flushForTesting();
-          await settle();
-          assertEquals(0, innerComposebox.files.size);
+            searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
+            await searchboxCallbackRouterRemote.$.flushForTesting();
+            await settle();
+            assertEquals(0, innerComposebox.files.size);
 
-          const addCallCount =
-              mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
-          await pushAutoTab(
-              createTabInfo(3, 'Other tab', 'https://b.example.com'));
-          await settle();
-          assertEquals(
-              addCallCount,
-              mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-          assertEquals(0, innerComposebox.files.size);
-          assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+            const addCallCount =
+                mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
+            await pushAutoTab(
+                createTabInfo(3, 'Other tab', 'https://b.example.com'));
+            await settle();
+            assertEquals(
+                addCallCount,
+                mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+            assertEquals(0, innerComposebox.files.size);
+            assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
+          });
         });
         // </if>
       });
