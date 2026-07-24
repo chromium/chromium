@@ -189,7 +189,6 @@
 using base::UserMetricsAction;
 using content::WebContents;
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCreateNewTabGroupTopLevel);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kProfileMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kProfileOpenGuestItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kBookmarksMenuItem);
@@ -2178,16 +2177,6 @@ void AppMenuModel::Build() {
           : IDS_NEW_TAB,
       features::IsRoundedIconsEnabled() ? kTabIcon : kNewTabRefreshOldIcon);
 
-  if (base::FeatureList::IsEnabled(
-          features::kCreateNewTabGroupAppMenuTopLevel)) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL, IDS_NEW_TAB_GROUP,
-        features::IsRoundedIconsEnabled() ? kLibraryAddIcon
-                                          : kCreateNewTabGroupOldIcon);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL).value(),
-        kCreateNewTabGroupTopLevel);
-  }
 
   AddItemWithStringIdAndVectorIcon(
       this, IDC_NEW_WINDOW, IDS_NEW_WINDOW,

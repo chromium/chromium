@@ -1196,28 +1196,6 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuMoreEntryPointsFeature,
       EnsurePresent(STGTabsMenuModel::kTab));
 }
 
-class SavedTabGroupsCreateNewTabGroupAppMenu
-    : public SavedTabGroupInteractiveTestBase {
- public:
-  SavedTabGroupsCreateNewTabGroupAppMenu() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kCreateNewTabGroupAppMenuTopLevel}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SavedTabGroupsCreateNewTabGroupAppMenu,
-    CheckCreateNewTabGroupPresentInEverythingMenuFromAppMenu) {
-  RunTestSequence(FinishTabstripAnimations(),
-                  EnsurePresent(kToolbarAppMenuButtonElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-                  EnsurePresent(STGEverythingMenu::kCreateNewTabGroup));
-}
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/438799035): This test is flaky on chromeos when waiting for

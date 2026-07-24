@@ -1390,9 +1390,6 @@ void BrowserCommandController::HandleCommandWithDisposition(
       base::UmaHistogramEnumeration("TabGroups.Shortcuts",
                                     TabGroupShortcut::kCreateNewTabGroup);
       break;
-    case IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL:
-      CreateNewTabGroup(browser_);
-      break;
     case IDC_ADD_NEW_TAB_TO_GROUP:
       AddNewTabToGroup(browser_);
       base::UmaHistogramEnumeration("TabGroups.Shortcuts",
@@ -1721,8 +1718,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_FOCUS_PREV_TAB_GROUP, true);
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_TAB_GROUP, true);
   command_updater_->UpdateCommandEnabled(IDC_GROUP_UNGROUPED_TABS, true);
-  command_updater_->UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL,
-                                         true);
   command_updater_->UpdateCommandEnabled(IDC_ADD_NEW_TAB_RECENT_GROUP, true);
   command_updater_->UpdateCommandEnabled(IDC_UNFOCUS_TAB_GROUP, true);
 

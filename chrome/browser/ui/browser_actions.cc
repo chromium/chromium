@@ -3204,16 +3204,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionGroupUngroupedTabs)
           .Build());
 
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::CreateNewTabGroup(bwi);
-              },
-              bwi))
-          .SetActionId(kActionCreateNewTabGroupTopLevel)
-          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

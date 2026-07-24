@@ -94,7 +94,6 @@
   E(kActionFocusPrevTabGroup, IDC_FOCUS_PREV_TAB_GROUP) \
   E(kActionCloseTabGroup, IDC_CLOSE_TAB_GROUP) \
   E(kActionGroupUngroupedTabs, IDC_GROUP_UNGROUPED_TABS) \
-  E(kActionCreateNewTabGroupTopLevel, IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) \
   E(kActionAddNewTabRecentGroup, IDC_ADD_NEW_TAB_RECENT_GROUP) \
   E(kActionFakePageActionForDebug, IDC_FAKE_PAGE_ACTION_FOR_DEBUG) \
   /* Page-manipulation commands that target a specified tab, which may not */ \

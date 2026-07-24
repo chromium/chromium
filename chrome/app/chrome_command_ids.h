@@ -21,7 +21,7 @@
 // NOTE: Within each of the following sections, the IDs are ordered roughly by
 // how they appear in the GUI/menus (left to right, top to bottom, etc.).
 
-// LINT.IfChange(BrowserCommandIds)
+// LINT.IfChange
 // =============================================================================
 // When adding a new IDC_* command below, you MUST also create
 // a corresponding declarative ActionItem in the modern Actions framework.
@@ -126,7 +126,6 @@
 #define IDC_FOCUS_PREV_TAB_GROUP      34103
 #define IDC_CLOSE_TAB_GROUP           34104
 #define IDC_GROUP_UNGROUPED_TABS      34105
-#define IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL 34106
 #define IDC_ADD_NEW_TAB_RECENT_GROUP  34107
 #define IDC_UNFOCUS_TAB_GROUP         34108
 
