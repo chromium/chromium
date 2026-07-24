@@ -55,7 +55,6 @@ class PassthroughProgramCacheTest : public GpuServiceTest,
   void OnRescheduleAfterFinished() override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
-  bool ShouldYield() override { return false; }
 
   int32_t blob_count() { return blob_count_; }
 

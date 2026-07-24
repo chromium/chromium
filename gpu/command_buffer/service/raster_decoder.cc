@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
@@ -142,15 +141,6 @@ namespace raster {
 namespace {
 
 base::AtomicSequenceNumber g_raster_decoder_id;
-
-// Controls whether we may yield during rasterization.
-BASE_FEATURE(kGpuYieldRasterization, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls how many ops are rastered before checking if we should yield.
-const base::FeatureParam<int> kGpuYieldRasterizationOpCount(
-    &kGpuYieldRasterization,
-    "gpu_yield_rasterization_op_count",
-    500);
 
 // This class prevents any GL errors that occur when it is in scope from
 // being reported to the client.
@@ -780,12 +770,12 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLboolean visible,
                              GLfloat hdr_headroom,
                              const volatile GLbyte* key);
-  error::Error DoRasterCHROMIUM(GLuint raster_shm_id,
-                                GLuint raster_shm_offset,
-                                GLuint raster_shm_size,
-                                GLuint font_shm_id,
-                                GLuint font_shm_offset,
-                                GLuint font_shm_size);
+  void DoRasterCHROMIUM(GLuint raster_shm_id,
+                        GLuint raster_shm_offset,
+                        GLuint raster_shm_size,
+                        GLuint font_shm_id,
+                        GLuint font_shm_offset,
+                        GLuint font_shm_size);
   void DoEndRasterCHROMIUM();
   void DoFlushTileRasterGraphiteCommandsCHROMIUM();
   void DoCreateTransferCacheEntryINTERNAL(GLuint entry_type,
@@ -917,14 +907,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   raw_ptr<SkCanvas> raster_canvas_ = nullptr;
   std::vector<SkDiscardableHandleId> locked_handles_;
 
-  // Cached value of `kGpuYieldRasterizationOpCount`. This is only set if
-  // `kGpuYieldRasterization` is enabled.
-  std::optional<int> check_for_yield_op_count_;
-
-  // If set, indicates rasterization was deferred. The value gives how far into
-  // the buffer was processed.
-  std::optional<size_t> deferred_raster_paint_buffer_offset_;
-
   // Tracing helpers.
   int raster_chromium_id_ = 0;
 
@@ -1047,9 +1029,6 @@ RasterDecoderImpl::RasterDecoderImpl(
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(switches::kDisableGLDrawingForTests)) {
     no_draw_canvas_ = std::make_unique<SkNoDrawCanvas>(0, 0);
-  }
-  if (base::FeatureList::IsEnabled(kGpuYieldRasterization)) {
-    check_for_yield_op_count_ = kGpuYieldRasterizationOpCount.Get();
   }
 }
 
@@ -2976,19 +2955,19 @@ void RasterDecoderImpl::ReportProgress() {
     shared_context_state_->progress_reporter()->ReportProgress();
 }
 
-error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
-                                                 GLuint raster_shm_offset,
-                                                 GLuint raster_shm_size,
-                                                 GLuint font_shm_id,
-                                                 GLuint font_shm_offset,
-                                                 GLuint font_shm_size) {
+void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
+                                         GLuint raster_shm_offset,
+                                         GLuint raster_shm_size,
+                                         GLuint font_shm_id,
+                                         GLuint font_shm_offset,
+                                         GLuint font_shm_size) {
   TRACE_EVENT1("gpu", "RasterDecoderImpl::DoRasterCHROMIUM", "raster_id",
                ++raster_chromium_id_);
 
   if (!sk_surface_ && !scoped_shared_image_raster_write_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
                        "RasterCHROMIUM without BeginRasterCHROMIUM");
-    return error::kNoError;
+    return;
   }
   DCHECK(transfer_cache());
 
@@ -2997,14 +2976,14 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   if (paint_buffer_opt.value_or({}).empty()) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Can not read paint buffer.");
-    return error::kNoError;
+    return;
   }
   base::span<uint8_t> paint_buffer = *paint_buffer_opt;
 
   if (!base::IsAligned(paint_buffer.data(), 16u)) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                        "Buffer is not aligned with 16 bytes.");
-    return error::kNoError;
+    return;
   }
 
   cc::PlaybackParams playback_params(nullptr, SkM44());
@@ -3029,41 +3008,32 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoRasterCHROMIUM::Deserializing");
 
   if (scoped_shared_image_raster_write_) {
-    DCHECK(!deferred_raster_paint_buffer_offset_.has_value());
     auto* paint_op_buffer =
         scoped_shared_image_raster_write_->paint_op_buffer();
     paint_op_buffer->Deserialize(paint_buffer, options);
-    return error::kNoError;
+    return;
   }
 
-  if (deferred_raster_paint_buffer_offset_.has_value()) {
-    CHECK(*deferred_raster_paint_buffer_offset_ <= paint_buffer.size());
-    paint_buffer = paint_buffer.subspan(*deferred_raster_paint_buffer_offset_);
-    deferred_raster_paint_buffer_offset_.reset();
-  } else {
-    if (font_shm_size > 0) {
-      // Deserialize fonts before raster.
-      auto font_buffer_opt = GetSharedMemoryAsSpan<volatile uint8_t>(
-          font_shm_id, font_shm_offset, font_shm_size);
-      if (font_buffer_opt.value_or({}).empty()) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
-                           "Can not read font buffer.");
-        return error::kNoError;
-      }
-      base::span<volatile uint8_t> font_buffer = *font_buffer_opt;
-
-      std::vector<SkDiscardableHandleId> new_locked_handles;
-      if (!font_manager_->Deserialize(font_buffer, &new_locked_handles)) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
-                           "Invalid font buffer.");
-        return error::kNoError;
-      }
-      locked_handles_.insert(locked_handles_.end(), new_locked_handles.begin(),
-                             new_locked_handles.end());
+  if (font_shm_size > 0) {
+    // Deserialize fonts before raster.
+    auto font_buffer_opt = GetSharedMemoryAsSpan<volatile uint8_t>(
+        font_shm_id, font_shm_offset, font_shm_size);
+    if (font_buffer_opt.value_or({}).empty()) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                         "Can not read font buffer.");
+      return;
     }
-  }
+    base::span<volatile uint8_t> font_buffer = *font_buffer_opt;
 
-  size_t processed_commands = 0;
+    std::vector<SkDiscardableHandleId> new_locked_handles;
+    if (!font_manager_->Deserialize(font_buffer, &new_locked_handles)) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                         "Invalid font buffer.");
+      return;
+    }
+    locked_handles_.insert(locked_handles_.end(), new_locked_handles.begin(),
+                           new_locked_handles.end());
+  }
 
   while (!paint_buffer.empty()) {
     size_t skip = 0;
@@ -3072,42 +3042,14 @@ error::Error RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     if (!deserialized_op) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
                          "RasterCHROMIUM: serialization failure");
-      return error::kNoError;
+      return;
     }
 
     deserialized_op->Raster(raster_canvas_, playback_params);
     deserialized_op->DestroyThis();
 
     paint_buffer = paint_buffer.subspan(skip);
-    processed_commands++;
-
-    if (check_for_yield_op_count_.has_value() &&
-        processed_commands % check_for_yield_op_count_.value() == 0 &&
-        !paint_buffer.empty() && client()->ShouldYield()) {
-      // Pause command batch to check if we should yield execution.
-      TRACE_EVENT0("gpu", "RasterDecoderImpl::DoRasterCHROMIUM::Yield");
-      deferred_raster_paint_buffer_offset_ =
-          raster_shm_size - paint_buffer.size();
-      return error::kDeferCommandUntilLater;
-    }
   }
-
-  return error::kNoError;
-}
-
-error::Error RasterDecoderImpl::HandleRasterCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile raster::cmds::RasterCHROMIUM& c =
-      *static_cast<const volatile raster::cmds::RasterCHROMIUM*>(cmd_data);
-  GLuint raster_shm_id = static_cast<GLuint>(c.raster_shm_id);
-  GLuint raster_shm_offset = static_cast<GLuint>(c.raster_shm_offset);
-  GLuint raster_shm_size = static_cast<GLuint>(c.raster_shm_size);
-  GLuint font_shm_id = static_cast<GLuint>(c.font_shm_id);
-  GLuint font_shm_offset = static_cast<GLuint>(c.font_shm_offset);
-  GLuint font_shm_size = static_cast<GLuint>(c.font_shm_size);
-  return DoRasterCHROMIUM(raster_shm_id, raster_shm_offset, raster_shm_size,
-                          font_shm_id, font_shm_offset, font_shm_size);
 }
 
 void RasterDecoderImpl::DoEndRasterCHROMIUM() {

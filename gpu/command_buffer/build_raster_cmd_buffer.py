@@ -298,7 +298,6 @@ _FUNCTION_INFO = {
   },
   'RasterCHROMIUM': {
     'decoder_func': 'DoRasterCHROMIUM',
-    'type': 'Custom',
     'internal': True,
     'impl_func': True,
     'cmd_args': 'GLuint raster_shm_id, GLuint raster_shm_offset,'

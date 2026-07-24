@@ -76,9 +76,6 @@ void RasterDecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void RasterDecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void RasterDecoderTestBase::OnDescheduleUntilFinished() {}
 void RasterDecoderTestBase::OnRescheduleAfterFinished() {}
-bool RasterDecoderTestBase::ShouldYield() {
-  return false;
-}
 
 void RasterDecoderTestBase::SetUp() {
   InitDecoder(InitState());

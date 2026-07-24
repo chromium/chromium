@@ -58,7 +58,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferDirect
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override;
-  bool ShouldYield() override;
 
   scoped_refptr<Buffer> CreateTransferBufferWithId(uint32_t size, int32_t id);
 

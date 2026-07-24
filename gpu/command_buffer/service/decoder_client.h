@@ -55,9 +55,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT DecoderClient {
 
   // Called by the decoder to pass a variable-size block of data to the client.
   virtual void HandleReturnData(base::span<const uint8_t> data) = 0;
-
-  // Returns true if rasterization should yield.
-  virtual bool ShouldYield() = 0;
 };
 
 }  // namespace gpu

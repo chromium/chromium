@@ -67,7 +67,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
-  bool ShouldYield() override;
 
   // Template to call glGenXXX functions.
   template <typename T>
@@ -839,7 +838,6 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
-  bool ShouldYield() override;
 
   void SetUp() override;
   void TearDown() override;

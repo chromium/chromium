@@ -154,9 +154,6 @@ void GLES2DecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderTestBase::OnRescheduleAfterFinished() {}
-bool GLES2DecoderTestBase::ShouldYield() {
-  return false;
-}
 
 void GLES2DecoderTestBase::SetUp() {
   InitState init;
@@ -2298,9 +2295,6 @@ void GLES2DecoderPassthroughTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderPassthroughTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderPassthroughTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderPassthroughTestBase::OnRescheduleAfterFinished() {}
-bool GLES2DecoderPassthroughTestBase::ShouldYield() {
-  return false;
-}
 
 void GLES2DecoderPassthroughTestBase::SetUp() {
   base::CommandLine::Init(0, nullptr);

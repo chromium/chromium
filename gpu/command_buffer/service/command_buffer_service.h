@@ -137,8 +137,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommandBufferService
 
   size_t GetSharedMemoryBytesAllocated() const;
 
-  bool ShouldYield();
-
  private:
   raw_ptr<CommandBufferServiceClient> client_;
   std::unique_ptr<TransferBufferManager> transfer_buffer_manager_;

@@ -156,7 +156,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void OnRescheduleAfterFinished() override;
   void ScheduleGrContextCleanup() override;
   void HandleReturnData(base::span<const uint8_t> data) override;
-  bool ShouldYield() override;
 
   const gles2::FeatureInfo* GetFeatureInfo() const;
 

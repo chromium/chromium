@@ -134,7 +134,6 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   void OnRescheduleAfterFinished() override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
-  bool ShouldYield() override { return false; }
 
   int32_t shader_cache_count() { return shader_cache_count_; }
   const std::string& shader_cache_shader() { return shader_cache_shader_; }
