@@ -119,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_F(AndroidSpareRendererNavigationThrottleTest,
                        NonSpareRendererNavigationNotThrottled) {
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
-      RenderProcessHostImpl::CreateRenderProcessHost(browser_context(),
-                                                     nullptr));
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          browser_context(), nullptr));
   rph->Init();
   EXPECT_TRUE(base::test::RunUntil([&]() { return rph->IsReady(); }));
   std::unique_ptr<MockNavigationThrottleRegistry> registry =

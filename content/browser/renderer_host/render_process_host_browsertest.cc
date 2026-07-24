@@ -1281,11 +1281,12 @@ IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
 // This test verifies properties of RenderProcessHostImpl *before* Init method
 // is called.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ConstructedButNotInitializedYet) {
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
 
-  // Just verifying that the arguments of CreateRenderProcessHost got processed
-  // correctly.
+  // Just verifying that the arguments of CreateRenderProcessHostForTesting got
+  // processed correctly.
   EXPECT_EQ(ShellContentBrowserClient::Get()->browser_context(),
             process->GetBrowserContext());
   EXPECT_FALSE(process->IsForGuestsOnly());
@@ -1468,8 +1469,9 @@ IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest,
 
 // This test verifies that a fast shutdown is possible for a starting process.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, FastShutdownForStartingProcess) {
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
   process->Init();
   EXPECT_TRUE(process->FastShutdownIfPossible());
   process->Cleanup();
@@ -2035,8 +2037,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ZeroExecutionTimes) {
     return;
   }
   base::HistogramTester histogram_tester;
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
   RenderProcessHostWatcher process_watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
   process->Init();
@@ -2223,9 +2226,10 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
 
 // This test verifies that a renderer process is correctly sandboxed.
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTestBase, IsSandboxed) {
-  RenderProcessHost* rph = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(),
-      /*site_instance=*/nullptr);
+  RenderProcessHost* rph =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(),
+          /*site_instance=*/nullptr);
   ASSERT_TRUE(rph->Init());
 
   mojo::Remote<mojom::TestService> service;
@@ -2257,8 +2261,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HostCreationObserved) {
   int created_count = 0;
   CreationObserver creation_observer(
       base::BindLambdaForTesting([&created_count]() { ++created_count; }));
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
   RenderProcessHostWatcher process_watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
   process->Init();
@@ -2289,8 +2294,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
       }));
   CreationObserver creation_observer2;
 
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
   RenderProcessHostWatcher process_watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
   process->Init();
@@ -2313,8 +2319,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   destroy_second_observer = base::BindLambdaForTesting(
       [&creation_observer2]() { creation_observer2.reset(); });
 
-  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHost* process =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          ShellContentBrowserClient::Get()->browser_context(), nullptr);
   RenderProcessHostWatcher process_watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
   process->Init();
@@ -2792,7 +2799,7 @@ class RenderProcessHostTestOOPVideoDecoderTest
     }
 #endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 
-    rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
+    rph_ = RenderProcessHostImpl::CreateRenderProcessHostForTesting(
         ShellContentBrowserClient::Get()->browser_context(), nullptr);
     ASSERT_TRUE(rph_->Init());
     rph_initialized_ = true;
@@ -2975,10 +2982,12 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   scoped_refptr<SiteInstanceImpl> site_instance_b =
       SiteInstanceImpl::CreateForTesting(browser_context, url_b);
 
-  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_a.get());
-  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_b.get());
+  RenderProcessHost* process_a =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          browser_context, site_instance_a.get());
+  RenderProcessHost* process_b =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          browser_context, site_instance_b.get());
   process_a->Init();
   process_b->Init();
 
@@ -3013,10 +3022,12 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
   scoped_refptr<SiteInstanceImpl> site_instance_b =
       SiteInstanceImpl::CreateForTesting(browser_context, url_b);
 
-  RenderProcessHost* process_a = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_a.get());
-  RenderProcessHost* process_b = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, site_instance_b.get());
+  RenderProcessHost* process_a =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          browser_context, site_instance_a.get());
+  RenderProcessHost* process_b =
+      RenderProcessHostImpl::CreateRenderProcessHostForTesting(
+          browser_context, site_instance_b.get());
   process_a->Init();
   process_b->Init();
 

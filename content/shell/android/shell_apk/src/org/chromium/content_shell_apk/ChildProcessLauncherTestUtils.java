@@ -69,7 +69,9 @@ public final class ChildProcessLauncherTestUtils {
                                 /* reducePriorityOnBackground= */ false,
                                 /* canUseWarmUpConnection= */ true,
                                 /* binderCallback= */ null,
-                                doSetupConnection);
+                                doSetupConnection,
+                                /* isSpareRenderer= */ false,
+                                /* isForOutermostMainFrame= */ true);
                     }
                 });
     }

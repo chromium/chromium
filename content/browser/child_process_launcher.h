@@ -243,6 +243,8 @@ class CONTENT_EXPORT ChildProcessLauncher
     // after calling
     // RenderProcessHostImpl::GraduateSpareToNormalRendererPriority.
     virtual void OnSpareRendererPriorityGraduated(bool is_alive) {}
+    // Whether the process is being allocated for an outermost main frame.
+    virtual bool IsForOutermostMainFrame();
 #endif
 
    protected:

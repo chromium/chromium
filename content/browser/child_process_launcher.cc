@@ -98,6 +98,10 @@ bool ChildProcessLauncher::Client::CanUseWarmUpConnection() {
 bool ChildProcessLauncher::Client::HasSpareRendererPriority() {
   return false;
 }
+
+bool ChildProcessLauncher::Client::IsForOutermostMainFrame() {
+  return false;
+}
 #endif
 
 ChildProcessLauncher::ChildProcessLauncher(
@@ -137,6 +141,7 @@ ChildProcessLauncher::ChildProcessLauncher(
       weak_factory_.GetWeakPtr(), terminate_child_on_shutdown_,
 #if BUILDFLAG(IS_ANDROID)
       client_->CanUseWarmUpConnection(), client_->HasSpareRendererPriority(),
+      client_->IsForOutermostMainFrame(),
 #endif
       std::move(mojo_invitation), process_error_callback, std::move(file_data),
       std::move(histogram_memory_region),

@@ -61,6 +61,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidRemoveSetLocalFocusWorkaroundOnBaklava,
     &features::kAndroidBlockMisspellingSuggestionSpanInCompositionMode,
     &features::kAndroidBlockGrammarSuggestionSpanInCompositionMode,
+    &features::kEarlyTopAppForSandboxedRenderer,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
     &features::kFedCmNativeIdPs,

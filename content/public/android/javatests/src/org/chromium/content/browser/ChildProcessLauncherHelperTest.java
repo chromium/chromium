@@ -31,6 +31,8 @@ import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -313,6 +315,103 @@ public class ChildProcessLauncherHelperTest {
                                 () -> connection.getNotPerceptibleBindingCount()));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"ProcessManagement"})
+    @EnableFeatures({ContentInternalFeatures.EARLY_TOP_APP_FOR_SANDBOXED_RENDERER})
+    public void testEarlyTopAppForSandboxedRenderer() {
+        ChildProcessLauncherHelperImpl launcher =
+                startChildProcess(
+                        BLOCK_UNTIL_SETUP,
+                        /* doSetupConnection= */ true,
+                        /* sandboxed= */ true,
+                        /* reducePriorityOnBackground= */ false,
+                        /* canUseWarmUpConnection= */ false);
+        final ChildProcessConnection connection =
+                ChildProcessLauncherTestUtils.getConnection(launcher);
+
+        Assert.assertEquals(
+                1,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.getStrongBindingCount()));
+        Assert.assertEquals(
+                0,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> connection.getVisibleBindingCount()));
+
+        // Also verify that a spare renderer does not get early strong binding even when the feature
+        // is enabled.
+        ChildProcessLauncherHelperImpl spareLauncher =
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        new Callable<ChildProcessLauncherHelperImpl>() {
+                            @Override
+                            public ChildProcessLauncherHelperImpl call() {
+                                return ChildProcessLauncherHelperImpl.createAndStartForTesting(
+                                        sProcessWaitArguments,
+                                        new IFileDescriptorInfo[0],
+                                        /* sandboxed= */ true,
+                                        /* reducePriorityOnBackground= */ false,
+                                        /* canUseWarmUpConnection= */ false,
+                                        /* binderCallback= */ null,
+                                        /* doSetupConnection= */ true,
+                                        /* isSpareRenderer= */ true,
+                                        /* isForOutermostMainFrame= */ false);
+                            }
+                        });
+        blockUntilConnected(spareLauncher);
+        blockUntilSetup(spareLauncher);
+
+        final ChildProcessConnection spareConnection =
+                ChildProcessLauncherTestUtils.getConnection(spareLauncher);
+        Assert.assertEquals(
+                0,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> spareConnection.getStrongBindingCount()));
+        Assert.assertEquals(
+                1,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> spareConnection.getVisibleBindingCount()));
+
+        // Also verify that a subframe renderer (!isForOutermostMainFrame) does not get early strong
+        // binding when the feature is enabled.
+        ChildProcessLauncherHelperImpl subframeLauncher =
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        new Callable<ChildProcessLauncherHelperImpl>() {
+                            @Override
+                            public ChildProcessLauncherHelperImpl call() {
+                                return ChildProcessLauncherHelperImpl.createAndStartForTesting(
+                                        sProcessWaitArguments,
+                                        new IFileDescriptorInfo[0],
+                                        /* sandboxed= */ true,
+                                        /* reducePriorityOnBackground= */ false,
+                                        /* canUseWarmUpConnection= */ false,
+                                        /* binderCallback= */ null,
+                                        /* doSetupConnection= */ true,
+                                        /* isSpareRenderer= */ false,
+                                        /* isForOutermostMainFrame= */ false);
+                            }
+                        });
+        blockUntilConnected(subframeLauncher);
+        blockUntilSetup(subframeLauncher);
+
+        final ChildProcessConnection subframeConnection =
+                ChildProcessLauncherTestUtils.getConnection(subframeLauncher);
+        Assert.assertEquals(
+                0,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> subframeConnection.getStrongBindingCount()));
+        Assert.assertEquals(
+                1,
+                (int)
+                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                                () -> subframeConnection.getVisibleBindingCount()));
+    }
+
     private static ChildProcessLauncherHelperImpl startSandboxedChildProcess(
             int blockingPolicy, final boolean doSetupConnection) {
         return startChildProcess(
@@ -342,7 +441,9 @@ public class ChildProcessLauncherHelperTest {
                                         reducePriorityOnBackground,
                                         canUseWarmUpConnection,
                                         /* binderCallback= */ null,
-                                        doSetupConnection);
+                                        doSetupConnection,
+                                        /* isSpareRenderer= */ false,
+                                        /* isForOutermostMainFrame= */ true);
                             }
                         });
         if (blockingPolicy != DONT_BLOCK) {

@@ -1596,7 +1596,8 @@ int RenderProcessHost::GetCurrentRenderProcessCountForTesting() {
 RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstanceImpl* site_instance,
-    bool is_spare_renderer) {
+    bool is_spare_renderer,
+    bool is_for_outermost_main_frame) {
   if (g_render_process_host_factory_) {
     return g_render_process_host_factory_->CreateRenderProcessHost(
         browser_context, site_instance);
@@ -1650,15 +1651,17 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
-                                   flags, is_spare_renderer);
+                                   flags, is_spare_renderer,
+                                   is_for_outermost_main_frame);
 }
 
 // static
-RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
+RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHostForTesting(
     BrowserContext* browser_context,
     SiteInstanceImpl* site_instance) {
   return CreateRenderProcessHost(browser_context, site_instance,
-                                 /* is_spare_renderer=*/false);
+                                 /* is_spare_renderer= */ false,
+                                 /* is_for_outermost_main_frame= */ false);
 }
 
 // static
@@ -1666,7 +1669,8 @@ RenderProcessHost* RenderProcessHostImpl::CreateSpareRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstanceImpl* site_instance) {
   return CreateRenderProcessHost(browser_context, site_instance,
-                                 /* is_spare_renderer=*/true);
+                                 /* is_spare_renderer= */ true,
+                                 /* is_for_outermost_main_frame= */ false);
 }
 
 // static
@@ -1677,7 +1681,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,
     int flags,
-    bool is_spare_renderer)
+    bool is_spare_renderer,
+    bool is_for_outermost_main_frame)
     : priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
                 false /* has_immersive_xr_session */,
@@ -1702,6 +1707,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       spare_renderer_priority_status_(
           is_spare_renderer ? SpareRendererPriorityStatus::kSpare
                             : SpareRendererPriorityStatus::kNormal),
+      next_launch_for_initial_outermost_main_frame_(
+          is_for_outermost_main_frame),
 #endif
       tracing_track_(
           perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
@@ -5485,8 +5492,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     // RenderProcessHostFactory may not instantiate a StoragePartition, and
     // creating one here with GetStoragePartition() can run into cross-thread
     // issues as TestBrowserContext initialization is done on the main thread.
-    render_process_host =
-        CreateRenderProcessHost(browser_context, site_instance);
+    bool is_for_outermost_main_frame =
+        allocation_context.navigation_context.has_value() &&
+        allocation_context.navigation_context->is_outermost_main_frame;
+    render_process_host = CreateRenderProcessHost(
+        browser_context, site_instance, /*is_spare_renderer=*/false,
+        is_for_outermost_main_frame);
 
     site_instance->set_process_assignment(
         SiteInstanceProcessAssignment::CREATED_NEW_PROCESS);
@@ -6058,6 +6069,10 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
   process_launched_time_ = base::TimeTicks::Now();
 
+#if BUILDFLAG(IS_ANDROID)
+  next_launch_for_initial_outermost_main_frame_ = false;
+#endif
+
   if (child_process_launcher_) {
     CHECK(child_process_launcher_->GetProcess().IsValid(),
           base::NotFatalUntil::M152);
@@ -6196,6 +6211,10 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   if (deleting_soon_)
     return;
 
+#if BUILDFLAG(IS_ANDROID)
+  next_launch_for_initial_outermost_main_frame_ = false;
+#endif
+
   ChildProcessTerminationInfo info;
   info.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   info.exit_code = error_code;
@@ -6224,6 +6243,10 @@ void RenderProcessHostImpl::OnSpareRendererPriorityGraduated(bool is_alive) {
   for (auto& observer : observers_) {
     observer.SpareRendererPriorityGraduated(this, is_alive);
   }
+}
+
+bool RenderProcessHostImpl::IsForOutermostMainFrame() {
+  return next_launch_for_initial_outermost_main_frame_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

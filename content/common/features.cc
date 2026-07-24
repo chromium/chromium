@@ -200,6 +200,14 @@ BASE_FEATURE(kDocumentIsolationPolicyWithoutSiteIsolation,
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, sandboxed renderer processes (except spare renderers) are
+// initially bound with a strong (BIND_IMPORTANT) binding right at creation
+// time, putting them immediately in the top-app cpuset group on Android.
+BASE_FEATURE(kEarlyTopAppForSandboxedRenderer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled `EditContext::updateSelection` calls from async selectionchange
 // handlers sync the selection to the browser.
 // See https://crbug.com/516839844

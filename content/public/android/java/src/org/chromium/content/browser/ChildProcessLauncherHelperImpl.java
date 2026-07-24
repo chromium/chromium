@@ -401,8 +401,10 @@ public final class ChildProcessLauncherHelperImpl {
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
             boolean canUseWarmUpConnection,
-            boolean isSpareRenderer) {
+            boolean isSpareRenderer,
+            boolean isForOutermostMainFrame) {
         assert LauncherThread.runningOnLauncherThread();
+        assert !isSpareRenderer || !isForOutermostMainFrame;
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
@@ -444,7 +446,8 @@ public final class ChildProcessLauncherHelperImpl {
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
                         binderCallback,
-                        isSpareRenderer);
+                        isSpareRenderer,
+                        isForOutermostMainFrame);
         helper.start();
 
         if (sandboxed && !sCheckedServiceGroupImportance) {
@@ -751,7 +754,8 @@ public final class ChildProcessLauncherHelperImpl {
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
             @Nullable IBinder binderCallback,
-            boolean isSpareRenderer) {
+            boolean isSpareRenderer,
+            boolean isForOutermostMainFrame) {
         assert LauncherThread.runningOnLauncherThread();
 
         mNativeChildProcessLauncherHelper = nativePointer;
@@ -791,6 +795,10 @@ public final class ChildProcessLauncherHelperImpl {
                 mEffectiveImportance = ChildProcessImportance.NORMAL;
             } else if (useNotPerceptibleBinding) {
                 mEffectiveImportance = ChildProcessImportance.NOT_PERCEPTIBLE;
+            } else if (!isSpareRenderer
+                    && isForOutermostMainFrame
+                    && ContentFeatureList.sEarlyTopAppForSandboxedRenderer.isEnabled()) {
+                mEffectiveImportance = ChildProcessImportance.IMPORTANT;
             } else {
                 mEffectiveImportance = ChildProcessImportance.MODERATE;
             }
@@ -1168,7 +1176,9 @@ public final class ChildProcessLauncherHelperImpl {
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
             IBinder binderCallback,
-            boolean doSetupConnection) {
+            boolean doSetupConnection,
+            boolean isSpareRenderer,
+            boolean isForOutermostMainFrame) {
         ChildProcessLauncherHelperImpl launcherHelper =
                 new ChildProcessLauncherHelperImpl(
                         0L,
@@ -1178,7 +1188,8 @@ public final class ChildProcessLauncherHelperImpl {
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
                         binderCallback,
-                        /* isSpareRenderer= */ false);
+                        isSpareRenderer,
+                        isForOutermostMainFrame);
         launcherHelper.mLauncher.start(
                 doSetupConnection,
                 /* queueIfNoFreeConnection= */ true,
