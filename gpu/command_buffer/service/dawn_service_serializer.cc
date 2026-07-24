@@ -82,13 +82,6 @@ bool DawnServiceSerializer::SetWorkerPending(bool pending) {
   return true;
 }
 
-void* DawnServiceSerializer::GetCmdSpace(size_t size) {
-  if (auto result = GetCommandSpace(size)) {
-    return const_cast<std::byte*>(result->data());
-  }
-  return nullptr;
-}
-
 std::optional<std::span<volatile std::byte>>
 DawnServiceSerializer::GetCommandSpace(size_t size) {
   if (gpu_main_thread_runner_->BelongsToCurrentThread()) {

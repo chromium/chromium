@@ -17,10 +17,6 @@ size_t DawnNoopCommandSerializer::GetMaximumAllocationSize() const {
   return sizeof(buf_);
 }
 
-void* DawnNoopCommandSerializer::GetCmdSpace(size_t size) {
-  return buf_.data();
-}
-
 std::optional<std::span<volatile std::byte>>
 DawnNoopCommandSerializer::GetCommandSpace(size_t size) {
   if (size > sizeof(buf_)) {
@@ -56,13 +52,6 @@ DawnTestingCommandSerializer::GetCommandSpace(size_t size) {
     }
   }
   return buf_.take_first(size);
-}
-
-void* DawnTestingCommandSerializer::GetCmdSpace(size_t size) {
-  if (auto result = GetCommandSpace(size)) {
-    return const_cast<std::byte*>(result->data());
-  }
-  return nullptr;
 }
 
 bool DawnTestingCommandSerializer::Flush() {

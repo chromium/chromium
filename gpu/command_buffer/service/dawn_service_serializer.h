@@ -37,7 +37,6 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
   // is identified to be an issue here, we may consider developing a new API for
   // the wire to address the issue.
   size_t GetMaximumAllocationSize() const final;
-  void* GetCmdSpace(size_t size) final;
   std::optional<std::span<volatile std::byte>> GetCommandSpace(
       size_t size) final;
   bool Flush() final;

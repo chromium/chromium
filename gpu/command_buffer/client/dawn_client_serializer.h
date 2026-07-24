@@ -35,7 +35,6 @@ class DawnClientSerializer : public dawn::wire::CommandSerializer {
 
   // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
-  void* GetCmdSpace(size_t size) final;
   std::optional<std::span<volatile std::byte>> GetCommandSpace(
       size_t size) final;
 #if DCHECK_IS_ON()

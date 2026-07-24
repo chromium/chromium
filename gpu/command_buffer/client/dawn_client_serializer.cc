@@ -92,13 +92,6 @@ DawnClientSerializer::GetCommandSpace(size_t size) {
       reinterpret_cast<std::byte*>(space.data()), space.size());
 }
 
-void* DawnClientSerializer::GetCmdSpace(size_t size) {
-  if (auto result = GetCommandSpace(size)) {
-    return const_cast<std::byte*>(result->data());
-  }
-  return nullptr;
-}
-
 void DawnClientSerializer::Commit() {
   if (buffer_.valid()) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),

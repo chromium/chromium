@@ -33,13 +33,6 @@ class DawnClientMemoryTransferService::MemoryHandleImpl
   size_t GetSerializeCreateSize() const override {
     return sizeof(MemoryTransferHandle);
   }
-  void SerializeCreate(std::span<std::byte> serialize_space) const override {
-    DCHECK(serialize_space.size() == GetSerializeCreateSize());
-    base::span<std::byte> target_untyped = serialize_space;
-    auto target = base::subtle::reinterpret_span<MemoryTransferHandle>(
-        base::as_writable_bytes(target_untyped));
-    target[0] = handle_;
-  }
   void SerializeCreate(
       std::span<volatile std::byte> serialize_space) const override {
     // Note that we cannot use base::subtle::reinterpret_span here because
@@ -65,12 +58,6 @@ class DawnClientMemoryTransferService::MemoryHandleImpl
   size_t GetSerializeDataUpdateSize(size_t offset, size_t size) const override {
     // No data is serialized because we're using shared memory.
     return 0;
-  }
-  void SerializeDataUpdate(std::span<std::byte> serialize_data,
-                           size_t offset,
-                           size_t size) const override {
-    // No data is serialized because we're using shared memory.
-    DCHECK(serialize_data.size() == GetSerializeDataUpdateSize(offset, size));
   }
   void SerializeDataUpdate(std::span<volatile std::byte> serialize_data,
                            size_t offset,
