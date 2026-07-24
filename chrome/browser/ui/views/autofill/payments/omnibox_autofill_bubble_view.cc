@@ -40,7 +40,6 @@ class SuggestionButton : public views::Button {
         selected_callback_(std::move(selected_callback)),
         deselection_callback_(std::move(deselection_callback)) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    SetFocusBehavior(FocusBehavior::ALWAYS);
     SetRequestFocusOnPress(true);
     SetAccessibleName(accessible_name);
     SetNotifyEnterExitOnChild(true);
@@ -153,14 +152,6 @@ void OmniboxAutofillBubbleView::AddedToWidget() {
   }
 }
 
-views::View* OmniboxAutofillBubbleView::GetInitiallyFocusedView() {
-  if (auto* frame_view = GetBubbleFrameView()) {
-    if (auto* close_button = frame_view->close_button()) {
-      return close_button;
-    }
-  }
-  return nullptr;
-}
 
 void OmniboxAutofillBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(

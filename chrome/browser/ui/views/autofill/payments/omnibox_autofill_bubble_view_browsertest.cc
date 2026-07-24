@@ -184,33 +184,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
-                       FocusesCloseButton) {
-  auto* controller = GetBubbleController();
-  ASSERT_TRUE(controller);
-
-  // Add suggestion.
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(u"Visa •••• 1111", SuggestionType::kCreditCardEntry);
-
-  controller->Initialize(suggestions, base::DoNothing(), base::DoNothing(),
-                         base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
-
-  controller->QueueOrShowBubble();
-
-  auto* bubble_view = GetBubbleView();
-  ASSERT_TRUE(bubble_view);
-
-  // Verify one suggestion is shown.
-  std::vector<views::Button*> buttons = GetSuggestions(bubble_view);
-  ASSERT_EQ(buttons.size(), 1u);
-
-  // Verify the close button has focus and the suggestion button does not.
-  EXPECT_TRUE(bubble_view->GetBubbleFrameView()->close_button()->HasFocus());
-  EXPECT_FALSE(buttons[0]->HasFocus());
-}
-
-IN_PROC_BROWSER_TEST_F(OmniboxAutofillBubbleViewBrowserTest,
                        CloseBubbleTriggersOnSuggestionsHidden) {
   OmniboxAutofillBubbleController* controller = GetBubbleController();
   ASSERT_TRUE(controller);

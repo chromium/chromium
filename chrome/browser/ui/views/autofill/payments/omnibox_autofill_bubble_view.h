@@ -46,7 +46,6 @@ class OmniboxAutofillBubbleView : public AutofillLocationBarBubble {
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void AddedToWidget() override;
-  views::View* GetInitiallyFocusedView() override;
 
  protected:
   // LocationBarBubbleDelegateView:
