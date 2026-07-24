@@ -11,10 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -43,6 +45,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
  public:
   struct Log {
     int allow_storage_access_count = 0;
+    int eager_allow_storage_access_count = 0;
     int on_content_blocked_count = 0;
     ContentSettingsType on_content_blocked_type = ContentSettingsType::DEFAULT;
   };
@@ -60,8 +63,17 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
                           const url::Origin& origin,
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
+                          bool enable_logging_usage,
                           base::OnceCallback<void(bool)> callback) override {
-    ++log_->allow_storage_access_count;
+    // In production, enable_logging_usage=false skips UI updates and metrics
+    // logging. However, in this mock, we intentionally count it via
+    // eager_allow_storage_access_count to verify that the eager pre-fetch IPC
+    // successfully reached the browser process.
+    if (enable_logging_usage) {
+      ++log_->allow_storage_access_count;
+    } else {
+      ++log_->eager_allow_storage_access_count;
+    }
     std::move(callback).Run(true);
   }
   void OnContentBlocked(const blink::LocalFrameToken& frame_token,
@@ -101,6 +113,9 @@ class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
 
   int allow_storage_access_count() const {
     return log_.allow_storage_access_count;
+  }
+  int eager_allow_storage_access_count() const {
+    return log_.eager_allow_storage_access_count;
   }
   int on_content_blocked_count() const { return log_.on_content_blocked_count; }
   ContentSettingsType on_content_blocked_type() const {
@@ -365,6 +380,60 @@ TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesNoSettingsSet) {
   ContentSettingsAgentImpl* agent =
       ContentSettingsAgentImpl::Get(GetMainRenderFrame());
   EXPECT_TRUE(agent->ShouldAutoupgradeMixedContent());
+}
+
+TEST_P(ContentSettingsAgentImplBrowserTest,
+       EagerStorageAccessPermissionCheckEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEagerStorageAccessPermissionCheck);
+
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  // Load some HTML. This will trigger DidCommitProvisionalLoad.
+  LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
+
+  // Wait for the eager IPC.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return mock_agent.eager_allow_storage_access_count() == 2; }));
+
+  // Subsequent sync access should hit the cache and NOT trigger more IPCs
+  // directly, but WILL trigger one async IPC for UI metric logging (which has
+  // enable_logging_usage=true).
+  mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage);
+
+  // Wait for the UI logging async IPC to be sent.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return mock_agent.allow_storage_access_count() == 1; }));
+}
+
+TEST_P(ContentSettingsAgentImplBrowserTest,
+       EagerStorageAccessPermissionCheckDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kEagerStorageAccessPermissionCheck);
+
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  // Load some HTML. This will trigger DidCommitProvisionalLoad.
+  LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
+
+  // Verify no eager IPCs were sent.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(0, mock_agent.eager_allow_storage_access_count());
+
+  // Sync access should trigger IPC.
+  mock_agent.AllowStorageAccessSync(
+      blink::WebContentSettingsClient::StorageType::kLocalStorage);
+
+  // Wait for the sync IPC to be processed.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return mock_agent.allow_storage_access_count() == 1; }));
 }
 
 }  // namespace content_settings

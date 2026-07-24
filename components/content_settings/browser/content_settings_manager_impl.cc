@@ -152,6 +152,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     const url::Origin& origin,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    bool enable_logging_usage,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL url = origin.GetURL();
@@ -193,18 +194,24 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     allowed = true;
   }
 
-  if (delegate_->AllowStorageAccess(
-          content::GlobalRenderFrameHostToken(render_process_id_, frame_token),
-          storage_type, url, allowed, &callback)) {
-    DCHECK(!callback);
-    return;
-  }
+  // `enable_logging_usage` is set to false during eager pre-fetching so that
+  // UI indicators (like the omnibox cookie blocked icon) are not triggered
+  // before JavaScript actually accesses storage. The permission evaluation
+  // above always runs and its result (`allowed`) is always returned below.
+  if (enable_logging_usage) {
+    if (delegate_->AllowStorageAccess(content::GlobalRenderFrameHostToken(
+                                          render_process_id_, frame_token),
+                                      storage_type, url, allowed, &callback)) {
+      DCHECK(!callback);
+      return;
+    }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&NotifyStorageAccess,
-                                content::GlobalRenderFrameHostToken(
-                                    render_process_id_, frame_token),
-                                storage_type, top_frame_origin, allowed));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&NotifyStorageAccess,
+                                  content::GlobalRenderFrameHostToken(
+                                      render_process_id_, frame_token),
+                                  storage_type, top_frame_origin, allowed));
+  }
 
   std::move(callback).Run(allowed);
 }

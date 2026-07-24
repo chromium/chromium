@@ -32,6 +32,11 @@ BASE_DECLARE_FEATURE(kSafetyCheckUnusedSitePermissions);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kActiveContentSettingExpiry);
 
+// Enables early querying of storage access permissions to populate the renderer
+// cache and eliminate synchronous IPCs during initial page load.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kEagerStorageAccessPermissionCheck);
+
 // When enabled, site permissions will be considered as unused immediately in
 // order to facilitate testing.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)

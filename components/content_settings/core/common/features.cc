@@ -28,6 +28,8 @@ BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kActiveContentSettingExpiry, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEagerStorageAccessPermissionCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kSafetyCheckUnusedSitePermissionsNoDelay{
     &kSafetyCheckUnusedSitePermissions,
