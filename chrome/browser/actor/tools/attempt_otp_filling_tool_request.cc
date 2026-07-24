@@ -9,9 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/shared_types.h"
 
@@ -38,9 +41,12 @@ AttemptOtpFillingToolRequest::~AttemptOtpFillingToolRequest() = default;
 ToolRequest::CreateToolResult AttemptOtpFillingToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
+  auto* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(&tool_delegate.GetProfile());
   return {std::make_unique<AttemptOtpFillingTool>(
               task_id, tool_delegate, GetTabHandle(), trigger_fields_,
-              for_signin_, predicted_otp_type_),
+              for_signin_, predicted_otp_type_,
+              std::make_unique<ActorLoginFlowVerifier>(affiliation_service)),
           MakeOkResult()};
 }
 
