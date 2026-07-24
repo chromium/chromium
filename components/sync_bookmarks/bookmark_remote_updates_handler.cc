@@ -221,7 +221,7 @@ void ApplyRemoteUpdate(
   const size_t new_index = ComputeChildNodeIndex(
       new_parent, update_entity.specifics.bookmark().unique_position(),
       tracker);
-  tracker->RecordAcceptedRemoteUpdate(tracked_entity, update);
+  tracked_entity->RecordAcceptedRemoteUpdate(update);
 
   if (new_parent == old_parent &&
       (new_index == old_index || new_index == old_index + 1)) {
@@ -307,16 +307,6 @@ void BookmarkRemoteUpdatesHandler::Process(
           update_entity.modification_time);
     }
 
-    // The server ID has changed for a tracked entity (matched via client tag).
-    // This can happen if a commit succeeds, but the response does not come back
-    // fast enough(e.g. before shutdown or crash), then the |bookmark_tracker_|
-    // might assume that it was never committed. The server will track the
-    // client that sent up the original commit and return this in a get updates
-    // response. This also may happen due to duplicate UUIDs. In this case it's
-    // better to update to the latest server ID.
-    if (tracked_entity) {
-      bookmark_tracker_->UpdateServerId(tracked_entity, update_entity.id);
-    }
 
     if (tracked_entity && tracked_entity->IsUnsynced()) {
       tracked_entity = ProcessConflict(*update, tracked_entity);
@@ -580,7 +570,7 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
   // parent without any data change.
   if (tracked_entity->MatchesData(update_entity)) {
     DCHECK_EQ(new_parent, old_parent);
-    bookmark_tracker_->RecordAcceptedRemoteUpdate(tracked_entity, update);
+    tracked_entity->RecordAcceptedRemoteUpdate(update);
     ReuploadEntityIfNeeded(update_entity, tracked_entity);
     return;
   }
@@ -684,6 +674,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent_entity) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentEntityInConflict);
+    tracked_entity->RecordIgnoredRemoteUpdate(update);
     syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
@@ -697,6 +688,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentNodeInConflict);
+    tracked_entity->RecordIgnoredRemoteUpdate(update);
     syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
@@ -707,7 +699,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (tracked_entity->MatchesData(update_entity)) {
     DCHECK_EQ(new_parent, old_parent);
     tracked_entity->AckSequenceNumber();
-    bookmark_tracker_->RecordAcceptedRemoteUpdate(tracked_entity, update);
+    tracked_entity->RecordAcceptedRemoteUpdate(update);
 
     // The changes are identical so there isn't a real conflict.
     syncer::RecordDataTypeEntityConflictResolution(
@@ -715,7 +707,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   } else if (tracked_entity->MatchesBaseData(update_entity)) {
     // Local update vs remote update which matches base data.
     // Local wins, ignore remote.
-    tracked_entity->UpdateServerVersion(update.response_version);
+    tracked_entity->RecordIgnoredRemoteUpdate(update);
     syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kIgnoreRemoteNoOpUpdate);
   } else {

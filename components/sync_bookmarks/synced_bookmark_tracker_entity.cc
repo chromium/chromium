@@ -81,10 +81,7 @@ size_t SyncedBookmarkTrackerEntity::EstimateMemoryUsage() const {
 }
 
 void SyncedBookmarkTrackerEntity::RecordAcceptedRemoteUpdate(
-    PassKey,
     const syncer::UpdateResponseData& update) {
-  CHECK_EQ(metadata_.proto().server_id(), update.entity.id);
-
   std::optional<sync_pb::UniquePosition> unique_position;
   if (update.entity.specifics.bookmark().has_unique_position()) {
     unique_position = update.entity.specifics.bookmark().unique_position();
@@ -99,6 +96,17 @@ void SyncedBookmarkTrackerEntity::RecordAcceptedRemoteUpdate(
   } else {
     metadata_.mutable_proto()->clear_bookmark_favicon_hash();
   }
+}
+
+void SyncedBookmarkTrackerEntity::RecordIgnoredRemoteUpdate(
+    const syncer::UpdateResponseData& update) {
+  metadata_.RecordIgnoredRemoteUpdate(update);
+}
+
+void SyncedBookmarkTrackerEntity::OverrideServerMetadata(
+    const std::string& server_id,
+    int64_t server_version) {
+  metadata_.OverrideServerMetadata(server_id, server_version);
 }
 
 void SyncedBookmarkTrackerEntity::RecordLocalUpdate(

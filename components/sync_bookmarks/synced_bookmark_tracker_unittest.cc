@@ -364,13 +364,14 @@ TEST(SyncedBookmarkTrackerTest, ShouldVerifyIsVersionAlreadyKnown) {
   EXPECT_FALSE(entity->IsVersionAlreadyKnown(kServerVersion + 1));
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldUpdateServerId) {
+TEST(SyncedBookmarkTrackerTest, ShouldRecordIgnoredRemoteUpdate) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kNewSyncId = "NEW_SYNC_ID";
   const int64_t kServerVersion = 1000;
+  const int64_t kNewServerVersion = 1001;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
@@ -381,8 +382,13 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateServerId) {
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(entity, NotNull());
-  // Update the server id.
-  tracker->UpdateServerId(entity, kNewSyncId);
+
+  syncer::UpdateResponseData update;
+  update.response_version = kNewServerVersion;
+  update.entity.id = kNewSyncId;
+  update.entity.client_tag_hash = entity->GetClientTagHash();
+
+  entity->RecordIgnoredRemoteUpdate(update);
 
   // Old id shouldn't be found, but the new one should.
   EXPECT_THAT(tracker->GetEntityForSyncIdExhaustively(kSyncId), IsNull());
@@ -390,7 +396,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateServerId) {
 
   EXPECT_THAT(entity->metadata().server_id(), Eq(kNewSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(&node));
-  EXPECT_THAT(entity->metadata().server_version(), Eq(kServerVersion));
+  EXPECT_THAT(entity->metadata().server_version(), Eq(kNewServerVersion));
 }
 
 TEST(SyncedBookmarkTrackerTest,
@@ -1142,7 +1148,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   update.entity.id = kSyncId;
   update.entity.modification_time = kModificationTime;
   update.entity.specifics = specifics;
-  tracker->RecordAcceptedRemoteUpdate(entity, update);
+  entity->RecordAcceptedRemoteUpdate(update);
 
   EXPECT_TRUE(entity->metadata().has_bookmark_favicon_hash());
   EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));

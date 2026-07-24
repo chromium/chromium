@@ -287,8 +287,7 @@ void SyncedBookmarkTracker::OverrideServerMetadata(
   SyncedBookmarkTrackerEntity* entity =
       GetEntityForClientTagHash(client_tag_hash);
   if (entity) {
-    UpdateServerId(entity, sync_id);
-    entity->UpdateServerVersion(server_version);
+    entity->OverrideServerMetadata(sync_id, server_version);
   }
 }
 
@@ -716,26 +715,6 @@ void SyncedBookmarkTracker::TraverseAndAppend(
     }
     TraverseAndAppend(child.get(), ordered_entities);
   }
-}
-
-void SyncedBookmarkTracker::RecordAcceptedRemoteUpdate(
-    const SyncedBookmarkTrackerEntity* entity,
-    const syncer::UpdateResponseData& update) {
-  DCHECK(entity);
-
-  SyncedBookmarkTrackerEntity* mutable_entity = AsMutableEntity(entity);
-  UpdateServerId(mutable_entity, update.entity.id);
-  mutable_entity->RecordAcceptedRemoteUpdate(
-      SyncedBookmarkTrackerEntity::PassKey(), update);
-}
-
-void SyncedBookmarkTracker::UpdateServerId(
-    const SyncedBookmarkTrackerEntity* entity,
-    const std::string& sync_id) {
-  DCHECK(entity);
-  AsMutableEntity(entity)
-      ->MutableMetadata(SyncedBookmarkTrackerEntity::PassKey())
-      ->set_server_id(sync_id);
 }
 
 void SyncedBookmarkTracker::UndeleteTombstoneForBookmarkNode(

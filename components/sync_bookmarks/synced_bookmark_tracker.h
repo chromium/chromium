@@ -24,10 +24,6 @@ class BookmarkModelMetadata;
 class EntitySpecifics;
 }  // namespace sync_pb
 
-namespace syncer {
-struct UpdateResponseData;
-}  // namespace syncer
-
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
@@ -155,16 +151,6 @@ class SyncedBookmarkTracker {
       const;
   std::vector<SyncedBookmarkTrackerEntity*>
   GetMutableEntitiesWithLocalChanges();
-
-  // Updates the tracker after receiving a remote update. `entity` must be owned
-  // by this tracker.
-  void RecordAcceptedRemoteUpdate(const SyncedBookmarkTrackerEntity* entity,
-                                  const syncer::UpdateResponseData& update);
-
-  // Updates the server ID for `entity`. `entity` must be owned by this tracker.
-  void UpdateServerId(const SyncedBookmarkTrackerEntity* entity,
-                      const std::string& sync_id);
-
   // Used to start tracking an entity that overwrites a previous local tombstone
   // (e.g. user-initiated bookmark deletion undo). `entity` must be owned by
   // this tracker.
