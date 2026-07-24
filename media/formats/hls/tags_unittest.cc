@@ -1530,6 +1530,9 @@ TEST(HlsTagsTest, ParseInfTag) {
   ErrorTest<InfTag>(",", ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   ErrorTest<InfTag>("-123,",
                     ParseStatusCode::kFailedToParseDecimalFloatingPoint);
+  ErrorTest<InfTag>("0,", ParseStatusCode::kFailedToParseDecimalFloatingPoint);
+  ErrorTest<InfTag>("0.0,",
+                    ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   ErrorTest<InfTag>("asdf,",
                     ParseStatusCode::kFailedToParseDecimalFloatingPoint);
 

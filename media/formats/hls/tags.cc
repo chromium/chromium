@@ -1172,6 +1172,11 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
     return ParseStatusCode::kValueOverflowsTimeDelta;
   }
 
+  if (!duration.is_positive()) {
+    return {ParseStatusCode::kFailedToParseDecimalFloatingPoint,
+            "EXTINF duration values must be greater than zero."};
+  }
+
   return InfTag{.duration = duration, .title = title_str};
 }
 
