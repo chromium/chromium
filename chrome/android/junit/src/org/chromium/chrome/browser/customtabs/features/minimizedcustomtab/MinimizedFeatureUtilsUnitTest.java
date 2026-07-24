@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ActivityType.CUSTOM_TAB;
+import static org.chromium.chrome.browser.flags.ActivityType.DEV_TOOLS;
 import static org.chromium.chrome.browser.flags.ActivityType.WEBAPP;
 
 import android.app.AppOpsManager;
@@ -128,6 +129,10 @@ public class MinimizedFeatureUtilsUnitTest {
         when(mIntentDataProvider.hasTargetNetwork()).thenReturn(true);
         assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
         when(mIntentDataProvider.hasTargetNetwork()).thenReturn(false);
+
+        // False for DevTools
+        when(mIntentDataProvider.getActivityType()).thenReturn(DEV_TOOLS);
+        assertFalse(MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider));
 
         // False for Webapps
         when(mIntentDataProvider.getActivityType()).thenReturn(WEBAPP);

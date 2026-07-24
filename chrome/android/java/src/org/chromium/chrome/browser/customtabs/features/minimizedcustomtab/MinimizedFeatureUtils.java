@@ -25,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.Retention;
@@ -153,6 +154,9 @@ public class MinimizedFeatureUtils {
     public static boolean shouldEnableMinimizedCustomTabs(
             BrowserServicesIntentDataProvider intentDataProvider) {
         if (intentDataProvider.hasTargetNetwork()) return false;
+
+        // DevToolsActivity does not support minimization into Picture-in-Picture mode.
+        if (intentDataProvider.getActivityType() == ActivityType.DEV_TOOLS) return false;
 
         boolean isWebApp =
                 intentDataProvider.isWebappOrWebApkActivity()
