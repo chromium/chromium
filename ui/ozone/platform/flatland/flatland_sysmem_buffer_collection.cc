@@ -250,9 +250,12 @@ bool FlatlandSysmemBufferCollection::Initialize(
     NativePixmapUsageSet usage,
     VkDevice vk_device,
     size_t min_buffer_count) {
-  DCHECK(IsNativePixmapConfigSupported(format, usage));
-  DCHECK(!collection_);
-  DCHECK(!vk_buffer_collection_);
+  if (!IsNativePixmapConfigSupported(format, usage)) {
+    LOG(ERROR) << "Unsupported format/usage: " << format.ToString();
+    return false;
+  }
+  CHECK(!collection_);
+  CHECK(!vk_buffer_collection_);
 
   handle_ = std::move(handle);
   auto koid = base::GetKoid(handle_);
@@ -316,6 +319,20 @@ void FlatlandSysmemBufferCollection::InitializeForTesting(
     zx::eventpair::create(0, &export_token.value,
                           &flatland_import_token_.value);
   }
+}
+
+void FlatlandSysmemBufferCollection::InitializeForTesting(  // IN-TEST
+    zx::eventpair handle,
+    NativePixmapUsageSet usage,
+    viz::SharedImageFormat format,
+    fuchsia::sysmem2::BufferCollectionInfo buffers_info,
+    VkDevice vk_device) {
+  InitializeForTesting(std::move(handle), usage);  // IN-TEST
+  usage_ = usage;
+  format_ = format;
+  vk_device_ = vk_device;
+  buffers_info_ = std::move(buffers_info);
+  buffer_size_ = buffers_info_.settings().buffer_settings().size_bytes();
 }
 
 scoped_refptr<gfx::NativePixmap>

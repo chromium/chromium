@@ -75,6 +75,15 @@ class FlatlandSysmemBufferCollection
   // Does minimum initialization needed for tests based on |usage|.
   void InitializeForTesting(zx::eventpair handle, NativePixmapUsageSet usage);
 
+  // Same as above, but also populates the negotiated buffer-collection info so
+  // that CreateNativePixmap() can be exercised without a real sysmem
+  // allocation.
+  void InitializeForTesting(zx::eventpair handle,
+                            NativePixmapUsageSet usage,
+                            viz::SharedImageFormat format,
+                            fuchsia::sysmem2::BufferCollectionInfo buffers_info,
+                            VkDevice vk_device = VK_NULL_HANDLE);
+
   // Creates a NativePixmap with the specified handle. The handle must reference
   // a buffer in this collection.
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
