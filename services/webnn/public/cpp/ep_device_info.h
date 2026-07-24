@@ -22,12 +22,13 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN) EpDeviceInfo {
   std::string ep_name;
   mojom::Device device_type = mojom::Device::kCpu;
   uint32_t device_id = 0;
+  uint32_t vendor_id = 0;
 
   auto operator<=>(const EpDeviceInfo&) const = default;
   bool operator==(const EpDeviceInfo&) const = default;
 
   // Serializes this info into a string. The format is
-  // "<ep_name>,<device_type>,<device_id>".
+  // "<ep_name>,<device_type>,<device_id>,<vendor_id>".
   std::string ToSwitchValue() const;
 
   // Parses a value produced by ToSwitchValue(). Returns std::nullopt if failed

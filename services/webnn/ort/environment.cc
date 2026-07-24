@@ -976,6 +976,11 @@ const OrtEpDevice* Environment::FindRegisteredEpDevice(
     if (registered_device_id != device_info.device_id) {
       continue;
     }
+    uint32_t registered_vendor_id =
+        ort_api->HardwareDevice_VendorId(hardware_device);
+    if (registered_vendor_id != device_info.vendor_id) {
+      continue;
+    }
     const OrtHardwareDeviceType registered_device_type =
         ort_api->HardwareDevice_Type(hardware_device);
     if (registered_device_type ==

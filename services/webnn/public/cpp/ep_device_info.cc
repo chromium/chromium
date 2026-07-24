@@ -14,8 +14,9 @@
 namespace webnn {
 
 std::string EpDeviceInfo::ToSwitchValue() const {
-  return base::StringPrintf("%s,%s,%04x", ep_name,
-                            DeviceTypeToString(device_type), device_id);
+  return base::StringPrintf("%s,%s,%04x,%04x", ep_name,
+                            DeviceTypeToString(device_type), device_id,
+                            vendor_id);
 }
 
 // static
@@ -23,7 +24,7 @@ std::optional<EpDeviceInfo> EpDeviceInfo::FromSwitchValue(
     std::string_view value) {
   std::vector<std::string_view> parts = base::SplitStringPiece(
       value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() != 3) {
+  if (parts.size() != 4) {
     return std::nullopt;
   }
 
@@ -37,9 +38,15 @@ std::optional<EpDeviceInfo> EpDeviceInfo::FromSwitchValue(
     return std::nullopt;
   }
 
+  uint32_t vendor_id = 0;
+  if (!base::HexStringToUInt(parts[3], &vendor_id)) {
+    return std::nullopt;
+  }
+
   return EpDeviceInfo{.ep_name = std::string(parts[0]),
                       .device_type = *device_type,
-                      .device_id = device_id};
+                      .device_id = device_id,
+                      .vendor_id = vendor_id};
 }
 
 }  // namespace webnn

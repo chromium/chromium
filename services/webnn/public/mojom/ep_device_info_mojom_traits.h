@@ -27,6 +27,10 @@ struct StructTraits<webnn::mojom::EpDeviceInfoDataView, webnn::EpDeviceInfo> {
     return device.device_id;
   }
 
+  static uint32_t vendor_id(const webnn::EpDeviceInfo& device) {
+    return device.vendor_id;
+  }
+
   static bool Read(webnn::mojom::EpDeviceInfoDataView data,
                    webnn::EpDeviceInfo* out) {
     if (!data.ReadEpName(&out->ep_name)) {
@@ -34,6 +38,7 @@ struct StructTraits<webnn::mojom::EpDeviceInfoDataView, webnn::EpDeviceInfo> {
     }
     out->device_type = data.device_type();
     out->device_id = data.device_id();
+    out->vendor_id = data.vendor_id();
     return true;
   }
 };

@@ -59,6 +59,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OpenVINOExecutionProvider"/>
   <variant name="QNNExecutionProvider"/>
   <variant name="VitisAIExecutionProvider"/>
+  <variant name="WebGpuExecutionProvider"/>
 </variants>
 
 <histogram

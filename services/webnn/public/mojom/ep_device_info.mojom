@@ -6,11 +6,11 @@ module webnn.mojom;
 
 import "services/webnn/public/mojom/webnn_device.mojom";
 
-// Identifies an execution provider device by EP name, device type, and hardware
-// device ID. Currently the vendor ID is not needed because each EP in kKnownEPs
-// is associated with a single vendor.
+// Identifies an execution provider device by EP name, device type, hardware
+// device ID and vendor ID.
 struct EpDeviceInfo {
   string ep_name;
   Device device_type;
   uint32 device_id;
+  uint32 vendor_id;
 };
