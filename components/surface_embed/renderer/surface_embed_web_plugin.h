@@ -71,6 +71,7 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void DidReceiveData(base::span<const char> data) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
+  bool SupportsKeyboardFocus() const override;
 
  private:
   // Destroy via ->Destroy().
@@ -94,7 +95,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
   void ChildProcessGone() override;
-  void RequestFocus() override;
+  void RequestFocusOnEmbedElement(
+      RequestFocusOnEmbedElementCallback callback) override;
 
   // cc::ContentLayerClient, used only if we're painting a sad plugin.
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;

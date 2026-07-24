@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/frame/frame_visual_properties.mojom";
+import "third_party/blink/public/mojom/input/focus_type.mojom";
 
 // Implemented by SurfaceEmbedWebPlugin in the render process.
 // The browser uses this interface to embed the surface of a child WebContents
@@ -32,8 +33,14 @@ interface SurfaceEmbed {
   // child this is embedding has crashed.
   ChildProcessGone();
 
-  // Requests focus for the <embed> element.
-  RequestFocus();
+  // Requests focus for the <embed> element. Returns when the focus request
+  // has completed.
+  // SurfaceEmbedHost uses this completion callback to track pending focus
+  // requests so that OnEmbedElementFocused() can ignore focus events triggered
+  // by RequestFocusOnEmbedElement(). This prevents an incorrect call to
+  // WebContents::Focus() in multi-level embedding setups (e.g., root -> parent
+  // embed -> child embed when clicking on the child embed).
+  RequestFocusOnEmbedElement() => ();
 };
 
 // Implemented by SurfaceEmbedHost in the browser process.
@@ -55,4 +62,13 @@ interface SurfaceEmbedHost {
   SynchronizeVisualProperties(
       blink.mojom.FrameVisualProperties visual_properties,
       bool is_visible);
+
+  // Notifies the browser that the embed element inside the parent document
+  // gained or lost focus.
+  // SurfaceEmbedHost ignores this notification if there is a pending
+  // RequestFocusOnEmbedElement() call to avoid incorrectly calling
+  // WebContents::Focus() on the embedded WebContents in multi-level embedding
+  // setups.
+  OnEmbedElementFocused(bool focused, blink.mojom.FocusType focus_type);
 };
+

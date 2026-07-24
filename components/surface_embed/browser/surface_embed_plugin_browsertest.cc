@@ -1059,4 +1059,42 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusPreservedAfterNavigation) {
   EXPECT_TRUE(content::EvalJs(child_contents.get(), "document.hasFocus()")
                   .ExtractBool());
 }
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, FocusByTabKey) {
+  NavigateToTestUrl(kFocusHarnessUrl);
+
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kInnerPageUrl);
+  content::ReadyForInputObserver(web_contents()).Wait();
+
+  AttachChildToEmbedWithId(child_contents.get(), "my_embed");
+
+  // Focus outer1 which is before the embed tag.
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('outer1').focus()"));
+  ASSERT_EQ("outer1",
+            content::EvalJs(web_contents(), "document.activeElement.id"));
+
+  // Press tab, it should move into the embed element, which focuses the child
+  // WebContents.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                            ui::VKEY_TAB, false, false, false, false);
+
+  // Focus should go to the embed element in the parent WebContents.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "document.activeElement.id") ==
+               "my_embed" &&
+           content::EvalJs(child_contents.get(), "document.hasFocus()")
+               .ExtractBool() &&
+           content::EvalJs(child_contents.get(), "document.activeElement.id") ==
+               "inner";
+  }));
+
+  // Keep pressing tab, it should not crash.
+  // TODO(crbug.com/508638062): update this test to traverse to the next element
+  // after the embed element.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                            ui::VKEY_TAB, false, false, false, false);
+}
+
 }  // namespace surface_embed

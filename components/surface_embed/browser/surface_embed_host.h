@@ -56,6 +56,8 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override;
+  void OnEmbedElementFocused(bool focused,
+                             blink::mojom::FocusType focus_type) override;
 
   // content::SurfaceEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
@@ -81,6 +83,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   void Bind(mojo::PendingReceiver<mojom::SurfaceEmbedHost> receiver);
 
   void OnMojoDisconnect();
+  void OnRequestFocusOnEmbedElementCompleted();
 
   // May return null.
   content::SurfaceEmbedConnector* GetConnector() const;
@@ -91,8 +94,11 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   // The WebContents of the child document.
   base::WeakPtr<content::WebContents> child_contents_ = nullptr;
 
+  bool pending_request_focus_on_embed_element_ = false;
+
   mojo::Remote<mojom::SurfaceEmbed> surface_embed_;
   mojo::Receiver<mojom::SurfaceEmbedHost> receiver_{this};
+  base::WeakPtrFactory<SurfaceEmbedHost> weak_ptr_factory_{this};
 };
 
 }  // namespace surface_embed

@@ -148,7 +148,13 @@ void SurfaceEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 
 void SurfaceEmbedWebPlugin::UpdateFocus(bool focused,
                                         blink::mojom::FocusType focus_type) {
-  NOTIMPLEMENTED();
+  if (host_) {
+    host_->OnEmbedElementFocused(focused, focus_type);
+  }
+}
+
+bool SurfaceEmbedWebPlugin::SupportsKeyboardFocus() const {
+  return true;
 }
 
 void SurfaceEmbedWebPlugin::UpdateVisibility(bool visible) {
@@ -360,10 +366,12 @@ void SurfaceEmbedWebPlugin::ChildProcessGone() {
   container_->ScheduleAnimation();
 }
 
-void SurfaceEmbedWebPlugin::RequestFocus() {
+void SurfaceEmbedWebPlugin::RequestFocusOnEmbedElement(
+    RequestFocusOnEmbedElementCallback callback) {
   if (container_) {
     container_->GetElement().Focus();
   }
+  std::move(callback).Run();
 }
 
 scoped_refptr<cc::DisplayItemList>

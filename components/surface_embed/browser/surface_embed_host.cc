@@ -171,6 +171,39 @@ void SurfaceEmbedHost::SynchronizeVisualProperties(
   }
 }
 
+void SurfaceEmbedHost::OnEmbedElementFocused(
+    bool focused,
+    blink::mojom::FocusType focus_type) {
+  if (!child_contents_) {
+    return;
+  }
+
+  if (!focused) {
+    // TODO(crbug.com/508638062): the <embed> element in the parent frame lost
+    // focus. Should we remove the page focus from the embedded page?
+    return;
+  }
+
+  // When a child embed requests focus via RequestFocusOnEmbedElement(),
+  // focusing the <embed> element in the parent renderer triggers
+  // OnEmbedElementFocused(). In a multi-level embedding setup
+  // (e.g., root -> parent embed -> child embed), clicking on the child embed
+  // focuses the parent <embed> element. If there is a pending
+  // RequestFocusOnEmbedElement(), do nothing so we don't call Focus() on the
+  // parent <embed>'s WebContents.
+  if (pending_request_focus_on_embed_element_) {
+    return;
+  }
+
+  if (focus_type == blink::mojom::FocusType::kForward) {
+    child_contents_->FocusThroughTabTraversal(/*reverse=*/false);
+  } else if (focus_type == blink::mojom::FocusType::kBackward) {
+    child_contents_->FocusThroughTabTraversal(/*reverse=*/true);
+  } else {
+    child_contents_->Focus();
+  }
+}
+
 void SurfaceEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
                                       bool allow_paint_holding) {
   if (surface_embed_) {
@@ -202,9 +235,21 @@ void SurfaceEmbedHost::DetachedByHost() {
 }
 
 void SurfaceEmbedHost::RequestFocus() {
-  if (surface_embed_) {
-    surface_embed_->RequestFocus();
+  if (pending_request_focus_on_embed_element_) {
+    return;
   }
+
+  if (surface_embed_) {
+    pending_request_focus_on_embed_element_ = true;
+    surface_embed_->RequestFocusOnEmbedElement(
+        base::BindOnce(&SurfaceEmbedHost::OnRequestFocusOnEmbedElementCompleted,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void SurfaceEmbedHost::OnRequestFocusOnEmbedElementCompleted() {
+  CHECK(pending_request_focus_on_embed_element_);
+  pending_request_focus_on_embed_element_ = false;
 }
 
 bool SurfaceEmbedHost::IsAttachedForTesting() const {

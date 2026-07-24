@@ -99,6 +99,9 @@ class WebContentsViewChildFrame : public WebContentsView,
       RenderWidgetHost* render_widget_host);
 
  private:
+  enum class Type { kGuestView, kSurfaceEmbed };
+  Type GetType() const;
+
   WebContentsView* GetOuterView();
   const WebContentsView* GetOuterView() const;
 
