@@ -35,9 +35,11 @@ VerticalTabIphController::VerticalTabIphController(
     : browser_window_interface_(interface),
       scoped_data_(interface->GetUnownedUserDataHost(), *this) {
   auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
-  auto* profile = Profile::FromBrowserContext(tab_strip_model->profile());
-  if (!profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime)) {
-    browser_window_interface_->GetTabStripModel()->AddObserver(this);
+  auto* profile_prefs =
+      Profile::FromBrowserContext(tab_strip_model->profile())->GetPrefs();
+  if (!profile_prefs->GetBoolean(prefs::kVerticalTabsEnabledFirstTime) &&
+      !profile_prefs->GetBoolean(prefs::kVerticalTabsEnabled)) {
+    tab_strip_model->AddObserver(this);
   }
 }
 
@@ -56,12 +58,15 @@ void VerticalTabIphController::OnTabStripModelChanged(
 
 void VerticalTabIphController::MaybeShowPromo() {
   auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
-  if (tab_strip_model->count() <= kMinTabsForVerticalTabPromo) {
+  auto* profile_prefs =
+      Profile::FromBrowserContext(tab_strip_model->profile())->GetPrefs();
+  if (profile_prefs->GetBoolean(prefs::kVerticalTabsEnabled) ||
+      profile_prefs->GetBoolean(prefs::kVerticalTabsEnabledFirstTime)) {
+    tab_strip_model->RemoveObserver(this);
     return;
   }
 
-  auto* profile = Profile::FromBrowserContext(tab_strip_model->profile());
-  if (profile->GetPrefs()->GetBoolean(prefs::kVerticalTabsEnabledFirstTime)) {
+  if (tab_strip_model->count() <= kMinTabsForVerticalTabPromo) {
     return;
   }
 
