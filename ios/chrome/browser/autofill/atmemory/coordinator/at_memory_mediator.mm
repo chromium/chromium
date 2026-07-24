@@ -8,17 +8,8 @@
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_search_provider.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_consumer.h"
-#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
-#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
-#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_result_item.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-
-static NSArray<AtMemorySearchItem*>* gRecentFills = nil;
-
-namespace {
-using autofill::AtMemoryViewState;
-}  // namespace
 
 @interface AtMemoryMediator () {
   // Current search text entered by the user.
@@ -40,22 +31,8 @@ using autofill::AtMemoryViewState;
   return self;
 }
 
-+ (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills {
-  gRecentFills = [recentFills copy];
-}
-
-- (NSArray<AtMemorySearchItem*>*)recentFills {
-  return gRecentFills;
-}
-
 - (void)setConsumer:(id<AtMemoryConsumer>)consumer {
   _consumer = consumer;
-  if (self.recentFills.count > 0) {
-    [consumer setRecentFills:self.recentFills];
-    [consumer setViewState:AtMemoryViewState::kRecentFills];
-  } else {
-    [consumer setViewState:AtMemoryViewState::kEmpty];
-  }
 }
 
 #pragma mark - AtMemoryViewControllerDelegate
@@ -63,16 +40,7 @@ using autofill::AtMemoryViewState;
 - (void)atMemoryViewController:(AtMemoryViewController*)viewController
            didChangeSearchText:(NSString*)searchText {
   _searchText = [searchText copy];
-  if (searchText.length == 0) {
-    if (self.recentFills.count > 0) {
-      [self.consumer setViewState:AtMemoryViewState::kRecentFills];
-    } else {
-      [self.consumer setViewState:AtMemoryViewState::kEmpty];
-    }
-  } else {
-    [self.consumer setSearchQuery:searchText];
-    [self.consumer setViewState:AtMemoryViewState::kSearch];
-  }
+  [self.consumer setSearchQuery:searchText];
 }
 
 - (void)atMemoryViewControllerDidTapSearch:
@@ -93,7 +61,6 @@ using autofill::AtMemoryViewState;
   NSArray<AtMemoryGranularFillItem*>* granularItems =
       _searchProvider ? [_searchProvider granularFillItemsForItem:item] : @[];
   [self.consumer setGranularFillItems:granularItems];
-  [self.consumer setViewState:AtMemoryViewState::kGranularFill];
 }
 
 - (void)atMemoryViewController:(AtMemoryViewController*)viewController
@@ -111,12 +78,6 @@ using autofill::AtMemoryViewState;
   _searchResults = _searchProvider
                        ? [_searchProvider searchResultsForText:_searchText]
                        : @[];
-  [self.consumer setSearchResults:_searchResults];
-  if (_searchResults.count > 0) {
-    [self.consumer setViewState:AtMemoryViewState::kSearchResults];
-  } else {
-    [self.consumer setViewState:AtMemoryViewState::kNoData];
-  }
 }
 
 @end

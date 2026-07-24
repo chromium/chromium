@@ -11,8 +11,6 @@
 
 @protocol ManualFillContentInjector;
 
-@class AtMemorySearchItem;
-
 // Mediator for AtMemory.
 @interface AtMemoryMediator : NSObject <AtMemoryViewControllerDelegate>
 
@@ -21,12 +19,6 @@
 
 // The content injector.
 @property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
-
-// Sets the recent fills list for testing.
-+ (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills;
-
-// The recent fills list.
-@property(nonatomic, readonly, copy) NSArray<AtMemorySearchItem*>* recentFills;
 
 @end
 
