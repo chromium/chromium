@@ -77,11 +77,11 @@ export class NearbyShareConfirmPageElement extends
     };
   }
 
-  connectionToken: string|null;
-  shareTarget: ShareTarget|null;
-  transferStatus: TransferStatus|null;
-  private errorDescription_: string|null;
-  private errorTitle_: string|null;
+  declare connectionToken: string|null;
+  declare shareTarget: ShareTarget|null;
+  declare transferStatus: TransferStatus|null;
+  declare private errorDescription_: string|null;
+  declare private errorTitle_: string|null;
 
   /**
    * Update the |errorTitle_| and the |errorDescription_| when the transfer

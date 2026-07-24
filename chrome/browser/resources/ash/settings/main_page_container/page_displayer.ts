@@ -35,9 +35,9 @@ export class PageDisplayerElement extends PolymerElement {
     };
   }
 
-  override ariaLabel: string;
-  active: boolean;
-  section: Section;
+  declare ariaLabel: string;
+  declare active: boolean;
+  declare section: Section;
 
   override ready(): void {
     super.ready();

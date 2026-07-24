@@ -120,15 +120,15 @@ export class SettingsMultideviceNotificationAccessSetupDialogElement extends
   }
 
   private browserProxy_: MultiDeviceBrowserProxy;
-  private description_: string;
-  private didSetupAttemptFail_: boolean;
-  private hasCompletedSetupSuccessfully_: boolean;
-  private hasNotStartedSetupAttempt_: boolean;
-  private isNotificationAccessProhibited_: boolean;
-  private isSetupAttemptInProgress_: boolean;
-  private setupState_: NotificationAccessSetupOperationStatus|null;
-  private shouldShowSetupInstructionsSeparately_: boolean;
-  private title_: string;
+  declare private description_: string;
+  declare private didSetupAttemptFail_: boolean;
+  declare private hasCompletedSetupSuccessfully_: boolean;
+  declare private hasNotStartedSetupAttempt_: boolean;
+  declare private isNotificationAccessProhibited_: boolean;
+  declare private isSetupAttemptInProgress_: boolean;
+  declare private setupState_: NotificationAccessSetupOperationStatus|null;
+  declare private shouldShowSetupInstructionsSeparately_: boolean;
+  declare private title_: string;
 
   constructor() {
     super();

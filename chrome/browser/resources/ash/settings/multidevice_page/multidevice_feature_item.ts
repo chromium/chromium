@@ -90,13 +90,13 @@ export class SettingsMultideviceFeatureItemElement extends
     };
   }
 
-  feature: MultiDeviceFeature;
-  icon: string;
-  iconTooltip: string;
-  isSubFeature: boolean;
-  isFeatureIconHidden: boolean;
-  subpageRoute: Route|undefined;
-  subpageRouteUrlSearchParams: URLSearchParams|undefined;
+  declare feature: MultiDeviceFeature;
+  declare icon: string;
+  declare iconTooltip: string;
+  declare isSubFeature: boolean;
+  declare isFeatureIconHidden: boolean;
+  declare subpageRoute: Route|undefined;
+  declare subpageRouteUrlSearchParams: URLSearchParams|undefined;
 
   constructor() {
     super();

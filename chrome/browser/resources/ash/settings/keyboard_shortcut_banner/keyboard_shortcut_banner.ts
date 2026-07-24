@@ -58,12 +58,17 @@ export class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
     };
   }
 
-  header: string;
-  hideDismissButton: boolean;
-  body: TrustedHTML[];
-  shortcutLabelProperties: ShortcutLabelProperties[];
-  private showCustomizedShortcut_ =
-      loadTimeData.getBoolean('isShortcutCustomizationEnabled');
+  constructor() {
+    super();
+    this.showCustomizedShortcut_ =
+        loadTimeData.getBoolean('isShortcutCustomizationEnabled');
+  }
+
+  declare header: string;
+  declare hideDismissButton: boolean;
+  declare body: TrustedHTML[];
+  declare shortcutLabelProperties: ShortcutLabelProperties[];
+  declare private showCustomizedShortcut_: boolean;
 
   static get observers() {
     return ['createCustomizedShortcutBanner_(shortcutLabelProperties.*)'];

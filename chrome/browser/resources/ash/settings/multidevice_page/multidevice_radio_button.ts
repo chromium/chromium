@@ -49,9 +49,9 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
     };
   }
 
-  override ariaChecked: string;
-  override ariaDisabled: string;
-  override ariaLabel: string;
+  declare ariaChecked: string;
+  declare ariaDisabled: string;
+  declare ariaLabel: string;
 
   override ready(): void {
     super.ready();

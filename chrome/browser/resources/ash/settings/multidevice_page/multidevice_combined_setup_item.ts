@@ -66,13 +66,13 @@ export class SettingsMultideviceCombinedSetupItemElement extends
     };
   }
 
-  cameraRoll: boolean;
-  notifications: boolean;
-  appStreaming: boolean;
+  declare cameraRoll: boolean;
+  declare notifications: boolean;
+  declare appStreaming: boolean;
 
   private browserProxy_: MultiDeviceBrowserProxy;
-  private setupName_: string;
-  private setupSummary_: string;
+  declare private setupName_: string;
+  declare private setupSummary_: string;
 
   constructor() {
     super();

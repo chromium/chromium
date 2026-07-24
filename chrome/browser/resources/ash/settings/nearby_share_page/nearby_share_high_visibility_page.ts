@@ -102,13 +102,13 @@ export class NearbyShareHighVisibilityPageElement extends
     };
   }
 
-  deviceName: string;
-  nearbyProcessStopped: boolean;
-  registerResult: RegisterReceiveSurfaceResult|null;
-  shutoffTimestamp: number;
-  startAdvertisingFailed: boolean;
-  private errorState_: NearbyVisibilityErrorState|null;
-  private remainingTimeInSeconds_: number;
+  declare deviceName: string;
+  declare nearbyProcessStopped: boolean;
+  declare registerResult: RegisterReceiveSurfaceResult|null;
+  declare shutoffTimestamp: number;
+  declare startAdvertisingFailed: boolean;
+  declare private errorState_: NearbyVisibilityErrorState|null;
+  declare private remainingTimeInSeconds_: number;
   private remainingTimeIntervalId_: number;
 
   constructor() {

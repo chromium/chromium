@@ -48,7 +48,7 @@ class SettingsMultideviceWifiSyncItemElement extends
     };
   }
 
-  private isWifiSyncV1Enabled_: boolean;
+  declare private isWifiSyncV1Enabled_: boolean;
   private osSyncBrowserProxy_: OsSyncBrowserProxy;
 
   constructor() {

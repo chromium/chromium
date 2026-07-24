@@ -57,7 +57,7 @@ class NearbyShareDataUsageDialogElement extends
     };
   }
 
-  settings: NearbySettings;
+  declare settings: NearbySettings;
 
   override connectedCallback(): void {
     super.connectedCallback();

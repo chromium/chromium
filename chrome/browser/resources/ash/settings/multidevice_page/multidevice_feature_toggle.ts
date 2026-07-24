@@ -51,9 +51,9 @@ export class SettingsMultideviceFeatureToggleElement extends
     return ['resetChecked_(feature, pageContentData)'];
   }
 
-  feature: MultiDeviceFeature;
-  toggleAriaLabel: string;
-  private checked_: boolean;
+  declare feature: MultiDeviceFeature;
+  declare toggleAriaLabel: string;
+  declare private checked_: boolean;
 
   override ready(): void {
     super.ready();

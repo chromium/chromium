@@ -52,8 +52,8 @@ class NearbyShareDeviceNameDialogElement extends
     };
   }
 
-  settings: NearbySettings;
-  errorMessage: string;
+  declare settings: NearbySettings;
+  declare errorMessage: string;
 
   override connectedCallback(): void {
     super.connectedCallback();

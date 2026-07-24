@@ -85,13 +85,13 @@ export class SettingsMultideviceScreenLockSubpageElement extends
     };
   }
 
-  isPasswordDialogShowing: boolean;
-  isScreenLockEnabled: boolean;
-  showSetupPinDialog: boolean;
-  private authTokenInfo_: TokenInfo|undefined;
-  private quickUnlockDisabledByPolicy_: boolean;
-  private shouldPromptPasswordDialog_: boolean;
-  hasPin: boolean;
+  declare isPasswordDialogShowing: boolean;
+  declare isScreenLockEnabled: boolean;
+  declare showSetupPinDialog: boolean;
+  declare private authTokenInfo_: TokenInfo|undefined;
+  declare private quickUnlockDisabledByPolicy_: boolean;
+  declare private shouldPromptPasswordDialog_: boolean;
+  declare hasPin: boolean;
 
   static get observers() {
     return [

@@ -164,28 +164,28 @@ export class KerberosAddAccountDialogElement extends
     };
   }
 
-  accountWasRefreshed: boolean;
-  presetAccount: KerberosAccount|null;
+  declare accountWasRefreshed: boolean;
+  declare presetAccount: KerberosAccount|null;
 
   private actionButtonLabel_: string;
   private browserProxy_: KerberosAccountsBrowserProxy;
-  private configErrorText_: string;
+  declare private configErrorText_: string;
   private config_: string;
-  private editableConfig_: string;
-  private generalErrorText_: string;
-  private inProgress_: boolean;
-  private isGuestMode_: boolean;
-  private isManaged_: boolean;
-  private passwordErrorText_: string;
-  private password_: string;
-  private prefillDomain_: string;
-  private rememberPasswordEnabledByPolicy_: boolean;
+  declare private editableConfig_: string;
+  declare private generalErrorText_: string;
+  declare private inProgress_: boolean;
+  declare private isGuestMode_: boolean;
+  declare private isManaged_: boolean;
+  declare private passwordErrorText_: string;
+  declare private password_: string;
+  declare private prefillDomain_: string;
+  declare private rememberPasswordEnabledByPolicy_: boolean;
   private rememberPasswordChecked_: boolean;
-  private showAdvancedConfig_: boolean;
+  declare private showAdvancedConfig_: boolean;
   private title_: string;
   private useStoredPassword_: boolean;
-  private usernameErrorText_: string;
-  private username_: string;
+  declare private usernameErrorText_: string;
+  declare private username_: string;
 
   constructor() {
     super();

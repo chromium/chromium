@@ -141,8 +141,8 @@ export class SettingsNearbyShareSubpageElement extends
     ];
   }
 
-  isSettingsRetreived: boolean;
-  settings: NearbySettings;
+  declare isSettingsRetreived: boolean;
+  declare settings: NearbySettings;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -154,19 +154,19 @@ export class SettingsNearbyShareSubpageElement extends
     Setting.kDevicesNearbyAreSharingNotificationOnOff,
   ]);
 
-  private inHighVisibility_: boolean;
-  private isQuickShareV2Enabled_: boolean;
-  private manageContactsUrl_: string;
-  private profileLabel_: string;
-  private profileName_: string;
+  declare private inHighVisibility_: boolean;
+  declare private isQuickShareV2Enabled_: boolean;
+  declare private manageContactsUrl_: string;
+  declare private profileLabel_: string;
+  declare private profileName_: string;
   private receiveObserver_: ReceiveObserverReceiver|null;
-  private shouldShowFastInititationNotificationToggle_: boolean;
-  private showDataUsageDialog_: boolean;
-  private showDeviceNameDialog_: boolean;
-  private showReceiveDialog_: boolean;
-  private showVisibilityDialog_: boolean;
-  private yourDevicesLabel_: string;
-  private contactsLabel_: string;
+  declare private shouldShowFastInititationNotificationToggle_: boolean;
+  declare private showDataUsageDialog_: boolean;
+  declare private showDeviceNameDialog_: boolean;
+  declare private showReceiveDialog_: boolean;
+  declare private showVisibilityDialog_: boolean;
+  declare private yourDevicesLabel_: string;
+  declare private contactsLabel_: string;
 
   constructor() {
     super();

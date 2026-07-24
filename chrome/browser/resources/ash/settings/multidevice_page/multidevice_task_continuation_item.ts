@@ -59,7 +59,7 @@ export class SettingsMultideviceTaskContinuationItemElement extends
     };
   }
 
-  private isChromeTabsSyncEnabled_: boolean;
+  declare private isChromeTabsSyncEnabled_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy;
 
   constructor() {

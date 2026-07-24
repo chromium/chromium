@@ -56,7 +56,7 @@ export class SettingsMultideviceSmartlockItemElement extends
     };
   }
 
-  authToken: string|undefined;
+  declare authToken: string|undefined;
   private browserProxy_: MultiDeviceBrowserProxy;
 
   constructor() {

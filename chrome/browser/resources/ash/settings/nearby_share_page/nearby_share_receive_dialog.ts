@@ -117,21 +117,21 @@ export class NearbyShareReceiveDialogElement extends PolymerElement {
     ];
   }
 
-  connectionToken: string|null;
-  isSettingsRetreived: boolean;
-  settings: NearbySettings;
-  shareTarget: ShareTarget|null;
+  declare connectionToken: string|null;
+  declare isSettingsRetreived: boolean;
+  declare settings: NearbySettings;
+  declare shareTarget: ShareTarget|null;
   private closing_: boolean;
   private highVisibilityShutoffTimestamp_: number;
-  private nearbyProcessStopped_: boolean;
+  declare private nearbyProcessStopped_: boolean;
   private observerReceiver_: ReceiveObserverReceiver|null;
   private postOnboardingCallback_: Function|null;
   private postSettingsCallback_: Function|null;
   private receiveManager_: ReceiveManagerInterface|null;
   private registerForegroundReceiveSurfaceResult_: RegisterReceiveSurfaceResult|
       null;
-  private startAdvertisingFailed_: boolean;
-  private transferStatus_: TransferStatus|null;
+  declare private startAdvertisingFailed_: boolean;
+  declare private transferStatus_: TransferStatus|null;
 
   constructor() {
     super();

@@ -99,12 +99,12 @@ export class SettingsKerberosAccountsSubpageElement extends
     Setting.kSetActiveKerberosTicketV2,
   ]);
 
-  private accountToastText_: string;
-  private accounts_: KerberosAccount[];
-  private addAccountsAllowed_: boolean;
-  private isDarkModeActive_: boolean;
-  private selectedAccount_: KerberosAccount|null;
-  private showAddAccountDialog_: boolean;
+  declare private accountToastText_: string;
+  declare private accounts_: KerberosAccount[];
+  declare private addAccountsAllowed_: boolean;
+  declare private isDarkModeActive_: boolean;
+  declare private selectedAccount_: KerberosAccount|null;
+  declare private showAddAccountDialog_: boolean;
 
   private browserProxy_: KerberosAccountsBrowserProxy;
 
