@@ -1285,8 +1285,6 @@ void AutofillAgent::ApplyFieldsAction(
                                      supports_refill);
   }
 
-  javascript_autofill_tracker_.OnWillAutofillForm();
-
   std::vector<WebFormControlElement> filled_elements = base::ToVector(
       form_util::ApplyFieldsAction(document, fields, action_type,
                                    action_persistence, field_data_manager()),
