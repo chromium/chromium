@@ -55,8 +55,11 @@ constexpr struct RecordedHistogram {
   size_t buckets;
   int count;
 } kHistograms[] = {
-    {"test.h.1", base::HISTOGRAM, 1, 100, 50, 1},          // custom
-    {"test.h.2", base::LINEAR_HISTOGRAM, 1, 200, 50, 1},   // custom
+    {"test.h.1", base::HISTOGRAM, 1, 100, 50, 1},         // custom
+    {"test.h.2", base::LINEAR_HISTOGRAM, 1, 200, 50, 1},  // custom
+    // test.h.large requested 2000 buckets, but was clamped to 1002
+    // (kBucketCount_MAX).
+    {"test.h.large", base::LINEAR_HISTOGRAM, 1, 2000, 1002, 1},
     {"test.h.3", base::LINEAR_HISTOGRAM, 1, 101, 102, 2},  // percentage
     {"test.sparse.1", base::SPARSE_HISTOGRAM, 0, 0, 0, 1},
     {"test.sparse.2", base::SPARSE_HISTOGRAM, 0, 0, 0, 2},
@@ -69,6 +72,10 @@ constexpr struct RecordedHistogram {
     {"test.small.count", base::HISTOGRAM, 1, 100, 50, 1},
     {"test.bucketchange.linear", base::LINEAR_HISTOGRAM, 1, 100, 10, 2},
     {"test.bucketchange.log", base::HISTOGRAM, 1, 100, 10, 2},
+    {"test.enum.1", base::LINEAR_HISTOGRAM, 1, 5, 6, 1},
+    // Blink.UseCounter.Test requested 1000000 buckets, but was clamped to 1001
+    // (kBucketCount_MAX - 1). Regression test for crbug.com/535290296.
+    {"Blink.UseCounter.Test", base::LINEAR_HISTOGRAM, 1, 1001, 1002, 1},
 };
 
 // Represents a bucket in a sparse histogram.

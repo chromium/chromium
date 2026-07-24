@@ -61,9 +61,31 @@ chrome.test.runTests([
         },
         42);
 
+    // This should be clamped to UMA limits (1002) in the browser, allowing it
+    // to succeed instead of failing silently due to exceeding kBucketCount_MAX.
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'test.h.large',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 1,
+          max: 2000,
+          buckets: 2000,
+        },
+        42);
+
     chrome.metricsPrivate.recordPercentage('test.h.3', 42);
     chrome.metricsPrivate.recordPercentage('test.h.3', 42);
 
+    chrome.test.succeed();
+  },
+
+  function recordEnumerationValue() {
+    chrome.metricsPrivate.recordEnumerationValue('test.enum.1', 2, 5);
+    // This should be clamped to UMA limits (1001) in the browser to prevent
+    // triggering excessively large allocations. Regression test for
+    // crbug.com/535290296.
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Blink.UseCounter.Test', 2, 1000000);
     chrome.test.succeed();
   },
 

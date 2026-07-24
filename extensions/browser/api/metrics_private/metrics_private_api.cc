@@ -13,6 +13,7 @@
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_samples.h"
@@ -57,10 +58,6 @@ namespace RecordMediumTime = api::metrics_private::RecordMediumTime;
 namespace RecordLongTime = api::metrics_private::RecordLongTime;
 
 namespace {
-
-const size_t kMaxBuckets = 10000;  // We don't ever want more than these many
-                                   // buckets; there is no real need for them
-                                   // and would cause crazy memory usage
 
 // Amount of time to give other processes to report their histograms.
 constexpr base::TimeDelta kHistogramsRefreshTimeout = base::Seconds(10);
@@ -132,11 +129,12 @@ void MetricsHistogramHelperFunction::RecordValue(const std::string& name,
                                                  int max,
                                                  size_t buckets,
                                                  int sample) {
-  // Make sure toxic values don't get to internal code.
-  // Fix for maximums
+  // Sanitize untrusted renderer inputs to prevent integer overflow and avoid
+  // triggering crash dumps in base::Histogram.
+  // Fix for maximums.
   min = std::min(min, INT_MAX - 3);
   max = std::min(max, INT_MAX - 3);
-  buckets = std::min(buckets, kMaxBuckets);
+  buckets = std::min(buckets, base::Histogram::kBucketCount_MAX);
   // Fix for minimums.
   min = std::max(min, 1);
   max = std::max(max, min + 1);
@@ -221,8 +219,12 @@ MetricsPrivateRecordEnumerationValueFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   // Uses UmaHistogramExactLinear instead of UmaHistogramEnumeration
   // because we don't have an enum type on params->value.
-  base::UmaHistogramExactLinear(params->metric_name, params->value,
-                                params->enum_size);
+  // Clamp the enum_size to UMA limits to prevent triggering excessively large
+  // allocations and avoid triggering crash dumps in base::Histogram.
+  int enum_size =
+      std::min(params->enum_size,
+               static_cast<int>(base::Histogram::kBucketCount_MAX - 1));
+  base::UmaHistogramExactLinear(params->metric_name, params->value, enum_size);
   return RespondNow(NoArguments());
 }
 
