@@ -875,45 +875,72 @@ InteractiveBrowserWindowTestApi::ClickElement(
 
 // Recurses through elements, printing important information.
 constexpr std::string_view kDumpHtml = R"(
-  function dumpHtmlContent(node, depth, active) {
-    let result = '';
-    let indent = new Array(depth + 1).join('  ');
+  function gatherHtmlContent(node, active) {
+    const result = {
+      text: '',
+      children: [],
+    };
     let hidden = false;
     if (node instanceof ShadowRoot) {
-      result += indent + 'shadowRoot';
+      result.text = '(shadow root)';
       active = node.activeElement;
     } else if (node instanceof Element) {
-      result += indent + node.tagName.toLowerCase();
-      if (node.id) {
-        result += ' #' + node.id;
+      if (active === node && !node.shadowRoot) {
+        result.text += '[FOCUSED] ';
       }
+      if (node.id) {
+        result.text += '#' + node.id + ' ';
+      }
+      result.text += node.tagName.toLowerCase();
       const rect = node.getBoundingClientRect();
       hidden = rect.width <= 0 || rect.height <= 0;
       if (hidden) {
-        result += ' HIDDEN';
+        result.text += ' (not visible)';
       } else {
         const round = (n) => Math.round(n * 10) / 10;
-        result += ' ' + round(rect.x) + ',' + round(rect.y) + ' '
-               + round(rect.width) + 'x' + round(rect.height);
+        // x:86-120 y:56-90 (34x34)
+        result.text += ' at x:' + round(rect.x) + '-' + round(rect.x + rect.width);
+        result.text += ' y:' + round(rect.y) + '-' + round(rect.y + rect.height);
+        result.text += ' (' + round(rect.width) + 'x' + round(rect.height) + ')';
       }
-      if (active === node && !node.shadowRoot) {
-        result += ' FOCUSED';
-      }
+    } else {
+      return null;
     }
     if (!hidden) {
       for (const child of node.childNodes) {
-        const childResult = dumpHtmlContent(child, depth + 1, active);
-        if (childResult) {
-          result += '\n' + childResult;
+        const childData = gatherHtmlContent(child, active);
+        if (childData) {
+          result.children.push(childData);
         }
       }
-      if (node instanceof Element) {
-        if (node.shadowRoot) {
-          result += '\n' + dumpHtmlContent(node.shadowRoot, depth + 1);
-        }
+      if (node instanceof Element && node.shadowRoot) {
+        result.children.push(gatherHtmlContent(node.shadowRoot));
       }
     }
     return result;
+  }
+  function stringifyHtmlContent(node, prefix, last) {
+    let text = prefix;
+    if (!prefix) {
+      prefix += '  ';
+    } else {
+      if (last) {
+        text += '╰─';
+        prefix += '   ';
+      } else {
+        text += '├─';
+        prefix += '│  ';
+      }
+    }
+    text += node.text + '\n';
+    for (let i = 0; i < node.children.length; ++i) {
+      const last_child = (i == node.children.length - 1);
+      text += stringifyHtmlContent(node.children[i], prefix, last_child);
+    }
+    return text;
+  }
+  function dumpHtmlContent(node, active) {
+    return stringifyHtmlContent(gatherHtmlContent(node, active), '', false);
   }
 )";
 
@@ -927,7 +954,7 @@ InteractiveBrowserWindowTestApi::DumpWebContents(
                          ui::TrackedElement* el) {
             std::string error_msg;
             std::string function = base::StringPrintf(
-                "function() { %s; return dumpHtmlContent(document.body, 1, "
+                "function() { %s; return dumpHtmlContent(document.body, "
                 "document.activeElement); }",
                 kDumpHtml);
             base::Value result =
@@ -955,23 +982,20 @@ InteractiveBrowserWindowTestApi::DumpWebContentsAt(
           [where, web_contents](ui::InteractionSequence* sequence,
                                 ui::TrackedElement* el) {
             std::string error_msg;
-            std::string function = base::StringPrintf(
-                "function(el) { %s; return dumpHtmlContent(el, 1, undefined); "
-                "}",
-                kDumpHtml);
-            const auto full_function = base::StringPrintf(
+            const auto function = base::StringPrintf(
                 R"(
             (el, err) => {
               if (err) {
                 throw err;
               }
-              return (%s)(el);
+              %s;
+              return dumpHtmlContent(el, undefined);
             }
           )",
-                function);
+                kDumpHtml);
             base::Value result =
                 el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
-                    where, full_function, &error_msg);
+                    where, function, &error_msg);
             if (!error_msg.empty()) {
               LOG(ERROR) << "DumpWebElement() failed: " << error_msg;
               sequence->FailForTesting();
