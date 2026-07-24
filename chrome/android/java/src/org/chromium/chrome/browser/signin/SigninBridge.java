@@ -413,7 +413,7 @@ final class SigninBridge {
                                 R.string.signin_account_picker_bottom_sheet_title_for_extensions,
                                 assertNonNull(extensionName));
         String subtitleString =
-                extensionName == null
+                extensionName.isEmpty()
                         ? context.getString(
                                 R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin)
                         : context.getString(

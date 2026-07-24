@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -90,12 +91,14 @@ import java.util.Collection;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SigninBridgeTest {
+    private static final String TEST_EXTENSION_NAME = "Test Extension";
+
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
                     {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN, ""},
-                    {/* isWebSignin= */ false, SigninAccessPoint.EXTENSIONS, "Test Extension"}
+                    {/* isWebSignin= */ false, SigninAccessPoint.EXTENSIONS, TEST_EXTENSION_NAME}
                 });
     }
 
@@ -827,7 +830,17 @@ public class SigninBridgeTest {
     private void verifyBottomSheetStartSigninFlow(@Nullable CoreAccountId accountId) {
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
+        String expectedTitleString;
+        String expectedSubtitleString;
         if (mIsWebSignin) {
+            expectedTitleString =
+                    ApplicationProvider.getApplicationContext()
+                            .getString(R.string.signin_account_picker_bottom_sheet_title);
+            expectedSubtitleString =
+                    ApplicationProvider.getApplicationContext()
+                            .getString(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_subtitle_for_web_signin);
             ArgumentCaptor<DelegateContext> delegateContextCaptor =
                     ArgumentCaptor.forClass(DelegateContext.class);
             verify(mCoordinatorMock)
@@ -838,9 +851,28 @@ public class SigninBridgeTest {
             Assert.assertEquals(mContinueUrl, delegateContext.getContinueUrl());
             Assert.assertEquals(TAB_ID, delegateContext.getTabId());
         } else {
+            expectedTitleString =
+                    ApplicationProvider.getApplicationContext()
+                            .getString(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_title_for_extensions,
+                                    TEST_EXTENSION_NAME);
+            expectedSubtitleString =
+                    ApplicationProvider.getApplicationContext()
+                            .getString(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_subtitle_for_extensions);
             verify(mCoordinatorMock).startSigninFlow(configCaptor.capture());
         }
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         Assert.assertEquals(accountId, config.selectedCoreAccountId);
+        Assert.assertEquals(
+                new AccountPickerBottomSheetStrings.Builder(expectedTitleString)
+                        .setSubtitleString(expectedSubtitleString)
+                        .setDismissButtonString(
+                                ApplicationProvider.getApplicationContext()
+                                        .getString(R.string.signin_account_picker_dismiss_button))
+                        .build(),
+                config.bottomSheetStrings);
     }
 }
