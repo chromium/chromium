@@ -245,6 +245,13 @@ Vector<QualifiedName> Sorted(const SanitizerNameSet& unsorted) {
   return result;
 }
 
+Vector<AtomicString> Sorted(const HashSet<AtomicString>& unsorted) {
+  Vector<AtomicString> result;
+  std::ranges::copy(unsorted, std::back_inserter(result));
+  std::ranges::sort(result, &SanitizerAtomicStringLessThan);
+  return result;
+}
+
 SanitizerConfig* Sanitizer::get() const {
   // https://wicg.github.io/sanitizer-api/#dom-sanitizer-get
   //
@@ -371,6 +378,33 @@ SanitizerConfig* Sanitizer::get() const {
               attr));
     }
     config->setRemoveAttributes(remove_attrs);
+  }
+
+  if (allow_processing_instructions_) {
+    HeapVector<Member<V8UnionSanitizerProcessingInstructionOrString>> allow_pis;
+    for (const String& target : Sorted(*allow_processing_instructions_)) {
+      Member<SanitizerProcessingInstruction> pi =
+          SanitizerProcessingInstruction::Create();
+      pi->setTarget(target);
+      allow_pis.push_back(
+          MakeGarbageCollected<V8UnionSanitizerProcessingInstructionOrString>(
+              pi));
+    }
+    config->setProcessingInstructions(allow_pis);
+  }
+
+  if (remove_processing_instructions_) {
+    HeapVector<Member<V8UnionSanitizerProcessingInstructionOrString>>
+        remove_pis;
+    for (const String& target : Sorted(*remove_processing_instructions_)) {
+      Member<SanitizerProcessingInstruction> pi =
+          SanitizerProcessingInstruction::Create();
+      pi->setTarget(target);
+      remove_pis.push_back(
+          MakeGarbageCollected<V8UnionSanitizerProcessingInstructionOrString>(
+              pi));
+    }
+    config->setRemoveProcessingInstructions(remove_pis);
   }
 
   if (data_attrs_ != SanitizerBoolWithAbsence::kAbsent) {

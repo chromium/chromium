@@ -1,17 +1,5 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] SanitizerConfig, normalization: processingInstructions: ["target-1"]
-  Cannot read properties of undefined (reading 'length')
-[FAIL] SanitizerConfig, normalization: processingInstructions: [{"target":"target-1"}]
-  Cannot read properties of undefined (reading 'length')
-[FAIL] SanitizerConfig, normalization: removeProcessingInstructions: ["target-1"]
-  Cannot read properties of undefined (reading 'length')
-[FAIL] SanitizerConfig, normalization: removeProcessingInstructions: [{"target":"target-1"}]
-  Cannot read properties of undefined (reading 'length')
-[FAIL] Test processingInstructions addition.
-  Cannot read properties of undefined (reading 'length')
-[FAIL] Test processingInstructions removal.
-  Cannot read properties of undefined (reading 'length')
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Both processingInstructions and removeProcessingInstructions should not be allowed.
   assert_throws_js: function "() => {\n    new Sanitizer({ processingInstructions: [], removeProcessingInstructions: [] });\n  }" did not throw
 [FAIL] config[replaceWithChildrenElements] should not allow non-replaceable elements
