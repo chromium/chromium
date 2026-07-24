@@ -11,9 +11,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -41,10 +44,10 @@ import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDe
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -109,20 +112,29 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /** Unit tests for {@link NtpCustomizationUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
 public class NtpCustomizationUtilsUnitTest {
+    private static final String TEST_FILE_NAME = "test_file.png";
+    private static final String LARGE_FILE_NAME = "large_file.png";
+    private static final String ERROR_FILE_NAME = "error_file.png";
+    private static final String INVALID_FILE_NAME = "invalid_file.png";
+    private static final String NULL_FILE_NAME = "null_file.png";
+    private static final String FILE_ID_HASH_SUFFIX = "_-1";
+    private static final String STREAM_ERROR_MESSAGE = "Stream error";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
     @Mock private NtpCustomizationConfigManager mConfigManager;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private NtpCustomizationUtils.Natives mMockJni;
 
     private Context mContext;
     private Resources mResources;
@@ -136,6 +148,7 @@ public class NtpCustomizationUtilsUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
         NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
+        NtpCustomizationUtilsJni.setInstanceForTesting(mMockJni);
 
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
     }
@@ -1752,65 +1765,145 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testGetBitmapFromUriAsync() throws IOException {
-        int width = 100;
-        int height = 100;
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        byte[] bitmapBytes = outputStream.toByteArray();
-
+    public void testGetBitmapFromUriAsync_SingleReadSuccess() throws IOException {
+        String fileName = TEST_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        byte[] bitmapBytes = new byte[] {1, 2, 3, 4, 5};
         Uri uri = mock(Uri.class);
         ContentResolver contentResolver = mock(ContentResolver.class);
-        // We need to spy or mock Context because mContext is a ContextThemeWrapper which wraps
-        // ApplicationContext.
-        Context context = spy(mContext);
-        when(context.getContentResolver()).thenReturn(contentResolver);
-        when(contentResolver.openInputStream(uri))
-                .thenAnswer(invocation -> new ByteArrayInputStream(bitmapBytes));
-
-        when(uri.getLastPathSegment()).thenReturn("test_file.png");
+        setupMockInputStream(contentResolver, uri, bitmapBytes);
+        Bitmap mockBitmap = setupMockJniDecodeSuccess();
 
         NtpCustomizationUtils.OnImageLoadedCallback callback =
-                mock(NtpCustomizationUtils.OnImageLoadedCallback.class);
-        NtpCustomizationUtils.getBitmapFromUriAsync(context, uri, callback);
-        RobolectricUtil.runAllBackgroundAndUi();
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
 
-        ArgumentCaptor<Bitmap> captor = ArgumentCaptor.forClass(Bitmap.class);
-        ArgumentCaptor<String> fileIdHashCaptor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onImageLoaded(captor.capture(), fileIdHashCaptor.capture());
-        Bitmap result = captor.getValue();
-        assertEquals("test_file.png_-1", fileIdHashCaptor.getValue());
-        assertNotNull("The file reading flow should successfully load the bitmap.", result);
-        assertEquals(
-                "The file reading flow should preserve width for small images.",
-                width,
-                result.getWidth());
-        assertEquals(
-                "The file reading flow should preserve height for small images.",
-                height,
-                result.getHeight());
+        verify(contentResolver).openInputStream(uri);
+        verify(mMockJni).decodeImage(eq(bitmapBytes), any());
+        verify(callback).onImageLoaded(eq(mockBitmap), eq(expectedFileIdHash));
     }
 
     @Test
-    public void testCalculateInSampleSize() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.outWidth = 500;
-        options.outHeight = 500;
+    public void testGetBitmapFromUriAsync_ExceedsMaxSizeCap() throws IOException {
+        String fileName = LARGE_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        byte[] largeBytes = new byte[25 * 1024 * 1024 + 100];
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        setupMockInputStream(contentResolver, uri, largeBytes);
 
-        // Test no downsampling needed.
-        assertEquals(
-                1,
-                NtpCustomizationUtils.calculateInSampleSize(
-                        options, /* reqWidth= */ 500, /* reqHeight= */ 500));
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
 
-        // Test downsampling.
-        options.outWidth = 2000;
-        options.outHeight = 2000;
-        assertEquals(
-                4,
-                NtpCustomizationUtils.calculateInSampleSize(
-                        options, /* reqWidth= */ 500, /* reqHeight= */ 500));
+        verify(contentResolver).openInputStream(uri);
+        verify(mMockJni, never()).decodeImage(any(), any());
+        verify(callback).onImageLoaded(isNull(), eq(expectedFileIdHash));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_StreamIOException() throws IOException {
+        String fileName = ERROR_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        String errorMessage = STREAM_ERROR_MESSAGE;
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        when(contentResolver.openInputStream(uri))
+                .thenThrow(new FileNotFoundException(errorMessage));
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(mMockJni, never()).decodeImage(any(), any());
+        verify(callback).onImageLoaded(isNull(), eq(expectedFileIdHash));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_DecodingFailed() throws IOException {
+        String fileName = INVALID_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        byte[] bitmapBytes = new byte[] {1, 2, 3};
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        setupMockInputStream(contentResolver, uri, bitmapBytes);
+
+        doAnswer(
+                        invocation -> {
+                            Callback<Bitmap> callback = invocation.getArgument(1);
+                            callback.onResult(null);
+                            return null;
+                        })
+                .when(mMockJni)
+                .decodeImage(any(), any());
+
+        NtpCustomizationUtils.OnImageLoadedCallback imageLoadedCallback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(mMockJni).decodeImage(eq(bitmapBytes), any());
+        verify(imageLoadedCallback).onImageLoaded(isNull(), eq(expectedFileIdHash));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_NullInputStream() throws IOException {
+        String fileName = NULL_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        when(contentResolver.openInputStream(uri)).thenReturn(null);
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(mMockJni, never()).decodeImage(any(), any());
+        verify(callback).onImageLoaded(isNull(), eq(expectedFileIdHash));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_AssetFileDescriptorExceedsMaxSize() throws IOException {
+        String fileName = LARGE_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        AssetFileDescriptor afd =
+                setupMockAssetFileDescriptor(contentResolver, uri, 25 * 1024 * 1024 + 100L);
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(afd).getLength();
+        verify(contentResolver, never()).openInputStream(any());
+        verify(mMockJni, never()).decodeImage(any(), any());
+        verify(callback).onImageLoaded(isNull(), eq(expectedFileIdHash));
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_AssetFileDescriptorNormalSize() throws IOException {
+        byte[] bitmapBytes = new byte[] {10, 20, 30};
+        runAssetFileDescriptorSuccessTest((long) bitmapBytes.length, bitmapBytes);
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_AssetFileDescriptorUnknownLength() throws IOException {
+        byte[] bitmapBytes = new byte[] {40, 50, 60};
+        runAssetFileDescriptorSuccessTest(AssetFileDescriptor.UNKNOWN_LENGTH, bitmapBytes);
+    }
+
+    @Test
+    public void testGetBitmapFromUriAsync_AssetFileDescriptorException() throws IOException {
+        String fileName = TEST_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        byte[] bitmapBytes = new byte[] {70, 80, 90};
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        when(contentResolver.openAssetFileDescriptor(uri, "r"))
+                .thenThrow(new FileNotFoundException(STREAM_ERROR_MESSAGE));
+        setupMockInputStream(contentResolver, uri, bitmapBytes);
+        Bitmap mockBitmap = setupMockJniDecodeSuccess();
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(contentResolver).openInputStream(uri);
+        verify(mMockJni).decodeImage(eq(bitmapBytes), any());
+        verify(callback).onImageLoaded(eq(mockBitmap), eq(expectedFileIdHash));
     }
 
     @Test
@@ -1843,5 +1936,64 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 "image_for_testing.jpg",
                 NtpCustomizationUtils.getFileIdHashFromFilePath("/path/to/image_for_testing.jpg"));
+    }
+
+    private NtpCustomizationUtils.OnImageLoadedCallback loadBitmapFromUriForTesting(
+            Uri uri, String fileName, ContentResolver contentResolver) {
+        Context context = spy(mContext);
+        when(context.getContentResolver()).thenReturn(contentResolver);
+        when(uri.getLastPathSegment()).thenReturn(fileName);
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                mock(NtpCustomizationUtils.OnImageLoadedCallback.class);
+        NtpCustomizationUtils.getBitmapFromUriAsync(context, uri, callback);
+        RobolectricUtil.runAllBackgroundAndUi();
+        return callback;
+    }
+
+    private AssetFileDescriptor setupMockAssetFileDescriptor(
+            ContentResolver contentResolver, Uri uri, long length) throws IOException {
+        AssetFileDescriptor afd = mock(AssetFileDescriptor.class);
+        when(contentResolver.openAssetFileDescriptor(uri, "r")).thenReturn(afd);
+        when(afd.getLength()).thenReturn(length);
+        return afd;
+    }
+
+    private void setupMockInputStream(ContentResolver contentResolver, Uri uri, byte[] data)
+            throws IOException {
+        when(contentResolver.openInputStream(uri))
+                .thenAnswer(invocation -> new ByteArrayInputStream(data));
+    }
+
+    private Bitmap setupMockJniDecodeSuccess() {
+        Bitmap mockBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        doAnswer(
+                        invocation -> {
+                            Callback<Bitmap> callback = invocation.getArgument(1);
+                            callback.onResult(mockBitmap);
+                            return null;
+                        })
+                .when(mMockJni)
+                .decodeImage(any(), any());
+        return mockBitmap;
+    }
+
+    private void runAssetFileDescriptorSuccessTest(long afdLength, byte[] bitmapBytes)
+            throws IOException {
+        String fileName = TEST_FILE_NAME;
+        String expectedFileIdHash = fileName + FILE_ID_HASH_SUFFIX;
+        Uri uri = mock(Uri.class);
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        AssetFileDescriptor afd = setupMockAssetFileDescriptor(contentResolver, uri, afdLength);
+        setupMockInputStream(contentResolver, uri, bitmapBytes);
+        Bitmap mockBitmap = setupMockJniDecodeSuccess();
+
+        NtpCustomizationUtils.OnImageLoadedCallback callback =
+                loadBitmapFromUriForTesting(uri, fileName, contentResolver);
+
+        verify(afd).getLength();
+        verify(contentResolver).openInputStream(uri);
+        verify(mMockJni).decodeImage(eq(bitmapBytes), any());
+        verify(callback).onImageLoaded(eq(mockBitmap), eq(expectedFileIdHash));
     }
 }

@@ -41,6 +41,7 @@ import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDe
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -69,6 +70,10 @@ import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
+
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -109,6 +114,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -119,6 +125,7 @@ import java.util.concurrent.Executor;
 
 /** Utility class of the NTP customization. */
 @NullMarked
+@JNINamespace("ntp_customization")
 public class NtpCustomizationUtils {
 
     // LINT.IfChange(NtpBackgroundType)
@@ -161,14 +168,22 @@ public class NtpCustomizationUtils {
     }
 
     private static class ImageLoadResult {
-        public final @Nullable Bitmap bitmap;
+        public final byte @Nullable [] data;
         public final String fileIdHash;
 
-        ImageLoadResult(@Nullable Bitmap bitmap, String fileIdHash) {
-            this.bitmap = bitmap;
+        ImageLoadResult(byte @Nullable [] data, String fileIdHash) {
+            this.data = data;
             this.fileIdHash = fileIdHash;
         }
     }
+
+    // Maximum allowed byte size for user-uploaded custom background images (25 MiB) to prevent
+    // memory exhaustion.
+    private static final int MAX_IMAGE_BYTES = 25 * 1024 * 1024;
+    // Initial in-memory buffer capacity when reading background image stream (1 MiB).
+    private static final int INITIAL_BUFFER_CAPACITY_BYTES = 1024 * 1024;
+    // Chunk size used to read the background image stream (8 KiB).
+    private static final int READ_BUFFER_SIZE_BYTES = 8192;
 
     public static final String NTP_UPLOAD_IMAGES_DIR = "upload_images";
     public static final String NTP_THEME_COLLECTION_IMAGES_DIR = "theme_collection_images";
@@ -179,7 +194,6 @@ public class NtpCustomizationUtils {
     static final String NTP_BACKGROUND_IMAGE_FILE_FOR_DAILY_REFRESH =
             "ntp_background_image_for_daily_refresh";
 
-    private static final int MAX_IMAGE_SIZE = 2556;
     private static final int IMAGE_SIZE_FOR_EXTRACTING_COLOR = 100;
     private static final String TAG = "NtpCustomization";
     private static final String DELIMITER = "|";
@@ -1770,25 +1784,41 @@ public class NtpCustomizationUtils {
             @Override
             protected ImageLoadResult doInBackground() {
                 String fileIdHash = NtpBackgroundDataUtils.getMetadataFingerprint(context, uri);
-                try {
-                    // 1. Decode with inJustDecodeBounds=true to check dimensions
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inJustDecodeBounds = true;
-                    try (var inputStream = context.getContentResolver().openInputStream(uri)) {
-                        BitmapFactory.decodeStream(inputStream, null, options);
-                    }
-
-                    // 2. Calculate inSampleSize
-                    options.inSampleSize =
-                            calculateInSampleSize(options, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE);
-
-                    // 3. Decode bitmap with inSampleSize set
-                    options.inJustDecodeBounds = false;
-                    try (var inputStream = context.getContentResolver().openInputStream(uri)) {
-                        return new ImageLoadResult(
-                                BitmapFactory.decodeStream(inputStream, null, options), fileIdHash);
+                try (AssetFileDescriptor afd =
+                        context.getContentResolver().openAssetFileDescriptor(uri, "r")) {
+                    if (afd != null) {
+                        long fileLength = afd.getLength();
+                        if (fileLength != AssetFileDescriptor.UNKNOWN_LENGTH
+                                && fileLength > MAX_IMAGE_BYTES) {
+                            Log.w(TAG, "Image exceeds maximum allowed size cap of 25 MiB.");
+                            return new ImageLoadResult(null, fileIdHash);
+                        }
                     }
                 } catch (Exception e) {
+                    // Ignore and proceed to stream read, as some content providers might not
+                    // support openAssetFileDescriptor.
+                }
+
+                try (var inputStream = context.getContentResolver().openInputStream(uri)) {
+                    if (inputStream == null) {
+                        return new ImageLoadResult(null, fileIdHash);
+                    }
+
+                    ByteArrayOutputStream buffer =
+                            new ByteArrayOutputStream(INITIAL_BUFFER_CAPACITY_BYTES);
+                    byte[] data = new byte[READ_BUFFER_SIZE_BYTES];
+                    int nRead;
+                    int totalRead = 0;
+                    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                        totalRead += nRead;
+                        if (totalRead > MAX_IMAGE_BYTES) {
+                            Log.w(TAG, "Image exceeds maximum allowed size cap of 25 MiB.");
+                            return new ImageLoadResult(null, fileIdHash);
+                        }
+                        buffer.write(data, 0, nRead);
+                    }
+                    return new ImageLoadResult(buffer.toByteArray(), fileIdHash);
+                } catch (Exception | OutOfMemoryError e) {
                     Log.e(TAG, "Error reading bitmap from URI", e);
                     return new ImageLoadResult(null, fileIdHash);
                 }
@@ -1796,30 +1826,17 @@ public class NtpCustomizationUtils {
 
             @Override
             protected void onPostExecute(ImageLoadResult result) {
-                callback.onImageLoaded(result.bitmap, result.fileIdHash);
+                byte @Nullable [] data = result.data;
+                if (data == null) {
+                    callback.onImageLoaded(null, result.fileIdHash);
+                    return;
+                }
+
+                NtpCustomizationUtilsJni.get()
+                        .decodeImage(
+                                data, bitmap -> callback.onImageLoaded(bitmap, result.fileIdHash));
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @VisibleForTesting
-    static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps height or
-            // width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) >= reqHeight
-                    || (halfWidth / inSampleSize) >= reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
     }
 
     /** Returns whether the theme tip bottom sheet has been shown before. */
@@ -1852,5 +1869,10 @@ public class NtpCustomizationUtils {
      */
     public static File createThemeCollectionImageFileInDirForTesting(String fileName) {
         return createThemeImageFileInDir(fileName, NTP_THEME_COLLECTION_IMAGES_DIR);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void decodeImage(@JniType("std::vector<uint8_t>") byte[] data, Callback<Bitmap> callback);
     }
 }

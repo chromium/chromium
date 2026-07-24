@@ -21,6 +21,7 @@ source_set("ntp_customization") {
     "ntp_android_custom_background_service.cc",
     "ntp_android_custom_background_service_factory.cc",
     "ntp_android_theme_sync_bridge.cc",
+    "ntp_customization_utils.cc",
     "ntp_synced_theme_bridge.cc",
     "ntp_theme_collection_bridge.cc",
   ]
@@ -34,11 +35,15 @@ source_set("ntp_customization") {
     "//build:android_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//ui/webui:buildflags",
     "//chrome/common:constants",
     "//components/application_locale_storage",
     "//components/sync",
     "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/mojom",
+    "//skia",
+    "//ui/gfx",
+    "//ui/webui:buildflags",
     "//url",
   ]
 }
@@ -213,6 +218,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationUtils.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/CrossDeviceThemeTracker.java",
@@ -444,6 +450,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ntp_android_custom_background_service_unittest.cc",
+    "ntp_customization_utils_unittest.cc",
   ]
   if (!is_desktop_android) {
     sources += [ "ntp_android_theme_sync_bridge_unittest.cc" ]
@@ -457,6 +464,7 @@ source_set("unit_tests") {
     "//components/application_locale_storage",
     "//components/prefs:test_support",
     "//components/sync:test_support",
+    "//skia",
     "//testing/gtest",
   ]
 }
