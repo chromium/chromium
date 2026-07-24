@@ -1,5 +1,15 @@
 include_rules = [
-  "+components/notebooks/internal/notebooks_service_impl.h",
-  "+components/notebooks/internal/empty_notebooks_service.h",
   "+components/notebooks/public",
 ]
+
+specific_include_rules = {
+  # Allow internal headers specifically needed by notebooks_service_factory.cc
+  "notebooks_service_factory\.cc": [
+    "+components/notebooks/internal/empty_notebooks_service.h",
+    "+components/notebooks/internal/notebooks_service_impl.h",
+  ],
+  # Allow internal header specifically needed by notebooks_eligibility_service_factory.cc
+  "notebooks_eligibility_service_factory\.cc": [
+    "+components/notebooks/internal/notebooks_eligibility_service_impl.h",
+  ],
+}

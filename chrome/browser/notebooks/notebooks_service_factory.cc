@@ -9,12 +9,14 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/notebooks/notebooks_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/notebooks/internal/empty_notebooks_service.h"
 #include "components/notebooks/internal/notebooks_service_impl.h"
 #include "components/notebooks/public/features.h"
+#include "components/notebooks/public/notebooks_eligibility_service.h"
 #include "components/notebooks/public/notebooks_service.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -40,6 +42,7 @@ NotebooksServiceFactory::NotebooksServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .Build()) {
+  DependsOn(NotebooksEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
@@ -48,12 +51,10 @@ NotebooksServiceFactory::~NotebooksServiceFactory() = default;
 std::unique_ptr<KeyedService>
 NotebooksServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kNotebooks)) {
-    return std::make_unique<EmptyNotebooksService>();
-  }
-
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord()) {
+  NotebooksEligibilityService* eligibility_service =
+      NotebooksEligibilityServiceFactory::GetForProfile(profile);
+  if (!eligibility_service || !eligibility_service->IsEligible()) {
     return std::make_unique<EmptyNotebooksService>();
   }
 

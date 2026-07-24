@@ -8,6 +8,8 @@ group("notebooks") {
 
 source_set("factory") {
   sources = [
+    "notebooks_eligibility_service_factory.cc",
+    "notebooks_eligibility_service_factory.h",
     "notebooks_service_factory.cc",
     "notebooks_service_factory.h",
   ]
@@ -30,7 +32,10 @@ source_set("factory") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "notebooks_service_factory_unittest.cc" ]
+  sources = [
+    "notebooks_eligibility_service_factory_unittest.cc",
+    "notebooks_service_factory_unittest.cc",
+  ]
 
   deps = [
     ":notebooks",

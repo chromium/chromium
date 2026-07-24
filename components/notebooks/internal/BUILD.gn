@@ -13,6 +13,8 @@ static_library("internal") {
     "empty_notebooks_service.h",
     "notebook_sync_bridge.cc",
     "notebook_sync_bridge.h",
+    "notebooks_eligibility_service_impl.cc",
+    "notebooks_eligibility_service_impl.h",
     "notebooks_network_service_impl.cc",
     "notebooks_network_service_impl.h",
     "notebooks_service_impl.cc",
@@ -46,6 +48,7 @@ source_set("unit_tests") {
   sources = [
     "empty_notebooks_service_unittest.cc",
     "notebook_sync_bridge_unittest.cc",
+    "notebooks_eligibility_service_impl_unittest.cc",
     "notebooks_network_service_impl_unittest.cc",
     "notebooks_service_impl_unittest.cc",
   ]

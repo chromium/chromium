@@ -7,6 +7,7 @@ source_set("public") {
     "features.cc",
     "features.h",
     "notebooks_constants.h",
+    "notebooks_eligibility_service.h",
     "notebooks_network_service.cc",
     "notebooks_network_service.h",
     "notebooks_service.h",
