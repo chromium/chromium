@@ -3520,6 +3520,11 @@ bool VaapiWrapper::HasContext() const {
 
 void VaapiWrapper::DestroyContext() {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Destroy the buffer before the context is destroyed. This is effectively a
+  // no-op if the context ID was invalid, but the destructor for ScopedVABuffer
+  // also acquires the lock.
+  va_buffer_for_vpp_.reset();
+
   base::AutoLockMaybe auto_lock(va_lock_.get());
   DVLOG(2) << "Destroying context";
 
