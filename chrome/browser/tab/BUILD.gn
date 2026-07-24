@@ -315,11 +315,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "payload_util_unittest.cc",
+    "tab_state_storage_service_unittest.cc",
     "tab_storage_util_unittest.cc",
   ]
   deps = [
     ":tab",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser",
     "//components/tabs:public",
     "//testing/gtest",
