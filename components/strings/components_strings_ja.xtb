@@ -1864,6 +1864,7 @@
 <translation id="385489333361351399">カメラ、写真機材</translation>
 <translation id="3858027520442213535">日時を更新</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="3864558817291331916"><ph name="AI_ENGINE_NAME" /> を常に表示</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> の利用規約はこちらをご確認ください</translation>
 <translation id="3869939189466884821">ローカル ファイルは <ph name="MINUTES" /> 分後に削除されます</translation>
 <translation id="3872834068356954457">科学</translation>
@@ -2194,7 +2195,6 @@
 <translation id="4340810192899866471">JSON からインポート</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4342742994656318294">テーマパーク</translation>
-<translation id="4344194909635300809">ページのタイトルと URL は Google に送信され、人間のレビュアーによる確認が行われる場合があります</translation>
 <translation id="4346670990181948854">旅行情報 · 車両情報</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> への接続は安全ではありません</translation>
 <translation id="4349365535725594680">機密コンテンツは共有できません</translation>
@@ -2456,7 +2456,6 @@
 <translation id="4786804728079074733">バレーボール</translation>
 <translation id="4787182171088676626">封筒（上質）</translation>
 <translation id="4791134497475588553">Linux アプリがインストールされ、最後に使用されたとき</translation>
-<translation id="4791602164422809437">Gemini のパーソナル インテリジェンスを使用します。ページのタイトルと URL は Google に送信され、人間のレビュアーによる確認が行われる場合があります。<ph name="BEGIN_LINK" />設定を管理する<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">送信しようとしている情報は保護されません</translation>
 <translation id="4793219378458250238">11x12 インチ</translation>
 <translation id="4796594887379589189">ジョブ管理 ID</translation>
@@ -3362,6 +3361,7 @@
 <translation id="6177531123306197852">C2 封筒</translation>
 <translation id="6180316780098470077">再試行の間隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Tab キーを押してから Enter キーを押すと、<ph name="AI_ENGINE_NAME" /> に質問できます</translation>
 <translation id="6189351761800074311">テキストとページのコンテンツが Google に送信されますが、AI の改善には使用されません。
     <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">キーボードの一部のキー（Esc キーなど）のオーバーライド</translation>
@@ -3438,7 +3438,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> の権限の詳細を表示</translation>
 <translation id="6304398603974202180">マルチメディア ソフトウェア</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
-<translation id="6305834316918845109">高精度の自動入力の対象となるリクエストを入力したとき、Chrome では、この機能をどのように使用したか（自動入力の候補の承認、編集、無視など）が記録されます</translation>
 <translation id="6306713302480826305">この住所は、このデバイスとログインしている他のデバイスから削除されます</translation>
 <translation id="6307968763353904914">ご利用の銀行では、現在このお支払い方法のための仮想カードを提供できません。<ph name="CARD_LABEL" /> を使用したオンライン決済は可能です。</translation>
 <translation id="6311410654831092784">カード用紙</translation>
@@ -3990,6 +3989,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
 <translation id="7156870133441232244">サーバーを TLS 1.2 以降にアップグレードする必要があります。</translation>
 <translation id="7156885531105222428">リクエストされたページはアプリケーションに見つかりませんでした</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> 検索で <ph name="AI_ENGINE_NAME" /> に質問する</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> を使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}other{<ph name="FEATURE_NAME" /> を使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" />　必要です）}}</translation>
 <translation id="7160999678034985039">作業内容を保存し、準備ができたら更新を開始してください。</translation>
 <translation id="7162277662076933695">スマート カードリーダー</translation>
@@ -4083,7 +4083,6 @@
 <translation id="7310392214323165548">間もなくデバイスが再起動します</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7313107491291103073">あなたの組織ではこのサイトはポリシーに違反している可能性があるものとして報告されています。</translation>
-<translation id="7313260329718515829">Gemini のパーソナル インテリジェンスに送信されたリクエストは、自動入力の改善のために分析されます</translation>
 <translation id="7316521168101843192">ファイルを Microsoft OneDrive に保存しています</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
@@ -4578,7 +4577,6 @@
 <translation id="803771048473350947">ファイル</translation>
 <translation id="8038182528865038593">赤 2</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
-<translation id="8042898384266617514">リクエスト、ページのタイトル、URL は Google に送信され、人間のレビュアーによる確認が行われる場合があります</translation>
 <translation id="8043255123207491407">販売者の利用規約を表示</translation>
 <translation id="8044986521421349135">最近使用したタブ</translation>
 <translation id="8046360364391076336">産業資材、設備</translation>
@@ -4641,6 +4639,7 @@
 <translation id="815036624016370447">Google アカウント（<ph name="ACCOUNT" />）の情報を使用して、Chrome でフォームにすばやく入力できるようにします</translation>
 <translation id="8150722005171944719"><ph name="URL" /> のファイルを読むことができません。削除されたか移動された可能性があります。ファイルに対するアクセス権がない場合もあります。</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
+<translation id="8152194419479742504">フォームに「@@」と入力すると、タブを切り替えずに情報を検索して入力できます</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> にダウンロードすることは推奨されていません}}</translation>
 <translation id="8155253549374198915">最後に開いたタブ</translation>
 <translation id="81563721597823545">ホッケー用品</translation>
@@ -4661,6 +4660,7 @@
 <translation id="8189557652711717875">選択した検索エンジンは、アドレスバーからの検索やウェブページの画像からの検索などの機能に使用されます。</translation>
 <translation id="8190193880870196235">拡張機能によって管理されています</translation>
 <translation id="8194412401381329820">管理対象外のデバイスで、管理対象のアカウントのページを使用することはできません。このページを使用すると、このデバイスと同じエンティティが管理するアカウント（関連アカウント）を除く、すべての管理対象アカウントがロックされます。</translation>
+<translation id="8194579937546982778"><ph name="AI_ENGINE_NAME" /> を常に表示</translation>
 <translation id="8194797478851900357">移動の取り消し（&amp;U）</translation>
 <translation id="8194956568907463262">シューティング ゲーム</translation>
 <translation id="8199437620497683918">光ディスク（光沢）</translation>
@@ -5168,6 +5168,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core を試す</translation>
 <translation id="9027531288681624875">全画面表示を終了するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="9035022520814077154">セキュリティ エラー</translation>
+<translation id="9035699147763101514">Gemini のパーソナル インテリジェンスを使用します。選択内容は [設定] で管理できます。</translation>
 <translation id="9035824888276246493">セキュリティ コードを保存する</translation>
 <translation id="9036306139374661733">マイクの使用を許可しますか？</translation>
 <translation id="9036484080057916082">署名付き証明書のタイムスタンプ リスト</translation>
@@ -5346,6 +5347,7 @@
 <translation id="979107176848483472">お使いのブラウザとプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="979189555234810423">展示会、コンベンション</translation>
 <translation id="981121421437150478">オフライン</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> ボタン。Enter キーを押すと <ph name="AI_ENGINE_NAME" /> に質問できます</translation>
 <translation id="984101218975906499">医薬品、バイオテクノロジー</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="985199708454569384">&lt;p&gt;このエラーは、パソコンまたはモバイル デバイスの日付と時刻が正確でない場合に表示されます。&lt;/p&gt;

@@ -143,6 +143,7 @@
 <translation id="1544826120773021464">如要管理你的 Google 帳戶，請輕觸 [管理帳戶] 按鈕</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1554352084785952638"><ph name="SEARCH_ENGINE" />：「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
 <translation id="1568636008098739136">請讓系統朗讀這頁內容。按住這裡即可編輯這個捷徑。</translation>
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
@@ -562,7 +563,7 @@
 <translation id="3331974543021145906">應用程式資訊</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="333863344734218290">在你造訪不安全的公開和私人網站時發出警告</translation>
-<translation id="3339788961947270565">正在關機</translation>
+<translation id="3339788961947270565">即將關閉程式</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3351959803838327376">長按網站開啟選單</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
@@ -728,7 +729,7 @@
 <translation id="4045441967987592849">重新開啟</translation>
 <translation id="4049920046559074950">更多「<ph name="INSTANCE_TITLE" />」的選項</translation>
 <translation id="4051548576872472315">你可以在這裡找到最近關閉的分頁和視窗</translation>
-<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{在無痕視窗中開啟}other{在無痕視窗中開啟所有書籤 (#)}}</translation>
+<translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{在無痕視窗開啟}other{在無痕視窗開啟所有書籤 (#)}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{共用分頁群組中的 <ph name="TABS_COUNT_ONE" /> 個標準分頁有新活動}other{共用分頁群組中的 <ph name="TABS_COUNT_MANY" /> 個標準分頁有新活動}}</translation>
 <translation id="405365679581583349">更新 Google Play 服務</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>

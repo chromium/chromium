@@ -5022,6 +5022,7 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />와 충�
 형식이 잘못된 도메인은 무시됩니다.</translation>
 <translation id="4238777612788632629">오래된 경우 빠르게 다시 실행</translation>
 <translation id="4239720644496144453">이 캐시는 Android 앱에 사용되지 않습니다. 여러 사용자가 동일한 Android 앱을 설치하는 경우 앱이 각 사용자마다 새로 다운로드됩니다.</translation>
+<translation id="4239949495354048254">Chrome의 Gemini에 파일 업로드를 허용합니다.</translation>
 <translation id="4242583077375244471">정책을 사용 설정하면 <ph name="PRODUCT_NAME" />에서
 Chrome Root Store를 공개 신뢰의 소스로 사용하는 내장된
 인증서 확인 기능으로 서버 인증서를 인증합니다.
@@ -8401,6 +8402,7 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 <ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
 
 <ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
+<translation id="6279539269393750872">Chrome의 Gemini 파일 업로드 설정</translation>
 <translation id="628084107912717806">WebAssembly 모듈이 출처 간에 전송되도록 허용할지 선택</translation>
 <translation id="6280973140313576289">시작 시 프로필 선택도구 강제 사용</translation>
 <translation id="6282524907402492171"><ph name="CLOUD_PRINT_NAME" /> 지원 중단 경고 표시</translation>
@@ -10507,19 +10509,6 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 
       정책이 설정되지 않거나 False로 설정되면 TLS의 RC4 암호화 스위트가 사용 설정되지 않습니다. 아니면 오래된 서버와의 호환성을 유지하기 위해 True로 설정될 수 있습니다. 임시방편이므로 서버를 다시 구성해야 합니다.</translation>
 <translation id="751615601677744094">사용 안함: 변형 이벤트의 일반적인 동작으로, 삭제 날짜 이후에는 이러한 이벤트가 실행되지 않는다는 의미입니다.</translation>
-<translation id="7518736413346509172">정책을 사용 설정하면 <ph name="LOCAL_NETWORK_ACCESS" />
-요청은 <ph name="LOCAL_NETWORK_ACCESS" /> 검사 실패로 인해 <ph name="CHROME_DEVTOOLS_NAME" />에서만 경고를 표시합니다.
-
-정책을 사용 중지하거나 설정하지 않으면 <ph name="LOCAL_NETWORK_ACCESS" /> 요청에서 이러한 요청의
-기본 처리를 사용합니다.
-
-<ph name="LOCAL_NETWORK_ACCESS" /> 제한사항에 관한 내용은 https://wicg.github.io/local-network-access/ 페이지를 참고하세요.
-
-이 기업 정책은 일시적이며, M152 이후 삭제될 예정입니다.
-
-장기적으로 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 사용하여
-<ph name="LOCAL_NETWORK_ACCESS" /> 권한이 자동으로 부여되어야 하는 URL 패턴을
-허용 목록에 추가할 수 있습니다.</translation>
 <translation id="7519218194072744342">프로토콜 핸들러의 URL입니다.</translation>
 <translation id="7519251620064708155">이 사이트에서 키 생성 허용</translation>
 <translation id="7521864460386999758">서드 파티 코드가 Chrome에 삽입되지 않도록 차단</translation>
@@ -11428,6 +11417,7 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="8102913158860568230">기본 mediastream 설정</translation>
 <translation id="8104962233214241919">이 사이트에 대해 클라이언트 인증서를 자동으로 선택합니다.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> 템플릿</translation>
+<translation id="811012672754800797">Chrome의 Gemini에 파일 업로드를 허용하지 않습니다.</translation>
 <translation id="8111331908123507719">잠금 화면의 화면 보호기가 표시되기까지 기기의 유휴 상태 제한 시간(초)을 구성합니다.
 
 유효한 값의 범위는 1초~9,999초입니다. 정책을 설정하지 않으면 <ph name="PRODUCT_OS_NAME" />에서 기본값인 7초를 사용합니다.

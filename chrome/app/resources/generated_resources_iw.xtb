@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">‫<ph name="ITEM" /> לא נבחר. ‫<ph name="INDEX" /> מתוך <ph name="COUNT" />. כדי לבחור, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="1086486568852410168">‏חיפוש באמצעות Google Lens</translation>
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
+<translation id="109038914521989341">עליך לכתוב מה הסיבה להדבקת הנתונים האלה:</translation>
 <translation id="1090541560108055381">לפני ההתאמה צריך לוודא שמשתמשים באותו קוד בשני המכשירים</translation>
 <translation id="1093457606523402488">רשתות גלויות:</translation>
 <translation id="1093645050124056515">‏Ctrl +‏ Alt + חץ למטה</translation>
@@ -2054,7 +2055,6 @@
 <translation id="2588271083332682494">קבוצות של כרטיסיות עוזרות לשמור על סדר</translation>
 <translation id="2588636910004461974">מכשירים של <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
-<translation id="2595508219468433076">מצב כבוי, ללא מיקוד בשורה, באפשרויות הסגנון</translation>
 <translation id="2597073208962000830">‏התכונה 'שיתוף בקרבת מקום' מחפשת מכשירים בקרבת מקום באמצעות Bluetooth.</translation>
 <translation id="2598136842498757793">התאמה אישית של כפתורי סרגל הכלים</translation>
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
@@ -3866,6 +3866,7 @@
 <translation id="3930968231047618417">צבע רקע</translation>
 <translation id="3932356525934356570">הצמדה של <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">אורך מקסימלי של <ph name="MAX" /> תווים</translation>
+<translation id="3932501527949942152">שיתוף עם אודיו מהכרטיסייה</translation>
 <translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3936260554100916852">‏המכשיר <ph name="DEVICE_NAME" /> משתף איתך רשת Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;פתיחת אודיו בכרטיסייה חדשה</translation>
@@ -4351,6 +4352,7 @@
 <translation id="4325515113816851466">הבחירות של ההורה שלך לא יחולו אחרי היציאה</translation>
 <translation id="4326146840124313313">‏האבטחה הכי יעילה של Chrome מגינה עליך טוב יותר מפני תוספים, הורדות ואתרים מסוכנים</translation>
 <translation id="4327380114687339519">תפריט התוספים</translation>
+<translation id="4328160087116165267">שיתוף עם אודיו מהמערכת</translation>
 <translation id="4330191372652740264">מים עם קרח</translation>
 <translation id="4330387663455830245">איני רוצה לקבל תרגום מ<ph name="LANGUAGE" /> בכלל</translation>
 <translation id="4330963457501417204">הרחבת הכרטיסיות המכווצות כשמציבים מעליהן את הסמן</translation>
@@ -4478,7 +4480,7 @@
 <translation id="4417555042033340400">{NUM_TABS,plural, =1{השהיית הכרטיסייה הזו}one{השהיית הכרטיסיות האלה}two{השהיית הכרטיסיות האלה}other{השהיית הכרטיסיות האלה}}</translation>
 <translation id="4421287311914156329">‫<ph name="WINDOW_TITLE" /> – תצוגה עליונה</translation>
 <translation id="4421823557207751899">מחובר כ-<ph name="USERNAME" /></translation>
-<translation id="4421932172707401417">ההצעות לכתיבה מבוססות על ההנחיות שמזינים ועל התוכן של דף האינטרנט</translation>
+<translation id="4421932172707401417">ההצעות לכתיבה מבוססות על הפרומפטים שמזינים ועל התוכן של דף האינטרנט</translation>
 <translation id="4421932782753506458">לקיק</translation>
 <translation id="4423376891418188461">שחזור הגדרות</translation>
 <translation id="4423525817792153232">מראים את כל השיניים</translation>
@@ -4851,6 +4853,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> משתף את המסך שלך.</translation>
 <translation id="4722989931633062466">לא מורשים להציג בקשות כניסה של צד שלישי</translation>
 <translation id="4723140812774948886">החלפה עם הבא</translation>
+<translation id="4724031052727917178">שיתוף עם אודיו</translation>
 <translation id="4724450788351008910">השיוך השתנה</translation>
 <translation id="4725511304875193254">קורגי</translation>
 <translation id="4726710355753484204">‏כדי להתקרב, מקישים על Ctrl‏ + Alt + העלאת רמת הבהירות.
@@ -5345,7 +5348,6 @@
 <translation id="5096775069898886423">מקבלים אזהרה לפני שמבקרים באתרים שלא תומכים בחיבורים מאובטחים</translation>
 <translation id="5097002363526479830">ההתחברות לרשת נכשלה '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">אתרים שביקרת בהם יכולים לזהות מה מעניין אותך ואז להציע מודעות במהלך הגלישה</translation>
-<translation id="5097472729724586429">אפשר להוסיף הערות באמצעות הכלי החדש "הוספת הערות לטקסט"</translation>
 <translation id="5097649414558628673">כלי: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ללחוץ אוטומטית כשהסמן עוצר</translation>
 <translation id="5098963855433723436">פתיחה באפליקציה נפרדת</translation>
@@ -7776,6 +7778,7 @@
 <translation id="701020165009334820">‏אפשר להוריד משחקים ואפליקציות ל-Android מחנות Play.</translation>
 <translation id="701080569351381435">הצגת המקור</translation>
 <translation id="7012430956470647760">אמצעי בקרת הורים לאפליקציות</translation>
+<translation id="7012873145982513962">כדי להשתמש בכל הפונקציות באתר הזה, מומלץ לשתף את האודיו</translation>
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
 <translation id="7014480873681694324">הסרת ההדגשה</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>

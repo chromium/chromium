@@ -132,7 +132,6 @@
 <translation id="1411386976162024013">Cerca visual de Lens</translation>
 <translation id="1417474386970818917">Tanca la sessió i suprimeix</translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="1429187656584513419">Obre Contrasenyes</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1433478348197382180">Mode de lectura</translation>
 <translation id="1435271730600332883">Obre Emplenament automàtic i contrasenyes</translation>
@@ -1198,6 +1197,7 @@
 <translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5020732097997376541">Toca la icona de Lens</translation>
 <translation id="5021500396464456616">Contacta amb la persona que t'ha enviat aquest enllaç</translation>
+<translation id="503173149952522259">Mantén premut per fixar aquesta pestanya</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
 <translation id="5050810143224996149">Comparteix la contrasenya</translation>

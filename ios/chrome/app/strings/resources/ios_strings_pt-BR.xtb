@@ -132,7 +132,6 @@
 <translation id="1411386976162024013">Pesquisa visual com o Lens</translation>
 <translation id="1417474386970818917">Sair e excluir</translation>
 <translation id="1426410128494586442">Sim</translation>
-<translation id="1429187656584513419">Abra o app Senhas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1433478348197382180">Modo de leitura</translation>
 <translation id="1435271730600332883">Abra "Preenchimento automático e senhas"</translation>
@@ -2311,6 +2310,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8643403533759285912">Excluir grupo</translation>
 <translation id="8647280737650867362">Não foi possível remover o monitoramento do preço.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
+<translation id="8655861111558401309">Selecione Excluir Dados de Navegação</translation>
 <translation id="8659875081143553823">Aguarde um instante</translation>
 <translation id="8660600697590740984">Imagem copiada no Lens</translation>
 <translation id="866266761389616183">Ah, não!</translation>

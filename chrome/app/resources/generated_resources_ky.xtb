@@ -136,6 +136,7 @@
 <translation id="1085618740036066768"><ph name="ITEM" /> тандалган жок. <ph name="COUNT" /> ичинен <ph name="INDEX" />. Тандоо үчүн Издөө жана Боштук баскычын басыңыз.</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
 <translation id="1090126737595388931">Фондо иштеп жаткан колдонмо жок</translation>
+<translation id="109038914521989341">Бул маалыматты көчүрүп алуy үчүн себепти көрсөтүңүз:</translation>
 <translation id="1090541560108055381">Жупташтыруудан мурун эки түзмөктө тең ушул код көрсөтүлгөнүн текшериңиз</translation>
 <translation id="1093457606523402488">Көрүнүп турган тармактар:</translation>
 <translation id="1093645050124056515">ctrl + alt + ылдый жебе</translation>
@@ -2055,7 +2056,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2588271083332682494">Өтмөктөр тобу менен өтмөктөрдү иреттеп алыңыз</translation>
 <translation id="2588636910004461974">Камсыздоочунун (<ph name="VENDOR_NAME" />) түзмөктөрү</translation>
 <translation id="2589658397149952302">Drive файлдары эч качан көрсөтүлбөсүн</translation>
-<translation id="2595508219468433076">Өчүк (сапты бөлүп көрсөтүлбөйт)</translation>
 <translation id="2597073208962000830">Nearby Share жакын жердеги түзмөктөрдү издөө үчүн Bluetooth'ду колдонот.</translation>
 <translation id="2598136842498757793">Куралдар тилкесиндеги баскычтарды ыңгайлаштыруу</translation>
 <translation id="2598710988533271874">Жаңы Chrome жеткиликтүү</translation>
@@ -3867,6 +3867,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3930968231047618417">Фондун түсү</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> кадоо</translation>
 <translation id="3932477678113677556"><ph name="MAX" /> cимволдон ашпашы керек</translation>
+<translation id="3932501527949942152">Өтмөктүн аудиосу менен бөлүшүү</translation>
 <translation id="3933121352599513978">Керексиз сурамдарды жыйыштыруу (сунушталат)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> түзмөгү Wi-Fi тармагын сиз менен бөлүшүүдө</translation>
 <translation id="3936390757709632190">&amp;Аудиону жаңы өтмөктө ачуу</translation>
@@ -4352,6 +4353,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4325515113816851466">Аккаунттан чыккандан кийин ата-энең тандаган параметрлер колдонулбайт</translation>
 <translation id="4326146840124313313">Chrome'дун эң күчтүү коопсуздук тутуму кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргойт</translation>
 <translation id="4327380114687339519">Кеңейтүүлөр менюсу</translation>
+<translation id="4328160087116165267">Тутумдун аудиосу менен бөлүшүү</translation>
 <translation id="4330191372652740264">Муз кошулган суу</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> тили эч качан которулбасын</translation>
 <translation id="4330963457501417204">Курсорду алып келүү менен жыйыштырылган өтмөктөрдү жайып көрсөтүү</translation>
@@ -4851,6 +4853,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4722920479021006856"><ph name="APP_NAME" /> экраныңыз менен бөлүшүүдө.</translation>
 <translation id="4722989931633062466">Үчүнчү тараптын кирүү сурамдарын көрсөтүүгө тыюу салынат</translation>
 <translation id="4723140812774948886">Кийинки менен алмаштыруу</translation>
+<translation id="4724031052727917178">Аудио менен бөлүшүү</translation>
 <translation id="4724450788351008910">Дайындалышы өзгөрүлдү</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4726710355753484204">Жакындатуу үчүн Ctrl + Alt + Жарыктыгын көбөйтүүнү басыңыз.
@@ -5345,7 +5348,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5096775069898886423">Коопсуз байланышты колдонбогон сайттарга өтүүдөн мурда эскертүү алыңыз</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' тармагына туташпай калды: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Сиз баш баккан сайттар жактырган нерселериңизди аныктап, серептеген сайын жарнамаларды сунушташат</translation>
-<translation id="5097472729724586429">"Текстке аннотацияларды кошуу" деген жаңы курал менен текстке учкай жазууларды кошуңуз</translation>
 <translation id="5097649414558628673">Курал: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Курсор токтогондо автоматтык түрдө чыкылдатуу</translation>
 <translation id="5098963855433723436">Өзүнчө колдонмодо ачылат</translation>
@@ -7772,6 +7774,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="701020165009334820">Android колдонмолорун жана оюндарын Play Store аркылуу жүктөп алсаңыз болот.</translation>
 <translation id="701080569351381435">Булакты карап көрүү</translation>
 <translation id="7012430956470647760">Колдонмолор үчүн Ата-эненин көзөмөлү</translation>
+<translation id="7012873145982513962">Бул сайт толук кандуу иштеши үчүн аудиону бөлүшүүнү сунуштайт</translation>
 <translation id="7014174261166285193">Орнотулбай калды.</translation>
 <translation id="7014480873681694324">Бөлүп көрсөтүүнү өчүрүү</translation>
 <translation id="7014741021609395734">Чоңойтуп/кичирейтүү деңгээли</translation>

@@ -1864,6 +1864,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="385489333361351399">Kaamera- ja fotoseadmed</translation>
 <translation id="3858027520442213535">Värskenda kuupäeva ja kellaaega</translation>
 <translation id="3858860766373142691">Nimi</translation>
+<translation id="3864558817291331916">Kuva alati <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="3865339060090354361">Tingimused krediitkaardi <ph name="CREDIT_CARD_NAME" /> puhul leiate siit</translation>
 <translation id="3869939189466884821">Teie kohalikud failid kustutatakse <ph name="MINUTES" /> minuti pärast</translation>
 <translation id="3872834068356954457">Teadus</translation>
@@ -2194,7 +2195,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4340810192899866471">Impordi JSON-ist</translation>
 <translation id="4340982228985273705">Tuvastati, et tegemist ei ole ettevõtte hallatava arvutiga, seega saab reegel installida ainult Chrome'i veebipoes hostitavaid laiendusi. Chrome'i veebipoe värskenduse URL on „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4342742994656318294">Teemapargid</translation>
-<translation id="4344194909635300809">Lehtede pealkirjad ja URL-id saadetakse Google'ile ning ülevaatajad võivad need üle vaadata</translation>
 <translation id="4346670990181948854">Reisiteave · Sõidukid</translation>
 <translation id="4348834659292907206">Ühendus saidiga <ph name="SITE" /> pole turvaline</translation>
 <translation id="4349365535725594680">Ei saa konfidentsiaalset sisu jagada</translation>
@@ -2456,7 +2456,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4786804728079074733">Võrkpall</translation>
 <translation id="4787182171088676626">Ümbrik (kvaliteetpaber)</translation>
 <translation id="4791134497475588553">Linuxi rakenduste installimise ja viimatise kasutamise aeg</translation>
-<translation id="4791602164422809437">Toimib Gemini Personal Intelligence'i abil. Lehtede pealkirjad ja URL-id saadetakse Google'ile ning ülevaatajad võivad need üle vaadata. <ph name="BEGIN_LINK" />Seadete haldamine<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Esitatava teabe turvalisus pole tagatud</translation>
 <translation id="4793219378458250238">11 × 12 tolli</translation>
 <translation id="4796594887379589189">Töökonto ID</translation>
@@ -3362,6 +3361,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6177531123306197852">Ümbrik C2</translation>
 <translation id="6180316780098470077">Uuesti proovimise intervall</translation>
 <translation id="6182972682129119950">A4 × 5</translation>
+<translation id="6187575936001446786">Tööriistalt <ph name="AI_ENGINE_NAME" /> küsimiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
 <translation id="6189351761800074311">Teie tekst ja lehe sisu saadetakse Google'ile, kuid seda ei kasutata AI täiustamiseks.
     <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Saate alistada oma klaviatuuri teatud klahve, näiteks paoklahvi</translation>
@@ -3438,7 +3438,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6302546952464230349">Kuva loa <ph name="PERMISSION_NAME" /> üksikasjad</translation>
 <translation id="6304398603974202180">Multimeediatarkvara</translation>
 <translation id="6305205051461490394">URL-iga <ph name="URL" /> ei saa ühendust.</translation>
-<translation id="6305834316918845109">Kui sisestate täiustatud automaattäite päringu, salvestab Chrome teabe selle kohta, kuidas te funktsiooni kasutate – näiteks kas nõustute automaattäite soovitustega, muudate neid või eirate neid täielikult</translation>
 <translation id="6306713302480826305">See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud</translation>
 <translation id="6307968763353904914">Teie pank ei paku praegu sellele makseviisile virtuaalkaarti, kuid saate endiselt kaardiga <ph name="CARD_LABEL" /> veebis maksta.</translation>
 <translation id="6311410654831092784">Kartong</translation>
@@ -3990,6 +3989,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Server tuleb üle viia TLS 1.2-le või uuemale.</translation>
 <translation id="7156885531105222428">Teie taotletud lehte ei leitud rakendusest</translation>
+<translation id="7157447397944182926">Küsige tööriistalt <ph name="AI_ENGINE_NAME" /> otsingumootoris <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Selle faili saatmiseks funktsiooniga <ph name="FEATURE_NAME" /> vabastage oma seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}other{Nende failide saatmiseks funktsiooniga <ph name="FEATURE_NAME" /> vabastage oma seadmes ruumi (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="7160999678034985039">Salvestage pooleliolevad tööd ja alustage värskendamist, kui olete valmis.</translation>
 <translation id="7162277662076933695">Kiipkaardi lugeja</translation>
@@ -4083,7 +4083,6 @@ Lisateave:
 <translation id="7310392214323165548">Seade taaskäivitub peagi</translation>
 <translation id="7311244614769792472">Tulemusi ei leitud</translation>
 <translation id="7313107491291103073">Teie organisatsioon on märkinud, et see sait võib eeskirju rikkuda.</translation>
-<translation id="7313260329718515829">Gemini Personal Intelligence'ile saadetud taotlusi analüüsitakse automaattäite täiustamiseks</translation>
 <translation id="7316521168101843192">Faili salvestamine Microsoft OneDrive'i</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ühendamise abi</translation>
@@ -4578,7 +4577,6 @@ Lisateave:
 <translation id="803771048473350947">Fail</translation>
 <translation id="8038182528865038593">Punane 2</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
-<translation id="8042898384266617514">Teie taotlused, lehtede pealkirjad ja URL-id saadetakse Google'ile ning ülevaatajad võivad need üle vaadata.</translation>
 <translation id="8043255123207491407">Vaadake müüja nõudeid ja tingimusi</translation>
 <translation id="8044986521421349135">Teie kõige hiljutisem vaheleht</translation>
 <translation id="8046360364391076336">Tööstuslikud materjalid ja seadmed</translation>
@@ -4641,6 +4639,7 @@ Lisateave:
 <translation id="815036624016370447">Teave teie Google'i kontolt <ph name="ACCOUNT" /> aitab teil vorme Chrome'is kiiremini täita</translation>
 <translation id="8150722005171944719">Fail <ph name="URL" /> ei ole loetav. Võimalik, et see on eemaldatud, teisaldatud või faili load takistavad juurdepääsu.</translation>
 <translation id="8151185429379586178">Arendaja tööriistad</translation>
+<translation id="8152194419479742504">Sisestage mis tahes vormile @@, et teave leida ja sisestada ilma vahekaarti vahetamata</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}other{Administraatori eeskirjad ei soovita seda faili sihtkohta <ph name="DESTINATION_NAME" /> alla laadida}}</translation>
 <translation id="8155253549374198915">Viimati avatud vahelehed</translation>
 <translation id="81563721597823545">Hokivarustus</translation>
@@ -4661,6 +4660,7 @@ Lisateave:
 <translation id="8189557652711717875">Teie valitavat otsingumootorit kasutatakse funktsioonide jaoks, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt.</translation>
 <translation id="8190193880870196235">Haldab laiendus</translation>
 <translation id="8194412401381329820">Te ei saa seda hallatud konto lehte haldamata seadmes kasutada. Selle lehe kasutamisel lukustatakse kõik hallatud kontod, v.a need, mida haldab sama juriidiline isik, kes haldab ka seda seadet (siduskontod).</translation>
+<translation id="8194579937546982778">Kuva alati <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">&amp;Võta teisaldamine tagasi</translation>
 <translation id="8194956568907463262">Tulistamismängud</translation>
 <translation id="8199437620497683918">Optiline andmekandja (läikega)</translation>
@@ -5167,6 +5167,7 @@ Lisateave:
 <translation id="9027020981272345766">Proovi Chrome Enterprise Core'i</translation>
 <translation id="9027531288681624875">Vajutage täisekraanilt väljumiseks pikalt klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Turvaviga</translation>
+<translation id="9035699147763101514">Toimib Gemini Personal Intelligence'i abil. Hallake oma valikuid seadetes.</translation>
 <translation id="9035824888276246493">Salvesta turvakoodid</translation>
 <translation id="9036306139374661733">Kas lubada mikrofon?</translation>
 <translation id="9036484080057916082">Allkirjastatud sertifikaadi ajatemplite loend</translation>
@@ -5346,6 +5347,7 @@ Lisateave:
 <translation id="979107176848483472">Teie brauserit ja profiili haldab <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Näitused ja kokkutulekud</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
+<translation id="983587187183716432">Tööriista <ph name="AI_ENGINE_NAME" /> nupp, vajutage sisestusklahvi, et tööriistalt <ph name="AI_ENGINE_NAME" /> küsida.</translation>
 <translation id="984101218975906499">Farmaatsia ja biotehnoloogia</translation>
 <translation id="984275831282074731">Makseviisid</translation>
 <translation id="985199708454569384">&lt;p&gt;Seda viga näete juhul, kui teie arvuti või mobiilseadme kuupäev ja kellaaeg pole õiged.&lt;/p&gt;

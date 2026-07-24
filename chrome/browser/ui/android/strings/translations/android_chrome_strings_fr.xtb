@@ -143,6 +143,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1544826120773021464">Pour gérer votre compte Google, appuyez sur le bouton "Gérer le compte"</translation>
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
+<translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> : "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Aider à améliorer Chrome pour les personnes qui l'utilisent comme vous</translation>
 <translation id="1568636008098739136">Écoutez cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="1571041387761170095">Aucun mot de passe peu sécurisé/réutilisé</translation>
@@ -884,7 +885,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4665799914191099447">Appuyez sur Confidentialité et sécurité &gt; Navigation sécurisée</translation>
 <translation id="4668279686271488041">Les données de mesure des annonces sont régulièrement supprimées de votre appareil</translation>
 <translation id="4668347365065281350">Toutes les données stockées par les sites, y compris les cookies et autres données stockées en local</translation>
-<translation id="4673702426794876519">Fenêtre navigation privée</translation>
+<translation id="4673702426794876519">Navigation privée</translation>
 <translation id="4675298276894277358">Ce site ne sera plus affiché</translation>
 <translation id="4678082183394354975">Le thème sombre pour les sites est activé dans Chrome</translation>
 <translation id="4685741273709472646">Sélectionnez depuis la liste déroulante</translation>

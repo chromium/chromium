@@ -136,6 +136,7 @@
 <translation id="1085618740036066768"><ph name="ITEM" /> বেছে নেওয়া হয়নি। <ph name="COUNT" />টির মধ্যে <ph name="INDEX" /> নম্বর। বেছে নিতে Search ও Space বোতাম প্রেস করুন।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1090126737595388931">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
+<translation id="109038914521989341">এই ডেটা কপি করার কারণ লিখুন:</translation>
 <translation id="1090541560108055381">পেয়ার করার আগে, এই কোডটি দুটি ডিভাইসে একই আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="1093457606523402488">দৃশ্যমান নেটওয়ার্কগুলি</translation>
 <translation id="1093645050124056515">ctrl + alt + নিম্নমুখী তীরচিহ্ন</translation>
@@ -2055,7 +2056,6 @@
 <translation id="2588271083332682494">ট্যাব গ্রুপের সাহায্যে, গুছিয়ে আপনার কাজ করুন</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />-এর ডিভাইসের নাম</translation>
 <translation id="2589658397149952302">Drive-এ থাকা ফাইল কখনই দেখাবেন না</translation>
-<translation id="2595508219468433076">বন্ধ (কোনও লাইন ফোকাস নেই)</translation>
 <translation id="2597073208962000830">কাছাকাছি ডিভাইস খুঁজে পেতে 'নিয়ারবাই শেয়ার' ব্লুটুথ স্ক্যানিং ব্যবহার করে।</translation>
 <translation id="2598136842498757793">কাস্টমাইজ টুলবার বোতাম</translation>
 <translation id="2598710988533271874">নতুন Chrome উপলভ্য</translation>
@@ -3867,6 +3867,7 @@
 <translation id="3930968231047618417">ব্যাকগ্রাউন্ডের রঙ</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> পিন করুন</translation>
 <translation id="3932477678113677556">সর্বাধিক <ph name="MAX" />টি অক্ষর লেখা যায়</translation>
+<translation id="3932501527949942152">ট্যাব অডিওর সাথে শেয়ার করুন</translation>
 <translation id="3933121352599513978">অবাঞ্ছিত অনুরোধ আড়াল করুন (সাজেস্ট করা)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> আপনার সাথে ওয়াই-ফাই নেটওয়ার্ক শেয়ার করছে</translation>
 <translation id="3936390757709632190">অডিও নতুন ট্যাবে &amp;খুলুন</translation>
@@ -4352,6 +4353,7 @@
 <translation id="4325515113816851466">আপনি সাইন-আউট করার পরে আপনার অভিভাবকের পছন্দ প্রযোজ্য হবে না</translation>
 <translation id="4326146840124313313">ক্ষতিকর ওয়েবসাইট, ডাউনলোড ও এক্সটেনশন থেকে আপনাকে সুরক্ষিত রাখতে, Chrome-এর সবচেয়ে শক্তিশালী নিরাপত্তা আরও অনেক কিছু করে</translation>
 <translation id="4327380114687339519">এক্সটেনশন মেনু</translation>
+<translation id="4328160087116165267">সিস্টেম অডিওর সাথে শেয়ার করুন</translation>
 <translation id="4330191372652740264">বরফ জল</translation>
 <translation id="4330387663455830245">কখনও <ph name="LANGUAGE" /> অনুবাদ করবেন না</translation>
 <translation id="4330963457501417204">হোভার করে আড়াল করা ট্যাব বড় করুন</translation>
@@ -4851,6 +4853,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> আপনার স্ক্রিন ভাগ করছে৷</translation>
 <translation id="4722989931633062466">থার্ড-পার্টির সাইন-ইন প্রম্পট দেখানোর অনুমতি নেই</translation>
 <translation id="4723140812774948886">পরবর্তীতে পাল্টান</translation>
+<translation id="4724031052727917178">অডিও সহ শেয়ার করুন</translation>
 <translation id="4724450788351008910">অনুমতি পরিবর্তিত</translation>
 <translation id="4725511304875193254">কর্গি কুকুর</translation>
 <translation id="4726710355753484204">বড় করতে 'Ctrl + Alt + উজ্জ্বলতা বাড়ানোর' কী ব্যবহার করুন।
@@ -5345,7 +5348,6 @@
 <translation id="5096775069898886423">যেসব সাইটে সুরক্ষিত কানেকশনের সুবিধা কাজ করে না, সেই সব সাইট দেখার আগে সতর্কতা পান</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': <ph name="DETAILS" /> নেটওয়ার্কে সংযোগ করা গেল না </translation>
 <translation id="5097349930204431044">আপনি কী পছন্দ করেন তা আপনার দেখা সাইটগুলি নির্ধারণ করতে পারে এবং তারপরে ব্রাউজ করার সাথে সাথে বিজ্ঞাপন সাজেস্ট করে</translation>
-<translation id="5097472729724586429">নতুন "টেক্সট অ্যানোটেশন যোগ করুন" টুল ব্যবহার করে টেক্সট অ্যানোটেশন যোগ করুন</translation>
 <translation id="5097649414558628673">টুল: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">কার্সর থেমে যাওয়া মাত্রই অটোমেটিক ক্লিক করুন</translation>
 <translation id="5098963855433723436">আলাদা অ্যাপ্লিকেশনে খোলে</translation>
@@ -7775,6 +7777,7 @@
 <translation id="701020165009334820">Play Store থেকে আপনি Android অ্যাপ ও গেম ডাউনলোড করতে পারবেন।</translation>
 <translation id="701080569351381435">উৎস দেখান</translation>
 <translation id="7012430956470647760">অ্যাপের জন্য 'অভিভাবকীয় নিয়ন্ত্রণ' ফিচার</translation>
+<translation id="7012873145982513962">সম্পূর্ণ কার্যকারিতার জন্য এই সাইট অডিও শেয়ার করার সাজেশন দেয়</translation>
 <translation id="7014174261166285193">ইনস্টলেশান ব্যর্থ হয়েছে৷</translation>
 <translation id="7014480873681694324">হাইলাইট সরিয়ে দিন</translation>
 <translation id="7014741021609395734">জুম লেভেল</translation>

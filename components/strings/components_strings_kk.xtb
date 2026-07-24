@@ -1863,6 +1863,7 @@
 <translation id="385489333361351399">Камера және фотосурет жабдығы</translation>
 <translation id="3858027520442213535">Күні мен уақытын жаңарту</translation>
 <translation id="3858860766373142691">Аты</translation>
+<translation id="3864558817291331916"><ph name="AI_ENGINE_NAME" /> үнемі көрсетілсін</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> шарттарын осы жерден көріңіз.</translation>
 <translation id="3869939189466884821">Жергілікті файлдар <ph name="MINUTES" /> минуттан кейін жойылады</translation>
 <translation id="3872834068356954457">Ғылым</translation>
@@ -2193,7 +2194,6 @@
 <translation id="4340810192899866471">JSON-нан импорттау</translation>
 <translation id="4340982228985273705">Бұл компьютерді кәсіпорын басқармайтындықтан, саясат тек Chrome Webstore дүкенінде орналасқан кеңейтімдерді автоматты түрде орната алады. Chrome Webstore жаңартылған нұсқасының URL мекенжайы: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Аттракцион парктері</translation>
-<translation id="4344194909635300809">Бет атаулары мен URL мекенжайлары Google-ға жіберіледі және оларды тексерушілер тексереді.</translation>
 <translation id="4346670990181948854">Саяхат туралы ақпарат · Көліктер</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> сайтымен байланыс қауіпсіз емес</translation>
 <translation id="4349365535725594680">Құпия контент бөлісілмеді</translation>
@@ -2455,7 +2455,6 @@
 <translation id="4786804728079074733">Волейбол</translation>
 <translation id="4787182171088676626">Хатқалта (жұқа)</translation>
 <translation id="4791134497475588553">Орнатылған Linux қолданбалары және олар соңғы рет пайдаланылған күн</translation>
-<translation id="4791602164422809437">Gemini-дағы Personal Intelligence арқылы істейді. Бет атаулары мен URL мекенжайлары Google-ға жіберіледі және оларды тексерушілер тексеруі мүмкін. <ph name="BEGIN_LINK" />Параметрлерді басқару<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Жібергелі тұрған ақпаратыңыз қорғалмаған</translation>
 <translation id="4793219378458250238">11 x 12 дюйм</translation>
 <translation id="4796594887379589189">Тапсырма аккаунтының идентификаторы</translation>
@@ -3361,6 +3360,7 @@
 <translation id="6177531123306197852">C2 хатқалтасы</translation>
 <translation id="6180316780098470077">Қайталау аралығы</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786"><ph name="AI_ENGINE_NAME" /> қызметінен сұрау үшін Tab, содан кейін Enter пернесін басыңыз</translation>
 <translation id="6189351761800074311">Мәтін мен бет контенті Google-ға жіберіледі, бірақ олар жасанды интеллектіні жақсарту үшін қолданылмайды.
     <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Пернетақтадағы Esc сияқты кейбір пернелерді қайта анықтау</translation>
@@ -3437,7 +3437,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> рұқсатының мәліметтерін көрсету</translation>
 <translation id="6304398603974202180">Мультимедиаға арналған бағдарламалық құрал</translation>
 <translation id="6305205051461490394"><ph name="URL" /> мекенжайына кіру мүмкін емес.</translation>
-<translation id="6305834316918845109">Дұрысталған автотолтыру функциясына сұрау енгізген кезде, Chrome бұл функцияны қалай пайдаланатыныңызды (мысалы, автотолтыру ұсыныстарын қабылдағаныңызды, өзгерткеніңізді немесе елемегеніңізді) тіркеп отырады.</translation>
 <translation id="6306713302480826305">Бұл мекенжай осы және аккаунтқа кірген басқа құрылғыларыңыздан жойылады.</translation>
 <translation id="6307968763353904914">Банкіңіз қазір бұл төлеу әдісі үшін виртуалдық карталарды ұсына алмайды, дегенмен картаңызбен (<ph name="CARD_LABEL" />) онлайн төлем жасай аласыз.</translation>
 <translation id="6311410654831092784">Карталар будасы</translation>
@@ -3988,6 +3987,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
 <translation id="7156885531105222428">Сіз сұраған бет қолданбадан табылмады.</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> Search-те <ph name="AI_ENGINE_NAME" /> қызметінен сұрау</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Бұл файлды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды <ph name="FEATURE_NAME" /> көмегімен жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="7160999678034985039">Жұмысыңызды сақтаңыз және дайын болған кезде жаңартуды бастаңыз.</translation>
 <translation id="7162277662076933695">Смарт терминал</translation>
@@ -4081,7 +4081,6 @@
 <translation id="7310392214323165548">Құрылғы сәлден соң өшіп, қайта қосылады.</translation>
 <translation id="7311244614769792472">Ешбір нәтиже табылмады</translation>
 <translation id="7313107491291103073">Ұйымыңыз бұл сайтты саясатқа қайшы деп белгіледі.</translation>
-<translation id="7313260329718515829">Gemini бар Personal Intelligence-ке жіберілген сұраулар автотолтыруды жақсарту үшін талданады.</translation>
 <translation id="7316521168101843192">Файл Microsoft OneDrive қызметіне сақталып жатыр.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
@@ -4576,7 +4575,6 @@
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Қызыл 2</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
-<translation id="8042898384266617514">Сұрауларыңыз, бет атаулары мен URL мекенжайлары Google-ға жіберіледі және оларды тексерушілер тексеруі мүмкін.</translation>
 <translation id="8043255123207491407">Сатушының шарттары мен талаптарын көру</translation>
 <translation id="8044986521421349135">Ең соңғы қойындыңыз</translation>
 <translation id="8046360364391076336">Өнеркәсіптік материалдар мен жабдық</translation>
@@ -4639,6 +4637,7 @@
 <translation id="815036624016370447">Google аккаунтындағы (<ph name="ACCOUNT" />) ақпарат Chrome-да үлгілерді жылдам толтыруға мүмкіндік береді.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> сілтемесіндегі файл оқылмайды. Ол жойылған, көшірілген болуы немесе файл рұқсаттары кедергі болуы мүмкін.</translation>
 <translation id="8151185429379586178">Әзірлеуші құралдары</translation>
+<translation id="8152194419479742504">Кез келген үлгіде @@ деп теріп, қойындыларды ауыстырмай-ақ ақпаратты тауып, толтырыңыз</translation>
 <translation id="8153865548451212769">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}}</translation>
 <translation id="8155253549374198915">Соңғы ашылған қойындылар</translation>
 <translation id="81563721597823545">Хоккей жабдығы</translation>
@@ -4659,6 +4658,7 @@
 <translation id="8189557652711717875">Сіз таңдайтын іздеу жүйесі мекенжай жолағынан және веб-беттердегі кескіндерден іздеу сияқты функциялар үшін қолданылады.</translation>
 <translation id="8190193880870196235">Кеңейтім арқылы басқарылады.</translation>
 <translation id="8194412401381329820">Бұл басқарылмайтын құрылғыда басқарылатын аккаунттан осы бетті пайдалану мүмкін емес. Бұл бетті пайдалансаңыз, осы құрылғымен бірдей ұйым басқаратын аккаунттан басқа барлық басқарылатын аккаунт құлыпталады (үлестес аккаунттар).</translation>
+<translation id="8194579937546982778"><ph name="AI_ENGINE_NAME" /> үнемі көрсетілсін</translation>
 <translation id="8194797478851900357">&amp;Жылжуды болдырмау</translation>
 <translation id="8194956568907463262">Атыс ойындары</translation>
 <translation id="8199437620497683918">Оптикалық диск (жылтыр)</translation>
@@ -5165,6 +5165,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core нұсқасын пайдаланып көру</translation>
 <translation id="9027531288681624875">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз</translation>
 <translation id="9035022520814077154">Қауіпсіздік қатесі</translation>
+<translation id="9035699147763101514">Gemini-дағы Personal Intelligence арқылы істейді. Таңдауларыңызды параметрлерде реттей аласыз.</translation>
 <translation id="9035824888276246493">Қауіпсіздік кодтарын сақтау</translation>
 <translation id="9036306139374661733">Микрофонды пайдалануға рұқсат берілсін бе?</translation>
 <translation id="9036484080057916082">Қол қойылған сертификат уақыт белгілерінің тізімі</translation>
@@ -5343,6 +5344,7 @@
 <translation id="979107176848483472">Браузеріңіз бен профиліңізді <ph name="DOMAIN" /> басқарады</translation>
 <translation id="979189555234810423">Көрмелер және келісімдер</translation>
 <translation id="981121421437150478">Желіден тыс</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> түймесі. <ph name="AI_ENGINE_NAME" /> қызметінен сұрау үшін Enter пернесін басыңыз</translation>
 <translation id="984101218975906499">Фармацевтика және биотехнологиялар</translation>
 <translation id="984275831282074731">Төлеу әдістері</translation>
 <translation id="985199708454569384">&lt;p&gt;Компьютеріңіз немесе мобильді құрылғыңызда белгіленген күн мен уақыт дұрыс болмаса, осы қате шығады.&lt;/p&gt;

@@ -1226,7 +1226,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1851034156561932736">啟用充電音效</translation>
 <translation id="1851282952069386119">使用者可以選擇與 Google 分享 Chrome 清理功能的清理作業結果</translation>
 <translation id="1852294065645015766">允許自動播放媒體</translation>
-<translation id="1853303312483982680">所有視窗關閉時停用自動重新啟動功能</translation>
+<translation id="1853303312483982680">停用所有視窗關閉時的自動重新啟動功能</translation>
 <translation id="1855963029978337744">你可以透過這項政策設定網址清單，指定哪些網站會自動取得權限，能夠存取具備指定廠商 ID 和產品 ID 的 HID 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這個項目才會生效，否則將遭到忽略。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目必須包含 <ph name="VENDOR_ID_FIELD_NAME" /> 且可能包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，建立的政策將適用於具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，該項目將為無效且遭到忽略。
 
       如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
@@ -4851,6 +4851,7 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 系統會忽略格式不正確的網域。</translation>
 <translation id="4238777612788632629">如果過時就快速重新啟動</translation>
 <translation id="4239720644496144453">這個快取不會供 Android 應用程式使用。如有多位使用者安裝同一個 Android 應用程式，則會針對每位使用者重新下載快取。</translation>
+<translation id="4239949495354048254">允許將檔案上傳至 Chrome 內建 Gemini。</translation>
 <translation id="4242583077375244471">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會在驗證伺服器憑證時使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
 如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
 
@@ -8081,6 +8082,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。
 
 <ph name="MAC_OS_NAME" /> 執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能使用這項政策。</translation>
+<translation id="6279539269393750872">Chrome 內建 Gemini 檔案上傳設定</translation>
 <translation id="628084107912717806">指定是否可以跨來源傳送 WebAssembly 模組</translation>
 <translation id="6280973140313576289">瀏覽器啟動時強制顯示設定檔選擇畫面</translation>
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
@@ -8140,11 +8142,11 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
        如果停用這項政策或未設定，系統預設會採用 <ph name="AES_NI_NAME" /> 為 <ph name="DM_CRYPT" /> 使用者首頁的使用者儲存空間進行加密。</translation>
 <translation id="6316971721180184579">停用低電量音效</translation>
 <translation id="6319198883324703402">設定第一次通知使用者重新啟動的時間</translation>
-<translation id="6319529757992804545">控管 macOS 有待處理的安全性更新，且所有瀏覽器視窗都關閉時，是否要在背景自動重新啟動。
+<translation id="6319529757992804545">控管 macOS 環境的背景自動重新啟動行為：有待處理的安全性更新，且所有瀏覽器視窗都關閉時。
 
 如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 就能在所有瀏覽器視窗關閉時自動重新啟動，以套用待處理的更新。
 
-如果設為 False，系統就會在所有瀏覽器視窗關閉時，停用自動重新啟動功能。</translation>
+如果設為 False，所有瀏覽器視窗關閉時不會自動重新啟動。</translation>
 <translation id="6319907968994678054">如果啟用這項政策，系統會關閉在 <ph name="PRODUCT_NAME" /> 中使用 Google 代管同步服務的資料同步作業。
       如要完全關閉 <ph name="CHROME_SYNC_NAME" />服務，建議你前往 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />關閉這項服務。
 
@@ -10069,13 +10071,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
       如果未設定這項政策或設為 False，系統將不會啟用傳輸層安全標準 (TLS) 中的 RC4 加密套件。如要啟用這個套件，可將政策值設為 True，以便與過時伺服器維持相容性。這種做法只是權宜之計，正確的做法是重新設定伺服器。</translation>
 <translation id="751615601677744094">停用：變動事件的正常行為，代表在移除日期後不會觸發這些事件。</translation>
-<translation id="7518736413346509172">如果將這項政策設為啟用，<ph name="LOCAL_NETWORK_ACCESS" />要求只會在 <ph name="CHROME_DEVTOOLS_NAME" />中顯示<ph name="LOCAL_NETWORK_ACCESS" />檢查失敗的警告。如果將這項政策設為停用或未設定，系統會使用預設處理方式處理<ph name="LOCAL_NETWORK_ACCESS" />要求。
-
-如要瞭解<ph name="LOCAL_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/local-network-access/。
-
-這項企業政策只是臨時措施，將於 M152 版之後移除。
-
-長期來看，使用 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策將網址模式加入許可清單，就能自動授予<ph name="LOCAL_NETWORK_ACCESS" />權限。</translation>
 <translation id="7519218194072744342">通訊協定處理常式的網址。</translation>
 <translation id="7519251620064708155">允許在這些網站上使用金鑰產生功能</translation>
 <translation id="7521864460386999758">不允許在 Chrome 中插入第三方程式碼</translation>
@@ -10942,6 +10937,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8102913158860568230">預設媒體串流設定</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /><ph name="IPP_ATTRIBUTE" />的範本</translation>
+<translation id="811012672754800797">不允許將檔案上傳至 Chrome 內建 Gemini。</translation>
 <translation id="8111331908123507719">設定裝置進入閒置狀態之後，需要多久時間 (秒) 才會顯示鎖定畫面螢幕保護程式。有效值範圍介於 1 秒到 9999 秒之間。如未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會使用預設值 (7 秒)。如果將 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策將不會有任何作用。</translation>
 <translation id="8113731369695819720">在登入畫面上停用單聲道音訊模式</translation>
 <translation id="8117662664312039036">不允許裝置使用 PluginVm</translation>
@@ -11633,7 +11629,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       如果將這項政策設為 True，在當機或重新啟動後，系統就會根據還原應用程式設定，決定是否還原應用程式和應用程式視窗。
       如果將這項政策設為 False，則只有瀏覽器視窗會自動啟動。</translation>
 <translation id="8579020983849384175">文字編輯器 (自 136 版起支援)</translation>
-<translation id="8580740891685654239">所有視窗關閉時啟用自動重新啟動功能</translation>
+<translation id="8580740891685654239">啟用所有視窗關閉時的自動重新啟動功能</translation>
 <translation id="8583509234908413302">允許在 WebRTC 中降級為舊版傳輸層安全標準 (TLS)/DTLS</translation>
 <translation id="8584279193368801689">限制 PIN 碼列印模式。如果不設定這項政策，系統會視為未設限制。如果設定的模式不適用，系統會忽略這項政策。請注意，印表機使用的通訊協定必須是 IPPS、HTTPS、USB 或 IPP 型 USB 的其中一種，才能啟用 PIN 碼列印功能。</translation>
 <translation id="858510846828945657">浮動單一登入 (SSO) 服務網域封鎖清單例外狀況清單</translation>

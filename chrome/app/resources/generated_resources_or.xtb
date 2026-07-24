@@ -136,6 +136,7 @@
 <translation id="1085618740036066768"><ph name="ITEM" /> ଚୟନ କରାଯାଇନାହିଁ। <ph name="COUNT" />ରୁ <ph name="INDEX" />। ଚୟନ କରିବା ପାଇଁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="1086486568852410168">Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1090126737595388931">କୌଣସି ଆପ୍ସ ପୃଷ୍ଠପଟରେ ଚାଲୁନାହିଁ</translation>
+<translation id="109038914521989341">ଦୟାକରି ଏହି ଡାଟାକୁ ପ୍ରିଣ୍ଟ କରିବାର ଏକ କାରଣ ଲେଖନ୍ତୁ:</translation>
 <translation id="1090541560108055381">ପେୟାରିଂ ପୂର୍ବରୁ, ଉଭୟ ଡିଭାଇସରେ ଏହି କୋଡ ସମାନ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="1093457606523402488">ଦେଖାଯାଉଥିବା ନେଟ୍‌ୱର୍କ:</translation>
 <translation id="1093645050124056515">ctrl + alt + ଡାଉନ ତୀର</translation>
@@ -2044,7 +2045,6 @@
 <translation id="2588271083332682494">ଟାବ ଗ୍ରୁପ ମାଧ୍ୟମରେ ବ୍ୟବସ୍ଥିତ କରନ୍ତୁ</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />ର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="2589658397149952302">କେବେ ବି Drive ଫାଇଲଗୁଡ଼ିକ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
-<translation id="2595508219468433076">ବନ୍ଦ (କୌଣସି ଲାଇନ ଫୋକସ ନାହିଁ)</translation>
 <translation id="2597073208962000830">ଆଖପାଖର ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜିବା ପାଇଁ Nearby Share ବ୍ଲୁଟୁଥ ସ୍କାନିଂ ବ୍ୟବହାର କରେ।</translation>
 <translation id="2598136842498757793">ଟୁଲବାର ବଟନକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="2598710988533271874">ନୂଆ Chrome ଉପଲବ୍ଧ ଅଛି</translation>
@@ -3856,6 +3856,7 @@
 <translation id="3930968231047618417">ପୃଷ୍ଠପଟ ରଙ୍ଗ</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" />କୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="3932477678113677556">ସର୍ବାଧିକ ଲମ୍ବ <ph name="MAX" /> କେରେକ୍ଟର</translation>
+<translation id="3932501527949942152">ଟାବ ଅଡିଓ ସହ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="3933121352599513978">ଅବାଞ୍ଛିତ ଅନୁରୋଧଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ଆପଣଙ୍କ ସହ ଏକ ୱାଇ-ଫାଇ ନେଟୱାର୍କ ସେୟାର କରୁଛି</translation>
 <translation id="3936390757709632190">ନୂତନ ଟ୍ୟାବରେ ଅଡିଓ &amp;ଖୋଲନ୍ତୁ</translation>
@@ -4340,6 +4341,7 @@
 <translation id="4325515113816851466">ତୁମେ ସାଇନ ଆଉଟ କରିବା ପରେ ତୁମ ବାପାମାଙ୍କ ପସନ୍ଦଗୁଡ଼ିକ ଲାଗୁ ହେବ ନାହିଁ</translation>
 <translation id="4326146840124313313">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ଆପଣଙ୍କୁ ବିପଦଜନକ ୱେବସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନସନରୁ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆହୁରି ଅନେକ କିଛି କରେ</translation>
 <translation id="4327380114687339519">ଏକ୍ସଟେନସନ ମେନୁ</translation>
+<translation id="4328160087116165267">ସିଷ୍ଟମ ଅଡିଓ ସହ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="4330191372652740264">ଆଇସ୍‌ୱାଟର୍</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />କୁ କେବେ ହେଲେ ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="4330963457501417204">ହୋଭର କରି ସଙ୍କୁଚିତ ଟାବଗୁଡ଼ିକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
@@ -4839,6 +4841,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାର୍ କରୁଛନ୍ତି।</translation>
 <translation id="4722989931633062466">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4723140812774948886">ପରବର୍ତ୍ତୀ ଆଇଟମ୍ ସହିତ ସ୍ୱାପ୍ କରନ୍ତୁ</translation>
+<translation id="4724031052727917178">ଅଡିଓ ସହ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="4724450788351008910">ଅନୁବନ୍ଧନ ବଦଳିଗଲା</translation>
 <translation id="4725511304875193254">କୋର୍ଗି</translation>
 <translation id="4726710355753484204">ଜୁମ ଇନ କରିବାକୁ Ctrl + Alt + ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ ବ୍ୟବହାର କରନ୍ତୁ।
@@ -5332,7 +5335,6 @@
 <translation id="5096775069898886423">ସୁରକ୍ଷିତ କନେକ୍ସନକୁ ସପୋର୍ଟ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ପାଇଁ ସାଇଟକୁ ଭିଜିଟ କରିବା ପୂର୍ବରୁ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>
 <translation id="5097002363526479830">ନେଟ୍‌ୱର୍କ '<ph name="NAME" /> ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ଆପଣ ଯାହା ପସନ୍ଦ କରନ୍ତି ତାହା ସ୍ଥିର କରିପାରିବ ଏବଂ ତା'ପରେ ଆପଣ ବ୍ରାଉଜ କରିବା ଜାରି ରଖିଲେ ବିଜ୍ଞାପନଗୁଡ଼ିକ ପରାମର୍ଶ ଦେଇପାରିବ</translation>
-<translation id="5097472729724586429">ନୂଆ "ଟେକ୍ସଟ ଏନୋଟେସନ ଯୋଗ କରନ୍ତୁ" ଟୁଲ ସହ ଟେକ୍ସଟ ଏନୋଟେସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5097649414558628673">ଟୁଲ୍: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">କର୍ସର୍ ମୁଭ୍ ହେବା ବନ୍ଦ ହେଲେ ସ୍ୱଚାଳିତ ଭାବେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5098963855433723436">ଏକ ଅଲଗା ଆପ୍ଲିକେସନରେ ଖୋଲେ</translation>
@@ -7758,6 +7760,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="701020165009334820">Play Store ମାଧ୍ୟମରେ ଆପଣ Android ଆପ୍ସ ଏବଂ ଗେମଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରିପାରିବେ।</translation>
 <translation id="701080569351381435">ଉତ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="7012430956470647760">ଆପ୍ସ ପାଇଁ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
+<translation id="7012873145982513962">ସମ୍ପୂର୍ଣ୍ଣ କାର୍ଯ୍ୟକ୍ଷମତା ପାଇଁ ଅଡିଓ ସେୟାର କରିବାକୁ ଏହି ସାଇଟ ସୁପାରିଶ କରେ</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="7014480873681694324">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7014741021609395734">ଜୁମ୍ ସ୍ତର</translation>

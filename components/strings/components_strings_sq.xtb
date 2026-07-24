@@ -1864,6 +1864,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="385489333361351399">Kamera dhe pajisje për fotografi</translation>
 <translation id="3858027520442213535">Përditëso datën dhe kohën</translation>
 <translation id="3858860766373142691">Emri</translation>
+<translation id="3864558817291331916">Shfaq gjithmonë <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="3865339060090354361">Shiko kushtet këtu për <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Skedarët e tu lokalë do të fshihen pas <ph name="MINUTES" /> minutash</translation>
 <translation id="3872834068356954457">Shkenca</translation>
@@ -2194,7 +2195,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4340810192899866471">Importo nga JSON</translation>
 <translation id="4340982228985273705">Ky kompjuter nuk është zbuluar si i menaxhuar nga ndërmarrja, prandaj politika mund të instalojë automatikisht vetëm shtesat e strehuara në "Dyqanin e uebit të Chrome". URL-ja e përditësimit të "Dyqanit të uebit të Chrome" është "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4342742994656318294">Parqe lojërash</translation>
-<translation id="4344194909635300809">Titujt e faqeve dhe URL-të dërgohen te Google dhe mund të shqyrtohen nga njerëz</translation>
 <translation id="4346670990181948854">Informacionet e udhëtimit · Automjetet</translation>
 <translation id="4348834659292907206">Lidhja me <ph name="SITE" /> nuk është e sigurt</translation>
 <translation id="4349365535725594680">Përmbajtja konfidenciale nuk mund të ndahet</translation>
@@ -2456,7 +2456,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4786804728079074733">Volejbolli</translation>
 <translation id="4787182171088676626">Zarf (i rafinuar)</translation>
 <translation id="4791134497475588553">Aplikacionet e instaluara të Linux dhe kur janë përdorur për herë të fundit</translation>
-<translation id="4791602164422809437">Mundësuar nga "Inteligjenca personale" me Gemini. Titujt e faqeve dhe URL-të dërgohen te Google dhe mund të shqyrtohen nga njerëz. <ph name="BEGIN_LINK" />Menaxho cilësimet<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Informacionet që po dërgon nuk janë të sigurta</translation>
 <translation id="4793219378458250238">11 x 12 inç</translation>
 <translation id="4796594887379589189">ID-ja e llogarisë së punës</translation>
@@ -3361,6 +3360,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6177531123306197852">Zarf C2</translation>
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Shtyp "Tab" dhe më pas "Enter" për të pyetur <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="6189351761800074311">Teksti yt dhe përmbajtja e faqes dërgohen te Google, por nuk do të përdoren për të përmirësuar IA-në.
     <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Zëvendëso disa teste në tastierën tënde, si p.sh. Esc</translation>
@@ -3437,7 +3437,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6302546952464230349">Shfaq detajet e lejes (<ph name="PERMISSION_NAME" />)</translation>
 <translation id="6304398603974202180">Softuerë për multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
-<translation id="6305834316918845109">Kur shkruan një kërkesë për plotësimin e përmirësuar automatik, Chrome regjistron se si e përdor veçorinë, si p.sh. nëse i pranon, modifikon ose shpërfill sugjerimet për plotësimin automatik</translation>
 <translation id="6306713302480826305">Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar</translation>
 <translation id="6307968763353904914">Banka nuk mund të ofrojë karta virtuale për këtë mënyrë pagese tani, por mund ta përdorësh përsëri kartën <ph name="CARD_LABEL" /> për të paguar online.</translation>
 <translation id="6311410654831092784">Karton i hollë</translation>
@@ -3988,6 +3987,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tjetër}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> të tjera}}</translation>
 <translation id="7156870133441232244">Serveri duhet të përmirësohet në versionin TLS 1.2 ose një version të mëvonshëm.</translation>
 <translation id="7156885531105222428">Faqja që ke kërkuar nuk mund të gjendet në aplikacion</translation>
+<translation id="7157447397944182926">Pyet <ph name="AI_ENGINE_NAME" /> në "Kërko" në <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për t'i dërguar këta skedarë duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="7160999678034985039">Ruaj punën dhe fillo përditësimin kur të jesh gati.</translation>
 <translation id="7162277662076933695">Lexuesi i kartave inteligjente</translation>
@@ -4081,7 +4081,6 @@ Detaje shtesë:
 <translation id="7310392214323165548">Pajisja do të riniset së shpejti</translation>
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7313107491291103073">Organizata jote e ka raportuar këtë sajt pasi ai mund të shkelë një politikë.</translation>
-<translation id="7313260329718515829">Kërkesat e dërguara te "Inteligjenca personale" me Gemini analizohen për të përmirësuar plotësimin automatik</translation>
 <translation id="7316521168101843192">Skedari po ruhet te Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
@@ -4576,7 +4575,6 @@ Detaje shtesë:
 <translation id="803771048473350947">Skedar</translation>
 <translation id="8038182528865038593">E kuqe 2</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
-<translation id="8042898384266617514">Kërkesat, titujt e faqeve dhe URL-të e tua dërgohen te Google dhe mund të shqyrtohen nga njerëz</translation>
 <translation id="8043255123207491407">Shiko kushtet e përgjithshme të shitësit</translation>
 <translation id="8044986521421349135">Skeda jote më e fundit</translation>
 <translation id="8046360364391076336">Materiale dhe pajisje industriale</translation>
@@ -4639,6 +4637,7 @@ Detaje shtesë:
 <translation id="815036624016370447">Informacionet nga "Llogaria jote e Google" <ph name="ACCOUNT" /> mund të të ndihmojnë t'i plotësosh më shpejt formularët në Chrome</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
 <translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
+<translation id="8152194419479742504">Shkruaj @@ në çdo formular për të marrë dhe plotësuar informacionet pa i ndërruar skedat</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politika e administratorit nuk rekomandon shkarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon shkarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Skedat e fundit të hapura</translation>
 <translation id="81563721597823545">Pajisje për hokej</translation>
@@ -4659,6 +4658,7 @@ Detaje shtesë:
 <translation id="8189557652711717875">Motori i kërkimit që ti zgjedh do të përdoret për veçori të tilla, si p.sh. për kërkimin nga shiriti i adresave dhe nga imazhet në faqet e uebit.</translation>
 <translation id="8190193880870196235">Menaxhuar nga një shtesë</translation>
 <translation id="8194412401381329820">Nuk mund ta përdorësh këtë faqe nga një llogari e menaxhuar në këtë pajisje të pamenaxhuar. Të gjitha llogaritë e menmaxhuara do të kyçen nëse përdor këtë faqe, përveç llogarive të menaxhuara nga i njëjti entitet si kjo pajisje (llogaritë e lidhura).</translation>
+<translation id="8194579937546982778">Shfaq gjithmonë <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">&amp;Zhbëj zhvendosjen</translation>
 <translation id="8194956568907463262">Lojëra me qitje</translation>
 <translation id="8199437620497683918">Disk optik (me shkëlqim)</translation>
@@ -5165,6 +5165,7 @@ Detaje shtesë:
 <translation id="9027020981272345766">Provo Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Për të dalë nga ekrani i plotë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Gabim i sigurisë</translation>
+<translation id="9035699147763101514">Mundësuar nga "Inteligjenca personale" me Gemini. Menaxho zgjedhjet e tua te cilësimet.</translation>
 <translation id="9035824888276246493">Ruaj kodet e sigurisë</translation>
 <translation id="9036306139374661733">Të lejohet mikrofoni?</translation>
 <translation id="9036484080057916082">Lista e vulave kohore të certifikatave të nënshkruara</translation>
@@ -5344,6 +5345,7 @@ Detaje shtesë:
 <translation id="979107176848483472">Shfletuesi dhe profili yt menaxhohen nga <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Ekspozita dhe kongrese</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="983587187183716432">Butoni "<ph name="AI_ENGINE_NAME" />", shtyp "Enter" për të pyetur <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984101218975906499">Produktet farmaceutike dhe bioteknologjia</translation>
 <translation id="984275831282074731">Mënyrat e pagesës</translation>
 <translation id="985199708454569384">&lt;p&gt;Këtë gabim do ta shohësh nëse data dhe ora e kompjuterit ose e pajisjes celulare janë të pasakta.&lt;/p&gt;

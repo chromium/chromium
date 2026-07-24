@@ -2042,7 +2042,6 @@
 <translation id="2588271083332682494">Уредите картице помоћу група картица</translation>
 <translation id="2588636910004461974">Уређаји продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Не приказуј никада фајлове са Диска</translation>
-<translation id="2595508219468433076">Искључено (нема фокуса на ред)</translation>
 <translation id="2597073208962000830">Дељење у близини користи Bluetooth скенирање да би пронашло уређаје у близини.</translation>
 <translation id="2598136842498757793">Прилагодите дугмад траке с алаткама</translation>
 <translation id="2598710988533271874">Доступан је нови Chrome</translation>
@@ -3854,6 +3853,7 @@
 <translation id="3930968231047618417">Боја позадине</translation>
 <translation id="3932356525934356570">Закачите <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Максимална дужина је <ph name="MAX" /> знакова</translation>
+<translation id="3932501527949942152">Дели са звуком картице</translation>
 <translation id="3933121352599513978">Скупи нежељене захтеве (препоручено)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> дели WiFi мрежу са вама</translation>
 <translation id="3936390757709632190">&amp;Отвори аудио снимак на новој картици</translation>
@@ -4339,6 +4339,7 @@
 <translation id="4325515113816851466">Изабране опције родитеља неће важити када се одјавиш</translation>
 <translation id="4326146840124313313">Најјача Chrome заштита вам пружа додатну заштиту од опасних веб-сајтова, преузимања и додатака</translation>
 <translation id="4327380114687339519">Мени Додаци</translation>
+<translation id="4328160087116165267">Дели са системским звуком</translation>
 <translation id="4330191372652740264">Вода са ледом</translation>
 <translation id="4330387663455830245">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Прошири скупљене картице преласком курсора</translation>
@@ -4838,6 +4839,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> дели екран.</translation>
 <translation id="4722989931633062466">Приказивање упита за пријављивање треће стране није дозвољено</translation>
 <translation id="4723140812774948886">Замени следећим</translation>
+<translation id="4724031052727917178">Дели са звуком</translation>
 <translation id="4724450788351008910">Припадност је измењена</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4726710355753484204">Користите Ctrl + Alt + тастер за повећавање осветљености да бисте увећали приказ.
@@ -5332,7 +5334,6 @@
 <translation id="5096775069898886423">За сајтове који не подржавају безбедне везе, добијајте упозорење пре него што посетите сајт</translation>
 <translation id="5097002363526479830">Повезивање са мрежом „<ph name="NAME" />“ није успело: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Сајтови које посећујете могу да одреде шта вам се свиђа, а затим да вам предлажу огласе док и даље прегледате садржај</translation>
-<translation id="5097472729724586429">Додајте текстуалне напомене помоћу нове алатке Додај текстуалне напомене</translation>
 <translation id="5097649414558628673">Алатка: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Аутоматски клик кад се курсор заустави</translation>
 <translation id="5098963855433723436">Отвара се у засебној апликацији</translation>
@@ -7762,6 +7763,7 @@
 <translation id="701020165009334820">Можете да преузимате Android апликације и игре преко Play продавнице.</translation>
 <translation id="701080569351381435">Прикажи извор</translation>
 <translation id="7012430956470647760">Родитељски надзор за апликације</translation>
+<translation id="7012873145982513962">Да бисте користили све функције, овај сајт препоручује дељење звука</translation>
 <translation id="7014174261166285193">Инсталација није успела.</translation>
 <translation id="7014480873681694324">Уклони истицање</translation>
 <translation id="7014741021609395734">Ниво зумирања</translation>

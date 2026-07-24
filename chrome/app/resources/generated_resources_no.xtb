@@ -136,6 +136,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1085618740036066768"><ph name="ITEM" /> er ikke valgt. <ph name="INDEX" /> av <ph name="COUNT" />. Trykk på Søk + mellomrom for å velge.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1090126737595388931">Ingen bakgrunnsprogrammer kjører</translation>
+<translation id="109038914521989341">Oppgi en årsak til at du kopierer disse dataene:</translation>
 <translation id="1090541560108055381">Før sammenkobling må du forsikre deg om at denne koden er lik på begge enhetene</translation>
 <translation id="1093457606523402488">Synlige nettverk:</translation>
 <translation id="1093645050124056515">ctrl + alt + nedoverpil</translation>
@@ -2052,7 +2053,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2588271083332682494">Rydd opp med fanegrupper</translation>
 <translation id="2588636910004461974">Enheter fra <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Vis aldri Disk-filer</translation>
-<translation id="2595508219468433076">Av (ingen linjefokus)</translation>
 <translation id="2597073208962000830">Nærdeling bruker Bluetooth-skanning for å finne enheter i nærheten.</translation>
 <translation id="2598136842498757793">Tilpass knapper på verktøylinjen</translation>
 <translation id="2598710988533271874">En ny Chrome-versjon er tilgjengelig</translation>
@@ -3864,6 +3864,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3930968231047618417">Bakgrunnsfarge</translation>
 <translation id="3932356525934356570">Fest <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Makslengde: <ph name="MAX" /> tegn</translation>
+<translation id="3932501527949942152">Del med fanelyd</translation>
 <translation id="3933121352599513978">Skjul uønskede forespørsler (anbefales)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deler et wifi-nettverk med deg</translation>
 <translation id="3936390757709632190">&amp;Åpne lyd i ny fane</translation>
@@ -4347,6 +4348,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4325515113816851466">Forelderens valg gjelder ikke når du har logget av</translation>
 <translation id="4326146840124313313">Den sterkeste sikkerheten i Chrome gjør mer for å beskytte deg mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="4327380114687339519">Utvidelser-menyen</translation>
+<translation id="4328160087116165267">Del med systemlyd</translation>
 <translation id="4330191372652740264">Isvann</translation>
 <translation id="4330387663455830245">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Vis skjulte faner ved å holde markøren over dem</translation>
@@ -4846,6 +4848,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler skjermen din.</translation>
 <translation id="4722989931633062466">Nettsteder som ikke har lov til å vise påloggingsforespørsler fra tredjeparter</translation>
 <translation id="4723140812774948886">Bytt med neste</translation>
+<translation id="4724031052727917178">Del med lyd</translation>
 <translation id="4724450788351008910">Tilknytning endret</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Bruk Ctrl + Alt + lysstyrke opp for å zoome inn.
@@ -5339,7 +5342,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5096775069898886423">Du blir advart før du besøker nettsteder som ikke støtter sikre tilkoblinger</translation>
 <translation id="5097002363526479830">Kunne ikke koble til nettverket «<ph name="NAME" />»: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Nettstedene du besøker, kan bestemme hva du liker, og deretter foreslå annonser ved kontinuerlig lesing</translation>
-<translation id="5097472729724586429">Legg til tekstmerknader med det nye «Legg til tekstmerknader»-verktøyet</translation>
 <translation id="5097649414558628673">Verktøy: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikk automatisk når markøren stanser</translation>
 <translation id="5098963855433723436">Åpnes i et eget program</translation>
@@ -7764,6 +7766,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="701020165009334820">Du kan laste ned Android-apper og -spill via Play-butikken.</translation>
 <translation id="701080569351381435">Se kilde</translation>
 <translation id="7012430956470647760">Foreldrekontroll for apper</translation>
+<translation id="7012873145982513962">Dette nettstedet anbefaler å dele lyd for full funksjonalitet</translation>
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7014480873681694324">Fjern markering</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>

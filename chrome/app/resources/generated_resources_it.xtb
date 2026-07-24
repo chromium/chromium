@@ -136,6 +136,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1085618740036066768">Elemento <ph name="ITEM" /> non selezionato. <ph name="INDEX" /> di <ph name="COUNT" />. Premi il tasto per la ricerca e la barra spaziatrice per selezionarlo.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
+<translation id="109038914521989341">Indica il motivo per cui desideri copiare questi dati:</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
 <translation id="1093457606523402488">Reti visibili:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + Freccia giù</translation>
@@ -2041,7 +2042,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2588271083332682494">Organizza con i gruppi di schede</translation>
 <translation id="2588636910004461974">Dispositivi di <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Non mostrare mai i file di Drive</translation>
-<translation id="2595508219468433076">Disattivo (nessuna selezione riga)</translation>
 <translation id="2597073208962000830">La funzionalità Condivisione nelle vicinanze usa la scansione Bluetooth per trovare dispositivi nelle vicinanze.</translation>
 <translation id="2598136842498757793">Personalizza i pulsanti della barra degli strumenti</translation>
 <translation id="2598710988533271874">Nuovo Chrome disponibile</translation>
@@ -3853,6 +3853,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3930968231047618417">Colore sfondo</translation>
 <translation id="3932356525934356570">Blocca <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Lunghezza massima <ph name="MAX" /> caratteri</translation>
+<translation id="3932501527949942152">Condividi con audio della scheda</translation>
 <translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> sta condividendo una rete Wi-Fi con te</translation>
 <translation id="3936390757709632190">&amp;Apri audio in nuova scheda</translation>
@@ -4338,6 +4339,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4325515113816851466">Le scelte del genitore non verranno applicate dopo aver disconnesso l'account</translation>
 <translation id="4326146840124313313">La più efficace misura di sicurezza di Chrome ti protegge da siti web, download ed estensioni pericolosi</translation>
 <translation id="4327380114687339519">Menu Estensioni</translation>
+<translation id="4328160087116165267">Condividi con audio di sistema</translation>
 <translation id="4330191372652740264">Acqua con ghiaccio</translation>
 <translation id="4330387663455830245">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Espandi le schede compresse passando il mouse sopra</translation>
@@ -4837,6 +4839,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sta condividendo il tuo schermo.</translation>
 <translation id="4722989931633062466">Non autorizzati a mostrare richieste di accesso di terze parti</translation>
 <translation id="4723140812774948886">Scambia con elemento successivo</translation>
+<translation id="4724031052727917178">Condividi con audio</translation>
 <translation id="4724450788351008910">Affiliazione modificata</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Premi Ctrl + Alt + Aumenta luminosità per aumentare lo zoom.
@@ -5330,7 +5333,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5096775069898886423">Ricevi un avviso prima di visitare i siti che non supportano le connessioni sicure</translation>
 <translation id="5097002363526479830">Connessione alla rete "<ph name="NAME" />" non riuscita: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">I siti che visiti possono stabilire i tuoi interessi e poi suggerire annunci mentre continui a navigare</translation>
-<translation id="5097472729724586429">Aggiungi annotazioni di testo con il nuovo strumento "Aggiungi annotazioni di testo"</translation>
 <translation id="5097649414558628673">Strumento: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Fare clic automaticamente quando il puntatore si ferma</translation>
 <translation id="5098963855433723436">Si apre in un'applicazione separata</translation>
@@ -7754,6 +7756,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="701020165009334820">Puoi scaricare giochi e app per Android dal Play Store.</translation>
 <translation id="701080569351381435">Visualizza sorgente</translation>
 <translation id="7012430956470647760">Controllo genitori per le app</translation>
+<translation id="7012873145982513962">Questo sito consiglia di condividere l'audio per usufruire di tutte le funzionalità</translation>
 <translation id="7014174261166285193">Installazione non riuscita.</translation>
 <translation id="7014480873681694324">Rimuovi evidenziazione</translation>
 <translation id="7014741021609395734">Livello di zoom</translation>

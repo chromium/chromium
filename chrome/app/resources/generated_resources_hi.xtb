@@ -2056,7 +2056,6 @@
 <translation id="2588271083332682494">टैब ग्रुप की मदद से, अपने काम के टैब व्यवस्थित करें</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> की ओर से डिवाइस</translation>
 <translation id="2589658397149952302">Drive में मौजूद फ़ाइलें कभी न दिखाएं</translation>
-<translation id="2595508219468433076">बंद (कोई लाइन फ़ोकस नहीं)</translation>
 <translation id="2597073208962000830">आस-पास मौजूद डिवाइसों को खोजने के लिए, आस-पास शेयर करने की सुविधा में ब्लूटूथ स्कैनिंग का इस्तेमाल किया जाता है.</translation>
 <translation id="2598136842498757793">टूलबार के बटनों को पसंद के मुताबिक बनाएं</translation>
 <translation id="2598710988533271874">Chrome का नया वर्शन उपलब्ध है</translation>
@@ -5347,7 +5346,6 @@
 <translation id="5096775069898886423">सुरक्षित कनेक्शन की सुविधा न देने वाली साइटों पर विज़िट करने से पहले आपको चेतावनी मिलेगी</translation>
 <translation id="5097002363526479830">नेटवर्क से कनेक्ट करने में विफल '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">आपने जिन साइटों पर विज़िट किया है वे आपकी दिलचस्पी का अनुमान लगा सकती हैं और फिर आपके ब्राउज़ करने पर, इस हिसाब से विज्ञापन दिखा सकती हैं</translation>
-<translation id="5097472729724586429">नए टूल, "टेक्स्ट एनोटेशन जोड़ें" की मदद से टेक्स्ट एनोटेशन जोड़ें</translation>
 <translation id="5097649414558628673">टूल: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">कर्सर के रुकने पर अपने-आप क्लिक होगा</translation>
 <translation id="5098963855433723436">इससे एक अलग ऐप्लिकेशन विंडो खुलती है</translation>
@@ -6195,6 +6193,7 @@
 <translation id="5794700615121138172">Linux से Chromebook के साथ शेयर किए गए फ़ोल्डर</translation>
 <translation id="5794786537412027208">सभी Chrome Apps से बाहर निकलें</translation>
 <translation id="5796485699458186843">नया गुप्त टैब</translation>
+<translation id="5796656350463724">टैब की स्टाइल</translation>
 <translation id="5796956053441619942">रिमोट डिवाइस से मिला यूआरएल काम नहीं करता</translation>
 <translation id="5798079537501238810">साइटें पेमेंट हैंडलर इंस्टॉल कर सकती हैं</translation>
 <translation id="5798086737841799234">पुष्टि करने वाला कोड डालें</translation>

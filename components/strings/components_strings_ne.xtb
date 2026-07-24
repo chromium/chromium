@@ -1861,6 +1861,7 @@
 <translation id="385489333361351399">क्यामेरा र फोटोसम्बन्धी उपकरण</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="3864558817291331916"><ph name="AI_ENGINE_NAME" /> सधैँ देखाउनुहोस्</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> का सर्तहरू यहाँ हेर्नुहोस्</translation>
 <translation id="3869939189466884821">डिभाइसमा भएका तपाईंका फाइलहरू <ph name="MINUTES" /> मिनेटमा मेटाइने छन्</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
@@ -2192,7 +2193,6 @@
 <translation id="4340810192899866471">JSON बाट इम्पोर्ट गर्नुहोस्</translation>
 <translation id="4340982228985273705">यो कम्प्युटरलाई इन्टरप्राइजद्वारा व्यवस्थापन नगरिएको हुनाले नीति अनुसार Chrome को वेबस्टोरले होस्ट गरेका विस्तारहरू स्वतः स्थापना गर्न सकिन्छ। Chrome को वेबस्टोरको अद्यावधिक URL "<ph name="CWS_UPDATE_URL" />" हो।</translation>
 <translation id="4342742994656318294">मनोरञ्जन पार्कहरू</translation>
-<translation id="4344194909635300809">पेजका शीर्षक र URL हरू Google मा पठाइन्छन् र समीक्षकहरू तिनको समीक्षा गर्न सक्छन्</translation>
 <translation id="4346670990181948854">यात्रासम्बन्धी जानकारी · सवारी साधनहरू</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> सँगको कनेक्सन सुरक्षित छैन</translation>
 <translation id="4349365535725594680">गोप्य सामग्री सेयर गर्न सकिँदैन</translation>
@@ -2454,7 +2454,6 @@
 <translation id="4786804728079074733">भलिबल</translation>
 <translation id="4787182171088676626">इन्भलप (फाइन)</translation>
 <translation id="4791134497475588553">स्थापना गरिएका Linux एप र यिनीहरूलाई अन्तिम पटक प्रयोग गरिएको समय</translation>
-<translation id="4791602164422809437">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। पेजका शीर्षक र URL हरू Google मा पठाइन्छन् र समीक्षकहरू तिनको समीक्षा गर्न सक्छन्। <ph name="BEGIN_LINK" />सेटिङ मिलाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">तपाईंले पेस गर्न लाग्नुभएको जानकारी सुरक्षित छैन</translation>
 <translation id="4793219378458250238">११ x १२ इन्च</translation>
 <translation id="4796594887379589189">कार्य खाताको ID</translation>
@@ -3360,6 +3359,7 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">पुन: प्रयास गर्न पाइने अन्तराल</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786"><ph name="AI_ENGINE_NAME" /> मा प्रश्न सोध्न ट्याब अनि इन्टर थिच्नुहोस्</translation>
 <translation id="6189351761800074311">तपाईंले लेख्नुभएको टेक्स्ट र तपाईंको पेजमा भएका कन्टेन्ट Google मा पठाइने छन् तर AI को गुणस्तर सुधार्न तिनको प्रयोग गरिने छैन।
     <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">किबोर्डका Esc जस्ता केही कीहरू ओभरराइड गर्नुहोस्</translation>
@@ -3436,7 +3436,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> प्रयोग गर्ने अनुमतिसम्बन्धी विवरण देखाउनुहोस्</translation>
 <translation id="6304398603974202180">मल्टिमिडिया सफ्टवेयर</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>
-<translation id="6305834316918845109">तपाईंले परिष्कृत अटोफिलसम्बन्धी अनुरोध टाइप गर्दा Chrome ले तपाईंले सुझावहरू स्वीकार, सम्पादन वा बेवास्ता गर्नुभएको जस्ता यो सुविधा प्रयोग गर्ने तरिकाको रेकर्ड राख्छ।</translation>
 <translation id="6306713302480826305">यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यो ठेगाना मेटाइने छ</translation>
 <translation id="6307968763353904914">तपाईंको बैंकले यस बखत यो भुक्तानी विधिका हकमा भर्चुअल कार्डको सुविधा प्रदान गर्न सक्दैन तर तपाईं आफ्नो <ph name="CARD_LABEL" /> प्रयोग गरी अनलाइन भुक्तानी गर्न भने सक्नुहुन्छ।</translation>
 <translation id="6311410654831092784">कार्ड स्टक</translation>
@@ -3987,6 +3986,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">सर्भरको स्तरोन्नति गरेर TLS १.२ वा त्यसपछिको संस्करण पार्नु पर्छ।</translation>
 <translation id="7156885531105222428">तपाईंले अनुरोध गर्नुभएको पेज यो एपमा भेट्टाउन सकिएन</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> Search मा <ph name="AI_ENGINE_NAME" /> मा प्रश्न सोध्नुहोस्</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> प्रयोग गरी यो फाइल पठाउन आफ्नो डिभाइसमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}other{<ph name="FEATURE_NAME" /> प्रयोग गरी यी फाइलहरू पठाउन आफ्नो डिभाइसमा ठाउँ (<ph name="DISK_SPACE_SIZE" />) खाली गर्नुहोस्}}</translation>
 <translation id="7160999678034985039">कृपया आफ्नो कार्य सेभ गर्नुहोस् र आफू तयार भएपछि अपडेट गर्न थाल्नुहोस्</translation>
 <translation id="7162277662076933695">स्मार्ट कार्ड रिडर</translation>
@@ -4080,7 +4080,6 @@
 <translation id="7310392214323165548">डिभाइस चाँडै रिस्टार्ट हुने छ</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7313107491291103073">यो साइटले कुनै नीतिको उल्लङ्घन गर्न सक्ने भएकाले तपाईंको सङ्गठनले यो साइट फ्ल्याग गरेको छ।</translation>
-<translation id="7313260329718515829">Gemini प्रयोग गरी पर्सनल इन्टेलिजेन्समा पठाइएका अनुरोधहरू अटोफिल सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि विश्लेषण गरिन्छन्</translation>
 <translation id="7316521168101843192">यो फाइल Microsoft OneDrive मा सेभ गरिँदै छ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
@@ -4575,7 +4574,6 @@
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8038182528865038593">रातो २</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
-<translation id="8042898384266617514">तपाईंका अनुरोध, पेजका शीर्षक र URL हरू Google मा पठाइन्छन् र समीक्षकहरू तिनको समीक्षा गर्न सक्छन्</translation>
 <translation id="8043255123207491407">विक्रेताका सर्तहरू हेर्नुहोस्</translation>
 <translation id="8044986521421349135">तपाईंले हालसालै प्रयोग गर्नुभएको ट्याब</translation>
 <translation id="8046360364391076336">औद्योगिक सामग्री तथा उपकरण</translation>
@@ -4638,6 +4636,7 @@
 <translation id="815036624016370447">तपाईं आफ्नो Google खाता <ph name="ACCOUNT" /> मा सेभ गरिएको जानकारी प्रयोग गरेर Chrome मा फारामहरू अझ छिटो भर्न सक्नुहुन्छ</translation>
 <translation id="8150722005171944719"><ph name="URL" /> मा भएको फाइल पठनीय छैन। यो हटाइएको, सारिएको हुनसक्छ, वा फाइल अनुमतिले पहुँचलाई रोकेको हुन सक्छ।</translation>
 <translation id="8151185429379586178">विकासकर्ता उपकरणहरू</translation>
+<translation id="8152194419479742504">ट्याबहरू अदलबदल नगरिकनै जानकारी भेट्टाउन र भर्न कुनै पनि फाराममा @@ टाइप गर्नुहोस्</translation>
 <translation id="8153865548451212769">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा डाउनलोड गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा डाउनलोड गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="8155253549374198915">पछिल्लो पटक खोलिएका ट्याबहरू</translation>
 <translation id="81563721597823545">हक्की उपकरण</translation>
@@ -4658,6 +4657,7 @@
 <translation id="8189557652711717875">तपाईंले छनौट गर्ने सर्च इन्जिन एड्रेस बार र वेबपेजमा भएका फोटोहरूबाट खोज्ने सुविधाहरू उपलब्ध गराउन प्रयोग गरिन्छ।</translation>
 <translation id="8190193880870196235">कुनै एक्स्टेन्सनले व्यवस्थापन गरेको</translation>
 <translation id="8194412401381329820">तपाईं व्यवस्थापन नगरिएको यो डिभाइसमा व्यवस्थापन गरिएको खाताको पेज प्रयोग गर्न सक्नुहुन्न। तपाईंले यो पेज प्रयोग गर्नुभयो भने व्यवस्थापन गरिएका सबै खाताहरू लक गरिने छन् तर यो डिभाइस व्यवस्थापन गर्ने व्यक्ति वा संस्थाले नै व्यवस्थापन गरेका खाताहरू (सम्बद्ध खाताहरू) भने लक गरिने छैनन्।</translation>
+<translation id="8194579937546982778"><ph name="AI_ENGINE_NAME" /> सधैँ देखाउनुहोस्</translation>
 <translation id="8194797478851900357">सार्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="8194956568907463262">सुटर गेमहरू</translation>
 <translation id="8199437620497683918">अप्टिकल डिस्क (ग्लसी)</translation>
@@ -5164,6 +5164,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="9027531288681624875">फुल स्क्रिनबाट बाहिरिन |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="9035022520814077154">सुरक्षा त्रुटी</translation>
+<translation id="9035699147763101514">Gemini मा उपलब्ध पर्सनल इन्टेलिजेन्स प्रयोग गरी बनाइएको। सेटिङमा गई आफ्ना विकल्पहरू व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="9035824888276246493">सेक्युरिटी कोडहरू सेभ गर्नुहोस्</translation>
 <translation id="9036306139374661733">माइक्रोफोन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="9036484080057916082">हस्ताक्षर गरिएको सर्टिफिकेट टाइमस्ट्याम्पको सूची</translation>
@@ -5343,6 +5344,7 @@
 <translation id="979107176848483472"><ph name="DOMAIN" /> ले तपाईंका ब्राउजर र प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="979189555234810423">एक्स्पो तथा कन्भेन्सनहरू</translation>
 <translation id="981121421437150478">अफलाइन</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> को बटन, <ph name="AI_ENGINE_NAME" /> मा प्रश्न सोध्न इन्टर थिच्नुहोस्</translation>
 <translation id="984101218975906499">औषधि तथा जैविक प्रविधि</translation>
 <translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="985199708454569384">&lt;p&gt;तपाईंको कम्प्युटर वा मोबाइल यन्त्रको मिति र समय नमिलेको बेला तपाईंले यो त्रुटि देख्नुहुन्छ।&lt;/p&gt;

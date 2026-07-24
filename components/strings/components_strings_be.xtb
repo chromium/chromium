@@ -1864,6 +1864,7 @@
 <translation id="385489333361351399">Абсталяванне для фота- і відэаздымкі</translation>
 <translation id="3858027520442213535">Абнавіць дату і час</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3864558817291331916">Заўсёды паказваць <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="3865339060090354361">Азнаёмцеся з умовамі выкарыстання карткі <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Лакальныя файлы будуць выдалены праз <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Навука</translation>
@@ -2194,7 +2195,6 @@
 <translation id="4340810192899866471">Імпартаваць з файла JSON</translation>
 <translation id="4340982228985273705">Не ўстаноўлена, што гэты камп’ютар знаходзіцца пад карпаратыўным кіраваннем, таму палітыка дазваляе аўтаматычна ўсталёўваць толькі пашырэнні з Chrome Webstore. URL-адрас абнаўлення ў Chrome Webstore: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Паркі адпачынку з атракцыёнамі</translation>
-<translation id="4344194909635300809">Загалоўкі старонак і URL-адрасы адпраўляюцца ў Google і могуць разглядацца спецыялістамі</translation>
 <translation id="4346670990181948854">Інфармацыя пра паездкі · Транспартныя сродкі</translation>
 <translation id="4348834659292907206">Падключэнне да сайта <ph name="SITE" /> не з’яўляецца надзейным</translation>
 <translation id="4349365535725594680">Нельга абагульваць канфідэнцыяльнае змесціва</translation>
@@ -2456,7 +2456,6 @@
 <translation id="4786804728079074733">Валейбол</translation>
 <translation id="4787182171088676626">Канверт з высакаякаснага матэрыялу</translation>
 <translation id="4791134497475588553">Усталяваныя праграмы Linux, і калі яны апошні раз выкарыстоўваліся</translation>
-<translation id="4791602164422809437">На платформе персаналізаванага інтэлекту з Gemini. Загалоўкі старонак і URL-адрасы адпраўляюцца ў Google, дзе іх могуць праглядаць спецыялісты. <ph name="BEGIN_LINK" />Кіраваць наладамі<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Інфармацыя, якую вы збіраецеся адправіць, не абаронена</translation>
 <translation id="4793219378458250238">11 x 12 цаляў</translation>
 <translation id="4796594887379589189">Ідэнтыфікатар уліковага запісу задання</translation>
@@ -3361,6 +3360,7 @@
 <translation id="6177531123306197852">Канверт C2</translation>
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Каб задаць пытанне з дапамогай функцыі "<ph name="AI_ENGINE_NAME" />", націсніце Tab і затым Увод</translation>
 <translation id="6189351761800074311">Ваш тэкст і змесціва старонкі адпраўляюцца ў Google, але не будуць выкарыстоўвацца для паляпшэння штучнага інтэлекту.
     <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Перавызначаць некаторыя клавішы на клавіятуры, напрыклад Esc</translation>
@@ -3437,7 +3437,6 @@
 <translation id="6302546952464230349">Паказаць падрабязныя звесткі пра дазвол "<ph name="PERMISSION_NAME" />"</translation>
 <translation id="6304398603974202180">Праграмнае забеспячэнне для працы з мультымедыя</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недаступны.</translation>
-<translation id="6305834316918845109">Калі вы ўводзіце запыт для палепшанага аўтазапаўнення, Chrome рэгіструе, як вы выкарыстоўваеце гэту функцыю: напрыклад, ці прымаеце, рэдагуеце або ігнаруеце прапановы аўтазапаўнення</translation>
 <translation id="6306713302480826305">Гэты адрас будзе выдалены з бягучай і іншых прылад, на якіх выкананы ўваход ва ўліковы запіс</translation>
 <translation id="6307968763353904914">Ваш банк зараз не прапануе віртуальныя карткі для гэтага спосабу аплаты, аднак вы ўсё роўна можаце расплачвацца карткай "<ph name="CARD_LABEL" />" анлайн.</translation>
 <translation id="6311410654831092784">Папера для картак</translation>
@@ -3988,6 +3987,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Сервер патрабуе абнаўлення пратакола TLS да версіі 1.2 або навейшай.</translation>
 <translation id="7156885531105222428">Запытаную вамі старонку не ўдалося знайсці ў праграме</translation>
+<translation id="7157447397944182926">Задайце пытанне з дапамогай функцыі "<ph name="AI_ENGINE_NAME" />" (<ph name="SEARCH_ENGINE_NAME" /> Пошук)</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Каб адправіць гэты файл з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}one{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}few{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}many{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}other{Каб адправіць гэтыя файлы з дапамогай функцыі "<ph name="FEATURE_NAME" />", вызваліце <ph name="DISK_SPACE_SIZE" /> месца на прыладзе}}</translation>
 <translation id="7160999678034985039">Захавайце працу і пачніце абнаўленне, калі будзеце гатовыя.</translation>
 <translation id="7162277662076933695">Кардрыдар для разумных картак</translation>
@@ -4081,7 +4081,6 @@
 <translation id="7310392214323165548">Скора прылада перазапусціцца</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
 <translation id="7313107491291103073">Ваша арганізацыя пазначыла, што гэты сайт, магчыма, парушае правілы.</translation>
-<translation id="7313260329718515829">Запыты, якія адпраўляюцца ў функцыю "Персаналізаваны інтэлект" з Gemini, аналізуюцца для ўдасканалення аўтазапаўнення</translation>
 <translation id="7316521168101843192">Файл захоўваецца ў Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Даведка па падключэнні</translation>
@@ -4577,7 +4576,6 @@
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Чырвоны 2</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
-<translation id="8042898384266617514">Запыты, загалоўкі старонак і URL-адрасы адпраўляюцца ў Google, дзе іх могуць праглядаць спецыялісты</translation>
 <translation id="8043255123207491407">Праглядзець умовы выкарыстання, вызначаныя прадаўцом</translation>
 <translation id="8044986521421349135">Ваша апошняя ўкладка</translation>
 <translation id="8046360364391076336">Прамысловыя матэрыялы і абсталяванне</translation>
@@ -4640,6 +4638,7 @@
 <translation id="815036624016370447">Інфармацыя з вашага Уліковага запісу Google (<ph name="ACCOUNT" />) можа дапамагчы вам хутчэй запаўняць формы ў Chrome</translation>
 <translation id="8150722005171944719">Файл па адрасе "<ph name="URL" />" не чытаецца.  Магчыма, ён быў выдалены, перамешчаны або не хапае дазволаў на доступ да яго.</translation>
 <translation id="8151185429379586178">Інструменты распрацоўшчыкаў</translation>
+<translation id="8152194419479742504">Каб знайсці і запоўніць інфармацыю, не пераключаючыся паміж укладкамі, увядзіце @@ у любой форме</translation>
 <translation id="8153865548451212769">{0,plural, =1{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэты файл сюды: <ph name="DESTINATION_NAME" />}one{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}few{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}many{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}other{Згодна з зададзенай адміністратарам палітыкай, не рэкамендуецца спампоўваць гэтыя файлы сюды: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Апошнія адкрытыя ўкладкі</translation>
 <translation id="81563721597823545">Хакейны рыштунак</translation>
@@ -4660,6 +4659,7 @@
 <translation id="8189557652711717875">Выбраная вамі пошукавая сістэма будзе выкарыстоўвацца для такіх функцый, як пошук з адпраўкай запытаў з адраснага радка і па відарысах на вэб-сайтах.</translation>
 <translation id="8190193880870196235">Пад кіраваннем пашырэння</translation>
 <translation id="8194412401381329820">Вы не можаце выкарыстоўваць гэту старонку ва ўліковым запісе пад кіраваннем на прыладзе, якая не знаходзіцца пад кантролем. Калі вы выкарыстаеце гэту старонку, будуць заблакіраваны ўсе ўліковыя запісы пад кіраваннем, акрамя тых, якія кантралюе тая ж юрыдычная асоба, што і гэту прыладу (партнёрскія ўліковыя запісы).</translation>
+<translation id="8194579937546982778">Заўсёды паказваць <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">&amp;Адрабіць перамяшчэнне</translation>
 <translation id="8194956568907463262">Шутары</translation>
 <translation id="8199437620497683918">Глянцавы аптычны дыск</translation>
@@ -5166,6 +5166,7 @@
 <translation id="9027020981272345766">Паспрабуйце Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Каб выйсці з поўнаэкраннага рэжыму, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>
+<translation id="9035699147763101514">На платформе персаналізаванага інтэлекту з Gemini. Вы можаце кіраваць сваім выбарам у наладах.</translation>
 <translation id="9035824888276246493">Захоўваць коды бяспекі</translation>
 <translation id="9036306139374661733">Дазволіць доступ да мікрафона?</translation>
 <translation id="9036484080057916082">Спіс метак часу падпісаных сертыфікатаў</translation>
@@ -5345,6 +5346,7 @@
 <translation id="979107176848483472">Ваш браўзер і профіль знаходзяцца пад кіраваннем <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Выстаўкі і канферэнцыі</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
+<translation id="983587187183716432">Кнопка "<ph name="AI_ENGINE_NAME" />". Націсніце Увод, каб задаць пытанне з дапамогай функцыі "<ph name="AI_ENGINE_NAME" />".</translation>
 <translation id="984101218975906499">Фармацэўтыка і біятэхналогіі</translation>
 <translation id="984275831282074731">Спосабы аплаты</translation>
 <translation id="985199708454569384">&lt;p&gt;Гэта памылка ўзнікае, калі на камп’ютары ці мабільнай прыладзе няправільна вызначаны дата і час.&lt;/p&gt;

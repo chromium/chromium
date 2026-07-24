@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{បិទ​ផ្ទាំង​ឯកជន}other{បិទ​ផ្ទាំង​ឯកជន (វិនដូ #)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ផ្នែកនៃក្រុម <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">កម្រិតថ្ម​ខាងស្ដាំ <ph name="PERCENTAGE" />%។</translation>
+<translation id="1130866111814048607">នៅពេលផ្ទាំង​ត្រូវបាន​ចែករំលែក ខ្លឹមសារទំព័រ មេឌៀ និង URL របស់ផ្ទាំង​ទាំងនោះ​ត្រូវបាន​បញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យ ដើម្បីរក្សាសុវត្ថិភាព។</translation>
 <translation id="1133418583142946603">បញ្ចូល​ផ្ទាំង​បច្ចុប្បន្ន</translation>
 <translation id="1133751489735776037">ចុចម៉ៅស៍​បីដង</translation>
 <translation id="1136712381129578788">សោសុវត្ថិភាព​ជាប់សោហើយ ដោយសារបញ្ចូល​កូដ PIN មិនត្រឹមត្រូវ​ច្រើនដងពេក។ ដើម្បីដោះសោ​សោសុវត្ថិភាពនេះ សូមដកចេញ រួចដោតបញ្ចូលវាម្ដងទៀត។</translation>
@@ -1109,6 +1110,7 @@
 <translation id="1846308012215045257">ចុច Control-click ដើម្បីដំណើរការ <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">ចេញពីគណនី​នៅពេលគម្របបិទ</translation>
 <translation id="184862733444771842">សំណើមុខងារ</translation>
+<translation id="184871971966737653">បញ្ចូលផ្ទាំងដែលបើក ដើម្បីសួរអ្វីក៏បាន</translation>
 <translation id="1849016657376805933">ឧបករណ៍ HID នានា</translation>
 <translation id="1849022541429818637">អនុញ្ញាតឱ្យចាប់យក និងប្រើការបញ្ចូលពីម៉ៅស៍របស់អ្នក</translation>
 <translation id="1849252834922144634">ចុចឱ្យជាប់ ដើម្បី​ខ្ទាស់​ផ្លូវកាត់</translation>
@@ -2056,7 +2058,6 @@
 <translation id="2588271083332682494">រៀបចំឱ្យមានសណ្ដាប់ធ្នាប់ដោយប្រើក្រុមផ្ទាំង</translation>
 <translation id="2588636910004461974">ឧបករណ៍​ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">កុំបង្ហាញ​ឯកសារ​ថាស​ឱ្យសោះ</translation>
-<translation id="2595508219468433076">បិទ (គ្មាន​ការផ្ដោតលើបន្ទាត់ទេ)</translation>
 <translation id="2597073208962000830">ការចែករំលែក​នៅជិត​ប្រើការស្កេន​ប៊្លូធូស ដើម្បីស្វែងរក​ឧបករណ៍​នៅជិត។</translation>
 <translation id="2598136842498757793">ប្ដូរ​ប៊ូតុង​របារឧបករណ៍​តាមបំណង</translation>
 <translation id="2598710988533271874">មាន Chrome ថ្មី</translation>
@@ -2099,6 +2100,7 @@
 <translation id="2624142942574147739">ទំព័រនេះកំពុងចូលប្រើកាមេរ៉ា និងម៉ៃក្រូហ្វូនរបស់អ្នក។</translation>
 <translation id="2626799779920242286">សូមព្យាយាមម្តងដងទៀតពេលក្រោយ។</translation>
 <translation id="2627424346328942291">មិនអាច​ចែករំលែក​បានទេ</translation>
+<translation id="2627970398976286795">ពិនិត្យមើលហានិភ័យរបស់ Gemini Spark</translation>
 <translation id="2628258844236035475">ដក​អាសយដ្ឋាន​ផ្ទះ​របស់អ្នក​ចេញពី​ការបំពេញ​ស្វ័យប្រវត្តិ​របស់ Chrome ឬ?</translation>
 <translation id="2628770867680720336">តម្រូវឱ្យកំណត់ Chromebook នេះដូច​ដើមឡើងវិញ ដើម្បីបើក​ការជួសជុល ADB។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់​បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">ចាប់ផ្ដើម​ការជជែកថ្មី​ជាមួយ Gemini</translation>
@@ -2789,6 +2791,7 @@
 <translation id="3134312457920437826">មិនអាច​ដំឡើង​កម្មវិធីបន្ថែម​បានទេ ដោយសារ​វាប្រើ​កំណែ​មេនីហ្វេសថ៍​ដែលមិនអាច​ប្រើបាន។</translation>
 <translation id="3134393957315651797">ជ្រើសរើសស្ថានភាព​ពិសោធន៍សម្រាប់​ការពិសោធ <ph name="EXPERIMENT_NAME" />។ ការពណ៌នាអំពី​ការពិសោធ៖ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">រូបតំណាងពណ៌លឿងលំនាំដើម</translation>
+<translation id="314095642664111744">បិទមុខងារផ្ដោតអារម្មណ៍</translation>
 <translation id="3141093262818886744">មិន​អីទេ បើក​ចុះ</translation>
 <translation id="3141318088920353606">កំពុងស្ដាប់...</translation>
 <translation id="3142562627629111859">ក្រុមថ្មី</translation>
@@ -3344,6 +3347,7 @@
 <translation id="3569614820047645079">ឯកសារ​របស់អ្នក​នៅក្នុង "ថាសខ្ញុំ" ធ្វើសម​កាលកម្មទៅ Chromebook របស់អ្នក​ដោយស្វ័យប្រវត្តិ ដូច្នេះ​អ្នកអាចចូលប្រើ​ឯកសារ​ទាំងនោះបាន​ដោយគ្មាន​ការតភ្ជាប់អ៊ីនធឺណិត។</translation>
 <translation id="3569617221227793022">បច្ចុប្បន្ន ល្វែងម៉ោងត្រូវបានកំណត់ទៅ <ph name="TIME_ZONE_ENTRY" />។ ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> អាចមើល​ថត និងឯកសារខាងក្រោម</translation>
+<translation id="3570112771874223231">ខ្លឹមសារ​ទំព័រ និង URL ដែល Gemini ប្រើក្នុង​អំឡុងពេល​បំពេញ​កិច្ចការ នឹងត្រូវបាន​ចែករំលែក​ជាមួយ Google និងអាចត្រូវបានត្រួតពិនិត្យដើម្បីរក្សាសុវត្ថិភាព។</translation>
 <translation id="3571734092741541777">តំឡើង</translation>
 <translation id="3575121482199441727">អនុញ្ញាត​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="3575224072358507281">ប្រមូល​លទ្ធផល​វាស់ស្ទង់​បណ្ដាញ និង​អាសយដ្ឋាន IP សម្រាប់ Measurement Lab ដោយ​យោងតាម​គោលការណ៍​ឯកជនភាព​របស់វា (measurementlab.net/privacy)</translation>
@@ -3604,6 +3608,7 @@
 <translation id="3756578970075173856">កំណត់​កូដ PIN</translation>
 <translation id="3756806135608816820">គេហទំព័រ​អាច​ស្នើសុំ​រកមើល​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="3756823472711156529">ស្ដារ​ក្រុម</translation>
+<translation id="3757337311115630808">ស្វែងយល់បន្ថែមអំពី Gemini Spark</translation>
 <translation id="3757567010566591880">ដកខ្ទាស់ពី​របារឧបករណ៍</translation>
 <translation id="3757645900890881944">ឧបករណ៍​ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="3757733214359997190">រកមិនឃើញ​គេហទំព័រទេ</translation>
@@ -4754,6 +4759,7 @@
 <translation id="4647283074445570750">ជំហានទី <ph name="CURRENT_STEP" /> នៃ <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">ឧបករណ៍ជ្រើសរើសពណ៌</translation>
 <translation id="4648491805942548247">ការអនុញ្ញាតមិនគ្រប់គ្រាន់</translation>
+<translation id="4648876469762528742">កម្មវិធីមានកំណែចុងក្រោយបំផុតហើយ។</translation>
 <translation id="4650037136970677721">​បានសន្សំសំចៃអង្គចងចាំ​</translation>
 <translation id="4650591383426000695">ផ្ដាច់​ទូរសព្ទ​ពី <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="4651921906638302153">មិនអាចចូល​ដោយប្រើគណនី​នេះបានទេ</translation>
@@ -5005,6 +5011,7 @@
 <translation id="4840096453115567876">នៅតែចង់​ចាកចេញពី​មុខងារ​ឯកជនឬ?</translation>
 <translation id="4841475798258477260">ឧបករណ៍នេះអាចភ្ជាប់បានតែជាមួយបណ្ដាញទូរសព្ទចល័តជាក់លាក់ប៉ុណ្ណោះ។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ទំព័រនេះកំពុងព្យាយាមដំណើរការស្គ្រីបពីប្រភពដែលមិនបានសម្គាល់អត្តសញ្ញាណ។</translation>
+<translation id="4843037705239202082">ការយល់ដឹងអំពីមេឌៀ</translation>
 <translation id="484462545196658690">ស្វ័យប្រវត្តិ</translation>
 <translation id="4846628405149428620">ជ្រើសរើស​កន្លែង​ដែល​គេហទំព័រ​នេះ​អាច​រក្សាទុក​ការផ្លាស់ប្ដូរ</translation>
 <translation id="4846680374085650406">អ្នកកំពុងធ្វើតាមការណែនាំរបស់អ្នកគ្រប់គ្រងសម្រាប់ការកំណត់នេះ។</translation>
@@ -5346,7 +5353,6 @@
 <translation id="5096775069898886423">សម្រាប់​គេហទំព័រ​ដែល​មិនអាចធ្វើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព អ្នកទទួលបាន​សារប្រុង​ប្រយ័ត្ន មុនពេល​ចូលមើល​គេហទំព័រនោះ</translation>
 <translation id="5097002363526479830">បានបរាជ័យក្នុងការភ្ជាប់ទៅបណ្តាញ៖ '<ph name="NAME" />': <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">គេហទំព័រ​ដែល​អ្នក​ចូលមើល​អាច​កំណត់​​អ្វី​ដែល​អ្នក​ចូលចិត្ត រួច​ណែនាំ​ការផ្សាយពាណិជ្ជកម្ម​នៅ​ពេល​ដែល​អ្នក​បន្ត​រុករក</translation>
-<translation id="5097472729724586429">បញ្ចូលចំណារជាអក្សរដោយប្រើឧបករណ៍ "បញ្ចូលចំណារជាអក្សរ" ថ្មី</translation>
 <translation id="5097649414558628673">ឧបករណ៍៖ <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ចុចដោយស្វ័យប្រវត្តិ នៅពេល​ទស្សន៍ទ្រនិច​ឈប់</translation>
 <translation id="5098963855433723436">បើកក្នុងកម្មវិធីដាច់ដោយឡែក</translation>
@@ -6195,6 +6201,7 @@
 <translation id="5794700615121138172">ថតដែល Linux បានចែករំលែក</translation>
 <translation id="5794786537412027208">ចាកចេញពីកម្មវិធី Chrome ទាំងអស់</translation>
 <translation id="5796485699458186843">ផ្ទាំងឯកជនថ្មី</translation>
+<translation id="5796656350463724">ការកំណត់រចនាបថផ្ទាំង</translation>
 <translation id="5796956053441619942">មិនអាចប្រើ URL ពីឧបករណ៍ពីចម្ងាយបានទេ</translation>
 <translation id="5798079537501238810">គេហទំព័រអាចដំឡើងឧបករណ៍ដោះស្រាយការបង់ប្រាក់</translation>
 <translation id="5798086737841799234">បញ្ចូល​លេខ​កូដ​បញ្ជាក់</translation>
@@ -7752,6 +7759,7 @@
 <translation id="7001809623433867903">សម្អាត​ចំណាំ​ឬ?</translation>
 <translation id="7003339318920871147">មូលដ្ឋានទិន្នន័យគេហទំព័រ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ឯកសារ {COUNT}}other{ឯកសារ {COUNT}}}</translation>
+<translation id="7003537330107832201">មាន​កំណែថ្មី (<ph name="VERSION" />) នៃ <ph name="APP_NAME" />។ វិនដូដែលបើកទាំងអស់នឹងត្រូវបានបិទ ដើម្បីដំឡើងកំណែ។ ទិន្នន័យដែលមិនបានរក្សាទុកអាចត្រូវបាត់បង់។</translation>
 <translation id="7003644704445046755">បានទាញយកឯកសារសំឡេងភាសា<ph name="LANGUAGE" />ដែលមានគុណភាពខ្ពស់</translation>
 <translation id="7003723821785740825">កំណត់​វិធី​លឿនជាងនេះ​ដើម្បី​ដោះសោ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7003844668372540529">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពី <ph name="VENDOR_NAME" /></translation>
@@ -8315,6 +8323,7 @@
 <translation id="7434509671034404296">អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="7434757724413878233">ការបង្កើន​ល្បឿន​កណ្ដុរ</translation>
 <translation id="7434969625063495310">មិន​អាចបញ្ចូល​ម៉ាស៊ីនមេបោះពុម្ព​បានទេ។ សូមពិនិត្យ​ការកំណត់រចនាសម្ព័ន្ធរបស់ម៉ាស៊ីនមេ រួចព្យាយាមម្ដងទៀត។</translation>
+<translation id="7435500219604275502">ដំឡើងកំណែ</translation>
 <translation id="7439519621174723623">បញ្ចូល​ឈ្មោះឧបករណ៍ ដើម្បីបន្ត</translation>
 <translation id="7441736921018636843">ដើម្បី​ប្ដូរការកំណត់នេះ <ph name="BEGIN_LINK" />សូមកំណត់សមកាលកម្មឡើងវិញ<ph name="END_LINK" /> ដើម្បី​លុប​ឃ្លាសម្ងាត់សមកាលកម្មរបស់អ្នក</translation>
 <translation id="7441830548568730290">អ្នកប្រើផ្សេងទៀត</translation>
@@ -9487,6 +9496,7 @@
 <translation id="8342387517402567689">មិនអាច​ដំឡើង​កម្មវិធីវេប​នៅក្នុង​មុខងារ​ឯកជន​បានទេ</translation>
 <translation id="8342861492835240085">ជ្រើសរើស​​​បណ្ដុំ</translation>
 <translation id="8343578633847737325">ការជជែក និងកម្រងសារថ្មីៗ</translation>
+<translation id="8345099007452202761">មាន​កំណែថ្មី (<ph name="VERSION" />) នៃ <ph name="APP_NAME" />។ តើអ្នកចង់ដំឡើងកំណែឥឡូវនេះដែរឬទេ?</translation>
 <translation id="8345848587667658367">ឥឡូវនេះ អ្នក​អាច​មើល​រូបថត មេឌៀ ការជូនដំណឹង និង​កម្មវិធី​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក​បាន​ហើយ</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
 <translation id="8347728744337089388">ផ្ញើទៅ&amp;ឧបករណ៍របស់អ្នក</translation>

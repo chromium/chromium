@@ -136,6 +136,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1085618740036066768">No se ha seleccionado <ph name="ITEM" />. <ph name="INDEX" /> de <ph name="COUNT" />. Pulsa Buscar y la barra espaciadora para seleccionar un elemento.</translation>
 <translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1090126737595388931">No se están ejecutando aplicaciones en segundo plano.</translation>
+<translation id="109038914521989341">Introduce un motivo para copiar estos datos:</translation>
 <translation id="1090541560108055381">Antes de emparejar los dispositivos, comprueba que este código sea el mismo en ambos</translation>
 <translation id="1093457606523402488">Redes visibles:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + flecha hacia abajo</translation>
@@ -2043,7 +2044,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2588271083332682494">Ordena con grupos de pestañas</translation>
 <translation id="2588636910004461974">Dispositivos de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nunca mostrar archivos de Drive</translation>
-<translation id="2595508219468433076">Desactivado (sin enfoque de línea)</translation>
 <translation id="2597073208962000830">Compartir con Nearby usa la búsqueda de dispositivos Bluetooth para encontrar dispositivos cercanos.</translation>
 <translation id="2598136842498757793">Personalizar botones de la barra de herramientas</translation>
 <translation id="2598710988533271874">Nuevo Chrome disponible</translation>
@@ -3855,6 +3855,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3930968231047618417">Color de fondo</translation>
 <translation id="3932356525934356570">Fijar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Longitud máxima: <ph name="MAX" /> caracteres</translation>
+<translation id="3932501527949942152">Compartir con audio de la pestaña</translation>
 <translation id="3933121352599513978">Ocultar solicitudes no deseadas (recomendado)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> está compartiendo una red Wi‑Fi contigo</translation>
 <translation id="3936390757709632190">&amp;Abrir audio en una pestaña nueva</translation>
@@ -4339,6 +4340,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4325515113816851466">Las opciones de tus padres no se aplicarán después de que cierres sesión</translation>
 <translation id="4326146840124313313">La seguridad más potente de Chrome te ofrece más protección frente a sitios web, descargas y extensiones peligrosos</translation>
 <translation id="4327380114687339519">Menú Extensiones</translation>
+<translation id="4328160087116165267">Compartir con audio del sistema</translation>
 <translation id="4330191372652740264">Agua helada</translation>
 <translation id="4330387663455830245">No traducir nunca del <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Mostrar pestañas contraídas al colocar el cursor sobre ellas</translation>
@@ -4838,6 +4840,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4722989931633062466">No tiene permiso para mostrar notificaciones de inicio de sesión de terceros</translation>
 <translation id="4723140812774948886">Intercambiar con el siguiente</translation>
+<translation id="4724031052727917178">Compartir con audio</translation>
 <translation id="4724450788351008910">Afiliación modificada</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Usa Ctrl + Alt + Aumentar el brillo para ampliar la pantalla.
@@ -5331,7 +5334,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5096775069898886423">Recibe una advertencia antes de visitar sitios que no admitan conexiones seguras</translation>
 <translation id="5097002363526479830">Error al establecer conexión con la red "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Los sitios que visitas pueden determinar qué te gusta y luego sugerirte anuncios a medida que navegas</translation>
-<translation id="5097472729724586429">Añade anotaciones de texto con la nueva herramienta Añadir anotaciones de texto</translation>
 <translation id="5097649414558628673">Herramienta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5098963855433723436">Se abre en una aplicación independiente</translation>
@@ -7757,6 +7759,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="701020165009334820">Puedes descargar aplicaciones y juegos Android a través de Play Store.</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7012430956470647760">Controles parentales para aplicaciones</translation>
+<translation id="7012873145982513962">Este sitio recomienda compartir audio para disfrutar de todas las funciones</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7014480873681694324">Eliminar resaltado</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>

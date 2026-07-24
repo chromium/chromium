@@ -136,6 +136,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1085618740036066768">A(z) <ph name="ITEM" /> nincs kiválasztva. <ph name="COUNT" />/<ph name="INDEX" />. A kiválasztáshoz nyomja le a Keresőgomb plusz szóköz billentyűkombinációt.</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
 <translation id="1090126737595388931">Nincs háttérben futó alkalmazás</translation>
+<translation id="109038914521989341">Adja meg az adat másolásának okát:</translation>
 <translation id="1090541560108055381">A párosítás előtt ellenőrizze, hogy mindkét eszközön ugyanazt a kódot használja-e</translation>
 <translation id="1093457606523402488">Látható hálózatok:</translation>
 <translation id="1093645050124056515">ctrl + alt + lefelé nyíl</translation>
@@ -2053,7 +2054,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2588271083332682494">Rendszerezés lapcsoportokkal</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> gyártótól származó eszközök</translation>
 <translation id="2589658397149952302">Soha ne jelenjenek meg Drive-fájlok</translation>
-<translation id="2595508219468433076">Kikapcsolva (nincs sorfókusz)</translation>
 <translation id="2597073208962000830">A Közeli megosztás funkció a Bluetooth használatával keres közelben lévő eszközöket.</translation>
 <translation id="2598136842498757793">Eszköztár gombjainak személyre szabása</translation>
 <translation id="2598710988533271874">Rendelkezésre áll az új Chrome</translation>
@@ -3865,6 +3865,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3930968231047618417">Háttérszín</translation>
 <translation id="3932356525934356570">A(z) <ph name="EXTENSION_NAME" /> kitűzése</translation>
 <translation id="3932477678113677556">A maximális hosszúság <ph name="MAX" /> karakter</translation>
+<translation id="3932501527949942152">Megosztás a lap hangjával</translation>
 <translation id="3933121352599513978">Nem kívánt kérelmek összecsukása (ajánlott)</translation>
 <translation id="3936260554100916852">A(z) <ph name="DEVICE_NAME" /> Wi-Fi-hálózatot oszt meg Önnel</translation>
 <translation id="3936390757709632190">&amp;Hang megnyitása új lapon</translation>
@@ -4349,6 +4350,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4325515113816851466">A szülőd által kiválasztott beállítások nem lesznek alkalmazva a kijelentkezés után</translation>
 <translation id="4326146840124313313">A Chrome legerősebb biztonsági megoldása többet tesz a veszélyes webhelyekkel, letöltésekkel és bővítményekkel szembeni védekezésért</translation>
 <translation id="4327380114687339519">Bővítmények menü</translation>
+<translation id="4328160087116165267">Megosztás rendszerhanggal</translation>
 <translation id="4330191372652740264">Jeges víz</translation>
 <translation id="4330387663455830245">Soha ne fordítsa le a(z) <ph name="LANGUAGE" /> nyelvű szöveget</translation>
 <translation id="4330963457501417204">Összecsukott lapok kibontása rámutatással</translation>
@@ -4848,6 +4850,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4722920479021006856">A(z) <ph name="APP_NAME" /> megosztja az Ön képernyőjét.</translation>
 <translation id="4722989931633062466">Nincs engedélyezve a harmadik fél szolgáltatások bejelentkezési értesítéseinek megjelenítése</translation>
 <translation id="4723140812774948886">Csere a következővel</translation>
+<translation id="4724031052727917178">Megosztás hanggal</translation>
 <translation id="4724450788351008910">A hovatartozás módosult</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Nagyításhoz használja a Ctrl + Alt + Fényerő növelése,
@@ -5342,7 +5345,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5096775069898886423">A biztonságos kapcsolatokat nem támogató webhelyek esetében még a webhely felkeresése előtt figyelmeztetést kap</translation>
 <translation id="5097002363526479830">Nem sikerült csatlakozni a(z) <ph name="NAME" /> hálózathoz: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">A felkeresett webhelyek megállapíthatják, hogy mi tetszik Önnek, majd hirdetéseket javasolhatnak böngészés közben.</translation>
-<translation id="5097472729724586429">Szöveges jelöléseket adhat hozzá az új „Szöveges jelölések hozzáadása” eszközzel</translation>
 <translation id="5097649414558628673">Eszköz: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatikus kattintás, ha a kurzor megáll</translation>
 <translation id="5098963855433723436">Külön alkalmazásban nyílik meg</translation>
@@ -7770,6 +7772,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="701020165009334820">A Play Áruházból Android-alkalmazásokat és -játékokat tölthet le.</translation>
 <translation id="701080569351381435">Forráskód megtekintése</translation>
 <translation id="7012430956470647760">Szülői felügyelet alkalmazásokhoz</translation>
+<translation id="7012873145982513962">A webhely a teljes funkcionalitás érdekében a hang megosztását javasolja</translation>
 <translation id="7014174261166285193">A telepítés nem sikerült.</translation>
 <translation id="7014480873681694324">Kiemelés eltávolítása</translation>
 <translation id="7014741021609395734">Nagyítás/kicsinyítés szintje</translation>

@@ -1862,6 +1862,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="385489333361351399">Fotós és videós felszerelések</translation>
 <translation id="3858027520442213535">Dátum és idő frissítése</translation>
 <translation id="3858860766373142691">Név</translation>
+<translation id="3864558817291331916"><ph name="AI_ENGINE_NAME" /> mindig jelenjen meg</translation>
 <translation id="3865339060090354361">Itt tekintheti meg a következő általános szerződési feltételeit: <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Helyi fájljait <ph name="MINUTES" /> perc múlva töröljük</translation>
 <translation id="3872834068356954457">Természettudományok</translation>
@@ -2191,7 +2192,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4340810192899866471">Importálás JSON-ból</translation>
 <translation id="4340982228985273705">A rendszer nem vállalat által kezeltként érzékeli ezt a számítógépet, ezért a házirend csak a Chrome Webáruházban tárolt bővítményeket tudja automatikusan telepíteni. A Chrome Webáruház frissítési URL-je: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4342742994656318294">Vidámparkok</translation>
-<translation id="4344194909635300809">A rendszer elküldi a Google-nak az oldalcímeket és az URL-eket, és előfordulhat, hogy emberek ellenőrzik őket</translation>
 <translation id="4346670990181948854">Utazási információ · Járművek</translation>
 <translation id="4348834659292907206">A kapcsolat a következő webhellyel nem biztonságos: <ph name="SITE" /></translation>
 <translation id="4349365535725594680">Nem lehet megosztani bizalmas tartalmat</translation>
@@ -2453,7 +2453,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4786804728079074733">Röplabda</translation>
 <translation id="4787182171088676626">Boríték (tiszta)</translation>
 <translation id="4791134497475588553">A telepített Linux-alkalmazások és legutóbbi használatuk ideje</translation>
-<translation id="4791602164422809437">A Gemini Személyre szabott intelligencia funkciójával. A rendszer elküldi a Google-nak az oldalcímeket és az URL-eket, és előfordulhat, hogy emberek ellenőrzik őket. <ph name="BEGIN_LINK" />Beállítások kezelése<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Az elküldeni kívánt adatok nem biztonságosak</translation>
 <translation id="4793219378458250238">11 × 12 hüvelyk</translation>
 <translation id="4796594887379589189">Munkafiók azonosítója</translation>
@@ -3359,6 +3358,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6177531123306197852">C2 boríték</translation>
 <translation id="6180316780098470077">Újrapróbálkozások közötti idő</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Nyomja meg a Tab, majd az Enter billentyűt, hogy kérdezzen a következőtől: <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="6189351761800074311">A rendszer elküldi a Google-nak a szöveges és oldaltartalmakat, de nem használjuk fel őket az AI fejlesztésére.
     <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6190518157737269631">Felülbírálni a billentyűzet egyes gombjait, például az Esc billentyűt</translation>
@@ -3435,7 +3435,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6302546952464230349">A(z) <ph name="PERMISSION_NAME" /> engedély részleteinek mutatása</translation>
 <translation id="6304398603974202180">Multimédiás szoftver</translation>
 <translation id="6305205051461490394">A(z) <ph name="URL" /> nem érhető el.</translation>
-<translation id="6305834316918845109">Amikor továbbfejlesztett automatikus kitöltésre vonatkozó kérést ír be, a Chrome naplózza a funkció használatát, például azt, hogy elfogadja, szerkeszti vagy figyelmen kívül hagyja-e az automatikus kitöltési javaslatokat.</translation>
 <translation id="6306713302480826305">Ez a cím törlődni fog erről és a többi bejelentkezett eszközről</translation>
 <translation id="6307968763353904914">Bankja jelenleg nem tud virtuális kártyát adni ehhez a fizetési módhoz, de online használhatja <ph name="CARD_LABEL" />-kártyáját.</translation>
 <translation id="6311410654831092784">Kartonlapok</translation>
@@ -3987,6 +3986,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">A szervert a TLS 1.2-es vagy újabb verziójára kell frissíteni.</translation>
 <translation id="7156885531105222428">A kért oldal nem található az alkalmazásban</translation>
+<translation id="7157447397944182926">Kérdezzen az <ph name="AI_ENGINE_NAME" /> szolgáltatástól a <ph name="SEARCH_ENGINE_NAME" /> Keresőben</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Ha a(z) <ph name="FEATURE_NAME" /> funkcióval szeretné elküldeni ezt a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet az eszközön.}other{Ha a(z) <ph name="FEATURE_NAME" /> funkcióval szeretné elküldeni ezeket a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet az eszközön.}}</translation>
 <translation id="7160999678034985039">Mentse a munkáját, és ha készen áll, indítsa el a frissítést.</translation>
 <translation id="7162277662076933695">Intelligens kártyaolvasó</translation>
@@ -4080,7 +4080,6 @@ További részletek:
 <translation id="7310392214323165548">Az eszköz hamarosan újraindul</translation>
 <translation id="7311244614769792472">Nincs találat</translation>
 <translation id="7313107491291103073">Szervezete megjelölte ezt a webhelyet, mert irányelvet sérthet.</translation>
-<translation id="7313260329718515829">A Gemini Személyre szabott intelligencia szolgáltatásnak küldött kéréseket a rendszer elemzi az automatikus kitöltés javítása érdekében</translation>
 <translation id="7316521168101843192">Fájl mentése a Microsoft OneDrive szolgáltatásba</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Segítség a kapcsolódáshoz</translation>
@@ -4575,7 +4574,6 @@ További részletek:
 <translation id="803771048473350947">Fájl</translation>
 <translation id="8038182528865038593">Piros 2</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
-<translation id="8042898384266617514">A rendszer elküldi a Google-nak a kéréseket, az oldalcímeket és az URL-eket, és előfordulhat, hogy emberek ellenőrzik őket.</translation>
 <translation id="8043255123207491407">Az eladó általános szerződési feltételeinek megtekintése</translation>
 <translation id="8044986521421349135">A legutóbbi lap</translation>
 <translation id="8046360364391076336">Ipari anyagok és berendezések</translation>
@@ -4638,6 +4636,7 @@ További részletek:
 <translation id="815036624016370447">A(z) <ph name="ACCOUNT" /> Google-fiókból származó adatok segíthetnek az űrlapok gyorsabb kitöltésében a Chrome-ban</translation>
 <translation id="8150722005171944719">A fájl (<ph name="URL" />) nem olvasható. Lehet, hogy eltávolították, áthelyezték, vagy a fájlengedélyek megakadályozzák a hozzáférést.</translation>
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
+<translation id="8152194419479742504">Írja be a @@ karaktereket bármely űrlapba az adatok lapváltás nélkül való megkereséséhez és kitöltéséhez</translation>
 <translation id="8153865548451212769">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a letöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Legutóbb megnyitott lapok</translation>
 <translation id="81563721597823545">Jégkorong-felszerelés</translation>
@@ -4658,6 +4657,7 @@ További részletek:
 <translation id="8189557652711717875">A kiválasztott keresőmotort a rendszer olyan funkciókhoz használja majd, mint amilyen a címsávból és a weboldalakon található képekből történő keresés.</translation>
 <translation id="8190193880870196235">Bővítmény kezeli</translation>
 <translation id="8194412401381329820">Ezt az oldalt nem kezelheti felügyelt fiókból erről a nem kezelt eszközről. Az összes felügyelt fiók zárolva lesz, ha ezt az oldalt használja, kivéve az eszközével megegyező entitás által kezelt fiókokat (társított fiókok).</translation>
+<translation id="8194579937546982778"><ph name="AI_ENGINE_NAME" /> mindig jelenjen meg</translation>
 <translation id="8194797478851900357">&amp;Áthelyezés visszavonása</translation>
 <translation id="8194956568907463262">Lövöldözős játékok</translation>
 <translation id="8199437620497683918">Optikai lemez (fényes)</translation>
@@ -5166,6 +5166,7 @@ További részletek:
 <translation id="9027020981272345766">Próbálja ki a Chrome Enterprise Core szolgáltatást</translation>
 <translation id="9027531288681624875">A teljes képernyős nézetből való kilépéshez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Biztonsági hiba</translation>
+<translation id="9035699147763101514">A Gemini Személyre szabott intelligencia funkciójával. A beállításokban kezelheti a választásait.</translation>
 <translation id="9035824888276246493">Biztonsági kódok mentése</translation>
 <translation id="9036306139374661733">Engedélyezi a mikrofonhasználatot?</translation>
 <translation id="9036484080057916082">Az aláírt tanúsítvány időbélyeglistája</translation>
@@ -5345,6 +5346,7 @@ További részletek:
 <translation id="979107176848483472">Profilját és böngészőjét a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Kiállítások és találkozók</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> gomb. Az Enter billentyű lenyomásával kérdezhet a következőtől: <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984101218975906499">Gyógyszerészet és biotechnológia</translation>
 <translation id="984275831282074731">Fizetési módok</translation>
 <translation id="985199708454569384">&lt;p&gt;Ez a hiba akkor fordul elő, ha a számítógép vagy mobileszköz dátuma és ideje pontatlan.&lt;/p&gt;

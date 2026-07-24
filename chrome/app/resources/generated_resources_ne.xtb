@@ -136,6 +136,7 @@
 <translation id="1085618740036066768"><ph name="ITEM" /> चयन गरिएको छैन। <ph name="COUNT" /> मध्ये <ph name="INDEX" />। चयन गर्न Search र Space बटन एकै पटक थिच्नुहोस्।</translation>
 <translation id="1086486568852410168">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="1090126737595388931">कुनै पृष्ठभूमिमा चलिरहेका एपहरू छैनन्</translation>
+<translation id="109038914521989341">यो डेटा कपी गर्नुको कारण बताउनुहोस्:</translation>
 <translation id="1090541560108055381">कुनै डिभाइसमा कनेक्ट गर्नुअघि उक्त डिभाइसमा र यो डिभाइसमा उही कोड देखाइएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="1093457606523402488">दर्शनीय नेटवर्कहरू:</translation>
 <translation id="1093645050124056515">ctrl + alt + डाउन एरो</translation>
@@ -2042,7 +2043,6 @@
 <translation id="2588271083332682494">ट्याब समूहहरू बनाएर आफ्नो ब्राउजर व्यवस्थित राख्नुहोस्</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> का यन्त्रहरू</translation>
 <translation id="2589658397149952302">Drive का फाइलहरू कहिल्यै पनि नदेखाउनुहोस्</translation>
-<translation id="2595508219468433076">अफ छ (लाइन फोकस छैन)</translation>
 <translation id="2597073208962000830">नजिकैका डिभाइससँग सेयर गर्ने सुविधाले नजिकैका डिभाइसहरू फेला पार्ने प्रयोजनका लागि ब्लुटुथ प्रयोग गर्छ।</translation>
 <translation id="2598136842498757793">टुलबारका बटनहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="2598710988533271874">Chrome को नयाँ अपडेट उपलब्ध छ</translation>
@@ -3853,6 +3853,7 @@
 <translation id="3930968231047618417">पृष्ठभूमिको रङ्ग</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> पिन गर्नुहोस्</translation>
 <translation id="3932477678113677556">बढीमा <ph name="MAX" /> वटा वर्ण प्रयोग गर्न मिल्छ</translation>
+<translation id="3932501527949942152">ट्याब अडियोसहित सेयर गर्नुहोस्</translation>
 <translation id="3933121352599513978">अनावश्यक अनुरोधहरू कोल्याप्स गर्नुहोस् (सिफारिस गरिन्छ)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ले तपाईंसँग कुनै Wi-Fi नेटवर्क सेयर गर्दै छ</translation>
 <translation id="3936390757709632190">अडियो नयाँ ट्याबमा &amp;खोल्नुहोस्</translation>
@@ -4337,6 +4338,7 @@
 <translation id="4325515113816851466">तपाईंले साइन आउट गरेपछि तपाईंका अभिभावकका रोजाइहरू लागू हुने छैनन्।</translation>
 <translation id="4326146840124313313">Chrome को सबैभन्दा भरपर्दो सुरक्षा सुविधाले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड तथा एक्स्टेन्सनहरूबाट थप सुरक्षित राख्छ</translation>
 <translation id="4327380114687339519">एक्स्टेन्सन मेनु</translation>
+<translation id="4328160087116165267">सिस्टम अडियोसहित सेयर गर्नुहोस्</translation>
 <translation id="4330191372652740264">बरफ जस्तो चिसो पानी</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> लाई कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="4330963457501417204">कोल्याप्स गरिएका ट्याबहरूमाथि होभर गरेर ती ट्याब एक्स्पान्ड गर्नुहोस्</translation>
@@ -4836,6 +4838,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ले तपाईंको स्क्रिन साझा गर्दैछ।</translation>
 <translation id="4722989931633062466">तेस्रो पक्षीय साइन इन प्रम्प्टहरू देखाउन अनुमति नदिइएका साइटहरू</translation>
 <translation id="4723140812774948886">यसपछिको वस्तुसँग साट्नुहोस्</translation>
+<translation id="4724031052727917178">अडियोसहित सेयर गर्नुहोस्</translation>
 <translation id="4724450788351008910">सम्बन्ध परिवर्तन गरियो</translation>
 <translation id="4725511304875193254">कोर्गी</translation>
 <translation id="4726710355753484204">जुम इन गर्न Ctrl + Alt + चमक बढाउने की थिच्नुहोस्।
@@ -5330,7 +5333,6 @@
 <translation id="5096775069898886423">सुरक्षित कनेक्सन प्रयोग गर्न नमिल्ने साइटका हकमा उक्त साइटमा जानुअघि नै चेतावनी प्राप्त गर्नुहोस्</translation>
 <translation id="5097002363526479830">नेटवर्क '<ph name="NAME" />' मा जडान हुन असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">तपाईंले खोल्ने साइटहरूले तपाईंलाई मन पर्ने कुराहरू निर्धारण गरी तपाईंले ब्राउज गर्ने क्रममा तपाईंको रुचिअनुसारका विज्ञापन देखाउन सक्छन्</translation>
-<translation id="5097472729724586429">"टेक्स्ट एनोटेसन हाल्नुहोस्" नामक नयाँ टुल प्रयोग गरी टेक्स्ट एनोटेसन हाल्नुहोस्</translation>
 <translation id="5097649414558628673">टुल: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">कर्सर रोकिँदा स्वतः क्लिक गर्नुहोस्</translation>
 <translation id="5098963855433723436">छुट्टै एपमा खुल्छ</translation>
@@ -7755,6 +7757,7 @@
 <translation id="701020165009334820">तपाईं Play स्टोर मार्फत Android एप तथा गेमहरू डाउनलोड गर्न सक्नुहुन्छ।</translation>
 <translation id="701080569351381435">स्रोत हेर्नुहोस्</translation>
 <translation id="7012430956470647760">एपहरूका लागि अभिभावकीय नियन्त्रणहरू</translation>
+<translation id="7012873145982513962">यो साइटले पूर्ण रूपमा काम गर्न अडियो सेयर गर्न सिफारिस गर्छ</translation>
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
 <translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>

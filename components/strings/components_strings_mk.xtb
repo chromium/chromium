@@ -1864,6 +1864,7 @@
 <translation id="385489333361351399">Камера и опрема за фотографирање</translation>
 <translation id="3858027520442213535">Ажурирај датум и време</translation>
 <translation id="3858860766373142691">Име</translation>
+<translation id="3864558817291331916">Секогаш прикажувај <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="3865339060090354361">Погледнете ги условите за <ph name="CREDIT_CARD_NAME" /> тука</translation>
 <translation id="3869939189466884821">Вашите локални датотеки ќе се избришат по <ph name="MINUTES" /> минути</translation>
 <translation id="3872834068356954457">Наука</translation>
@@ -2194,7 +2195,6 @@
 <translation id="4340810192899866471">Увезете од JSON</translation>
 <translation id="4340982228985273705">Овој компјутер не се препознава како управуван од организација, така што правилото може автоматски да инсталира само екстензии хостирани на Chrome Web Store. URL-адресата за ажурирање од Chrome Web Store е „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4342742994656318294">Тематски паркови</translation>
-<translation id="4344194909635300809">URL-адресите и насловите на страниците се испраќаат до Google и може да ги прегледуваат луѓе</translation>
 <translation id="4346670990181948854">Информации за патување · Возила</translation>
 <translation id="4348834659292907206">Врската со <ph name="SITE" /> не е безбедна</translation>
 <translation id="4349365535725594680">Не може да се споделат доверливи содржини</translation>
@@ -2456,7 +2456,6 @@
 <translation id="4786804728079074733">Одбојка</translation>
 <translation id="4787182171088676626">Коверт (софистициран)</translation>
 <translation id="4791134497475588553">Инсталирани апликации на Linux и кога последен пат се користени</translation>
-<translation id="4791602164422809437">Овозможено од „Лична интелигенција“ со Gemini. URL-адресите и насловите на страниците се испраќаат до Google и може да ги прегледуваат луѓе. <ph name="BEGIN_LINK" />Управувајте со поставките<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Испраќањето на податоците не е безбедно</translation>
 <translation id="4793219378458250238">11 x 12 инчи</translation>
 <translation id="4796594887379589189">ID на работен налог</translation>
@@ -3362,6 +3361,7 @@
 <translation id="6177531123306197852">Плик C2</translation>
 <translation id="6180316780098470077">Обиди се повторно со интервалот</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Притиснете Tab, па Enter за да ја прашате <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="6189351761800074311">Текстот и содржините на страницата се испраќаат до Google, но нема да се користат за подобрување на AI.
     <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">да отфрли некои копчиња на тастатурата, како Esc</translation>
@@ -3438,7 +3438,6 @@
 <translation id="6302546952464230349">Прикажи детали за дозволата за <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Софтвер за мултимедијални содржини</translation>
 <translation id="6305205051461490394"><ph name="URL" /> е недостапна.</translation>
-<translation id="6305834316918845109">Кога пишувате барање за „Подобрено автоматско пополнување“, Chrome евидентира како ја користите функцијата, на пример, дали ги прифаќате, ги изменувате или ги игнорирате предлозите за „Автоматско пополнување“</translation>
 <translation id="6306713302480826305">Адресава ќе биде избришана од овој и од другите ваши најавени уреди</translation>
 <translation id="6307968763353904914">Банката не може да понуди виртуелни картички за овој начин на плаќање, но сѐ уште може да плаќате онлајн со картичката <ph name="CARD_LABEL" />.</translation>
 <translation id="6311410654831092784">Пакет картички</translation>
@@ -3989,6 +3988,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Серверот треба да се надгради на TLS 1.2 или понова верзија.</translation>
 <translation id="7156885531105222428">Страницата што ја побаравте не можеше да се најде во апликацијата</translation>
+<translation id="7157447397944182926">Прашајте ја <ph name="AI_ENGINE_NAME" /> во „Пребарување на <ph name="SEARCH_ENGINE_NAME" />“</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{За да ја испратите датотекава со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}one{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}other{За да ги испратите датотекиве со <ph name="FEATURE_NAME" />, ослободете простор (<ph name="DISK_SPACE_SIZE" />) на вашиот уред}}</translation>
 <translation id="7160999678034985039">Зачувајте ја вашата работа и започнете го ажурирањето кога ќе бидете подготвени.</translation>
 <translation id="7162277662076933695">Читач на паметни картички</translation>
@@ -4082,7 +4082,6 @@
 <translation id="7310392214323165548">Уредот ќе се рестартира наскоро</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
 <translation id="7313107491291103073">Вашата организација го означи сајтов бидејќи можеби прекршува правило.</translation>
-<translation id="7313260329718515829">Барањата испратени до „Лична интелигенција“ со Gemini се анализираат за да се подобри „Автоматско пополнување“</translation>
 <translation id="7316521168101843192">Датотеката се зачувува во Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
@@ -4577,7 +4576,6 @@
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8038182528865038593">Црвена 2</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
-<translation id="8042898384266617514">Вашите барања, наслови на страници и URL-адреси се испраќаат до Google и може да ги прегледуваат луѓе</translation>
 <translation id="8043255123207491407">Погледнете ги „Условите и одредбите на продавачот“</translation>
 <translation id="8044986521421349135">Вашата последно отворена картичка</translation>
 <translation id="8046360364391076336">Индустриски материјали и опрема</translation>
@@ -4640,6 +4638,7 @@
 <translation id="815036624016370447">Податоците од вашата сметка на Google <ph name="ACCOUNT" /> може да ви помогнат да ги пополнувате формуларите побрзо во Chrome</translation>
 <translation id="8150722005171944719">Датотеката на <ph name="URL" /> не може да се прочита. Можно е да е отстранета, преместена или дозволите на датотеката да го спречуваат пристапот.</translation>
 <translation id="8151185429379586178">Програмерски алатки</translation>
+<translation id="8152194419479742504">Внесете @@ во кој било формулар за да ги најдете и да ги пополните податоците без да се префрлате во друга картичка</translation>
 <translation id="8153865548451212769">{0,plural, =1{Правилото на администраторот не препорачува да се презема датотекава во <ph name="DESTINATION_NAME" />}one{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}other{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Последни отворени картички</translation>
 <translation id="81563721597823545">Опрема за хокеј</translation>
@@ -4660,6 +4659,7 @@
 <translation id="8189557652711717875">Пребарувачот што ќе го изберете ќе се користи за функции како пребарување од лентата за адреси и од слики на веб-страници.</translation>
 <translation id="8190193880870196235">Управувано од екстензија</translation>
 <translation id="8194412401381329820">Не може да ја користите страницава од управувана сметка на неуправуваниов уред. Ако ја користите страницава, ќе се заклучат сите управувани сметки, освен сметките со коишто управува истиот ентитет што управува со уредов (поврзани сметки).</translation>
+<translation id="8194579937546982778">Секогаш прикажувај <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="8194797478851900357">&amp;Врати преместување</translation>
 <translation id="8194956568907463262">Пукачки игри</translation>
 <translation id="8199437620497683918">Оптички диск (сјајен)</translation>
@@ -5166,6 +5166,7 @@
 <translation id="9027020981272345766">Испробајте го Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">За да излезете од цел екран, притиснете и задржете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
+<translation id="9035699147763101514">Овозможено од „Лична интелигенција“ со Gemini. Управувајте со избраните опции во поставките.</translation>
 <translation id="9035824888276246493">Зачувај ги безбедносните кодови</translation>
 <translation id="9036306139374661733">Да се дозволи микрофонот?</translation>
 <translation id="9036484080057916082">Список со временски печати на потпишан сертификат</translation>
@@ -5345,6 +5346,7 @@
 <translation id="979107176848483472">Со вашите прелистувач и профил управува <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Саеми и конвенции</translation>
 <translation id="981121421437150478">Без мрежа</translation>
+<translation id="983587187183716432">Копче <ph name="AI_ENGINE_NAME" />, притиснете Enter за да ја прашате <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984101218975906499">Фармација и биотехнологија</translation>
 <translation id="984275831282074731">Начини на плаќање</translation>
 <translation id="985199708454569384">&lt;p&gt;Грешкава ќе ја видите ако датумот и времето на компјутерот или мобилниот уред не се точни.&lt;/p&gt;

@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">未选择“<ph name="ITEM" />”。第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个。按搜索键 + 空格键即可选择。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
+<translation id="109038914521989341">请输入复制此数据的原因：</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1093457606523402488">可见网络：</translation>
 <translation id="1093645050124056515">ctrl + alt + 向下键</translation>
@@ -2042,7 +2043,6 @@
 <translation id="2588271083332682494">使用标签页分组整理标签页</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
 <translation id="2589658397149952302">一律不显示云端硬盘文件</translation>
-<translation id="2595508219468433076">关闭（无行聚焦）</translation>
 <translation id="2597073208962000830">附近分享功能使用蓝牙扫描寻找附近的设备。</translation>
 <translation id="2598136842498757793">自定义工具栏按钮</translation>
 <translation id="2598710988533271874">有新版 Chrome 可用</translation>
@@ -3852,6 +3852,7 @@
 <translation id="3930968231047618417">背景颜色</translation>
 <translation id="3932356525934356570">固定“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="3932477678113677556">最多不能超过 <ph name="MAX" /> 个字符</translation>
+<translation id="3932501527949942152">带标签页音频分享</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3936260554100916852">“<ph name="DEVICE_NAME" />”正在与您分享一个 Wi-Fi 网络</translation>
 <translation id="3936390757709632190">在新标签页中打开音频(&amp;O)</translation>
@@ -4336,6 +4337,7 @@
 <translation id="4325515113816851466">退出账号后，家长选择的设置将不再适用</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4327380114687339519">扩展程序菜单</translation>
+<translation id="4328160087116165267">带系统音频分享</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="4330963457501417204">将光标悬停在已收起的标签页上即可展开标签页</translation>
@@ -4835,6 +4837,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" />正在共享您的屏幕。</translation>
 <translation id="4722989931633062466">不得显示第三方登录提示</translation>
 <translation id="4723140812774948886">与后一项调换</translation>
+<translation id="4724031052727917178">带音频分享</translation>
 <translation id="4724450788351008910">附属关系已更改</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4726710355753484204">使用 Ctrl + Alt +“调高亮度”键即可放大。
@@ -5328,7 +5331,6 @@
 <translation id="5096775069898886423">在您访问不支持安全连接的网站前，系统会发出警告</translation>
 <translation id="5097002363526479830">无法连接到网络“<ph name="NAME" />”：<ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
-<translation id="5097472729724586429">使用新的“添加文字注释”工具添加文字注释</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
 <translation id="5098963855433723436">在单独的应用中打开</translation>
@@ -7751,6 +7753,7 @@
 <translation id="701020165009334820">您可以通过 Play 商店下载 Android 应用和游戏。</translation>
 <translation id="701080569351381435">显示源代码</translation>
 <translation id="7012430956470647760">适用于应用的家长控制功能</translation>
+<translation id="7012873145982513962">此网站建议分享音频以实现完整功能</translation>
 <translation id="7014174261166285193">安装失败。</translation>
 <translation id="7014480873681694324">撤消突出显示</translation>
 <translation id="7014741021609395734">缩放级别</translation>

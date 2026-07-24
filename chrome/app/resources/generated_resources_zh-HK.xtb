@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">無揀「<ph name="ITEM" />」。第 <ph name="INDEX" /> 項，總共有 <ph name="COUNT" /> 項。㩒搜尋鍵加空白鍵就可以揀。</translation>
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
+<translation id="109038914521989341">請輸入複製資料的原因：</translation>
 <translation id="1090541560108055381">在進行配對前，請先確認兩部裝置所顯示的代碼相同</translation>
 <translation id="1093457606523402488">可見的網絡：</translation>
 <translation id="1093645050124056515">Ctrl 鍵 + Alt 鍵 + 向下箭咀鍵</translation>
@@ -2054,7 +2055,6 @@
 <translation id="2588271083332682494">分頁群組助你保持條理</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="2589658397149952302">永不顯示「雲端硬碟」檔案</translation>
-<translation id="2595508219468433076">關閉 (沒有行焦點)</translation>
 <translation id="2597073208962000830">「咫尺共享」功能會透過藍牙掃瞄尋找附近的裝置。</translation>
 <translation id="2598136842498757793">自訂工具列按鈕</translation>
 <translation id="2598710988533271874">有新版本 Chrome 可安裝</translation>
@@ -3864,6 +3864,7 @@
 <translation id="3930968231047618417">背景顏色</translation>
 <translation id="3932356525934356570">固定「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="3932477678113677556">最多 <ph name="MAX" /> 個字元</translation>
+<translation id="3932501527949942152">連分頁音訊分享</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3936260554100916852">「<ph name="DEVICE_NAME" />」正在與您共用 Wi-Fi 網絡</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效檔案(&amp;O)</translation>
@@ -4349,6 +4350,7 @@
 <translation id="4325515113816851466">你登出後，系統就不會套用家長的選擇</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全功能可進一步保護您免受危險網站、下載檔案和擴充程式威脅</translation>
 <translation id="4327380114687339519">擴充程式選單</translation>
+<translation id="4328160087116165267">連系統音訊分享</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">永不翻譯<ph name="LANGUAGE" />內容</translation>
 <translation id="4330963457501417204">懸停即可展開已收合的分頁</translation>
@@ -4848,6 +4850,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用您的螢幕。</translation>
 <translation id="4722989931633062466">不允許顯示第三方登入提示</translation>
 <translation id="4723140812774948886">與下一個交換</translation>
+<translation id="4724031052727917178">連音訊分享</translation>
 <translation id="4724450788351008910">聯盟已變更</translation>
 <translation id="4725511304875193254">哥基</translation>
 <translation id="4726710355753484204">使用 Ctrl + Alt + 調高亮度鍵即可放大畫面。
@@ -5341,7 +5344,6 @@
 <translation id="5096775069898886423">如果網站不支援安全連線，系統會在瀏覽前發出警告</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">您瀏覽的網站可判斷您喜愛的內容，然後在您繼續瀏覽時建議廣告</translation>
-<translation id="5097472729724586429">使用全新的「新增文字註解」工具加入文字註釋</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
 <translation id="5098963855433723436">喺另一個應用程式度開</translation>
@@ -7764,6 +7766,7 @@
 <translation id="701020165009334820">你可以透過「Play 商店」下載 Android 應用程式同遊戲。</translation>
 <translation id="701080569351381435">檢視原始碼</translation>
 <translation id="7012430956470647760">應用程式家長監控設定</translation>
+<translation id="7012873145982513962">此網站建議分享音訊以使用完整功能</translation>
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7014480873681694324">移除焦點內容</translation>
 <translation id="7014741021609395734">縮放比例</translation>

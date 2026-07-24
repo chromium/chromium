@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">‏<ph name="ITEM" /> کا انتخاب نہیں کیا گیا۔ <ph name="COUNT" /> میں سے <ph name="INDEX" />۔ منتخب کرنے کیلئے، تلاش اور Space دبائیں۔</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
 <translation id="1090126737595388931">پس منظر کی کوئی ایپس نہیں چل رہی ہیں</translation>
+<translation id="109038914521989341">براہ کرم اس ڈیٹا کو کاپی کرنے کی وجہ درج کریں:</translation>
 <translation id="1090541560108055381">جوڑا بنانے سے پہلے، یقینی بنائیں کہ یہ کوڈ دونوں آلات پر ایک جیسا ہے</translation>
 <translation id="1093457606523402488">دیکھنے لائق نیٹ ورکس:</translation>
 <translation id="1093645050124056515">‏ctrl + alt + نیچے تیر کا نشان</translation>
@@ -188,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{پوشیدگی ونڈو بند کریں}other{پوشیدگی (# ونڈوز) بند کریں}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - گروپ کا حصہ <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
+<translation id="1130866111814048607">‏ٹیبز کا اشتراک کرنے پر، ان کے صفحہ کے مواد، میڈیا اور URLs کو Google کو بھیجا جاتا ہے اور حفاظت کے لیے ان کا جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="1133418583142946603">موجودہ ٹیب شامل کریں</translation>
 <translation id="1133751489735776037">ماؤس پر تین بار کلک کریں</translation>
 <translation id="1136712381129578788">‏کئی مرتبہ غلط PIN درج کرنے کی وجہ سے سیکیورٹی کلید مقفل ہو گئی ہے۔ اسے غیر مقفل کرنے کیلئے، اسے ہٹا کر دوبارہ داخل کریں۔</translation>
@@ -1099,6 +1101,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> چلانے کیلئے کنٹرول دبا کر کلک کریں</translation>
 <translation id="1848219224579402567">لِڈ بند ہونے پر سائن آؤٹ کریں</translation>
 <translation id="184862733444771842">خصوصیت کی درخواست</translation>
+<translation id="184871971966737653">کچھ بھی پوچھنے کے لیے کھلے ٹیبز شامل کریں</translation>
 <translation id="1849016657376805933">‏کوئی بھی HID آلہ</translation>
 <translation id="1849022541429818637">آپ کے ماؤس ان پٹ کو کیپچر کرنے اور استعمال کرنے کی اجازت دی گئی</translation>
 <translation id="1849252834922144634">شارٹ کٹس کو پن کرنے کے لیے تھپتھپائیں اور دبائے رکھیں</translation>
@@ -2042,7 +2045,6 @@
 <translation id="2588271083332682494">ٹیب گروپس کے ساتھ صاف کریں</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> کے آلات</translation>
 <translation id="2589658397149952302">‏Drive فائلیں کبھی نہ دکھائیں</translation>
-<translation id="2595508219468433076">آف ہے (لائن فوکس نہیں ہے)</translation>
 <translation id="2597073208962000830">قریبی آلات کے ساتھ اشتراک قریبی آلات تلاش کرنے کے لیے بلوٹوتھ اسکیننگ کا استعمال کرتا ہے۔</translation>
 <translation id="2598136842498757793">ٹول بار کے بٹنز کو حسب ضرورت بنائیں</translation>
 <translation id="2598710988533271874">‏نیا Chrome دستیاب ہے</translation>
@@ -2085,6 +2087,7 @@
 <translation id="2624142942574147739">یہ صفحہ آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کر رہا ہے۔</translation>
 <translation id="2626799779920242286">براہ کرم بعد میں دوبارہ آزمائیں۔</translation>
 <translation id="2627424346328942291">اشتراک نہیں کیا جا سکتا</translation>
+<translation id="2627970398976286795">‏‫Gemini Spark کے خطرات کا جائزہ لیں</translation>
 <translation id="2628258844236035475">‏‫Chrome آٹو فل سے اپنے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="2628770867680720336">‏اس Chromebook کو فیکٹری ری سیٹ کرنے کے لیے ADB ڈیبگنگ فعال کرنا ہوگا۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">‏‫Gemini کے ساتھ نئی چیٹ شروع کریں</translation>
@@ -2775,6 +2778,7 @@
 <translation id="3134312457920437826">ایکسٹینشن کو انسٹال نہیں کیا جا سکتا کیونکہ یہ ایک غیر تعاون یافتہ مینی فیسٹ ورژن استعمال کرتی ہے۔</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> تجربے کیلئے تجربے کی حالت منتخب کریں۔ تجربے کی تفصیل: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ڈیفالٹ زرد اوتار</translation>
+<translation id="314095642664111744">فوکس آف کریں</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
 <translation id="3141318088920353606">سنا جا رہا ہے…</translation>
 <translation id="3142562627629111859">نیا گروپ</translation>
@@ -3330,6 +3334,7 @@
 <translation id="3569614820047645079">‏میری ڈرائیو میں موجود آپ کی فائلز خودکار طور پر آپ کے Chromebook سے مطابقت پذیر ہوتی ہیں تاکہ آپ انٹرنیٹ کنکشن کے بغیر ان تک رسائی حاصل کر سکیں۔</translation>
 <translation id="3569617221227793022">ٹائم زون فی الحال <ph name="TIME_ZONE_ENTRY" /> پر سیٹ ہے۔ یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> مندرجہ ذیل فائلز اور فولڈرز کو دیکھ سکتا ہے</translation>
+<translation id="3570112771874223231">‏صفحے کا وہ مواد اور URLs جو Gemini کسی ٹاسک کے دوران استعمال کرتا ہے، ان کا اشتراک Google کے ساتھ کیا جائے گا اور حفاظت کے لیے ان کا جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3575224072358507281">‏Measurement Lab کے لیے ان کی رازداری کی پالیسی (measurementlab.net/privacy) کے مطابق IP پتہ اور نیٹ ورک کی پیمائش کے نتائج جمع کریں</translation>
@@ -3590,6 +3595,7 @@
 <translation id="3756578970075173856">‏PIN سیٹ کریں</translation>
 <translation id="3756806135608816820">سائٹس بلوٹوتھ آلات تلاش کرنے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="3756823472711156529">گروپ کو بحال کریں</translation>
+<translation id="3757337311115630808">‏‫Gemini Spark کے بارے میں مزید جانیں</translation>
 <translation id="3757567010566591880">ٹول بار سے پن ہٹائیں</translation>
 <translation id="3757645900890881944">تلاش کے ٹولز</translation>
 <translation id="3757733214359997190">کوئی سائٹ نہیں ملی</translation>
@@ -3852,6 +3858,7 @@
 <translation id="3930968231047618417">پس منظر کا رنگ</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> کو پن کریں</translation>
 <translation id="3932477678113677556">زیادہ سے زیادہ لمبائی <ph name="MAX" /> حروف</translation>
+<translation id="3932501527949942152">ٹیب آڈیو کے ساتھ اشتراک کریں</translation>
 <translation id="3933121352599513978">غیر مطلوبہ درخواستوں کو سکیڑیں (تجویز کردہ)</translation>
 <translation id="3936260554100916852">‏<ph name="DEVICE_NAME" /> آپ کے ساتھ Wi-Fi نیٹ ورک کا اشتراک کر رہا ہے</translation>
 <translation id="3936390757709632190">آڈیو کو نئے ٹیب میں &amp;کھولیں</translation>
@@ -4337,6 +4344,7 @@
 <translation id="4325515113816851466">آپ کے سائن آؤٹ کرنے کے بعد آپ کے والد/والدہ کے انتخابات لاگو نہیں ہوں گے</translation>
 <translation id="4326146840124313313">‏Chrome کی مضبوط ترین سیکیورٹی آپ کو خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے بچانے کے لیے بہت کچھ کرتی ہے</translation>
 <translation id="4327380114687339519">ایکسٹینشنز کا مینو</translation>
+<translation id="4328160087116165267">سسٹم آڈیو کے ساتھ اشتراک کریں</translation>
 <translation id="4330191372652740264">برف کا پانی</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="4330963457501417204">ہوور کر کے سکیڑے ہوئے ٹیبز کو پھیلائیں</translation>
@@ -4738,6 +4746,7 @@
 <translation id="4647283074445570750">مرحلہ <ph name="TOTAL_STEPS" /> میں سے <ph name="CURRENT_STEP" /></translation>
 <translation id="4647836961514597010">رنگ منتخب کنندہ</translation>
 <translation id="4648491805942548247">ناکافی اجازتیں</translation>
+<translation id="4648876469762528742">ایپ اپ ٹو ڈیٹ ہے۔</translation>
 <translation id="4650037136970677721">میموری محفوظ ہو گئی</translation>
 <translation id="4650591383426000695">اپنے فون کو <ph name="DEVICE_TYPE" /> سے غیر منسلک کریں</translation>
 <translation id="4651921906638302153">اس اکاؤنٹ کے ساتھ سائن ان نہیں کر سکتے</translation>
@@ -4836,6 +4845,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> آپ کی اسکرین کا اشتراک کر رہی ہے۔</translation>
 <translation id="4722989931633062466">فریق ثالث کے سائن ان پرامپٹس دکھانے کی اجازت نہیں ہے</translation>
 <translation id="4723140812774948886">اگلے کے ساتھ تبدیل کریں</translation>
+<translation id="4724031052727917178">آڈیو کے ساتھ اشتراک کریں</translation>
 <translation id="4724450788351008910">الحاق تبدیل کر دیا گیا</translation>
 <translation id="4725511304875193254">کورگی</translation>
 <translation id="4726710355753484204">‏زوم ان کرنے کے لیے Ctrl+Alt+Brightness Up کا استعمال کریں۔
@@ -4988,6 +4998,7 @@
 <translation id="4840096453115567876">بہر حال پوشیدگی وضع کو بند کریں؟</translation>
 <translation id="4841475798258477260">یہ آلہ صرف ایک مخصوص موبائل نیٹ ورک سے منسلک ہو سکتا ہے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">یہ صفحہ غیر توثیق کردہ ذرائع سے اسکرپٹس لوڈ کرنے کی کوشش کر رہا ہے۔</translation>
+<translation id="4843037705239202082">میڈیا کی تفہیم</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4846628405149428620">منتخب کریں کہ یہ سائٹ تبدیلیاں کہاں محفوظ کر سکتی ہے</translation>
 <translation id="4846680374085650406">اس ترتیب کیلئے آپ منتظم کی تجویز کی پیروی کر رہے ہیں۔</translation>
@@ -5329,7 +5340,6 @@
 <translation id="5096775069898886423">محفوظ کنکشنز کا تعاون کرنے والی سائٹس کیلئے، سائٹ ملاحظہ کرنے سے پہلے وارننگ حاصل کریں</translation>
 <translation id="5097002363526479830">نیٹ ورک '<ph name="NAME" />' سے منسلک ہونے میں ناکام ہوگیا: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">آپ جو سائٹ ملاحظہ کرتے ہیں وہ اس بات کا تعین کر سکتی ہیں کہ آپ کیا پسند کرتے ہیں اور پھر جب آپ براؤز کرنا جاری رکھتے ہیں تو اشتہارات تجویز کر سکتی ہیں۔</translation>
-<translation id="5097472729724586429">نئے "ٹیکسٹ تشریحات شامل کریں" ٹول کے ساتھ ٹیکسٹ تشریحات شامل کریں</translation>
 <translation id="5097649414558628673">ٹول: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">جب کرسر رک جاتا ہے تو خودکار طور پر کلک کریں</translation>
 <translation id="5098963855433723436">ایک الگ ایپلیکیشن میں کھلتا ہے</translation>
@@ -7733,6 +7743,7 @@
 <translation id="7001809623433867903">بُک مارکس ہٹائیں؟</translation>
 <translation id="7003339318920871147">ویب ڈیٹا بیسز</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} فائل}other{{COUNT} فائلز}}</translation>
+<translation id="7003537330107832201">‫<ph name="APP_NAME" /> کا نیا ورژن (<ph name="VERSION" />) دستیاب ہے۔ اپ ڈیٹ لاگو کرنے کے لیے تمام کھلی ونڈوز بند ہو جائیں گی۔ غیر محفوظ کردہ ڈیٹا ضائع ہو سکتا ہے۔</translation>
 <translation id="7003644704445046755">اعلی کوالٹی کی <ph name="LANGUAGE" /> آواز کی فائلز داؤن لوڈ کی گئیں</translation>
 <translation id="7003723821785740825">اپنا آلہ غیر مقفل کرنے کا ایک تیز تر طریقہ ترتیب دیں</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
@@ -7754,6 +7765,7 @@
 <translation id="701020165009334820">‏آپ Play اسٹور سے Android ایپس اور گیمز ڈاؤن لوڈ کر سکتے ہیں۔</translation>
 <translation id="701080569351381435">ماخذ دیکھیں</translation>
 <translation id="7012430956470647760">ایپس کے لیے پیرنٹل کنٹرولز</translation>
+<translation id="7012873145982513962">یہ سائٹ مکمل فعالیت کے لیے آڈیو کا اشتراک کرنے کی تجویز کرتی ہے</translation>
 <translation id="7014174261166285193">انسٹالیشن ناکام ہو گیا۔</translation>
 <translation id="7014480873681694324">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="7014741021609395734">زوم کی سطح</translation>
@@ -8295,6 +8307,7 @@
 <translation id="7434509671034404296">ڈویلپر</translation>
 <translation id="7434757724413878233">ماؤس کا ایکسیلریشن</translation>
 <translation id="7434969625063495310">پرنٹ سرور شامل نہیں کر سکا۔ براہ کرم سرور کی کنفیگریشن کو چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="7435500219604275502">اپ ڈیٹ لاگو کریں</translation>
 <translation id="7439519621174723623">جاری رکھنے کیلئے ایک آلے کا نام شامل کریں</translation>
 <translation id="7441736921018636843">اس ترتیب کو تبدیل کرنے کے لیے، اپنی مطابقت پذیری کے پاس فریز کو ہٹانے کے لیے <ph name="BEGIN_LINK" />مطابقت پذیری کو ری سیٹ کریں<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">دیگر صارفین</translation>
@@ -9467,6 +9480,7 @@
 <translation id="8342387517402567689">پوشیدگی وضع میں ویب ایپ انسٹالز تعاون یافتہ نہیں ہیں</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
 <translation id="8343578633847737325">حالیہ چیٹس اور سلسلے</translation>
+<translation id="8345099007452202761">‫<ph name="APP_NAME" /> کا نیا ورژن (<ph name="VERSION" />) دستیاب ہے۔ کیا آپ اسے ابھی لاگو کرنا چاہیں گے؟</translation>
 <translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8347728744337089388">اپنے آلہ پر بھیجیں</translation>

@@ -136,6 +136,7 @@
 <translation id="1085618740036066768"><ph name="ITEM" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ. <ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />. ಆಯ್ಕೆಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1086486568852410168">Google Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಿ</translation>
 <translation id="1090126737595388931">ಯಾವುದೇ ಹಿನ್ನೆಲೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಚಾಲನೆಯಲ್ಲಿಲ್ಲ</translation>
+<translation id="109038914521989341">ಈ ಡೇಟಾವನ್ನು ಕಾಪಿ ಮಾಡಲು ಕಾರಣವನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="1090541560108055381">ಜೋಡಿಸುವ ಮೊದಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ ಈ ಕೋಡ್ ಒಂದೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1093457606523402488">ಗೋಚರಿಸುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
 <translation id="1093645050124056515">ctrl + alt + ಡೌನ್ ಆ್ಯರೋ</translation>
@@ -2046,7 +2047,6 @@
 <translation id="2588271083332682494">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ವ್ಯವಸ್ಥಿತವಾಗಿರಿಸಿ</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> ನಿಂದ ಸಾಧನಗಳು</translation>
 <translation id="2589658397149952302">Drive ಫೈಲ್‌ಗಳನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
-<translation id="2595508219468433076">ಆಫ್ ಆಗಿದೆ (ಲೈನ್ ಫೋಕಸ್ ಇಲ್ಲ)</translation>
 <translation id="2597073208962000830">ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು, ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಅನ್ನು Nearby ಶೇರ್ ಬಳಸಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="2598136842498757793">ಟೂಲ್‌ಬಾರ್ ಬಟನ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="2598710988533271874">ಹೊಸ Chrome ಲಭ್ಯವಿದೆ</translation>
@@ -3857,6 +3857,7 @@
 <translation id="3930968231047618417">ಹಿನ್ನೆಲೆ ಬಣ್ಣ</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> ಅನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="3932477678113677556">ಗರಿಷ್ಠ ಉದ್ದ <ph name="MAX" /> ಅಕ್ಷರಗಳು</translation>
+<translation id="3932501527949942152">ಟ್ಯಾಬ್ ಆಡಿಯೊದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3933121352599513978">ಅನಗತ್ಯ ವಿನಂತಿಗಳನ್ನು ಕುಗ್ಗಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> ನಿಮ್ಮ ಜೊತೆಗೆ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
 <translation id="3936390757709632190">&amp;ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಆಡಿಯೋ ತೆರೆಯಿರಿ</translation>
@@ -4342,6 +4343,7 @@
 <translation id="4325515113816851466">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳು ಅನ್ವಯಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4326146840124313313">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯು ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4327380114687339519">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಮೆನು</translation>
+<translation id="4328160087116165267">ಸಿಸ್ಟಂ ಆಡಿಯೊದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4330191372652740264">ಐಸ್ ವಾಟರ್</translation>
 <translation id="4330387663455830245">ಎಂದಿಗೂ <ph name="LANGUAGE" /> ಭಾಷೆಯನ್ನು ಅನುವಾದಿಸಬೇಡ</translation>
 <translation id="4330963457501417204">ಹೋವರ್ ಮಾಡುವ ಮೂಲಕ ಕುಗ್ಗಿಸಲಾದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವಿಸ್ತರಿಸಿ</translation>
@@ -4841,6 +4843,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="4722989931633062466">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್-ಇನ್ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4723140812774948886">ಮುಂದಿನದರ ಮೂಲಕ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="4724031052727917178">ಆಡಿಯೋ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4724450788351008910">ಅನುದಾನವನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="4725511304875193254">ಕಾರ್ಗಿ</translation>
 <translation id="4726710355753484204">ಝೂಮ್ ಇನ್ ಮಾಡಲು, Ctrl + Alt + ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿ.
@@ -5335,7 +5338,6 @@
 <translation id="5096775069898886423">ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬೆಂಬಲಿಸದ ಸೈಟ್‌ಗಳಿಗಾಗಿ, ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ವಿಫಲವಾಗಿದೆ: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ನೀವು ಏನು ಇಷ್ಟಪಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ಧರಿಸಬಹುದು ಮತ್ತು ನೀವು ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿದಾಗ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸಬಹುದು.</translation>
-<translation id="5097472729724586429">ಹೊಸ "ಪಠ್ಯ ಟಿಪ್ಪಣಿಗಳನ್ನು ಸೇರಿಸಿ" ಟೂಲ್‌ನ ಮೂಲಕ ಪಠ್ಯ ಟಿಪ್ಪಣಿಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5097649414558628673">ಟೂಲ್: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ಕರ್ಸರ್ ಚಲಿಸುವುದು ನಿಂತಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5098963855433723436">ಪ್ರತ್ಯೇಕ ಆ್ಯಪ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ</translation>
@@ -7764,6 +7766,7 @@
 <translation id="701020165009334820">Play Store ಮೂಲಕ ನೀವು Android ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="701080569351381435">ಮೂಲ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7012430956470647760">ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳು</translation>
+<translation id="7012873145982513962">ಉತ್ತಮ ಅನುಭವಕ್ಕಾಗಿ ಆಡಿಯೊವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಈ ಸೈಟ್ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="7014174261166285193">ಸ್ಥಾಪನೆ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="7014480873681694324">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7014741021609395734">ಝೂಮ್ ಮಟ್ಟ</translation>

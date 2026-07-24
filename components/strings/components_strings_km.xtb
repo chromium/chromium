@@ -729,6 +729,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />។ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ម៉ាស៊ីនស្វែងរកទាំងនេះបង្ហាញ​តាមលំដាប់​ចៃដន្យ។ អ្នកអាចប្ដូរម៉ាស៊ីនស្វែងរកលំនាំដើមរបស់អ្នកបានគ្រប់ពេល។</translation>
+<translation id="2134584557120247184">សំបុត្រយន្តហោះ</translation>
 <translation id="2137891579555018930">កំពុង​រង់ចាំ​ការអនុញ្ញាត...</translation>
 <translation id="213826338245044447">ចំណាំទូរស័ព្ទ</translation>
 <translation id="2141000681034340397">កែការបញ្ចូលរបស់អ្នក</translation>
@@ -1428,6 +1429,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាអចិន្ត្រៃយ៍</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> នៅលើ <ph name="SERVER_NAME" /></translation>
+<translation id="3196374699162453920">កូដកក់</translation>
 <translation id="3196902089458890316">ចែករំលែក​ផ្ទាំង​ដែលពាក់ព័ន្ធជានិច្ច ដើម្បី​ទទួលបាន​ការឆ្លើយតប​កាន់តែ​ប្រសើរឬ?</translation>
 <translation id="3197136577151645743">អាចសួរដើម្បីដឹងថា នៅពេលណាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រងថាព័ត៌មានអ្វីដែលអ្នកធ្វើសមកាលកម្មនៅក្នុងការកំណត់ Chrome</translation>
@@ -2045,6 +2047,7 @@
 <translation id="4140905366050378834">ផលិតផល​ថែទាំ​សត្វចិញ្ចឹម និង​អាហារ​របស់សត្វចិញ្ចឹម</translation>
 <translation id="4140905530744469899">លេខសម្គាល់កម្រងព័ត៌មាន៖</translation>
 <translation id="4142935452406587478">ទម្រទី 10</translation>
+<translation id="4143568335933115324">អាកាសយានដ្ឋានទៅដល់</translation>
 <translation id="4147897805161313378">Google រូបថត</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">ស្រោមសំបុត្រចិន #4</translation>
@@ -2198,7 +2201,6 @@
 <translation id="4340810192899866471">នាំចូល​ពី JSON</translation>
 <translation id="4340982228985273705">កុំព្យូទ័រនេះ​មិនត្រូវបាន​រកឃើញ​ថាជា​សហគ្រាស​ដែលបាន​គ្រប់គ្រង​ទេ ដូច្នេះ​គោលការណ៍​អាចដំឡើង​កម្មវិធី​បន្ថែម​ដែលបាន​បង្ហោះដោយ​ស្វ័យប្រវត្តិ​នៅ​លើ Chrome Webstore តែ​ប៉ុណ្ណោះ។ URL កំណែថ្មី​របស់ Chrome Webstore គឺ "<ph name="CWS_UPDATE_URL" />" ។</translation>
 <translation id="4342742994656318294">សួន​កម្សាន្ត</translation>
-<translation id="4344194909635300809">ចំណងជើង និង URL ទំព័រត្រូវបានបញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យដោយមនុស្ស</translation>
 <translation id="4346670990181948854">ព័ត៌មាន​អំពី​ការធ្វើដំណើរ · យានជំនិះ</translation>
 <translation id="4348834659292907206">ការតភ្ជាប់ទៅ <ph name="SITE" /> មិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4349365535725594680">មិនអាច​ចែករំលែក​ខ្លឹមសារសម្ងាត់​បានទេ</translation>
@@ -2313,6 +2315,7 @@
 <translation id="4543072026714825470">ដើម្បី​បង់ប្រាក់​លឿន​ជាងនេះ​នៅពេល​ក្រោយ សូមរក្សាទុកកាត និង​អាសយដ្ឋាន​ទូទាត់វិក្កយបត្រ​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="4546730006268514143">ការផ្ទេរ​អស់ម៉ោងហើយ</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{បាន​បង្កើត 1 ថ្ងៃមុន}other{បានបង្កើត {NUM_DAYS} ថ្ងៃមុន}}</translation>
+<translation id="4550087677305533997">អ្នកដំណើរ</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">អ្នកកំពុង​ប្រើ​ការ​ចាក់សោអេក្រង់​សម្រាប់​ការបំពេញ​ពាក្យសម្ងាត់</translation>
 <translation id="4557573143631562971">ធានា​រ៉ាប់រង​ផ្ទះ</translation>
@@ -2366,6 +2369,7 @@
 <translation id="4658801711339831733">បានរក្សាទុក​ឯកសារស្កេន​ទៅ Google ថាស</translation>
 <translation id="4660592918803576381">បើក​នៅក្នុង​ថាស</translation>
 <translation id="4660780573807106293">អាចស្នើសុំប្រើសេនស័រចាប់ចលនា និងពន្លឺរបស់អ្នក</translation>
+<translation id="4661010630350489875">លេខ​ជើងហោះហើរ</translation>
 <translation id="4661556981531699496">សត្វ​ចិញ្ចឹម និងសត្វពាហនៈ</translation>
 <translation id="4661868874067696603">ស្វែងរក​ជម្រើសទិញ​ច្រើនទៀត</translation>
 <translation id="4663373278480897665">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
@@ -2461,7 +2465,6 @@
 <translation id="4786804728079074733">បាល់​ទះ</translation>
 <translation id="4787182171088676626">ស្រោមសំបុត្រ (គុណភាពខ្ពស់)</translation>
 <translation id="4791134497475588553">កម្មវិធី Linux ដែល​បានដំឡើង និងពេលដែលកម្មវិធី​ទាំងនេះត្រូវបានប្រើ​ចុងក្រោយ</translation>
-<translation id="4791602164422809437">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ ចំណងជើង និង URL ទំព័រត្រូវបានបញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យដោយមនុស្ស។ <ph name="BEGIN_LINK" />គ្រប់គ្រង​ការកំណត់<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">ព័ត៌មានដែលអ្នកហៀប​នឹងដាក់បញ្ជូនមិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4793219378458250238">11 x 12 in</translation>
 <translation id="4796594887379589189">លេខសម្គាល់​គណនីការងារ</translation>
@@ -2839,6 +2842,7 @@
 <translation id="5391010642126249196">អ្នកបានចូលមើល</translation>
 <translation id="5391030615542642809">ឧបករណ៍ <ph name="MANUFACTURER" /></translation>
 <translation id="5391306025131596142">&amp;បើកទំព័រប្រវត្តិ</translation>
+<translation id="5391870546630695708">អាកាសយានដ្ឋាន​ចេញ​ដំណើរ</translation>
 <translation id="539203134595252721">ប៉េងប៉ុង</translation>
 <translation id="5392506727170022660">លោហៈ (រលោងមធ្យម)</translation>
 <translation id="5394069166371280357">កម្មវិធី​ទូរទស្សន៍​សម្រាប់គ្រួសារ</translation>
@@ -2949,6 +2953,7 @@
 <translation id="5540969246441091044">អ្នកជំនាញ​ជិះសេះ</translation>
 <translation id="5541086400771735334">ប្រអប់​សំបុត្រទី 7</translation>
 <translation id="5541546772353173584">បញ្ចូល​អ៊ីមែល</translation>
+<translation id="5541735141423273733">កាលបរិច្ឆេទទៅដល់</translation>
 <translation id="5543452229212526547">អក្សរ​របស់អ្នក ព្រមទាំង​ខ្លឹមសារ និង URL នៃទំព័រ​ដែលអ្នក​កំពុងសរសេរ​នឹងត្រូវបាន​ផ្ញើទៅ Google។ ខ្លឹមសារ​របស់អ្នក​នឹងមិន​ត្រូវបាន​ប្រើប្រាស់​ដោយ​អ្នកត្រួត​ពិនិត្យជា​មនុស្ស ដើម្បី​កែលម្អ AI នោះទេ។ ស្ថាប័ន​របស់អ្នក​អាចប្ដូរ​ការកំណត់​ទាំងនេះ​នៅពេល​ណាក៏បាន។</translation>
 <translation id="5543564889050342791">សួនសត្វ ជលវប្បដ្ឋាន និង​តំបន់​អភិរក្ស</translation>
 <translation id="5543722831081909240">180 ដឺក្រេ</translation>
@@ -3444,7 +3449,6 @@
 <translation id="6302546952464230349">បង្ហាញ​ព័ត៌មាន​លម្អិតអំពី​ការអនុញ្ញាត <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">កម្មវិធី​ពហុ​មេឌៀ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> មិនអាចភ្ជាប់បានទេ</translation>
-<translation id="6305834316918845109">នៅពេលអ្នកវាយបញ្ចូលសំណើសុំការបំពេញស្វ័យប្រវត្តិដែលបានធ្វើឱ្យប្រសើរឡើង Chrome កត់ត្រាអំពីរបៀបដែលអ្នកប្រើមុខងារនេះ ដូចជាថាតើអ្នកទទួលយក កែ ឬមិនអើពើការណែនាំការបំពេញស្វ័យប្រវត្តិឬអត់</translation>
 <translation id="6306713302480826305">អាសយដ្ឋាន​នេះ​នឹង​ត្រូវ​បានលុប​ពី​ឧបករណ៍​នេះ និង​ឧបករណ៍ដែល​ចូលគណនី​ផ្សេង​ទៀត</translation>
 <translation id="6307968763353904914">ធនាគាររបស់អ្នកមិនអាចផ្ដល់ជូនកាតនិម្មិតសម្រាប់វិធីបង់ប្រាក់នេះក្នុងពេលនេះបានទេ ប៉ុន្តែអ្នកនៅតែអាចប្រើ <ph name="CARD_LABEL" /> របស់អ្នក ដើម្បីបង់ប្រាក់លើអ៊ីនធឺណិត។</translation>
 <translation id="6311410654831092784">ស្តុកកាត</translation>
@@ -4089,7 +4093,6 @@
 <translation id="7310392214323165548">ឧបករណ៍នឹងចាប់ផ្ដើមឡើងវិញឆាប់ៗនេះ</translation>
 <translation id="7311244614769792472">រក​មិន​ឃើញ​លទ្ធផលទេ</translation>
 <translation id="7313107491291103073">ស្ថាប័ន​របស់អ្នក​បាន​សម្គាល់​គេហទំព័រនេះ ដោយសារ​វាអាច​បំពាន​គោលការណ៍។</translation>
-<translation id="7313260329718515829">សំណើដែលបានផ្ញើទៅបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini ត្រូវបានវិភាគ ដើម្បីកែលម្អការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="7316521168101843192">កំពុងរក្សាទុកឯកសារទៅ Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ជំនួយ​ការតភ្ជាប់</translation>
@@ -4586,7 +4589,6 @@
 <translation id="803771048473350947">ឯកសារ</translation>
 <translation id="8038182528865038593">ក្រហមទី 2</translation>
 <translation id="8041089156583427627">ផ្ញើមតិ</translation>
-<translation id="8042898384266617514">សំណើ ចំណងជើងទំព័រ និង URL របស់អ្នកត្រូវបានបញ្ជូនទៅ Google និងអាចត្រូវបានត្រួតពិនិត្យដោយមនុស្ស</translation>
 <translation id="8043255123207491407">មើល​លក្ខខណ្ឌ​របស់​អ្នកលក់</translation>
 <translation id="8044986521421349135">ផ្ទាំងថ្មីបំផុតរបស់អ្នក</translation>
 <translation id="8046360364391076336">សម្ភារ និង​បរិក្ខារ​ឧស្សាហកម្ម</translation>
@@ -4741,6 +4743,7 @@
 <translation id="8288320283441806607">ដើម្បីប្រើ​មុខងារនេះ សូម​បើក "ធ្វើឱ្យ​ការស្វែងរក និង​ការរុករក​ប្រសើរ​ជាងមុន"</translation>
 <translation id="8288807391153049143">បង្ហាញវិញ្ញាបនបត្រ</translation>
 <translation id="8289355894181816810">ទំនាក់ទំនងអ្នកគ្រប់គ្រងបណ្តាញរបស់អ្នក ប្រសិនបើអ្នកមិនប្រាកដថាមានន័យដូចម្តេច។</translation>
+<translation id="8289655756644294629">កាលបរិច្ឆេទចេញដំណើរ</translation>
 <translation id="8291367150570302588">កាតសម្គាល់ខ្លួន</translation>
 <translation id="829335040383910391">សំឡេង</translation>
 <translation id="8294425747071240447">ការណែនាំ​ដែលដំណើរការ​ដោយ AI</translation>
@@ -5177,6 +5180,7 @@
 <translation id="9027020981272345766">សាកល្បងប្រើ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូម​ចុច |<ph name="ACCELERATOR" />| ឱ្យជាប់</translation>
 <translation id="9035022520814077154">កំហុសឆ្គងសុវត្ថិភាព</translation>
+<translation id="9035699147763101514">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ គ្រប់គ្រងជម្រើសរបស់អ្នកនៅក្នុងការកំណត់។</translation>
 <translation id="9035824888276246493">រក្សាទុក​លេខកូដ​សុវត្ថិភាព</translation>
 <translation id="9036306139374661733">អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន​ដែរទេ?</translation>
 <translation id="9036484080057916082">បញ្ជីពេលវេលាវិញ្ញាបនបត្រដែលបានចុះហត្ថលេខា</translation>

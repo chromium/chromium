@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">Не е избрано: <ph name="ITEM" />. <ph name="INDEX" /> од <ph name="COUNT" />. Притиснете ги копчињата Search и Space за да изберете.</translation>
 <translation id="1086486568852410168">Пребарај со Google Lens</translation>
 <translation id="1090126737595388931">Нема активни апликации во заднина</translation>
+<translation id="109038914521989341">Внесете причина за копирање на податоциве:</translation>
 <translation id="1090541560108055381">Пред спарувањето, проверете дали кодов е ист на двата уреда</translation>
 <translation id="1093457606523402488">Видливи мрежи:</translation>
 <translation id="1093645050124056515">ctrl + alt + стрелка надолу</translation>
@@ -2055,7 +2056,6 @@
 <translation id="2588271083332682494">Расчистете со групите картички</translation>
 <translation id="2588636910004461974">Уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогаш не прикажувај датотеки на Drive</translation>
-<translation id="2595508219468433076">Исклучено (нема фокус на редот)</translation>
 <translation id="2597073208962000830">„Споделување во близина“ користи скенирање со Bluetooth за да најде уреди во близина.</translation>
 <translation id="2598136842498757793">Приспособете ги копчињата на алатникот</translation>
 <translation id="2598710988533271874">Достапна е нова верзија на Chrome</translation>
@@ -3867,6 +3867,7 @@
 <translation id="3930968231047618417">Боја на заднина</translation>
 <translation id="3932356525934356570">Закачи ја екстензијата <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Максимална должина: <ph name="MAX" /> знаци</translation>
+<translation id="3932501527949942152">Сподели со аудиото од картичката</translation>
 <translation id="3933121352599513978">Соберете ги несаканите барања (препорачано)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> споделува Wi-Fi мрежа со вас</translation>
 <translation id="3936390757709632190">&amp;Отвори аудио во нова картичка</translation>
@@ -4352,6 +4353,7 @@
 <translation id="4325515113816851466">Изборите на твојот родител нема да важат откако ќе се одјавиш</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
 <translation id="4327380114687339519">Мени за екстензии</translation>
+<translation id="4328160087116165267">Сподели со системското аудио</translation>
 <translation id="4330191372652740264">Вода со мраз</translation>
 <translation id="4330387663455830245">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Прошири ги собраните картички со наместување на курсорот над нив</translation>
@@ -4851,6 +4853,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> го споделува вашиот екран.</translation>
 <translation id="4722989931633062466">Не е дозволено да се прикажува prompt за најавување од трети страни</translation>
 <translation id="4723140812774948886">Заменете ја со следната</translation>
+<translation id="4724031052727917178">Сподели со аудиото</translation>
 <translation id="4724450788351008910">Припадностa е променета</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4726710355753484204">Користете Ctrl + Alt + копчето за зголемување осветленост за да зумирате.
@@ -5345,7 +5348,6 @@
 <translation id="5096775069898886423">За сајтовите што не поддржуваат безбедни врски, добијте предупредување пред да го отворите сајтот</translation>
 <translation id="5097002363526479830">Не успеа да се поврзе на мрежа „<ph name="NAME" />“: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Сајтовите што ги посетувате може да утврдуваат што ви се допаѓа и потоа да ви предлагаат реклами кога ќе продолжите со прелистувањето</translation>
-<translation id="5097472729724586429">Додавајте текстуални прибелешки со новата алатка „Додајте текстуални прибелешки“</translation>
 <translation id="5097649414558628673">Алатка: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Автоматски кликнувај кога курсорот ќе застане</translation>
 <translation id="5098963855433723436">Се отвора во засебна апликација</translation>
@@ -7774,6 +7776,7 @@
 <translation id="701020165009334820">Може да преземате апликации и игри за Android преку Play Store.</translation>
 <translation id="701080569351381435">Прикажи извор</translation>
 <translation id="7012430956470647760">Родителски контроли за апликации</translation>
+<translation id="7012873145982513962">Сајтов препорачува споделување аудио за целосна функционалност</translation>
 <translation id="7014174261166285193">Инсталацијата не успеа.</translation>
 <translation id="7014480873681694324">Отстрани нагласување</translation>
 <translation id="7014741021609395734">Ниво на зумирање</translation>

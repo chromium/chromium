@@ -2195,7 +2195,6 @@
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
 <translation id="4342742994656318294">테마파크</translation>
-<translation id="4344194909635300809">페이지 제목과 URL은 Google로 전송되며 인적 검토자가 이를 확인할 수 있습니다</translation>
 <translation id="4346670990181948854">여행 정보 · 차량</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
 <translation id="4349365535725594680">기밀 콘텐츠를 공유할 수 없음</translation>
@@ -2457,7 +2456,6 @@
 <translation id="4786804728079074733">배구</translation>
 <translation id="4787182171088676626">봉투(고운)</translation>
 <translation id="4791134497475588553">설치된 Linux 앱과 마지막 사용 시점</translation>
-<translation id="4791602164422809437">Gemini의 개인 인텔리전스를 기반으로 합니다. 페이지 제목과 URL은 Google로 전송되며 인적 검토자가 이를 확인할 수 있습니다. <ph name="BEGIN_LINK" />설정 관리<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">안전하지 않은 정보를 제출하려 함</translation>
 <translation id="4793219378458250238">11x12인치</translation>
 <translation id="4796594887379589189">작업 계정 ID</translation>
@@ -3440,7 +3438,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> 권한 세부정보 표시</translation>
 <translation id="6304398603974202180">멀티미디어 소프트웨어</translation>
 <translation id="6305205051461490394"><ph name="URL" />에 연결할 수 없습니다.</translation>
-<translation id="6305834316918845109">향상된 자동 완성 요청을 입력하면 Chrome에서 사용자가 기능을 사용하는 방식(예: 자동 완성 추천을 수락, 수정 또는 무시하는지 여부)을 기록합니다.</translation>
 <translation id="6306713302480826305">이 기기와 다른 로그인된 기기에서 주소가 삭제됩니다.</translation>
 <translation id="6307968763353904914">지금은 은행에서 이 결제 수단을 위한 가상 카드를 제공할 수 없지만 <ph name="CARD_LABEL" /> 카드를 사용하여 온라인에서 결제할 수는 있습니다.</translation>
 <translation id="6311410654831092784">카드 용지</translation>
@@ -4086,7 +4083,6 @@
 <translation id="7310392214323165548">기기가 곧 다시 시작됩니다</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7313107491291103073">정책 위반 가능성이 있는 사이트이므로 조직에서 신고했습니다.</translation>
-<translation id="7313260329718515829">Gemini의 개인 인텔리전스로 전송된 요청은 자동 완성을 개선하기 위해 분석됩니다.</translation>
 <translation id="7316521168101843192">Microsoft OneDrive에 파일 저장 중</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">연결 도움말</translation>
@@ -4580,7 +4576,6 @@
 <translation id="803771048473350947">파일</translation>
 <translation id="8038182528865038593">빨간색 2</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
-<translation id="8042898384266617514">요청, 페이지 제목, URL이 Google로 전송되며 담당자가 검토할 수 있습니다.</translation>
 <translation id="8043255123207491407">판매자의 이용약관 보기</translation>
 <translation id="8044986521421349135">가장 최근 탭</translation>
 <translation id="8046360364391076336">산업자재 및 장비</translation>
@@ -5171,6 +5166,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core 사용해 보기</translation>
 <translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="9035022520814077154">보안 오류</translation>
+<translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>

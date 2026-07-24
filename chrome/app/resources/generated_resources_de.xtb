@@ -136,6 +136,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1085618740036066768"><ph name="ITEM" /> nicht ausgewählt. <ph name="INDEX" /> von <ph name="COUNT" />. Drücke zum Auswählen die Suchtaste + Leertaste.</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1090126737595388931">Es werden keine Apps im Hintergrund ausgeführt.</translation>
+<translation id="109038914521989341">Gib einen Grund für das Kopieren dieser Daten an:</translation>
 <translation id="1090541560108055381">Prüfe vor dem Koppeln, ob dieser Code auf beiden Geräten übereinstimmt</translation>
 <translation id="1093457606523402488">Sichtbare Netzwerke:</translation>
 <translation id="1093645050124056515">Strg + Alt + Abwärtspfeil</translation>
@@ -2042,7 +2043,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2588271083332682494">Überblick dank Tabgruppen</translation>
 <translation id="2588636910004461974">Geräte von <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Drive-Dateien nie anzeigen</translation>
-<translation id="2595508219468433076">Deaktiviert (kein Zeilenfokus)</translation>
 <translation id="2597073208962000830">Nearby Share nutzt die Bluetooth-Suche, um Geräte in der Nähe zu finden.</translation>
 <translation id="2598136842498757793">Buttons auf Symbolleiste anpassen</translation>
 <translation id="2598710988533271874">Neue Chrome-Version verfügbar</translation>
@@ -3852,6 +3852,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3930968231047618417">Hintergrundfarbe</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> anpinnen</translation>
 <translation id="3932477678113677556">Maximale Länge: <ph name="MAX" /> Zeichen</translation>
+<translation id="3932501527949942152">Mit Tab-Audio teilen</translation>
 <translation id="3933121352599513978">Unerwünschte Anfragen minimieren (empfohlen)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> teilt ein WLAN mit dir</translation>
 <translation id="3936390757709632190">&amp;Audio in neuem Tab öffnen</translation>
@@ -4337,6 +4338,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4325515113816851466">Die Einstellungen, die deine Eltern festgelegt haben, gelten nicht mehr, wen du dich abmeldest</translation>
 <translation id="4326146840124313313">Die stärksten Sicherheitsfunktionen von Chrome, um dich besser vor gefährlichen Websites, Downloads und Erweiterungen zu schützen</translation>
 <translation id="4327380114687339519">Menü „Erweiterungen“</translation>
+<translation id="4328160087116165267">Mit Systemaudio teilen</translation>
 <translation id="4330191372652740264">Wasser mit Eis</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="4330963457501417204">Minimierte Tabs maximieren, wenn der Mauszeiger darauf bewegt wird</translation>
@@ -4836,6 +4838,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
 <translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
 <translation id="4723140812774948886">Mit nächstem tauschen</translation>
+<translation id="4724031052727917178">Mit Audio teilen</translation>
 <translation id="4724450788351008910">Zugehörigkeit geändert</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Zum Heranzoomen drücke Strg + Alt + „Helligkeit erhöhen“.
@@ -5329,7 +5332,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5096775069898886423">Du wirst gewarnt, wenn du eine Website aufrufen möchtest, die keine sicheren Verbindungen unterstützt</translation>
 <translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Websites, die du besuchst, können feststellen, was dir gefällt, und dir dann Werbung vorschlagen, wenn du hinterher im Internet surfst</translation>
-<translation id="5097472729724586429">Mit dem neuen Tool „Anmerkungen hinzufügen“ kannst du Anmerkungen hinzufügen</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klicken, wenn der Cursor stoppt</translation>
 <translation id="5098963855433723436">Wird in einer separaten Anwendung geöffnet</translation>
@@ -7752,6 +7754,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="701020165009334820">Du kannst Android-Apps und ‑Spiele über den Play Store herunterladen.</translation>
 <translation id="701080569351381435">Quelltext anzeigen</translation>
 <translation id="7012430956470647760">Jugendschutzeinstellungen für Apps</translation>
+<translation id="7012873145982513962">Diese Website empfiehlt, Audioinhalte zu teilen, um alle Funktionen nutzen zu können</translation>
 <translation id="7014174261166285193">Installation fehlgeschlagen</translation>
 <translation id="7014480873681694324">Markierung entfernen</translation>
 <translation id="7014741021609395734">Zoomstufe</translation>

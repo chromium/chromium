@@ -1865,6 +1865,7 @@
 <translation id="385489333361351399">Камер болон зургийн хэрэгсэл</translation>
 <translation id="3858027520442213535">Огноо болон цагийг шинэчлэх</translation>
 <translation id="3858860766373142691">Нэр</translation>
+<translation id="3864558817291331916"><ph name="AI_ENGINE_NAME" />-г үргэлж харуулах</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-н нөхцөлүүдийг эндээс харна уу</translation>
 <translation id="3869939189466884821">Таны дотоод файлуудыг <ph name="MINUTES" /> минутын дараа устгана</translation>
 <translation id="3872834068356954457">Шинжлэх ухаан</translation>
@@ -2195,7 +2196,6 @@
 <translation id="4340810192899866471">JSON-с импорт хийх</translation>
 <translation id="4340982228985273705">Энэ компьютерийг байгууллагаас удирддаг гэж илрүүлээгүй тул удирдамж нь зөвхөн Chrome Webstore-т хост хийсэн өргөтгөлийг автоматаар суулгах боломжтой. Chrome Webstore шинэчлэлтийн URL нь "<ph name="CWS_UPDATE_URL" />" юм.</translation>
 <translation id="4342742994656318294">Сэдэвчилсэн паркууд</translation>
-<translation id="4344194909635300809">Хуудасны гарчиг, URL-уудыг Google рүү илгээдэг бөгөөд хүмүүс хянаж магадгүй</translation>
 <translation id="4346670990181948854">Аяллын мэдээлэл · тээврийн хэрэгсэл</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-н холболт аюултай байна</translation>
 <translation id="4349365535725594680">Нууцлалтай контент хуваалцах боломжгүй</translation>
@@ -2457,7 +2457,6 @@
 <translation id="4786804728079074733">Гар бөмбөг</translation>
 <translation id="4787182171088676626">Дугтуй (нарийн)</translation>
 <translation id="4791134497475588553">Linux-н апп суулгагдсан болон хэзээ хамгийн сүүлд түүнийг ашигласан</translation>
-<translation id="4791602164422809437">Gemini-тай Personal Intelligence-р дэмжсэн. Хуудасны гарчиг, URL-уудыг Google рүү илгээдэг бөгөөд хүмүүс хянаж магадгүй. <ph name="BEGIN_LINK" />Тохиргоог удирдах<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">Таны илгээх гэж буй мэдээлэл аюултай байна</translation>
 <translation id="4793219378458250238">11 x 12 инч</translation>
 <translation id="4796594887379589189">Ажилтай холбоотой бүртгэлийн ID</translation>
@@ -3362,6 +3361,7 @@
 <translation id="6177531123306197852">Дугтуй C2</translation>
 <translation id="6180316780098470077">Дахин оролдлого хоорондох интервал</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786"><ph name="AI_ENGINE_NAME" />-с асуухын тулд таб, дараа нь enter дээр дарна уу</translation>
 <translation id="6189351761800074311">Таны текст, хуудасны контентыг Google-д илгээдэг ч ХОУ-ыг сайжруулахад ашиглахгүй.
     <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc зэрэг таны гарын зарим товчийг дарах</translation>
@@ -3438,7 +3438,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> зөвшөөрлийн дэлгэрэнгүйг харуулах</translation>
 <translation id="6304398603974202180">Мультимедиа программ хангамж</translation>
 <translation id="6305205051461490394"><ph name="URL" />-г ашиглах боломжгүй байна.</translation>
-<translation id="6305834316918845109">Таныг сайжруулсан автоматаар бөглөх хүсэлт бичихэд Chrome таныг зөвлөмжийг зөвшөөрөх, засах эсвэл үл хэрэгсэх зэргээр тус онцлогийг хэрхэн ашиглаж байгааг бүртгэдэг</translation>
 <translation id="6306713302480826305">Энэ хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана</translation>
 <translation id="6307968763353904914">Таны банк яг одоо энэ төлбөрийн хэрэгсэлд виртуал картууд санал болгох боломжгүй хэдий ч та өөрийн <ph name="CARD_LABEL" />-г ашиглан онлайнаар төлөх боломжтой хэвээр байна.</translation>
 <translation id="6311410654831092784">Картон цаас</translation>
@@ -3989,6 +3988,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7156870133441232244">Серверийг TLS 1.2 эсвэл түүнээс дээших хувилбар луу дэвшүүлэх шаардлагатай.</translation>
 <translation id="7156885531105222428">Таны хүссэн хуудсыг аппликейшнаас олж чадсангүй</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> Хайлтад <ph name="AI_ENGINE_NAME" />-с асуух</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Энэ файлыг <ph name="FEATURE_NAME" />-г ашиглан илгээхийн тулд төхөөрөмждөө сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}other{Эдгээр файлыг <ph name="FEATURE_NAME" />-г ашиглан илгээхийн тулд төхөөрөмждөө сул зай (<ph name="DISK_SPACE_SIZE" />) гаргана уу}}</translation>
 <translation id="7160999678034985039">Ажлаа хадгалаад бэлэн болсон үедээ шинэчлэлтийг эхлүүлнэ үү.</translation>
 <translation id="7162277662076933695">Ухаалаг карт уншигч</translation>
@@ -4082,7 +4082,6 @@
 <translation id="7310392214323165548">Төхөөрөмжийг тун удахгүй дахин эхлүүлнэ</translation>
 <translation id="7311244614769792472">Илэрц олдсонгүй</translation>
 <translation id="7313107491291103073">Энэ сайт бодлогыг зөрчиж магадгүй тул танай байгууллага үүнийг дарцагласан.</translation>
-<translation id="7313260329718515829">Автоматаар бөглөх хэсгийг сайжруулахын тулд Gemini-тай Personal Intelligence-д илгээсэн хүсэлтийг задлан шинжилдэг</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-т файл хадгалж байна</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Холболтын тусламж</translation>
@@ -4577,7 +4576,6 @@
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">Улаан 2</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
-<translation id="8042898384266617514">Таны хүсэлт, хуудасны гарчиг, URL-г Google рүү илгээдэг бөгөөд хүмүүс хянаж магадгүй</translation>
 <translation id="8043255123207491407">Борлуулагчийн үйлчилгээний ерөнхий нөхцөлийг харах</translation>
 <translation id="8044986521421349135">Таны хамгийн сүүлийн таб</translation>
 <translation id="8046360364391076336">Аж үйлдвэрийн материалууд болон тоног төхөөрөмж</translation>
@@ -4640,6 +4638,7 @@
 <translation id="815036624016370447">Таны <ph name="ACCOUNT" /> Google Бүртгэлийн мэдээлэл Chrome-д маягтыг илүү хурдан бөглөхөд туслах боломжтой</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дахь файлыг унших боломжгүй байна. Энэ файл нь устгагдсан, шилжигдсэн, эсвэл хандалтыг хазгаарласан байж болно.</translation>
 <translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
+<translation id="8152194419479742504">Таб сэлгэхгүйгээр мэдээлэл олох, бөглөхийн тулд дурын маягтад @@ гэж бичнэ үү</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}}</translation>
 <translation id="8155253549374198915">Сүүлд нээсэн таб</translation>
 <translation id="81563721597823545">Хоккейн хэрэгсэл</translation>
@@ -4660,6 +4659,7 @@
 <translation id="8189557652711717875">Таны сонгосон хайлтын системийг хаяг оруулах хэсэг, веб хуудаснууд дээрх зургуудаас хайх зэрэг онцлогуудад ашиглана.</translation>
 <translation id="8190193880870196235">Өргөтгөлөөр удирддаг</translation>
 <translation id="8194412401381329820">Та энэ удирдаагүй төхөөрөмжийн тохиргоо хийгдсэн бүртгэлээс уг хуудсыг ашиглах боломжгүй. Энэ төхөөрөмжтэй ижил аж ахуйн нэгжээс удирддаг бүртгэлүүдээс бусад бүртгэлээс (холбоотой бүртгэлүүд) та энэ хуудсыг ашиглавал бүх тохиргоо хийгдсэн бүртгэлийг түгжинэ.</translation>
+<translation id="8194579937546982778"><ph name="AI_ENGINE_NAME" />-г үргэлж харуулах</translation>
 <translation id="8194797478851900357">&amp; Зөөвөрлөх үйлдлийг буцаах</translation>
 <translation id="8194956568907463262">Буудагчтай тоглоомууд</translation>
 <translation id="8199437620497683918">Оптик диск (гялгар)</translation>
@@ -5166,6 +5166,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core-г туршиж үзэх</translation>
 <translation id="9027531288681624875">Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR" />|-г удаан дарна уу</translation>
 <translation id="9035022520814077154">Аюулгүй байдлын алдаа</translation>
+<translation id="9035699147763101514">Gemini-тай Personal Intelligence-р дэмжсэн. Тохиргооноос сонголтуудаа удирдана уу.</translation>
 <translation id="9035824888276246493">Аюулгүй байдлын кодуудыг хадгалах</translation>
 <translation id="9036306139374661733">Микрофоныг зөвшөөрөх үү?</translation>
 <translation id="9036484080057916082">Гарын үсэг зурсан сертификатын хугацаа тэмдэглэгчийн жагсаалт</translation>
@@ -5345,6 +5346,7 @@
 <translation id="979107176848483472">Таны хөтөч болон профайлыг <ph name="DOMAIN" /> удирддаг</translation>
 <translation id="979189555234810423">Үзэсгэлэн ба чуулган</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" />-н товч, <ph name="AI_ENGINE_NAME" />-с асуухын тулд Enter дээр дарна уу</translation>
 <translation id="984101218975906499">Эмийн бэлдмэл, биотехнологи</translation>
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="985199708454569384">&lt;p&gt;Хэрэв таны компьютер эсвэл хөдөлгөөнт төхөөрөмжийн огноо болон цаг буруу байвал та тус алдааг харах болно.&lt;/p&gt;

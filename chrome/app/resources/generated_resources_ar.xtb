@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">لم يتم اختيار "<ph name="ITEM" />". العنصر <ph name="INDEX" /> من إجمالي <ph name="COUNT" />. لاختياره، يُرجى الضغط على مفتاح البحث ومفتاح المسافة.</translation>
 <translation id="1086486568852410168">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="1090126737595388931">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
+<translation id="109038914521989341">يُرجى إدخال سبب لنسخ هذه البيانات:</translation>
 <translation id="1090541560108055381">يجب أن يكون الرمز متطابقًا على كلا الجهازين قبل الإقران.</translation>
 <translation id="1093457606523402488">شبكات مرئية:</translation>
 <translation id="1093645050124056515">‏‫ctrl‏ + alt + السهم المتّجه للأسفل</translation>
@@ -2045,7 +2046,6 @@
 <translation id="2588271083332682494">نظِّم متصفّحك من خلال "مجموعات علامات التبويب"</translation>
 <translation id="2588636910004461974">أجهزة من <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏عدم عرض ملفات Drive مطلقًا</translation>
-<translation id="2595508219468433076">غير مفعَّل (لا يتم التركيز على السطر)</translation>
 <translation id="2597073208962000830">تستخدم ميزة "المشاركة عن قرب" تقنية البلوتوث للعثور على الأجهزة القريبة.</translation>
 <translation id="2598136842498757793">تخصيص أزرار شريط الأدوات</translation>
 <translation id="2598710988533271874">‏يتوفّر تحديث جديد لمتصفِّح Chrome</translation>
@@ -5336,7 +5336,6 @@
 <translation id="5096775069898886423">بالنسبة إلى المواقع الإلكترونية التي لا تتيح الاتصالات الآمنة، ستتلقّى تحذيرًا قبل الانتقال إليها</translation>
 <translation id="5097002363526479830">تعذّر الاتصال بشبكة "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">يمكن للمواقع الإلكترونية التي تزورها تحديد اهتماماتك، ثم اقتراح إعلانات لك أثناء تصفحّك مواقع أخرى.</translation>
-<translation id="5097472729724586429">يمكنك إضافة تعليقات توضيحية نصية باستخدام أداة "إضافة تعليقات توضيحية نصية" الجديدة</translation>
 <translation id="5097649414558628673">الأداة: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">النقر تلقائيًا عند توقف المؤشر</translation>
 <translation id="5098963855433723436">يتم فتح الرابط في تطبيق منفصل</translation>

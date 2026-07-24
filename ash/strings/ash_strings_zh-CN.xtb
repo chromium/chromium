@@ -1287,7 +1287,7 @@
 <translation id="4633757335284074492">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。此类备份内容包含应用数据。备份内容将上传到 Google 并使用您孩子的 Google 账号密码进行加密。</translation>
 <translation id="4635501805800894201">{0,plural, =0{立即将设备回滚为上一个版本}=1{在 1 秒内将设备回滚为上一个版本}other{在 # 秒内将设备回滚为上一个版本}}</translation>
 <translation id="4641539339823703554">Chrome无法设置系统时间。请检查下面的时间，并在必要时进行更正。</translation>
-<translation id="4642092649622328492">截取局部屏幕截图</translation>
+<translation id="4642092649622328492">局部截屏</translation>
 <translation id="4643833688073835173">您的 Chromebook 使用内置传感器检测是否有人位于设备前。所有数据都会立即在您的设备上处理，完成后便会删除。传感器数据绝不会发送给 Google。</translation>
 <translation id="4644727592819780893">区域太小，无法显示相机预览画面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>

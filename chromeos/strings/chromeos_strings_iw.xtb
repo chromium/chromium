@@ -600,7 +600,7 @@
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3661106764436337772">לכתוב מהר יותר ועם יותר ביטחון</translation>
 <translation id="3662461537616691585">בורדו וחום ערמוני</translation>
-<translation id="3664755900672940272">הנחיות לדוגמה מוצגות באופן אקראי</translation>
+<translation id="3664755900672940272">פרומפטים לדוגמה מוצגים באופן אקראי</translation>
 <translation id="3668449597372804501">הטפט של תנועת העננים</translation>
 <translation id="3668570675727296296">הגדרות שפה</translation>
 <translation id="3675132884790542448">חזירים</translation>
@@ -1236,7 +1236,7 @@
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
 <translation id="6462978824459367242">‏הכפתור 'הוספת ה-APN' מופעל עכשיו</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
-<translation id="6468146470109254228">‫3 ההנחיות והתוצאות האחרונות שלך. אפשר לגשת אליהן רק כשמשתמשים ב'טפט וסגנון'.</translation>
+<translation id="6468146470109254228">‫3 התוצאות והפרומפטים האחרונים שלך. אפשר לגשת אליהם רק כשמשתמשים ב'טפט וסגנון'.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">סירות</translation>
 <translation id="64778964625672495">בצבע אדום כהה</translation>
@@ -1736,7 +1736,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> כדי לנהל את התכונה הזו, יש להקיש על מקש החץ הימני או השמאלי.</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
-<translation id="8721554916373590179">הנחיות לדוגמה</translation>
+<translation id="8721554916373590179">פרומפטים לדוגמה</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
@@ -1745,7 +1745,7 @@
 <translation id="8747900814994928677">אישור השינוי</translation>
 <translation id="8749478549112817787">רקע המצלמה</translation>
 <translation id="8755946156089753497">מגדל</translation>
-<translation id="8760616037557661287">ההנחיות הקודמות</translation>
+<translation id="8760616037557661287">הפרומפטים הקודמים</translation>
 <translation id="876280838467039397">הורדה ובחירה של מודל התמלול ב<ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>

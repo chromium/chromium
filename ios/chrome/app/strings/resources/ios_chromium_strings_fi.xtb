@@ -228,6 +228,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5731004036450828399">Jotta voit pitää avainkoodit turvassa, sinun on ensin luotava palautuksen PIN-koodi.
 
         Avainkoodit tallennetaan Salasanoihin, joten voit käyttää niitä Chromiumissa millä tahansa laitteella.</translation>
+<translation id="575593940213760950">Salasanat-palveluun (tili: <ph name="EMAIL" />)</translation>
 <translation id="584550191241316896">Kirjautuneena Chromiumiin</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5889847953983052353">Kun se on päällä:

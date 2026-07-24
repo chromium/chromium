@@ -1865,6 +1865,7 @@
 <translation id="385489333361351399">ক্যামেরা ও ফটো সম্পর্কিত সরঞ্জাম</translation>
 <translation id="3858027520442213535">তারিখ এবং সময় আপডেট করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3864558817291331916">সবসময় <ph name="AI_ENGINE_NAME" /> দেখুন</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" />-এর শর্তাবলী এখানে দেখুন</translation>
 <translation id="3869939189466884821">আপনার স্থানীয় ফাইল <ph name="MINUTES" /> মিনিটের মধ্যে মুছে যাবে</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
@@ -2195,7 +2196,6 @@
 <translation id="4340810192899866471">JSON থেকে ইমপোর্ট করুন</translation>
 <translation id="4340982228985273705">এই কম্পিউটারটি এন্টারপ্রাইজ স্তরে পরিচালনা করা হচ্ছে হিসেবে শনাক্ত করা যায়নি, তাই নীতিটি শুধুমাত্র Chrome ওয়েব স্টোরে হোস্ট করা এক্সটেনশন নিজে থেকে ইনস্টল করতে পারবে। Chrome ওয়েব স্টোর আপডেটের ইউআরএল হল "<ph name="CWS_UPDATE_URL" />"।</translation>
 <translation id="4342742994656318294">থিম পার্ক</translation>
-<translation id="4344194909635300809">পৃষ্ঠার শিরোনাম ও URL Google-এ পাঠানো হয় এবং হিউম্যান রিভিউয়ার তা পর্যালোচনা করতে পারেন</translation>
 <translation id="4346670990181948854">ভ্রমণ সংক্রান্ত তথ্য · যানবাহন</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-এর কানেকশনটি সুরক্ষিত নয়</translation>
 <translation id="4349365535725594680">গোপনীয় কন্টেন্ট শেয়ার করা যাচ্ছে না</translation>
@@ -2457,7 +2457,6 @@
 <translation id="4786804728079074733">ভলিবল</translation>
 <translation id="4787182171088676626">এনভেলপ (ফাইন)</translation>
 <translation id="4791134497475588553">ইনস্টল থাকা Linux অ্যাপ এবং শেষবার কখন সেগুলি ব্যবহার করা হয়েছে</translation>
-<translation id="4791602164422809437">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। পৃষ্ঠার টাইটেল ও URL Google-এ পাঠানো হয় এবং হিউম্যান রিভিউয়ার তা পর্যালোচনা করতে পারেন। <ph name="BEGIN_LINK" />সেটিংস ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">আপনি নিরাপদ নয় এমন ফর্মের মাধ্যমে তথ্য জমা দিচ্ছেন</translation>
 <translation id="4793219378458250238">১১ x ১২ ইঞ্চি</translation>
 <translation id="4796594887379589189">জব অ্যাকাউন্টের আইডি</translation>
@@ -3362,6 +3361,7 @@
 <translation id="6177531123306197852">এনভেলপ C2</translation>
 <translation id="6180316780098470077">কতক্ষণ পর আবার চেষ্টা করা যাবে</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786"><ph name="AI_ENGINE_NAME" />-কে জিজ্ঞাসা করতে প্রথমে Tab ও তারপরে Enter প্রেস করুন</translation>
 <translation id="6189351761800074311">আপনার টেক্সট ও পৃষ্ঠার কন্টেন্ট Google-কে পাঠানো হয়, তবে AI উন্নত করতে ব্যবহার করা হয় না।
     <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">আপনার কীবোর্ডে কিছু কী ওভাররাইড করুন, যেমন Esc</translation>
@@ -3438,7 +3438,6 @@
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতি সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6304398603974202180">মাল্টিমিডিয়া সফ্টওয়্যার</translation>
 <translation id="6305205051461490394"><ph name="URL" /> এ পৌঁছানো যাচ্ছে না</translation>
-<translation id="6305834316918845109">এনহ্যান্সড অটোফিলের জন্য অনুরোধ টাইপ করলে, আপনি কীভাবে ফিচারটি ব্যবহার করেন তা Chrome লগ করে, যেমন আপনি অটোফিল সাজেশন গ্রহণ, এডিট বা উপেক্ষা করেন কিনা</translation>
 <translation id="6306713302480826305">এই ঠিকানাটি এটি এবং আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে মুছে ফেলা হবে</translation>
 <translation id="6307968763353904914">এই পেমেন্ট পদ্ধতির জন্য আপনার ব্যাঙ্ক এই মুহূর্তে ভার্চুয়াল কার্ড প্রদান করতে পারছে না, তবে আপনি এখনও অনলাইনে পেমেন্ট করার জন্য <ph name="CARD_LABEL" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="6311410654831092784">কার্ড স্টক</translation>
@@ -3990,6 +3989,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
 <translation id="7156885531105222428">আপনার অনুরোধ করা পৃষ্ঠা অ্যাপ্লিকেশনে পাওয়া যায়নি</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> Search-এ <ph name="AI_ENGINE_NAME" />-কে জিজ্ঞাসা করুন</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}one{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}other{<ph name="FEATURE_NAME" /> ব্যবহার করে এই ফাইল পাঠাতে, আপনার ডিভাইসে (<ph name="DISK_SPACE_SIZE" />) স্পেস খালি করুন}}</translation>
 <translation id="7160999678034985039">আপনার কাজ সেভ করুন এবং সেভ করা হয়ে গেলে আপডেট শুরু করুন।</translation>
 <translation id="7162277662076933695">স্মার্ট কার্ড রিডার</translation>
@@ -4083,7 +4083,6 @@
 <translation id="7310392214323165548">ডিভাইস খুব শীঘ্রই রিস্টার্ট হবে</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7313107491291103073">আপনার সংস্থা এই সাইটকে ফ্ল্যাগ করেছে কারণ এটি কোনও নীতি লঙ্ঘন করতে পারে।</translation>
-<translation id="7313260329718515829">অটোফিল উন্নত করতে Gemini-এর পার্সোনাল ইন্টেলিজেন্সে পাঠানো অনুরোধ বিশ্লেষণ করা হয়</translation>
 <translation id="7316521168101843192">Microsoft OneDrive-এ ফাইল সেভ করা হচ্ছে</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">কানেকশন সহায়তা</translation>
@@ -4578,7 +4577,6 @@
 <translation id="803771048473350947">ফাইল</translation>
 <translation id="8038182528865038593">লাল ২</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
-<translation id="8042898384266617514">আপনার অনুরোধ, পৃষ্ঠার শিরোনাম ও URL Google-এ পাঠানো হয় এবং হিউম্যান রিভিউয়ার তা পর্যালোচনা করতে পারেন</translation>
 <translation id="8043255123207491407">বিক্রেতার নিয়ম ও শর্তাবলী দেখুন</translation>
 <translation id="8044986521421349135">আপনার সবচেয়ে রিসেন্ট ট্যাব</translation>
 <translation id="8046360364391076336">শিল্প সামগ্রী ও যন্ত্রপাতি</translation>
@@ -4641,6 +4639,7 @@
 <translation id="815036624016370447">আপনার <ph name="ACCOUNT" /> Google অ্যাকাউন্ট থেকে তথ্য নিয়ে Chrome-এ আরও তাড়াতাড়ি ফর্ম পূরণ করতে পারবেন</translation>
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>
 <translation id="8151185429379586178">ডেভেলপার টুল</translation>
+<translation id="8152194419479742504">ট্যাব পরিবর্তন না করেই তথ্য খুঁজে পেতে ও তা পূরণ করতে, যেকোনও ফর্মে @@ টাইপ করুন</translation>
 <translation id="8153865548451212769">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}}</translation>
 <translation id="8155253549374198915">শেষ খোলা ট্যাব</translation>
 <translation id="81563721597823545">হকির সরঞ্জাম</translation>
@@ -4661,6 +4660,7 @@
 <translation id="8189557652711717875">আপনার বেছে নেওয়া সার্চ ইঞ্জিন অ্যাড্রেস বার ও ওয়েব পৃষ্ঠায় ছবি থেকে সার্চ করার মতো ফিচারের জন্য ব্যবহার করা হবে।</translation>
 <translation id="8190193880870196235">এক্সটেনশনের মাধ্যমে ম্যানেজ করা হয়েছে</translation>
 <translation id="8194412401381329820">ম্যানেজ না করা এই ডিভাইসে ম্যানেজ করা কোনও অ্যাকাউন্ট থেকে এই পৃষ্ঠা ব্যবহার করতে পারবেন না। আপনি এই পৃষ্ঠা ব্যবহার করলে সব ম্যানেজ করা অ্যাকাউন্ট লক করা হবে, শুধুমাত্র এই ডিভাইসের মতো একই এন্টিটির মাধ্যমে ম্যানেজ করা অ্যাকাউন্ট (অ্যাফিলিয়েট করা কোম্পানি)।</translation>
+<translation id="8194579937546982778">সবসময় <ph name="AI_ENGINE_NAME" /> দেখুন</translation>
 <translation id="8194797478851900357">&amp;সরানোকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="8194956568907463262">শুটার গেম</translation>
 <translation id="8199437620497683918">অপটিকাল ডিস্ক (গ্লসি)</translation>
@@ -5167,6 +5167,7 @@
 <translation id="9027020981272345766">Chrome Enterprise Core ব্যবহার করে দেখুন</translation>
 <translation id="9027531288681624875">ফুল স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
 <translation id="9035022520814077154">নিরাপত্তা ত্রুটি</translation>
+<translation id="9035699147763101514">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। সেটিংস থেকে আপনার পছন্দ ম্যানেজ করুন।</translation>
 <translation id="9035824888276246493">নিরাপত্তা কোড সেভ করুন</translation>
 <translation id="9036306139374661733">মাইক্রোফোন অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="9036484080057916082">সই করা সার্টিফিকেট টাইমস্ট্যাম্প সংক্রান্ত তালিকা</translation>
@@ -5346,6 +5347,7 @@
 <translation id="979107176848483472"><ph name="DOMAIN" /> আপনার ব্রাউজার ও প্রোফাইল ম্যানেজ করে</translation>
 <translation id="979189555234810423">প্রদর্শনী ও সভা</translation>
 <translation id="981121421437150478">অফলাইন</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> বোতাম, <ph name="AI_ENGINE_NAME" />-কে প্রশ্ন করতে Enter প্রেস করুন</translation>
 <translation id="984101218975906499">ফার্মাসিউটিক্যালস এবং বায়োটেক</translation>
 <translation id="984275831282074731">পেমেন্ট পদ্ধতি</translation>
 <translation id="985199708454569384">&lt;p&gt;আপনার কম্পিউটার অথবা মোবাইল ডিভাইসে সঠিক তারিখ এবং সময় সেট করা না থাকলে এই সমস্যাটি হতে পারে।&lt;/p&gt;

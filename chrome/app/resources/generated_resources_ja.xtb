@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">「<ph name="ITEM" />」は選択されていません。全 <ph name="COUNT" /> 件のうち、<ph name="INDEX" /> 番目です。選択するには検索+Space キーを押してください。</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
+<translation id="109038914521989341">このデータをコピーする理由を入力してください。</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1093457606523402488">検出されたネットワーク:</translation>
 <translation id="1093645050124056515">Ctrl+Alt+下矢印</translation>
@@ -2041,7 +2042,6 @@
 <translation id="2588271083332682494">タブグループで整理整頓</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> のデバイス</translation>
 <translation id="2589658397149952302">ドライブ ファイルを表示しない</translation>
-<translation id="2595508219468433076">オフ（行のフォーカスなし）</translation>
 <translation id="2597073208962000830">ニアバイシェアでは Bluetooth のスキャン機能を使用して、付近のデバイスを探します。</translation>
 <translation id="2598136842498757793">ツールバーのボタンをカスタマイズ</translation>
 <translation id="2598710988533271874">新しい Chrome をご利用いただけます</translation>
@@ -3851,6 +3851,7 @@
 <translation id="3930968231047618417">背景の色</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> を固定</translation>
 <translation id="3932477678113677556">最大 <ph name="MAX" /> 文字</translation>
+<translation id="3932501527949942152">タブの音声を含めて共有する</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> から Wi-Fi ネットワークが共有されています</translation>
 <translation id="3936390757709632190">オーディオを新しいタブで開く(&amp;O)</translation>
@@ -4336,6 +4337,7 @@
 <translation id="4325515113816851466">ログアウトすると、保護者の方が指定した設定は適用されなくなります</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
 <translation id="4327380114687339519">拡張機能メニュー</translation>
+<translation id="4328160087116165267">システムの音声を含めて共有する</translation>
 <translation id="4330191372652740264">氷水</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />を翻訳しない</translation>
 <translation id="4330963457501417204">折りたたまれたタブにカーソルを合わせて展開する</translation>
@@ -4835,6 +4837,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> が画面を共有しています。</translation>
 <translation id="4722989931633062466">サードパーティのログイン メッセージの表示を許可しないサイト</translation>
 <translation id="4723140812774948886">次と交換</translation>
+<translation id="4724031052727917178">音声付きで共有</translation>
 <translation id="4724450788351008910">アフィリエーションが変更された</translation>
 <translation id="4725511304875193254">コーギー</translation>
 <translation id="4726710355753484204">拡大するには、Ctrl+Alt+明るさを上げるキーを使用します。
@@ -5328,7 +5331,6 @@
 <translation id="5096775069898886423">サイトで安全な接続がサポートされていない場合は、サイトにアクセスする前に警告が表示されます</translation>
 <translation id="5097002363526479830">ネットワーク「<ph name="NAME" />」に接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">ユーザーが訪れた広告主のウェブサイトがユーザーの興味 / 関心を判断し、後に訪問する別のウェブサイトで広告を提案することができます</translation>
-<translation id="5097472729724586429">新しい「テキスト アノテーションを追加」ツールでテキスト アノテーションを追加できます</translation>
 <translation id="5097649414558628673">ツール: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">カーソルの停止時に自動的にクリックする</translation>
 <translation id="5098963855433723436">別のアプリケーションで開く</translation>
@@ -7752,6 +7754,7 @@
 <translation id="701020165009334820">Google Play ストアから Android のアプリやゲームをダウンロードできます。</translation>
 <translation id="701080569351381435">ソースを表示</translation>
 <translation id="7012430956470647760">アプリの保護者による使用制限</translation>
+<translation id="7012873145982513962">このサイトでは、すべての機能を利用するために音声を共有することが推奨されます</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
 <translation id="7014480873681694324">テキストの選択を解除</translation>
 <translation id="7014741021609395734">ズームレベル</translation>

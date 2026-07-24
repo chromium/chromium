@@ -136,6 +136,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1085618740036066768">Item "<ph name="ITEM" />" não selecionado. <ph name="INDEX" /> de <ph name="COUNT" />. Pressione "Pesquisar" junto à barra de espaço para selecionar.</translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1090126737595388931">Nenhum aplicativo de fundo sendo executado</translation>
+<translation id="109038914521989341">Informe um motivo para copiar os dados:</translation>
 <translation id="1090541560108055381">Antes de parear, confira se é mostrado o mesmo código nos dois dispositivos</translation>
 <translation id="1093457606523402488">Redes visíveis</translation>
 <translation id="1093645050124056515">ctrl + alt + seta para baixo</translation>
@@ -753,6 +754,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1581962803218266616">Mostrar no Finder</translation>
 <translation id="1582955169539260415">excluir [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">O <ph name="LANGUAGE" /> é processado localmente e funciona off-line</translation>
+<translation id="1586075235463145108">Primeiro, ative a navegação automática do Chrome para este dispositivo</translation>
 <translation id="1587275751631642843">&amp;Console JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Revisar atualizações de nome e logotipo</translation>
@@ -1829,6 +1831,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 conta de <ph name="DOMAIN_LINK" />. Senha salva apenas neste dispositivo. Mais detalhes}one{{NUM_PASSWORDS} conta de <ph name="DOMAIN_LINK" />. Senha salva apenas neste dispositivo. Mais detalhes}other{{NUM_PASSWORDS} contas de <ph name="DOMAIN_LINK" />. Senhas salvas apenas neste dispositivo. Mais detalhes}}</translation>
 <translation id="2428510569851653187">Descrever o que você estava fazendo quando a guia travou</translation>
 <translation id="2428939361789119025">Desativar o Wi-Fi</translation>
+<translation id="2431280447889982015">Escolha uma tela com áudio</translation>
 <translation id="243275146591958220">Cancelar download</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps registrados</translation>
 <translation id="2433237965825924228">Os apps isolados da Web controlam os dispositivos de autenticação e os cartões inteligentes acessíveis a eles. Em geral, os cartões inteligentes contêm identificadores usados para autenticar seu acesso.</translation>
@@ -2055,7 +2058,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2588271083332682494">Aproveite os grupos de guias</translation>
 <translation id="2588636910004461974">Dispositivos deste fornecedor: <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nunca mostrar arquivos do Drive</translation>
-<translation id="2595508219468433076">Desativado (sem foco na linha)</translation>
 <translation id="2597073208962000830">O recurso "Compartilhar por proximidade" usa a busca por Bluetooth para encontrar dispositivos por perto.</translation>
 <translation id="2598136842498757793">Personalizar botões da barra de ferramentas</translation>
 <translation id="2598710988533271874">Novo Chrome disponível</translation>
@@ -3867,6 +3869,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
 <translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Tamanho máximo de <ph name="MAX" /> caracteres</translation>
+<translation id="3932501527949942152">Compartilhar com áudio da guia</translation>
 <translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você</translation>
 <translation id="3936390757709632190">&amp;Abrir áudio em uma nova guia</translation>
@@ -4352,6 +4355,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4325515113816851466">As escolhas da sua família não serão aplicadas depois que você sair da conta</translation>
 <translation id="4326146840124313313">A melhor segurança do Chrome protege você ainda mais contra sites, extensões e downloads perigosos</translation>
 <translation id="4327380114687339519">Menu de extensões</translation>
+<translation id="4328160087116165267">Compartilhar com áudio do sistema</translation>
 <translation id="4330191372652740264">Água com gelo</translation>
 <translation id="4330387663455830245">Nunca traduzir <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Expandir as guias recolhidas ao passar o cursor</translation>
@@ -4851,6 +4855,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4722920479021006856">O <ph name="APP_NAME" /> está compartilhando sua tela.</translation>
 <translation id="4722989931633062466">Não pode mostrar solicitações de login de terceiros</translation>
 <translation id="4723140812774948886">Trocar com o próximo</translation>
+<translation id="4724031052727917178">Compartilhar com áudio</translation>
 <translation id="4724450788351008910">Afiliação alterada</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4726710355753484204">Use Ctrl + Alt + Aumentar brilho para aumentar o zoom.
@@ -5345,7 +5350,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5096775069898886423">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras</translation>
 <translation id="5097002363526479830">Falha na conexão à rede "<ph name="NAME" />": <ph name="DETAILS" /></translation>
 <translation id="5097349930204431044">Os sites que você visita podem determinar do que você gosta e sugerir anúncios enquanto continua a navegar</translation>
-<translation id="5097472729724586429">Adicione anotações com a nova ferramenta "Adicionar anotações de texto"</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clicar automaticamente quando o cursor parar</translation>
 <translation id="5098963855433723436">Abre em um aplicativo separado</translation>
@@ -6300,6 +6304,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5864754048328252126">Ação de inatividade ao carregar</translation>
 <translation id="586567932979200359">Você está executando o <ph name="PRODUCT_NAME" /> a partir de uma imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e garante que ele se manterá atualizado.</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
+<translation id="58659335642601499">Escolha uma janela com áudio</translation>
 <translation id="5866363217037791319">Encerrar tarefa</translation>
 <translation id="5868434909835797817">O microfone está desativado no dispositivo</translation>
 <translation id="5868479397518301468">O tempo limite de login expirou</translation>
@@ -7775,6 +7780,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="701020165009334820">É possível baixar jogos e apps Android pela Play Store.</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7012430956470647760">Controles da família para apps</translation>
+<translation id="7012873145982513962">Este site recomenda compartilhar o áudio para ter acesso a todas as funcionalidades</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7014480873681694324">Remover destaque</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
