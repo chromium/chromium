@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
+
 #include "base/sanitizer_buildflags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -386,6 +391,49 @@ TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsNotRestoreRecorded) {
   histogram_tester_.ExpectBucketCount(
       kBackForwardCachePageWithFormRestoreResultHistogramName,
       BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored, 1);
+}
+
+TEST_F(BackForwardCacheMetricsTest,
+       MetricsNotReusedForCrossSiteInstanceMainFrameNavigation) {
+  const GURL url1("http://a.com/");
+  const GURL url2("http://b.com/");
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+
+  // Navigate to `url1` and capture the entry's metrics, SiteInstance and
+  // document sequence number.
+  NavigationSimulator::NavigateAndCommitFromDocument(url1, main_test_rfh());
+  NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(0);
+  BackForwardCacheMetrics* metrics1 = entry1->back_forward_cache_metrics();
+  SiteInstanceImpl* site_instance1 = entry1->site_instance();
+  int64_t dsn1 = entry1->root_node()->frame_entry->document_sequence_number();
+  ASSERT_TRUE(metrics1);
+  ASSERT_TRUE(site_instance1);
+
+  // Navigate cross-site to `url2`, which commits in a different SiteInstance.
+  NavigationSimulator::NavigateAndCommitFromDocument(url2, main_test_rfh());
+  NavigationEntryImpl* entry2 = controller.GetEntryAtIndex(1);
+  SiteInstanceImpl* site_instance2 = entry2->site_instance();
+  ASSERT_TRUE(site_instance2);
+  ASSERT_NE(site_instance1, site_instance2);
+  ASSERT_NE(entry2->back_forward_cache_metrics(), metrics1);
+
+  // A main-frame navigation that reports `entry1`'s document sequence number
+  // but commits in `entry2`'s SiteInstance must not reuse `entry1`'s metrics,
+  // since the document sequence number is renderer-supplied and a
+  // same-document navigation never changes SiteInstance.
+  scoped_refptr<BackForwardCacheMetrics> result = BackForwardCacheMetrics::
+      CreateOrReuseBackForwardCacheMetricsForNavigation(
+          entry1, /*is_main_frame_navigation=*/true, dsn1, site_instance2);
+  EXPECT_NE(result.get(), metrics1);
+
+  // A main-frame navigation reporting `entry1`'s document sequence number and
+  // committing in `entry1`'s SiteInstance should still reuse the metrics.
+  result = BackForwardCacheMetrics::
+      CreateOrReuseBackForwardCacheMetricsForNavigation(
+          entry1, /*is_main_frame_navigation=*/true, dsn1, site_instance1);
+  EXPECT_EQ(result.get(), metrics1);
 }
 
 TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsNotStore) {

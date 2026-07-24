@@ -42,13 +42,14 @@ class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
 class NavigationRequest;
 class RenderFrameHostImpl;
+class SiteInstanceImpl;
 struct BackForwardCacheCanStoreDocumentResultWithTree;
 
 // Helper class for recording metrics around history navigations.
 // Associated with a main frame document and shared between all
 // NavigationEntries with the same document_sequence_number for the main
 // document.
-class BackForwardCacheMetrics
+class CONTENT_EXPORT BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
   using NotRestoredReason = BackForwardCache::NotRestoredReason;
@@ -99,13 +100,17 @@ class BackForwardCacheMetrics
   // navigation is a subframe navigation or if it's same-document with
   // `previous_entry`'s document.
   //
-  // |document_sequence_number| is the sequence number of the document
-  // associated with the navigating frame.
+  // `committing_document_sequence_number` is the sequence number of the
+  // document associated with the navigating frame.
+  // `committing_main_frame_site_instance` is the SiteInstance the main frame
+  // is committing in, and is only used when `is_main_frame_navigation` is
+  // true.
   static scoped_refptr<BackForwardCacheMetrics>
   CreateOrReuseBackForwardCacheMetricsForNavigation(
       NavigationEntryImpl* previous_entry,
       bool is_main_frame_navigation,
-      int64_t committing_document_sequence_number);
+      int64_t committing_document_sequence_number,
+      SiteInstanceImpl* committing_main_frame_site_instance);
 
   explicit BackForwardCacheMetrics(int64_t document_sequence_number);
 
@@ -188,11 +193,11 @@ class BackForwardCacheMetrics
 
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
-  CONTENT_EXPORT static uint64_t MetricValue(BackForwardCache::DisabledReason);
+  static uint64_t MetricValue(BackForwardCache::DisabledReason);
 
   // Injects a clock for mocking time.
   // Should be called only from the UI thread.
-  CONTENT_EXPORT static void OverrideTimeForTesting(base::TickClock* clock);
+  static void OverrideTimeForTesting(base::TickClock* clock);
 
   class TestObserver {
    public:

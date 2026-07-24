@@ -95,7 +95,8 @@ scoped_refptr<BackForwardCacheMetrics>
 BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
     NavigationEntryImpl* previous_entry,
     bool is_main_frame_navigation,
-    int64_t committing_document_sequence_number) {
+    int64_t committing_document_sequence_number,
+    SiteInstanceImpl* committing_main_frame_site_instance) {
   // TODO(https://crbug.com/445585641): Make this enforceable on Android.
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
@@ -123,10 +124,18 @@ BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
   }
 
   // Reuse `previous_entry_metrics` on subframe navigations and same-document
-  // navigations.
+  // main-frame navigations. The document sequence number used to detect the
+  // latter is supplied by the renderer; since same-document navigations never
+  // change SiteInstance, also require the committing SiteInstance to match
+  // `previous_entry`'s before treating the navigation as same-document.
+  // `previous_entry`'s SiteInstance may be null after session restore, in
+  // which case the document sequence number alone is trusted.
   if (!is_main_frame_navigation ||
-      committing_document_sequence_number ==
-          previous_entry_metrics->document_sequence_number_) {
+      (committing_document_sequence_number ==
+           previous_entry_metrics->document_sequence_number_ &&
+       (!previous_entry->site_instance() ||
+        previous_entry->site_instance() ==
+            committing_main_frame_site_instance))) {
     return previous_entry_metrics;
   }
 

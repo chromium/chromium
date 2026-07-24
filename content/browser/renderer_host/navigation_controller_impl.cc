@@ -1916,7 +1916,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
     back_forward_cache_metrics = BackForwardCacheMetrics::
         CreateOrReuseBackForwardCacheMetricsForNavigation(
             GetLastCommittedEntry(), is_main_frame_navigation,
-            params.document_sequence_number);
+            params.document_sequence_number,
+            is_main_frame_navigation ? rfh->GetSiteInstance() : nullptr);
   }
 
   // Notify the last active entry that we have navigated away.
