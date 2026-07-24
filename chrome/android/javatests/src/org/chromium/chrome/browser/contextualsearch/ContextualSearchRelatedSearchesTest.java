@@ -40,7 +40,7 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288251
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // Explicitly not supported.
 public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrumentationBase {
     @Override
     @Before

@@ -96,7 +96,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287853
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // Explicitly not supported.
 // TODO(donnd): Create class with limited API to encapsulate the internals of simulations.
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
@@ -750,7 +750,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444937
     public void testContextualDictionaryDefinitions() throws Exception {
         runDictionaryCardTest(CardTag.CT_CONTEXTUAL_DEFINITION);
     }
@@ -931,7 +930,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     // Previously flaky and disabled 4/2021.  https://crbug.com/40750236
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444937
     public void testTriggeringContextualSearchHidesFindInPageOverlay() throws Exception {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),

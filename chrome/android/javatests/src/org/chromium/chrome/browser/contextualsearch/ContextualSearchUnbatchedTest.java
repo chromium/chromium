@@ -29,6 +29,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // explicitly not supported.
 @DoNotBatch(reason = "testTapWithLanguage is flaky if it is batched https://crbug.com/40705847")
 public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentationBase {
     @Override
