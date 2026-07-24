@@ -20,6 +20,7 @@ source_set("bookmarks") {
     "bookmark_utils.h",
     "bookmark_utils_desktop.h",
     "bookmarks_service_feature.h",
+    "combined_bookmarks_view.h",
     "recently_used_folders_combo_model.h",
     "test_bookmark_navigation_wrapper.h",
   ]
@@ -62,6 +63,7 @@ source_set("impl") {
     "bookmark_utils.cc",
     "bookmark_utils_desktop.cc",
     "bookmarks_service_feature.cc",
+    "combined_bookmarks_view.cc",
     "recently_used_folders_combo_model.cc",
     "test_bookmark_navigation_wrapper.cc",
   ]
@@ -163,6 +165,7 @@ source_set("unit_tests") {
     "bookmark_ui_utils_desktop_unittest.cc",
     "bookmark_unittest.cc",
     "bookmark_utils_unittest.cc",
+    "combined_bookmarks_view_unittest.cc",
     "recently_used_folders_combo_model_unittest.cc",
   ]
 
