@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -105,6 +107,49 @@ TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
   select->SetUserHasEditedTheField();
   select->SetAutofillValue("111", WebAutofillState::kAutofilled);
   EXPECT_EQ(select->UserHasEditedTheField(), true);
+}
+
+TEST_F(HTMLSelectElementTest, ListBoxSuggestedOptionScrollTargetGroup) {
+  StringBuilder html;
+  html.Append(
+      "<!DOCTYPE HTML>"
+      "<style>nav { scroll-target-group: auto }</style>"
+      "<select id='sel' size='4'>");
+  for (int i = 0; i < 20; ++i) {
+    html.AppendFormat("<option id='o%d' value='v%d'>o%d</option>", i, i, i);
+  }
+  html.Append("</select><nav id='nav'>");
+  for (int i = 0; i < 20; ++i) {
+    html.AppendFormat("<a id='a%d' href='#o%d'></a>", i, i);
+  }
+  html.Append("</nav>");
+  SetHtmlInnerHTML(html.ToString().Utf8());
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
+  Element* nav = GetElementById("nav");
+  Element* first_anchor = GetElementById("a0");
+  ScrollMarkerGroupData* group = nav->GetScrollTargetGroupData();
+  ASSERT_TRUE(group);
+  ASSERT_EQ(group->Selected(), first_anchor);
+
+  // Setting the suggested option scrolls the listbox to bring it into view,
+  // but the selected scroll marker should not follow that scroll while the
+  // suggestion has not been accepted.
+  select->SetSuggestedValue("v15");
+  ASSERT_TRUE(select->IsPreviewed());
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(group->Selected(), first_anchor);
+
+  // Once the suggestion is cleared and a value is committed, the selected
+  // scroll marker tracks the listbox scroll position again.
+  select->setValueForBinding("v15");
+  ASSERT_FALSE(select->IsPreviewed());
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_NE(group->Selected(), first_anchor);
 }
 
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {

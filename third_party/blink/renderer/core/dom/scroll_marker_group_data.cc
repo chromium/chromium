@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -586,6 +587,13 @@ Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
     // group.
     if (targets.empty()) {
       break;
+    }
+    // Form controls in autofill preview state may have been scrolled to bring
+    // the previewed value into view. Keep the current selection so that the
+    // suggested value cannot be observed via the selected scroll marker.
+    if (auto* form_control = DynamicTo<HTMLFormControlElement>(scroller);
+        form_control && form_control->IsPreviewed()) {
+      return selected_marker_;
     }
     LayoutBox* scroller_box = scroller->GetLayoutBox();
     DCHECK(scroller_box);
