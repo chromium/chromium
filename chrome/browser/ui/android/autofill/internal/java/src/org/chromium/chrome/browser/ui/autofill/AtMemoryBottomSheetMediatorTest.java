@@ -305,18 +305,17 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testOnQuerySubmitted() {
+        when(mDelegate.isSearching()).thenReturn(true);
         mMediator.onQuerySubmitted("flight");
         assertTrue(mHomeModel.get(HomeProperties.IS_LOADING));
         verify(mDelegate).onQuerySubmitted("flight");
 
-        when(mDelegate.isSearching()).thenReturn(true);
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder().setLabel("Flight").setSubLabel("KLM").build();
         mMediator.show(List.of(suggestion));
         assertTrue(mHomeModel.get(HomeProperties.IS_LOADING));
-        assertEquals(2, mModelList.size());
-        assertEquals(HomeProperties.ItemType.ZERO_STATE, mModelList.get(0).type);
-        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(1).type);
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
 
         when(mDelegate.isSearching()).thenReturn(false);
         mMediator.show(List.of(suggestion));

@@ -55,7 +55,7 @@ class AtMemoryScreenState {
     public static final AtMemoryScreenState LOADING =
             new AtMemoryScreenState(
                     /* isLoading= */ true,
-                    /* showZeroState= */ true,
+                    /* showZeroState= */ false,
                     /* showAtMemorySuggestions= */ true);
 
     /** Screen state when the search input is empty or returned no results. */
