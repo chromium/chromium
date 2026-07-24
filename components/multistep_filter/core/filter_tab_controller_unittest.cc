@@ -61,6 +61,7 @@ class MockMultistepFilterService : public MultistepFilterService {
               (SuggestionUserDecision),
               (override));
   MOCK_METHOD(RetentionStateSnapshot, GetRetentionState, (), (const, override));
+  MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (const, override));
 };
 
 class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
@@ -147,6 +148,8 @@ class FilterTabControllerTest : public testing::Test {
             NewAnonymizedDataCollectionConsentHelper(&pref_service_);
     mock_service_ = std::make_unique<StrictMock<MockMultistepFilterService>>(
         std::move(params));
+    EXPECT_CALL(*mock_service_, CanUseModelExecutionFeatures())
+        .WillRepeatedly(Return(true));
     mock_delegate_ =
         std::make_unique<StrictMock<MockMultistepFilterUiDelegate>>();
     controller_ = std::make_unique<FilterTabController>(
@@ -425,6 +428,23 @@ TEST_F(FilterTabControllerTest, SuppressExtractionAndGenerationOnConsentFalse) {
 
   EXPECT_CALL(*mock_service_, HasUserProvidedConsent(metadata.navigation_id,
                                                      metadata.url.GetHost()))
+      .WillOnce(Return(false));
+
+  controller_->OnNavigationFinished(metadata);
+}
+
+// Tests that FilterTabController aborts immediately when model execution is
+// disabled.
+TEST_F(FilterTabControllerTest,
+       SuppressExtractionAndGenerationOnModelExecutionDisabled) {
+  FilterNavigationMetadata metadata =
+      CreateMetadata(3, GURL("https://example.com"));
+  metadata.prev_url = GURL("https://different.com");
+  metadata.has_user_gesture = true;
+
+  ExpectNoExtractionOrSuggestion();
+
+  EXPECT_CALL(*mock_service_, CanUseModelExecutionFeatures())
       .WillOnce(Return(false));
 
   controller_->OnNavigationFinished(metadata);

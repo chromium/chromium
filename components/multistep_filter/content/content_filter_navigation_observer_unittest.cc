@@ -78,6 +78,7 @@ class MockMultistepFilterService : public MultistepFilterService {
           return params;
         }()) {
     ON_CALL(*this, HasUserProvidedConsent).WillByDefault(Return(true));
+    ON_CALL(*this, CanUseModelExecutionFeatures).WillByDefault(Return(true));
   }
   ~MockMultistepFilterService() override = default;
 
@@ -85,6 +86,7 @@ class MockMultistepFilterService : public MultistepFilterService {
               HasUserProvidedConsent,
               (int64_t navigation_id, std::string_view host),
               (override));
+  MOCK_METHOD(bool, CanUseModelExecutionFeatures, (), (const, override));
 };
 
 class NavigationTimeCapturer : public content::WebContentsObserver {

@@ -23,7 +23,9 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/multistep_filter/core/verification/filter_application_verifier.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -134,6 +136,18 @@ bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
                          url_keyed_data_collection_enabled,
                          history_sync_enabled);
   return consent_enabled;
+}
+
+bool MultistepFilterService::CanUseModelExecutionFeatures() const {
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.GetAccountCapabilities()
+             .can_use_model_execution_features() == signin::Tribool::kTrue;
 }
 
 bool MultistepFilterService::IsUserSignedIn() const {

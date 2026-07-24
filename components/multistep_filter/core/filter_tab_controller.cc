@@ -259,6 +259,12 @@ void FilterTabController::OnNavigationFinished(
     return;
   }
 
+  if (!service_->CanUseModelExecutionFeatures()) {
+    LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,
+                           "model_execution_features_disabled");
+    return;
+  }
+
   if (!service_->HasUserProvidedConsent(metadata.navigation_id,
                                         metadata.url.GetHost())) {
     LogUrlEligibilityCheck(log_router_, metadata, /*eligible=*/false,

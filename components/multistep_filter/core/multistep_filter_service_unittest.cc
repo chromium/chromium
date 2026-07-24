@@ -26,6 +26,7 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -198,6 +199,53 @@ TEST_F(MultistepFilterServiceTest, HasUserProvidedConsent_FullyConsented) {
 
   CreateService();
   EXPECT_TRUE(service_->HasUserProvidedConsent(4, "example.com"));
+}
+
+// Tests that CanUseModelExecutionFeatures returns false when not signed in.
+TEST_F(MultistepFilterServiceTest, CanUseModelExecutionFeatures_NotSignedIn) {
+  CreateService();
+  EXPECT_FALSE(service_->CanUseModelExecutionFeatures());
+}
+
+// Tests that CanUseModelExecutionFeatures returns false when signed in but the
+// capability is false.
+TEST_F(MultistepFilterServiceTest,
+       CanUseModelExecutionFeatures_CapabilityFalse) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env_.identity_manager(),
+                                      account_info);
+
+  CreateService();
+  EXPECT_FALSE(service_->CanUseModelExecutionFeatures());
+}
+
+// Tests that CanUseModelExecutionFeatures returns true when signed in and the
+// capability is true.
+TEST_F(MultistepFilterServiceTest,
+       CanUseModelExecutionFeatures_CapabilityTrue) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env_.identity_manager(),
+                                      account_info);
+
+  CreateService();
+  EXPECT_TRUE(service_->CanUseModelExecutionFeatures());
+}
+
+// Tests that CanUseModelExecutionFeatures returns false when signed in and the
+// capability is not explicitly set (defaults to kUnknown).
+TEST_F(MultistepFilterServiceTest,
+       CanUseModelExecutionFeatures_CapabilityNotSet) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  CreateService();
+  EXPECT_FALSE(service_->CanUseModelExecutionFeatures());
 }
 
 }  // namespace multistep_filter

@@ -83,6 +83,10 @@ class MultistepFilterService : public KeyedService,
   virtual bool HasUserProvidedConsent(int64_t navigation_id,
                                       std::string_view host);
 
+  // Returns true if the user's account capabilities allow using model execution
+  // features.
+  virtual bool CanUseModelExecutionFeatures() const;
+
   // Records a suggestion impression in Profile retention preferences.
   virtual void RecordSuggestionImpression();
 

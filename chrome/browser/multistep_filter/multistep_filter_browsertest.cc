@@ -51,6 +51,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -147,8 +148,11 @@ class MultistepFilterBrowserTest : public InProcessBrowserTest,
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     // TODO(crbug.com/519167729): Remove once kSync becomes unreachable or is
     // deleted from the codebase.
-    signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                        signin::ConsentLevel::kSync);
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, kTestEmail, signin::ConsentLevel::kSync);
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
