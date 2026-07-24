@@ -247,10 +247,11 @@ void NtpAndroidThemeSyncBridge::OnDataLoaded(
       sync_pb::ThemeAndroidSpecifics specifics;
       if (specifics.ParseFromString(record.value)) {
         current_theme_ = specifics;
+        break;
       } else {
         DLOG(ERROR) << "Failed to deserialize ThemeAndroidSpecifics.";
+        continue;
       }
-      continue;
     }
   }
 
