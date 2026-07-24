@@ -58,6 +58,8 @@ static constexpr char kHandleRequiredForResidentCredential[] =
 static constexpr char kInvalidCmtgKey[] = "Invalid CMTG key";
 static constexpr char kInvalidCtapVersion[] = "Invalid CTAP version.";
 static constexpr char kInvalidProtocol[] = "The protocol is not valid";
+static constexpr char kInvalidSignatureCounter[] =
+    "Signature counter must be greater than or equal to -1";
 static constexpr char kInvalidTransport[] = "The transport is not valid";
 static constexpr char kInvalidUserHandle[] =
     "The User Handle must have a maximum size of ";
@@ -135,7 +137,7 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
     const VirtualAuthenticator& authenticator,
     base::span<const uint8_t> credential_id,
     const device::VirtualFidoDevice::RegistrationData& registration) {
-  int sign_count = 0;
+  int sign_count = -1;
   if (registration.counter.has_value()) {
     sign_count = base::saturated_cast<int>(*registration.counter);
   }
@@ -420,6 +422,18 @@ void WebAuthnHandler::AddCredential(
   bool credential_created;
   std::vector<uint8_t> credential_id =
       CopyBinaryToVector(credential->GetCredentialId());
+
+  std::optional<uint32_t> counter;
+  int provided_sign_count = credential->GetSignCount().value_or(0);
+  if (provided_sign_count < -1) {
+    callback->sendFailure(Response::InvalidParams(kInvalidSignatureCounter));
+    return;
+  }
+  if (provided_sign_count > -1) {
+    // -1 is a special value to mean no signature counter.
+    counter = static_cast<uint32_t>(provided_sign_count);
+  }
+
   if (credential->GetIsResidentCredential()) {
     if (!authenticator->has_resident_key()) {
       callback->sendFailure(
@@ -435,12 +449,12 @@ void WebAuthnHandler::AddCredential(
 
     credential_created = authenticator->AddResidentRegistration(
         credential_id, credential->GetRpId(""), credential->GetPrivateKey(),
-        credential->GetSignCount(), CopyBinaryToVector(user_handle),
-        credential->GetUserName(""), credential->GetUserDisplayName(""));
+        counter, CopyBinaryToVector(user_handle), credential->GetUserName(""),
+        credential->GetUserDisplayName(""));
   } else {
-    credential_created = authenticator->AddRegistration(
-        credential_id, credential->GetRpId(""), credential->GetPrivateKey(),
-        credential->GetSignCount());
+    credential_created =
+        authenticator->AddRegistration(credential_id, credential->GetRpId(""),
+                                       credential->GetPrivateKey(), counter);
   }
 
   if (!credential_created) {
@@ -599,7 +613,8 @@ Response WebAuthnHandler::SetCredentialProperties(
     std::optional<bool> backup_eligibility,
     std::optional<bool> backup_state,
     std::optional<int> active_cmtg_key_index,
-    std::optional<bool> generate_cmtg_key_on_next_operation) {
+    std::optional<bool> generate_cmtg_key_on_next_operation,
+    std::optional<int> sign_count) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
   if (!response.IsSuccess()) {
@@ -638,6 +653,16 @@ Response WebAuthnHandler::SetCredentialProperties(
         generate_cmtg_key_on_next_operation.has_value()) {
       return Response::InvalidParams(kCmtgNotSupported);
     }
+  }
+  if (sign_count.has_value()) {
+    if (*sign_count < -1) {
+      return Response::InvalidParams(kInvalidSignatureCounter);
+    }
+    authenticator->SetSignatureCounter(
+        credential_id,
+        // -1 is used to represent no counter available.
+        *sign_count == -1 ? std::nullopt
+                          : std::make_optional<uint32_t>(*sign_count));
   }
   return Response::Success();
 }
