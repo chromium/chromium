@@ -35,7 +35,6 @@
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -100,9 +99,17 @@ float GetEdgeWeight(const LanguageTag& source, const LanguageTag& target) {
             non_default_edges{
                 {{GetKnownLanguageTag("es-419"), GetKnownLanguageTag("es-MX")},
                  0.8},
+                // For english global (en-001), we favor "en-GB" matches by
+                // lowering the edge weight.
                 {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-GB")},
                  0.8},
                 {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-US")},
+                 0.9},
+                // For english (en) we favor "en-US" matches by lowering the
+                // "en" -> "en-US" edge weight.
+                {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-US")},
+                 0.8},
+                {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-GB")},
                  0.9},
                 {{GetKnownLanguageTag("es"), GetKnownLanguageTag("es-419")},
                  0.8},
@@ -153,6 +160,14 @@ class LanguageTagPreferenceGraph {
     // rest should default to en-GB.
     AddEdge(GetKnownLanguageTag("en-PH"), GetKnownLanguageTag("en-US"));
     AddEdge(GetKnownLanguageTag("en-LR"), GetKnownLanguageTag("en-US"));
+    // Special case for "en-CA" which from ICU data will default to "en-US" but
+    // Chorme i18n code always assumes it should match "en-GB".
+    AddEdge(GetKnownLanguageTag("en-CA"), GetKnownLanguageTag("en-GB"));
+    // This edge does not exist from the fallback algorithm as
+    // fallback("en-GB") = ["en-001", "en"]
+    // We need to add it to get "en" to match "en-GB" when "en-US" is not
+    // present.
+    AddEdge(GetKnownLanguageTag("en"), GetKnownLanguageTag("en-GB"));
   }
 
   // Computes the closest supported locale for all reachable nodes in the graph.
