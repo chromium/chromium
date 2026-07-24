@@ -55,6 +55,11 @@ template("cpp_api_from_rust") {
   # platform and doesn't yet work for the host platform.
   assert(!rust_prebuilt_stdlib)
 
+  # PDFium, V8 and other "2nd-party" Chromium projects don't yet have their own
+  # `//build_overrides/crubit.gni` build file.  Until this is fixed, we assert
+  # that `cpp_api_from_rust` template can only be used in Chromium builds.
+  assert(build_with_chromium)
+
   _rspgen_target_name = "${target_name}_crubit_rspgen"
   _action_target_name = "${target_name}_crubit_action"
   _rust_impl_target_name = "${target_name}_crubit_impl"

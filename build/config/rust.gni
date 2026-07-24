@@ -421,8 +421,8 @@ rust_prebuilt_stdlib =
 #
 # See the `assert` comments in `cpp_api_from_rust.gni` for explanation of
 # the conditions used here.
-enable_cpp_api_from_rust =
-    enable_rust && use_chromium_rust_toolchain && !rust_prebuilt_stdlib
+enable_cpp_api_from_rust = enable_rust && use_chromium_rust_toolchain &&
+                           !rust_prebuilt_stdlib && build_with_chromium
 
 rustc_wrapper_inputs = [
   "//build/action_helpers.py",
