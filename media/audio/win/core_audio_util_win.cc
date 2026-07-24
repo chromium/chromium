@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1223,6 +1224,8 @@ HRESULT CoreAudioUtil::SharedModeInitialize(IAudioClient* client,
                                             uint32_t* endpoint_buffer_size,
                                             const GUID* session_guid,
                                             bool is_offload_stream) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.Audio.Win.CoreAudioUtil.SharedModeInitializeTime");
   TRACE_EVENT0("audio", "CoreAudioUtil::SharedModeInitialize");
   // Use default flags (i.e, dont set AUDCLNT_STREAMFLAGS_NOPERSIST) to
   // ensure that the volume level and muting state for a rendering session

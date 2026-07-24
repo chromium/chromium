@@ -2400,6 +2400,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Win.CoreAudioUtil.SharedModeInitializeTime"
+    units="ms" expires_after="2027-01-10">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>media-audio@chromium.org</owner>
+  <summary>
+    Measures the execution time of CoreAudioUtil::SharedModeInitialize. Recorded
+    when Chrome attempts to initialize the audio stream between the client and
+    the device in shared mode. This captures the synchronous time spent waiting
+    for the Windows WASAPI driver to initialize a shared-mode audio endpoint.
+
+    Note: Although this function is currently only used for output (render)
+    streams, we intentionally omit &quot;Output.Win&quot; from the metric name
+    to maintain a 1:1 mapping with the underlying C++ CoreAudioUtil method name.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.{Direction}DeviceEnumerationOutcome"
     enum="AudioDeviceEnumerationOutcome" expires_after="2027-05-01">
   <owner>frederikh@google.com</owner>
