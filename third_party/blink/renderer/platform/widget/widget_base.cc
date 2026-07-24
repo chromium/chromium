@@ -1270,7 +1270,11 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
   std::optional<gfx::Rect> control_bounds;
   std::optional<gfx::Rect> selection_bounds;
   if (frame_widget) {
+    base::WeakPtr<WidgetBase> weak_this = weak_ptr_factory_.GetWeakPtr();
     new_info = frame_widget->TextInputInfo();
+    if (!weak_this) {
+      return;
+    }
     // This will be used to decide whether or not to show VK when VK policy is
     // manual.
     last_vk_visibility_request =
