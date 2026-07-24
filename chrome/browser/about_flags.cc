@@ -6990,6 +6990,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSplitViewTabRestoreDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kSplitViewTabRestore)},
 
+    {"tab-strip-unification", flag_descriptions::kTabStripUnificationName,
+     flag_descriptions::kTabStripUnificationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kTabStripUnification)},
+
     {"vertical-tabs", flag_descriptions::kVerticalTabsName,
      flag_descriptions::kVerticalTabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
@@ -7449,8 +7453,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"inline-pdf-v2", flag_descriptions::kInlinePdfV2Name,
      flag_descriptions::kInlinePdfV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInlinePdfV2)},
-    {"inline-pdf-v2-incognito",
-     flag_descriptions::kInlinePdfV2IncognitoName,
+    {"inline-pdf-v2-incognito", flag_descriptions::kInlinePdfV2IncognitoName,
      flag_descriptions::kInlinePdfV2IncognitoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInlinePdfV2Incognito)},
     {"android-pdf-reuse-fragment",
@@ -11021,10 +11024,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMagiChromePasskeySignInName,
      flag_descriptions::kMagiChromePasskeySignInDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         switches::kMagiChromePasskeySignIn,
-         kMagiChromePasskeySignInVariations,
-         "MagiChromePasskeySignIn")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kMagiChromePasskeySignIn,
+                                    kMagiChromePasskeySignInVariations,
+                                    "MagiChromePasskeySignIn")},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)

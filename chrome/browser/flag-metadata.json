@@ -9467,6 +9467,15 @@
     "expiry_milestone": 160
   },
   {
+    "name": "tab-strip-unification",
+    "owners": [
+      "top-chrome-desktop-ui@google.com",
+      "corising@chromium.org",
+      "lugli@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-switcher-drag-drop",
     "owners": [
       "desiatyrikov@google.com",

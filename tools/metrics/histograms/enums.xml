@@ -14770,6 +14770,7 @@ from previous Chrome versions.
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>
   <int value="89909398" label="CameraAppDigitalZoom:disabled"/>
   <int value="89934221" label="MediaAppPhotosIntegrationImage:disabled"/>
+  <int value="90493901" label="TabStripUnification:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
   <int value="90673685" label="cast-mirroring-target-playout-delay"/>
   <int value="91502414" label="VerticalTabsExpandOnHover:disabled"/>
@@ -19923,6 +19924,7 @@ from previous Chrome versions.
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
+  <int value="1717602894" label="TabStripUnification:enabled"/>
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
   <int value="1718341860" label="NTPButton:enabled"/>
