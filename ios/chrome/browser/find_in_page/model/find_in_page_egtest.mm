@@ -929,9 +929,9 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 
   // Scroll up and down the page.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionUp, 150)];
+      performAction:grey_scrollInDirection(kGREYDirectionUp, 100)];
 
   // Ensure that the bottom Omnibox is not visible.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxAtBottom()]
