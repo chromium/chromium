@@ -13,10 +13,12 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_node.h"
 
 namespace autofill {
 
 namespace {
+
 // The min/max number of fields that must be modified by JS to be considered
 // as a custom JS autofill.
 constexpr size_t kJsAutofillMinFieldsChanged = 3;
@@ -28,6 +30,40 @@ constexpr base::TimeDelta kJsAutofillMaxTimeGap = base::Milliseconds(200);
 
 // The maximum number of logs we store before evicting the oldest.
 constexpr size_t kMaxStoredJsLogs = 100;
+
+bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
+  // A JS-autofill picker would usually be anchored on a text-like input or
+  // textarea element. We exclude select elements to avoid false positives
+  // from country/state dropdowns resetting other fields and checkboxes and
+  // radio buttons to avoid false positives caused by checking boxes like
+  // "Billing address is similar to shipping address".
+  std::optional<mojom::FormControlType> field_type =
+      form_util::GetAutofillFormControlType(element);
+  if (!field_type) {
+    return false;
+  }
+  switch (*field_type) {
+    case mojom::FormControlType::kInputText:
+    case mojom::FormControlType::kInputSearch:
+    case mojom::FormControlType::kInputEmail:
+    case mojom::FormControlType::kInputTelephone:
+    case mojom::FormControlType::kInputUrl:
+    case mojom::FormControlType::kTextArea:
+      return true;
+    case mojom::FormControlType::kContentEditable:
+    case mojom::FormControlType::kInputCheckbox:
+    case mojom::FormControlType::kInputMonth:
+    case mojom::FormControlType::kInputNumber:
+    case mojom::FormControlType::kInputPassword:
+    case mojom::FormControlType::kInputRadio:
+    case mojom::FormControlType::kSelectOne:
+    case mojom::FormControlType::kInputDate:
+    case mojom::FormControlType::kInputHiddenEmailVerification:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 JavaScriptAutofillTracker::JavaScriptAutofillTracker(
@@ -113,6 +149,27 @@ void JavaScriptAutofillTracker::Reset() {
   timer_.Stop();
 }
 
+void JavaScriptAutofillTracker::HandleMousedown() {
+  // In order to start recording logs to `js_logs_`, the following conditions
+  // must be satisfied:
+
+  // (1) The frame must have transient user activation.
+  blink::WebDocument document = web_frame_->GetDocument();
+  if (!document || !web_frame_->HasTransientUserActivation()) {
+    return;
+  }
+
+  // (2) The frame should have a non-null focused element whose type can be that
+  // of an anchor element.
+  blink::WebFormControlElement focused_element =
+      document.FocusedElement().DynamicTo<blink::WebFormControlElement>();
+  if (!focused_element || !IsPossibleAnchorElement(focused_element)) {
+    return;
+  }
+
+  // TODO(crbug.com/529775544): Implement mousedown handling.
+}
+
 void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
   std::vector<JsChangeRecord> logs = std::move(js_logs_);
   js_logs_.clear();
@@ -124,34 +181,8 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
     return;
   }
 
-  // A JS-autofill picker would usually be anchored on a text-like input or
-  // textarea element. We exclude select elements to avoid false positives
-  // from country/state dropdowns resetting other fields and checkboxes and
-  // radio buttons to avoid false positives caused by checking boxes like
-  // "Billing address is similar to shipping address".
-  std::optional<mojom::FormControlType> field_type =
-      form_util::GetAutofillFormControlType(first_focused_field);
-  if (!field_type) {
+  if (!IsPossibleAnchorElement(first_focused_field)) {
     return;
-  }
-  switch (*field_type) {
-    case mojom::FormControlType::kInputText:
-    case mojom::FormControlType::kInputSearch:
-    case mojom::FormControlType::kInputEmail:
-    case mojom::FormControlType::kInputTelephone:
-    case mojom::FormControlType::kInputUrl:
-    case mojom::FormControlType::kTextArea:
-      break;
-    case mojom::FormControlType::kContentEditable:
-    case mojom::FormControlType::kInputCheckbox:
-    case mojom::FormControlType::kInputMonth:
-    case mojom::FormControlType::kInputNumber:
-    case mojom::FormControlType::kInputPassword:
-    case mojom::FormControlType::kInputRadio:
-    case mojom::FormControlType::kSelectOne:
-    case mojom::FormControlType::kInputDate:
-    case mojom::FormControlType::kInputHiddenEmailVerification:
-      return;
   }
 
   blink::WebFormElement target_form =

@@ -566,7 +566,13 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
     return gfx::Transform();
   }
 
-  virtual void OnMouseDown(Node&) {}
+  // Called immediately before initiating DOM event dispatch for a pointerdown
+  // event on `frame`.
+  virtual void WillDispatchPointerDown(LocalFrame&) {}
+
+  // Called immediately after a mousedown event or gesture tap has been
+  // dispatched to `mouse_down_node`.
+  virtual void DidDispatchMouseDown(Node&) {}
 
   virtual void DidUpdateBrowserControls() const {}
 

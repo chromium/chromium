@@ -335,7 +335,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
     DCHECK(gesture_event.GetType() == WebInputEvent::Type::kGestureTap);
     HitTestResult result = current_hit_test;
     result.SetToShadowHostIfInUAShadowRoot();
-    frame_->GetChromeClient().OnMouseDown(*result.InnerNode());
+    frame_->GetChromeClient().DidDispatchMouseDown(*result.InnerNode());
   }
 
   if (current_hit_test.InnerNode()) {

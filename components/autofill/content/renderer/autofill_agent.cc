@@ -2291,6 +2291,10 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 #endif
 }
 
+void AutofillAgent::DidReceiveLeftPointerDownBeforeDispatch() {
+  javascript_autofill_tracker_.HandleMousedown();
+}
+
 void AutofillAgent::SelectControlSelectionChanged(
     const WebFormControlElement& element) {
   if (WebDocument document = GetDocument();

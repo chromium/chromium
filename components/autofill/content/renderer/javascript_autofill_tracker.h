@@ -16,7 +16,7 @@
 
 namespace blink {
 class WebLocalFrame;
-}
+}  // namespace blink
 
 namespace autofill {
 
@@ -53,6 +53,11 @@ class JavaScriptAutofillTracker {
   // This is used to allow the tracker to distinguish between browser and
   // JavaScript autofilling a form.
   void OnWillAutofillForm();
+
+  // Invoked directly from Blink just prior to initiating DOM mousedown event
+  // dispatch. Initializes the detection timer before any webpage JavaScript can
+  // run or modify form field values.
+  void HandleMousedown();
 
   // Clears all recorded changes and stops the detection timer.
   void Reset();
