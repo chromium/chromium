@@ -85,11 +85,11 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
 AutofillAiSaveUpdateEntityFlowManager::AutofillAiSaveUpdateEntityFlowManager(
     content::WebContents* web_contents,
     AutofillMessageController* autofill_message_controller,
+    AutofillDialogController* autofill_dialog_controller,
     std::string app_locale)
     : web_contents_(web_contents),
       autofill_message_controller_(CHECK_DEREF(autofill_message_controller)),
-      autofill_dialog_controller_(
-          std::make_unique<AutofillDialogControllerImpl>(web_contents_)),
+      autofill_dialog_controller_(CHECK_DEREF(autofill_dialog_controller)),
       app_locale_(std::move(app_locale)) {}
 
 AutofillAiSaveUpdateEntityFlowManager::

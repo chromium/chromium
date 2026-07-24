@@ -72,6 +72,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "chrome/browser/ui/autofill/autofill_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_otp_phish_guard_delegate.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
@@ -1219,6 +1220,15 @@ ChromeAutofillClient::GetAutofillSnackbarController() {
   return autofill_snackbar_controller_impl_.get();
 }
 
+AutofillDialogController* ChromeAutofillClient::GetAutofillDialogController() {
+  if (!autofill_dialog_controller_impl_) {
+    autofill_dialog_controller_impl_ =
+        std::make_unique<AutofillDialogControllerImpl>(web_contents());
+  }
+
+  return autofill_dialog_controller_impl_.get();
+}
+
 AutofillMessageController*
 ChromeAutofillClient::GetAutofillMessageController() {
   if (!autofill_message_controller_) {
@@ -1341,7 +1351,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_save_update_entity_flow_manager_ =
         std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
-            web_contents, GetAutofillMessageController(), GetAppLocale());
+            web_contents, GetAutofillMessageController(),
+            GetAutofillDialogController(), GetAppLocale());
   }
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>(

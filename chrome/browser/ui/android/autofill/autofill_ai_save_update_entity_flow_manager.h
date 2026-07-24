@@ -39,6 +39,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   explicit AutofillAiSaveUpdateEntityFlowManager(
       content::WebContents* web_contents,
       AutofillMessageController* autofill_message_controller,
+      AutofillDialogController* autofill_dialog_controller,
       std::string app_locale);
   AutofillAiSaveUpdateEntityFlowManager(
       const AutofillAiSaveUpdateEntityFlowManager&) = delete;
@@ -57,11 +58,6 @@ class AutofillAiSaveUpdateEntityFlowManager {
   // instead of uploading it to Google Wallet.
   void ShowLocalSaveNotification();
 
-  void SetAutofillDialogControllerForTest(
-      std::unique_ptr<AutofillDialogController> autofill_dialog_controller) {
-    autofill_dialog_controller_ = std::move(autofill_dialog_controller);
-  }
-
  private:
   void OnMessagePrimaryAction(EntityInstance entity,
                               std::optional<EntityInstance> old_entity);
@@ -76,9 +72,9 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ref<AutofillMessageController> autofill_message_controller_;
+  raw_ref<AutofillDialogController> autofill_dialog_controller_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptController>
       save_update_entity_prompt_controller_;
-  std::unique_ptr<AutofillDialogController> autofill_dialog_controller_;
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.

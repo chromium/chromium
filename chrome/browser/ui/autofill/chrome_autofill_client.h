@@ -72,6 +72,7 @@ namespace autofill {
 class AutofillAiSaveUpdateEntityFlowManager;
 class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
+class AutofillDialogController;
 class AtMemoryBottomSheetBridge;
 class TouchToFillAutofillController;
 #endif
@@ -271,6 +272,9 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // the messages API.
   AutofillMessageController* GetAutofillMessageController();
 
+  // The AutofillDialogController is used to show Android modal dialogs.
+  AutofillDialogController* GetAutofillDialogController();
+
   void SetTouchToFillAutofillControllerForTesting(
       std::unique_ptr<TouchToFillAutofillController>
           touch_to_fill_autofill_controller);
@@ -424,6 +428,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillMessageController> autofill_message_controller_;
+  std::unique_ptr<AutofillDialogController> autofill_dialog_controller_impl_;
   std::unique_ptr<AutofillAiSaveUpdateEntityFlowManager>
       autofill_ai_save_update_entity_flow_manager_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>
