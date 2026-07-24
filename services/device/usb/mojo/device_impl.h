@@ -47,7 +47,8 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
                      mojo::PendingReceiver<mojom::UsbDevice> receiver,
                      mojo::PendingRemote<mojom::UsbDeviceClient> client,
                      base::span<const uint8_t> blocked_interface_classes,
-                     bool allow_security_key_requests);
+                     bool allow_security_key_requests,
+                     bool allow_unrestricted_control_transfers);
 
   DeviceImpl(const DeviceImpl&) = delete;
   DeviceImpl& operator=(const DeviceImpl&) = delete;
@@ -58,7 +59,8 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   DeviceImpl(scoped_refptr<device::UsbDevice> device,
              mojo::PendingRemote<mojom::UsbDeviceClient> client,
              base::span<const uint8_t> blocked_interface_classes,
-             bool allow_security_key_requests);
+             bool allow_security_key_requests,
+             bool allow_unrestricted_control_transfers);
 
   // Closes the device if it's open. This will always set |device_handle_| to
   // null.
@@ -179,6 +181,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
 
   const base::flat_set<uint8_t> blocked_interface_classes_;
   const bool allow_security_key_requests_;
+  const bool allow_unrestricted_control_transfers_;
   mojo::SelfOwnedReceiverRef<mojom::UsbDevice> receiver_;
   mojo::Remote<device::mojom::UsbDeviceClient> client_;
   base::WeakPtrFactory<DeviceImpl> weak_factory_{this};

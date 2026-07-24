@@ -79,6 +79,11 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
+  void GetUnrestrictedDevice(
+      const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
+      mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
+      mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
   void GetSecurityKeyDevice(
       const std::string& guid,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,

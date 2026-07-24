@@ -105,6 +105,11 @@ class FakeDeviceManagerRemote extends TestBrowserProxy implements
       _guid: string, _devicePendingReceiver: UsbDevicePendingReceiver,
       _deviceClient: UsbDeviceClientRemote|null) {}
 
+  getUnrestrictedDevice(
+      _guid: string, _blockedInterfaceClasses: number[],
+      _devicePendingReceiver: UsbDevicePendingReceiver,
+      _deviceClient: UsbDeviceClientRemote|null) {}
+
   getDevices(): Promise<{results: UsbDeviceInfo[]}> {
     this.methodCalled('getDevices');
     return Promise.resolve({results: this.devices});

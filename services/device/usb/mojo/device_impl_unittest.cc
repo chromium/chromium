@@ -218,7 +218,8 @@ class USBDeviceImplTest : public testing::Test {
       const std::string& serial,
       base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests,
-      mojo::PendingRemote<mojom::UsbDeviceClient> client) {
+      mojo::PendingRemote<mojom::UsbDeviceClient> client,
+      bool allow_unrestricted_control_transfers = false) {
     mock_device_ =
         new MockUsbDevice(vendor_id, product_id, manufacturer, product, serial);
     mock_handle_ = new MockUsbDeviceHandle(mock_device_.get());
@@ -226,7 +227,8 @@ class USBDeviceImplTest : public testing::Test {
     mojo::Remote<mojom::UsbDevice> proxy;
     DeviceImpl::Create(mock_device_, proxy.BindNewPipeAndPassReceiver(),
                        std::move(client), blocked_interface_classes,
-                       allow_security_key_requests);
+                       allow_security_key_requests,
+                       allow_unrestricted_control_transfers);
 
     // Set up mock handle calls to respond based on mock device configs
     // established by the test.
@@ -1437,7 +1439,8 @@ TEST_F(USBDeviceImplTest, ClaimInterfaceFailsDuringSetConfigurationMultiPipe) {
                      device2.BindNewPipeAndPassReceiver(),
                      /*client=*/mojo::NullRemote(),
                      /*blocked_interface_classes=*/{},
-                     /*allow_security_key_requests=*/false);
+                     /*allow_security_key_requests=*/false,
+                     /*allow_unrestricted_control_transfers=*/false);
 
   EXPECT_CALL(mock_device(), OpenInternal(_)).Times(2);
 
@@ -1752,6 +1755,76 @@ TEST_F(USBDeviceImplTest, ControlTransferStandardWriteBlocked) {
                        loop.QuitClosure()));
     loop.Run();
   }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, ControlTransferStandardWriteAllowedWithBypass) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy(
+      /*vendor_id=*/0x1234, /*product_id=*/0x5678,
+      /*manufacturer=*/"ACME", /*product=*/"Frobinator",
+      /*serial=*/"ABCDEF",
+      /*blocked_interface_classes=*/{},
+      /*allow_security_key_requests=*/false,
+      /*client=*/mojo::NullRemote(),
+      /*allow_unrestricted_control_transfers=*/true);
+
+  EXPECT_CALL(mock_device(), OpenInternal(/*callback=*/_));
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/7,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/1,
+                                  /*subclass_code=*/2,
+                                  /*protocol_code=*/3)
+                    .Build());
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(/*configuration_value=*/1,
+                                                      /*callback=*/_));
+  base::test::TestFuture<bool> set_config_future;
+  device->SetConfiguration(/*configuration_value=*/1,
+                           set_config_future.GetCallback());
+  EXPECT_TRUE(set_config_future.Get());
+
+  std::vector<uint8_t> fake_data = {1, 2, 3};
+
+  auto params = mojom::UsbControlTransferParams::New();
+  params->type = UsbControlTransferType::STANDARD;
+  params->recipient = UsbControlTransferRecipient::DEVICE;
+  // Request 9 is SetConfiguration (kUsbRequestSetConfiguration). In WebUSB, all
+  // OUTBOUND standard requests and all non-allowlisted standard requests are
+  // blocked. Setting allow_unrestricted_control_transfers to true bypasses this
+  // allowlist entirely, permitting the request to go through.
+  params->request = 9; /*kUsbRequestSetConfiguration*/
+  params->value = 1;
+  params->index = 0;
+
+  EXPECT_CALL(mock_handle(),
+              ControlTransferInternal(
+                  /*direction=*/UsbTransferDirection::OUTBOUND,
+                  /*request_type=*/UsbControlTransferType::STANDARD,
+                  /*recipient=*/UsbControlTransferRecipient::DEVICE,
+                  /*request=*/9 /*kUsbRequestSetConfiguration*/,
+                  /*value=*/1, /*index=*/0, /*buffer=*/_, /*timeout=*/_,
+                  /*callback=*/_))
+      .WillOnce([](UsbTransferDirection direction,
+                   UsbControlTransferType request_type,
+                   UsbControlTransferRecipient recipient, uint8_t request,
+                   uint16_t value, uint16_t index,
+                   scoped_refptr<base::RefCountedBytes> buffer,
+                   unsigned int timeout,
+                   UsbDeviceHandle::TransferCallback& callback) {
+        std::move(callback).Run(UsbTransferStatus::COMPLETED, buffer,
+                                buffer->size());
+      });
+
+  base::test::TestFuture<mojom::UsbTransferStatus> transfer_out_future;
+  device->ControlTransferOut(std::move(params), fake_data, /*timeout=*/0,
+                             transfer_out_future.GetCallback());
+  EXPECT_EQ(mojom::UsbTransferStatus::COMPLETED, transfer_out_future.Get());
 
   EXPECT_CALL(mock_handle(), Close());
 }

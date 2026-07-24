@@ -160,10 +160,11 @@ void DeviceImpl::Create(scoped_refptr<device::UsbDevice> device,
                         mojo::PendingReceiver<mojom::UsbDevice> receiver,
                         mojo::PendingRemote<mojom::UsbDeviceClient> client,
                         base::span<const uint8_t> blocked_interface_classes,
-                        bool allow_security_key_requests) {
-  auto* device_impl =
-      new DeviceImpl(std::move(device), std::move(client),
-                     blocked_interface_classes, allow_security_key_requests);
+                        bool allow_security_key_requests,
+                        bool allow_unrestricted_control_transfers) {
+  auto* device_impl = new DeviceImpl(
+      std::move(device), std::move(client), blocked_interface_classes,
+      allow_security_key_requests, allow_unrestricted_control_transfers);
   device_impl->receiver_ = mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(device_impl), std::move(receiver));
 }
@@ -175,11 +176,14 @@ DeviceImpl::~DeviceImpl() {
 DeviceImpl::DeviceImpl(scoped_refptr<device::UsbDevice> device,
                        mojo::PendingRemote<mojom::UsbDeviceClient> client,
                        base::span<const uint8_t> blocked_interface_classes,
-                       bool allow_security_key_requests)
+                       bool allow_security_key_requests,
+                       bool allow_unrestricted_control_transfers)
     : device_(std::move(device)),
       blocked_interface_classes_(blocked_interface_classes.begin(),
                                  blocked_interface_classes.end()),
       allow_security_key_requests_(allow_security_key_requests),
+      allow_unrestricted_control_transfers_(
+          allow_unrestricted_control_transfers),
       client_(std::move(client)) {
   DCHECK(device_);
   observation_.Observe(device_.get());
@@ -261,7 +265,8 @@ bool DeviceImpl::HasControlTransferPermission(
   // 1. STANDARD Requests
   // ==========================================
   if (type == UsbControlTransferType::STANDARD) {
-    if (base::FeatureList::IsEnabled(
+    if (!allow_unrestricted_control_transfers_ &&
+        base::FeatureList::IsEnabled(
             features::kWebUsbEnforceStandardRequestAllowlist)) {
       // Reject all Standard requests except fundamental inspection and
       // discovery inbound commands (GET_STATUS, GET_DESCRIPTOR,
