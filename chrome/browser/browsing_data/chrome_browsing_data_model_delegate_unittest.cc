@@ -14,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
@@ -84,18 +83,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile("test_profile");
 
     delegate_ = ChromeBrowsingDataModelDelegate::CreateForProfile(profile_);
-
-    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-              auto mock_browsing_topics_service = std::make_unique<
-                  browsing_topics::MockBrowsingTopicsService>();
-              mock_browsing_topics_service_ =
-                  mock_browsing_topics_service.get();
-              return mock_browsing_topics_service;
-            }));
 
 #if !BUILDFLAG(IS_ANDROID)
     if (auto* web_app_provider =
@@ -171,19 +158,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
     database->StoreTokens(tokens);
   }
 };
-
-TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForTopics) {
-  auto test_origin = url::Origin::Create(GURL("a.test"));
-  EXPECT_CALL(*mock_browsing_topics_service(),
-              ClearTopicsDataForOrigin(test_origin))
-      .Times(1);
-
-  delegate()->RemoveDataKey(
-      test_origin,
-      {static_cast<BrowsingDataModel::StorageType>(
-          ChromeBrowsingDataModelDelegate::StorageType::kTopics)},
-      base::DoNothing());
-}
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForMediaDeviceSalts) {
   base::test::TestFuture<void> done_future;

@@ -12,7 +12,6 @@
 #include "base/functional/concurrent_callbacks.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
@@ -151,16 +150,6 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
   base::ConcurrentClosures concurrent;
-
-  if (storage_types.Has(
-          static_cast<BrowsingDataModel::StorageType>(StorageType::kTopics))) {
-    // Topics can be deleted but not queried from disk as the creating origins
-    // are hashed before being saved.
-    const url::Origin* origin = std::get_if<url::Origin>(&data_key);
-    auto* browsing_topics_service =
-        browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
-    browsing_topics_service->ClearTopicsDataForOrigin(*origin);
-  }
 
   if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
           StorageType::kMediaDeviceSalt))) {

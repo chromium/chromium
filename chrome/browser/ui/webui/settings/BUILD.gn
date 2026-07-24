@@ -514,7 +514,6 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/bluetooth",
       "//chrome/browser/browsing_data",
-      "//chrome/browser/browsing_topics",
       "//chrome/browser/content_settings",
       "//chrome/browser/download",
       "//chrome/browser/engagement",

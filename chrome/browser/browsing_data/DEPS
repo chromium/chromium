@@ -38,7 +38,6 @@ include_rules = [
   "+chrome/browser/browsing_data/counters/tabs_counter.h",
   "+chrome/browser/browsing_data/navigation_entry_remover.h",
   "+chrome/browser/browsing_data/site_data_size_collector.h",
-  "+chrome/browser/browsing_topics/browsing_topics_service_factory.h",
   "+chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h",
   "+chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h",
   "+chrome/browser/commerce/shopping_service_factory.h",

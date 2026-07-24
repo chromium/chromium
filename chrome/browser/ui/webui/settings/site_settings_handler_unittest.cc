@@ -43,7 +43,6 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -371,17 +370,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     SetUpUserManager(profile_.get());
 #endif
 
-    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-              auto mock_browsing_topics_service = std::make_unique<
-                  browsing_topics::MockBrowsingTopicsService>();
-              mock_browsing_topics_service_ =
-                  mock_browsing_topics_service.get();
-              return mock_browsing_topics_service;
-            }));
 
     mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
         PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(

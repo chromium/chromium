@@ -37,7 +37,6 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"

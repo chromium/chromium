@@ -459,8 +459,8 @@ class PrivacySandboxServiceTest : public testing::Test {
     return std::make_unique<PrivacySandboxServiceImpl>(
         profile(), privacy_sandbox_settings(), cookie_settings(),
         profile()->GetPrefs(), GetProfileType(), browsing_data_remover(),
-        host_content_settings_map(), mock_browsing_topics_service(),
-        first_party_sets_policy_service(), mock_privacy_sandbox_countries());
+        host_content_settings_map(), first_party_sets_policy_service(),
+        mock_privacy_sandbox_countries());
   }
 
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -503,13 +503,6 @@ class PrivacySandboxServiceAdPrivacyUxDeprecationTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationTest, TopicsDataCleared) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
-  CreateService();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
-}
 
 TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationTest, FledgeDataCleared) {
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
@@ -666,23 +659,6 @@ TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
-TEST_F(PrivacySandboxServiceTest, DisablingTopicsPrefClearsData) {
-  // Confirm that when the topics preference is disabled, topics data is
-  // deleted. No browsing data remover tasks are started.
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
-  // Enabling should not delete data.
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
-  constexpr uint64_t kNoRemovalTask = -1ull;
-  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
-            kNoRemovalTask);
-
-  // Disabling should start delete topics data.
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
-  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
-            kNoRemovalTask);
-}
-
 TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
   // Confirm that when the fledge preference is disabled, a browsing data
   // remover task is started. Topics data isn't deleted.
@@ -728,30 +704,6 @@ TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
-TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
-  // Check that the service correctly de-dupes and orders top topics. Topics
-  // should be alphabetically ordered.
-  const privacy_sandbox::CanonicalTopic kFirstTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(24),  // "Blues"
-                                      kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kSecondTopic =
-      privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(23),  // "Music & audio"
-          kTestTaxonomyVersion);
-
-  const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
-      kSecondTopic, kSecondTopic, kFirstTopic};
-
-  EXPECT_CALL(*mock_browsing_topics_service(), GetTopTopicsForDisplay())
-      .WillOnce(testing::Return(kTopTopics));
-
-  auto topics = privacy_sandbox_service()->GetCurrentTopTopics();
-
-  ASSERT_EQ(topics.size(), 2u);
-  EXPECT_EQ(topics[0], kFirstTopic);
-  EXPECT_EQ(topics[1], kSecondTopic);
-}
-
 TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
   // Check that blocked topics are correctly alphabetically sorted and returned.
   const privacy_sandbox::CanonicalTopic kFirstTopic =
@@ -774,76 +726,6 @@ TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
   ASSERT_EQ(blocked_topics.size(), 2u);
   EXPECT_EQ(blocked_topics[0], kFirstTopic);
   EXPECT_EQ(blocked_topics[1], kSecondTopic);
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFirstLevelTopics) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "2"}});
-
-  // Check that blocked topics are correctly alphabetically sorted and returned.
-  const privacy_sandbox::CanonicalTopic kFirstTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1),
-                                      kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kLastTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(332),
-                                      kTestTaxonomyVersion);
-
-  auto first_level_topics = privacy_sandbox_service()->GetFirstLevelTopics();
-
-  ASSERT_EQ(first_level_topics.size(), 22u);
-  EXPECT_EQ(first_level_topics[0], kFirstTopic);
-  EXPECT_EQ(first_level_topics[21], kLastTopic);
-}
-
-TEST_F(PrivacySandboxServiceTest, GetChildTopicsCurrentlyAssigned) {
-  const privacy_sandbox::CanonicalTopic kParentTopic =
-      privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(1),  // "Arts & Entertainment"
-          kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kDirectChildTopic =
-      privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(23),  // "Music & audio"
-          kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kIndirectChildTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(29),  // "Jazz"
-                                      kTestTaxonomyVersion);
-  const privacy_sandbox::CanonicalTopic kNotChildTopic =
-      privacy_sandbox::CanonicalTopic(
-          browsing_topics::Topic(99),  // "Hair Care"
-          kTestTaxonomyVersion);
-
-  // No child topic assigned initially.
-  auto currently_assigned_child_topics =
-      privacy_sandbox_service()->GetChildTopicsCurrentlyAssigned(kParentTopic);
-  ASSERT_EQ(0u, currently_assigned_child_topics.size());
-
-  // Assign some topics.
-  const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
-      kDirectChildTopic, kIndirectChildTopic, kNotChildTopic};
-  ON_CALL(*mock_browsing_topics_service(), GetTopTopicsForDisplay())
-      .WillByDefault(testing::Return(kTopTopics));
-
-  // Both direct and indirect child should be returned.
-  currently_assigned_child_topics =
-      privacy_sandbox_service()->GetChildTopicsCurrentlyAssigned(kParentTopic);
-  ASSERT_EQ(currently_assigned_child_topics.size(), 2u);
-  EXPECT_EQ(currently_assigned_child_topics[0], kIndirectChildTopic);
-  EXPECT_EQ(currently_assigned_child_topics[1], kDirectChildTopic);
-}
-
-TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
-  const privacy_sandbox::CanonicalTopic kTestTopic =
-      privacy_sandbox::CanonicalTopic(browsing_topics::Topic(10),
-                                      kTestTaxonomyVersion);
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearTopic(kTestTopic)).Times(1);
-  privacy_sandbox_service()->SetTopicAllowed(kTestTopic, false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(kTestTopic));
-
-  testing::Mock::VerifyAndClearExpectations(mock_browsing_topics_service());
-  EXPECT_CALL(*mock_browsing_topics_service(), ClearTopic(kTestTopic)).Times(0);
-  privacy_sandbox_service()->SetTopicAllowed(kTestTopic, true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(kTestTopic));
 }
 
 TEST_F(PrivacySandboxServiceTest, TestNoFakeTopics) {
@@ -1367,92 +1249,6 @@ TEST_F(PrivacySandboxServiceTest, TopicsConsentSettings_EnableNoBlocked) {
           {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
           {kTopicsConsentStringIdentifiers,
            GetTopicsSettingsStringIdentifiers(/*did_consent=*/true,
-                                              /*has_current_topics=*/false,
-                                              /*has_blocked_topics=*/false)},
-      });
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       TopicsConsentSettings_DisableCurrentAndBlocked) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, true},
-                {kHasCurrentTopics, true},
-                {kHasBlockedTopics, true},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, false},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, false},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
-                                              /*has_current_topics=*/true,
-                                              /*has_blocked_topics=*/true)},
-      });
-}
-
-TEST_F(PrivacySandboxServiceTest, TopicsConsentSettings_DisableBlockedOnly) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, true},
-                {kHasCurrentTopics, false},
-                {kHasBlockedTopics, true},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, false},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, false},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
-                                              /*has_current_topics=*/false,
-                                              /*has_blocked_topics=*/true)},
-      });
-}
-
-TEST_F(PrivacySandboxServiceTest, TopicsConsentSettings_DisableCurrentOnly) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, true},
-                {kHasCurrentTopics, true},
-                {kHasBlockedTopics, false},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, false},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, false},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
-                                              /*has_current_topics=*/true,
-                                              /*has_blocked_topics=*/false)},
-      });
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       TopicsConsentSettings_DisableNoCurrentNoBlocked) {
-  RunTestCase(
-      TestState{{kActiveTopicsConsent, true},
-                {kHasCurrentTopics, false},
-                {kHasBlockedTopics, false},
-                {kAdvanceClockBy, base::Hours(1)}},
-      TestInput{
-          {kTopicsToggleNewValue, false},
-      },
-      TestOutput{
-          {kTopicsConsentGiven, false},
-          {kTopicsConsentLastUpdateReason,
-           privacy_sandbox::TopicsConsentUpdateSource::kSettings},
-          {kTopicsConsentLastUpdateTime, base::Time::Now() + base::Hours(1)},
-          {kTopicsConsentStringIdentifiers,
-           GetTopicsSettingsStringIdentifiers(/*did_consent=*/false,
                                               /*has_current_topics=*/false,
                                               /*has_blocked_topics=*/false)},
       });

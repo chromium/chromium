@@ -56,7 +56,6 @@
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/btm/btm_browser_signin_detector_factory.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
@@ -858,7 +857,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   BrowserManagerServiceFactory::GetInstance();
 #endif
-  browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   BulkLeakCheckServiceFactory::GetInstance();

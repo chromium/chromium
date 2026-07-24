@@ -17,9 +17,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/common/common_types.h"
-#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -227,7 +225,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     profile_metrics::BrowserProfileType profile_type,
     content::BrowsingDataRemover* browsing_data_remover,
     HostContentSettingsMap* host_content_settings_map,
-    browsing_topics::BrowsingTopicsService* browsing_topics_service,
     first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
     PrivacySandboxCountries* privacy_sandbox_countries)
     : profile_(profile),
@@ -237,7 +234,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       profile_type_(profile_type),
       browsing_data_remover_(browsing_data_remover),
       host_content_settings_map_(host_content_settings_map),
-      browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
   static constexpr int kFakeTaxonomyVersion = 1;
@@ -305,7 +301,6 @@ void PrivacySandboxServiceImpl::Shutdown() {
   user_prefs_registrar_.RemoveAll();
   privacy_sandbox_countries_ = nullptr;
   first_party_sets_policy_service_ = nullptr;
-  browsing_topics_service_ = nullptr;
   host_content_settings_map_ = nullptr;
   browsing_data_remover_ = nullptr;
   pref_service_ = nullptr;
@@ -464,14 +459,7 @@ PrivacySandboxServiceImpl::GetCurrentTopTopics() const {
     return {fake_current_topics_.begin(), fake_current_topics_.end()};
   }
 
-  if (!browsing_topics_service_) {
-    return {};
-  }
-
-  auto topics = browsing_topics_service_->GetTopTopicsForDisplay();
-  SortAndDeduplicateTopicsForDisplay(topics);
-
-  return topics;
+  return {};
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
@@ -498,53 +486,13 @@ PrivacySandboxServiceImpl::GetBlockedTopics() const {
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxServiceImpl::GetFirstLevelTopics() const {
-  static const base::NoDestructor<std::vector<privacy_sandbox::CanonicalTopic>>
-      kFirstLevelTopics([]() -> std::vector<privacy_sandbox::CanonicalTopic> {
-        browsing_topics::SemanticTree semantic_tree;
-
-        auto topics = semantic_tree.GetFirstLevelTopicsInCurrentTaxonomy();
-        std::vector<privacy_sandbox::CanonicalTopic> first_level_topics;
-        first_level_topics.reserve(topics.size());
-        std::transform(
-            topics.begin(), topics.end(),
-            std::back_inserter(first_level_topics),
-            [&](const browsing_topics::Topic& topic) {
-              return privacy_sandbox::CanonicalTopic(
-                  topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
-            });
-
-        SortAndDeduplicateTopicsForDisplay(first_level_topics);
-
-        return first_level_topics;
-      }());
-
-  return *kFirstLevelTopics;
+  return {};
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxServiceImpl::GetChildTopicsCurrentlyAssigned(
     const privacy_sandbox::CanonicalTopic& parent_topic) const {
-  browsing_topics::SemanticTree semantic_tree;
-
-  auto descendant_topics =
-      semantic_tree.GetDescendantTopics(parent_topic.topic_id());
-  auto current_assigned_topics = GetCurrentTopTopics();
-
-  std::set<privacy_sandbox::CanonicalTopic> descendant_topics_set;
-  std::transform(
-      std::begin(descendant_topics), std::end(descendant_topics),
-      std::inserter(descendant_topics_set, descendant_topics_set.begin()),
-      [](browsing_topics::Topic topic) {
-        return privacy_sandbox::CanonicalTopic(
-            topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
-      });
-  std::vector<privacy_sandbox::CanonicalTopic> child_topics_assigned;
-  for (const auto topic : current_assigned_topics) {
-    if (descendant_topics_set.contains(topic)) {
-      child_topics_assigned.push_back(topic);
-    }
-  }
-  return child_topics_assigned;
+  return {};
 }
 
 void PrivacySandboxServiceImpl::SetTopicAllowed(
@@ -559,10 +507,6 @@ void PrivacySandboxServiceImpl::SetTopicAllowed(
       fake_blocked_topics_.insert(topic);
     }
     return;
-  }
-
-  if (!allowed && browsing_topics_service_) {
-    browsing_topics_service_->ClearTopic(topic);
   }
 
   privacy_sandbox_settings_->SetTopicAllowed(topic, allowed);
@@ -670,15 +614,7 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
 }
 
 void PrivacySandboxServiceImpl::OnTopicsPrefChanged() {
-  // If the user has disabled the preference, any related data stored should
-  // be cleared.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
-    return;
-  }
-
-  if (browsing_topics_service_) {
-    browsing_topics_service_->ClearAllTopicsData();
-  }
+  // TODO(crbug.com/461709147): Remove method since Topics API is deprecated.
 }
 
 void PrivacySandboxServiceImpl::OnFledgePrefChanged() {

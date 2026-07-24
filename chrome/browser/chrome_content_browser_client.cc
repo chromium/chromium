@@ -66,7 +66,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/btm/btm_browser_signin_detector.h"
 #include "chrome/browser/btm/stateful_bounce_counter.h"
 #include "chrome/browser/child_process_host_flags.h"
@@ -7800,47 +7799,6 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
   }
 }
 
-bool ChromeContentBrowserClient::HandleTopicsWebApi(
-    const url::Origin& context_origin,
-    content::RenderFrameHost* main_frame,
-    browsing_topics::ApiCallerSource caller_source,
-    bool get_topics,
-    bool observe,
-    std::vector<blink::mojom::EpochTopicPtr>& topics) {
-  browsing_topics::BrowsingTopicsService* browsing_topics_service =
-      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(
-              content::WebContents::FromRenderFrameHost(main_frame)
-                  ->GetBrowserContext()));
-
-  if (!browsing_topics_service) {
-    return {};
-  }
-
-  bool allowed = browsing_topics_service->HandleTopicsWebApi(
-      context_origin, main_frame, caller_source, get_topics, observe, topics);
-
-  if (main_frame) {
-    ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
-        main_frame, context_origin,
-        ChromeBrowsingDataModelDelegate::StorageType::kTopics, !allowed);
-  }
-
-  return allowed;
-}
-
-int ChromeContentBrowserClient::NumVersionsInTopicsEpochs(
-    content::RenderFrameHost* main_frame) const {
-  browsing_topics::BrowsingTopicsService* browsing_topics_service =
-      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(
-              content::WebContents::FromRenderFrameHost(main_frame)
-                  ->GetBrowserContext()));
-
-  CHECK(browsing_topics_service);
-  return browsing_topics_service->NumVersionsInEpochs(
-      main_frame->GetLastCommittedOrigin());
-}
 
 void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
     content::RenderFrameHost* rfh,

@@ -33,10 +33,6 @@ namespace content_settings {
 class CookieSettings;
 }
 
-namespace browsing_topics {
-class BrowsingTopicsService;
-}
-
 class PrivacySandboxServiceImpl : public PrivacySandboxService {
  public:
   PrivacySandboxServiceImpl(
@@ -47,7 +43,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
       HostContentSettingsMap* host_content_settings_map,
-      browsing_topics::BrowsingTopicsService* browsing_topics_service,
       first_party_sets::FirstPartySetsPolicyService* first_party_sets_service,
       PrivacySandboxCountries* privacy_sandbox_countries);
 
@@ -168,7 +163,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   profile_metrics::BrowserProfileType profile_type_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;

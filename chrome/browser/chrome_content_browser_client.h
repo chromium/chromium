@@ -892,17 +892,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy) override;
 
-  bool HandleTopicsWebApi(
-      const url::Origin& context_origin,
-      content::RenderFrameHost* main_frame,
-      browsing_topics::ApiCallerSource caller_source,
-      bool get_topics,
-      bool observe,
-      std::vector<blink::mojom::EpochTopicPtr>& topics) override;
-
-  int NumVersionsInTopicsEpochs(
-      content::RenderFrameHost* main_frame) const override;
-
   void GetMediaDeviceIDSalt(
       content::RenderFrameHost* rfh,
       const net::SiteForCookies& site_for_cookies,

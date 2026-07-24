@@ -89,7 +89,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
@@ -1488,21 +1487,6 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     RenderFrameHost* frame_host,
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {}
-
-bool ContentBrowserClient::HandleTopicsWebApi(
-    const url::Origin& context_origin,
-    content::RenderFrameHost* main_frame,
-    browsing_topics::ApiCallerSource caller_source,
-    bool get_topics,
-    bool observe,
-    std::vector<blink::mojom::EpochTopicPtr>& topics) {
-  return true;
-}
-
-int ContentBrowserClient::NumVersionsInTopicsEpochs(
-    content::RenderFrameHost* main_frame) const {
-  return 0;
-}
 
 void ContentBrowserClient::GetMediaDeviceIDSalt(
     content::RenderFrameHost* rfh,
