@@ -82,8 +82,6 @@ rewriter
 run-ad-auction
 screen-wake-lock
 serial
-shared-storage
-shared-storage-select-url
 speaker-selection
 storage-access
 summarizer

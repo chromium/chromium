@@ -3363,7 +3363,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     # <selectlist> shouldn't fail.
     self._driver.Load('about:blank')
     self._driver.ExecuteScript(
-        "document.body.innerHTML = '<selectlist tabindex=0><option>1</option></selectlist>';")
+        "document.body.innerHTML ="
+        " '<selectlist tabindex=0><option>1</option></selectlist>';")
     selectlist = self._driver.FindElement('tag name', 'selectlist')
     selectlist.SendKeys('\uE00C')  # ESC
 
@@ -3372,7 +3373,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     # <selectlist> should fail.
     self._driver.Load('about:blank')
     self._driver.ExecuteScript(
-        "document.body.innerHTML = '<selectlist><option>1</option></selectlist>';")
+        "document.body.innerHTML ="
+        " '<selectlist><option>1</option></selectlist>';")
     selectlist = self._driver.FindElement('tag name', 'selectlist')
     with self.assertRaises(chromedriver.ElementNotInteractable):
       selectlist.SendKeys('\uE00C')  # ESC
@@ -6000,7 +6002,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
         chrome_switches=['--site-per-process',
           '--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride,'
           'FencedFramesAPIChanges,FencedFramesDefaultMode,'
-          'FencedFramesEnforceFocus'])
+          'FencedFramesEnforceFocus,SharedStorageAPI'])
 
   @staticmethod
   def GetHttpsUrlForFile(file_path):
