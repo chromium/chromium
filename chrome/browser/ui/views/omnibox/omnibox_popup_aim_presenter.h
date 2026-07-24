@@ -41,6 +41,10 @@ class OmniboxPopupAimPresenter
   // initiating the focus restoration flow.
   void OnFileSelectionClosed() override;
 
+  bool is_restoring_focus_after_file_selection() const {
+    return is_restoring_focus_after_file_selection_;
+  }
+
  protected:
   // OmniboxPopupPresenterBase overrides:
   void LogResultToContentReadyMetric(bool success) override;
@@ -73,6 +77,8 @@ class OmniboxPopupAimPresenter
   // omnibox popup from closing due to focus transitions during focus
   // restoration.
   bool is_restoring_focus_after_file_selection_ = false;
+
+  base::WeakPtrFactory<OmniboxPopupAimPresenter> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_

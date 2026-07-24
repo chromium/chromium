@@ -139,6 +139,20 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
     return content;
   }
 
+  void DeactivatePresenterAndVerifyState(
+      OmniboxPopupAimPresenter* presenter,
+      OmniboxPopupState expected_state = OmniboxPopupState::kNone) {
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              expected_state);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
@@ -348,9 +362,28 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
             OmniboxPopupState::kAim);
 }
 
+class OmniboxAimPopupKeepOpenBrowserTest
+    : public OmniboxAimPopupBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  OmniboxAimPopupKeepOpenBrowserTest() {
+    feature_list_.InitWithFeatureState(omnibox::kOmniboxKeepOpenOnFileSelection,
+                                       IsKeepOpenEnabled());
+  }
+
+  bool IsKeepOpenEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxAimPopupKeepOpenBrowserTest,
+                         ::testing::Bool());
+
 // Verify that active deactivation blockers prevent the omnibox popup from
 // closing, and that destroying the blockers allows it to close.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        DeactivationBlockersPreventPopupClose) {
   ASSERT_TRUE(ShowPopupAndGetWebUIContent());
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
@@ -367,51 +400,62 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
 
   // Create a deactivation blocker.
   auto blocker = presenter->CreateDeactivationBlocker();
-  ASSERT_TRUE(blocker);
-  EXPECT_TRUE(presenter->has_active_blockers());
+  if (IsKeepOpenEnabled()) {
+    ASSERT_TRUE(blocker);
+    EXPECT_TRUE(presenter->has_active_blockers());
 
-  // Simulate deactivation (loss of widget activation).
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+    // Simulate deactivation (loss of widget activation).
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Verify the popup did not close (remains kAim).
-  EXPECT_EQ(location_bar()
-                ->GetOmniboxController()
-                ->popup_state_manager()
-                ->popup_state(),
-            OmniboxPopupState::kAim);
+    // Verify the popup did not close (remains kAim).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kAim);
 
-  // Destroy the blocker.
-  blocker.reset();
-  EXPECT_FALSE(presenter->has_active_blockers());
+    // Destroy the blocker.
+    blocker.reset();
+    EXPECT_FALSE(presenter->has_active_blockers());
 
-  // Simulate deactivation again (loss of widget activation).
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+    // Simulate deactivation again (loss of widget activation).
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Verify the popup has now closed (transitions to kNone).
-  EXPECT_EQ(location_bar()
-                ->GetOmniboxController()
-                ->popup_state_manager()
-                ->popup_state(),
-            OmniboxPopupState::kNone);
-}
+    // Verify the popup has now closed (transitions to kNone).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kNone);
+  } else {
+    EXPECT_FALSE(blocker);
+    EXPECT_FALSE(presenter->has_active_blockers());
 
-class OmniboxAimPopupKeepOpenBrowserTest : public OmniboxAimPopupBrowserTest {
- public:
-  OmniboxAimPopupKeepOpenBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        omnibox::kOmniboxKeepOpenOnFileSelection);
+    // Simulate deactivation (loss of widget activation).
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
+
+    // Verify the popup closes immediately when feature is disabled.
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kNone);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+}
 
 // Verifies that opening a file chooser creates a deactivation blocker that
 // prevents the AIM popup from closing on activation loss, and that cancelling
 // the file selection proxies FileSelectionCanceled and releases the blocker.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
+IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserCancellationReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
   ASSERT_TRUE(content);
@@ -435,64 +479,102 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
       content->GetWebContents()->GetPrimaryMainFrame(), test_listener, params);
   ASSERT_TRUE(base::test::RunUntil([&]() { return dialog_opened; }));
 
-  // Verify a deactivation blocker was created by `RunFileChooser`.
-  EXPECT_TRUE(presenter->has_active_blockers());
+  if (IsKeepOpenEnabled()) {
+    // Verify a deactivation blocker was created by `RunFileChooser`.
+    EXPECT_TRUE(presenter->has_active_blockers());
 
-  // Simulate loss of widget activation while file dialog is open.
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+    // Simulate loss of widget activation while file dialog is open.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Verify the popup did not close (remains kAim).
-  EXPECT_EQ(location_bar()
-                ->GetOmniboxController()
-                ->popup_state_manager()
-                ->popup_state(),
-            OmniboxPopupState::kAim);
+    // Verify the popup did not close (remains kAim).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kAim);
 
-  // Simulate cancelling the file chooser dialog.
-  ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
-  ASSERT_TRUE(dialog);
-  dialog->CallFileSelectionCanceled();
+    // Simulate cancelling the file chooser dialog.
+    ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
+    ASSERT_TRUE(dialog);
+    dialog->CallFileSelectionCanceled();
 
-  // Verify cancellation was proxied to our listener and the blocker was
-  // released via `OnFileChooserClosed`.
-  EXPECT_TRUE(test_listener->canceled());
-  EXPECT_FALSE(presenter->has_active_blockers());
+    // Verify cancellation was proxied to our listener and the blocker was
+    // released via `OnFileChooserClosed`.
+    EXPECT_TRUE(test_listener->canceled());
+    EXPECT_FALSE(presenter->has_active_blockers());
 
-  // Simulate loss of widget activation immediately after the file dialog has
-  // closed. Because focus restoration is pending, this deactivation is blocked.
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+    // Simulate loss of widget activation immediately after the file dialog has
+    // closed. Because focus restoration is pending, this deactivation is
+    // blocked.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Verify the popup remains open (blocked by focus restoration).
-  EXPECT_EQ(location_bar()
-                ->GetOmniboxController()
-                ->popup_state_manager()
-                ->popup_state(),
-            OmniboxPopupState::kAim);
+    // Verify the popup remains open (blocked by focus restoration).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kAim);
 
-  // Simulate focus restoring to the Omnibox (kFocusRestore reason).
-  auto* fm = location_bar()->GetWidget()->GetFocusManager();
-  ASSERT_TRUE(fm);
-  fm->SetFocusedViewWithReason(
-      location_bar()->omnibox_view(),
-      views::FocusManager::FocusChangeReason::kFocusRestore);
+    // Simulate focus restoring to the Omnibox.
+    auto* fm = location_bar()->GetWidget()->GetFocusManager();
+    ASSERT_TRUE(fm);
+    EXPECT_TRUE(presenter->is_restoring_focus_after_file_selection());
+    fm->ClearFocus();
+    fm->SetFocusedViewWithReason(
+        location_bar()->omnibox_view(),
+        views::FocusManager::FocusChangeReason::kFocusRestore);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !presenter->is_restoring_focus_after_file_selection();
+    }));
 
-  // Simulate loss of widget activation now that focus restoration is reset.
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+    // Simulate loss of widget activation now that focus restoration is reset.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Verify the popup now closes (transitions to `kNone`).
-  EXPECT_EQ(location_bar()
-                ->GetOmniboxController()
-                ->popup_state_manager()
-                ->popup_state(),
-            OmniboxPopupState::kNone);
+    // Verify the popup now closes (transitions to `kNone`).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kNone);
+  } else {
+    // Verify no deactivation blocker was created.
+    EXPECT_FALSE(presenter->has_active_blockers());
+
+    // Simulate loss of widget activation while file dialog is open.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
+
+    // Verify the popup closes when feature is disabled.
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kNone);
+
+    // Simulate cancelling the file chooser dialog.
+    ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
+    ASSERT_TRUE(dialog);
+    dialog->CallFileSelectionCanceled();
+
+    // Verify cancellation was still proxied to our listener.
+    EXPECT_TRUE(test_listener->canceled());
+  }
 }
 
 // Verifies that selecting a file in the file chooser proxies `FileSelected`
 // and releases the deactivation blocker via `OnFileChooserClosed`.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
+IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserSelectionReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
   ASSERT_TRUE(content);
@@ -520,8 +602,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
       content->GetWebContents()->GetPrimaryMainFrame(), test_listener, params);
   ASSERT_TRUE(base::test::RunUntil([&]() { return dialog_opened; }));
 
-  // Verify a deactivation blocker is active.
-  EXPECT_TRUE(presenter->has_active_blockers());
+  if (IsKeepOpenEnabled()) {
+    // Verify a deactivation blocker is active.
+    EXPECT_TRUE(presenter->has_active_blockers());
+  } else {
+    EXPECT_FALSE(presenter->has_active_blockers());
+  }
 
   // Simulate selecting a file in the dialog.
   ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
@@ -539,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
 // Verifies that closing a file selection dialog triggers focus restoration
 // handling, preventing a subsequent deactivation event from closing the popup,
 // and that it is cleaned up when focus is restored to the Omnibox.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
+IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileSelectionFocusRestorationPreventsPopupClose) {
   ASSERT_TRUE(ShowPopupAndGetWebUIContent());
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
@@ -558,35 +644,131 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
   // Close the file selection dialog.
   presenter->OnFileSelectionClosed();
 
-  // Deactivate the widget. Because the restoration flag is active,
-  // this deactivation should be blocked.
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+  if (IsKeepOpenEnabled()) {
+    // Deactivate the widget. Because the restoration flag is active,
+    // this deactivation should be blocked.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kAim);
 
-  // Verify the popup remains open.
+    // Clear focus first so SetFocusedViewWithReason triggers a focus change
+    // event.
+    EXPECT_TRUE(presenter->is_restoring_focus_after_file_selection());
+    fm->ClearFocus();
+    fm->SetFocusedViewWithReason(
+        location_bar()->omnibox_view(),
+        views::FocusManager::FocusChangeReason::kFocusRestore);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !presenter->is_restoring_focus_after_file_selection();
+    }));
+
+    // Deactivate the widget again. Because the restoration flag has been reset,
+    // this deactivation should now close the popup.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
+  } else {
+    // When feature is disabled, deactivation closes the popup.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
+  }
+}
+
+// Verifies that a widget activation sequence (active=true followed by
+// active=false during window reactivation) after closing file selection does
+// not prematurely reset focus restoration state or close the AIM popup when
+// kOmniboxKeepOpenOnFileSelection is enabled.
+IN_PROC_BROWSER_TEST_P(
+    OmniboxAimPopupKeepOpenBrowserTest,
+    ActivationChangedAfterFileSelectionClosedPreservesPopup) {
+  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
   EXPECT_EQ(location_bar()
                 ->GetOmniboxController()
                 ->popup_state_manager()
                 ->popup_state(),
             OmniboxPopupState::kAim);
+  // Wait for the popup state transition delayed task to finish.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !location_bar()->in_popup_state_transition(); }));
 
-  // Restore focus to the Omnibox. This consumes and resets the restoration
-  // flag.
-  fm->SetFocusedViewWithReason(
-      location_bar()->omnibox_view(),
-      views::FocusManager::FocusChangeReason::kFocusRestore);
+  // Simulate file selection dialog closure.
+  presenter->OnFileSelectionClosed();
 
-  // Deactivate the widget again. Because the restoration flag has been reset,
-  // this deactivation should now close the popup.
-  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
-      nullptr, /*active=*/false);
+  if (IsKeepOpenEnabled()) {
+    // Simulate window reactivation when file chooser closes.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/true);
+    // Simulate subsequent focus transition/deactivation event.
+    static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+        nullptr, /*active=*/false);
+    // Wait for any popup state transition to finish before verifying state.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !location_bar()->in_popup_state_transition(); }));
+    // Verify the popup remains open (blocked by focus restoration).
+    EXPECT_EQ(location_bar()
+                  ->GetOmniboxController()
+                  ->popup_state_manager()
+                  ->popup_state(),
+              OmniboxPopupState::kAim);
 
-  // Verify the popup is now closed.
+    // Simulate focus restoration to the omnibox textfield after the activation
+    // sequence. If the activation toggle prematurely reset the restoration
+    // state, this will fail to redirect focus away from the omnibox_view.
+    auto* fm = location_bar()->GetWidget()->GetFocusManager();
+    ASSERT_TRUE(fm);
+    EXPECT_TRUE(presenter->is_restoring_focus_after_file_selection());
+    fm->ClearFocus();
+    fm->SetFocusedViewWithReason(
+        location_bar()->omnibox_view(),
+        views::FocusManager::FocusChangeReason::kFocusRestore);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !presenter->is_restoring_focus_after_file_selection();
+    }));
+  } else {
+    // When feature is disabled, deactivation closes the popup.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
+  }
+}
+
+// Verifies that if focus moves to a view other than the omnibox text field
+// while file selection restoration is pending, the restoration state is
+// cancelled (`else if (focused_now)` branch) and subsequent deactivations close
+// the popup.
+IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
+                       FocusMovingElsewhereCancelsRestorationState) {
+  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
   EXPECT_EQ(location_bar()
                 ->GetOmniboxController()
                 ->popup_state_manager()
                 ->popup_state(),
-            OmniboxPopupState::kNone);
+            OmniboxPopupState::kAim);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !location_bar()->in_popup_state_transition(); }));
+
+  presenter->OnFileSelectionClosed();
+
+  if (IsKeepOpenEnabled()) {
+    auto* fm = location_bar()->GetWidget()->GetFocusManager();
+    ASSERT_TRUE(fm);
+
+    // Simulate focus moving to a different focusable view (e.g.,
+    // location_icon_view()) rather than omnibox_view().
+    auto* icon_view = location_bar()->location_icon_view();
+    ASSERT_TRUE(icon_view);
+    fm->ClearFocus();
+    fm->SetFocusedView(icon_view);
+
+    // Verify focus stays on that view and is not redirected to the popup.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return fm->GetFocusedView() == icon_view; }));
+
+    // Because OnDidChangeFocus hit `else if (focused_now)` and called
+    // ResetFocusRestorationState(), deactivating the widget should now close
+    // the popup.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
+  } else {
+    // When feature is disabled, deactivation closes the popup.
+    DeactivatePresenterAndVerifyState(presenter, OmniboxPopupState::kNone);
+  }
 }
 
 namespace {
