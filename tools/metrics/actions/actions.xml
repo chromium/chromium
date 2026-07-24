@@ -55116,6 +55116,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VerticalTabs.Toolbar.CaptionAreaPressed">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user presses on the non-interactive caption area of the
+    toolbar in vertical tabs mode to potentially start a window drag. Note: This
+    metric is based on hit testing during mouse button state checks. It may
+    include false positives (e.g. right-clicks or deduplication artifacts), and
+    should be used primarily for relative comparison with
+    VerticalTabs.Toolbar.InteractiveAreaPressed.
+  </description>
+</action>
+
+<action name="VerticalTabs.Toolbar.InteractiveAreaPressed">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user presses on an interactive area (e.g. buttons,
+    omnibox, or menu) of the toolbar in vertical tabs mode. Note: This metric is
+    based on hit testing during mouse button state checks. It may include
+    inaccuracies (e.g. false positives or deduplication artifacts) and should be
+    used primarily for relative comparison with
+    VerticalTabs.Toolbar.CaptionAreaPressed.
+  </description>
+</action>
+
 <action name="VerticalTabs_EnabledFirstTime">
   <owner>charlesmeng@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

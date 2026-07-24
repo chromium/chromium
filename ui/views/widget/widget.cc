@@ -922,6 +922,10 @@ bool Widget::IsMoveLoopSupported() const {
   return native_widget_ ? native_widget_->IsMoveLoopSupported() : false;
 }
 
+bool Widget::IsMouseButtonDown() const {
+  return native_widget_ ? native_widget_->IsMouseButtonDown() : false;
+}
+
 Widget::MoveLoopResult Widget::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     MoveLoopSource source,

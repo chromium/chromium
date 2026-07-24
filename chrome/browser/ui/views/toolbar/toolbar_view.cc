@@ -1258,6 +1258,25 @@ bool ToolbarView::IsPositionInWindowCaption(
   return IsPositionInWindowCaptionForView(this, test_point);
 }
 
+void ToolbarView::RecordHitTestMetrics(bool is_caption_area) {
+  const bool is_mouse_down = GetWidget() && GetWidget()->IsMouseButtonDown();
+
+  if (!is_mouse_down) {
+    was_mouse_down_ = false;
+  } else if (!was_mouse_down_) {
+    was_mouse_down_ = true;
+    if (browser_view_->ShouldDrawVerticalTabStrip()) {
+      if (is_caption_area) {
+        base::RecordAction(
+            base::UserMetricsAction("VerticalTabs.Toolbar.CaptionAreaPressed"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "VerticalTabs.Toolbar.InteractiveAreaPressed"));
+      }
+    }
+  }
+}
+
 views::Button* ToolbarView::GetChromeLabsButton() const {
   return ChromeLabsCoordinator::From(browser_)->GetChromeLabsButton();
 }

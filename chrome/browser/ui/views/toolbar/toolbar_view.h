@@ -165,6 +165,9 @@ class ToolbarView : public views::AccessiblePaneView,
   // area.
   bool IsPositionInWindowCaption(const gfx::Point& test_point) const;
 
+  // Records user metrics based on hit test results within the toolbar view.
+  void RecordHitTestMetrics(bool is_caption_area);
+
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
@@ -457,6 +460,8 @@ class ToolbarView : public views::AccessiblePaneView,
   bool should_display_vertical_tabs_ = false;
   bool should_show_glic_button_ = false;
   bool should_show_glic_actor_ = false;
+
+  bool was_mouse_down_ = false;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

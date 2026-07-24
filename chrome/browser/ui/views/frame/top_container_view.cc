@@ -34,7 +34,7 @@ TopContainerView::~TopContainerView() = default;
 
 bool TopContainerView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
-  const ToolbarView* const toolbar = browser_view_->toolbar();
+  ToolbarView* const toolbar = browser_view_->toolbar();
   for (auto& child : children()) {
     gfx::Point logical_test_point(GetMirroredXInView(test_point.x()),
                                   test_point.y());
@@ -42,7 +42,9 @@ bool TopContainerView::IsPositionInWindowCaption(
       if (child == toolbar) {
         const auto in_toolbar =
             views::View::ConvertPointToTarget(this, toolbar, test_point);
-        if (toolbar->IsPositionInWindowCaption(in_toolbar)) {
+        const bool is_caption = toolbar->IsPositionInWindowCaption(in_toolbar);
+        toolbar->RecordHitTestMetrics(is_caption);
+        if (is_caption) {
           return true;
         }
       }
