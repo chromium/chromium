@@ -1467,6 +1467,11 @@ inline constexpr char kOmniboxCrashFixKillSwitchName[] =
 inline constexpr char kOmniboxCrashFixKillSwitchDescription[] =
     "Enables the OmniboxCrashFixKillSwitch feature.";
 
+inline constexpr char kOmniboxCrossDeviceTabZeroSuggestName[] =
+    "Omnibox Cross-Device Tab Zero Suggest";
+inline constexpr char kOmniboxCrossDeviceTabZeroSuggestDescription[] =
+    "Enables showing cross-device tabs in the omnibox zero-state.";
+
 inline constexpr char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
     "Omnibox Grouping Framework for Typed Suggestions";
 inline constexpr char
