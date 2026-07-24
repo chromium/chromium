@@ -1826,6 +1826,14 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
     }
 
+    @Test
+    public void testAnimateIconChanges_desktopPlatform() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        reset(mStatusCoordinator);
+        mMediator.onUrlFocusChange(true);
+        verify(mStatusCoordinator).setShouldAnimateIconChanges(false);
+    }
+
     private void testOnUrlFocusChange(boolean expectDesktopMode) {
         mProfileSupplier.set(mProfile);
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
