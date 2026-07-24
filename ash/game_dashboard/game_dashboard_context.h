@@ -276,8 +276,7 @@ class ASH_EXPORT GameDashboardContext : public ui::EventHandler,
   // The `GameDashboardMainMenuView` when the user presses the Game Dashboard
   // button to display all Game Dashboard views. This displays the main menu and
   // settings views. Owned by the views hierarchy.
-  raw_ptr<GameDashboardMainMenuView, DanglingUntriaged> main_menu_view_ =
-      nullptr;
+  raw_ptr<GameDashboardMainMenuView> main_menu_view_ = nullptr;
 
   // The `GameDashboardToolbarView` when the user makes the toolbar visible.
   // Owned by the views hierarchy.
