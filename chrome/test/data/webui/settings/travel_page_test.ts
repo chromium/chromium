@@ -384,8 +384,7 @@ suite('TravelPage', function() {
       assertTrue(!!button);
 
       button.click();
-      assertEquals(
-          '/suggestionsFromGemini', Router.getInstance().currentRoute.path);
+      assertEquals('/enhancedAutofill', Router.getInstance().currentRoute.path);
       const action = await metricsBrowserProxy.whenCalled('recordAction');
       assertEquals(
           'PersonalContext.Settings.EntryPoint.TravelSettings', action);

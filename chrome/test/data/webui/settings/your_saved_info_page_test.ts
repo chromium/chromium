@@ -317,8 +317,7 @@ suite('YourSavedInfoPage', function() {
     // </if>
 
     button.click();
-    assertEquals(
-        '/suggestionsFromGemini', Router.getInstance().currentRoute.path);
+    assertEquals('/enhancedAutofill', Router.getInstance().currentRoute.path);
 
     const action = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
