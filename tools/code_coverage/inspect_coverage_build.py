@@ -5,19 +5,24 @@
 """Programmatic inspector for LUCI Code Coverage builds.
 
 Responsible for:
-# 1. Fetching raw build details and step history via Buildbucket CLI (bb).
-# 2. Verifying gclient config and lookup GN args against
-#    language_coverage_map.json.
-# 3. Verifying coverage pipeline steps (unit & overall), HTML report
-#    generation, and HTML upload.
-# 4. Extracting target file coverage metrics and uncovered lines.
+- Fetching raw build details and step history via Buildbucket CLI (bb).
+- Verifying gclient config and lookup GN args against
+  language_coverage_map.json.
+- Verifying coverage pipeline steps (unit & overall), HTML report
+  generation, and HTML upload across languages.
+- Extracting target file coverage metrics and uncovered lines.
 """
 
 import argparse
+import gzip
+import gzip
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
+import zlib
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
@@ -56,6 +61,7 @@ class StepStatus(StrEnum):
 
 
 INDENT = '  '
+SRC_ROOT = Path(__file__).resolve().parents[2]
 
 
 def get_supported_languages() -> list[str]:
@@ -214,28 +220,73 @@ def verify_configuration(build_data: dict[str, Any],
   }
 
 
+def first_matching_url(gsutil_urls: dict[str, str | None],
+                       candidate_keys: list[str]) -> str | None:
+  """Returns the first non-empty URL string found in gsutil_urls.
+
+  Args:
+      gsutil_urls: Dictionary mapping step names to GCS URLs.
+      candidate_keys: Ordered list of property key strings to test.
+
+  Returns:
+      First matching URL string or None if no valid match is found.
+  """
+  for key in candidate_keys:
+    val = gsutil_urls.get(key)
+    if val:
+      return str(val)
+  return None
+
+
 def verify_coverage_pipeline(build_data: dict[str, Any]) -> dict[str, Any]:
-  """Verifies coverage pipeline execution and artifact generation.
+  """Verifies coverage pipeline execution and artifacts across languages.
 
   Args:
       build_data: Raw build dictionary returned by bb get.
 
   Returns:
-      Dictionary reporting generation status, substeps, and artifact URLs.
+      Dictionary reporting generation status, substeps, and artifact URLs across
+      C++, Java, and JavaScript coverage pipelines.
   """
   steps = build_data.get('steps', [])
   out_props = build_data.get('output', {}).get('properties', {})
   gsutil_urls = out_props.get('gsutil_urls', {})
 
-  pipelines = ['overall test coverage', 'unit test coverage']
+  pipelines_config = [
+      (
+          'cpp_overall',
+          'process clang code coverage data for overall test coverage',
+          'overall',
+      ),
+      (
+          'cpp_unit',
+          'process clang code coverage data for unit test coverage',
+          'unit',
+      ),
+      (
+          'java_overall',
+          'process java coverage (overall)',
+          'overall',
+      ),
+      (
+          'java_unit',
+          'process java coverage (unit)',
+          'unit',
+      ),
+      (
+          'js_overall',
+          'process javascript coverage (overall)',
+          'overall',
+      ),
+  ]
+
   results = {}
   all_pipelines_valid = True
+  build_id_str = str(build_data.get('id', ''))
 
-  for p_type in pipelines:
-    parent_step_name = f'process clang code coverage data for {p_type}'
+  for p_key, parent_step_name, p_level in pipelines_config:
     parent_status = StepStatus.NOT_FOUND
-    html_gen_status = StepStatus.NOT_FOUND
-    html_upload_status = StepStatus.NOT_FOUND
+    artifacts_upload_status = StepStatus.NOT_FOUND
     tests_processed_count = 0
     skipped_no_data = False
     child_steps = []
@@ -266,7 +317,8 @@ def verify_coverage_pipeline(build_data: dict[str, Any]) -> dict[str, Any]:
 
       if s_name == parent_step_name:
         parent_status = st
-      elif s_name.startswith(prefix):
+        continue
+      if s_name.startswith(prefix):
         sub_name = s_name[len(prefix):]
         child_steps.append({'name': sub_name, 'status': st})
         if 'skip processing because no data is found' in sub_name:
@@ -281,42 +333,75 @@ def verify_coverage_pipeline(build_data: dict[str, Any]) -> dict[str, Any]:
               'skip processing because no profdata was generated',
               'step_name': sub_name,
           })
-        if sub_name.startswith('generate html report'):
-          html_gen_status = st
+        if sub_name.startswith((
+            'generate html report',
+            'Generate Java coverage metadata',
+            'generate javascript html report',
+            'Generate JavaScript coverage metadata',
+        )):
           match_count = re.search(r'in (\d+) tests', s_name)
           if match_count:
             tests_processed_count = int(match_count.group(1))
-        elif sub_name == 'gsutil upload html report':
-          html_upload_status = st
+        elif sub_name.startswith('gsutil Upload coverage artifacts'):
+          artifacts_upload_status = st
 
-    html_report_gcs_url = gsutil_urls.get(
-        f'{parent_step_name}|gsutil upload html report', '')
+    if (parent_status == StepStatus.NOT_FOUND and not child_steps
+        and not recipe_messages):
+      continue
+
+    upload_step_name = ('gsutil Upload coverage artifacts (2)' if p_level
+                        == 'overall' else 'gsutil Upload coverage artifacts')
+    if artifacts_upload_status == StepStatus.NOT_FOUND:
+      for s in steps:
+        if s.get('name', '') == upload_step_name:
+          artifacts_upload_status = s.get('status',
+                                          StepStatus.STATUS_UNSPECIFIED)
+          break
+      if artifacts_upload_status == StepStatus.NOT_FOUND:
+        fallback_upload_name = ('gsutil Upload coverage artifacts'
+                                if p_level == 'overall' else
+                                'gsutil Upload coverage artifacts (2)')
+        for s in steps:
+          if s.get('name', '') == fallback_upload_name:
+            artifacts_upload_status = s.get('status',
+                                            StepStatus.STATUS_UNSPECIFIED)
+            break
+
+    upload_step_alt = ('gsutil Upload coverage artifacts' if upload_step_name
+                       == 'gsutil Upload coverage artifacts (2)' else '')
+    base_gs = first_matching_url(gsutil_urls, [
+        f'{parent_step_name}|{upload_step_name}',
+        f'{parent_step_name}|gsutil Upload coverage artifacts',
+        upload_step_name,
+        upload_step_alt,
+    ])
     profdata_gcs_url = gsutil_urls.get(
         f'{parent_step_name}|gsutil upload artifact to GS', '')
-
-    def to_https(gs_url: str, suffix: str = '') -> str:
-      if gs_url.startswith('gs://'):
-        return gs_url.replace('gs://',
-                              'https://storage.cloud.google.com/') + suffix
-      return ''
-
-    html_report_url = to_https(html_report_gcs_url, '/index.html')
+    all_json_gz_url = (base_gs.rstrip('/') + '/all.json.gz' if base_gs else '')
+    if (not all_json_gz_url and build_id_str
+        and parent_status == StepStatus.SUCCESS
+        and not os.environ.get('INSPECT_COVERAGE_NO_NETWORK')):
+      gsutil_py = SRC_ROOT / 'third_party' / 'depot_tools' / 'gsutil.py'
+      gcs_pattern = (f'gs://code-coverage-data/**/{build_id_str}/{p_level}/'
+                     '**all.json.gz')
+      ls_cmd = [sys.executable, str(gsutil_py), 'ls', gcs_pattern]
+      res = subprocess.run(ls_cmd, capture_output=True, text=True, check=False)
+      if res.returncode == 0 and res.stdout.strip():
+        all_json_gz_url = res.stdout.strip().splitlines()[0]
 
     pipeline_success = (parent_status == StepStatus.SUCCESS
-                        and html_gen_status == StepStatus.SUCCESS
-                        and html_upload_status == StepStatus.SUCCESS)
-    if parent_status != StepStatus.NOT_FOUND or len(recipe_messages) > 0:
-      results[p_type] = {
+                        and artifacts_upload_status == StepStatus.SUCCESS)
+    if (parent_status != StepStatus.NOT_FOUND or len(child_steps) > 0
+        or len(recipe_messages) > 0):
+      results[p_key] = {
           'parent_step_status': parent_status,
-          'html_report_generation_status': html_gen_status,
-          'html_report_upload_status': html_upload_status,
+          'artifacts_upload_status': artifacts_upload_status,
           'tests_processed_count': tests_processed_count,
           'skipped_no_data': skipped_no_data,
           'recipe_error_messages_detected': recipe_messages,
           'child_steps': child_steps,
-          'html_report_gcs_url': html_report_gcs_url,
-          'html_report_url': html_report_url,
           'merged_profdata_gcs_url': profdata_gcs_url,
+          'all_json_gz_url': all_json_gz_url,
           'pipeline_success': pipeline_success,
       }
       if not pipeline_success:
@@ -354,68 +439,133 @@ def format_line_ranges(line_nums: list[int]) -> str:
   return ', '.join(ranges)
 
 
-def fetch_and_parse_file_html_report(gcs_url: str) -> dict[str, Any]:
-  """Fetches and parses llvm-cov HTML report for a target file via gsutil.
+_ALL_JSON_GZ_CACHE: dict[str, dict[str, Any] | None] = {}
+
+
+def download_and_parse_all_json_gz_once(all_json_gz_url: str,
+                                        force_reload: bool = False
+                                        ) -> dict[str, Any] | None:
+  """Downloads, decompresses, and caches a GCS all.json.gz metadata bundle.
 
   Args:
-      gcs_url: GCS URI to the target source file's HTML report.
+      all_json_gz_url: GCS URI to the target all.json.gz bundle.
+      force_reload: If True, bypasses and clears the in-memory cache for url.
 
   Returns:
-      Dictionary containing coverage percentages and uncovered line numbers.
+      Parsed JSON dictionary or None if unavailable.
   """
-  if not gcs_url.startswith('gs://'):
+  if not all_json_gz_url:
+    return None
+  if force_reload:
+    _ALL_JSON_GZ_CACHE.pop(all_json_gz_url, None)
+  if all_json_gz_url in _ALL_JSON_GZ_CACHE:
+    return _ALL_JSON_GZ_CACHE[all_json_gz_url]
+
+  gsutil_py = SRC_ROOT / 'third_party' / 'depot_tools' / 'gsutil.py'
+
+  try:
+    with tempfile.NamedTemporaryFile(suffix='.json.gz') as tf:
+      tmp_path = tf.name
+      res = subprocess.run(
+          [sys.executable,
+           str(gsutil_py), 'cp', all_json_gz_url, tmp_path],
+          capture_output=True,
+          check=False,
+      )
+      if res.returncode != 0 or not os.path.exists(tmp_path):
+        _ALL_JSON_GZ_CACHE[all_json_gz_url] = None
+        return None
+      with open(tmp_path, 'rb') as f:
+        raw = f.read()
+    try:
+      data = json.loads(zlib.decompress(raw))
+    except Exception:
+      try:
+        data = json.loads(gzip.decompress(raw))
+      except Exception:
+        data = json.loads(raw)
+    _ALL_JSON_GZ_CACHE[all_json_gz_url] = data
+    return data
+  except Exception:
+    _ALL_JSON_GZ_CACHE[all_json_gz_url] = None
+    return None
+
+
+def fetch_and_parse_json_file_coverage(
+    all_json_gz_url: str,
+    clean_path: str,
+    force_reload: bool = False) -> dict[str, Any]:
+  """Extracts per-file coverage summary from a cached GCS metadata bundle.
+
+  Args:
+      all_json_gz_url: GCS URI to the target all.json.gz metadata bundle.
+      clean_path: Target source file relative path.
+      force_reload: If True, bypasses and clears the in-memory cache for url.
+
+  Returns:
+      Dictionary containing coverage percentages and uncovered lines.
+  """
+  data = download_and_parse_all_json_gz_once(all_json_gz_url, force_reload)
+  if not data:
     return {'available': False}
-
-  src_root = Path(__file__).resolve().parents[2]
-  gsutil_py = src_root / 'third_party' / 'depot_tools' / 'gsutil.py'
-
-  if '*' in gcs_url:
-    ls_cmd = [sys.executable, str(gsutil_py), 'ls', gcs_url
-              ] if gsutil_py.exists() else ['gsutil', 'ls', gcs_url]
-    ls_res = subprocess.run(ls_cmd, capture_output=True, text=True, check=False)
-    if ls_res.returncode != 0 or not ls_res.stdout.strip():
+  try:
+    files = data.get('files', []) if isinstance(data, dict) else []
+    target = None
+    for item in files:
+      if isinstance(item, dict):
+        path = item.get('path', item.get('filename', ''))
+        if not path:
+          continue
+        if path.endswith(clean_path) or clean_path.endswith(path):
+          target = item
+          break
+    if not target:
       return {'available': False}
-    gcs_url = ls_res.stdout.strip().splitlines()[0]
 
-  if gsutil_py.exists():
-    cmd = [sys.executable, str(gsutil_py), 'cat', gcs_url]
-  else:
-    cmd = ['gsutil', 'cat', gcs_url]
+    uncovered_lines = []
+    for l_item in target.get('lines', []):
+      if isinstance(l_item, dict) and l_item.get('count', 0) == 0:
+        uncovered_lines.extend(
+            range(l_item.get('first', 0),
+                  l_item.get('last', 0) + 1))
 
-  res = subprocess.run(cmd, capture_output=True, text=True, check=False)
-  if res.returncode != 0:
+    summaries_data = target.get('summaries', target.get('summary', []))
+    if isinstance(summaries_data, dict):
+      summaries = {}
+      for k_name, k_dict in summaries_data.items():
+        if isinstance(k_dict,
+                      dict) and 'covered' in k_dict and ('count' in k_dict
+                                                         or 'total' in k_dict):
+          tot = k_dict.get('count', k_dict.get('total', 0))
+          summaries[k_name] = {
+              'covered': k_dict.get('covered', 0),
+              'total': tot,
+          }
+    else:
+      summaries = {
+          s.get('name'): s
+          for s in summaries_data if isinstance(s, dict)
+      }
+
+    def fmt_summary(name: str, alt_name: str = '') -> str:
+      s = summaries.get(name) or (summaries.get(alt_name) if alt_name else None)
+      if not s:
+        return 'N/A'
+      cov = s.get('covered', 0)
+      tot = s.get('total', s.get('count', 0))
+      pct = (cov / tot * 100.0) if tot > 0 else 0.0
+      return f'{cov}/{tot} ({pct:.2f}%)'
+
+    return {
+        'available': True,
+        'line_coverage': fmt_summary('line', 'lines'),
+        'function_coverage': fmt_summary('method', 'functions'),
+        'region_coverage': fmt_summary('instruction', 'regions'),
+        'branch_coverage': fmt_summary('branch', 'branches'),
+        'uncovered_lines': sorted(list(set(uncovered_lines))),
+    }
+  except Exception:
     return {'available': False}
-
-  html = res.stdout
-  summary_matches = re.findall(
-      r'<td class="column-entry-[^"]*">\s*<pre>\s*([^<]+)</pre>', html)
-  function_cov = (summary_matches[0].strip()
-                  if len(summary_matches) > 0 else 'N/A')
-  line_cov = summary_matches[1].strip() if len(summary_matches) > 1 else 'N/A'
-  region_cov = (summary_matches[2].strip()
-                if len(summary_matches) > 2 else 'N/A')
-  branch_cov = (summary_matches[3].strip()
-                if len(summary_matches) > 3 else 'N/A')
-
-  uncovered_lines = []
-  for match in re.finditer(
-      r'<pre class="line-number">\s*(\d+)\|.*?'
-      r'<pre class="line-count ([^"]*)">\s*([^<]*)\|',
-      html,
-      re.DOTALL,
-  ):
-    line_num_str, count_class, count_val = match.groups()
-    if 'uncoveredLine' in count_class or count_val.strip() == '0':
-      uncovered_lines.append(int(line_num_str))
-
-  return {
-      'available': True,
-      'function_coverage': function_cov,
-      'line_coverage': line_cov,
-      'region_coverage': region_cov,
-      'branch_coverage': branch_cov,
-      'uncovered_lines': uncovered_lines,
-  }
 
 
 def extract_coverage_artifacts_for_files(
@@ -439,10 +589,9 @@ def extract_coverage_artifacts_for_files(
     clean_path = f_path.lstrip('/')
     file_info = {}
     for p_type, p_details in pipelines_checked.items():
-      base_gcs_url = p_details.get('html_report_gcs_url', '').rstrip('/')
-      if base_gcs_url and p_details.get('pipeline_success'):
-        file_gcs_url = f'{base_gcs_url}/coverage/**/{clean_path}.html'
-        parsed = fetch_and_parse_file_html_report(file_gcs_url)
+      json_gz_url = p_details.get('all_json_gz_url', '')
+      if json_gz_url and p_details.get('pipeline_success'):
+        parsed = fetch_and_parse_json_file_coverage(json_gz_url, clean_path)
       else:
         parsed = {'available': False}
 
@@ -531,13 +680,12 @@ def format_inspection_report(combined_report: dict[str, Any],
   lines.append(f'{INDENT}* All Pipelines Successful: {pipelines_valid}')
   for p_type, details in pipeline_report['pipelines_checked'].items():
     parent_status = details['parent_step_status']
-    html_gen = details['html_report_generation_status']
     tests_cnt = details['tests_processed_count']
-    html_up = details['html_report_upload_status']
+    artifacts_up = details.get('artifacts_upload_status', 'N/A')
     lines.append(f'{INDENT}* Pipeline: {p_type!r}')
     lines.append(
-        f'{INDENT * 2}- Parent Step: {parent_status} | HTML Gen: {html_gen}'
-        f' ({tests_cnt} tests) | HTML Upload: {html_up}')
+        f'{INDENT * 2}- Parent Step: {parent_status} ({tests_cnt} tests) '
+        f'| Artifacts Upload: {artifacts_up}')
     if details.get('recipe_error_messages_detected'):
       for r_msg in details['recipe_error_messages_detected']:
         cond = r_msg['detected_condition']
@@ -554,9 +702,6 @@ def format_inspection_report(combined_report: dict[str, Any],
         c_name = cs['name']
         c_status = cs['status']
         lines.append(f'{INDENT * 3}* {c_name}: {c_status}')
-    if details['html_report_url']:
-      h_url = details['html_report_url']
-      lines.append(f'{INDENT * 2}- Direct HTML View: {h_url}')
     if details['merged_profdata_gcs_url']:
       m_url = details['merged_profdata_gcs_url']
       lines.append(f'{INDENT * 2}- Merged Profdata GCS: {m_url}')

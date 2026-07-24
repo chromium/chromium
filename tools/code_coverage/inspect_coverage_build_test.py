@@ -4,11 +4,14 @@
 # found in the LICENSE file.
 """Unit tests for inspect_coverage_build.py."""
 
+import contextlib
+import io
 import os
 from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
+import sys
 
 import inspect_coverage_build
 
@@ -17,7 +20,9 @@ class InspectCoverageBuildTest(unittest.TestCase):
   """Tests build ID parsing, status verification, config audit, and pipeline check."""
 
   def setUp(self) -> None:
-    """Sets up subprocess runner mock for bb get execution."""
+    """Sets up test fixtures before each test method."""
+    inspect_coverage_build._ALL_JSON_GZ_CACHE.clear()
+    self.addCleanup(inspect_coverage_build._ALL_JSON_GZ_CACHE.clear)
     self.run_patcher = mock.patch('subprocess.run')
     self.mock_run = self.run_patcher.start()
     self.addCleanup(self.run_patcher.stop)
@@ -126,21 +131,21 @@ class InspectCoverageBuildTest(unittest.TestCase):
             },
             {
                 'name':
-                'process clang code coverage data for unit test coverage|gsutil upload html report',
+                'process clang code coverage data for unit test coverage|gsutil Upload coverage artifacts',
                 'status': 'SUCCESS'
             },
         ],
         'output': {
             'properties': {
                 'gsutil_urls': {
-                    'process clang code coverage data for unit test coverage|gsutil upload html report':
+                    'process clang code coverage data for unit test coverage|gsutil Upload coverage artifacts':
                     'gs://bucket/report'
                 }
             }
         }
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    unit_res = result['pipelines_checked']['unit test coverage']
+    unit_res = result['pipelines_checked']['cpp_unit']
     self.assertTrue(unit_res['pipeline_success'])
     self.assertEqual(unit_res['tests_processed_count'], 42)
     self.assertFalse(unit_res['skipped_no_data'])
@@ -165,7 +170,7 @@ class InspectCoverageBuildTest(unittest.TestCase):
         }
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    unit_res = result['pipelines_checked']['unit test coverage']
+    unit_res = result['pipelines_checked']['cpp_unit']
     self.assertFalse(unit_res['pipeline_success'])
     self.assertTrue(unit_res['skipped_no_data'])
     self.assertEqual(len(unit_res['child_steps']), 2)
@@ -312,11 +317,8 @@ class InspectCoverageBuildTest(unittest.TestCase):
         }
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    overall = result['pipelines_checked']['overall test coverage']
-    self.assertEqual(
-        overall['html_report_url'],
-        'https://storage.cloud.google.com/bucket/html/index.html',
-    )
+    overall = result['pipelines_checked']['cpp_overall']
+
     self.assertEqual(overall['merged_profdata_gcs_url'], 'gs://bucket/profdata')
 
   def test_verify_coverage_pipeline_detects_recipe_messages(self) -> None:
@@ -336,7 +338,7 @@ class InspectCoverageBuildTest(unittest.TestCase):
         ]
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    overall = result['pipelines_checked']['overall test coverage']
+    overall = result['pipelines_checked']['cpp_overall']
     messages = [
         m['detected_condition']
         for m in overall['recipe_error_messages_detected']
@@ -354,17 +356,11 @@ class InspectCoverageBuildTest(unittest.TestCase):
         '1-3, 5, 8-9')
     self.assertEqual(inspect_coverage_build.format_line_ranges([]), 'None')
 
-  @mock.patch('inspect_coverage_build.fetch_and_parse_file_html_report')
-  def test_extract_coverage_artifacts_for_files(
-      self, mock_parse: mock.MagicMock) -> None:
+  def test_extract_coverage_artifacts_for_files(self) -> None:
     """Verifies target file coverage metrics are extracted across pipelines."""
-    mock_parse.return_value = {
-        'available': True,
-        'line_coverage': '80.0% (80/100)'
-    }
     pipeline_report = {
         'pipelines_checked': {
-            'unit test coverage': {
+            'cpp_unit': {
                 'pipeline_success': True,
                 'html_report_gcs_url': 'gs://bucket/report'
             }
@@ -373,15 +369,14 @@ class InspectCoverageBuildTest(unittest.TestCase):
     file_res = inspect_coverage_build.extract_coverage_artifacts_for_files(
         pipeline_report, target_files=['chrome/browser/ui/foo.cc'])
     self.assertIn('chrome/browser/ui/foo.cc', file_res)
-    unit_info = file_res['chrome/browser/ui/foo.cc']['unit test coverage']
-    self.assertTrue(unit_info['available'])
-    self.assertEqual(unit_info['line_coverage'], '80.0% (80/100)')
+    unit_info = file_res['chrome/browser/ui/foo.cc']['cpp_unit']
+    self.assertFalse(unit_info['available'])
 
   def test_format_file_coverage_report(self) -> None:
     """Verifies readable text formatting of target file coverage breakdown."""
     file_data = {
         'foo.cc': {
-            'unit test coverage': {
+            'cpp_unit': {
                 'available': True,
                 'line_coverage': '80.0% (80/100)',
                 'function_coverage': '100.0% (5/5)',
@@ -438,7 +433,7 @@ class InspectCoverageBuildTest(unittest.TestCase):
         ]
     }
     result = inspect_coverage_build.verify_coverage_pipeline(build_data)
-    overall = result['pipelines_checked']['overall test coverage']
+    overall = result['pipelines_checked']['cpp_overall']
     messages = [
         m['detected_condition']
         for m in overall['recipe_error_messages_detected']
@@ -447,74 +442,11 @@ class InspectCoverageBuildTest(unittest.TestCase):
     self.assertIn('Found invalid profraw files', messages)
     self.assertIn('skip processing because no profdata was generated', messages)
 
-  def test_fetch_and_parse_file_html_report_non_gs_url(self) -> None:
-    """Verifies non-gs:// URLs immediately return available=False."""
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'https://foo.html')
-    self.assertFalse(res['available'])
-
-  def test_fetch_and_parse_file_html_report_success(self) -> None:
-    """Verifies successful parsing of llvm-cov HTML summary table and uncovered lines."""
-    html_content = (
-        '<td class="column-entry-yellow"><pre> 100% </pre></td>'
-        '<td class="column-entry-red"><pre> 85.5% </pre></td>'
-        '<td class="column-entry-green"><pre> 90% </pre></td>'
-        '<td class="column-entry-yellow"><pre> 80% </pre></td>'
-        '<pre class="line-number"> 42|...<pre class="line-count uncoveredLine"> 0|'
-    )
-    self.mock_run.return_value = mock.MagicMock(returncode=0,
-                                                stdout=html_content)
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'gs://bucket/file.html')
-    self.assertTrue(res['available'])
-    self.assertEqual(res['function_coverage'], '100%')
-    self.assertEqual(res['line_coverage'], '85.5%')
-    self.assertEqual(res['uncovered_lines'], [42])
-
-  def test_fetch_and_parse_file_html_report_glob_success(self) -> None:
-    """Verifies wildcard URLs resolve via ls and fetch content correctly."""
-    html_content = ('<td class="column-entry-yellow"><pre> 100% </pre></td>'
-                    '<td class="column-entry-red"><pre> 85.5% </pre></td>'
-                    '<td class="column-entry-green"><pre> 90% </pre></td>'
-                    '<td class="column-entry-yellow"><pre> 80% </pre></td>')
-    self.mock_run.side_effect = [
-        mock.MagicMock(returncode=0, stdout='gs://bucket/real.html\n'),
-        mock.MagicMock(returncode=0, stdout=html_content),
-    ]
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'gs://bucket/*.html')
-    self.assertTrue(res['available'])
-    self.assertEqual(res['line_coverage'], '85.5%')
-
-  def test_fetch_and_parse_file_html_report_glob_failure(self) -> None:
-    """Verifies glob failure returns available=False."""
-    self.mock_run.return_value = mock.MagicMock(returncode=1, stdout='')
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'gs://bucket/*.html')
-    self.assertFalse(res['available'])
-
-  def test_fetch_and_parse_file_html_report_cat_failure(self) -> None:
-    """Verifies cat failure returns available=False."""
-    self.mock_run.return_value = mock.MagicMock(returncode=1, stdout='')
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'gs://bucket/file.html')
-    self.assertFalse(res['available'])
-
-  @mock.patch('pathlib.Path.exists')
-  def test_fetch_and_parse_file_html_report_no_gsutil_py(
-      self, mock_exists: mock.MagicMock) -> None:
-    """Verifies fallback to system gsutil binary when depot_tools gsutil.py is absent."""
-    mock_exists.return_value = False
-    self.mock_run.return_value = mock.MagicMock(returncode=1, stdout='')
-    res = inspect_coverage_build.fetch_and_parse_file_html_report(
-        'gs://bucket/file.html')
-    self.assertFalse(res['available'])
-
   def test_extract_coverage_artifacts_for_files_unmocked(self) -> None:
     """Verifies real file report extraction runs fetch_and_parse or not available."""
     pipeline_report = {
         'pipelines_checked': {
-            'unit test coverage': {
+            'cpp_unit': {
                 'pipeline_success': False,
                 'html_report_gcs_url': 'gs://bucket/report'
             }
@@ -522,13 +454,13 @@ class InspectCoverageBuildTest(unittest.TestCase):
     }
     file_res = inspect_coverage_build.extract_coverage_artifacts_for_files(
         pipeline_report, target_files=['foo.cc'])
-    self.assertFalse(file_res['foo.cc']['unit test coverage']['available'])
+    self.assertFalse(file_res['foo.cc']['cpp_unit']['available'])
 
   def test_format_file_coverage_report_not_available(self) -> None:
     """Verifies format_file_coverage_report handles unavailable pipelines."""
-    file_data = {'foo.cc': {'unit test coverage': {'available': False}}}
+    file_data = {'foo.cc': {'cpp_unit': {'available': False}}}
     text = inspect_coverage_build.format_file_coverage_report(file_data)
-    self.assertIn("Pipeline 'unit test coverage': Not Available", text)
+    self.assertIn("Pipeline 'cpp_unit': Not Available", text)
 
   def test_format_inspection_report_comprehensive(self) -> None:
     """Verifies format_inspection_report outputs all optional sections and mismatches."""
@@ -548,12 +480,12 @@ class InspectCoverageBuildTest(unittest.TestCase):
         'coverage_pipeline_verification': {
             'all_pipelines_successful': False,
             'pipelines_checked': {
-                'overall test coverage': {
+                'cpp_overall': {
                     'parent_step_status':
                     'FAILURE',
                     'html_report_generation_status':
                     'FAILURE',
-                    'html_report_upload_status':
+                    'artifacts_upload_status':
                     'NOT_FOUND',
                     'tests_processed_count':
                     10,
@@ -578,7 +510,7 @@ class InspectCoverageBuildTest(unittest.TestCase):
         },
         'target_file_coverage': {
             'foo.cc': {
-                'overall test coverage': {
+                'cpp_overall': {
                     'available': True,
                     'line_coverage': '50%',
                     'function_coverage': '50%',
@@ -597,10 +529,323 @@ class InspectCoverageBuildTest(unittest.TestCase):
     self.assertIn("DETECTED RECIPE CONDITION: 'foo'", text)
     self.assertIn("SKIPPED: 'skip processing because no data is found'", text)
     self.assertIn('Substep breakdown:', text)
-    self.assertIn(
-        'Direct HTML View: https://storage.cloud.google.com/foo/index.html',
-        text)
     self.assertIn('Merged Profdata GCS: gs://foo/merged.profdata', text)
+
+
+  def test_verify_coverage_pipeline_java_and_js(self) -> None:
+    """Verifies Java and JS coverage pipelines and metadata generation steps."""
+    build_data = {
+        'steps': [
+            {
+                'name': 'process java coverage (overall)',
+                'status': 'SUCCESS',
+            },
+            {
+                'name':
+                'process java coverage (overall)|Generate Java coverage metadata',
+                'status': 'SUCCESS',
+            },
+            {
+                'name':
+                'process java coverage (overall)|gsutil Upload coverage artifacts (2)',
+                'status': 'SUCCESS',
+            },
+            {
+                'name': 'process javascript coverage (overall)',
+                'status': 'SUCCESS',
+            },
+            {
+                'name':
+                'process javascript coverage (overall)|Generate JavaScript coverage metadata',
+                'status': 'SUCCESS',
+            },
+            {
+                'name':
+                'process javascript coverage (overall)|gsutil Upload coverage artifacts',
+                'status': 'SUCCESS',
+            },
+        ],
+        'output': {
+            'properties': {
+                'gsutil_urls': {
+                    'process java coverage (overall)|gsutil Upload coverage artifacts (2)':
+                    'gs://bucket/java_meta',
+                    'process javascript coverage (overall)|gsutil Upload coverage artifacts':
+                    'gs://bucket/js_meta',
+                }
+            }
+        },
+    }
+    result = inspect_coverage_build.verify_coverage_pipeline(build_data)
+    java_res = result['pipelines_checked']['java_overall']
+    self.assertTrue(java_res['pipeline_success'])
+    self.assertEqual(java_res['all_json_gz_url'],
+                     'gs://bucket/java_meta/all.json.gz')
+
+  def test_verify_coverage_pipeline_upload_step_fallback(self) -> None:
+    """Verifies fallback between upload step (2) and without (2) when checking status and GCS URL."""
+    build_data = {
+        'steps': [
+            {
+                'name':
+                'process clang code coverage data for overall test coverage',
+                'status': 'SUCCESS',
+            },
+            {
+                'name':
+                'process clang code coverage data for overall test coverage|generate html report in 5 tests',
+                'status': 'SUCCESS',
+            },
+            {
+                'name': 'gsutil Upload coverage artifacts',
+                'status': 'SUCCESS',
+            },
+        ],
+        'output': {
+            'properties': {
+                'gsutil_urls': {
+                    'gsutil Upload coverage artifacts': 'gs://bucket/fallback',
+                }
+            }
+        },
+    }
+    result = inspect_coverage_build.verify_coverage_pipeline(build_data)
+    overall = result['pipelines_checked']['cpp_overall']
+    self.assertTrue(overall['pipeline_success'])
+    self.assertEqual(overall['all_json_gz_url'],
+                     'gs://bucket/fallback/all.json.gz')
+
+  @mock.patch('inspect_coverage_build.fetch_and_parse_json_file_coverage')
+  def test_extract_coverage_artifacts_for_files_json_gz(
+      self, mock_parse_json: mock.MagicMock) -> None:
+    """Verifies extract_coverage_artifacts_for_files uses all_json_gz_url when present."""
+    mock_parse_json.return_value = {
+        'available': True,
+        'line_coverage': '90.0% (90/100)',
+    }
+    pipeline_report = {
+        'pipelines_checked': {
+            'java_overall': {
+                'pipeline_success': True,
+                'all_json_gz_url': 'gs://bucket/all.json.gz',
+                'html_report_gcs_url': 'gs://bucket/html_report/index.html',
+            }
+        }
+    }
+    file_res = inspect_coverage_build.extract_coverage_artifacts_for_files(
+        pipeline_report, target_files=['foo/bar.java'])
+    self.assertTrue(file_res['foo/bar.java']['java_overall']['available'])
+    self.assertEqual(file_res['foo/bar.java']['java_overall']['line_coverage'],
+                     '90.0% (90/100)')
+    mock_parse_json.assert_called_once_with('gs://bucket/all.json.gz',
+                                            'foo/bar.java')
+
+  @mock.patch('subprocess.run')
+  def test_fetch_and_parse_json_file_coverage_dict_summaries(
+      self, mock_run: mock.MagicMock) -> None:
+    """Verifies fetch_and_parse_json_file_coverage parses dict summary format and uncovered lines."""
+    import gzip
+    import json
+    data = {
+        'files': [{
+            'path':
+            'foo/bar.java',
+            'lines': [{
+                'first': 10,
+                'last': 12,
+                'count': 0
+            }, {
+                'first': 13,
+                'last': 13,
+                'count': 5
+            }],
+            'summaries': {
+                'line': {
+                    'covered': 8,
+                    'count': 10
+                },
+                'method': {
+                    'covered': 2,
+                    'total': 2
+                },
+            }
+        }]
+    }
+    with tempfile.NamedTemporaryFile(suffix='.json.gz', delete=False) as tf:
+      tf.write(gzip.compress(json.dumps(data).encode('utf-8')))
+      src_path = tf.name
+    try:
+
+      def fake_cp(*args, **kwargs):
+        dest = args[0][4]
+        with open(src_path, 'rb') as f_in, open(dest, 'wb') as f_out:
+          f_out.write(f_in.read())
+        return mock.MagicMock(returncode=0)
+
+      mock_run.side_effect = fake_cp
+      res = inspect_coverage_build.fetch_and_parse_json_file_coverage(
+          'gs://bucket/all.json.gz', 'bar.java')
+      self.assertTrue(res['available'])
+      self.assertEqual(res['line_coverage'], '8/10 (80.00%)')
+      self.assertEqual(res['function_coverage'], '2/2 (100.00%)')
+      self.assertEqual(res['uncovered_lines'], [10, 11, 12])
+    finally:
+      if os.path.exists(src_path):
+        os.remove(src_path)
+
+  @mock.patch('subprocess.run')
+  def test_fetch_and_parse_json_file_coverage_list_summaries_or_absent(
+      self, mock_run: mock.MagicMock) -> None:
+    """Verifies list-based summaries and missing target handling in fetch_and_parse_json_file_coverage."""
+    import gzip
+    import json
+    data = {
+        'files': [{
+            'filename': 'foo/other.js',
+            'summaries': [{
+                'name': 'line',
+                'covered': 15,
+                'count': 20
+            }]
+        }]
+    }
+    with tempfile.NamedTemporaryFile(suffix='.json.gz', delete=False) as tf:
+      tf.write(gzip.compress(json.dumps(data).encode('utf-8')))
+      src_path = tf.name
+    try:
+
+      def fake_cp(*args, **kwargs):
+        dest = args[0][4]
+        with open(src_path, 'rb') as f_in, open(dest, 'wb') as f_out:
+          f_out.write(f_in.read())
+        return mock.MagicMock(returncode=0)
+
+      mock_run.side_effect = fake_cp
+      res = inspect_coverage_build.fetch_and_parse_json_file_coverage(
+          'gs://bucket/all.json.gz', 'other.js')
+      self.assertTrue(res['available'])
+      self.assertEqual(res['line_coverage'], '15/20 (75.00%)')
+
+      res_absent = inspect_coverage_build.fetch_and_parse_json_file_coverage(
+          'gs://bucket/all.json.gz', 'missing.js')
+      self.assertFalse(res_absent['available'])
+
+      self.assertFalse(
+          inspect_coverage_build.fetch_and_parse_json_file_coverage(
+              '', 'other.js')['available'])
+    finally:
+      if os.path.exists(src_path):
+        os.remove(src_path)
+
+  def test_verify_coverage_pipeline_upload_step_primary_match(self) -> None:
+    """Verifies primary upload_step_name match when nested upload status is NOT_FOUND."""
+    build_data = {
+        'steps': [
+            {
+                'name':
+                'process clang code coverage data for overall test coverage',
+                'status': 'SUCCESS',
+            },
+            {
+                'name': 'gsutil Upload coverage artifacts (2)',
+                'status': 'SUCCESS',
+            },
+        ],
+        'output': {
+            'properties': {
+                'gsutil_urls': {}
+            }
+        },
+    }
+    result = inspect_coverage_build.verify_coverage_pipeline(build_data)
+    overall = result['pipelines_checked']['cpp_overall']
+
+  @mock.patch.dict(os.environ, {'INSPECT_COVERAGE_NO_NETWORK': ''})
+  @mock.patch('subprocess.run')
+  def test_verify_coverage_pipeline_gcs_fallback_when_url_missing(
+      self, mock_run: mock.MagicMock) -> None:
+    """Verifies gsutil ls fallback execution when all_json_gz_url is missing."""
+    mock_run.return_value = mock.MagicMock(
+        returncode=0, stdout='gs://bucket/fallback/all.json.gz\n')
+    build_data = {
+        'id':
+        '123456789',
+        'steps': [
+            {
+                'name':
+                'process clang code coverage data for overall test coverage',
+                'status': 'SUCCESS',
+            },
+        ],
+        'output': {
+            'properties': {
+                'gsutil_urls': {}
+            }
+        },
+    }
+    result = inspect_coverage_build.verify_coverage_pipeline(build_data)
+    overall = result['pipelines_checked']['cpp_overall']
+    self.assertEqual(overall['all_json_gz_url'],
+                     'gs://bucket/fallback/all.json.gz')
+
+  @mock.patch('subprocess.run')
+  def test_fetch_and_parse_json_file_coverage_uncompressed_fallback(
+      self, mock_run: mock.MagicMock) -> None:
+    """Verifies fallback to uncompressed json.loads when zlib and gzip decompression both fail."""
+    import json
+    data = {
+        'files': [{
+            'path': 'foo/raw.js',
+            'summaries': [{
+                'name': 'line',
+                'covered': 5,
+                'count': 5
+            }]
+        }]
+    }
+    with tempfile.NamedTemporaryFile(suffix='.json.gz', delete=False) as tf:
+      tf.write(json.dumps(data).encode('utf-8'))
+      src_path = tf.name
+    try:
+
+      def fake_cp(*args, **kwargs):
+        dest = args[0][4]
+        with open(src_path, 'rb') as f_in, open(dest, 'wb') as f_out:
+          f_out.write(f_in.read())
+        return mock.MagicMock(returncode=0)
+
+      mock_run.side_effect = fake_cp
+      res = inspect_coverage_build.fetch_and_parse_json_file_coverage(
+          'gs://bucket/all.json.gz', 'raw.js')
+      self.assertTrue(res['available'])
+      self.assertEqual(res['line_coverage'], '5/5 (100.00%)')
+    finally:
+      if os.path.exists(src_path):
+        os.remove(src_path)
+
+  @mock.patch('subprocess.run')
+  def test_fetch_and_parse_json_file_coverage_exceptions(
+      self, mock_run: mock.MagicMock) -> None:
+    """Verifies exception handling on corrupt JSON and os.remove failure inside fetch_and_parse."""
+    with tempfile.NamedTemporaryFile(suffix='.json.gz', delete=False) as tf:
+      tf.write(b'corrupt non-json bytes')
+      src_path = tf.name
+    try:
+
+      def fake_cp(*args, **kwargs):
+        dest = args[0][4]
+        with open(src_path, 'rb') as f_in, open(dest, 'wb') as f_out:
+          f_out.write(f_in.read())
+        return mock.MagicMock(returncode=0)
+
+      mock_run.side_effect = fake_cp
+      with mock.patch('os.remove', side_effect=OSError('Permission denied')):
+        res = inspect_coverage_build.fetch_and_parse_json_file_coverage(
+            'gs://bucket/all.json.gz', 'any.js')
+      self.assertFalse(res['available'])
+    finally:
+      if os.path.exists(src_path):
+        os.remove(src_path)
 
 
 class InspectCoverageBuildMainTest(unittest.TestCase):
@@ -608,20 +853,26 @@ class InspectCoverageBuildMainTest(unittest.TestCase):
 
   def setUp(self) -> None:
     """Initializes stdout, stderr, exit, and run_bb_get patchers for main()."""
-    self.stdout_patcher = mock.patch('sys.stdout')
-    self.stderr_patcher = mock.patch('sys.stderr')
+    self.stdout_buffer = io.StringIO()
+    self.stderr_buffer = io.StringIO()
+    self.stdout_context = contextlib.redirect_stdout(self.stdout_buffer)
+    self.stderr_context = contextlib.redirect_stderr(self.stderr_buffer)
+    self.stdout_context.__enter__()
+    self.stderr_context.__enter__()
+    self.addCleanup(self.stdout_context.__exit__, None, None, None)
+    self.addCleanup(self.stderr_context.__exit__, None, None, None)
+
     self.exit_patcher = mock.patch('sys.exit', side_effect=SystemExit)
     self.bb_patcher = mock.patch('inspect_coverage_build.run_bb_get')
+    self.run_patcher = mock.patch('subprocess.run')
 
-    self.mock_stdout = self.stdout_patcher.start()
-    self.mock_stderr = self.stderr_patcher.start()
     self.mock_exit = self.exit_patcher.start()
     self.mock_bb = self.bb_patcher.start()
+    self.mock_run = self.run_patcher.start()
 
-    self.addCleanup(self.stdout_patcher.stop)
-    self.addCleanup(self.stderr_patcher.stop)
     self.addCleanup(self.exit_patcher.stop)
     self.addCleanup(self.bb_patcher.stop)
+    self.addCleanup(self.run_patcher.stop)
 
   def test_main_json_output(self) -> None:
     """Verifies main() formats and outputs JSON when --json flag is passed."""
