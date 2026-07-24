@@ -124,7 +124,7 @@ public class FuseboxCoordinatorUnitTest {
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private final Function<Tab, @Nullable Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
-    private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+    private final NullableObservableSupplier<GURL> mPreviewMatchUrlSupplier =
             ObservableSuppliers.alwaysNull();
 
     @Before

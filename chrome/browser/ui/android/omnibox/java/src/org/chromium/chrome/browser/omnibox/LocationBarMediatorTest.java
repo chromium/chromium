@@ -753,7 +753,7 @@ public class LocationBarMediatorTest {
                 true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(anyLong(), anyString(), anyString(), anyLong(), any(), any());
-        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
@@ -780,14 +780,14 @@ public class LocationBarMediatorTest {
         mMediator.onSuggestionsChanged(defaultMatch, true);
         verify(mPrerenderJni)
                 .prerenderMaybe(123L, "text", JUnitTestGURLs.RED_1.getSpec(), 456L, mProfile, mTab);
-        assertNotNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
         var state = mSessionState;
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
     }
 
     @Test
@@ -800,12 +800,12 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
 
         mMediator.onSuggestionsChanged(null, false);
-        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
         verify(mUrlCoordinator).setAutocompleteText("text", null, null, null);
     }
 
     @Test
-    public void testSuspendInput_clearsExactMatchUrlSupplier() {
+    public void testSuspendInput_clearsPreviewMatchUrlSupplier() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
 
@@ -822,10 +822,10 @@ public class LocationBarMediatorTest {
                         .setUrl(JUnitTestGURLs.RED_1)
                         .build();
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNotNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
 
         mMediator.suspendInput();
-        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
     }
 
     @Test

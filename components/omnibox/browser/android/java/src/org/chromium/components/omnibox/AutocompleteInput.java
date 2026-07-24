@@ -145,7 +145,7 @@ public class AutocompleteInput implements UserData {
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
     private final SettableNullableObservableSupplier<SiteSearchData> mSiteSearchData =
             ObservableSuppliers.createNullable();
-    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+    private final SettableNullableObservableSupplier<GURL> mPreviewMatchUrlSupplier =
             ObservableSuppliers.createNullable();
 
     // LINT.ThenChange(:CopyFrom)
@@ -197,7 +197,7 @@ public class AutocompleteInput implements UserData {
         mInitialUserText = other.mInitialUserText;
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
         mSiteSearchData.set(other.mSiteSearchData.get());
-        mExactMatchUrlSupplier.set(other.mExactMatchUrlSupplier.get());
+        mPreviewMatchUrlSupplier.set(other.mPreviewMatchUrlSupplier.get());
     }
 
     // LINT.ThenChange(:Members)
@@ -331,9 +331,9 @@ public class AutocompleteInput implements UserData {
         return mSiteSearchData;
     }
 
-    /** Returns the supplier of the exact match URL for this input. */
-    public SettableNullableObservableSupplier<GURL> getExactMatchUrlSupplier() {
-        return mExactMatchUrlSupplier;
+    /** Returns the supplier of the preview match URL for this input. */
+    public SettableNullableObservableSupplier<GURL> getPreviewMatchUrlSupplier() {
+        return mPreviewMatchUrlSupplier;
     }
 
     /**
@@ -611,7 +611,7 @@ public class AutocompleteInput implements UserData {
         mAllowUserTextAutocompletion.set(true);
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mSiteSearchData.set(null);
-        mExactMatchUrlSupplier.set(null);
+        mPreviewMatchUrlSupplier.set(null);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mAutocompleteStateSupplier.set(AutocompleteState.ENABLED);

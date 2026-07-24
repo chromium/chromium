@@ -127,7 +127,8 @@ import java.util.function.Supplier;
     private final BackPressManager mBackPressManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final Callback<@Nullable GURL> mOnExactMatchUrlChanged = this::onExactMatchUrlChanged;
+    private final Callback<@Nullable GURL> mOnPreviewMatchUrlChanged =
+            this::onPreviewMatchUrlChanged;
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier;
     private final Runnable mOnActivationChipClickedWithQuery;
     private final Runnable mClearUrlBarTextRunnable;
@@ -403,7 +404,7 @@ import java.util.function.Supplier;
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
             mInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
             mInput.getAutocompleteStateSupplier().removeObserver(mOnAutocompleteStateChanged);
-            mInput.getExactMatchUrlSupplier().removeObserver(mOnExactMatchUrlChanged);
+            mInput.getPreviewMatchUrlSupplier().removeObserver(mOnPreviewMatchUrlChanged);
         }
         mInput = input;
         if (mInput == null) {
@@ -426,7 +427,7 @@ import java.util.function.Supplier;
                     .addSyncObserverAndCallIfNonNull(mOnSiteSearchDataChanged);
             mInput.getAutocompleteStateSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteStateChanged);
-            mInput.getExactMatchUrlSupplier().addSyncObserver(mOnExactMatchUrlChanged);
+            mInput.getPreviewMatchUrlSupplier().addSyncObserver(mOnPreviewMatchUrlChanged);
         }
     }
 
@@ -1042,7 +1043,7 @@ import java.util.function.Supplier;
         updateActivationChip();
     }
 
-    private void onExactMatchUrlChanged(@Nullable GURL url) {
+    private void onPreviewMatchUrlChanged(@Nullable GURL url) {
         updateActivationChip();
     }
 
@@ -1053,7 +1054,7 @@ import java.util.function.Supplier;
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mInput.getRequestType() == AutocompleteRequestType.SEARCH
                         && mInput.getSiteSearchData() == null
-                        && (mInput.getExactMatchUrlSupplier().get() == null);
+                        && (mInput.getPreviewMatchUrlSupplier().get() == null);
         if (mProfile != null
                 && !UserPrefs.get(mProfile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON)) {
             showActivationChip = false;

@@ -145,7 +145,7 @@ public final class StatusMediatorUnitTest {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableNonNullObservableSupplier<Integer> mFuseboxLayoutModeSupplier =
             ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
-    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+    private final SettableNullableObservableSupplier<GURL> mPreviewMatchUrlSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Integer> mRequestTypeSupplier =
             ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
@@ -164,7 +164,7 @@ public final class StatusMediatorUnitTest {
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mAutocompleteInput).when(mFuseboxSessionState).getAutocompleteInput();
-        doReturn(mExactMatchUrlSupplier).when(mAutocompleteInput).getExactMatchUrlSupplier();
+        doReturn(mPreviewMatchUrlSupplier).when(mAutocompleteInput).getPreviewMatchUrlSupplier();
         doReturn(mRequestTypeSupplier).when(mAutocompleteInput).getRequestTypeSupplier();
 
         mContext =
@@ -264,7 +264,7 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_onTextChanged_globeReplacesIconWhenTextIsSite() {
         mMediator.beginInput(mFuseboxSessionState);
 
-        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         assertEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
@@ -275,7 +275,7 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_onTextChanged_noGlobeReplacementWhenUrlBarTextDoesNotMatch() {
         mMediator.beginInput(mFuseboxSessionState);
 
-        mExactMatchUrlSupplier.set(null);
+        mPreviewMatchUrlSupplier.set(null);
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
@@ -286,8 +286,8 @@ public final class StatusMediatorUnitTest {
     public void searchEngineLogo_onTextChanged_noGlobeReplacementWhenUrlBarTextIsEmpty() {
         mMediator.beginInput(mFuseboxSessionState);
 
-        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
-        mExactMatchUrlSupplier.set(null);
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mPreviewMatchUrlSupplier.set(null);
         assertNotEquals(
                 R.drawable.ic_globe_24dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
@@ -413,7 +413,7 @@ public final class StatusMediatorUnitTest {
         doReturn(PageClassification.ANDROID_HUB_VALUE)
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
-        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mPreviewMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
         assertEquals(

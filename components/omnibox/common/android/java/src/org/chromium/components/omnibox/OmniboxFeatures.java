@@ -187,7 +187,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sAIMSuppressVerbatimMatch =
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sExactMatchFavicons =
+    // Shows the preview match's favicon in the status view. Originally and incorrectly called exact
+    // match. The feature string remains exact, but java code should be updated to the right name.
+    public static final CachedFlag sPreviewMatchFavicons =
             newFlag(OmniboxFeatureList.EXACT_MATCH_FAVICONS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sServeJavaCachedZeroSuggest =

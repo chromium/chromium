@@ -2555,10 +2555,10 @@ public class FuseboxMediatorUnitTest {
         mInput.setSiteSearchData(null);
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
-        mInput.getExactMatchUrlSupplier().set(new GURL("https://example.com"));
+        mInput.getPreviewMatchUrlSupplier().set(new GURL("https://example.com"));
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
-        mInput.getExactMatchUrlSupplier().set(null);
+        mInput.getPreviewMatchUrlSupplier().set(null);
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -2687,7 +2687,7 @@ public class FuseboxMediatorUnitTest {
     public void testAlwaysShowAiModePrefChangesActivationChipVisibility() {
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mInput.getExactMatchUrlSupplier().set(null);
+        mInput.getPreviewMatchUrlSupplier().set(null);
         recreateMediator();
 
         // Verify registrar is initialized
