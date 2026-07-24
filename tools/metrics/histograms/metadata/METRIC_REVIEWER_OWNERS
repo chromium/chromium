@@ -73,7 +73,6 @@ gjc@google.com
 chadduffin@chromium.org
 crisrael@google.com
 jiajunz@google.com
-julietlevesque@google.com
 khorimoto@chromium.org
 mattreynolds@chromium.org
 nikhilcn@google.com
@@ -92,7 +91,6 @@ koretadaniel@chromium.org
 # chromeos_hps
 chadduffin@chromium.org
 crisrael@google.com
-julietlevesque@google.com
 khorimoto@chromium.org
 tby@chromium.org
 jimmyxgong@chromium.org
@@ -103,7 +101,6 @@ chadduffin@chromium.org
 crisrael@google.com
 enlightened@chromium.org
 jiajunz@google.com
-julietlevesque@google.com
 khorimoto@chromium.org
 nikhilcn@google.com
 # chromeos_settings
@@ -143,7 +140,6 @@ nigeltao@chromium.org
 crisrael@google.com
 dclasson@google.com
 hansberry@chromium.org
-julietlevesque@google.com
 bhartmire@google.com
 # crostini
 drmasquatch@google.com
@@ -185,7 +181,6 @@ courtneywong@chromium.org
 ljjlee@google.com
 # fastpair
 jackshira@google.com
-julietlevesque@google.com
 dclasson@google.com
 # feature_engagement
 mschillaci@google.com
@@ -282,7 +277,6 @@ gjc@google.com
 crisrael@google.com
 dclasson@google.com
 hansberry@chromium.org
-julietlevesque@google.com
 # net
 csharrison@chromium.org
 dschinazi@chromium.org
@@ -310,6 +304,7 @@ tbansal@chromium.org
 # omnibox
 ender@google.com
 jdonnelly@chromium.org
+julietlevesque@google.com
 mahmadi@chromium.org
 manukh@chromium.org
 toyoshim@chromium.org
@@ -367,7 +362,6 @@ sophiechang@chromium.org
 # phonehub
 crisrael@google.com
 hansberry@chromium.org
-julietlevesque@google.com
 # platform
 iby@chromium.org
 hcyang@google.com
