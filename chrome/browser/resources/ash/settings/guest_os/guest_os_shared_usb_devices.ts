@@ -126,9 +126,9 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     };
   }
 
-  defaultGuestId: GuestId;
-  guestOsType: GuestOsType;
-  hasContainers: boolean;
+  declare defaultGuestId: GuestId;
+  declare guestOsType: GuestOsType;
+  declare hasContainers: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -136,13 +136,13 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     Setting.kGuestUsbPersistentPassthrough,
   ]);
 
-  private allContainers_: ContainerInfo[];
+  declare private allContainers_: ContainerInfo[];
   private browserProxy_: GuestOsBrowserProxy;
-  private reassignDevice_: GuestOsSharedUsbDevice|null;
-  private sharedUsbDevices_: SharedUsbDevice[];
-  private showAddUsbDialog_: boolean;
-  private showGuestUsbNotificationDialog_: boolean;
-  private showGuestUsbPersistentPassthroughDialog_: boolean;
+  declare private reassignDevice_: GuestOsSharedUsbDevice|null;
+  declare private sharedUsbDevices_: SharedUsbDevice[];
+  declare private showAddUsbDialog_: boolean;
+  declare private showGuestUsbNotificationDialog_: boolean;
+  declare private showGuestUsbPersistentPassthroughDialog_: boolean;
 
   constructor() {
     super();

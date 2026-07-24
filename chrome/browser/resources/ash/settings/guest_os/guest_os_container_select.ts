@@ -63,9 +63,9 @@ export class ContainerSelectElement extends PolymerElement {
     };
   }
 
-  selectedContainerId: GuestId;
-  defaultVmName: string|null;
-  containers: ContainerInfo[];
+  declare selectedContainerId: GuestId;
+  declare defaultVmName: string|null;
+  declare containers: ContainerInfo[];
 
   private onSelectContainer_(e: Event): void {
     const index = cast(e.target, HTMLSelectElement).selectedIndex;

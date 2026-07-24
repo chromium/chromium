@@ -342,10 +342,10 @@ export class SettingsInternetDetailPageElement extends
 
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   CR_EXPAND_BUTTON_TAG: string;
-  defaultNetwork: OncMojo.NetworkStateProperties|null;
-  globalPolicy?: GlobalPolicy;
-  guid: string;
-  managedNetworkAvailable: boolean;
+  declare defaultNetwork: OncMojo.NetworkStateProperties|null;
+  declare globalPolicy?: GlobalPolicy;
+  declare guid: string;
+  declare managedNetworkAvailable: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -374,43 +374,43 @@ export class SettingsInternetDetailPageElement extends
     Setting.kCellularMetered,
   ]);
 
-  private advancedExpanded_: boolean;
-  private alwaysOnVpn_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private advancedExpanded_: boolean;
+  declare private alwaysOnVpn_: chrome.settingsPrivate.PrefObject<boolean>;
   private applyingChanges_: boolean;
-  private autoConnectPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private autoConnectPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private browserProxy_: InternetPageBrowserProxy;
-  private dataUsageExpanded_: boolean;
-  private deviceState_: OncMojo.DeviceStateProperties|null;
+  declare private dataUsageExpanded_: boolean;
+  declare private deviceState_: OncMojo.DeviceStateProperties|null;
   private didSetFocus_: boolean;
-  private disabled_: boolean;
-  private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
-  private ipAddress_: string;
-  private isApnRevampEnabled_: boolean;
+  declare private disabled_: boolean;
+  declare private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private ipAddress_: string;
+  declare private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
-  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
-  private isSecondaryUser_: boolean;
-  private isTrafficCountersEnabled_: boolean;
-  private isTrafficCountersForWifiTestingEnabled_: boolean;
-  private isWifiSyncEnabled_: boolean;
-  private managedProperties_: ManagedProperties|undefined;
-  private meteredOverride_: boolean;
+  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
+  declare private isSecondaryUser_: boolean;
+  declare private isTrafficCountersEnabled_: boolean;
+  declare private isTrafficCountersForWifiTestingEnabled_: boolean;
+  declare private isWifiSyncEnabled_: boolean;
+  declare private managedProperties_: ManagedProperties|undefined;
+  declare private meteredOverride_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
-  private networkExpanded_: boolean;
+  declare private networkExpanded_: boolean;
   private osSyncBrowserProxy_: OsSyncBrowserProxy;
-  private outOfRange_: boolean;
+  declare private outOfRange_: boolean;
   private passpointService_: PasspointServiceInterface;
-  private passpointSubscription_: PasspointSubscription|null;
+  declare private passpointSubscription_: PasspointSubscription|null;
   private pendingSimLockDeepLink_: boolean;
-  private preferNetwork_: boolean;
-  private primaryUserEmail_: string;
+  declare private preferNetwork_: boolean;
+  declare private primaryUserEmail_: string;
   private propertiesReceived_: boolean;
-  private proxyExpanded_: boolean;
+  declare private proxyExpanded_: boolean;
   private shouldShowConfigureWhenNetworkLoaded_: boolean;
-  private showConfigurableSections_: boolean;
+  declare private showConfigurableSections_: boolean;
   private showMeteredToggle_: boolean;
-  private showTechnologyBadge_: string;
+  declare private showTechnologyBadge_: boolean;
   private trafficCountersAdapter_: TrafficCountersAdapter;
-  private trafficCountersAvailable_: boolean;
+  declare private trafficCountersAvailable_: boolean;
 
   constructor() {
     super();

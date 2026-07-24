@@ -66,12 +66,13 @@ export class SettingsSliderRowStorybook extends PolymerElement {
     };
   }
 
-  private sliderValueWithScale_: number;
-  private virtualManagedPref_: chrome.settingsPrivate.PrefObject<number>;
-  private ticks_: SliderTick[];
-  private hideLabel_: boolean;
-  private updateValueInstantly_: boolean;
-  private disabled_: boolean;
+  declare private sliderValueWithScale_: number;
+  declare private virtualManagedPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+  declare private ticks_: SliderTick[];
+  declare private hideLabel_: boolean;
+  declare private updateValueInstantly_: boolean;
+  declare private disabled_: boolean;
 
   private onScaleSliderChange_(event: CustomEvent<number>): void {
     this.sliderValueWithScale_ = event.detail;

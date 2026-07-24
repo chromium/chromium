@@ -233,15 +233,15 @@ export class SettingsInternetSubpageElement extends
     ];
   }
 
-  defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
-  deviceState: OncMojo.DeviceStateProperties|undefined;
-  globalPolicy: GlobalPolicy|undefined;
-  isBuiltInVpnManagementBlocked: boolean;
-  isCellularSetupActive: boolean;
-  isConnectedToNonCellularNetwork: boolean;
-  showSpinner: boolean;
-  tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
-  vpnProviders: VpnProvider[];
+  declare defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
+  declare deviceState: OncMojo.DeviceStateProperties|undefined;
+  declare globalPolicy: GlobalPolicy|undefined;
+  declare isBuiltInVpnManagementBlocked: boolean;
+  declare isCellularSetupActive: boolean;
+  declare isConnectedToNonCellularNetwork: boolean;
+  declare showSpinner: boolean;
+  declare tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
+  declare vpnProviders: VpnProvider[];
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -252,21 +252,22 @@ export class SettingsInternetSubpageElement extends
     Setting.kAddESimNetwork,
   ]);
 
-  private alwaysOnVpnMode_: AlwaysOnVpnMode|undefined;
-  private alwaysOnVpnService_: string|undefined;
+  declare private alwaysOnVpnMode_: AlwaysOnVpnMode|undefined;
+  declare private alwaysOnVpnService_: string|undefined;
   private browserProxy_: InternetPageBrowserProxy;
-  private hasCompletedScanSinceLastEnabled_: boolean;
-  private isManaged_: boolean;
-  private isShowingTether_: boolean;
-  private isShowingVpn_: boolean;
+  declare private hasCompletedScanSinceLastEnabled_: boolean;
+  declare private isManaged_: boolean;
+  declare private isShowingTether_: boolean;
+  declare private isShowingVpn_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
-  private networkStateList_: OncMojo.NetworkStateProperties[];
-  private notificationsDisabledDeviceNames_: string[];
-  private pendingSettingId_: Setting|null;
+  declare private networkStateList_: OncMojo.NetworkStateProperties[];
+  declare private notificationsDisabledDeviceNames_: string[];
+  declare private pendingSettingId_: Setting|null;
   private scanIntervalId_: number|null;
-  private showTechnologyBadge_: boolean;
-  private thirdPartyVpns_: Record<string, OncMojo.NetworkStateProperties[]>;
-  private vpnIsEnabled_: boolean;
+  declare private showTechnologyBadge_: boolean;
+  declare private thirdPartyVpns_:
+      Record<string, OncMojo.NetworkStateProperties[]>;
+  declare private vpnIsEnabled_: boolean;
 
   constructor() {
     super();

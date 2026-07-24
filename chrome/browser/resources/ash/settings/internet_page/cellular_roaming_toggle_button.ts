@@ -71,9 +71,9 @@ export class CellularRoamingToggleButtonElement extends
     ];
   }
 
-  disabled: boolean;
-  managedProperties: ManagedProperties|undefined;
-  private isRoamingAllowedForNetwork_: boolean;
+  declare disabled: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare private isRoamingAllowedForNetwork_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {

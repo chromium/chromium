@@ -109,11 +109,11 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     ];
   }
 
-  disabled: boolean;
-  managedProperties: ManagedProperties|undefined;
-  private extensionInfo_: ExtensionInfo|undefined;
-  private useSharedProxies_: boolean;
-  private hasProxyOverrideRules_: boolean;
+  declare disabled: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare private extensionInfo_: ExtensionInfo|undefined;
+  declare private useSharedProxies_: boolean;
+  declare private hasProxyOverrideRules_: boolean;
 
   /**
    * Returns the allow shared CrToggleElement.

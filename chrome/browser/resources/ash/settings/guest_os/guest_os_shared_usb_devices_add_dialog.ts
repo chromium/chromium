@@ -80,12 +80,12 @@ class GuestOsSharedUsbDevicesAddDialog extends
     };
   }
 
-  allContainers: ContainerInfo[];
-  defaultGuestId: GuestId;
+  declare allContainers: ContainerInfo[];
+  declare defaultGuestId: GuestId;
   private browserProxy_: GuestOsBrowserProxy;
-  private guestId_: GuestId|null;
-  private reassignDevice_: GuestOsSharedUsbDevice|null;
-  private sharedUsbDevices:
+  declare private guestId_: GuestId|null;
+  declare private reassignDevice_: GuestOsSharedUsbDevice|null;
+  declare private sharedUsbDevices:
       Array<{shared: boolean, device: GuestOsSharedUsbDevice}>;
 
   constructor() {

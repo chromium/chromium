@@ -72,11 +72,11 @@ export class EsimInstallErrorDialogElement extends
     };
   }
 
-  errorCode: ProfileInstallResult|null;
-  profile: ESimProfileRemote|null;
-  private confirmationCode_: string;
-  private isConfirmationCodeInvalid_: boolean;
-  private isInstallInProgress_: boolean;
+  declare errorCode: ProfileInstallResult|null;
+  declare profile: ESimProfileRemote|null;
+  declare private confirmationCode_: string;
+  declare private isConfirmationCodeInvalid_: boolean;
+  declare private isInstallInProgress_: boolean;
 
   private onConfirmationCodeChanged_(): void {
     this.isConfirmationCodeInvalid_ = false;

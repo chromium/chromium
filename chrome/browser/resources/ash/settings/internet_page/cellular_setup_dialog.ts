@@ -57,10 +57,10 @@ export class OsSettingsCellularSetupDialogElement extends
     };
   }
 
-  pageName: CellularSetupPageName;
-  private delegate_: CellularSetupDelegate;
-  private dialogHeader_: string;
-  private psimBanner_: string;
+  declare pageName: CellularSetupPageName;
+  declare private delegate_: CellularSetupDelegate;
+  declare private dialogHeader_: string;
+  declare private psimBanner_: string;
 
   constructor() {
     super();

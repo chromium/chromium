@@ -99,15 +99,15 @@ export class HotspotConfigDialogElement extends HotspotConfigDialogElementBase {
     };
   }
 
-  hotspotInfo: HotspotInfo;
-  private hotspotSsid_: string;
-  private isSsidInvalid_: boolean;
-  private hotspotPassword_: string;
-  private isPasswordInvalid_: boolean;
-  private securityType_: string;
-  private isRandomizeBssidToggleOn_: boolean;
-  private isExtendCompatibilityToggleOn_: boolean;
-  private error_: string;
+  declare hotspotInfo: HotspotInfo;
+  declare private hotspotSsid_: string;
+  declare private isSsidInvalid_: boolean;
+  declare private hotspotPassword_: string;
+  declare private isPasswordInvalid_: boolean;
+  declare private securityType_: string;
+  declare private isRandomizeBssidToggleOn_: boolean;
+  declare private isExtendCompatibilityToggleOn_: boolean;
+  declare private error_: string;
 
   override connectedCallback(): void {
     super.connectedCallback();

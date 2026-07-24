@@ -81,11 +81,11 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
     };
   }
 
-  isNumCustomApnsLimitReached: boolean;
-  shouldDisallowApnModification: boolean;
-  private deviceState_: OncMojo.DeviceStateProperties|null;
-  private guid_: string;
-  private managedProperties_: ManagedProperties|undefined;
+  declare isNumCustomApnsLimitReached: boolean;
+  declare shouldDisallowApnModification: boolean;
+  declare private deviceState_: OncMojo.DeviceStateProperties|null;
+  declare private guid_: string;
+  declare private managedProperties_: ManagedProperties|undefined;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {

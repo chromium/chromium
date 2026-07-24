@@ -84,11 +84,11 @@ export class SettingsGuestOsSharedPathsElement extends
     ];
   }
 
-  prefs: PrefsState;
-  guestOsType: GuestOsType;
+  declare prefs: PrefsState;
+  declare guestOsType: GuestOsType;
   private browserProxy_: GuestOsBrowserProxy;
-  private sharedPaths_: PathObject[];
-  private sharedPathWhichFailedRemoval_: string|null;
+  declare private sharedPaths_: PathObject[];
+  declare private sharedPathWhichFailedRemoval_: string|null;
 
   constructor() {
     super();

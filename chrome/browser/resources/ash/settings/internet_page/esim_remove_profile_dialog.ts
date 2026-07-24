@@ -65,9 +65,9 @@ export class EsimRemoveProfileDialogElement extends
     };
   }
 
-  networkState: OncMojo.NetworkStateProperties|null;
-  showCellularDisconnectWarning: boolean;
-  private esimProfileName_: string;
+  declare networkState: OncMojo.NetworkStateProperties|null;
+  declare showCellularDisconnectWarning: boolean;
+  declare private esimProfileName_: string;
   private esimProfileRemote_: ESimProfileRemote|null;
 
   constructor() {

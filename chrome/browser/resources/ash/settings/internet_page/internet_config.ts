@@ -104,15 +104,15 @@ export class InternetConfigElement extends InternetConfigElementBase {
     };
   }
 
-  guid: string;
-  name: string;
-  showConnect: boolean;
-  type: string;
-  private enableConnect_: boolean;
-  private enableSave_: boolean;
-  private error_: string;
-  private shareAllowEnable_: boolean;
-  private shareDefault_: boolean;
+  declare guid: string;
+  declare name: string;
+  declare showConnect: boolean;
+  declare type: string;
+  declare private enableConnect_: boolean;
+  declare private enableSave_: boolean;
+  declare private error_: string;
+  declare private shareAllowEnable_: boolean;
+  declare private shareDefault_: boolean;
 
   open(): void {
     const dialog = this.$.dialog;

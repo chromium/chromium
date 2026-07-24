@@ -361,10 +361,10 @@ export class SettingsInternetPageElement extends
     };
   }
 
-  defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
-  deviceStates: Record<string, OncMojo.DeviceStateProperties>|undefined;
-  hotspotInfo: HotspotInfo|undefined;
-  managedNetworkAvailable: boolean;
+  declare defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
+  declare deviceStates: Record<string, OncMojo.DeviceStateProperties>|undefined;
+  declare hotspotInfo: HotspotInfo|undefined;
+  declare managedNetworkAvailable: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -373,39 +373,39 @@ export class SettingsInternetPageElement extends
     Setting.kCellularAddApn,
   ]);
 
-  private addConnectionExpanded_: boolean;
+  declare private addConnectionExpanded_: boolean;
   private browserProxy_: InternetPageBrowserProxy;
-  private cellularSetupDialogPageName_: CellularSetupPageName|null;
+  declare private cellularSetupDialogPageName_: CellularSetupPageName|null;
   private detailType_: NetworkType|null;
-  private errorToastMessage_: string;
-  private eSimNetworkState_: NetworkStateProperties;
-  private globalPolicy_: GlobalPolicy|undefined;
-  private hasActiveCellularNetwork_: boolean;
-  private readonly isApnRevampEnabled_: boolean;
-  private isConnectedToNonCellularNetwork_: boolean;
-  private isNumCustomApnsLimitReached_: boolean;
-  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
-  private isBuiltInVpnManagementBlocked_: boolean;
-  private knownNetworksType_: NetworkType;
+  declare private errorToastMessage_: string;
+  declare private eSimNetworkState_: NetworkStateProperties;
+  declare private globalPolicy_: GlobalPolicy|undefined;
+  declare private hasActiveCellularNetwork_: boolean;
+  declare private readonly isApnRevampEnabled_: boolean;
+  declare private isConnectedToNonCellularNetwork_: boolean;
+  declare private isNumCustomApnsLimitReached_: boolean;
+  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
+  declare private isBuiltInVpnManagementBlocked_: boolean;
+  declare private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
-  private passpointSubscription_: PasspointSubscription|undefined;
-  private pendingShowCellularSetupDialogAttemptPageName_: CellularSetupPageName|
-      null;
-  private pendingShowSimLockDialog_: boolean;
-  private section_: Section;
-  private showCellularSetupDialog_: boolean;
-  private showESimProfileRenameDialog_: boolean;
-  private showESimRemoveProfileDialog_: boolean;
-  private showHotspotConfigDialog_: boolean;
-  private showInternetConfig_: boolean;
-  private showSimLockDialog_: boolean;
-  private isProviderLocked_: boolean;
-  private isDeviceUpdating_: boolean;
-  private showSpinner_: boolean;
-  private subpageType_: NetworkType;
-  private vpnIsProhibited_: boolean;
-  private vpnProviders_: VpnProvider[];
-  private apnMenuTooltipsPosition_: string;
+  declare private passpointSubscription_: PasspointSubscription|undefined;
+  declare private pendingShowCellularSetupDialogAttemptPageName_:
+      CellularSetupPageName|null;
+  declare private pendingShowSimLockDialog_: boolean;
+  declare private section_: Section;
+  declare private showCellularSetupDialog_: boolean;
+  declare private showESimProfileRenameDialog_: boolean;
+  declare private showESimRemoveProfileDialog_: boolean;
+  declare private showHotspotConfigDialog_: boolean;
+  declare private showInternetConfig_: boolean;
+  declare private showSimLockDialog_: boolean;
+  declare private isProviderLocked_: boolean;
+  declare private isDeviceUpdating_: boolean;
+  declare private showSpinner_: boolean;
+  declare private subpageType_: NetworkType;
+  declare private vpnIsProhibited_: boolean;
+  declare private vpnProviders_: VpnProvider[];
+  declare private apnMenuTooltipsPosition_: string;
 
   constructor() {
     super();

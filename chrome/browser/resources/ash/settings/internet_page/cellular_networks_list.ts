@@ -220,28 +220,28 @@ export class CellularNetworksListElement extends
     };
   }
 
-  canShowSpinner: boolean;
-  cellularDeviceState: OncMojo.DeviceStateProperties|undefined;
-  globalPolicy: GlobalPolicy|undefined;
-  isConnectedToNonCellularNetwork: boolean;
-  networks: OncMojo.NetworkStateProperties[];
-  showTechnologyBadge: boolean;
-  tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
+  declare canShowSpinner: boolean;
+  declare cellularDeviceState: OncMojo.DeviceStateProperties|undefined;
+  declare globalPolicy: GlobalPolicy|undefined;
+  declare isConnectedToNonCellularNetwork: boolean;
+  declare networks: OncMojo.NetworkStateProperties[];
+  declare showTechnologyBadge: boolean;
+  declare tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
 
-  private eSimPendingProfileItems_: NetworkList.CustomItemState[];
-  private eSimProfileInstallError_: ProfileInstallResult|null;
-  private eSimNetworks_: OncMojo.NetworkStateProperties[];
-  private euicc_: EuiccRemote|null;
-  private installingESimProfile_: ESimProfileRemote|null;
-  private isDeviceInhibited_: boolean;
-  private multiDevicePageContentData_: MultiDevicePageContentData|null;
+  declare private eSimPendingProfileItems_: NetworkList.CustomItemState[];
+  declare private eSimProfileInstallError_: ProfileInstallResult|null;
+  declare private eSimNetworks_: OncMojo.NetworkStateProperties[];
+  declare private euicc_: EuiccRemote|null;
+  declare private installingESimProfile_: ESimProfileRemote|null;
+  declare private isDeviceInhibited_: boolean;
+  declare private multiDevicePageContentData_: MultiDevicePageContentData|null;
   private networkConfig_: CrosNetworkConfigInterface;
-  private profilesMap_: Map<string, ESimProfileRemote>;
-  private pSimNetworks_: OncMojo.NetworkStateProperties[];
-  private shouldShowEidDialog_: boolean;
-  private shouldShowInstallErrorDialog_: boolean;
-  private tetherNetworks_: OncMojo.NetworkStateProperties[];
-  private isMultiDevicePageAvailable_: boolean;
+  declare private profilesMap_: Map<string, ESimProfileRemote>;
+  declare private pSimNetworks_: OncMojo.NetworkStateProperties[];
+  declare private shouldShowEidDialog_: boolean;
+  declare private shouldShowInstallErrorDialog_: boolean;
+  declare private tetherNetworks_: OncMojo.NetworkStateProperties[];
+  declare private isMultiDevicePageAvailable_: boolean;
 
   constructor() {
     super();

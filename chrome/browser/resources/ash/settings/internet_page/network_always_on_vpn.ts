@@ -62,9 +62,9 @@ export class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
     };
   }
 
-  mode: AlwaysOnVpnMode|undefined;
-  networks: OncMojo.NetworkStateProperties[];
-  service: string|undefined;
+  declare mode: AlwaysOnVpnMode|undefined;
+  declare networks: OncMojo.NetworkStateProperties[];
+  declare service: string|undefined;
 
   /**
    * Tells whether the always-on VPN main toggle is disabled or not. The toggle

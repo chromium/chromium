@@ -64,12 +64,13 @@ export class SettingsSliderV2Storybook extends PolymerElement {
     };
   }
 
-  private sliderValueWithTicks_: number;
-  private sliderValueWithScale_: number;
-  private hideLabel_: boolean;
-  private virtualManagedPref_: chrome.settingsPrivate.PrefObject<number>;
-  private ticks_: SliderTick[];
-  private disabled_: boolean;
+  declare private sliderValueWithTicks_: number;
+  declare private sliderValueWithScale_: number;
+  declare private hideLabel_: boolean;
+  declare private virtualManagedPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+  declare private ticks_: SliderTick[];
+  declare private disabled_: boolean;
 
   private onTicksSliderChange_(event: CustomEvent<number>): void {
     this.sliderValueWithTicks_ = event.detail;

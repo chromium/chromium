@@ -47,8 +47,8 @@ export class SettingsGuestOsConfirmationDialogElement extends PolymerElement {
     };
   }
 
-  acceptButtonText: string;
-  cancelButtonText: string;
+  declare acceptButtonText: string;
+  declare cancelButtonText: string;
   private accepted_: boolean;
 
   constructor() {

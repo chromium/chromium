@@ -109,16 +109,17 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
     };
   }
 
-  defaultNetwork: OncMojo.NetworkStateProperties|null;
-  hotspotInfo: HotspotInfo|undefined;
-  deviceStates: Partial<Record<NetworkType, OncMojo.DeviceStateProperties>>;
+  declare defaultNetwork: OncMojo.NetworkStateProperties|null;
+  declare hotspotInfo: HotspotInfo|undefined;
+  declare deviceStates:
+      Partial<Record<NetworkType, OncMojo.DeviceStateProperties>>;
   private activeNetworkIds_: Set<string>|null;
-  private activeNetworkStates_: OncMojo.NetworkStateProperties[];
+  declare private activeNetworkStates_: OncMojo.NetworkStateProperties[];
   private crosHotspotConfig_: CrosHotspotConfigInterface;
   private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
-  private globalPolicy_: GlobalPolicy|undefined;
+  declare private globalPolicy_: GlobalPolicy|undefined;
   private networkConfig_: CrosNetworkConfigInterface;
-  private networkStateLists_:
+  declare private networkStateLists_:
       Partial<Record<NetworkType, OncMojo.NetworkStateProperties[]>>;
 
   constructor() {

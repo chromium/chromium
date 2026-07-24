@@ -91,14 +91,14 @@ export class EsimRenameDialogElement extends EsimRenameDialogElementBase {
     };
   }
 
-  maxInputLength: number;
-  networkState: OncMojo.NetworkStateProperties|null;
-  showCellularDisconnectWarning: boolean;
-  private errorMessage_: string;
-  private esimProfileName_: string;
+  declare maxInputLength: number;
+  declare networkState: OncMojo.NetworkStateProperties|null;
+  declare showCellularDisconnectWarning: boolean;
+  declare private errorMessage_: string;
+  declare private esimProfileName_: string;
   private esimProfileRemote_: ESimProfileRemote|null;
-  private isInputInvalid_: boolean;
-  private isRenameInProgress_: boolean;
+  declare private isInputInvalid_: boolean;
+  declare private isRenameInProgress_: boolean;
 
   constructor() {
     super();

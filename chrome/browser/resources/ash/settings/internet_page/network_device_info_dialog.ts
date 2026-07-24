@@ -63,10 +63,10 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
     };
   }
 
-  euicc: EuiccRemote|undefined;
-  deviceState: OncMojo.DeviceStateProperties|undefined;
-  private canvasSize_: number;
-  private eid_: string|undefined;
+  declare euicc: EuiccRemote|undefined;
+  declare deviceState: OncMojo.DeviceStateProperties|undefined;
+  declare private canvasSize_: number;
+  declare private eid_: string|undefined;
   private canvasContext_: CanvasRenderingContext2D|null;
 
     override ready(): void {

@@ -103,14 +103,14 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     };
   }
 
-  activeNetworkState: OncMojo.NetworkStateProperties|undefined;
-  deviceState: OncMojo.DeviceStateProperties|undefined;
-  globalPolicy: GlobalPolicy|undefined;
-  networkStateList: OncMojo.NetworkStateProperties[];
-  networkTitleText: string|undefined;
-  tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
+  declare activeNetworkState: OncMojo.NetworkStateProperties|undefined;
+  declare deviceState: OncMojo.DeviceStateProperties|undefined;
+  declare globalPolicy: GlobalPolicy|undefined;
+  declare networkStateList: OncMojo.NetworkStateProperties[];
+  declare networkTitleText: string|undefined;
+  declare tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
   private browserProxy_: InternetPageBrowserProxy;
-  private showTechnologyBadge_: boolean;
+  declare private showTechnologyBadge_: boolean;
 
   constructor() {
     super();

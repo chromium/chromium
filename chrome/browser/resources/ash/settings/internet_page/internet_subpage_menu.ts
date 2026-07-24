@@ -51,9 +51,9 @@ export class SettingsInternetSubpageMenuElement extends
     };
   }
 
-  deviceState: OncMojo.DeviceStateProperties|undefined;
+  declare deviceState: OncMojo.DeviceStateProperties|undefined;
 
-  private showDeviceNetworkInfoDialog_: boolean;
+  declare private showDeviceNetworkInfoDialog_: boolean;
   private euicc_: EuiccRemote|null;
 
   constructor() {

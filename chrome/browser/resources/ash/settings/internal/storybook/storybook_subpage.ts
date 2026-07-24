@@ -44,7 +44,7 @@ export class SettingsStorybookSubpage extends PolymerElement {
     };
   }
 
-  private selectedIndex_: number;
+  declare private selectedIndex_: number;
 
   override ready(): void {
     super.ready();

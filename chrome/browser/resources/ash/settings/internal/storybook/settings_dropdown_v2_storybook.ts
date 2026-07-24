@@ -57,10 +57,11 @@ export class SettingsDropdownV2Storybook extends PolymerElement {
     };
   }
 
-  private basicDropdownDisabled_: boolean;
-  private basicDropdownValue_: number;
-  private dropdownOptions_: DropdownOptionList;
-  private virtualManagedPref_: chrome.settingsPrivate.PrefObject<number>;
+  declare private basicDropdownDisabled_: boolean;
+  declare private basicDropdownValue_: number;
+  declare private dropdownOptions_: DropdownOptionList;
+  declare private virtualManagedPref_:
+      chrome.settingsPrivate.PrefObject<number>;
 
   private onBasicDropdownChange_(event: CustomEvent<number>): void {
     this.basicDropdownValue_ = event.detail;

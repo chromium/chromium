@@ -66,12 +66,13 @@ export class SettingsToggleV2Storybook extends PolymerElement {
     };
   }
 
-  private basicToggleDisabled_: boolean;
-  private checkedValue_: boolean;
-  private prefCheckedValue_: boolean;
-  private showBasicDialog_: boolean;
-  private virtualManagedPref_: chrome.settingsPrivate.PrefObject<boolean>;
-  private virtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private basicToggleDisabled_: boolean;
+  declare private checkedValue_: boolean;
+  declare private prefCheckedValue_: boolean;
+  declare private showBasicDialog_: boolean;
+  declare private virtualManagedPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private virtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   private onCheckedValueChange_(event: CustomEvent<boolean>): void {
     this.checkedValue_ = event.detail;

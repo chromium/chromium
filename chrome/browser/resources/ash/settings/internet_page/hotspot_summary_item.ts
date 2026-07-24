@@ -62,8 +62,8 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     };
   }
 
-  hotspotInfo: HotspotInfo;
-  private isHotspotToggleOn_: boolean;
+  declare hotspotInfo: HotspotInfo;
+  declare private isHotspotToggleOn_: boolean;
 
   private onHotspotInfoChanged_(newValue: HotspotInfo, _oldValue: HotspotInfo):
       void {

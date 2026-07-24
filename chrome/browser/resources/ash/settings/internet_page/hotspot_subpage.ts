@@ -72,7 +72,7 @@ export class SettingsHotspotSubpageElement extends
     };
   }
 
-  hotspotInfo: HotspotInfo|undefined;
+  declare hotspotInfo: HotspotInfo|undefined;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -80,8 +80,9 @@ export class SettingsHotspotSubpageElement extends
     Setting.kHotspotAutoDisabled,
   ]);
 
-  private isHotspotToggleOn_: boolean;
-  private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private isHotspotToggleOn_: boolean;
+  declare private autoDisableVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.

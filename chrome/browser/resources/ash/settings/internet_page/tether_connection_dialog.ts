@@ -69,8 +69,8 @@ export class TetherConnectionDialogElement extends
     };
   }
 
-  managedProperties: ManagedProperties|undefined;
-  outOfRange: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare outOfRange: boolean;
 
   open(): void {
     const dialog = this.getDialog_();
