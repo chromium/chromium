@@ -40,7 +40,6 @@ targets.legacy_compound_suite(
     name = "devtools_gtests",
     basic_suites = [
         "devtools_browser_tests_suite",
-        "blink_unittests_suite",
     ],
 )
 

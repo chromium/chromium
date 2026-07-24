@@ -2631,7 +2631,6 @@
     ],
 
     'devtools_gtests': [
-      'blink_unittests_suite',
       'devtools_browser_tests_suite',
     ],
 
