@@ -2159,6 +2159,7 @@ class LocationBarMediator
     }
 
     /* package */ void onBackButtonClicked() {
+        RecordUserAction.record("MobileOmnibox.Back");
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab != null) {
             if (tab.canGoBack()) {

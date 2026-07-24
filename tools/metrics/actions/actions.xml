@@ -30549,6 +30549,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileOmnibox.Back">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    Recorded when the back button inside the mobile omnibox is tapped.
+  </description>
+</action>
+
 <action name="MobileOmniboxBookmarkHidden" not_user_triggered="true">
   <owner>clhager@google.com</owner>
   <description>Mobile Omnibox Bookmark button hidden.</description>

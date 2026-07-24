@@ -74,6 +74,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -3277,24 +3278,30 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnBackButtonClicked() {
+        UserActionTester actionTester = new UserActionTester();
         doReturn(true).when(mTab).canGoBack();
         mMediator.onBackButtonClicked();
         verify(mTab).goBack();
+        assertEquals(1, actionTester.getActionCount("MobileOmnibox.Back"));
     }
 
     @Test
     public void testBackButtonClicked_cannotGoBack() {
+        UserActionTester actionTester = new UserActionTester();
         doReturn(false).when(mTab).canGoBack();
         mMediator.onBackButtonClicked();
         verify(mTab, never()).goBack();
+        assertEquals(1, actionTester.getActionCount("MobileOmnibox.Back"));
     }
 
     @Test
     public void testBackButtonClicked_nullTab() {
+        UserActionTester actionTester = new UserActionTester();
         doReturn(null).when(mLocationBarDataProvider).getTab();
         doReturn(true).when(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
         mMediator.onBackButtonClicked();
         verify(mOverrideBackKeyBehaviorDelegate).handleBackKeyPressed();
+        assertEquals(1, actionTester.getActionCount("MobileOmnibox.Back"));
     }
 
     @Test
