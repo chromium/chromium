@@ -160,15 +160,9 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   return attributes;
 }
 
-// Gets the second SF Symbol based on accounts type and iOS availability.
+// Gets the second SF Symbol based on accounts type.
 + (Symbol)secondSymbolForManaged:(BOOL)isManaged {
-  if (isManaged) {
-    return SymbolBuilding2;
-  }
-  if (@available(iOS 18, *)) {
-    return SymbolCounterClockWise;
-  }
-  return SymbolHistory;
+  return isManaged ? SymbolBuilding2 : SymbolCounterClockWise;
 }
 
 // Helper to construct body text using embedded link delimiters.
