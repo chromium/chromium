@@ -714,6 +714,13 @@ UIImage* GetManualFillSymbol() {
   [self.contextMenuHandler openEditForSuggestion:suggestion];
 }
 
+- (NSString*)formSuggestionView:(FormSuggestionView*)formSuggestionView
+          usernameForSuggestion:(FormSuggestion*)suggestion {
+  return [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+                 usernameForSuggestion:suggestion];
+}
+
 - (BOOL)formSuggestionView:(FormSuggestionView*)formSuggestionView
             shouldShowRPId:(NSString*)rpId {
   return [self.formInputAccessoryViewControllerDelegate

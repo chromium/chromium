@@ -20,8 +20,8 @@
 // User tapped on the suggestion.
 - (void)didTapFormSuggestionLabel:(FormSuggestionLabel*)formSuggestionLabel;
 
-// Request if the suggestion label with the given RP ID should show its RP ID.
-- (BOOL)shouldShowRPId:(NSString*)rpId;
+// Returns the display description for a suggestion.
+- (NSString*)displayDescriptionForSuggestion:(FormSuggestion*)suggestion;
 
 @end
 

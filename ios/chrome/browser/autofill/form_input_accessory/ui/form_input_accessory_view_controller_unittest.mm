@@ -13,15 +13,40 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller+testing.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_label.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
+
+// Test constants.
+NSString* const kPasskeyLabel = @"Passkey";
+NSString* const kDefaultRPId = @"google.com";
+
+NSString* const kUsernameBob1 = @"bob1";
+NSString* const kUsernameBob2 = @"bob2";
+NSString* const kUsernameBob = @"bob";
+NSString* const kUsernameAlice = @"alice";
+
+NSString* const kDisplayNameBob = @"Bob";
+NSString* const kDisplayNameBobSmith = @"Bob Smith";
+NSString* const kDisplayNameAliceJones = @"Alice Jones";
+
+NSString* const kDescriptionBob1 = @"Passkey • bob1";
+NSString* const kDescriptionBob2 = @"Passkey • bob2";
+
+NSString* const kDescriptionBob1WithRPId = @"Passkey • bob1 • google.com";
+NSString* const kDescriptionBob2WithRPId = @"Passkey • bob2 • google.com";
+
+NSString* const kDelegateKey = @"formInputAccessoryViewControllerDelegate";
 
 // Returns whether the filling product exists on iOS.
 bool IsAvailableOnIos(autofill::FillingProduct filling_product) {
@@ -69,6 +94,28 @@ NSArray<FormSuggestion*>* SimpleFormSuggestions(int count) {
                       u"", autofill::SuggestionType::kAutocompleteEntry)];
   }
   return suggestions;
+}
+
+// Returns a passkey form suggestion.
+FormSuggestion* PasskeyFormSuggestion(NSString* username,
+                                      NSString* displayName,
+                                      NSString* rpId) {
+  NSString* value = displayName.length ? displayName : username;
+  NSString* displayDescription = kPasskeyLabel;
+  if (displayName.length && ![displayName isEqualToString:username]) {
+    displayDescription =
+        [NSString stringWithFormat:@"%@ • %@", kPasskeyLabel, username];
+  }
+  return [FormSuggestion
+              suggestionWithValue:value
+                       minorValue:rpId
+               displayDescription:displayDescription
+                             icon:nil
+                             type:autofill::SuggestionType::kWebauthnCredential
+                          payload:autofill::Suggestion::Payload()
+      fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                   requiresReauth:YES
+       acceptanceA11yAnnouncement:nil];
 }
 
 }  // namespace
@@ -180,4 +227,150 @@ TEST_F(FormInputAccessoryViewControllerTest,
   base::TimeDelta duration = base::TimeTicks::Now() - start;
 
   EXPECT_LT(duration, threshold);
+}
+
+// Tests that duplicate passkey suggestions have their username appended to
+// their display descriptions.
+TEST_F(FormInputAccessoryViewControllerTest,
+       PasskeySuggestionDisplayDescriptionDuplicateHandling) {
+  FormSuggestion* suggestion1 =
+      PasskeyFormSuggestion(kUsernameBob1, kDisplayNameBob, kDefaultRPId);
+  FormSuggestion* suggestion2 =
+      PasskeyFormSuggestion(kUsernameBob2, kDisplayNameBob, kDefaultRPId);
+
+  id delegate_mock =
+      OCMProtocolMock(@protocol(FormInputAccessoryViewControllerDelegate));
+  [view_controller_ setValue:delegate_mock forKey:kDelegateKey];
+
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion1])
+      .andReturn(kUsernameBob1);
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion2])
+      .andReturn(kUsernameBob2);
+
+  NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
+  [view_controller_ showAccessorySuggestions:suggestions];
+
+  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
+  EXPECT_NE(suggestion_view, nil);
+
+  NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion1];
+  NSString* desc2 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion2];
+
+  EXPECT_NSEQ(desc1, kDescriptionBob1);
+  EXPECT_NSEQ(desc2, kDescriptionBob2);
+}
+
+// Tests that duplicate passkey suggestions with RP ID shown append both their
+// username and RP ID to their display descriptions.
+TEST_F(FormInputAccessoryViewControllerTest,
+       PasskeySuggestionDisplayDescriptionDuplicateHandlingAndRPId) {
+  FormSuggestion* suggestion1 =
+      PasskeyFormSuggestion(kUsernameBob1, kDisplayNameBob, kDefaultRPId);
+  FormSuggestion* suggestion2 =
+      PasskeyFormSuggestion(kUsernameBob2, kDisplayNameBob, kDefaultRPId);
+
+  id delegate_mock =
+      OCMProtocolMock(@protocol(FormInputAccessoryViewControllerDelegate));
+  [view_controller_ setValue:delegate_mock forKey:kDelegateKey];
+
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion1])
+      .andReturn(kUsernameBob1);
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion2])
+      .andReturn(kUsernameBob2);
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                           shouldShowRPId:kDefaultRPId])
+      .andReturn(YES);
+
+  NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
+  [view_controller_ showAccessorySuggestions:suggestions];
+
+  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
+  EXPECT_NE(suggestion_view, nil);
+
+  NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion1];
+  NSString* desc2 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion2];
+
+  EXPECT_NSEQ(desc1, kDescriptionBob1WithRPId);
+  EXPECT_NSEQ(desc2, kDescriptionBob2WithRPId);
+}
+
+// Tests that duplicate passkey suggestions with no display name append their
+// usernames to distinguish themselves.
+TEST_F(FormInputAccessoryViewControllerTest,
+       PasskeySuggestionDisplayDescriptionDuplicateHandling_NoDisplayName) {
+  FormSuggestion* suggestion1 =
+      PasskeyFormSuggestion(kUsernameBob1, @"", kDefaultRPId);
+  FormSuggestion* suggestion2 =
+      PasskeyFormSuggestion(kUsernameBob2, @"", kDefaultRPId);
+
+  id delegate_mock =
+      OCMProtocolMock(@protocol(FormInputAccessoryViewControllerDelegate));
+  [view_controller_ setValue:delegate_mock forKey:kDelegateKey];
+
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion1])
+      .andReturn(kUsernameBob1);
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion2])
+      .andReturn(kUsernameBob2);
+
+  NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
+  [view_controller_ showAccessorySuggestions:suggestions];
+
+  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
+  EXPECT_NE(suggestion_view, nil);
+
+  NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion1];
+  NSString* desc2 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion2];
+
+  EXPECT_NSEQ(desc1, kPasskeyLabel);
+  EXPECT_NSEQ(desc2, kPasskeyLabel);
+}
+
+// Tests that non-duplicate passkey suggestions (suggestions with different
+// values but the same default description "Passkey") do not have their
+// usernames appended.
+TEST_F(FormInputAccessoryViewControllerTest,
+       PasskeySuggestionDisplayDescriptionNoDuplicates) {
+  FormSuggestion* suggestion1 =
+      PasskeyFormSuggestion(kUsernameBob, kDisplayNameBobSmith, kDefaultRPId);
+  FormSuggestion* suggestion2 = PasskeyFormSuggestion(
+      kUsernameAlice, kDisplayNameAliceJones, kDefaultRPId);
+
+  id delegate_mock =
+      OCMProtocolMock(@protocol(FormInputAccessoryViewControllerDelegate));
+  [view_controller_ setValue:delegate_mock forKey:kDelegateKey];
+
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion1])
+      .andReturn(kUsernameBob);
+  OCMStub([delegate_mock formInputAccessoryViewController:view_controller_
+                                    usernameForSuggestion:suggestion2])
+      .andReturn(kUsernameAlice);
+
+  NSArray<FormSuggestion*>* suggestions = @[ suggestion1, suggestion2 ];
+  [view_controller_ showAccessorySuggestions:suggestions];
+
+  FormSuggestionView* suggestion_view = view_controller_.formSuggestionView;
+  EXPECT_NE(suggestion_view, nil);
+
+  NSString* desc1 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion1];
+  NSString* desc2 = [(id<FormSuggestionLabelDelegate>)suggestion_view
+      displayDescriptionForSuggestion:suggestion2];
+
+  // Since they have different values, they are not duplicates, so they keep
+  // their default description "Passkey".
+  EXPECT_NSEQ(desc1, kPasskeyLabel);
+  EXPECT_NSEQ(desc2, kPasskeyLabel);
 }

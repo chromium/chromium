@@ -400,21 +400,6 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   [stackView addArrangedSubview:text_label];
 }
 
-// Returns the display description for a suggestion.
-NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
-                                          BOOL showRPId) {
-  if (suggestion.type == autofill::SuggestionType::kWebauthnCredential) {
-    NSString* passkeyLabel =
-        l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
-    if (showRPId) {
-      return [NSString
-          stringWithFormat:@"%@ • %@", passkeyLabel, suggestion.minorValue];
-    }
-    return passkeyLabel;
-  }
-  return suggestion.displayDescription;
-}
-
 }  // namespace
 
 @interface FormSuggestionLabel () <UIContextMenuInteractionDelegate>
@@ -506,9 +491,8 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
           l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME);
     }
 
-    NSString* displayDescription = DisplayDescriptionForSuggestion(
-        suggestion,
-        isPasskey && [delegate shouldShowRPId:suggestion.minorValue]);
+    NSString* displayDescription =
+        [delegate displayDescriptionForSuggestion:suggestion];
 
     NSString* minorValue = isPasskey ? nil : suggestion.minorValue;
 
@@ -567,11 +551,10 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
-    [self
-        setAccessibilityLabel:AccessibilityLabel(
-                                  suggestionText, suggestion.displayDescription,
-                                  suggestion.type ==
-                                      SuggestionType::kBackupPasswordEntry)];
+    [self setAccessibilityLabel:AccessibilityLabel(
+                                    suggestionText, displayDescription,
+                                    suggestion.type ==
+                                        SuggestionType::kBackupPasswordEntry)];
     [self
         setAccessibilityValue:l10n_util::GetNSStringF(
                                   IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,

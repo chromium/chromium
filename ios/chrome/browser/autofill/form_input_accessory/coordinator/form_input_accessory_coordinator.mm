@@ -534,6 +534,13 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   return NO;
 }
 
+- (NSString*)formInputAccessoryViewController:
+                 (FormInputAccessoryViewController*)
+                     formInputAccessoryViewController
+                        usernameForSuggestion:(FormSuggestion*)suggestion {
+  return [_formInputAccessoryMediator usernameForSuggestion:suggestion];
+}
+
 - (BOOL)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                           shouldShowRPId:(NSString*)rpId {

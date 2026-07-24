@@ -945,6 +945,23 @@ bool IsStateless() {
   [self didSelectSuggestion:formSuggestion atIndex:index completion:completion];
 }
 
+- (NSString*)usernameForSuggestion:(FormSuggestion*)suggestion {
+  if (suggestion.type != autofill::SuggestionType::kWebauthnCredential) {
+    return nil;
+  }
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      [self webAuthnCredentialsDelegate];
+  if (!delegate) {
+    return nil;
+  }
+  auto passkeys = delegate->GetPasskeys();
+  if (!passkeys.has_value()) {
+    return nil;
+  }
+  return webauthn::GetPasskeyUsernameForSuggestion(suggestion,
+                                                   *passkeys.value());
+}
+
 - (BOOL)shouldShowRPId:(NSString*)rpId {
   if (!_webState) {
     return NO;

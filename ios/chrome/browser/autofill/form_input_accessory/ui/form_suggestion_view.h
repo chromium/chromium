@@ -23,9 +23,13 @@
        didAcceptSuggestion:(FormSuggestion*)suggestion
                    atIndex:(NSInteger)index;
 
-// Request if the suggestion label should show its RP ID.
+// Requests if the suggestion label should show its RP ID.
 - (BOOL)formSuggestionView:(FormSuggestionView*)formSuggestionView
             shouldShowRPId:(NSString*)rpId;
+
+// Requests the username for a passkey suggestion.
+- (NSString*)formSuggestionView:(FormSuggestionView*)formSuggestionView
+          usernameForSuggestion:(FormSuggestion*)suggestion;
 
 @end
 
@@ -55,7 +59,7 @@
 // adapt to the compact size class if necessary.
 - (void)setIsCompact:(BOOL)isCompact;
 
-// Reset content insets back to zero and sets the delegate to nil. Used to stop
+// Resets content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;
 
