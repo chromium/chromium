@@ -56,8 +56,8 @@
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;
 
-// Whether this toolbar is currently visible or not.
-@property(nonatomic, assign) BOOL visible;
+// Whether this toolbar contains the omnibox.
+@property(nonatomic, readonly) BOOL hasOmnibox;
 
 // Whether this toolbar is currently showing a promo banner.
 @property(nonatomic, readonly) BOOL bannerPromoVisible;

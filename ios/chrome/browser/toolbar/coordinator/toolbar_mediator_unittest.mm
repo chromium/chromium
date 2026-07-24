@@ -503,12 +503,12 @@ TEST_P(ToolbarMediatorTest, TestBottomOmniboxEnabled) {
   }
   BOOL top_position = GetParam();
 
-  OCMExpect([consumer_ setVisible:top_position]);
+  OCMExpect([consumer_ setHasOmnibox:top_position]);
   TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, false);
   EXPECT_OCMOCK_VERIFY(consumer_);
 
-  OCMExpect([consumer_ setVisible:!top_position]);
+  OCMExpect([consumer_ setHasOmnibox:!top_position]);
   TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, true);
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -521,7 +521,7 @@ TEST_P(ToolbarMediatorTest, TestBottomOmniboxNotEnabled) {
     return;
   }
 
-  OCMReject([consumer_ setVisible:YES]).ignoringNonObjectArgs();
+  OCMReject([consumer_ setHasOmnibox:YES]).ignoringNonObjectArgs();
 
   TestingApplicationContext::GetGlobal()->GetLocalState()->SetBoolean(
       omnibox::kIsOmniboxInBottomPosition, false);

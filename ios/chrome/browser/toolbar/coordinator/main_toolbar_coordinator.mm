@@ -1055,7 +1055,7 @@ inline LayoutStateToolbarPassKey PassKey() {
 
 - (void)focusLocationBarForVoiceOver {
   if (IsChromeNextIaEnabled()) {
-    if (_topToolbarViewController.visible) {
+    if (_topToolbarViewController.hasOmnibox) {
       [_topLocationBarCoordinator focusOmniboxForVoiceOver];
     } else {
       [_bottomLocationBarCoordinator focusOmniboxForVoiceOver];

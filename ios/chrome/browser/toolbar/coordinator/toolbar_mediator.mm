@@ -492,11 +492,11 @@
 // Updates the position of the toolbar by updating its visibility.
 - (void)updateToolbarPosition {
   if (IsBottomOmniboxAvailable()) {
-    [self.consumer setVisible:_bottomOmniboxEnabled.value == !_topPosition];
+    [self.consumer setHasOmnibox:_bottomOmniboxEnabled.value == !_topPosition];
   } else {
     // When the bottom omnibox is not available, only the top toolbar is
     // available.
-    [self.consumer setVisible:_topPosition];
+    [self.consumer setHasOmnibox:_topPosition];
   }
 }
 

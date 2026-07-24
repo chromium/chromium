@@ -225,10 +225,8 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   // Whether this toolbar is in the top position.
   BOOL _topPosition;
 
-  // Whether this toolbar is currently visible.
-  /// TODO(crbug.com/493268305): Clean up the animation dismissing the toolbar
-  /// when navigating to a page where it is not visible (e.g. the New Tab Page).
-  BOOL _visible;
+  // Whether this toolbar contains the omnibox.
+  BOOL _hasOmnibox;
 
   // Whether this toolbar is in incognito mode.
   BOOL _incognito;
@@ -338,7 +336,7 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 }
 
 - (void)setLocationBarHidden:(BOOL)hidden {
-  _locationBarContainer.hidden = hidden || !_visible;
+  _locationBarContainer.hidden = hidden || !_hasOmnibox;
 }
 
 - (UIView*)locationBarContainerCopy {
@@ -531,11 +529,11 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   _shareButton.enabled = enabled;
 }
 
-- (void)setVisible:(BOOL)visible {
-  if (_visible == visible) {
+- (void)setHasOmnibox:(BOOL)hasOmnibox {
+  if (_hasOmnibox == hasOmnibox) {
     return;
   }
-  _visible = visible;
+  _hasOmnibox = hasOmnibox;
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
   [self updateTabGroupIndicatorAvailability];
@@ -879,7 +877,8 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 
   BOOL tabGroupIndicatorVisible =
       _tabGroupIndicatorView && !_tabGroupIndicatorView.hidden;
-  _innerSeparator.hidden = !(tabGroupIndicatorVisible || [self hasOmnibox]);
+  _innerSeparator.hidden =
+      !(tabGroupIndicatorVisible || [self isOmniboxVisible]);
 
   if (!_topPosition) {
     _outerSeparator.hidden = !_locationIndicatorActive;
@@ -1029,7 +1028,7 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 
 // Updates the availability of the tab group indicator and its constraints.
 - (void)updateTabGroupIndicatorAvailability {
-  if (_visible) {
+  if (_hasOmnibox) {
     _tabGroupIndicatorInactiveToolbarConstraint.active = NO;
     _tabGroupIndicatorActiveToolbarConstraint.active = YES;
   } else {
@@ -1780,24 +1779,27 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   [self.toolbarHeightDelegate toolbarsHeightChanged];
 }
 
-// Returns whether the toolbar has the omnibox.
-- (BOOL)hasOmnibox {
+// Returns whether the toolbar has a visible omnibox.
+- (BOOL)isOmniboxVisible {
+  if (!_hasOmnibox) {
+    return NO;
+  }
   return !_locationBarContainer.isHidden && _locationBarContainer.alpha != 0.0;
 }
 
 // Updates the visibility of the toolbar elements.
 - (void)updateToolbarElementsVisibility {
-  _leadingStackView.hidden = !_visible;
-  _locationBarContainer.hidden = !_visible;
-  _trailingStackView.hidden = !_visible;
+  _leadingStackView.hidden = !_hasOmnibox;
+  _locationBarContainer.hidden = !_hasOmnibox;
+  _trailingStackView.hidden = !_hasOmnibox;
   [self updateButtons:_leadingStackView.arrangedSubviews
       forFullscreenProgress:_fullscreenProgress];
   [self updateButtons:_trailingStackView.arrangedSubviews
       forFullscreenProgress:_fullscreenProgress];
-  _progressBarContainer.hidden = !_visible || CanShowTabStrip(self);
+  _progressBarContainer.hidden = !_hasOmnibox || CanShowTabStrip(self);
   if (IsGlassToolbarEnabled()) {
-    _glassBackgroundContainer.hidden = !_visible;
-    _glassBackgroundView.hidden = !_visible;
+    _glassBackgroundContainer.hidden = !_hasOmnibox;
+    _glassBackgroundView.hidden = !_hasOmnibox;
   }
   [self updateSeparatorVisibility];
   [self.toolbarHeightDelegate toolbarsHeightChanged];
@@ -1872,7 +1874,7 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 // Updates the layout guides to point to the buttons in this toolbar.
 // This should be called when this toolbar becomes the active visible toolbar.
 - (void)updateLayoutGuides {
-  if (!_visible) {
+  if (!_hasOmnibox) {
     return;
   }
 
@@ -1891,7 +1893,7 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 // Conditionally registers the Tab Switcher layout guide.
 // It should only be registered to the toolbar if the App Bar is not visible.
 - (void)updateTabSwitcherGuide {
-  if (!_visible || !self.view.window) {
+  if (!_hasOmnibox || !self.view.window) {
     return;
   }
   if (self.layoutState.appBarPosition == AppBarPosition::kNone) {

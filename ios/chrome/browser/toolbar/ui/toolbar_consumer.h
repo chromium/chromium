@@ -31,8 +31,8 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Sets whether the share button is enabled.
 - (void)setShareEnabled:(BOOL)enabled;
 
-// Sets whether the toolbar is visible.
-- (void)setVisible:(BOOL)visible;
+// Sets whether the toolbar contains the omnibox.
+- (void)setHasOmnibox:(BOOL)hasOmnibox;
 
 // Sets whether the current page is the NTP, if it is the Start Surface, whether
 // the page is loading, and the `progress` between 0.0 and 1.0 for the loading
