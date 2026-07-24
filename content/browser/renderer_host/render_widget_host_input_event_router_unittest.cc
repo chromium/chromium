@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -223,6 +224,44 @@ class MockInputTargetClient : public viz::mojom::InputTargetClient {
   mojo::Receiver<viz::mojom::InputTargetClient> receiver_;
 };
 
+class RecordingTouchEmulatorClient : public input::TouchEmulatorClient {
+ public:
+  void SetEmulator(TouchEmulatorImpl* emulator) { emulator_ = emulator; }
+
+  void ForwardEmulatedGestureEvent(
+      const blink::WebGestureEvent& event) override {
+    gesture_events_.push_back(event);
+  }
+
+  void ForwardEmulatedTouchEvent(
+      const blink::WebTouchEvent& event,
+      input::RenderWidgetHostViewInput* target) override {
+    touch_events_.push_back(event);
+    emulator_->HandleTouchEventAck(
+        event, blink::mojom::InputEventResultState::kNoConsumerExists);
+  }
+
+  void SetCursor(const ui::Cursor& cursor) override {}
+
+  void ShowContextMenuAtPoint(
+      const gfx::Point& point,
+      const ui::mojom::MenuSourceType source_type,
+      input::RenderWidgetHostViewInput* target) override {}
+
+  const std::vector<blink::WebTouchEvent>& touch_events() const {
+    return touch_events_;
+  }
+
+  const std::vector<blink::WebGestureEvent>& gesture_events() const {
+    return gesture_events_;
+  }
+
+ private:
+  raw_ptr<TouchEmulatorImpl> emulator_ = nullptr;
+  std::vector<blink::WebTouchEvent> touch_events_;
+  std::vector<blink::WebGestureEvent> gesture_events_;
+};
+
 }  // namespace
 
 class RenderWidgetHostInputEventRouterTest : public testing::Test {
@@ -245,6 +284,10 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
   input::RenderWidgetHostViewInput* last_mouse_down_target() {
     return rwhier()->last_mouse_down_target_;
+  }
+
+  input::RenderWidgetHostViewInput* last_emulated_event_root_view() {
+    return rwhier()->last_emulated_event_root_view_;
   }
 
   // testing::Test:
@@ -396,6 +439,81 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   std::unique_ptr<MockRootRenderWidgetHostView> view_root_;
   std::unique_ptr<MockInputTargetClient> input_target_client_root_;
 };
+
+// Regression test for crbug.com/537416055. Injected touch points and
+// synthesized gestures use root-view coordinates.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       InjectedTouchCoordinatesAreInRootSpace) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  constexpr gfx::Vector2dF kChildOffset(80, 100);
+  constexpr gfx::PointF kPointInChild(200, 180);
+  constexpr gfx::PointF kPointInRoot(280, 280);
+  view_root_->SetOffset(kChildOffset);
+  EXPECT_EQ(child.view->TransformPointToRootCoordSpaceF(kPointInChild),
+            kPointInRoot);
+
+  RecordingTouchEmulatorClient client;
+  TouchEmulatorImpl emulator(&client, 1.0f);
+  client.SetEmulator(&emulator);
+  emulator.SetDoubleTapSupportForPageEnabled(false);
+  emulator.Enable(input::TouchEmulator::Mode::kInjectingTouchEvents,
+                  ui::GestureProviderConfigType::GENERIC_MOBILE);
+
+  blink::WebTouchEvent touch_start(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_start.touches_length = 1;
+  touch_start.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_start.touches[0].SetPositionInWidget(kPointInRoot);
+  emulator.InjectTouchEvent(touch_start, child.view.get(), base::OnceClosure());
+
+  blink::WebTouchEvent touch_end = touch_start;
+  touch_end.SetType(blink::WebInputEvent::Type::kTouchEnd);
+  touch_end.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  emulator.InjectTouchEvent(touch_end, child.view.get(), base::OnceClosure());
+
+  ASSERT_EQ(2u, client.touch_events().size());
+  EXPECT_EQ(client.touch_events()[0].touches[0].PositionInWidget(),
+            kPointInRoot);
+  EXPECT_EQ(client.touch_events()[1].touches[0].PositionInWidget(),
+            kPointInRoot);
+
+  const blink::WebGestureEvent* tap = nullptr;
+  for (const auto& gesture : client.gesture_events()) {
+    if (gesture.GetType() == blink::WebInputEvent::Type::kGestureTap) {
+      tap = &gesture;
+      break;
+    }
+  }
+  ASSERT_TRUE(tap);
+  EXPECT_EQ(tap->PositionInWidget(), kPointInRoot);
+  emulator.Disable();
+}
+
+// Regression coverage for crbug.com/537416055: both events in the touch
+// sequence must continue to route through the target root view.
+TEST_F(RenderWidgetHostInputEventRouterTest, EmulatedTouchUsesTargetRootView) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, child.view.get());
+
+  EXPECT_EQ(view_root_.get(), last_emulated_event_root_view());
+
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  touch_event.unique_touch_event_id = 2;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, child.view.get());
+
+  EXPECT_EQ(view_root_.get(), last_emulated_event_root_view());
+}
 
 // Make sure that when a touch scroll crosses out of the area for a
 // RenderWidgetHostView, the RenderWidgetHostInputEventRouter continues to
