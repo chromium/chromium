@@ -4,6 +4,9 @@
 
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
 
+#include <ApplicationServices/ApplicationServices.h>
+
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -23,6 +26,8 @@
 #import "ui/accessibility/platform/browser_accessibility_cocoa.h"
 #import "ui/accessibility/platform/browser_accessibility_mac.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
+
+using base::apple::CFToNSPtrCast;
 
 namespace {
 
@@ -98,9 +103,10 @@ void BrowserAccessibilityManagerMac::FireSourceEvent(
       mac_notification = NSAccessibilityAutocorrectionOccurredNotification;
       break;
     case ax::mojom::Event::kLoadComplete:
-      if (!ShouldFireLoadCompleteNotification())
+      if (!ShouldFireLoadCompleteNotification()) {
         return;
-      mac_notification = NSAccessibilityLoadCompleteNotification;
+      }
+      mac_notification = CFToNSPtrCast(kAXLoadCompleteNotification);
       break;
     default:
       return;
@@ -166,7 +172,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       break;
     case AXEventGenerator::Event::ALERT:
       NSAccessibilityPostNotification(
-          native_node, NSAccessibilityLiveRegionCreatedNotification);
+          native_node, CFToNSPtrCast(kAXLiveRegionCreatedNotification));
       // Voiceover requires a live region changed notification to actually
       // announce the live region.
       FireGeneratedEvent(AXEventGenerator::Event::LIVE_REGION_CHANGED, node);
@@ -177,7 +183,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // https://www.w3.org/TR/core-aam-1.2/#details-id-186
       return;
     case AXEventGenerator::Event::BUSY_CHANGED:
-      mac_notification = NSAccessibilityElementBusyChangedNotification;
+      mac_notification = CFToNSPtrCast(kAXElementBusyChangedNotification);
       break;
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
@@ -187,7 +193,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowCollapsedNotification;
       } else {
-        mac_notification = NSAccessibilityExpandedChanged;
+        mac_notification = CFToNSPtrCast(kAXExpandedChangedNotification);
       }
       break;
     case AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
@@ -224,11 +230,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowExpandedNotification;
       } else {
-        mac_notification = NSAccessibilityExpandedChanged;
+        mac_notification = CFToNSPtrCast(kAXExpandedChangedNotification);
       }
       break;
     case AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      mac_notification = NSAccessibilityInvalidStatusChangedNotification;
+      mac_notification = CFToNSPtrCast(kAXInvalidStatusChangedNotification);
       break;
     case AXEventGenerator::Event::LIVE_REGION_CHANGED: {
       // Voiceover seems to drop live region changed notifications if they come
@@ -237,7 +243,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
 
       if (never_suppress_or_delay_events_for_testing_) {
         NSAccessibilityPostNotification(
-            native_node, NSAccessibilityLiveRegionChangedNotification);
+            native_node, CFToNSPtrCast(kAXLiveRegionChangedNotification));
         return;
       }
 
@@ -247,10 +253,10 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
             root_manager->ToBrowserAccessibilityManagerMac();
         id window = root_manager_mac->GetWindow();
         if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]]) {
-          // NSAccessibilityLiveRegionChangedNotification seems to require
-          // application be active. Use the announcement API to get around on
-          // PWA. Announcement requires active window, so send the announcement
-          // notification to the PWA related window. same work around like
+          // kAXLiveRegionChangedNotification seems to require application be
+          // active. Use the announcement API to get around on PWA. Announcement
+          // requires active window, so send the announcement notification to
+          // the PWA related window. same work around like
           // https://chromium-review.googlesource.com/c/chromium/src/+/3257815
           std::string live_status =
               node->GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
@@ -272,7 +278,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
               [](BrowserAccessibilityCocoa* wrapper) {
                 if (wrapper && [wrapper instanceActive]) {
                   NSAccessibilityPostNotification(
-                      wrapper, NSAccessibilityLiveRegionChangedNotification);
+                      wrapper, CFToNSPtrCast(kAXLiveRegionChangedNotification));
                 }
               },
               retained_node),
@@ -280,7 +286,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       return;
     }
     case AXEventGenerator::Event::LIVE_REGION_CREATED:
-      mac_notification = NSAccessibilityLiveRegionCreatedNotification;
+      mac_notification = CFToNSPtrCast(kAXLiveRegionCreatedNotification);
       break;
     case AXEventGenerator::Event::MENU_POPUP_END:
       // Calling NSAccessibilityPostNotification on a menu which is about to be
@@ -294,16 +300,16 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
               GetManagerForRootFrame()) {
         if (BrowserAccessibility* root =
                 root_manager->GetBrowserAccessibilityRoot()) {
-          FireNativeMacNotification((NSString*)kAXMenuClosedNotification,
+          FireNativeMacNotification(CFToNSPtrCast(kAXMenuClosedNotification),
                                     *root);
         }
       }
       return;
     case AXEventGenerator::Event::MENU_POPUP_START:
-      mac_notification = (NSString*)kAXMenuOpenedNotification;
+      mac_notification = CFToNSPtrCast(kAXMenuOpenedNotification);
       break;
     case AXEventGenerator::Event::MENU_ITEM_SELECTED:
-      mac_notification = NSAccessibilityMenuItemSelectedNotification;
+      mac_notification = CFToNSPtrCast(kAXMenuItemSelectedNotification);
       break;
     case AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(wrapper->GetData().IsRangeValueSupported())
@@ -654,9 +660,7 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
 
     id selected_text = [native_focus_object selectedTextMarkerRange];
     if (selected_text) {
-      NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
-          @"AXSelectedTextMarkerRange";
-      user_info[NSAccessibilitySelectedTextMarkerRangeAttribute] =
+      user_info[CFToNSPtrCast(kAXSelectedTextMarkerRangeAttribute)] =
           selected_text;
     }
   }

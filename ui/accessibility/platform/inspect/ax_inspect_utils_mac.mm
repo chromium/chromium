@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 
+#include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 #include <CoreGraphics/CoreGraphics.h>
 
@@ -21,6 +22,8 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
+
+using base::apple::CFToNSPtrCast;
 
 // TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
@@ -50,12 +53,13 @@ bool HasIDOrClass(const std::string& idOrClass, const AXUIElementRef node) {
   AXElementWrapper nsNode((__bridge id)node);
   NSString* nsIDOrClass = base::SysUTF8ToNSString(idOrClass);
   NSString* idValue =
-      *nsNode.GetAttributeValue(NSAccessibilityDOMIdentifierAttribute);
+      *nsNode.GetAttributeValue(CFToNSPtrCast(kAXDOMIdentifierAttribute));
   if ([idValue isEqualToString:nsIDOrClass]) {
     return true;
   }
 
-  NSArray* classList = *nsNode.GetAttributeValue(NSAccessibilityDOMClassList);
+  NSArray* classList =
+      *nsNode.GetAttributeValue(CFToNSPtrCast(kAXDOMClassListAttribute));
   return [classList containsObject:nsIDOrClass];
 }
 
@@ -63,50 +67,50 @@ bool HasIDOrClass(const std::string& idOrClass, const AXUIElementRef node) {
 
 bool IsValidAXAttribute(const std::string& attribute) {
   static NSSet<NSString*>* valid_attributes = [NSSet setWithArray:@[
-    NSAccessibilityAccessKeyAttribute,
-    NSAccessibilityARIAAtomicAttribute,
+    CFToNSPtrCast(kAXAccessKeyAttribute),
+    CFToNSPtrCast(kAXARIAAtomicAttribute),
     NSAccessibilityARIABusyAttribute,
-    NSAccessibilityARIAColumnCountAttribute,
-    NSAccessibilityARIAColumnIndexAttribute,
-    NSAccessibilityARIACurrentAttribute,
-    NSAccessibilityARIALiveAttribute,
-    NSAccessibilityARIAPosInSetAttribute,
-    NSAccessibilityARIARelevantAttribute,
-    NSAccessibilityARIARowCountAttribute,
-    NSAccessibilityARIARowIndexAttribute,
-    NSAccessibilityARIASetSizeAttribute,
+    CFToNSPtrCast(kAXARIAColumnCountAttribute),
+    CFToNSPtrCast(kAXARIAColumnIndexAttribute),
+    CFToNSPtrCast(kAXARIACurrentAttribute),
+    CFToNSPtrCast(kAXARIALiveAttribute),
+    CFToNSPtrCast(kAXARIAPosInSetAttribute),
+    CFToNSPtrCast(kAXARIARelevantAttribute),
+    CFToNSPtrCast(kAXARIARowCountAttribute),
+    CFToNSPtrCast(kAXARIARowIndexAttribute),
+    CFToNSPtrCast(kAXARIASetSizeAttribute),
     NSAccessibilityAutocompleteValueAttribute,
     NSAccessibilityBlockQuoteLevelAttribute,
-    NSAccessibilityBrailleLabelAttribute,
-    NSAccessibilityBrailleRoleDescription,
+    CFToNSPtrCast(kAXBrailleLabelAttribute),
+    CFToNSPtrCast(kAXBrailleRoleDescriptionAttribute),
     NSAccessibilityChromeAXNodeIdAttribute,
     NSAccessibilityColumnHeaderUIElementsAttribute,
     NSAccessibilityDescriptionAttribute,
     NSAccessibilityDetailsElementsAttribute,
-    NSAccessibilityDOMClassList,
-    NSAccessibilityDropEffectsAttribute,
-    NSAccessibilityElementBusyAttribute,
-    NSAccessibilityFocusableAncestorAttribute,
-    NSAccessibilityGrabbedAttribute,
-    NSAccessibilityHasPopupAttribute,
-    NSAccessibilityInvalidAttribute,
+    CFToNSPtrCast(kAXDOMClassListAttribute),
+    CFToNSPtrCast(kAXDropEffectsAttribute),
+    CFToNSPtrCast(kAXElementBusyAttribute),
+    CFToNSPtrCast(kAXFocusableAncestorAttribute),
+    CFToNSPtrCast(kAXGrabbedAttribute),
+    CFToNSPtrCast(kAXHasPopupAttribute),
+    CFToNSPtrCast(kAXInvalidAttribute),
     NSAccessibilityIsMultiSelectable,
-    NSAccessibilityKeyShortcutsValueAttribute,
-    NSAccessibilityLoadedAttribute,
-    NSAccessibilityLoadingProgressAttribute,
-    NSAccessibilityMathFractionNumeratorAttribute,
-    NSAccessibilityMathFractionDenominatorAttribute,
-    NSAccessibilityMathRootRadicandAttribute,
-    NSAccessibilityMathRootIndexAttribute,
-    NSAccessibilityMathBaseAttribute,
-    NSAccessibilityMathSubscriptAttribute,
-    NSAccessibilityMathSuperscriptAttribute,
-    NSAccessibilityMathUnderAttribute,
-    NSAccessibilityMathOverAttribute,
-    NSAccessibilityMathPostscriptsAttribute,
-    NSAccessibilityMathPrescriptsAttribute,
-    NSAccessibilityOwnsAttribute,
-    NSAccessibilityPopupValueAttribute,
+    CFToNSPtrCast(kAXKeyShortcutsAttribute),
+    CFToNSPtrCast(kAXLoadedAttribute),
+    CFToNSPtrCast(kAXLoadingProgressAttribute),
+    CFToNSPtrCast(kAXMathBaseAttribute),
+    CFToNSPtrCast(kAXMathFractionDenominatorAttribute),
+    CFToNSPtrCast(kAXMathFractionNumeratorAttribute),
+    CFToNSPtrCast(kAXMathOverAttribute),
+    CFToNSPtrCast(kAXMathPostscriptsAttribute),
+    CFToNSPtrCast(kAXMathPrescriptsAttribute),
+    CFToNSPtrCast(kAXMathRootIndexAttribute),
+    CFToNSPtrCast(kAXMathRootRadicandAttribute),
+    CFToNSPtrCast(kAXMathSubscriptAttribute),
+    CFToNSPtrCast(kAXMathSuperscriptAttribute),
+    CFToNSPtrCast(kAXMathUnderAttribute),
+    CFToNSPtrCast(kAXOwnsAttribute),
+    CFToNSPtrCast(kAXPopupValueAttribute),
     NSAccessibilityRequiredAttribute,
     NSAccessibilityRoleDescriptionAttribute,
     NSAccessibilitySelectedAttribute,

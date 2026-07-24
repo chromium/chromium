@@ -6,7 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_WEBKIT_CONSTANTS_MAC_H_
 
 #include <Availability.h>
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #include "base/component_export.h"
 
@@ -51,36 +51,25 @@ enum AXTextEditType {
   AXTextEditTypeAttributesChange
 };
 
-// Native macOS notifications fired.
+// Native macOS notifications fired. These are in the macOS 26 SDK as being
+// introduced in macOS 26, but they are actually available earlier. Define them
+// in a way that will override the SDK definition. Remove when macOS 26 is the
+// minimum requirement for Chromium.
 
 #if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
 #define NSAccessibilityAutocorrectionOccurredNotification \
   @"AXAutocorrectionOccurred"
 #endif
 
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityElementBusyChangedNotification =
-    @"AXElementBusyChanged";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityExpandedChanged = @"AXExpandedChanged";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityInvalidStatusChangedNotification =
-    @"AXInvalidStatusChanged";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityLiveRegionChangedNotification =
-    @"AXLiveRegionChanged";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityLiveRegionCreatedNotification =
-    @"AXLiveRegionCreated";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityLoadCompleteNotification =
-    @"AXLoadComplete";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityMenuItemSelectedNotification =
-    @"AXMenuItemSelected";
+// Attributes. These are in the macOS 26 SDK as being introduced in macOS 26,
+// but they are actually available earlier. Define them in a way that will
+// override the SDK definition. Remove when macOS 26 is the minimum requirement
+// for Chromium.
 
-// The following native macOS notifications are not fired:
-// AXLayoutComplete: Voiceover does not use this, it is considered too spammy.
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+#define NSAccessibilityTextStateChangeTypeKey @"AXTextStateChangeType"
+#define NSAccessibilityTextStateSyncKey @"AXTextStateSync"
+#endif
 
 // Attributes used for NSAccessibilitySelectedTextChangedNotification and
 // NSAccessibilityValueChangedNotification.
@@ -109,22 +98,60 @@ constexpr NSString* const NSAccessibilityTextSelectionDirection =
 COMPONENT_EXPORT(AX_PLATFORM)
 constexpr NSString* const NSAccessibilityTextSelectionGranularity =
     @"AXTextSelectionGranularity";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityTextStateChangeTypeKey =
-    @"AXTextStateChangeType";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityTextStateSyncKey = @"AXTextStateSync";
 
-// Actions.
+// Actions. This is in the macOS 26 SDK as being introduced in macOS 26, but it
+// is actually available earlier. Define it in a way that will override the SDK
+// definition. Remove when macOS 26 is the minimum requirement for Chromium.
 
 #if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
 #define NSAccessibilityScrollToVisibleAction @"AXScrollToVisible"
 #endif
 
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityFieldsetSubrole = @"AXFieldset";
-COMPONENT_EXPORT(AX_PLATFORM)
-constexpr NSString* const NSAccessibilityEmptyGroupSubrole = @"AXEmptyGroup";
+// Search Keys. This is in the macOS 26 SDK as being introduced in macOS 26, but
+// it is actually available earlier. Define it in a way that will override the
+// SDK definition. Remove when macOS 26 is the minimum requirement for Chromium.
+
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+#define NSAccessibilityAnyTypeSearchKey @"AXAnyTypeSearchKey"
+#define NSAccessibilityBlockquoteSameLevelSearchKey \
+  @"AXBlockquoteSameLevelSearchKey"
+#define NSAccessibilityBlockquoteSearchKey @"AXBlockquoteSearchKey"
+#define NSAccessibilityBoldFontSearchKey @"AXBoldFontSearchKey"
+#define NSAccessibilityButtonSearchKey @"AXButtonSearchKey"
+#define NSAccessibilityCheckBoxSearchKey @"AXCheckBoxSearchKey"
+#define NSAccessibilityControlSearchKey @"AXControlSearchKey"
+#define NSAccessibilityDifferentTypeSearchKey @"AXDifferentTypeSearchKey"
+#define NSAccessibilityFontChangeSearchKey @"AXFontChangeSearchKey"
+#define NSAccessibilityFontColorChangeSearchKey @"AXFontColorChangeSearchKey"
+#define NSAccessibilityFrameSearchKey @"AXFrameSearchKey"
+#define NSAccessibilityGraphicSearchKey @"AXGraphicSearchKey"
+#define NSAccessibilityHeadingLevel1SearchKey @"AXHeadingLevel1SearchKey"
+#define NSAccessibilityHeadingLevel2SearchKey @"AXHeadingLevel2SearchKey"
+#define NSAccessibilityHeadingLevel3SearchKey @"AXHeadingLevel3SearchKey"
+#define NSAccessibilityHeadingLevel4SearchKey @"AXHeadingLevel4SearchKey"
+#define NSAccessibilityHeadingLevel5SearchKey @"AXHeadingLevel5SearchKey"
+#define NSAccessibilityHeadingLevel6SearchKey @"AXHeadingLevel6SearchKey"
+#define NSAccessibilityHeadingSameLevelSearchKey @"AXHeadingSameLevelSearchKey"
+#define NSAccessibilityHeadingSearchKey @"AXHeadingSearchKey"
+#define NSAccessibilityItalicFontSearchKey @"AXItalicFontSearchKey"
+#define NSAccessibilityLandmarkSearchKey @"AXLandmarkSearchKey"
+#define NSAccessibilityLinkSearchKey @"AXLinkSearchKey"
+#define NSAccessibilityListSearchKey @"AXListSearchKey"
+#define NSAccessibilityLiveRegionSearchKey @"AXLiveRegionSearchKey"
+#define NSAccessibilityMisspelledWordSearchKey @"AXMisspelledWordSearchKey"
+#define NSAccessibilityOutlineSearchKey @"AXOutlineSearchKey"
+#define NSAccessibilityPlainTextSearchKey @"AXPlainTextSearchKey"
+#define NSAccessibilityRadioGroupSearchKey @"AXRadioGroupSearchKey"
+#define NSAccessibilitySameTypeSearchKey @"AXSameTypeSearchKey"
+#define NSAccessibilityStaticTextSearchKey @"AXStaticTextSearchKey"
+#define NSAccessibilityStyleChangeSearchKey @"AXStyleChangeSearchKey"
+#define NSAccessibilityTableSameLevelSearchKey @"AXTableSameLevelSearchKey"
+#define NSAccessibilityTableSearchKey @"AXTableSearchKey"
+#define NSAccessibilityTextFieldSearchKey @"AXTextFieldSearchKey"
+#define NSAccessibilityUnderlineSearchKey @"AXUnderlineSearchKey"
+#define NSAccessibilityUnvisitedLinkSearchKey @"AXUnvisitedLinkSearchKey"
+#define NSAccessibilityVisitedLinkSearchKey @"AXVisitedLinkSearchKey"
+#endif
 
 COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextStateChangeType);
 COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextSelectionDirection);

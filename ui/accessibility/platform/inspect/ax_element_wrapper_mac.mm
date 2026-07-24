@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 
 #import <Accessibility/Accessibility.h>
+#include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 
@@ -121,8 +122,9 @@ id AXElementWrapper::AsId() const {
 }
 
 std::string AXElementWrapper::DOMId() const {
-  id domid_value = *GetAttributeValue(@"AXDOMIdentifier");
-  return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
+  id domid_value =
+      *GetAttributeValue(base::apple::CFToNSPtrCast(kAXDOMIdentifierAttribute));
+  return base::SysNSStringToUTF8(base::apple::ObjCCast<NSString>(domid_value));
 }
 
 NSArray* AXElementWrapper::Children() const {

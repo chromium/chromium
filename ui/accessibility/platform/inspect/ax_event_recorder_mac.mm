@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/inspect/ax_event_recorder_mac.h"
 
+#include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 
 #include <algorithm>
@@ -23,6 +24,8 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 #include "ui/gfx/native_ui_types.h"
+
+using base::apple::CFToNSPtrCast;
 
 namespace ui {
 
@@ -67,28 +70,28 @@ AXEventRecorderMac::AXEventRecorderMac(
 
   // Add the notifications we care about to the observer.
   static NSArray* notifications = @[
-    @"AXAutocorrectionOccurred",
-    @"AXElementBusyChanged",
-    @"AXExpandedChanged",
-    @"AXInvalidStatusChanged",
-    @"AXLiveRegionChanged",
-    @"AXLiveRegionCreated",
-    @"AXLoadComplete",
-    @"AXMenuItemSelected",
-    (NSString*)kAXMenuClosedNotification,
-    (NSString*)kAXMenuOpenedNotification,
     NSAccessibilityAnnouncementRequestedNotification,
     NSAccessibilityApplicationActivatedNotification,
     NSAccessibilityApplicationDeactivatedNotification,
     NSAccessibilityApplicationHiddenNotification,
     NSAccessibilityApplicationShownNotification,
+    NSAccessibilityAutocorrectionOccurredNotification,
     NSAccessibilityCreatedNotification,
     NSAccessibilityDrawerCreatedNotification,
+    CFToNSPtrCast(kAXElementBusyChangedNotification),
+    CFToNSPtrCast(kAXExpandedChangedNotification),
     NSAccessibilityFocusedUIElementChangedNotification,
     NSAccessibilityFocusedWindowChangedNotification,
     NSAccessibilityHelpTagCreatedNotification,
+    CFToNSPtrCast(kAXInvalidStatusChangedNotification),
     NSAccessibilityLayoutChangedNotification,
+    CFToNSPtrCast(kAXLiveRegionChangedNotification),
+    CFToNSPtrCast(kAXLiveRegionCreatedNotification),
+    CFToNSPtrCast(kAXLoadCompleteNotification),
     NSAccessibilityMainWindowChangedNotification,
+    CFToNSPtrCast(kAXMenuClosedNotification),
+    CFToNSPtrCast(kAXMenuItemSelectedNotification),
+    CFToNSPtrCast(kAXMenuOpenedNotification),
     NSAccessibilityMovedNotification,
     NSAccessibilityResizedNotification,
     NSAccessibilityRowCollapsedNotification,
@@ -194,7 +197,7 @@ std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
     return {};
   }
 
-  NSDictionary* ns_user_info = base::apple::CFToNSPtrCast(user_info);
+  NSDictionary* ns_user_info = CFToNSPtrCast(user_info);
   std::vector<std::string> serialized_info;
   for (NSString* key in ns_user_info) {
     NSNumber* value = base::apple::ObjCCast<NSNumber>(ns_user_info[key]);

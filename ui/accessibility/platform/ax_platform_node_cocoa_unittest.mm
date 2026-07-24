@@ -4,8 +4,10 @@
 
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 
+#include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/bridging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +22,11 @@
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
+#include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
+
+using AXRange = ui::AXPlatformNodeDelegate::AXRange;
+using base::apple::CFToNSPtrCast;
 
 namespace {
 
@@ -29,8 +35,6 @@ struct FeatureState {
 };
 
 }  // namespace
-
-using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 @interface AXPlatformNodeCocoa (Private)
 
@@ -355,10 +359,13 @@ class AXPlatformNodeCocoaTest
                             NSDictionary<NSAttributedStringKey, id>* attributes,
                             NSRange range, BOOL* stop) {
                           if (NSEqualRanges(range, bold_and_italic_range)) {
-                            if (attributes[@"AXFont"][@"AXFontBold"]) {
+                            if (attributes[NSAccessibilityFontTextAttribute]
+                                          [NSAccessibilityFontBoldAttribute]) {
                               bold_count++;
                             }
-                            if (attributes[@"AXFont"][@"AXFontItalic"]) {
+                            if (attributes
+                                    [NSAccessibilityFontTextAttribute]
+                                    [NSAccessibilityFontItalicAttribute]) {
                               italic_count++;
                             }
                           } else if (NSEqualRanges(range,
@@ -384,26 +391,29 @@ class AXPlatformNodeCocoaTest
                                     [NSAccessibilityStrikethroughTextAttribute]) {
                               strikethrough_count++;
                             }
-                            font_size = [(
-                                NSNumber*)attributes[@"AXFont"]
-                                                    [NSAccessibilityFontSizeKey]
+                            font_size = [(NSNumber*)
+                                    attributes[NSAccessibilityFontTextAttribute]
+                                              [NSAccessibilityFontSizeKey]
                                 floatValue];
                           } else if (NSEqualRanges(range, mispelled_range1) ||
                                      NSEqualRanges(range, mispelled_range2) ||
                                      NSEqualRanges(range, mispelled_range3) ||
                                      NSEqualRanges(range, mispelled_range4)) {
-                            if (attributes[@"AXMarkedMisspelled"]) {
+                            if (attributes
+                                    [NSAccessibilityMarkedMisspelledTextAttribute]) {
                               misspelled_attribute_count++;
                             }
                           } else if (NSEqualRanges(range,
                                                    custom_highlight_range)) {
-                            if (attributes[@"AXHighlight"]) {
+                            if (attributes[CFToNSPtrCast(
+                                    kAXHighlightStringAttribute)]) {
                               custom_highlight_attribute_count++;
                             }
                           } else {
                             // Ensure other parts don't have attributes.
                             if (attributes.count > 1 ||
-                                [attributes[@"AXFont"] count]) {
+                                [attributes[NSAccessibilityFontTextAttribute]
+                                    count]) {
                               unexpected_attributes++;
                             }
                           }
@@ -480,7 +490,7 @@ TEST_P(AXPlatformNodeCocoaTest, TestCocoaActionListLayout) {
 
 // Tests that the correct methods are enabled based on migration mode.
 TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
-  // New API that was implementated since the creation of the flag goes here.
+  // New API that was implemented since the creation of the flag goes here.
   NSArray<NSString*>* selectors_enabled_when_migrated = @[
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
@@ -495,9 +505,12 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   // Old API for which the new API was implemented prior to the creation of the
   // flag goes here.
   NSArray<NSString*>* selectors_disabled_when_migrated = @[
-    @"AXInsertionPointLineNumber", @"AXNumberOfCharacters",
-    @"AXPlaceholderValue", @"AXSelectedText", @"AXSelectedTextRange",
-    @"AXVisibleCharacterRange"
+    CFToNSPtrCast(kAXInsertionPointLineNumberAttribute),
+    CFToNSPtrCast(kAXNumberOfCharactersAttribute),
+    CFToNSPtrCast(kAXPlaceholderValueAttribute),
+    CFToNSPtrCast(kAXSelectedTextAttribute),
+    CFToNSPtrCast(kAXSelectedTextRangeAttribute),
+    CFToNSPtrCast(kAXVisibleCharacterRangeAttribute)
   ];
 
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
@@ -629,7 +642,8 @@ TEST_P(AXPlatformNodeCocoaTest,
                           NSRange range, BOOL*) {
                         if (NSEqualRanges(range,
                                           NSMakeRange(0, attributed.length)) &&
-                            attrs[@"AXMarkedMisspelled"]) {
+                            attrs
+                                [NSAccessibilityMarkedMisspelledTextAttribute]) {
                           misspelled_spans++;
                         }
                       }];
@@ -708,7 +722,8 @@ TEST_P(AXPlatformNodeCocoaTest,
                       usingBlock:^(
                           NSDictionary<NSAttributedStringKey, id>* attrs,
                           NSRange range, BOOL*) {
-                        if (attrs[@"AXMarkedMisspelled"]) {
+                        if (attrs
+                                [NSAccessibilityMarkedMisspelledTextAttribute]) {
                           if (NSEqualRanges(range, misspelled_ns)) {
                             misspelled_spans++;
                           } else {
@@ -1512,7 +1527,8 @@ TEST_P(AXPlatformNodeCocoaTest, SupportsNewAccessibilityAPIMethod) {
       TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
       initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
-  EXPECT_TRUE([[node accessibilityRole] isEqualToString:@"AXHeading"]);
+  EXPECT_TRUE(
+      [[node accessibilityRole] isEqualToString:CFToNSPtrCast(kAXHeadingRole)]);
   EXPECT_EQ([node internalRole], ax::mojom::Role::kHeading);
   EXPECT_TRUE(
       [node supportsNewAccessibilityAPIMethod:@"isAccessibilityFocused"]);
@@ -1690,13 +1706,13 @@ TEST_P(AXPlatformNodeCocoaTest, ExpandedChangedNotificationForGroup) {
   EXPECT_NSEQ(
       [AXPlatformNodeCocoa
           nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kGroup
-                                           isExpanded:YES],
-      @"AXExpandedChanged");
+                                            isExpanded:YES],
+      CFToNSPtrCast(kAXExpandedChangedNotification));
   EXPECT_NSEQ(
       [AXPlatformNodeCocoa
           nativeNotificationForExpandedChangedWithRole:ax::mojom::Role::kGroup
-                                           isExpanded:NO],
-      @"AXExpandedChanged");
+                                            isExpanded:NO],
+      CFToNSPtrCast(kAXExpandedChangedNotification));
 }
 
 TEST_P(AXPlatformNodeCocoaTest, AXValueOnSliderReturnsNSNumber) {
