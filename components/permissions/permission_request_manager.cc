@@ -176,14 +176,6 @@ bool RequestExistsExactlyOnce(
          });
 }
 
-tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
-  return tabs::TabInterface::MaybeGetFromContents(web_contents);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 }  // namespace
 
 // PermissionRequestManager ----------------------------------------------------
@@ -965,8 +957,20 @@ PermissionRequestManager::PermissionRequestManager(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
               web_contents->GetBrowserContext())) {
   // Only register TabInterface observers on desktop to support Split View.
-  AdoptTabInterfaceIfNeeded(GetTabInterface(web_contents));
-  if (!tab_insert_subscription_) {
+  tabs::TabInterface* tab_interface =
+#if BUILDFLAG(IS_ANDROID)
+      nullptr;
+#else
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (tab_interface) {
+    tab_is_active_ = tab_interface->IsActivated();
+    // Tab helpers are attached before a tab is attached to the tab strip.
+    // Register tab listeners once the tab is attached.
+    tab_insert_subscription_ = tab_interface->RegisterDidInsert(
+        base::BindRepeating(&PermissionRequestManager::OnTabAttached,
+                            weak_factory_.GetWeakPtr()));
+  } else {
     tab_is_active_ =
         web_contents->GetVisibility() != content::Visibility::HIDDEN;
   }
@@ -1917,20 +1921,6 @@ ContentSetting PermissionRequestManager::GetRequestInitialStatus(
   return CONTENT_SETTING_DEFAULT;
 }
 
-void PermissionRequestManager::AdoptTabInterfaceIfNeeded(
-    tabs::TabInterface* tab_interface) {
-  if (tab_insert_subscription_ || !tab_interface) {
-    return;
-  }
-  tab_is_active_ = tab_interface->IsActivated();
-  tab_insert_subscription_ = tab_interface->RegisterDidInsert(
-      base::BindRepeating(&PermissionRequestManager::OnTabAttached,
-                          weak_factory_.GetWeakPtr()));
-  if (tab_interface->GetBrowserWindowInterface()) {
-    RegisterTabSubscriptions(tab_interface);
-  }
-}
-
 void PermissionRequestManager::RegisterTabSubscriptions(
     tabs::TabInterface* tab_interface) {
   tab_subscriptions_.clear();
@@ -1944,10 +1934,6 @@ void PermissionRequestManager::RegisterTabSubscriptions(
 
   tab_subscriptions_.push_back(tab_interface->RegisterWillDetach(
       base::BindRepeating(&PermissionRequestManager::OnTabDetached,
-                          weak_factory_.GetWeakPtr())));
-
-  tab_subscriptions_.push_back(tab_interface->RegisterWillDiscardContents(
-      base::BindRepeating(&PermissionRequestManager::OnTabWillDiscardContents,
                           weak_factory_.GetWeakPtr())));
 }
 
@@ -1968,31 +1954,6 @@ void PermissionRequestManager::OnTabDetached(
   // strip. This might mean the TabInterface will become part of a PWA which
   // should fall back to the OnVisibilityChanged listeners.
   tab_subscriptions_.clear();
-}
-
-void PermissionRequestManager::OnTabWillDiscardContents(
-    tabs::TabInterface* tab_interface,
-    content::WebContents* old_contents,
-    content::WebContents* new_contents) {
-  // Runs on the manager of old_contents — the only object that exists
-  // before the swap and is subscribed to the tab. The replacement's manager
-  // already exists (TabStripModel::DiscardWebContentsAt() attaches tab
-  // helpers before the swap) but cannot discover the TabInterface itself:
-  // the TabLookupFromWebContents entry moves over only after this
-  // notification returns. Hand it over explicitly.
-  if (web_contents() != old_contents) {
-    return;
-  }
-  if (PermissionRequestManager* new_manager = FromWebContents(new_contents)) {
-    new_manager->AdoptTabInterfaceIfNeeded(tab_interface);
-  }
-
-  // This WebContents is leaving the tab: drop the tab wiring and fall back
-  // to visibility-only gating, like OnTabDetached(). Cancelling a
-  // subscription from inside its own notification is supported by
-  // base::CallbackList.
-  tab_subscriptions_.clear();
-  tab_insert_subscription_ = base::CallbackListSubscription();
 }
 
 void PermissionRequestManager::OnTabAttached(
