@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
@@ -50,6 +52,7 @@ class ActorLoginFlowVerifierTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   affiliations::FakeAffiliationService fake_affiliation_service_;
   std::unique_ptr<ActorLoginFlowVerifier> verifier_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ActorLoginFlowVerifierTest, NullContext_ReturnsFalse) {
@@ -59,6 +62,11 @@ TEST_F(ActorLoginFlowVerifierTest, NullContext_ReturnsFalse) {
                                     std::nullopt, future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kNoActorLoginContext, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, FrameNotInContext_ReturnsFalse) {
@@ -72,6 +80,11 @@ TEST_F(ActorLoginFlowVerifierTest, FrameNotInContext_ReturnsFalse) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kFrameNotInLoginContext, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, TooManyNavigations_ReturnsFalse) {
@@ -86,6 +99,11 @@ TEST_F(ActorLoginFlowVerifierTest, TooManyNavigations_ReturnsFalse) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kAllFramesHaveTooManyNavigations, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, SameOrigin_ReturnsTrue) {
@@ -100,6 +118,11 @@ TEST_F(ActorLoginFlowVerifierTest, SameOrigin_ReturnsTrue) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kExactMatchAllowed, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest,
@@ -115,6 +138,10 @@ TEST_F(ActorLoginFlowVerifierTest,
                                     std::move(context), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kNoMatch, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, AffiliatedOrigin_ReturnsTrue) {
@@ -135,6 +162,11 @@ TEST_F(ActorLoginFlowVerifierTest, AffiliatedOrigin_ReturnsTrue) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kAffiliatedMatchAllowed, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, PslMatch_WeakMatchingAllowed_ReturnsTrue) {
@@ -151,6 +183,11 @@ TEST_F(ActorLoginFlowVerifierTest, PslMatch_WeakMatchingAllowed_ReturnsTrue) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kPslMatchAllowed, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest,
@@ -168,6 +205,11 @@ TEST_F(ActorLoginFlowVerifierTest,
                                     std::move(context), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kPslMatchDisallowed, 1);
 }
 
 TEST_F(ActorLoginFlowVerifierTest, GroupedOrigin_ReturnsFalse) {
@@ -189,6 +231,11 @@ TEST_F(ActorLoginFlowVerifierTest, GroupedOrigin_ReturnsFalse) {
                                     std::move(context), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                      VerifyIsActorLoginFlowEvent::kStart, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpVerifyIsActorLoginFlowHistogram,
+      VerifyIsActorLoginFlowEvent::kGroupedOrOtherMismatch, 1);
 }
 
 }  // namespace actor

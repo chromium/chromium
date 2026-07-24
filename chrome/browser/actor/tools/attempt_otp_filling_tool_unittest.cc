@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/tools/actor_login_flow_verifier.h"
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"

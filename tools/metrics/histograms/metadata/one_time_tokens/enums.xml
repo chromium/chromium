@@ -72,7 +72,7 @@ found in the LICENSE file.
   <int value="16" label="FillingOtpError"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h:AttemptOtpFillingEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:AttemptOtpFillingEvent) -->
 
 <!-- LINT.IfChange(AttemptOtpFillingPredictedOtpType) -->
 
@@ -94,7 +94,24 @@ found in the LICENSE file.
   <int value="3" label="PermissionGranted"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h:GmailOtpOptInCardInteraction) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:GmailOtpOptInCardInteraction) -->
+
+<!-- LINT.IfChange(VerifyIsActorLoginFlowEvent) -->
+
+<enum name="VerifyIsActorLoginFlowEvent">
+  <int value="0" label="Start"/>
+  <int value="1" label="NoActorLoginContext"/>
+  <int value="2" label="FrameNotInLoginContext"/>
+  <int value="3" label="AllFramesHaveTooManyNavigations"/>
+  <int value="4" label="NoMatch"/>
+  <int value="5" label="PslMatchAllowed"/>
+  <int value="6" label="PslMatchDisallowed"/>
+  <int value="7" label="GroupedOrOtherMismatch"/>
+  <int value="8" label="ExactMatchAllowed"/>
+  <int value="9" label="AffiliatedMatchAllowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_otp_filling_metrics.h:VerifyIsActorLoginFlowEvent) -->
 
 </enums>
 

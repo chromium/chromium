@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/tools/attempt_otp_filling_tool_metrics.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -18,6 +18,11 @@ void RecordGmailOtpOptInCardInteraction(
     GmailOtpOptInCardInteraction interaction) {
   base::UmaHistogramEnumeration(kGmailOtpOptInCardInteractionHistogram,
                                 interaction);
+}
+
+void RecordActorLoginFlowVerification(VerifyIsActorLoginFlowEvent event) {
+  base::UmaHistogramEnumeration(kActorOtpVerifyIsActorLoginFlowHistogram,
+                                event);
 }
 
 void RecordPredictedOtpTypeMetrics(

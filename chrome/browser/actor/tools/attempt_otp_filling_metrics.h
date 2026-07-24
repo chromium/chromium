@@ -2,13 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_
-#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
+
+#include <string_view>
 
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace actor {
+
+// LINT.IfChange(VerifyIsActorLoginFlowEvent)
+
+// Events recorded during ActorLoginFlowVerifier::VerifyIsActorLoginFlow.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VerifyIsActorLoginFlowEvent {
+  kStart = 0,
+  kNoActorLoginContext = 1,
+  kFrameNotInLoginContext = 2,
+  kAllFramesHaveTooManyNavigations = 3,
+  kNoMatch = 4,
+  kPslMatchAllowed = 5,
+  kPslMatchDisallowed = 6,
+  kGroupedOrOtherMismatch = 7,
+  kExactMatchAllowed = 8,
+  kAffiliatedMatchAllowed = 9,
+  kMaxValue = kAffiliatedMatchAllowed
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:VerifyIsActorLoginFlowEvent)
 
 // LINT.IfChange(AttemptOtpFillingEvent)
 
@@ -59,6 +81,10 @@ inline constexpr char kAttemptOtpFillingToolHistogram[] =
 inline constexpr char kGmailOtpOptInCardInteractionHistogram[] =
     "OneTimeTokens.Actor.AttemptOtpFilling.GmailOtpOptInCardInteraction";
 
+// Histogram name for VerifyIsActorLoginFlow events.
+inline constexpr std::string_view kActorOtpVerifyIsActorLoginFlowHistogram =
+    "OneTimeTokens.Actor.AttemptOtpFilling.VerifyIsActorLoginFlow";
+
 // Records events during the AttemptOtpFilling tool invocation events.
 void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
 
@@ -66,9 +92,12 @@ void RecordAttemptOtpFillingEvent(AttemptOtpFillingToolEvent event);
 void RecordGmailOtpOptInCardInteraction(
     GmailOtpOptInCardInteraction interaction);
 
+// Records events during VerifyIsActorLoginFlow.
+void RecordActorLoginFlowVerification(VerifyIsActorLoginFlowEvent event);
+
 void RecordPredictedOtpTypeMetrics(
     AttemptOtpFillingToolRequest::OtpType predicted_otp_type,
     ukm::SourceId ukm_source_id);
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_TOOL_METRICS_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_OTP_FILLING_METRICS_H_
