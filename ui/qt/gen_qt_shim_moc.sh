@@ -33,6 +33,11 @@ cat > ../qt5_shim_moc.cc <<EOF
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Always allowed. This is a generated file from outside of Chrome.
+#ifdef UNSAFE_BUFFERS_BUILD
+#pragma allow_unsafe_buffers
+#endif
+
 EOF
 cd "$SCRIPT_DIR/../.."
 cp ui/qt/qt5_shim_moc.cc ui/qt/qt6_shim_moc.cc
