@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -188,24 +192,44 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 suggestion.getType() == OmniboxSuggestionType.DOCUMENT_SUGGESTION;
         SuggestionSpannable textLine2 = null;
         boolean urlHighlighted = false;
+        @ColorInt int textLine2Color = 0;
 
         if (!isSearchSuggestion && !isDocumentSuggestion) {
             if (!suggestion.getUrl().isEmpty()
                     && suggestion.getType() != OmniboxSuggestionType.STARTER_PACK
                     && UrlBarData.shouldShowUrl(suggestion.getUrl(), false)) {
-                SuggestionSpannable str = new SuggestionSpannable(suggestion.getDisplayText());
+                textLine2 = new SuggestionSpannable(suggestion.getDisplayText());
+                textLine2Color = mUiContext.resourceProvider.getSuggestionUrlTextColor();
                 urlHighlighted =
                         applyHighlightToMatchRegions(
-                                str, suggestion.getDisplayTextClassifications());
-                textLine2 = str;
+                                textLine2, suggestion.getDisplayTextClassifications());
             }
         } else {
             textLine2 = getSuggestionDescription(suggestion);
+            textLine2Color = mUiContext.resourceProvider.getSuggestionSecondaryTextColor();
         }
 
-        final SuggestionSpannable textLine1 =
+        SuggestionSpannable textLine1 =
                 getSuggestedQuery(
                         suggestion, !isSearchSuggestion && !isDocumentSuggestion, !urlHighlighted);
+
+        applyTextColor(textLine1, mUiContext.resourceProvider.getSuggestionPrimaryTextColor());
+        applyTextColor(textLine2, textLine2Color);
+
+        if (OmniboxCapabilities.isDesktopPlatform() && !TextUtils.isEmpty(textLine2)) {
+            // Separate text and url with an emdash on Desktop. Desktop shows URLs as a single line.
+            var separator =
+                    mUiContext.resourceProvider.getString(
+                            R.string.autocomplete_match_description_separator);
+
+            textLine1 =
+                    new SuggestionSpannable(
+                            new SpannableStringBuilder()
+                                    .append(textLine1)
+                                    .append(separator)
+                                    .append(textLine2));
+            textLine2 = null;
+        }
 
         if (OmniboxCapabilities.isDesktopPlatform()) {
             model.set(
@@ -257,6 +281,16 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         setRemoveOrRefineAction(model, input, suggestion, position);
+    }
+
+    private void applyTextColor(@Nullable Spannable text, @ColorInt int color) {
+        if (TextUtils.isEmpty(text)) return;
+
+        text.setSpan(
+                new ForegroundColorSpan(color),
+                /* start= */ 0,
+                /* end= */ text.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private int getSuggestionKindString(AutocompleteMatch suggestion) {

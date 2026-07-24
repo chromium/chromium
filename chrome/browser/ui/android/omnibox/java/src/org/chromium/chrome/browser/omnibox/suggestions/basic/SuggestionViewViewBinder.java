@@ -8,13 +8,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,10 +39,7 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
             int minHeight = mResourceProvider.getSuggestionMinHeight(tv.getLineCount());
             view.setMinimumHeight(minHeight);
-        } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
-            updateSuggestionTextColor(view, model);
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {
-            updateSuggestionTextColor(view, model);
             // https://crbug.com/40084252: ensure URLs are always composed LTR and that their
             // components are not re-ordered.
             final boolean isSearch = model.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION);
@@ -71,20 +65,5 @@ public class SuggestionViewViewBinder extends BaseSuggestionViewBinder<View> {
         } else if (propertyKey == SuggestionViewProperties.CONTENT_DESCRIPTION) {
             view.setContentDescription(model.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
         }
-    }
-
-    private void updateSuggestionTextColor(View view, PropertyModel model) {
-        final boolean isSearch = model.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION);
-        final TextView line1 = view.findViewById(R.id.line_1);
-        final TextView line2 = view.findViewById(R.id.line_2);
-
-        final @ColorInt int color1 = mResourceProvider.getSuggestionPrimaryTextColor();
-        line1.setTextColor(color1);
-
-        final @ColorInt int color2 =
-                isSearch
-                        ? mResourceProvider.getSuggestionSecondaryTextColor()
-                        : mResourceProvider.getSuggestionUrlTextColor();
-        line2.setTextColor(color2);
     }
 }

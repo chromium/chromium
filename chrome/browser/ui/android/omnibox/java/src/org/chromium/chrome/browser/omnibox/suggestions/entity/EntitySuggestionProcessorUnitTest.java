@@ -16,12 +16,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
+import android.view.ContextThemeWrapper;
 
 import androidx.test.filters.SmallTest;
 
@@ -42,6 +44,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -87,6 +90,7 @@ public class EntitySuggestionProcessorUnitTest {
     private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Mock OmniboxActionDelegate mActionDelegate;
 
+    private Context mContext;
     private EntitySuggestionProcessor mProcessor;
 
     /**
@@ -132,9 +136,12 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
-                        ContextUtils.getApplicationContext(),
+                        mContext,
                         mSuggestionHost,
                         mTextProvider,
                         mImageSupplier,
@@ -241,7 +248,7 @@ public class EntitySuggestionProcessorUnitTest {
     public void fetchImage_withoutSupplier() {
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
-                        ContextUtils.getApplicationContext(),
+                        mContext,
                         mSuggestionHost,
                         mTextProvider,
                         /* imageSupplier= */ null,

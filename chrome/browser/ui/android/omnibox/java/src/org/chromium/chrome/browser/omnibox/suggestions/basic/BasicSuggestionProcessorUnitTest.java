@@ -19,6 +19,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.ContextThemeWrapper;
 
 import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
@@ -151,9 +152,12 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
+        var context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
-                        ContextUtils.getApplicationContext(),
+                        context,
                         mSuggestionHost,
                         null,
                         mImageSupplier,

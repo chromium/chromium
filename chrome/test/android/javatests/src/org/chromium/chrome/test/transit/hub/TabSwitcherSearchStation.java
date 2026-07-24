@@ -25,6 +25,7 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -42,6 +43,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.InputMethodManagerIsActive
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,11 +142,16 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                 matchers.add(withParentIndex(index));
             }
             if (title != null) {
+                var titleMatcher =
+                        OmniboxCapabilities.isDesktopPlatform()
+                                ? Matchers.startsWith(title)
+                                : Matchers.equalTo(title);
+
                 matchers.add(
                         hasDescendant(
                                 allOf(
                                         withId(R.id.line_1),
-                                        withText(title),
+                                        withText(titleMatcher),
                                         withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))));
             }
             if (text != null) {

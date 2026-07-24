@@ -1999,7 +1999,7 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- Keywords -->
-      <message name="IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR" desc="The separator between a result in the autocomplete popup and its description.">
+      <message name="IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR" desc="The separator between a result in the autocomplete popup and its description." formatter_data="android_java">
         ''' - '''
       </message>
       <if expr="not use_titlecase">
