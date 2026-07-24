@@ -31,7 +31,8 @@ class ListFamilyMembersServiceFactoryTest : public PlatformTest {
 // ListFamilyMembersService by default in unit tests.
 TEST_F(ListFamilyMembersServiceFactoryTest, NoServiceByDefaultInTests) {
   supervised_user::ListFamilyMembersService* service =
-      ListFamilyMembersServiceFactory::GetForProfile(GetRegularProfile());
+      supervised_user::ListFamilyMembersServiceFactory::GetForProfile(
+          GetRegularProfile());
   EXPECT_FALSE(service);
 }
 
@@ -42,6 +43,7 @@ TEST_F(ListFamilyMembersServiceFactoryTest,
   ProfileIOS* otr_profile = GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile);
   supervised_user::ListFamilyMembersService* service =
-      ListFamilyMembersServiceFactory::GetForProfile(otr_profile);
+      supervised_user::ListFamilyMembersServiceFactory::GetForProfile(
+          otr_profile);
   EXPECT_FALSE(service);
 }

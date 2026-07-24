@@ -180,8 +180,9 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (BOOL)isListFamilyMembersServiceCreated {
-  return ListFamilyMembersServiceFactory::GetForProfileIfExists(
-             chrome_test_util::GetOriginalProfile()) != nullptr;
+  return supervised_user::ListFamilyMembersServiceFactory::
+             GetForProfileIfExists(chrome_test_util::GetOriginalProfile()) !=
+         nullptr;
 }
 
 @end

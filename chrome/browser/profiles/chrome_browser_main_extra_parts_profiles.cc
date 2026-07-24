@@ -1147,7 +1147,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
 #endif
-  ListFamilyMembersServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
     ash::LocalAuthFactorsPolicyControllerFactory::GetInstance();
@@ -1545,6 +1544,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   SubresourceFilterProfileContextFactory::GetInstance();
   subscription_eligibility::SubscriptionEligibilityServiceFactory::
       GetInstance();
+  supervised_user::ListFamilyMembersServiceFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
   supervised_user::SupervisedUserServiceFactory::GetInstance();
   supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance();

@@ -15,11 +15,10 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "content/public/browser/browser_context.h"
 
+namespace supervised_user {
+
 class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static supervised_user::ListFamilyMembersService* GetForProfile(
-      Profile* profile);
-
   static ListFamilyMembersServiceFactory* GetInstance();
 
   ListFamilyMembersServiceFactory(const ListFamilyMembersServiceFactory&) =
@@ -40,5 +39,7 @@ class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
+
+}  // namespace supervised_user
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_LIST_FAMILY_MEMBERS_SERVICE_FACTORY_H_

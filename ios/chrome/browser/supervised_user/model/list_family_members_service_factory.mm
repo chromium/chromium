@@ -10,20 +10,19 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
+namespace supervised_user {
 // static
-supervised_user::ListFamilyMembersService*
-ListFamilyMembersServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<supervised_user::ListFamilyMembersService>(
-          profile, /*create=*/true);
+ListFamilyMembersService* ListFamilyMembersServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<ListFamilyMembersService>(
+      profile, /*create=*/true);
 }
 
 // static
-supervised_user::ListFamilyMembersService*
+ListFamilyMembersService*
 ListFamilyMembersServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<supervised_user::ListFamilyMembersService>(
-          profile, /*create=*/false);
+  return GetInstance()->GetServiceForProfileAs<ListFamilyMembersService>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -53,7 +52,9 @@ ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     // Match lifecycle of the identity manager. No identity means no family.
     return nullptr;
   }
-  return std::make_unique<supervised_user::ListFamilyMembersService>(
+  return std::make_unique<ListFamilyMembersService>(
       CHECK_DEREF(identity_manager), profile->GetSharedURLLoaderFactory(),
       CHECK_DEREF(profile->GetPrefs()));
 }
+
+}  // namespace supervised_user

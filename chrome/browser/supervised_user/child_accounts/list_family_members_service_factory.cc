@@ -15,12 +15,7 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "content/public/browser/browser_context.h"
 
-// static
-supervised_user::ListFamilyMembersService*
-ListFamilyMembersServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<supervised_user::ListFamilyMembersService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
+namespace supervised_user {
 
 // static
 ListFamilyMembersServiceFactory*
@@ -30,9 +25,8 @@ ListFamilyMembersServiceFactory::GetInstance() {
 }
 
 ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "ListFamilyMembersService",
-          supervised_user::BuildProfileSelectionsForRegularAndGuest()) {
+    : ProfileKeyedServiceFactory("ListFamilyMembersService",
+                                 BuildProfileSelectionsForRegularAndGuest()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -48,7 +42,7 @@ ListFamilyMembersServiceFactory::BuildServiceInstanceForBrowserContext(
     // Match lifecycle of the identity manager. No identity means no family.
     return nullptr;
   }
-  return std::make_unique<supervised_user::ListFamilyMembersService>(
+  return std::make_unique<ListFamilyMembersService>(
       CHECK_DEREF(identity_manager), profile->GetURLLoaderFactory(),
       CHECK_DEREF(profile->GetPrefs()));
 }
@@ -65,3 +59,5 @@ bool ListFamilyMembersServiceFactory::ServiceIsCreatedWithBrowserContext()
 bool ListFamilyMembersServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
+
+}  // namespace supervised_user
