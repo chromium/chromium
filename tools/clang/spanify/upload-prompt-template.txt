@@ -30,6 +30,21 @@ Constraints & Pragmatism:
   'gn' and 'autoninja'. Use 'gn outputs' to locate specific object files for
   fast compilation (e.g., obj/path/to/file.o) and run 'autoninja' to
   iteratively catch and fix exact compiler errors/warnings until clean.
+* CRITICAL: Allowed Commands Only. You are in a headless environment with
+  strict command permissions. You MUST ONLY run the following allowed commands
+  (with their arguments):
+  - `git status`, `git branch`, `git diff`
+  - `autoninja`
+  - `gn`
+  - `pwd`
+  - `ls`
+  - `tools/autotest.py`
+  - `cat`
+  - `grep`
+  - `rg`
+  - `diff`
+  Do NOT run any other commands or unlisted git operations (e.g. do NOT run
+  `git checkout`, `git add`, `git commit`, `ninja`, `python`, `sh`, etc.).
 * AVOID: spanifying argc argv arguments in main function.
 * **Engineering Judgment:** Use your expert judgment. If a specific tip or
   guideline below conflicts with achieving a robust, cleanly compiling, and
@@ -88,6 +103,9 @@ process:
 * Correct Initialization: Ensure all fixed containers (like 'std::array') are
   properly zero-initialized in constructors or struct declarations using
   aggregate initialization (e.g., 'my_array{}').
+
+When finishing the task respond only with a summary of the changes
+(no more than 300 characters).
 
 Start the task now and edit the code directly to implement these
 improvements.

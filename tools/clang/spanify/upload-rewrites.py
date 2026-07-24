@@ -264,34 +264,46 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
 
         # 2. Replicate the expected internal layout:
         # <gemini_dir>/<app_data_dir>/cli/
-        # --gemini_dir defaults to '.gemini' and
-        # --app_data_dir defaults to 'jetski'
         settings_dir = os.path.join(temp_gemini_dir, "jetski", "cli")
         os.makedirs(settings_dir, exist_ok=True)
         settings_file_path = os.path.join(settings_dir, "settings.json")
 
         # 3. Define the localized fine-grained permissions
-        settings_data = {
-            "permissions": {
-                "allow": [
-                    "command(git status)",
-                    "command(git branch)",
-                    "command(git diff)",
-                    "command(autoninja)",
-                    "command(gn)",
-                    "command(pwd)",
-                    "command(ls)",
-                    "command(tools/autotest.py)",
-                    "command(echo)",
-                    "command(cat)",
-                    "command(grep)",
-                    "command(diff)",
-                    "command(clang-format)",
-                    f"read_file({abs_working_dir})",
-                    f"write_file({abs_working_dir})",
-                ]
-            }
-        }
+        repo_root = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
+        prompt_path_abs = os.path.abspath(prompt_file_path)
+        prompt_dir_abs = os.path.abspath(PROMPT_DIR)
+        scratch_dir_abs = os.path.abspath(scratch_dir())
+        temp_dir_abs = os.path.abspath(tempfile.gettempdir())
+
+        allowed_paths = sorted(
+            list({
+                abs_working_dir,
+                repo_root,
+                prompt_path_abs,
+                prompt_dir_abs,
+                scratch_dir_abs,
+                temp_dir_abs,
+            }))
+
+        allow_rules = [
+            "command(git status)",
+            "command(git branch)",
+            "command(git diff)",
+            "command(autoninja)",
+            "command(gn)",
+            "command(pwd)",
+            "command(ls)",
+            "command(tools/autotest.py)",
+            "command(cat)",
+            "command(grep)",
+            "command(rg)",
+            "command(diff)",
+        ]
+        for p in allowed_paths:
+            allow_rules.append(f"read_file({p})")
+            allow_rules.append(f"write_file({p})")
+
+        settings_data = {"permissions": {"allow": allow_rules}}
 
         try:
             # 4. Write the settings file directly into our sandboxed directory
@@ -299,16 +311,16 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
                 json.dump(settings_data, f, indent=2)
         except Exception as e:
             print(f"ERROR: Failed to write settings.json: {e}")
-        # 5. Execute the binary using the native --gemini_dir flag override
         jetski_cmd = [
-            jetski_path,
-            "--gemini_dir",
-            os.path.abspath(temp_gemini_dir),
-            "--model",
-            model,
-            "-p",
-            f"@{prompt_file_path}",
+            jetski_path, "--gemini_dir",
+            os.path.abspath(temp_gemini_dir), "--app_data_dir", "jetski"
         ]
+
+        # Use default model if not specified
+        if model != "":
+            jetski_cmd += ["--model", model]
+
+        jetski_cmd += ["-p", f"@{prompt_file_path}"]
 
         llm_output = ""
         try:
@@ -550,8 +562,9 @@ def get_arguments():
         "--model",
         "-m",
         type=str,
-        default="gemini-3-flash-preview",
-        help="Model to use for jetski-cli (default: gemini-3-flash-preview)")
+        default="",
+        help="Model to use for jetski-cli, uses default model if not specified"
+    )
     parser.add_argument(
         "--upload",
         "-u",
