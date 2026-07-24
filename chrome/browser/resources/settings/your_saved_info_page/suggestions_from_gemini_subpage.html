@@ -20,7 +20,8 @@
         external>
     </cr-link-row>
   </div>
-  <div class="card" hidden$="[[!isAtMemoryTriggerCustomizationAllowed_]]">
+  <div class="card" hidden$="[[!showCustomShortcut_(
+          prefs.generated.find_and_fill_with_gemini.value,isAtMemoryTriggerCustomizationAllowed_)]]">
     <div class="cr-row keyboard-shortcut-setting"
         id="atMemoryTriggerSetting">
       <div class="flex cr-padded-text">
@@ -42,8 +43,8 @@
       </cr-shortcut-input>
     </div>
   </div>
-  <div id="qualityLoggingCard" class="card"
-      hidden$="[[!showQualityLogging_(prefs.generated.find_and_fill_with_gemini.value, isAtMemoryEnabled_)]]">
+  <div id="qualityLoggingCard" class="card" hidden$="[[!showQualityLogging_(
+          prefs.generated.find_and_fill_with_gemini.value, isAtMemoryEnabled_)]]">
     <div class="cr-row first">
       <div class="flex cr-padded-text">
         <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
@@ -90,8 +91,8 @@
               $i18n{suggestionsFromGeminiConsider2}
             </div>
           </li>
-          <li id="considerNoLoggingEnterprise"
-              hidden$="[[!showConsiderNoLoggingEnterprise_(prefs.autofill.personal_context.find_and_fill_with_gemini_settings.value)]]">
+          <li id="considerNoLoggingEnterprise" hidden$="[[!showConsiderNoLoggingEnterprise_(
+                          prefs.autofill.personal_context.find_and_fill_with_gemini_settings.value)]]">
             <cr-icon icon="cr20:domain" aria-hidden="true"></cr-icon>
             <div class="cr-secondary-text">
               $i18n{suggestionsFromGeminiConsider3}

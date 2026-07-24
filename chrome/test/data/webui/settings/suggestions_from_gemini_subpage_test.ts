@@ -217,6 +217,20 @@ suite('SuggestionsFromGeminiSubpage', function() {
     assertFalse(isVisible(inputElement));
   });
 
+  test('AtMemoryTriggerSettingIsHiddenWhenToggleIsOff', async function() {
+    const subpage = await setupPage();
+    const inputElement =
+        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+            '#atMemoryTriggerSetting cr-shortcut-input');
+    assertTrue(!!inputElement);
+    assertTrue(isVisible(inputElement));
+
+    subpage.set('prefs.generated.find_and_fill_with_gemini.value', false);
+    await flushTasks();
+
+    assertFalse(isVisible(inputElement));
+  });
+
   test('AtMemoryTriggerSettingShowsCurrentShortcut', async function() {
     const subpage = await setupPage();
     const inputElement =

@@ -86,6 +86,12 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
     return toggleOn && atMemoryEnabled;
   }
 
+  private showCustomShortcut_(
+      toggleOn: boolean,
+      isAtMemoryTriggerCustomizationAllowed: boolean): boolean {
+    return toggleOn && isAtMemoryTriggerCustomizationAllowed;
+  }
+
   private showConsiderNoLoggingEnterprise_(enterprisePolicyValue: number):
       boolean {
     return enterprisePolicyValue ===
