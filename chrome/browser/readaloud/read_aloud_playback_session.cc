@@ -92,60 +92,16 @@ void ReadAloudPlaybackSession::OnSeekTo(int player_id,
   service_->Seek(seek_time);
 }
 
-void ReadAloudPlaybackSession::OnRequestVisibility(
-    int player_id,
-    RequestVisibilityCallback callback) {
-  std::move(callback).Run(false);
-}
-
 content::RenderFrameHost* ReadAloudPlaybackSession::render_frame_host() const {
   return web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
-}
-
-std::optional<media_session::MediaPosition>
-ReadAloudPlaybackSession::GetPosition(int player_id) const {
-  // TODO(b/524283800): Support media position.
-  return std::nullopt;
-}
-
-bool ReadAloudPlaybackSession::IsPictureInPictureAvailable(
-    int player_id) const {
-  return false;
-}
-
-bool ReadAloudPlaybackSession::IsVideoFrameAvailable(int player_id) const {
-  return false;
-}
-
-bool ReadAloudPlaybackSession::HasSufficientlyVisibleVideo(
-    int player_id) const {
-  return false;
 }
 
 bool ReadAloudPlaybackSession::HasAudio(int player_id) const {
   return true;
 }
 
-bool ReadAloudPlaybackSession::HasVideo(int player_id) const {
-  return false;
-}
-
 bool ReadAloudPlaybackSession::IsPaused(int player_id) const {
   return is_paused_;
-}
-
-std::string ReadAloudPlaybackSession::GetAudioOutputSinkId(
-    int player_id) const {
-  return "";
-}
-
-bool ReadAloudPlaybackSession::SupportsAudioOutputDeviceSwitching(
-    int player_id) const {
-  return false;
-}
-
-media::MediaContentType ReadAloudPlaybackSession::GetMediaContentType() const {
-  return media::MediaContentType::kPersistent;
 }
 
 }  // namespace readaloud

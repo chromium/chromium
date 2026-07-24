@@ -51,57 +51,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   ~MockMediaSessionPlayerObserver() override = default;
 
-  void OnSuspend(int player_id, bool triggered_by_user) override {}
-  void OnResume(int player_id, bool triggered_by_user) override {}
-  void OnSeekForward(int player_id, base::TimeDelta seek_time) override {}
-  void OnSeekBackward(int player_id, base::TimeDelta seek_time) override {}
-  void OnSeekTo(int player_id, base::TimeDelta seek_time) override {}
-  void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
-  }
-  void OnEnterPictureInPicture(
-      int player_id,
-      const std::optional<gfx::Size>& min_size) override {}
-  void OnSetAudioSinkId(int player_id,
-                        const std::string& raw_device_id) override {}
-  void OnSetMute(int player_id, bool mute) override {}
-  void OnRequestMediaRemoting(int player_id) override {}
-  void OnRequestVisibility(
-      int player_id,
-      RequestVisibilityCallback request_visibility_callback) override {}
-  void OnAutoPictureInPictureInfoChanged(
-      int player_id,
-      const media::PictureInPictureEventsInfo::AutoPipInfo&
-          auto_picture_in_picture_info) override {}
-  void OnSaveVideoFrame(int player_id) override {}
-
-  std::optional<media_session::MediaPosition> GetPosition(
-      int player_id) const override {
-    return std::nullopt;
-  }
-
-  bool IsPictureInPictureAvailable(int player_id) const override {
-    return false;
-  }
-
-  bool HasSufficientlyVisibleVideo(int player_id) const override {
-    return false;
-  }
-
-  bool IsVideoFrameAvailable(int player_id) const override { return false; }
-
   bool HasAudio(int player_id) const override { return true; }
-  bool HasVideo(int player_id) const override { return false; }
-  bool IsPaused(int player_id) const override { return false; }
-
-  std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
-
-  bool SupportsAudioOutputDeviceSwitching(int player_id) const override {
-    return false;
-  }
-
-  media::MediaContentType GetMediaContentType() const override {
-    return media::MediaContentType::kPersistent;
-  }
 
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;

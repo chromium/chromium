@@ -32,45 +32,44 @@ class CONTENT_EXPORT MediaSessionPlayerObserver {
   virtual ~MediaSessionPlayerObserver() = default;
 
   // The given |player_id| has been suspended by the MediaSession.
-  virtual void OnSuspend(int player_id, bool triggered_by_user) = 0;
+  virtual void OnSuspend(int player_id, bool triggered_by_user) {}
 
   // The given |player_id| has been resumed by the MediaSession.
-  virtual void OnResume(int player_id, bool triggered_by_user) = 0;
+  virtual void OnResume(int player_id, bool triggered_by_user) {}
 
   // The given |player_id| has been seeked forward by the MediaSession.
-  virtual void OnSeekForward(int player_id, base::TimeDelta seek_time) = 0;
+  virtual void OnSeekForward(int player_id, base::TimeDelta seek_time) {}
 
   // The given |player_id| has been seeked backward by the MediaSession.
-  virtual void OnSeekBackward(int player_id, base::TimeDelta seek_time) = 0;
+  virtual void OnSeekBackward(int player_id, base::TimeDelta seek_time) {}
 
   // The given |player_id| has been seeked to by the MediaSession.
-  virtual void OnSeekTo(int player_id, base::TimeDelta seek_time) = 0;
+  virtual void OnSeekTo(int player_id, base::TimeDelta seek_time) {}
 
   // The given |player_id| has been set a new volume multiplier by
   // the MediaSession.
-  virtual void OnSetVolumeMultiplier(int player_id,
-                                     double volume_multiplier) = 0;
+  virtual void OnSetVolumeMultiplier(int player_id, double volume_multiplier) {}
 
   // The given `player_id` has been requested picture-in-picture, optionally
   // enforcing a minimum layout size constraint in the viewport (in CSS pixels,
   // accounting for transforms and zoom).
   virtual void OnEnterPictureInPicture(
       int player_id,
-      const std::optional<gfx::Size>& min_size) = 0;
+      const std::optional<gfx::Size>& min_size) {}
 
   // The given |player_id| has been requested to save the current video frame.
-  virtual void OnSaveVideoFrame(int player_id) = 0;
+  virtual void OnSaveVideoFrame(int player_id) {}
 
   // The given |player_id| has been requested to route audio output to the
   // specified audio device.
   virtual void OnSetAudioSinkId(int player_id,
-                                const std::string& raw_device_id) = 0;
+                                const std::string& raw_device_id) {}
 
   // The given |player_id| has been requested to mute or unmute.
-  virtual void OnSetMute(int player_id, bool mute) = 0;
+  virtual void OnSetMute(int player_id, bool mute) {}
 
   // The given |player_id| has been requested to start Media Remoting.
-  virtual void OnRequestMediaRemoting(int player_id) = 0;
+  virtual void OnRequestMediaRemoting(int player_id) {}
 
   // `RequestVisibilityCallback` is used to enable computing video visibility
   // on-demand. The callback is passed to the MediaVideoVisibilityTracker, where
@@ -84,48 +83,48 @@ class CONTENT_EXPORT MediaSessionPlayerObserver {
   // The given |player_id| has been requested to report its video visibility.
   virtual void OnRequestVisibility(
       int player_id,
-      RequestVisibilityCallback request_visibility_callback) = 0;
+      RequestVisibilityCallback request_visibility_callback);
 
   // Returns the position for |player_id|.
   virtual std::optional<media_session::MediaPosition> GetPosition(
-      int player_id) const = 0;
+      int player_id) const;
 
   // Returns if picture-in-picture is available for |player_id|.
-  virtual bool IsPictureInPictureAvailable(int player_id) const = 0;
+  virtual bool IsPictureInPictureAvailable(int player_id) const;
 
   // Returns if a video frame is available for |player_id|.
-  virtual bool IsVideoFrameAvailable(int player_id) const = 0;
+  virtual bool IsVideoFrameAvailable(int player_id) const;
 
   // Returns if player's |player_id| video is sufficiently visible.
-  virtual bool HasSufficientlyVisibleVideo(int player_id) const = 0;
+  virtual bool HasSufficientlyVisibleVideo(int player_id) const;
 
   // Returns true if the |player_id| has audio tracks.
-  virtual bool HasAudio(int player_id) const = 0;
+  virtual bool HasAudio(int player_id) const;
 
   // Returns true if the |player_id| has video tracks.
-  virtual bool HasVideo(int player_id) const = 0;
+  virtual bool HasVideo(int player_id) const;
 
   // Returns true if `player_id` is paused.
-  virtual bool IsPaused(int player_id) const = 0;
+  virtual bool IsPaused(int player_id) const;
 
   // Returns the id of the audio output device used by |player_id|. Returns the
   // empty string if unavailable.
-  virtual std::string GetAudioOutputSinkId(int player_id) const = 0;
+  virtual std::string GetAudioOutputSinkId(int player_id) const;
 
   // Returns true if the |player_id| supports audio output device switching.
-  virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const = 0;
+  virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const;
 
-  virtual media::MediaContentType GetMediaContentType() const = 0;
+  virtual media::MediaContentType GetMediaContentType() const;
 
   // Called when the auto picture in picture information has changed.
   virtual void OnAutoPictureInPictureInfoChanged(
       int player_id,
       const media::PictureInPictureEventsInfo::AutoPipInfo&
-          auto_picture_in_picture_info) = 0;
+          auto_picture_in_picture_info) {}
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.
-  virtual RenderFrameHost* render_frame_host() const = 0;
+  virtual RenderFrameHost* render_frame_host() const;
 };
 
 }  // namespace content

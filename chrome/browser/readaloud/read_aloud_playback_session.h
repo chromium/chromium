@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_READALOUD_READ_ALOUD_PLAYBACK_SESSION_H_
 #define CHROME_BROWSER_READALOUD_READ_ALOUD_PLAYBACK_SESSION_H_
 
-#include <optional>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -48,35 +45,10 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   void OnSeekForward(int player_id, base::TimeDelta seek_time) override;
   void OnSeekBackward(int player_id, base::TimeDelta seek_time) override;
   void OnSeekTo(int player_id, base::TimeDelta seek_time) override;
-  void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
-  }
-  void OnEnterPictureInPicture(
-      int player_id,
-      const std::optional<gfx::Size>& min_size) override {}
-  void OnSetAudioSinkId(int player_id,
-                        const std::string& raw_device_id) override {}
-  void OnSetMute(int player_id, bool mute) override {}
-  void OnRequestMediaRemoting(int player_id) override {}
-  void OnSaveVideoFrame(int player_id) override {}
-  void OnRequestVisibility(int player_id,
-                           RequestVisibilityCallback callback) override;
 
   content::RenderFrameHost* render_frame_host() const override;
-  std::optional<media_session::MediaPosition> GetPosition(
-      int player_id) const override;
-
-  bool IsPictureInPictureAvailable(int player_id) const override;
-  bool IsVideoFrameAvailable(int player_id) const override;
-  bool HasSufficientlyVisibleVideo(int player_id) const override;
   bool HasAudio(int player_id) const override;
-  bool HasVideo(int player_id) const override;
   bool IsPaused(int player_id) const override;
-  std::string GetAudioOutputSinkId(int player_id) const override;
-  bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
-  media::MediaContentType GetMediaContentType() const override;
-  void OnAutoPictureInPictureInfoChanged(
-      int player_id,
-      const media::PictureInPictureEventsInfo::AutoPipInfo& info) override {}
 
  private:
   const raw_ptr<ReadAloudService> service_;
