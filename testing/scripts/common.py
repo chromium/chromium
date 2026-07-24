@@ -59,6 +59,22 @@ CORRECT_ACL_VARIANTS = [
 # pylint: disable=useless-object-inheritance
 
 
+def _grant_acls(target_dir, grants):
+  """Helper to batch grant ACLs on a directory."""
+  if not target_dir:
+    return
+  os.makedirs(target_dir, exist_ok=True)
+  cmd = ['icacls', target_dir]
+  for sid, perm in grants:
+    cmd.extend(['/grant', '*%s:%s' % (sid, perm)])
+  cmd.append('/q')
+  try:
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  except (subprocess.CalledProcessError, OSError) as e:
+    print('Warning: Failed to set LPAC ACLs on %s: %s' % (target_dir, e),
+          file=sys.stderr)
+
+
 def set_lpac_acls(acl_dir, is_test_script=False):
   """Sets LPAC ACLs on a directory.
   Needed on versions greater than Windows 10 19H2.
@@ -108,11 +124,12 @@ def set_lpac_acls(acl_dir, is_test_script=False):
             os.path.join(acl_dir, os.pardir, filename.strip()))
         if 'S-1-15-2-2' in acl:
           continue
-        if os.path.isdir(full_filename):
-          continue
-        subprocess.check_output(
-            ['icacls', full_filename, '/grant', '*S-1-15-2-2:(RX)'],
-            stderr=subprocess.STDOUT)
+        _grant_acls(full_filename, [('S-1-15-2-2', '(RX)')])
+
+  llvm_prof_file = os.environ.get('LLVM_PROFILE_FILE')
+  if llvm_prof_file:
+    _grant_acls(os.path.dirname(llvm_prof_file),
+                [('S-1-15-2-1', '(OI)(CI)(M)'), ('S-1-15-2-2', '(OI)(CI)(M)')])
 
 
 def run_script(argv, funcs):
