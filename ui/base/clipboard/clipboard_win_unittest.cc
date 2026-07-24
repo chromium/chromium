@@ -348,6 +348,44 @@ TEST_F(ClipboardWinTest, ReadFilenamesAsyncEmptyClipboard) {
   EXPECT_TRUE(filenames_future.Get().empty());
 }
 
+TEST_F(ClipboardWinTest, ReadFilenamesUnicodeBoundedByGlobalSize) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    // The trailing byte is not a complete wchar_t. A bounded read ignores it,
+    // while a NUL-terminated read combines it with a byte past GlobalSize.
+    const std::vector<uint8_t> filename_bytes = {'f', 0, 'o', 0, 'x'};
+    writer.WriteRawDataForTest(ClipboardFormatType::FilenameType(),
+                               filename_bytes);
+  }
+
+  base::test::TestFuture<std::vector<ui::FileInfo>> filenames_future;
+  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           filenames_future.GetCallback());
+  ASSERT_TRUE(filenames_future.Wait());
+  const auto& filenames = filenames_future.Get();
+  ASSERT_EQ(1u, filenames.size());
+  EXPECT_EQ(base::FilePath(L"fo"), filenames[0].path);
+}
+
+TEST_F(ClipboardWinTest, ReadFilenamesAnsiBoundedByGlobalSize) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    const std::vector<uint8_t> filename_bytes = {'b', 'a', 'r'};
+    writer.WriteRawDataForTest(ClipboardFormatType::FilenameAType(),
+                               filename_bytes);
+  }
+
+  base::test::TestFuture<std::vector<ui::FileInfo>> filenames_future;
+  clipboard->ReadFilenames(ClipboardBuffer::kCopyPaste, std::nullopt,
+                           filenames_future.GetCallback());
+  ASSERT_TRUE(filenames_future.Wait());
+  const auto& filenames = filenames_future.Get();
+  ASSERT_EQ(1u, filenames.size());
+  EXPECT_EQ(base::FilePath(L"bar"), filenames[0].path);
+}
+
 TEST_F(ClipboardWinTest, ReadTextAsyncReturnsWrittenData) {
   auto* clipboard = Clipboard::GetForCurrentThread();
   {

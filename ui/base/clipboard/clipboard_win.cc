@@ -902,9 +902,13 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
     {
       // filename using Unicode
       base::win::ScopedHGlobal<wchar_t*> filename(data);
-      if (filename.data() && filename.data()[0]) {
-        base::FilePath path(filename.data());
-        result.emplace_back(path, base::FilePath());
+      if (filename.data()) {
+        std::wstring_view path(filename.data(),
+                               filename.size() / sizeof(wchar_t));
+        path = path.substr(0, path.find(L'\0'));
+        if (!path.empty()) {
+          result.emplace_back(base::FilePath(path), base::FilePath());
+        }
       }
     }
     return result;
@@ -916,9 +920,13 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
     {
       // filename using ASCII
       base::win::ScopedHGlobal<char*> filename(data);
-      if (filename.data() && filename.data()[0]) {
-        base::FilePath path(base::SysNativeMBToWide(filename.data()));
-        result.emplace_back(path, base::FilePath());
+      if (filename.data()) {
+        std::string_view path(filename.data(), filename.size());
+        path = path.substr(0, path.find('\0'));
+        if (!path.empty()) {
+          result.emplace_back(base::FilePath(base::SysNativeMBToWide(path)),
+                              base::FilePath());
+        }
       }
     }
   }
