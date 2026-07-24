@@ -615,7 +615,6 @@ void GlicSelectionObserver::UpdateSelectionState(
       widget_delegate_->CloseWidget();
     }
 
-    // TODO(b/508916357): Use the invoke API.
     SendAdditionalContextToPanel(tab_interface, selected_text);
     has_sent_selection_context_ = true;
   } else {
@@ -848,11 +847,12 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
     return;
   }
 
-  if (auto* instance = glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-    // TODO(b/508916357): Use the invoke API.
-    instance->SendAdditionalContext(
-        CreateAdditionalContext(web_contents(), selected_text));
-  }
+  GlicInvokeOptions options(glic::Target(*tab_interface, DefaultConversation()),
+                            mojom::InvocationSource::kTextSelectionWidget);
+  options.additional_context = AdditionalTabContext(
+      CreateAdditionalContext(web_contents(), selected_text),
+      content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
+  glic_keyed_service_->Invoke(std::move(options));
 }
 
 bool GlicSelectionObserver::IsPageContextEligible() const {
