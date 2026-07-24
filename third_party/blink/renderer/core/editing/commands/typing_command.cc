@@ -715,7 +715,7 @@ void TypingCommand::InsertTextInternal(const String& text,
     return;
   }
   wtf_size_t selection_start = selection_start_;
-  unsigned offset = 0;
+  wtf_size_t offset = 0;
   wtf_size_t newline;
   while ((newline = text.find('\n', offset)) != kNotFound) {
     if (newline > offset) {

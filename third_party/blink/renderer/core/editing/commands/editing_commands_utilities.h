@@ -109,7 +109,7 @@ Position LeadingCollapsibleWhitespacePosition(
     TextAffinity,
     WhitespacePositionOption = kNotConsiderNonCollapsibleWhitespace);
 
-unsigned NumEnclosingMailBlockquotes(const Position&);
+wtf_size_t NumEnclosingMailBlockquotes(const Position&);
 
 // -------------------------------------------------------------------------
 // VisiblePosition

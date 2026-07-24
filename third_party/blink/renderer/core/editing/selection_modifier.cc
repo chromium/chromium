@@ -1002,10 +1002,11 @@ static bool AbsoluteCaretY(const PositionInFlatTreeWithAffinity& c, int& y) {
 
 bool SelectionModifier::ModifyWithPageGranularity(
     SelectionModifyAlteration alter,
-    unsigned vertical_distance,
+    int vertical_distance,
     SelectionModifyVerticalDirection direction) {
-  if (!vertical_distance)
+  if (vertical_distance == 0) {
     return false;
+  }
 
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1068,8 +1069,9 @@ bool SelectionModifier::ModifyWithPageGranularity(
       break;
     if (direction == SelectionModifyVerticalDirection::kUp)
       next_y = -next_y;
-    if (next_y - start_y > static_cast<int>(vertical_distance))
+    if (next_y - start_y > vertical_distance) {
       break;
+    }
     if (next_y >= last_y) {
       last_y = next_y;
       result = next;

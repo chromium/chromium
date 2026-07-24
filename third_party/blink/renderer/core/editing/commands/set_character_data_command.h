@@ -13,8 +13,8 @@ namespace blink {
 class CORE_EXPORT SetCharacterDataCommand final : public SimpleEditCommand {
  public:
   SetCharacterDataCommand(Text* node,
-                          unsigned offset,
-                          unsigned count,
+                          wtf_size_t offset,
+                          wtf_size_t count,
                           const String& text,
                           PasswordEchoBehavior);
 
@@ -29,8 +29,8 @@ class CORE_EXPORT SetCharacterDataCommand final : public SimpleEditCommand {
   bool ShouldEchoPassword() const;
 
   const Member<Text> node_;
-  const unsigned offset_;
-  const unsigned count_;
+  const wtf_size_t offset_;
+  const wtf_size_t count_;
   String previous_text_for_undo_;
   const String new_text_;
   PasswordEchoBehavior password_echo_behavior_;

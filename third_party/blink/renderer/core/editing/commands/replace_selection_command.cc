@@ -1808,7 +1808,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   if (!start_of_inserted_content.IsNull() && enclosing_block_of_insertion_pos &&
       insertion_pos.AnchorNode() ==
           enclosing_block_of_insertion_pos->parentNode() &&
-      (unsigned)insertion_pos.ComputeEditingOffset() <
+      insertion_pos.ComputeEditingOffset() <
           enclosing_block_of_insertion_pos->NodeIndex() &&
       !IsStartOfParagraph(start_of_inserted_content)) {
     InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
@@ -2179,7 +2179,7 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
   Position start_downstream =
       MostForwardCaretPosition(start_of_inserted_content.DeepEquivalent());
   Node* start_node = start_downstream.ComputeNodeAfterPosition();
-  unsigned start_offset = 0;
+  wtf_size_t start_offset = 0;
   if (start_downstream.IsOffsetInAnchor()) {
     start_node = start_downstream.ComputeContainerNode();
     start_offset = start_downstream.OffsetInContainerNode();
@@ -2312,7 +2312,7 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
   // Merging Text nodes causes an additional layout. We'd like to skip it if the
   // editable text is huge.
   // TODO(tkent): 1024 was chosen by my intuition.  We need data.
-  const unsigned kMergeSizeLimit = 1024;
+  const wtf_size_t kMergeSizeLimit = 1024;
   bool has_incomplete_surrogate =
       text->data().length() >= 1 &&
       (U16_IS_TRAIL(text->data()[0]) ||
@@ -2353,7 +2353,7 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
   if (auto* next = DynamicTo<Text>(text->nextSibling())) {
     if (!has_incomplete_surrogate && next->data().length() > kMergeSizeLimit)
       return;
-    unsigned original_length = text->length();
+    wtf_size_t original_length = text->length();
     InsertTextIntoNode(text, original_length, next->data(),
                        password_echo_behavior_);
 
@@ -2378,7 +2378,7 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
 
 namespace {
 
-UChar PreviousCharacterForOffset(Text& text, unsigned offset) {
+UChar PreviousCharacterForOffset(Text& text, wtf_size_t offset) {
   DCHECK_LE(offset, text.length());
   if (offset) {
     return text.data()[offset - 1];
@@ -2386,7 +2386,7 @@ UChar PreviousCharacterForOffset(Text& text, unsigned offset) {
   return CharacterBefore(CreateVisiblePosition(Position(&text, 0)));
 }
 
-UChar NextCharacterForOffset(Text& text, unsigned offset) {
+UChar NextCharacterForOffset(Text& text, wtf_size_t offset) {
   DCHECK_LE(offset, text.length());
   if (offset < text.length()) {
     return text.data()[offset];
@@ -2460,13 +2460,13 @@ void ReplaceSelectionCommand::NormalizeNbspInInsertedContent(
       continue;
     }
 
-    const unsigned start_offset =
+    const wtf_size_t start_offset =
         range_start.AnchorNode() == text_node
             ? range_start.ComputeOffsetInContainerNode()
             : 0;
-    const unsigned end_offset = range_end.AnchorNode() == text_node
-                                    ? range_end.ComputeOffsetInContainerNode()
-                                    : text_node->length();
+    const wtf_size_t end_offset = range_end.AnchorNode() == text_node
+                                      ? range_end.ComputeOffsetInContainerNode()
+                                      : text_node->length();
     if (start_offset >= end_offset) {
       continue;
     }
@@ -2474,7 +2474,7 @@ void ReplaceSelectionCommand::NormalizeNbspInInsertedContent(
     bool changed = false;
     StringBuilder builder;
     builder.ReserveCapacity(data.length());
-    for (unsigned i = 0; i < data.length(); ++i) {
+    for (wtf_size_t i = 0; i < data.length(); ++i) {
       UChar c = data[i];
       if (c == uchar::kNoBreakSpace && i >= start_offset && i < end_offset) {
         const UChar prev_char = PreviousCharacterForOffset(*text_node, i);

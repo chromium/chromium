@@ -206,7 +206,7 @@ TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
   Vector<std::string> expectations = {"|", "a|<br>", "|<br>b", "a<br>|b"};
 
   GetDocument().setDesignMode("on");
-  for (unsigned i = 0; i < selection_texts.size(); ++i) {
+  for (wtf_size_t i = 0; i < selection_texts.size(); ++i) {
     Selection().SetSelection(SetSelectionTextToBody(selection_texts[i]),
                              SetSelectionOptions());
     auto* command = MakeGarbageCollected<IndentOutdentCommand>(

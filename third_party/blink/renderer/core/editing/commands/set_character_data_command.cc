@@ -13,8 +13,8 @@ namespace blink {
 
 SetCharacterDataCommand::SetCharacterDataCommand(
     Text* node,
-    unsigned offset,
-    unsigned count,
+    wtf_size_t offset,
+    wtf_size_t count,
     const String& text,
     PasswordEchoBehavior password_echo_behavior)
     : SimpleEditCommand(node->GetDocument()),

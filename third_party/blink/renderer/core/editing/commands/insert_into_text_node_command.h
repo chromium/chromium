@@ -35,7 +35,7 @@ class Text;
 class InsertIntoTextNodeCommand final : public SimpleEditCommand {
  public:
   InsertIntoTextNodeCommand(Text* node,
-                            unsigned offset,
+                            wtf_size_t offset,
                             const String& text,
                             PasswordEchoBehavior);
 
@@ -48,7 +48,7 @@ class InsertIntoTextNodeCommand final : public SimpleEditCommand {
   bool ShouldEchoPassword() const;
 
   Member<Text> node_;
-  unsigned offset_;
+  wtf_size_t offset_;
   String text_;
   PasswordEchoBehavior password_echo_behavior_;
 };

@@ -34,7 +34,7 @@
 
 namespace blink {
 
-SplitTextNodeCommand::SplitTextNodeCommand(Text* text, int offset)
+SplitTextNodeCommand::SplitTextNodeCommand(Text* text, wtf_size_t offset)
     : SimpleEditCommand(text->GetDocument()), text2_(text), offset_(offset) {
   // NOTE: Various callers rely on the fact that the original node becomes
   // the second node (i.e. the new node is inserted before the existing one).

@@ -46,7 +46,7 @@
 
 namespace blink {
 
-unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
+int MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
   const Element* focused_element = frame.GetDocument()->FocusedElement();
   if (!focused_element) {
     if (frame.IsCaretBrowsingEnabled()) {
@@ -77,7 +77,7 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
 bool MoveCommands::ModifySelectionWithPageGranularity(
     LocalFrame& frame,
     SelectionModifyAlteration alter,
-    unsigned vertical_distance,
+    int vertical_distance,
     SelectionModifyVerticalDirection direction) {
   if (alter == SelectionModifyAlteration::kMove)
     UpdateSelectionForCaretBrowsing(frame);
@@ -265,7 +265,7 @@ bool MoveCommands::ExecuteMovePageDown(LocalFrame& frame,
                                        Event*,
                                        EditorCommandSource,
                                        const String&) {
-  const unsigned distance = VerticalScrollDistance(frame);
+  const int distance = VerticalScrollDistance(frame);
   if (!distance)
     return false;
   return ModifySelectionWithPageGranularity(
@@ -277,7 +277,7 @@ bool MoveCommands::ExecuteMovePageDownAndModifySelection(LocalFrame& frame,
                                                          Event*,
                                                          EditorCommandSource,
                                                          const String&) {
-  const unsigned distance = VerticalScrollDistance(frame);
+  const int distance = VerticalScrollDistance(frame);
   if (!distance)
     return false;
   return ModifySelectionWithPageGranularity(
@@ -289,7 +289,7 @@ bool MoveCommands::ExecuteMovePageUp(LocalFrame& frame,
                                      Event*,
                                      EditorCommandSource,
                                      const String&) {
-  const unsigned distance = VerticalScrollDistance(frame);
+  const int distance = VerticalScrollDistance(frame);
   if (!distance)
     return false;
   return ModifySelectionWithPageGranularity(
@@ -301,7 +301,7 @@ bool MoveCommands::ExecuteMovePageUpAndModifySelection(LocalFrame& frame,
                                                        Event*,
                                                        EditorCommandSource,
                                                        const String&) {
-  const unsigned distance = VerticalScrollDistance(frame);
+  const int distance = VerticalScrollDistance(frame);
   if (!distance)
     return false;
   return ModifySelectionWithPageGranularity(

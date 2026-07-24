@@ -452,13 +452,15 @@ void CompositeEditCommand::RemoveAllChildrenIfPossible(
 }
 
 void CompositeEditCommand::RemoveChildrenInRange(Node* node,
-                                                 unsigned from,
-                                                 unsigned to,
+                                                 wtf_size_t from,
+                                                 wtf_size_t to,
                                                  EditingState* editing_state) {
   HeapVector<Member<Node>> children;
   Node* child = NodeTraversal::ChildAt(*node, from);
-  for (unsigned i = from; child && i < to; i++, child = child->nextSibling())
+  for (wtf_size_t i = from; child && i < to;
+       ++i, child = child->nextSibling()) {
     children.push_back(child);
+  }
 
   size_t size = children.size();
   for (wtf_size_t i = 0; i < size; ++i) {
@@ -515,11 +517,11 @@ void CompositeEditCommand::MoveRemainingSiblingsToNewParent(
   for (; node && node != past_last_node_to_move; node = node->nextSibling())
     nodes_to_remove.push_back(node);
 
-  for (unsigned i = 0; i < nodes_to_remove.size(); i++) {
-    RemoveNode(nodes_to_remove[i], editing_state);
+  for (auto& node_to_remove : nodes_to_remove) {
+    RemoveNode(node_to_remove, editing_state);
     if (editing_state->IsAborted())
       return;
-    AppendNode(nodes_to_remove[i], new_parent, editing_state);
+    AppendNode(node_to_remove, new_parent, editing_state);
     if (editing_state->IsAborted())
       return;
   }
@@ -561,7 +563,7 @@ void CompositeEditCommand::Prune(Node* node,
     RemoveNode(highest_node_to_remove, editing_state);
 }
 
-void CompositeEditCommand::SplitTextNode(Text* node, unsigned offset) {
+void CompositeEditCommand::SplitTextNode(Text* node, wtf_size_t offset) {
   // SplitTextNodeCommand is never aborted.
   ApplyCommandToComposite(
       MakeGarbageCollected<SplitTextNodeCommand>(node, offset),
@@ -601,7 +603,7 @@ void CompositeEditCommand::WrapContentsInDummySpan(Element* element) {
 }
 
 void CompositeEditCommand::SplitTextNodeContainingElement(Text* text,
-                                                          unsigned offset) {
+                                                          wtf_size_t offset) {
   // SplitTextNodeContainingElementCommand is never aborted.
   ApplyCommandToComposite(
       MakeGarbageCollected<SplitTextNodeContainingElementCommand>(text, offset),
@@ -610,7 +612,7 @@ void CompositeEditCommand::SplitTextNodeContainingElement(Text* text,
 
 void CompositeEditCommand::InsertTextIntoNode(
     Text* node,
-    unsigned offset,
+    wtf_size_t offset,
     const String& text,
     PasswordEchoBehavior password_echo_behavior) {
   // InsertIntoTextNodeCommand is never aborted.
@@ -622,8 +624,8 @@ void CompositeEditCommand::InsertTextIntoNode(
 }
 
 void CompositeEditCommand::DeleteTextFromNode(Text* node,
-                                              unsigned offset,
-                                              unsigned count) {
+                                              wtf_size_t offset,
+                                              wtf_size_t count) {
   // DeleteFromTextNodeCommand is never aborted.
   ApplyCommandToComposite(
       MakeGarbageCollected<DeleteFromTextNodeCommand>(node, offset, count),
@@ -632,8 +634,8 @@ void CompositeEditCommand::DeleteTextFromNode(Text* node,
 
 void CompositeEditCommand::ReplaceTextInNode(
     Text* node,
-    unsigned offset,
-    unsigned count,
+    wtf_size_t offset,
+    wtf_size_t count,
     const String& replacement_text,
     PasswordEchoBehavior password_echo_behavior) {
   // SetCharacterDataCommand is never aborted.
@@ -796,27 +798,28 @@ void CompositeEditCommand::RebalanceWhitespaceAt(const Position& position) {
                                      position.OffsetInContainerNode());
 }
 
-void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
-                                                              int start_offset,
-                                                              int end_offset) {
+void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(
+    Text* text_node,
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) {
   String text = text_node->data();
   DCHECK(!text.empty());
 
   // Set upstream and downstream to define the extent of the whitespace
   // surrounding text[offset].
-  int upstream = start_offset;
+  wtf_size_t upstream = start_offset;
   while (upstream > 0 &&
          IsWhitespaceForRebalance(*text_node, text[upstream - 1])) {
     upstream--;
   }
 
-  int downstream = end_offset;
-  while ((unsigned)downstream < text.length() &&
+  wtf_size_t downstream = end_offset;
+  while (downstream < text.length() &&
          IsWhitespaceForRebalance(*text_node, text[downstream])) {
     downstream++;
   }
 
-  int length = downstream - upstream;
+  wtf_size_t length = downstream - upstream;
   if (!length)
     return;
 
@@ -850,7 +853,7 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
       next_text_node && next_text_node->data().length() &&
       !IsWhitespace(next_text_node->data()[0]);
   const bool should_emit_nbs_pbefore_end =
-      (is_end_of_paragraph || (unsigned)downstream == text.length()) &&
+      (is_end_of_paragraph || downstream == text.length()) &&
       !next_sibling_is_text_node;
   String rebalanced_string = StringWithRebalancedWhitespace(
       string, is_start_of_paragraph || !upstream,
@@ -957,8 +960,8 @@ static bool IsInsignificantText(const LayoutText& layout_text) {
 }
 
 void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
-                                                   unsigned start,
-                                                   unsigned end) {
+                                                   wtf_size_t start,
+                                                   wtf_size_t end) {
   if (!text_node || start >= end)
     return;
 
@@ -974,7 +977,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
     RemoveNode(text_node, ASSERT_NO_EDITING_ABORT);
     return;
   }
-  unsigned length = text_node->length();
+  wtf_size_t length = text_node->length();
   if (start >= length || end > length)
     return;
 
@@ -1735,9 +1738,9 @@ bool CompositeEditCommand::SetDestinationSelectionAndPasteFragment(
 }
 
 void CompositeEditCommand::RestoreSelectionFromPlainText(
-    int destination_index,
-    int start_index,
-    int end_index,
+    wtf_size_t destination_index,
+    wtf_size_t start_index,
+    wtf_size_t end_index,
     Element& document_element) {
   // Fragment creation (using createMarkup) incorrectly uses regular spaces
   // instead of nbsps for some spaces that were rendered (11475), which causes

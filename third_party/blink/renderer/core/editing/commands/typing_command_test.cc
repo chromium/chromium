@@ -26,10 +26,10 @@ class TypingCommandTest : public EditingTestBase {};
 // Mock for ChromeClient.
 class MockChromeClient : public EmptyChromeClient {
  public:
-  unsigned int didUserChangeContentEditableContentCount = 0;
+  size_t did_user_change_content_editable_content_count = 0;
   // ChromeClient overrides:
   void DidUserChangeContentEditableContent(Element& element) override {
-    didUserChangeContentEditableContentCount++;
+    ++did_user_change_content_editable_content_count;
   }
 };
 
@@ -162,7 +162,7 @@ TEST_F(TypingCommandTest, TypedCharactersInContentEditable) {
       GetDocument(), "c", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   EXPECT_EQ("<table contenteditable>abc|</table>", GetSelectionTextFromBody());
-  EXPECT_EQ(2u, chrome_client->didUserChangeContentEditableContentCount);
+  EXPECT_EQ(2u, chrome_client->did_user_change_content_editable_content_count);
 }
 
 TEST_F(TypingCommandTest, FirstTypedCharactersInContentEditable) {
@@ -176,12 +176,12 @@ TEST_F(TypingCommandTest, FirstTypedCharactersInContentEditable) {
                                .Collapse(Position(table->firstChild(), 1))
                                .Build(),
                            SetSelectionOptions());
-  EXPECT_EQ(0u, chrome_client->didUserChangeContentEditableContentCount);
+  EXPECT_EQ(0u, chrome_client->did_user_change_content_editable_content_count);
   TypingCommand::InsertText(
       GetDocument(), "b", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   EXPECT_EQ("<table contenteditable>ab|</table>", GetSelectionTextFromBody());
-  EXPECT_EQ(1u, chrome_client->didUserChangeContentEditableContentCount);
+  EXPECT_EQ(1u, chrome_client->did_user_change_content_editable_content_count);
 }
 
 // Tests that insertText with CRLF (\r\n) produces the same DOM

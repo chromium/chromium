@@ -297,7 +297,7 @@ bool LineBreakExistsAtPosition(const Position& position) {
     return false;
   }
 
-  unsigned offset = position.OffsetInContainerNode();
+  wtf_size_t offset = position.OffsetInContainerNode();
   return offset < text_node->length() && text_node->data()[offset] == '\n';
 }
 
@@ -376,11 +376,11 @@ Position LeadingCollapsibleWhitespacePosition(const Position& position,
   return prev;
 }
 
-unsigned NumEnclosingMailBlockquotes(const Position& p) {
-  unsigned num = 0;
+wtf_size_t NumEnclosingMailBlockquotes(const Position& p) {
+  wtf_size_t num = 0;
   for (const Node* n = p.AnchorNode(); n; n = n->parentNode()) {
     if (IsMailHtmlBlockquoteElement(n)) {
-      num++;
+      ++num;
     }
   }
   return num;

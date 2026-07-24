@@ -76,7 +76,7 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
                       ShouldAssumeContentIsAlwaysEditable(false)) override;
   void RemoveCompletelySelectedNodes(Node* start_node,
                                      EditingState* editing_state);
-  void DeleteTextFromNode(Text*, unsigned, unsigned) override;
+  void DeleteTextFromNode(Text*, wtf_size_t, wtf_size_t) override;
   void RemoveRedundantBlocks(EditingState*);
 
   const DeleteSelectionOptions options_;

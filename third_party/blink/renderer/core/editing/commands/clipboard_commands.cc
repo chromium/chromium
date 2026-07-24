@@ -515,8 +515,8 @@ ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
   DocumentFragment* fragment = nullptr;
   if (frame.GetSystemClipboard()->IsFormatAvailable(
           blink::mojom::ClipboardFormat::kHtml)) {
-    unsigned fragment_start = 0;
-    unsigned fragment_end = 0;
+    wtf_size_t fragment_start = 0;
+    wtf_size_t fragment_end = 0;
     KURL url;
     const String markup =
         frame.GetSystemClipboard()->ReadHTML(url, fragment_start, fragment_end);
@@ -709,8 +709,8 @@ class CORE_EXPORT PasteImageResourceObserver final
   }
 
   DocumentFragment* BuildFragment() const {
-    unsigned fragment_start = 0;
-    unsigned fragment_end = 0;
+    wtf_size_t fragment_start = 0;
+    wtf_size_t fragment_end = 0;
 
     return CreateStrictlyProcessedFragmentFromMarkupWithContext(
         *(frame_->GetDocument()), BuildMarkup(), fragment_start, fragment_end,

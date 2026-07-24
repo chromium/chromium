@@ -33,8 +33,8 @@
 namespace blink {
 
 DeleteFromTextNodeCommand::DeleteFromTextNodeCommand(Text* node,
-                                                     unsigned offset,
-                                                     unsigned count)
+                                                     wtf_size_t offset,
+                                                     wtf_size_t count)
     : SimpleEditCommand(node->GetDocument()),
       node_(node),
       offset_(offset),

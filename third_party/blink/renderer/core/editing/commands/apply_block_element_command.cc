@@ -479,8 +479,7 @@ ApplyBlockElementCommand::EndOfNextParagrahSplittingTextNodesIfNeeded(
         end_of_next_paragraph_position.OffsetInContainerNode()) {
       // We can only fix endOfLastParagraph if the previous node was still text
       // and hasn't been modified by script.
-      if (previous_text && static_cast<unsigned>(
-                               end_of_last_paragraph.OffsetInContainerNode()) <=
+      if (previous_text && end_of_last_paragraph.OffsetInContainerNode() <=
                                previous_text->length()) {
         end_of_last_paragraph = Position(
             previous_text, end_of_last_paragraph.OffsetInContainerNode());

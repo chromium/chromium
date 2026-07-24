@@ -584,8 +584,8 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   if (insertion_position.IsOffsetInAnchor()) {
     if (auto* text_node =
             DynamicTo<Text>(insertion_position.ComputeContainerNode())) {
-      int text_offset = insertion_position.OffsetInContainerNode();
-      bool at_end = static_cast<unsigned>(text_offset) >= text_node->length();
+      wtf_size_t text_offset = insertion_position.OffsetInContainerNode();
+      bool at_end = text_offset >= text_node->length();
       if (text_offset > 0 && !at_end) {
         SplitTextNode(text_node, text_offset);
         GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);

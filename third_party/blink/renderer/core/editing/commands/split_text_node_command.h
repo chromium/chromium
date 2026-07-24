@@ -35,7 +35,7 @@ class Text;
 
 class CORE_EXPORT SplitTextNodeCommand final : public SimpleEditCommand {
  public:
-  SplitTextNodeCommand(Text*, int offset);
+  SplitTextNodeCommand(Text*, wtf_size_t offset);
 
   void Trace(Visitor*) const override;
 
@@ -48,7 +48,7 @@ class CORE_EXPORT SplitTextNodeCommand final : public SimpleEditCommand {
 
   Member<Text> text1_;
   Member<Text> text2_;
-  unsigned offset_;
+  wtf_size_t offset_;
 };
 
 }  // namespace blink

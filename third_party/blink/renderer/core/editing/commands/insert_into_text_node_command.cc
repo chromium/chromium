@@ -36,7 +36,7 @@ namespace blink {
 
 InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(
     Text* node,
-    unsigned offset,
+    wtf_size_t offset,
     const String& text,
     PasswordEchoBehavior password_echo_behavior)
     : SimpleEditCommand(node->GetDocument()),

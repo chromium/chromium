@@ -252,13 +252,13 @@ class CORE_EXPORT MoveCommands {
                                                      const String&);
 
  private:
-  static unsigned VerticalScrollDistance(LocalFrame&);
+  static int VerticalScrollDistance(LocalFrame&);
 
   // Returns true if selection is modified.
   static bool ModifySelectionWithPageGranularity(
       LocalFrame&,
       SelectionModifyAlteration,
-      unsigned,
+      int vertical_distance,
       SelectionModifyVerticalDirection);
 
   // Wraps FrameSelection::Modify for case where the selection is moved by the

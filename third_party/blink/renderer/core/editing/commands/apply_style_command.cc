@@ -74,11 +74,11 @@ static bool HasNoAttributeOrOnlyStyleAttribute(
   if (attributes.IsEmpty())
     return true;
 
-  unsigned matched_attributes = 0;
+  wtf_size_t matched_attributes = 0;
   if (element->hasAttribute(html_names::kStyleAttr) &&
       (should_style_attribute_be_empty == kAllowNonEmptyStyleAttribute ||
        !element->InlineStyle() || element->InlineStyle()->IsEmpty()))
-    matched_attributes++;
+    ++matched_attributes;
 
   DCHECK_LE(matched_attributes, attributes.size());
   return matched_attributes == attributes.size();
@@ -1502,7 +1502,7 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
   // removing the style from this node. e.g. if pushDownStart was at
   // Position("hello", 5) in <b>hello<div>world</div></b>, we want
   // Position("world", 0) instead.
-  const unsigned push_down_start_offset =
+  const wtf_size_t push_down_start_offset =
       push_down_start.ComputeOffsetInContainerNode();
   auto* push_down_start_container =
       DynamicTo<Text>(push_down_start.ComputeContainerNode());

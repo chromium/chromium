@@ -86,7 +86,7 @@ class CORE_EXPORT SelectionModifier {
               SelectionModifyDirection,
               TextGranularity);
   bool ModifyWithPageGranularity(SelectionModifyAlteration,
-                                 unsigned vertical_distance,
+                                 int vertical_distance,
                                  SelectionModifyVerticalDirection);
   void SetSelectionIsDirectional(bool selection_is_directional) {
     selection_is_directional_ = selection_is_directional;
