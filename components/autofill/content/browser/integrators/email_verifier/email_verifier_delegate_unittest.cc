@@ -225,11 +225,11 @@ class EmailVerifierDelegateTestBase
     EXPECT_CALL(driver(), UpdateEmailVerificationState(
                               form.field(0)->global_id(),
                               mojom::EmailVerificationState::kLoading))
-        .Times(is_accepted ? 2 : 1);
+        .Times(is_accepted ? 1 : 0);
     EXPECT_CALL(driver(), UpdateEmailVerificationState(
                               form.field(0)->global_id(),
                               mojom::EmailVerificationState::kNone))
-        .Times(is_accepted ? 1 : 2);
+        .Times(is_accepted ? 0 : 1);
 
     if (is_accepted) {
       EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
@@ -1206,10 +1206,6 @@ TEST_F(EmailVerifierDelegateTest,
   EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
 
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            form->field(0)->global_id(),
-                            mojom::EmailVerificationState::kLoading));
-
   EXPECT_CALL(driver(),
               UpdateEmailVerificationState(
                   form->field(0)->global_id(),
@@ -1233,11 +1229,6 @@ TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateFailed) {
   EXPECT_CALL(driver(), UpdateEmailVerificationState(
                             form->field(0)->global_id(),
                             mojom::EmailVerificationState::kLoading))
-      .Times(2);
-
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            form->field(0)->global_id(),
-                            mojom::EmailVerificationState::kNone))
       .Times(1);
 
   EXPECT_CALL(driver(), UpdateEmailVerificationState(
