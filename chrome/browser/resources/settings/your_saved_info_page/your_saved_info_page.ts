@@ -199,7 +199,7 @@ export class SettingsYourSavedInfoPageElement extends
           {
             id: YourSavedInfoDataChip.IBANS,
             label: this.i18n('ibanTitle'),
-            icon: 'settings20:iban',
+            icon: 'settings20:iban-custom',
             isVisibleWhenNoEntitiesOfTypeExists: () =>
                 loadTimeData.getBoolean('showIbansSettings'),
           },
@@ -224,7 +224,7 @@ export class SettingsYourSavedInfoPageElement extends
           {
             id: YourSavedInfoDataChip.ADDRESSES,
             label: this.i18n('addresses'),
-            icon: 'settings:email',
+            icon: 'settings:mail-filled',
             isVisibleWhenNoEntitiesOfTypeExists: () => true,
           },
         ],

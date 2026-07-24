@@ -232,12 +232,12 @@ export class SettingsSafetyHubPageElement extends
       {
         origin: this.i18n('safetyHubUserEduDataHeader'),
         detail: this.i18nAdvanced('safetyHubUserEduDataSubheader'),
-        icon: 'settings20:chrome-filled',
+        icon: 'settings20:chrome-product',
       },
       {
         origin: this.i18n('safetyHubUserEduIncognitoHeader'),
         detail: this.i18nAdvanced('safetyHubUserEduIncognitoSubheader'),
-        icon: 'settings20:incognito-unfilled',
+        icon: 'settings20:incognito',
       },
       {
         origin: this.i18n('safetyHubUserEduSafeBrowsingHeader'),

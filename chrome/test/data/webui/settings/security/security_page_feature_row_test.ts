@@ -39,7 +39,7 @@ suite('securityPageFeatureRow', function() {
     securityPageFeatureRow =
         document.createElement('security-page-feature-row');
     securityPageFeatureRow.pref = settingsPrefs.get('prefs.test');
-    securityPageFeatureRow.icon = 'settings20:warning_outline';
+    securityPageFeatureRow.icon = 'settings20:warning';
 
     document.body.appendChild(securityPageFeatureRow);
     flush();
@@ -155,7 +155,7 @@ suite('securityPageFeatureRow', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     };
-    securityPageFeatureRow.icon = 'settings20:warning_outline';
+    securityPageFeatureRow.icon = 'settings20:warning';
     securityPageFeatureRow.iconVisible = true;
 
     document.body.appendChild(securityPageFeatureRow);
@@ -187,7 +187,7 @@ suite('securityPageFeatureRow', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     };
-    securityPageFeatureRow.icon = 'settings20:warning_outline';
+    securityPageFeatureRow.icon = 'settings20:warning';
     securityPageFeatureRow.iconVisible = true;
 
     document.body.appendChild(securityPageFeatureRow);

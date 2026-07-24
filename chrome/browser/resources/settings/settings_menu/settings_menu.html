@@ -63,7 +63,7 @@
             hidden="[[!showAutofillMenuItem_(
                 enableYourSavedInfoSettingsPage_,
                 pageVisibility_.yourSavedInfo, pageVisibility_.autofill)]]">
-          <cr-icon icon="settings:assignment"></cr-icon>
+          <cr-icon icon="settings:password-manager"></cr-icon>
           $i18n{autofillPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -77,7 +77,7 @@
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.performance]]">
-          <cr-icon icon="settings:navigation-performance"></cr-icon>
+          <cr-icon icon="settings:speed"></cr-icon>
           $i18n{performancePageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -85,7 +85,7 @@
             hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility_.ai)]]"
             on-click="onAiPageClick_"
             class="cr-nav-menu-item">
-          <cr-icon icon="settings20:magic"></cr-icon>
+          <cr-icon icon="settings20:button-magic"></cr-icon>
           $i18n{aiPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -105,7 +105,7 @@
         <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
           href="/defaultBrowser"
           hidden="[[!pageVisibility_.defaultBrowser]]">
-          <cr-icon icon="settings:web"></cr-icon>
+          <cr-icon icon="settings:web-asset"></cr-icon>
           $i18n{defaultBrowser}
           <cr-ripple></cr-ripple>
         </a>
@@ -113,7 +113,7 @@
         <a role="menuitem" id="onStartup" href="/onStartup"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.onStartup]]">
-          <cr-icon icon="settings:power-settings"></cr-icon>
+          <cr-icon icon="settings:power-settings-new"></cr-icon>
           $i18n{onStartup}
           <cr-ripple></cr-ripple>
         </a>
@@ -121,7 +121,7 @@
         <a role="menuitem" id="languages" href="/languages"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.languages]]">
-          <cr-icon icon="settings:navigation-language"></cr-icon>
+          <cr-icon icon="settings:translate"></cr-icon>
           $i18n{languagesPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -142,14 +142,14 @@
 <if expr="not is_chromeos">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.system]]">
-          <cr-icon icon="settings:system"></cr-icon>
+          <cr-icon icon="settings:build"></cr-icon>
           $i18n{systemPageTitle}
           <cr-ripple></cr-ripple>
         </a>
 </if>
         <a role="menuitem" id="reset" href="/reset"
             hidden="[[!pageVisibility_.reset]]" class="cr-nav-menu-item">
-          <cr-icon icon="settings:restore"></cr-icon>
+          <cr-icon icon="settings:restart-alt"></cr-icon>
           $i18n{resetPageTitle}
           <cr-ripple></cr-ripple>
         </a>
@@ -160,7 +160,7 @@
             hidden="[[!pageVisibility_.extensions]]"
             on-click="onExtensionsLinkClick_"
             title="$i18n{extensionsLinkTooltip}">
-          <cr-icon icon="settings:extension"></cr-icon>
+          <cr-icon icon="settings:chrome-extension"></cr-icon>
           <span>$i18n{extensionsPageTitle}</span>
           <div class="cr-icon icon-external"></div>
           <cr-ripple></cr-ripple>

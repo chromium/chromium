@@ -405,7 +405,7 @@ suite('Main', function() {
     await flushTasks();
     assertTrue(
         row.iconVisible, 'Icon should be shown when safe browsing is disabled');
-    assertEquals('settings20:warning_outline', row.icon);
+    assertEquals('settings20:warning', row.icon);
 
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     await flushTasks();
