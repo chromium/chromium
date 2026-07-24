@@ -593,12 +593,11 @@ void AlarmManager::OnExtensionUninstalled(
 
 Alarm::Alarm() : js_alarm(std::in_place) {}
 
-Alarm::Alarm(const std::string& name,
-             const alarms::AlarmCreateInfo& create_info,
+Alarm::Alarm(const alarms::AlarmCreateInfo& create_info,
              base::TimeDelta min_granularity,
              base::Time now)
     : js_alarm(std::in_place) {
-  js_alarm->name = name;
+  js_alarm->name = *create_info.name;
   minimum_granularity = min_granularity;
 
   if (create_info.when) {

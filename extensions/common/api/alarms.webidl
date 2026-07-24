@@ -22,6 +22,9 @@ dictionary Alarm {
 // TODO(mpcomplete): rename to CreateInfo when http://crbug.com/123073 is
 // fixed.
 dictionary AlarmCreateInfo {
+  // Name of this alarm.
+  DOMString name;
+
   // Time at which the alarm should fire, in milliseconds past the epoch
   // (e.g. <code>Date.now() + n</code>).
   double when;

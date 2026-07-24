@@ -20,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 // TODO(crbug.com/445720439): Remove this import.
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -175,6 +176,42 @@ TEST_F(ExtensionAlarmsTest, Create) {
   alarm_manager_->GetAlarm(
       extension()->id(), std::string(),
       base::BindOnce(ExtensionAlarmsTestGetAlarmCallback, this));
+}
+
+TEST_F(ExtensionAlarmsTest, CreateNameInObject) {
+  test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(10));
+  // Create 1 non-repeating alarm passing name in object.
+  CreateAlarm("[null, {\"name\": \"Alarm Name\", \"delayInMinutes\": 0}]");
+
+  base::test::TestFuture<Alarm*> alarm_future;
+  alarm_manager_->GetAlarm(extension()->id(), "Alarm Name",
+                           alarm_future.GetCallback());
+  Alarm* alarm = alarm_future.Get();
+  ASSERT_TRUE(alarm);
+  EXPECT_EQ("Alarm Name", alarm->js_alarm->name);
+  EXPECT_DOUBLE_EQ(10000, alarm->js_alarm->scheduled_time);
+  EXPECT_FALSE(alarm->js_alarm->period_in_minutes);
+
+  // Now wait for the alarm to fire. Our test delegate will quit the
+  // `MessageLoop` when that happens.
+  alarm_delegate_->WaitForAlarm();
+
+  ASSERT_EQ(1u, alarm_delegate_->alarms_seen.size());
+  EXPECT_EQ("Alarm Name", alarm_delegate_->alarms_seen[0]);
+
+  // Ensure the alarm is gone.
+  base::test::TestFuture<const AlarmList*> alarm_list_future;
+  alarm_manager_->GetAllAlarms(extension()->id(),
+                               alarm_list_future.GetCallback());
+  const AlarmList* alarm_list = alarm_list_future.Get();
+  ASSERT_FALSE(alarm_list);
+}
+
+// Passing alarm name twice is not valid.
+TEST_F(ExtensionAlarmsTest, CreateNameInvalid) {
+  EXPECT_EQ("Cannot set alarm name in both separate argument and object form.",
+            FailToCreateAlarm(
+                R"(["Invalid", {"name": "Invalid", "delayInMinutes": 0}])"));
 }
 
 void ExtensionAlarmsTestCreateRepeatingGetAlarmCallback(

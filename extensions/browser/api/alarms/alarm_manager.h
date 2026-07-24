@@ -39,8 +39,7 @@ class ExtensionAlarmsSchedulingTest;
 
 struct Alarm {
   Alarm();
-  Alarm(const std::string& name,
-        const api::alarms::AlarmCreateInfo& create_info,
+  Alarm(const api::alarms::AlarmCreateInfo& create_info,
         base::TimeDelta min_granularity,
         base::Time now);
 
