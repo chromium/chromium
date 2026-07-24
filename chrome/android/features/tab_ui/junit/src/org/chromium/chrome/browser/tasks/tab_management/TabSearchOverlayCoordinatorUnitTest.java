@@ -42,6 +42,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
@@ -93,6 +94,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BackPressManager mBackPressManager;
+    private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -102,6 +105,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
         ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class);
         mActivity = controller.setup().get();
@@ -116,6 +120,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mSearchUiCoordinator.getLocationBarCoordinator()).thenReturn(mLocationBarCoordinator);
         when(mLocationBarCoordinator.getUrlBarCoordinator()).thenReturn(mUrlBarCoordinator);
         when(mSearchUiCoordinator.getSearchBox()).thenReturn(mSearchBox);
+        when(mLocationBarCoordinator.getSuggestionsListNonEmptySupplier())
+                .thenReturn(mSuggestionsListNonEmptySupplier);
 
         mCoordinator =
                 new TabSearchOverlayCoordinator(
@@ -137,6 +143,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mPanelContainer = mParentContainer.findViewById(R.id.tab_search_overlay_container);
         mScrim = mParentContainer.findViewById(R.id.tab_search_overlay_scrim);
 
+        assertTrue(mSuggestionsListNonEmptySupplier.hasObservers());
+
         verify(mBackPressManager)
                 .addHandler(mCoordinator, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
 
@@ -151,6 +159,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNull(mCoordinator.getPanelContainerForTesting());
         verify(mSearchUiCoordinator).destroy();
         verify(mBackPressManager).removeHandler(mCoordinator);
+        assertFalse(mSuggestionsListNonEmptySupplier.hasObservers());
     }
 
     @Test
@@ -371,5 +380,37 @@ public class TabSearchOverlayCoordinatorUnitTest {
         int result = mCoordinator.handleBackPress();
         assertEquals(BackPressResult.SUCCESS, result);
         assertOverlayHidden();
+    }
+
+    @Test
+    public void testSuggestionsChanged_togglesEmptyState() {
+        showOverlay();
+
+        // Case 1: Search query is empty, suggestions is false.
+        // Empty state should NOT be visible.
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("");
+        mSuggestionsListNonEmptySupplier.set(false);
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+
+        // Case 2: Search query is not empty, suggestions is true.
+        // Empty state should NOT be visible.
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
+        mSuggestionsListNonEmptySupplier.set(true);
+        assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+
+        // Case 3: Search query is not empty, suggestions is false.
+        // Empty state SHOULD be visible.
+        when(mUrlBarCoordinator.getTextWithoutAutocomplete()).thenReturn("abc");
+        mSuggestionsListNonEmptySupplier.set(false);
+        assertTrue(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
     }
 }

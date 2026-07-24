@@ -16,11 +16,10 @@ found in the LICENSE file.
     android:background="@android:color/transparent">
 
     <!-- The left-anchored search panel elevated over SideUi containers -->
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/tab_search_overlay_panel"
         android:layout_width="@dimen/tab_search_overlay_width"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="@drawable/tab_search_overlay_panel_bg"
         android:clipToOutline="true"
         android:elevation="8dp"
@@ -49,10 +48,17 @@ found in the LICENSE file.
             android:id="@+id/search_activity_container"
             layout="@layout/search_activity"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent" />
 
-    </LinearLayout>
+        <include
+            android:id="@+id/empty_state_container"
+            layout="@layout/empty_state_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/toolbar_height_no_shadow"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <!-- The transparent scrim area covering the rest of the screen -->
     <View

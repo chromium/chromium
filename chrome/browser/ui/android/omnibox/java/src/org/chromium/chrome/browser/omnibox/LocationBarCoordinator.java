@@ -42,6 +42,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -175,6 +176,8 @@ public class LocationBarCoordinator
     private @Nullable ButtonData mOptionalButtonData;
     private LocationBarDataProvider.@Nullable Observer mOptionalButtonLocationBarDataObserver;
     private @Nullable UrlFocusChangeListener mOptionalButtonUrlFocusChangeListener;
+    private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mNativeInitialized;
     private boolean mDefaultBoundsEllipsis;
@@ -826,6 +829,12 @@ public class LocationBarCoordinator
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
         assert defaultMatch == null || defaultMatch.allowedToBeDefaultMatch();
         mLocationBarMediator.onSuggestionsChanged(defaultMatch, hasSuggestions);
+        mSuggestionsListNonEmptySupplier.set(hasSuggestions);
+    }
+
+    /** Returns the supplier of whether the suggestions list has results. */
+    public NonNullObservableSupplier<Boolean> getSuggestionsListNonEmptySupplier() {
+        return mSuggestionsListNonEmptySupplier;
     }
 
     @Override

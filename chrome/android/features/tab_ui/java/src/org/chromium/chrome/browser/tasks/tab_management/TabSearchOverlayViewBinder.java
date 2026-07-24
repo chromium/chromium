@@ -24,22 +24,28 @@ public class TabSearchOverlayViewBinder {
     public static class ViewHolder {
         public final View panelContainer;
         public final View panel;
+        public final View emptyStateView;
 
         /**
          * Constructs a new ViewHolder holding the inflated views.
          *
          * @param panelContainer The root container layout for the search overlay.
          * @param panel The background overlay panel itself.
+         * @param emptyStateView The empty state view.
          */
-        public ViewHolder(View panelContainer, View panel) {
+        public ViewHolder(View panelContainer, View panel, View emptyStateView) {
             this.panelContainer = panelContainer;
             this.panel = panel;
+            this.emptyStateView = emptyStateView;
         }
     }
 
     /** Binds properties from the PropertyModel to the ViewHolder. */
     public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
-        if (TabSearchOverlayProperties.ON_CLOSE_CLICK == propertyKey) {
+        if (TabSearchOverlayProperties.EMPTY_STATE_VISIBLE == propertyKey) {
+            boolean visible = model.get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE);
+            view.emptyStateView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        } else if (TabSearchOverlayProperties.ON_CLOSE_CLICK == propertyKey) {
             view.panel
                     .findViewById(R.id.tab_search_close_button)
                     .setOnClickListener(model.get(TabSearchOverlayProperties.ON_CLOSE_CLICK));
