@@ -34,10 +34,10 @@ using ::testing::_;
 
 class MockOnDemandUpdater : public OnDemandUpdater {
  public:
-  MOCK_METHOD3(OnDemandUpdate,
-               void(const std::string& id,
-                    Priority priority,
-                    Callback callback));
+  MOCK_METHOD(void,
+              OnDemandUpdate,
+              (const std::string& id, Priority priority, Callback callback),
+              (override));
 };
 
 class PlatformRuntimeComponentInstallerTest : public testing::Test {

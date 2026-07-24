@@ -145,7 +145,7 @@ class MockObserver : public UpdateClient::Observer {
 
   ~MockObserver() override { update_client_->RemoveObserver(this); }
 
-  MOCK_METHOD1(OnEvent, void(const CrxUpdateItem& item));
+  MOCK_METHOD(void, OnEvent, (const CrxUpdateItem& item), (override));
 
  private:
   const scoped_refptr<UpdateClient> update_client_;
@@ -157,8 +157,10 @@ class MockActionHandler : public ActionHandler {
   MockActionHandler(const MockActionHandler&) = delete;
   MockActionHandler& operator=(const MockActionHandler&) = delete;
 
-  MOCK_METHOD3(Handle,
-               void(const base::FilePath&, const std::string&, Callback));
+  MOCK_METHOD(void,
+              Handle,
+              (const base::FilePath&, const std::string&, Callback),
+              (override));
 
  private:
   ~MockActionHandler() override = default;
@@ -2015,10 +2017,12 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
 TEST_F(UpdateClientTest, OneCrxInstallError) {
   class MockInstaller : public CrxInstaller {
    public:
-    MOCK_METHOD1(DoInstall, void(const base::FilePath& unpack_path));
-    MOCK_METHOD1(GetInstalledFile,
-                 std::optional<base::FilePath>(const std::string& file));
-    MOCK_METHOD0(Uninstall, bool());
+    MOCK_METHOD(void, DoInstall, (const base::FilePath& unpack_path));
+    MOCK_METHOD(std::optional<base::FilePath>,
+                GetInstalledFile,
+                (const std::string& file),
+                (override));
+    MOCK_METHOD(bool, Uninstall, (), (override));
 
     void Install(const base::FilePath& unpack_path,
                  const std::string& public_key,

@@ -54,15 +54,19 @@ using ::testing::Unused;
 class MockInstaller : public update_client::CrxInstaller {
  public:
   MockInstaller() = default;
-  MOCK_METHOD5(Install,
-               void(const base::FilePath& unpack_path,
-                    const std::string& public_key,
-                    std::unique_ptr<InstallParams> install_params,
-                    ProgressCallback progress_callback,
-                    Callback callback));
-  MOCK_METHOD1(GetInstalledFile,
-               std::optional<base::FilePath>(const std::string& file));
-  MOCK_METHOD0(Uninstall, bool());
+  MOCK_METHOD(void,
+              Install,
+              (const base::FilePath& unpack_path,
+               const std::string& public_key,
+               std::unique_ptr<InstallParams> install_params,
+               ProgressCallback progress_callback,
+               Callback callback),
+              (override));
+  MOCK_METHOD(std::optional<base::FilePath>,
+              GetInstalledFile,
+              (const std::string& file),
+              (override));
+  MOCK_METHOD(bool, Uninstall, (), (override));
 
  private:
   ~MockInstaller() override = default;
@@ -72,38 +76,47 @@ class MockUpdateClient : public UpdateClient {
  public:
   MockUpdateClient() = default;
 
-  MOCK_METHOD1(AddObserver, void(Observer* observer));
-  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
-  MOCK_METHOD4(
-      Install,
-      base::RepeatingClosure(const std::string& id,
-                             CrxDataCallback crx_data_callback,
-                             CrxStateChangeCallback crx_state_change_callback,
-                             Callback callback));
-  MOCK_METHOD5(Update,
-               void(const std::vector<std::string>& ids,
-                    CrxDataCallback crx_data_callback,
-                    CrxStateChangeCallback crx_state_change_callback,
-                    bool is_foreground,
-                    Callback callback));
-  MOCK_METHOD5(CheckForUpdate,
-               void(const std::string& ids,
-                    CrxDataCallback crx_data_callback,
-                    CrxStateChangeCallback crx_state_change_callback,
-                    bool is_foreground,
-                    Callback callback));
-  MOCK_CONST_METHOD2(GetCrxUpdateState,
-                     bool(const std::string& id, CrxUpdateItem* update_item));
-  MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
-  MOCK_METHOD0(Stop, void());
-  MOCK_METHOD3(SendPing,
-               void(const CrxComponent& crx_component,
-                    PingParams ping_params,
-                    Callback callback));
-  MOCK_METHOD2(SendRegistrationPing,
-               void(const CrxComponent& crx_component, Callback callback));
-  MOCK_METHOD2(CleanupStaleDownloads,
-               void(base::Time older_than, base::OnceClosure callback));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(base::RepeatingClosure,
+              Install,
+              (const std::string& id,
+               CrxDataCallback crx_data_callback,
+               CrxStateChangeCallback crx_state_change_callback,
+               Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              Update,
+              (const std::vector<std::string>& ids,
+               CrxDataCallback crx_data_callback,
+               CrxStateChangeCallback crx_state_change_callback,
+               bool is_foreground,
+               Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              CheckForUpdate,
+              (const std::string& ids,
+               CrxDataCallback crx_data_callback,
+               CrxStateChangeCallback crx_state_change_callback,
+               bool is_foreground,
+               Callback callback),
+              (override));
+  MOCK_METHOD(bool,
+              GetCrxUpdateState,
+              (const std::string& id, CrxUpdateItem* update_item),
+              (const, override));
+  MOCK_METHOD(bool, IsUpdating, (const std::string& id), (const, override));
+  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void,
+              SendPing,
+              (const CrxComponent& crx_component,
+               PingParams ping_params,
+               Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              CleanupStaleDownloads,
+              (base::Time older_than, base::OnceClosure callback),
+              (override));
 
  private:
   ~MockUpdateClient() override = default;
@@ -111,17 +124,19 @@ class MockUpdateClient : public UpdateClient {
 
 class MockServiceObserver : public ServiceObserver {
  public:
-  MOCK_METHOD1(OnEvent, void(const update_client::CrxUpdateItem&));
+  MOCK_METHOD(void, OnEvent, (const update_client::CrxUpdateItem&), (override));
 };
 
 class MockUpdateScheduler : public UpdateScheduler {
  public:
-  MOCK_METHOD4(Schedule,
-               void(base::TimeDelta initial_delay,
-                    base::TimeDelta delay,
-                    const UserTask& user_task,
-                    const OnStopTaskCallback& on_stop));
-  MOCK_METHOD0(Stop, void());
+  MOCK_METHOD(void,
+              Schedule,
+              (base::TimeDelta initial_delay,
+               base::TimeDelta delay,
+               const UserTask& user_task,
+               const OnStopTaskCallback& on_stop),
+              (override));
+  MOCK_METHOD(void, Stop, (), (override));
 };
 
 class LoopHandler {

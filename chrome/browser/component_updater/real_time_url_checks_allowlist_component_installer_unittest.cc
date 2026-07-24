@@ -26,8 +26,10 @@ class MockRealTimeUrlChecksAllowlist
   MockRealTimeUrlChecksAllowlist& operator=(
       const MockRealTimeUrlChecksAllowlist&) = delete;
 
-  MOCK_METHOD1(PopulateFromDynamicUpdate, void(const std::string& binary_pb));
-
+  MOCK_METHOD(void,
+              PopulateFromDynamicUpdate,
+              (const std::string& binary_pb),
+              (override));
 };
 
 class RealTimeUrlChecksAllowlistComponentInstallerTest

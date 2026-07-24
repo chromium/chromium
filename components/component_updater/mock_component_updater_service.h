@@ -31,36 +31,43 @@ class MockComponentUpdateService : public ComponentUpdateService {
   MockComponentUpdateService();
   ~MockComponentUpdateService() override;
 
-  void MaybeThrottle(const std::string& id,
-                     base::OnceClosure callback) override {
-    DoMaybeThrottle(id, std::move(callback));
-  }
+  MOCK_METHOD(scoped_refptr<base::SequencedTaskRunner>,
+              GetSequencedTaskRunner,
+              ());
 
-  base::Version GetRegisteredVersion(const std::string& app_id) override {
-    return base::Version(kNullVersion);
-  }
-
-  base::Version GetMaxPreviousProductVersion(
-      const std::string& app_id) override {
-    return base::Version(kNullVersion);
-  }
-
-  MOCK_METHOD1(AddObserver, void(Observer* observer));
-  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
-  MOCK_METHOD1(RegisterComponent, bool(const ComponentRegistration& component));
-  MOCK_METHOD1(UnregisterComponent, bool(const std::string& id));
-  MOCK_CONST_METHOD0(GetComponentIDs, std::vector<std::string>());
-  MOCK_CONST_METHOD0(GetComponents, std::vector<ComponentInfo>());
-  MOCK_METHOD0(GetOnDemandUpdater, OnDemandUpdater&());
-  MOCK_METHOD0(Stop, void());
-  MOCK_METHOD2(DoMaybeThrottle,
-               void(const std::string& id, const base::OnceClosure& callback));
-  MOCK_METHOD0(GetSequencedTaskRunner,
-               scoped_refptr<base::SequencedTaskRunner>());
-  MOCK_CONST_METHOD2(GetComponentDetails,
-                     bool(const std::string& id, CrxUpdateItem* item));
+  // ComponentUpdateService overrides.
+  MOCK_METHOD(void,
+              MaybeThrottle,
+              (const std::string& id, base::OnceClosure callback),
+              (override));
+  MOCK_METHOD(base::Version,
+              GetRegisteredVersion,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(base::Version,
+              GetMaxPreviousProductVersion,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(bool,
+              RegisterComponent,
+              (const ComponentRegistration& component),
+              (override));
+  MOCK_METHOD(bool, UnregisterComponent, (const std::string& id), (override));
+  MOCK_METHOD(std::vector<std::string>, GetComponentIDs, (), (const, override));
+  MOCK_METHOD(std::vector<ComponentInfo>, GetComponents, (), (const, override));
+  MOCK_METHOD(OnDemandUpdater&, GetOnDemandUpdater, (), (override));
+  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(bool,
+              GetComponentDetails,
+              (const std::string& id, CrxUpdateItem* item),
+              (const, override));
 #if BUILDFLAG(CHROME_FOR_TESTING)
-  MOCK_METHOD1(EnsureRequiredComponentsReady, void(base::TimeDelta timeout));
+  MOCK_METHOD(void,
+              EnsureRequiredComponentsReady,
+              (base::TimeDelta timeout),
+              (override));
 #endif
 };
 
