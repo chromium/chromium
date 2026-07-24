@@ -38,6 +38,8 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
+template <typename T>
+class PrefetchCandidateCollectHelper;
 class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
@@ -216,13 +218,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
   // lead inconsistent state. To avoid that, we record
   // `PrefetchServableState` in the `flat_map` at the beginning of
   // matching process and refer to it.
-  std::pair<std::vector<PrefetchContainer*>,
-            base::flat_map<PrefetchKey, PrefetchServableState>>
-  CollectMatchCandidates(const PrefetchKey& key,
-                         bool is_nav_prerender,
-                         const PrefetchKey* key_ahead_of_prerender,
-                         PrefetchPotentialCandidateCollectResult*
-                             collect_result_ahead_of_prerender);
+  void CollectMatchCandidates(
+      PrefetchCandidateCollectHelper<PrefetchContainer>& helper,
+      const PrefetchKey& key,
+      bool is_nav_prerender);
   PrefetchContainer* FindPrefetchAheadOfPrerenderForMetrics(
       const PreloadPipelineInfo& pipeline_info);
 

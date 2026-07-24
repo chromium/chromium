@@ -137,11 +137,10 @@ class CollectMatchCandidatesTestHelper {
     // We must bind the following value instead of using `std::get()` in `for`
     // due to a lifetime issue before C++23:
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2718r0.html
-    auto [candidates, _] = CollectMatchCandidatesGeneric(
-        owned_prefetches_, navigated_key, is_nav_prerender,
-        /*key_ahead_of_prerender=*/nullptr,
-        /*collect_result_ahead_of_prerender=*/nullptr);
-    for (const auto* container : candidates) {
+    PrefetchCandidateCollectHelper<MockContainer> helper;
+    CollectMatchCandidatesGeneric(helper, owned_prefetches_, navigated_key,
+                                  is_nav_prerender);
+    for (const auto* container : helper.GetMatchedCandidates()) {
       candidate_keys.push_back(container->key());
     }
     return candidate_keys;

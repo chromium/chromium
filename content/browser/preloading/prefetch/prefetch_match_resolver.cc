@@ -293,34 +293,62 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
     prefetch_container_ahead_of_prerender = nullptr;
   }
 
-  auto [candidates, servable_states] = prefetch_service.CollectMatchCandidates(
-      navigated_key_, is_nav_prerender_,
-      prefetch_container_ahead_of_prerender
-          ? &prefetch_container_ahead_of_prerender->key()
-          : nullptr,
-      &collect_result_ahead_of_prerender_for_metrics_);
-  // Consume `candidates`.
-  for (auto& prefetch_container : candidates) {
-    // Register the candidate only if `PrefetchServiceWorkerState` is matching.
-    if (prefetch_container->service_worker_state() ==
-        expected_service_worker_state_) {
-      RegisterCandidate(*prefetch_container);
-    } else if (prefetch_container->service_worker_state() ==
-               PrefetchServiceWorkerState::kAllowed) {
-      // Also register the candidate if `PrefetchServiceWorkerState::kAllowed`,
-      // so that we anyway start BlockUntilHead (if eligible) before service
-      // worker controller check is done, and remove the candidate later (in
-      // `OnDeterminedHead()`) if the final `PrefetchServiceWorkerState` turns
-      // not matching.
-      CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
-      RegisterCandidate(*prefetch_container);
-    } else {
-      DVLOG(1) << "Serving " << *prefetch_container
-               << ": dropped due to ServiceWorkerState ("
-               << prefetch_container->service_worker_state() << " vs. "
-               << expected_service_worker_state_ << ")";
+  base::flat_map<PrefetchKey, PrefetchServableState> servable_states;
+  {
+    // Dropped before `Unblock*()`, as it contains raw pointers.
+    PrefetchCandidateCollectHelper<PrefetchContainer> helper;
+    prefetch_service.CollectMatchCandidates(helper, navigated_key_,
+                                            is_nav_prerender_);
+
+    servable_states = helper.GetServableStates();
+
+    // Debug: Fill `PrefetchPotentialCandidateCollectResult` if the navigation
+    // is prerender and has prefetch ahead of prerender.
+    if (prefetch_container_ahead_of_prerender) {
+      [&]() {
+        for (const auto& details : helper.GetCandidates()) {
+          if (details.candidate->key() ==
+              prefetch_container_ahead_of_prerender->key()) {
+            collect_result_ahead_of_prerender_for_metrics_ =
+                details.collect_result;
+            return;
+          }
+        }
+        // Defaults to `kUnavailablePrefetchIsNotInPrefetchService` if prefetch
+        // ahead of prerender is not in the candidates.
+        collect_result_ahead_of_prerender_for_metrics_ =
+            PrefetchPotentialCandidateCollectResult::
+                kUnavailablePrefetchIsNotInPrefetchService;
+      }();
     }
+
+    // Consume `candidates`.
+    for (auto* prefetch_container : helper.GetMatchedCandidates()) {
+      // Register the candidate only if `PrefetchServiceWorkerState` is
+      // matching.
+      if (prefetch_container->service_worker_state() ==
+          expected_service_worker_state_) {
+        RegisterCandidate(*prefetch_container);
+      } else if (prefetch_container->service_worker_state() ==
+                 PrefetchServiceWorkerState::kAllowed) {
+        // Also register the candidate if
+        // `PrefetchServiceWorkerState::kAllowed`, so that we anyway start
+        // BlockUntilHead (if eligible) before service worker controller check
+        // is done, and remove the candidate later (in `OnDeterminedHead()`) if
+        // the final `PrefetchServiceWorkerState` turns not matching.
+        CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+        RegisterCandidate(*prefetch_container);
+      } else {
+        DVLOG(1) << "Serving " << *prefetch_container
+                 << ": dropped due to ServiceWorkerState ("
+                 << prefetch_container->service_worker_state() << " vs. "
+                 << expected_service_worker_state_ << ")";
+      }
+    }
+
+    // `PrefetchCandidateCollectHelper` dropped.
   }
+
   prefetch_match_metrics_->n_initial_candidates = candidates_.size();
   // `PrefetchMatchMetrics::n_initial_candidates_block_until_head` is `0` when
   // we early-exit before reaching `StartWaitFor()` calls below, as we anyway
