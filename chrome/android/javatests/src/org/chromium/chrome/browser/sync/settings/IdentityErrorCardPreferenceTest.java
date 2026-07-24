@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -31,8 +33,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -44,12 +46,13 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@Batch(Batch.PER_CLASS)
 public class IdentityErrorCardPreferenceTest {
     public final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.
@@ -84,6 +87,11 @@ public class IdentityErrorCardPreferenceTest {
                     mFakeSyncServiceImpl = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        mSigninTestRule.forceSignOut();
     }
 
     @Test

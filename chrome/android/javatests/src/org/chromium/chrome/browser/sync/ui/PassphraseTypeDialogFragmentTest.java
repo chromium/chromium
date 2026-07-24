@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -42,6 +43,7 @@ import java.io.IOException;
 /** Tests to make sure that PassphraseTypeDialogFragment presents the correct options. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class PassphraseTypeDialogFragmentTest {
     private static final int RENDER_TEST_REVISION = 3;
     private static final String RENDER_TEST_DESCRIPTION =
