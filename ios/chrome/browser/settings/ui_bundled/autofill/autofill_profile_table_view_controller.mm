@@ -170,7 +170,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
 // Returns true if the item type is user deletable.
 bool CanDeleteItemType(NSInteger itemType) {
   return itemType == ItemTypeAddress || itemType == ItemTypeIdentityDoc ||
-         itemType == ItemTypeTravel || itemType == ItemTypeShopping;
+         itemType == ItemTypeTravel;
 }
 
 ItemType ItemTypeForEntitySection(SectionIdentifier section_identifier) {
@@ -903,14 +903,14 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
            editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return [self isServerWalletItemAtIndexPath:indexPath]
+  return [self isServerWalletOrReadOnlyItemAtIndexPath:indexPath]
              ? UITableViewCellEditingStyleNone
              : UITableViewCellEditingStyleDelete;
 }
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
-  return ![self isServerWalletItemAtIndexPath:indexPath];
+  return ![self isServerWalletOrReadOnlyItemAtIndexPath:indexPath];
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -1039,7 +1039,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (_settingsAreDismissed || [self isServerWalletItemAtIndexPath:indexPath]) {
+  if (_settingsAreDismissed ||
+      [self isServerWalletOrReadOnlyItemAtIndexPath:indexPath]) {
     return NO;
   }
 
@@ -1311,23 +1312,29 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 #pragma mark - Private
 
 // Returns YES if the item at the given `indexPath` represents a server-side
-// Wallet entity.
-- (BOOL)isServerWalletItemAtIndexPath:(NSIndexPath*)indexPath {
+// Wallet entity or a read-only entity such as a shopping entity or a flight
+// entity.
+- (BOOL)isServerWalletOrReadOnlyItemAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
     AutofillAIEntityItem* aiItem =
         base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
-    return aiItem.isServerWalletItem;
+    return aiItem.isServerWalletItem ||
+           aiItem.entityTypeName ==
+               autofill::EntityTypeName::kFlightReservation ||
+           kShopping.contains(aiItem.entityTypeName);
   }
   return NO;
 }
 
 // Updates the opacity and interaction state of the given `cell` based on
-// whether it represents a server wallet entity and the table's editing state.
+// whether it represents a server wallet entity or shopping entity, and the
+// table's editing state.
 - (void)updateOpacityAndInteractionForCell:(UITableViewCell*)cell
                                atIndexPath:(NSIndexPath*)indexPath {
   BOOL shouldDisable =
-      [self isServerWalletItemAtIndexPath:indexPath] && self.tableView.editing;
+      [self isServerWalletOrReadOnlyItemAtIndexPath:indexPath] &&
+      self.tableView.editing;
 
   cell.contentView.alpha = shouldDisable ? 0.5 : 1.0;
   cell.userInteractionEnabled = !shouldDisable;
