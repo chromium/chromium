@@ -148,7 +148,8 @@ export class XfSelect extends XfBase {
         html`<span id="xf-select-icon" class="xf-select-icon ${
             this.icon}"></span>` :
         html``;
-    const labelPart = html`<span id="selected-option">${buttonLabel}</span>`;
+    const labelPart =
+        html`<span id="selected-option" class="label">${buttonLabel}</span>`;
 
     return html`
       <cr-button id="dropdown-toggle"
@@ -175,7 +176,7 @@ export class XfSelect extends XfBase {
                   aria-checked="${checked}"
                   @click=${() => this.onOptionSelected_(index)}
                   ?selected=${checked}>
-                ${option.text}
+                <span class="label">${option.text}</span>
                 <div class='dropdown-filler'></div>
                 <div slot='suffix-icon' class='selected-icon'></div>
               </cr-button>`;
@@ -378,6 +379,9 @@ function getCSS(): CSSResultGroup {
       font: var(--cros-button-2-font);
       height: 36px;
       padding: 0 16px;
+      max-width: 13em;
+      min-width: calc(12px + 1em);
+      outline: none;
     }
     cr-button.dropdown-item:hover {
       background-color: var(--cros-sys-hover_on_subtle);
@@ -390,6 +394,17 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item-end {
       justify-content: end;
+    }
+    #selected-option {
+      max-width: 13em;
+    }
+    .label {
+      display: block;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     div.dropdown-filler {
       flex-grow: 1;

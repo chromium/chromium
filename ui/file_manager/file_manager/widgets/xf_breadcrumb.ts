@@ -319,7 +319,7 @@ function getCSS() {
       margin: 0;
 
       /* elide wide text */
-      max-width: 200px;
+      max-width: 15em;
       /* text rendering debounce: fix a minimum width. */
       min-width: calc(12px + 1em);
       outline: none;
