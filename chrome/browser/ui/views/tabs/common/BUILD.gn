@@ -88,7 +88,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:utils",
-    "//chrome/browser/ui/tabs/projects:impl",
+    "//chrome/browser/ui/tabs/organizer:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views:layout_provider",

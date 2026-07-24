@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/color/projects_panel_color_mixer.h"
+#include "chrome/browser/ui/color/organizer_panel_color_mixer.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/color/color_id.h"

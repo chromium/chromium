@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view_layout.h"
 
-#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "ui/views/view.h"
 
 ProjectsPanelViewLayout::ProjectsPanelViewLayout(views::View* controls_view)

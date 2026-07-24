@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_LAYOUT_CONSTANTS_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_LAYOUT_CONSTANTS_H_
 
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
@@ -23,4 +23,4 @@ inline constexpr gfx::Insets kProjectsPanelRegionInteriorMargins =
 
 }  // namespace projects_panel
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_LAYOUT_CONSTANTS_H_

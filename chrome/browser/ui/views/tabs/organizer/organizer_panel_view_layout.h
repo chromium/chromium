@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_LAYOUT_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_LAYOUT_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_LAYOUT_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_LAYOUT_H_
 
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -28,4 +28,4 @@ class ProjectsPanelViewLayout : public views::LayoutManagerBase {
   raw_ptr<views::View> controls_view_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_LAYOUT_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_LAYOUT_H_

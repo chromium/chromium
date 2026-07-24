@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_PROJECTS_PROJECTS_PANEL_STATE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TABS_PROJECTS_PROJECTS_PANEL_STATE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_STATE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_STATE_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -62,4 +62,4 @@ class ProjectsPanelStateController {
   base::WeakPtrFactory<ProjectsPanelStateController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_PROJECTS_PROJECTS_PANEL_STATE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_STATE_CONTROLLER_H_

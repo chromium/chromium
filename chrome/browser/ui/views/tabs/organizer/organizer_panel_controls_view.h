@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLS_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLS_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLS_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLS_VIEW_H_
 
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -55,4 +55,4 @@ class ProjectsPanelControlsView : public views::View,
   raw_ptr<actions::ActionItem> toggle_projects_panel_action_item_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLS_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLS_VIEW_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_controls_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -161,4 +161,4 @@ class ProjectsPanelView : public views::View,
   base::WeakPtrFactory<ProjectsPanelView> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_

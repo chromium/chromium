@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/projects/projects_utils.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_utils.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

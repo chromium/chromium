@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("projects") {
+source_set("organizer") {
   sources = [
-    "projects_panel_state_controller.h",
-    "projects_prefs.h",
-    "projects_utils.h",
+    "organizer_panel_state_controller.h",
+    "organizer_prefs.h",
+    "organizer_utils.h",
   ]
 
   public_deps = [
@@ -17,12 +17,12 @@ source_set("projects") {
 
 source_set("impl") {
   sources = [
-    "projects_panel_state_controller.cc",
-    "projects_prefs.cc",
-    "projects_utils.cc",
+    "organizer_panel_state_controller.cc",
+    "organizer_prefs.cc",
+    "organizer_utils.cc",
   ]
 
-  public_deps = [ ":projects" ]
+  public_deps = [ ":organizer" ]
 
   deps = [
     "//chrome/app:generated_resources",
@@ -44,7 +44,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "projects_panel_state_controller_unittest.cc" ]
+  sources = [ "organizer_panel_state_controller_unittest.cc" ]
   deps = [
     ":impl",
     "//base/test:test_support",
@@ -58,13 +58,13 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "projects_panel_state_controller_interactive_uitest.cc" ]
+  sources = [ "organizer_panel_state_controller_interactive_uitest.cc" ]
   deps = [
     ":impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs",
-    "//chrome/browser/ui/views/tabs/projects",
+    "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//ui/base",

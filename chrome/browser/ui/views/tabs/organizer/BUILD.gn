@@ -2,19 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("projects") {
+source_set("organizer") {
   sources = [
     "layout_constants.h",
-    "projects_panel_controls_view.h",
-    "projects_panel_utils.h",
-    "projects_panel_view.h",
-    "projects_panel_view_layout.h",
+    "organizer_panel_controls_view.h",
+    "organizer_panel_utils.h",
+    "organizer_panel_view.h",
+    "organizer_panel_view_layout.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/app/vector_icons",
-    "//chrome/browser/ui/tabs/projects",
+    "//chrome/browser/ui/tabs/organizer",
     "//ui/base",
     "//ui/views",
   ]
@@ -22,13 +22,13 @@ source_set("projects") {
 
 source_set("impl") {
   sources = [
-    "projects_panel_controls_view.cc",
-    "projects_panel_utils.cc",
-    "projects_panel_view.cc",
-    "projects_panel_view_layout.cc",
+    "organizer_panel_controls_view.cc",
+    "organizer_panel_utils.cc",
+    "organizer_panel_view.cc",
+    "organizer_panel_view_layout.cc",
   ]
 
-  public_deps = [ ":projects" ]
+  public_deps = [ ":organizer" ]
 
   deps = [
     "//chrome/app:generated_resources",
@@ -41,7 +41,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",
-    "//chrome/browser/ui/tabs/projects:impl",
+    "//chrome/browser/ui/tabs/organizer:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
@@ -55,11 +55,11 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "projects_panel_view_layout_unittest.cc",
-    "projects_panel_view_unittest.cc",
+    "organizer_panel_view_layout_unittest.cc",
+    "organizer_panel_view_unittest.cc",
   ]
   deps = [
-    ":projects",
+    ":organizer",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
@@ -77,15 +77,15 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "projects_panel_view_interactive_uitest.cc" ]
+  sources = [ "organizer_panel_view_interactive_uitest.cc" ]
   deps = [
-    ":projects",
+    ":organizer",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs",
-    "//chrome/browser/ui/tabs/projects",
+    "//chrome/browser/ui/tabs/organizer",
     "//chrome/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/saved_tab_groups/public",

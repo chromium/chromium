@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view_layout.h"
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
