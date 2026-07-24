@@ -24,10 +24,21 @@ final class SideUiUpdateSpecs {
     /** {@link SideUiSpecs} containing only the {@link AnchorSide}s that need to be updated. */
     final SideUiSpecs mSpecsDiff;
 
-    SideUiUpdateSpecs(SideUiSpecs currentSpecs, SideUiSpecs newSpecs, SideUiSpecs specsDiff) {
+    /**
+     * {@link AnchorContainerTopMargins} containing only the {@link AnchorSide}s that needs to be
+     * updated.
+     */
+    final AnchorContainerTopMargins mTopMarginDiff;
+
+    SideUiUpdateSpecs(
+            SideUiSpecs currentSpecs,
+            SideUiSpecs newSpecs,
+            SideUiSpecs specsDiff,
+            AnchorContainerTopMargins topMarginDiff) {
         assert specsDiff.equals(newSpecs.diffAgainst(currentSpecs));
         mCurrentSpecs = currentSpecs;
         mNewSpecs = newSpecs;
         mSpecsDiff = specsDiff;
+        mTopMarginDiff = topMarginDiff;
     }
 }

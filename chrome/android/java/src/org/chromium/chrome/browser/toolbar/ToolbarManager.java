@@ -1890,14 +1890,16 @@ public class ToolbarManager
         mControlContainerSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
 
-        mProgressBarSideUiObserver = new ViewMarginAdjusterForSideUi(mProgressBarContainer);
+        mProgressBarSideUiObserver =
+                new ViewMarginAdjusterForSideUi(
+                        mProgressBarContainer, /* forToolbarElement= */ true);
         mProgressBarSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
         mSideUiStateProvider.addObserver(mProgressBarSideUiObserver);
     }
 
     private static class ToolbarMarginAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
         ToolbarMarginAdjusterForSideUi(View view) {
-            super(view);
+            super(view, /* forToolbarElement= */ true);
         }
 
         @Override

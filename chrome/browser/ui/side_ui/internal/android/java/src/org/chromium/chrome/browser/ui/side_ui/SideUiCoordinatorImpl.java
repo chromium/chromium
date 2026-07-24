@@ -32,12 +32,14 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
 
@@ -48,12 +50,17 @@ import java.util.Map;
 
 /** Implementation of {@link SideUiCoordinator}. */
 @NullMarked
-final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationChangedObserver {
+final class SideUiCoordinatorImpl
+        implements SideUiCoordinator,
+                ConfigurationChangedObserver,
+                BrowserControlsStateProvider.Observer {
 
     private static final long TRANSITION_DURATION_MS = 350L;
 
     private final Activity mParentActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final TopControlsStacker mTopControlsStacker;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private final ViewGroup mAnchorContainerParent;
 
@@ -61,8 +68,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
 
-    private final NonNullObservableSupplier<Integer> mTopMarginSupplier;
-    private final Callback<Integer> mTopMarginObserver;
+    private final NonNullObservableSupplier<Integer> mTabStripBottomPxSupplier;
+    private final Callback<Integer> mTabStripBottomPxObserver;
 
     /** Maps {@link AnchorSide} to {@link ViewGroup} where {@link SideUiContainer} is attached. */
     private final Map<@AnchorSide Integer, ViewGroup> mAnchorContainers = new ArrayMap<>();
@@ -92,26 +99,32 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
      *     top controls changes.
+     * @param topControlsStacker The {@link TopControlsStacker} to calculate heights for top
+     *     controls.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
      * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
      *     container.
-     * @param topMarginSupplier The supplier for the Side UI's top margin.
+     * @param tabStripBottomPxSupplier The supplier for the Side UI's top margin added for tab
+     *     strip.
      */
     /* package */ SideUiCoordinatorImpl(
             Activity parentActivity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
+            TopControlsStacker topControlsStacker,
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
             ViewStub webContentHairlineContainerStub,
-            NonNullObservableSupplier<Integer> topMarginSupplier) {
+            NonNullObservableSupplier<Integer> tabStripBottomPxSupplier) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mTopControlsStacker = topControlsStacker;
         mAnchorContainerParent = anchorContainerParent;
 
         ViewGroup leftAnchorContainer = (ViewGroup) leftAnchorContainerStub.inflate();
@@ -121,9 +134,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         mAnchorContainers.put(AnchorSide.LEFT, leftAnchorContainer);
         mAnchorContainers.put(AnchorSide.RIGHT, rightAnchorContainer);
 
-        mTopMarginObserver = this::onTopMarginChanged;
-        mTopMarginSupplier = topMarginSupplier;
-        mTopMarginSupplier.addSyncObserver(mTopMarginObserver);
+        mTabStripBottomPxObserver = this::onTabStripBottomPxChanged;
+        mTabStripBottomPxSupplier = tabStripBottomPxSupplier;
+        mTabStripBottomPxSupplier.addSyncObserver(mTabStripBottomPxObserver);
 
         webContentHairlineContainerStub.setLayoutResource(
                 R.layout.side_ui_web_content_hairline_container);
@@ -137,7 +150,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
-
+        browserControlsStateProvider.addObserver(this);
         mActivityLifecycleDispatcher.register(this);
     }
 
@@ -196,7 +209,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         }
         mCallbackController.destroy();
         mSideUiContainers.clear();
-        mTopMarginSupplier.removeObserver(mTopMarginObserver);
+        mTabStripBottomPxSupplier.removeObserver(mTabStripBottomPxObserver);
+        mBrowserControlsStateProvider.removeObserver(this);
         mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
@@ -287,6 +301,25 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     //              End of SideUiStateProvider Implementation                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    // BrowserControlsStateProvider.Observer implementation:
+    @Override
+    public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
+    @Override
+    public void onControlsOffsetChanged(
+            int topOffset,
+            int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
+            boolean isVisibilityForced) {
+        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+    }
+
     // ConfigurationChangedObserver Implementation
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -349,16 +382,20 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                 request.mSuppressAnimations
                         || ChromeFeatureList.sEnableAndroidSidePanelDisableAnimations.getValue();
 
-        // 3. Determine the new SideUiShowability and the new SideUiSpecs.
+        // 3. Determine the new SideUiShowability, SideUiSpecs, and AnchorContainerTopMargins.
         @Px int windowWidth = getWindowWidth();
         @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
         SideUiShowability newSideUiShowability =
                 determineSideUiShowability(windowWidth, minWebContentsWidth);
         SideUiSpecs newSideUiSpecs = determineSideUiSpecs(windowWidth, minWebContentsWidth);
+        AnchorContainerTopMargins newTopMargins =
+                determineAnchorContainerTopMargins(newSideUiSpecs);
 
         // 4. Collect containers whose width needs updating for resize event and transition effect.
         SideUiSpecs currentSideUiSpecs = getCurrentSideUiSpecsInternal();
         SideUiSpecs sideUiSpecsDiff = newSideUiSpecs.diffAgainst(currentSideUiSpecs);
+        AnchorContainerTopMargins currentTopMargins = getCurrentAnchorContainerTopMargins();
+        AnchorContainerTopMargins topMarginDiff = newTopMargins.diffAgainst(currentTopMargins);
 
         // 5. Handle auto-close/auto-restore.
         for (var container : mSideUiContainers) {
@@ -381,9 +418,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         mSideUiObserverNotifier.notifySideUiShowability(newSideUiShowability);
 
         // 7. Commit the new SideUiSpecs.
-        if (!sideUiSpecsDiff.isEmpty()) {
+        if (!sideUiSpecsDiff.isEmpty() || !topMarginDiff.isEmpty()) {
             var uiUpdateSpecs =
-                    new SideUiUpdateSpecs(currentSideUiSpecs, newSideUiSpecs, sideUiSpecsDiff);
+                    new SideUiUpdateSpecs(
+                            currentSideUiSpecs, newSideUiSpecs, sideUiSpecsDiff, topMarginDiff);
             @Nullable TransitionSet transitionSet =
                     suppressAnimations ? null : collectTransitions(uiUpdateSpecs);
             commitNewSideUiSpecs(uiUpdateSpecs, transitionSet);
@@ -415,11 +453,27 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     }
 
     private @HeightType int getCurrentHeightType(@AnchorSide int anchorSide) {
-        ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
-        if (anchorContainer.getVisibility() == View.GONE || anchorContainer.getWidth() == 0) {
-            return HeightType.NOT_APPLICABLE;
+        var anchorContainerTopMargins = getCurrentAnchorContainerTopMargins();
+        Integer topMargin = anchorContainerTopMargins.get(anchorSide);
+        if (topMargin == null) return HeightType.NOT_APPLICABLE;
+
+        return topMargin.equals(mTabStripBottomPxSupplier.get())
+                ? HeightType.TOOLBAR
+                : HeightType.WEB_CONTENTS;
+    }
+
+    private AnchorContainerTopMargins getCurrentAnchorContainerTopMargins() {
+        Map<@AnchorSide Integer, Integer> topMargins = new ArrayMap<>();
+        for (Map.Entry<@AnchorSide Integer, ViewGroup> entry : mAnchorContainers.entrySet()) {
+            @AnchorSide int anchorSide = entry.getKey();
+            ViewGroup anchorContainer = entry.getValue();
+            if (anchorContainer.getVisibility() == View.GONE || anchorContainer.getWidth() == 0) {
+                continue;
+            }
+            MarginLayoutParams lp = (MarginLayoutParams) anchorContainer.getLayoutParams();
+            topMargins.put(anchorSide, lp.topMargin);
         }
-        return HeightType.TOOLBAR;
+        return new AnchorContainerTopMargins(topMargins);
     }
 
     /**
@@ -469,7 +523,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             sideUiSpecs.put(side, new SideUiSize(0, HeightType.NOT_APPLICABLE));
         }
         for (var container : mSideUiContainers) {
-
             SideUiSize newSideUiSize =
                     container.hasContentToShow()
                             ? container.determineShowableSize(availableWidth, windowWidth)
@@ -478,6 +531,38 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             availableWidth = Math.max(availableWidth - newSideUiSize.width, 0);
         }
         return new SideUiSpecs(sideUiSpecs);
+    }
+
+    /**
+     * Determines the {@link AnchorContainerTopMargin} for {@link AnchorSide}s.
+     *
+     * <p>This derives the pixel value for each anchor container's top margin from the {@link
+     * HeightType} enum in {@link SideUiSpecs}.
+     */
+    private AnchorContainerTopMargins determineAnchorContainerTopMargins(SideUiSpecs sideUiSpecs) {
+        Map<@AnchorSide Integer, Integer> topMargins = new ArrayMap<>();
+        @Px int marginForTabStrip = mTabStripBottomPxSupplier.get();
+
+        for (Map.Entry<@AnchorSide Integer, SideUiSize> entry : sideUiSpecs.entrySet()) {
+            @AnchorSide int anchorSide = entry.getKey();
+            @HeightType int heightType = entry.getValue().heightType;
+            if (heightType == HeightType.NOT_APPLICABLE) continue;
+
+            @Px
+            int marginForTopControls =
+                    switch (heightType) {
+                        case HeightType.TOOLBAR -> 0;
+                        case HeightType.WEB_CONTENTS ->
+                                mTopControlsStacker.getVisibleTopControlsTotalHeight();
+                        default ->
+                                // includes HeightType.NOT_APPLICABLE
+                                throw new IllegalStateException(
+                                        "Unable to get top margin for HeightType: " + heightType);
+                    };
+            topMargins.put(anchorSide, marginForTabStrip + marginForTopControls);
+        }
+
+        return new AnchorContainerTopMargins(topMargins);
     }
 
     private ViewGroup getRootView() {
@@ -533,7 +618,33 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      */
     private void commitNewSideUiSpecs(
             SideUiUpdateSpecs uiUpdateSpecs, @Nullable TransitionSet transitionSet) {
-        if (transitionSet != null) {
+        // Whether both the width and height gets updated. The animation will be suppressed if true.
+        boolean willUpdateBothWidthHeight = false;
+        for (var marginDiff : uiUpdateSpecs.mTopMarginDiff.entrySet()) {
+            @AnchorSide int side = marginDiff.getKey();
+            @Px int topMargin = marginDiff.getValue();
+
+            boolean willUpdateWidth =
+                    (uiUpdateSpecs.mCurrentSpecs.getWidth(side)
+                            != uiUpdateSpecs.mNewSpecs.getWidth(side));
+
+            // HeightType update from/to NOT_APPLICABLE means the SideUiContainer is
+            // opened/closed, which has animation support. Only a change between
+            // TOOLBAR and WEB_CONTENTS or one in pixel values (due to top controls
+            // showing/hiding) doesn't have animation support. So we only care about the
+            // latter here.
+            boolean willUpdateHeight =
+                    (uiUpdateSpecs.mCurrentSpecs.getHeightType(side) != HeightType.NOT_APPLICABLE
+                            && uiUpdateSpecs.mNewSpecs.getHeightType(side)
+                                    != HeightType.NOT_APPLICABLE);
+            willUpdateBothWidthHeight |= (willUpdateWidth && willUpdateHeight);
+            ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(side));
+            var layoutParams = (MarginLayoutParams) anchorContainer.getLayoutParams();
+            layoutParams.topMargin = topMargin;
+            anchorContainer.setLayoutParams(layoutParams);
+        }
+
+        if (transitionSet != null && !willUpdateBothWidthHeight) {
             commitNewSpecsForAnimatedResize(uiUpdateSpecs, transitionSet);
         } else {
             commitNewSpecsForStaticResize(uiUpdateSpecs);
@@ -740,13 +851,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      *
      * @param tabStripBottomPx The tab strip's bottom in relation to the top of the window in px.
      */
-    private void onTopMarginChanged(@Px int tabStripBottomPx) {
-        for (ViewGroup anchorContainer : mAnchorContainers.values()) {
-            MarginLayoutParams layoutParams =
-                    ((MarginLayoutParams) anchorContainer.getLayoutParams());
-            layoutParams.topMargin = tabStripBottomPx;
-            anchorContainer.setLayoutParams(layoutParams);
-        }
+    private void onTabStripBottomPxChanged(@Px int tabStripBottomPx) {
+        updateUiInternal(new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
     }
 
     private @Px int getWindowWidth() {

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -52,11 +53,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -79,6 +82,7 @@ public class SideUiCoordinatorImplTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private ViewStub mLeftAnchorContainerStub;
     @Mock private ViewStub mRightAnchorContainerStub;
     @Mock private ViewStub mWebContentHairlineContainerStub;
@@ -86,7 +90,7 @@ public class SideUiCoordinatorImplTest {
 
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
-    private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
+    private final SettableNonNullObservableSupplier<Integer> mTabStripBottomPxSupplier =
             ObservableSuppliers.createNonNull(0);
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -141,11 +145,12 @@ public class SideUiCoordinatorImplTest {
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderSupplier,
                         mBrowserControlsStateProvider,
+                        mTopControlsStacker,
                         anchorContainerParent,
                         mLeftAnchorContainerStub,
                         mRightAnchorContainerStub,
                         mWebContentHairlineContainerStub,
-                        mTopMarginSupplier);
+                        mTabStripBottomPxSupplier);
 
         // Initialize the SideUiContainer View.
         mSideUiContainerView = new View(mTestActivity);
@@ -163,7 +168,7 @@ public class SideUiCoordinatorImplTest {
         // The constructor is invoked in setUp().
 
         verify(mActivityLifecycleDispatcher).register(mCoordinator);
-        assertEquals(1, mTopMarginSupplier.getObserverCount());
+        assertEquals(1, mTabStripBottomPxSupplier.getObserverCount());
     }
 
     @Test
@@ -174,7 +179,7 @@ public class SideUiCoordinatorImplTest {
 
         verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
         verify(mLayoutStateProvider).removeObserver(any());
-        assertEquals(0, mTopMarginSupplier.getObserverCount());
+        assertEquals(0, mTabStripBottomPxSupplier.getObserverCount());
     }
 
     @Test
@@ -577,19 +582,24 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testOnTopMarginChanged() {
+    public void testOnTabStripBottomPxChanged() {
         // Set initial params, since these Views aren't actually attached.
-        mLeftAnchorContainer.setLayoutParams(new MarginLayoutParams(0, 0));
-        mRightAnchorContainer.setLayoutParams(new MarginLayoutParams(0, 0));
+        mLeftAnchorContainer.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
+        mRightAnchorContainer.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        mCoordinator.registerSideUiContainer(sideUiContainer);
 
         // Notify of a top margin change.
         @Px int topMarginPx = 30;
-        mTopMarginSupplier.set(topMarginPx);
+        mTabStripBottomPxSupplier.set(topMarginPx);
 
         // Verify the topMargin is set appropriately.
         MarginLayoutParams leftLayoutParams =
                 ((MarginLayoutParams) mLeftAnchorContainer.getLayoutParams());
-        assertEquals("Unexpected top margin.", topMarginPx, leftLayoutParams.topMargin);
+        assertEquals("Unexpected top margin.", 0, leftLayoutParams.topMargin);
 
         MarginLayoutParams rightLayoutParams =
                 ((MarginLayoutParams) mRightAnchorContainer.getLayoutParams());
@@ -800,7 +810,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.updateUi(
                 new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
 
-        verify(mBrowserControlsStateProvider).getTopVisibleContentOffset();
+        verify(mBrowserControlsStateProvider, atLeastOnce()).getTopVisibleContentOffset();
     }
 
     @Test
@@ -846,5 +856,104 @@ public class SideUiCoordinatorImplTest {
 
         observer.onStartedHiding(LayoutType.BROWSING);
         assertEquals(View.VISIBLE, mLeftAnchorContainer.getVisibility());
+    }
+
+    @Test
+    public void testUpdateUi_InitialHeightTypeWebContents_UsesTopControlsStackerHeight() {
+        int topControlsTotalHeight = 56;
+        doReturn(topControlsTotalHeight)
+                .when(mTopControlsStacker)
+                .getVisibleTopControlsTotalHeight();
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        MarginLayoutParams rightLayoutParams =
+                (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
+        assertEquals(topControlsTotalHeight, rightLayoutParams.topMargin);
+    }
+
+    @Test
+    public void testUpdateUi_HeightTypeChanges_UpdatesTopMargin() {
+        mRightAnchorContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        int topControlsTotalHeight = 56;
+        doReturn(topControlsTotalHeight)
+                .when(mTopControlsStacker)
+                .getVisibleTopControlsTotalHeight();
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.TOOLBAR;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        MarginLayoutParams rightLayoutParams =
+                (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
+        assertEquals(0, rightLayoutParams.topMargin);
+
+        sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        // Verifies the top margin reflects the change in HeightType.
+        rightLayoutParams = (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
+        assertEquals(topControlsTotalHeight, rightLayoutParams.topMargin);
+    }
+
+    @Test
+    public void testUpdateUi_BothHeightAndWidthChange_NoAnimation() {
+        mRightAnchorContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        int topControlsTotalHeight = 56;
+        doReturn(topControlsTotalHeight)
+                .when(mTopControlsStacker)
+                .getVisibleTopControlsTotalHeight();
+
+        mTabStripBottomPxSupplier.set(50);
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mMinWidthDp = 300;
+        sideUiContainer.mMaxWidthDp = 300;
+        sideUiContainer.mHeightType = HeightType.TOOLBAR;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.addObserver(mSideUiObserver);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(), /* suppressAnimations= */ false));
+
+        verify(mSideUiObserver).onTransitionBegun(any());
+
+        mCoordinator.endAnimations();
+        RobolectricUtil.runAllBackgroundAndUi();
+        clearInvocations(mSideUiObserver);
+
+        sideUiContainer.mMinWidthDp = 400;
+        sideUiContainer.mMaxWidthDp = 400;
+        sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
+        mTabStripBottomPxSupplier.set(100);
+        mCoordinator.updateUi(
+                new UiUpdateRequest(
+                        sideUiContainer.getSideUiId(), /* suppressAnimations= */ false));
+
+        // Verifies changes in both width/height suppressed animation.
+        verify(mSideUiObserver, never()).onTransitionBegun(any());
     }
 }

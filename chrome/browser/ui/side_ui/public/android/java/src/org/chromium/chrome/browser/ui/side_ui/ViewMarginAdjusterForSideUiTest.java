@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -23,7 +24,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
+
+import java.util.Map;
 
 /** Tests for {@link ViewMarginAdjusterForSideUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -88,5 +94,23 @@ public class ViewMarginAdjusterForSideUiTest {
         verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
         assertEquals(120, mLayoutParamsCaptor.getValue().leftMargin);
         assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
+    }
+
+    @Test
+    public void testOnSideUiSpecsChanged_toolbarElementIgnoresWebContentsHeightType() {
+        SideUiObserver marginContainerObserver =
+                new ViewMarginAdjusterForSideUi(mView, /* forToolbarElement= */ true);
+
+        Map<@AnchorSide Integer, SideUiSize> sideUiSpecs = new ArrayMap<>();
+        sideUiSpecs.put(AnchorSide.LEFT, new SideUiSize(100, HeightType.WEB_CONTENTS));
+        sideUiSpecs.put(AnchorSide.RIGHT, new SideUiSize(200, HeightType.TOOLBAR));
+        marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(sideUiSpecs));
+        verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
+
+        // Ignores the width from WEB_CONTENTS-heighType container.
+        assertEquals(0, mLayoutParamsCaptor.getValue().getMarginStart());
+
+        // Respects the width from TOOLBAR-heighType container.
+        assertEquals(200, mLayoutParamsCaptor.getValue().getMarginEnd());
     }
 }

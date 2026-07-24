@@ -27,7 +27,7 @@ public final class TestSideUiContainer implements SideUiContainer {
     private static final int DEFAULT_MAX_WIDTH_DP = 412;
 
     /** Height type for this container. */
-    public static final @HeightType int HEIGHT_TYPE = HeightType.TOOLBAR;
+    public @HeightType int mHeightType = HeightType.TOOLBAR;
 
     /**
      * Whether the container has content to show.
@@ -113,7 +113,7 @@ public final class TestSideUiContainer implements SideUiContainer {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
 
-        return new SideUiSize(availableWidth < maxWidth ? availableWidth : maxWidth, HEIGHT_TYPE);
+        return new SideUiSize(availableWidth < maxWidth ? availableWidth : maxWidth, mHeightType);
     }
 
     @Override

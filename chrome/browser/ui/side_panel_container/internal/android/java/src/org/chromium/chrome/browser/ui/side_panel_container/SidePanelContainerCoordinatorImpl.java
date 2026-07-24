@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewUtils;
@@ -324,8 +325,12 @@ final class SidePanelContainerCoordinatorImpl
         int showableWidthDp =
                 determineShowableWidthDp(
                         availableWidthDp, windowWidthDp, minSidePanelContainerWidthDp);
-        return new SideUiSize(
-                ViewUtils.dpToPx(mParentActivity, showableWidthDp), HeightType.TOOLBAR);
+        @HeightType
+        int heightType =
+                VerticalTabUtils.isVerticalTabsEnabled(mParentActivity)
+                        ? HeightType.WEB_CONTENTS
+                        : HeightType.TOOLBAR;
+        return new SideUiSize(ViewUtils.dpToPx(mParentActivity, showableWidthDp), heightType);
     }
 
     @Override

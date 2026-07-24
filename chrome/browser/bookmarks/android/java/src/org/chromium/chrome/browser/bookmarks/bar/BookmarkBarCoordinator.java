@@ -827,7 +827,7 @@ public class BookmarkBarCoordinator
 
     private static class BookmarkBarAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
         BookmarkBarAdjusterForSideUi(View view) {
-            super(view);
+            super(view, /* forToolbarElement= */ true);
         }
 
         @Override

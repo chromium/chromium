@@ -73,7 +73,9 @@ public interface SideUiCoordinator extends SideUiStateProvider {
     @IntDef({HeightType.NOT_APPLICABLE, HeightType.TOOLBAR, HeightType.WEB_CONTENTS})
     @Target(ElementType.TYPE_USE)
     @interface HeightType {
+        /** For when a {@link SideUiContainer} shouldn't be shown. */
         int NOT_APPLICABLE = 0;
+
         int TOOLBAR = 1;
         int WEB_CONTENTS = 2;
         int NUM_ENTRIES = 3;

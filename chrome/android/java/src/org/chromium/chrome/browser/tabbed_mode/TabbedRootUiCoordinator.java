@@ -2261,6 +2261,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderOneShotSupplier,
                         mBrowserControlsManager,
+                        mTopControlsStacker,
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
