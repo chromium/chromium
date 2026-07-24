@@ -4,11 +4,14 @@
 
 #include "extensions/browser/event_router.h"
 
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -477,7 +480,9 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   FeatureProvider provider;
   auto feature = std::make_unique<SimpleFeature>();
   feature->set_name("test feature");
-  feature->set_matches({"chrome://settings/*"});
+  static constexpr auto kMatches =
+      std::to_array<std::string_view>({"chrome://settings/*"});
+  feature->set_matches(StaticSpan(kMatches));
   provider.AddFeature(event_name, std::move(feature));
 
   ExtensionAPI api;
@@ -956,12 +961,11 @@ class EventRouterDispatchTest : public ExtensionsTest {
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
  protected:
-  void RegisterTestApiFeature(
-      const std::string& event_name,
-      std::initializer_list<const char* const> matches = {}) {
+  void RegisterTestApiFeature(std::string_view event_name,
+                              StaticSpan<std::string_view> matches = {}) {
     auto feature = std::make_unique<SimpleFeature>();
     feature->set_name("test feature");
-    if (matches.size() > 0) {
+    if (!matches.span().empty()) {
       feature->set_matches(matches);
     }
     provider_.AddFeature(event_name, std::move(feature));
@@ -983,8 +987,9 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   GURL webui1("chrome-untrusted://one");
   GURL webui2("chrome-untrusted://two");
   std::string event_name = "testapi.onEvent";
-  RegisterTestApiFeature(event_name,
-                         {webui1.spec().c_str(), webui2.spec().c_str()});
+  static constexpr auto kMatches = std::to_array<std::string_view>(
+      {"chrome-untrusted://one/", "chrome-untrusted://two/"});
+  RegisterTestApiFeature(event_name, StaticSpan(kMatches));
 
   TestEventRouterObserver observer(event_router());
   auto add_extension = [&](const std::string& id) {

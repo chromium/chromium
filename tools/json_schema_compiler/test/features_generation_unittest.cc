@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
@@ -12,6 +14,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/features_compiler_test.h"
 
@@ -41,6 +44,12 @@ void ExpectOptionalVectorsEqual(const std::optional<std::vector<T>>& expected,
   }
   if (expected.has_value())
     ExpectVectorsEqual(*expected, *actual, name);
+}
+
+void ExpectMatchPatternsEqual(base::span<const std::string> expected,
+                              base::span<const std::string_view> actual,
+                              std::string_view name) {
+  EXPECT_THAT(actual, testing::UnorderedElementsAreArray(expected)) << name;
 }
 
 const bool kDefaultAutoGrant = true;
@@ -99,7 +108,7 @@ void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
   ExpectVectorsEqual(extension_types, feature->extension_types(), name);
   ExpectOptionalVectorsEqual(contexts, feature->contexts(), name);
   ExpectVectorsEqual(platforms, feature->platforms(), name);
-  ExpectVectorsEqual(match_patterns, feature->match_patterns(), name);
+  ExpectMatchPatternsEqual(match_patterns, feature->match_patterns(), name);
   EXPECT_EQ(location, feature->location()) << name;
   EXPECT_EQ(min_manifest_version, feature->min_manifest_version()) << name;
   EXPECT_EQ(max_manifest_version, feature->max_manifest_version()) << name;
@@ -210,6 +219,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts = std::vector<mojom::ContextType>(
         {mojom::ContextType::kUnprivilegedExtension});
     comparator.channel = version_info::Channel::STABLE;
+    comparator.match_patterns = {"*://complex.example/*"};
     // We cheat and have both children exactly the same for ease of comparing;
     // complex features are tested more thoroughly below.
     for (const auto& feature : complex_feature->features_)

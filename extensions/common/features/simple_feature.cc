@@ -627,22 +627,16 @@ void SimpleFeature::set_session_types(
   session_types_ = types;
 }
 
-void SimpleFeature::set_matches(
-    std::initializer_list<const char* const> matches) {
-  // Store owned copies of the pattern strings so callers need not keep their
-  // strings alive.
-  match_patterns_.assign(matches.begin(), matches.end());
+void SimpleFeature::set_matches(StaticSpan<std::string_view> matches) {
+  match_patterns_ = matches.span();
 }
 
 bool SimpleFeature::MatchesURL(const GURL& url) const {
   // Create the URLPattern per call to avoid the memory overhead of storing it
   // for the feature's process lifetime.
-  for (const std::string& pattern : match_patterns_) {
-    if (URLPattern(URLPattern::SCHEME_ALL, pattern).MatchesURL(url)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(match_patterns_, [&url](std::string_view pattern) {
+    return URLPattern(URLPattern::SCHEME_ALL, pattern).MatchesURL(url);
+  });
 }
 
 void SimpleFeature::set_platforms(std::initializer_list<Platform> platforms) {

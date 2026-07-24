@@ -1130,7 +1130,9 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   feature.set_contexts({mojom::ContextType::kWebPage});
 
   const GURL kTestPage = GURL("https://www.example.com");
-  feature.set_matches({kTestPage.spec().c_str()});
+  static constexpr auto kMatches =
+      std::to_array<std::string_view>({"https://www.example.com/"});
+  feature.set_matches(StaticSpan(kMatches));
   {
     // Test a feature that requires a delegated availability check but is
     // missing the check handler.
@@ -1218,7 +1220,9 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
   // Create a webui feature available on trunk.
   SimpleFeature feature;
   feature.set_contexts({mojom::ContextType::kWebUi});
-  feature.set_matches({content::GetWebUIURLString("settings/*").c_str()});
+  static constexpr auto kMatches =
+      std::to_array<std::string_view>({"chrome://settings/*"});
+  feature.set_matches(StaticSpan(kMatches));
   feature.set_channel(version_info::Channel::UNKNOWN);
 
   const GURL kAllowlistedUrl(content::GetWebUIURL("settings/foo"));
@@ -1251,7 +1255,9 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
 TEST(SimpleFeatureUnitTest, MatchesEvaluation) {
   SimpleFeature feature;
   feature.set_contexts({mojom::ContextType::kWebPage});
-  feature.set_matches({"https://example.com/*"});
+  static constexpr auto kMatches =
+      std::to_array<std::string_view>({"https://example.com/*"});
+  feature.set_matches(StaticSpan(kMatches));
 
   const GURL kMatch("https://example.com/path");
   const GURL kNoMatch("https://other.example/path");
@@ -1281,7 +1287,7 @@ TEST(SimpleFeatureUnitTest, MatchesEmptyDenies) {
     SimpleFeature feature;
     feature.set_contexts({mojom::ContextType::kWebPage});
     if (call_empty) {
-      feature.set_matches({});
+      feature.set_matches(StaticSpan<std::string_view>());
     }
     EXPECT_EQ(
         Feature::AvailabilityResult::kInvalidUrl,
@@ -1297,8 +1303,12 @@ TEST(SimpleFeatureUnitTest, MatchesEmptyDenies) {
 TEST(SimpleFeatureUnitTest, MatchesOverride) {
   SimpleFeature feature;
   feature.set_contexts({mojom::ContextType::kWebPage});
-  feature.set_matches({"https://first.example/*"});
-  feature.set_matches({"https://second.example/*"});
+  static constexpr auto kFirstMatches =
+      std::to_array<std::string_view>({"https://first.example/*"});
+  static constexpr auto kSecondMatches =
+      std::to_array<std::string_view>({"https://second.example/*"});
+  feature.set_matches(StaticSpan(kFirstMatches));
+  feature.set_matches(StaticSpan(kSecondMatches));
 
   EXPECT_EQ(Feature::AvailabilityResult::kInvalidUrl,
             feature
@@ -1310,27 +1320,6 @@ TEST(SimpleFeatureUnitTest, MatchesOverride) {
             feature
                 .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
                                       GURL("https://second.example/x"),
-                                      kUnspecifiedContextId, TestContextData())
-                .result());
-}
-
-// Regression guard: the pattern strings passed to set_matches() need not
-// outlive the feature. set_matches() must take owned copies, not dangling
-// pointers into the caller's (possibly temporary) strings. Under ASAN this
-// would fail if raw pointers were stored.
-TEST(SimpleFeatureUnitTest, MatchesPatternStringLifetime) {
-  SimpleFeature feature;
-  feature.set_contexts({mojom::ContextType::kWebPage});
-  {
-    // `pattern` is destroyed at the end of this block, before the availability
-    // check below parses the stored pattern.
-    std::string pattern = "https://example.com/*";
-    feature.set_matches({pattern.c_str()});
-  }
-  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
-            feature
-                .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
-                                      GURL("https://example.com/path"),
                                       kUnspecifiedContextId, TestContextData())
                 .result());
 }

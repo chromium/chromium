@@ -52,6 +52,9 @@ CC_FILE_BEGIN = """
 
 #include "%(header_file_path)s"
 
+#include <array>
+#include <string_view>
+
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/manifest_feature.h"
@@ -552,7 +555,14 @@ def GetCodeForFeatureValues(feature_values):
     if key in IGNORED_KEYS:
       continue
 
-    c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
+    if key == 'matches':
+      if not feature_values[key]:
+        continue
+      c.Append('static constexpr auto kMatches = '
+               'std::to_array<std::string_view>(%s);' % feature_values[key])
+      c.Append('feature->set_matches(StaticSpan(kMatches));')
+    else:
+      c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c
 
 

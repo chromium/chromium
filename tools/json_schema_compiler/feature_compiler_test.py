@@ -531,6 +531,7 @@ class FeatureCompilerTest(unittest.TestCase):
             'channel': 'beta',
             'contexts': ['privileged_extension'],
             'extension_types': ['extension'],
+            'matches': ['https://example.com/*'],
             'required_buildflags': ['use_cups']
         }
     }
@@ -546,9 +547,27 @@ class FeatureCompilerTest(unittest.TestCase):
     feature->set_channel(version_info::Channel::BETA);
     feature->set_contexts({mojom::ContextType::kPrivilegedExtension});
     feature->set_extension_types({Manifest::Type::kExtension});
+    static constexpr auto kMatches = std::to_array<std::string_view>({"https://example.com/*"});
+    feature->set_matches(StaticSpan(kMatches));
     provider->AddFeature("feature_cups", feature);
     #endif
   }''')
+
+  def testFeatureWithEmptyMatches(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+    compiler._json = {
+        'empty_matches': {
+            'channel': 'beta',
+            'contexts': ['privileged_extension'],
+            'extension_types': ['extension'],
+            'matches': []
+        }
+    }
+    compiler.Compile()
+    cc_code = compiler.Render().Render()
+
+    self.assertNotIn('set_matches', cc_code)
+    self.assertNotIn('kMatches', cc_code)
 
   def testOverrideFeature(self):
     current_directory = os.path.dirname(os.path.abspath(__file__))

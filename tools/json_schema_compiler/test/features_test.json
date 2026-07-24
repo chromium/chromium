@@ -45,10 +45,12 @@
   "gamma.complex_unparented": [{
     "channel": "stable",
     "contexts": ["unprivileged_extension"],
+    "matches": ["*://complex.example/*"],
     "noparent": true
   }, {
     "channel": "stable",
     "contexts": ["unprivileged_extension"],
+    "matches": ["*://complex.example/*"],
     "noparent": true
   }],
   "delta": {
