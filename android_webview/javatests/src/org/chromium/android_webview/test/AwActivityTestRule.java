@@ -646,7 +646,10 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     }
 
                     AwTestContainerView newContainerView =
-                            new AwTestContainerView(newActivity, true);
+                            new AwTestContainerView(
+                                    newActivity,
+                                    /* allowHardwareAcceleration= */ true,
+                                    /* allowMultipleHardwareViews= */ true);
                     newContainerView.initialize(view.getAwContents());
                     view.getAwContents()
                             .adopt(newContainerView, newContainerView.getInternalAccessDelegate());

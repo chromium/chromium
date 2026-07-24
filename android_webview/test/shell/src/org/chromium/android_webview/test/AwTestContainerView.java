@@ -207,14 +207,25 @@ public class AwTestContainerView extends FrameLayout {
         }
     }
 
-    private HardwareView createHardwareView(Context context) {
+    private static boolean sCreatedOnce;
+
+    private HardwareView createHardwareView(Context context, boolean allowMultiple) {
+        if (!allowMultiple && sCreatedOnce) return null;
+        sCreatedOnce = true;
         return new HardwareView(context);
     }
 
     public AwTestContainerView(Context context, boolean allowHardwareAcceleration) {
+        this(context, allowHardwareAcceleration, false);
+    }
+
+    public AwTestContainerView(
+            Context context,
+            boolean allowHardwareAcceleration,
+            boolean allowMultipleHardwareViews) {
         super(context);
         if (allowHardwareAcceleration) {
-            mHardwareView = createHardwareView(context);
+            mHardwareView = createHardwareView(context, allowMultipleHardwareViews);
         }
         if (isBackedByHardwareView()) {
             addView(
