@@ -1676,5 +1676,134 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationMirrorFiltering) {
   }
 }
 
+TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
+  chrome_root_store::MtcMetadata proto;
+  proto.set_update_time_seconds(987654321);
+
+  // 1. Add experiment format MtcAnchorData.
+  {
+    auto* anchor = proto.add_mtc_anchor_data();
+    anchor->set_log_id("\x01\x03\x06\x01\x04\x01");
+    auto* range = anchor->mutable_trusted_landmark_ids_range();
+    range->set_base_id(std::string("\x01\x03\x06\x01\x04\x01\x00\x02", 8));
+    range->set_min_active_landmark_inclusive(10);
+    range->set_last_landmark_inclusive(20);
+
+    auto* subtree = anchor->add_trusted_subtrees();
+    subtree->set_start_inclusive(100);
+    subtree->set_end_exclusive(200);
+    subtree->set_hash(std::string(32, '\xaa'));
+  }
+
+  // 2. Add plants format MtcAnchorData.
+  {
+    auto* anchor = proto.add_mtc_anchor_data();
+    anchor->set_ca_id("\x01\x03\x06\x01\x04\x02");
+
+    // Add revoked indices
+    auto* revoked = anchor->add_revoked_indices();
+    revoked->set_start_inclusive(500);
+    revoked->set_end_exclusive(600);
+
+    // Add log 1 (log number 5)
+    {
+      auto* log = anchor->add_mtc_log_data();
+      log->set_log_number(5);
+      auto* range = log->mutable_trusted_landmark_ids_range();
+      range->set_base_id(std::string("\x01\x03\x06\x01\x04\x02\x00\x05", 8));
+      range->set_min_active_landmark_inclusive(30);
+      range->set_last_landmark_inclusive(40);
+
+      auto* subtree = log->add_trusted_subtrees();
+      subtree->set_start_inclusive(300);
+      subtree->set_end_exclusive(400);
+      subtree->set_hash(std::string(32, '\xbb'));
+    }
+
+    // Add log 2 (log number 8)
+    {
+      auto* log = anchor->add_mtc_log_data();
+      log->set_log_number(8);
+      auto* range = log->mutable_trusted_landmark_ids_range();
+      range->set_base_id(std::string("\x01\x03\x06\x01\x04\x02\x00\x08", 8));
+      range->set_min_active_landmark_inclusive(50);
+      range->set_last_landmark_inclusive(60);
+
+      auto* subtree = log->add_trusted_subtrees();
+      subtree->set_start_inclusive(700);
+      subtree->set_end_exclusive(800);
+      subtree->set_hash(std::string(32, '\xcc'));
+    }
+  }
+
+  auto mtc_metadata =
+      ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(proto);
+  ASSERT_TRUE(mtc_metadata.has_value());
+  EXPECT_EQ(mtc_metadata->update_time(),
+            base::Time::UnixEpoch() + base::Seconds(987654321));
+
+  const auto& anchor_map = mtc_metadata->mtc_anchor_data();
+  ASSERT_EQ(anchor_map.size(), 1U);
+
+  // Check experiment format anchor.
+  std::vector<uint8_t> old_log_id = {0x01, 0x03, 0x06, 0x01, 0x04, 0x01};
+  auto old_it = anchor_map.find(old_log_id);
+  ASSERT_NE(old_it, anchor_map.end());
+  EXPECT_EQ(old_it->second.log_id, old_log_id);
+  EXPECT_EQ(
+      old_it->second.landmark_base_id,
+      std::vector<uint8_t>({0x01, 0x03, 0x06, 0x01, 0x04, 0x01, 0x00, 0x02}));
+  EXPECT_EQ(old_it->second.landmark_min_inclusive, 10U);
+  EXPECT_EQ(old_it->second.landmark_max_inclusive, 20U);
+  ASSERT_EQ(old_it->second.trusted_subtrees.size(), 1U);
+  EXPECT_EQ(old_it->second.trusted_subtrees[0].range.start, 100U);
+  EXPECT_EQ(old_it->second.trusted_subtrees[0].range.end, 200U);
+  EXPECT_EQ(base::ToVector(old_it->second.trusted_subtrees[0].hash),
+            std::vector<uint8_t>(32, 0xaa));
+  EXPECT_TRUE(old_it->second.revoked_indices.empty());
+
+  const auto& plants05_map = mtc_metadata->plants05_anchor_data();
+  ASSERT_EQ(plants05_map.size(), 1U);
+
+  // Check newer format logs.
+  // CA_ID (\x01\x03\x06\x01\x04\x02)
+  std::vector<uint8_t> ca_id = {0x01, 0x03, 0x06, 0x01, 0x04, 0x02};
+  auto new_it = plants05_map.find(ca_id);
+  ASSERT_NE(new_it, plants05_map.end());
+
+  ASSERT_EQ(new_it->second.revoked_serials.size(), 1U);
+  EXPECT_EQ(new_it->second.revoked_serials.begin()->first, 600U);
+  EXPECT_EQ(new_it->second.revoked_serials.begin()->second, 500U);
+
+  ASSERT_EQ(new_it->second.trusted_landmark_ranges.size(), 2U);
+  // Log 1: 5
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[0].log_number, 5U);
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[0].landmark_min_inclusive,
+            30U);
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[0].landmark_max_inclusive,
+            40U);
+  // Log 2: 8
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[1].log_number, 8U);
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[1].landmark_min_inclusive,
+            50U);
+  EXPECT_EQ(new_it->second.trusted_landmark_ranges[1].landmark_max_inclusive,
+            60U);
+
+  ASSERT_EQ(new_it->second.trusted_subtrees.size(), 2U);
+  ASSERT_TRUE(new_it->second.trusted_subtrees.contains(5));
+  ASSERT_EQ(new_it->second.trusted_subtrees.at(5).size(), 1U);
+  EXPECT_EQ(new_it->second.trusted_subtrees.at(5)[0].range.start, 300U);
+  EXPECT_EQ(new_it->second.trusted_subtrees.at(5)[0].range.end, 400U);
+  EXPECT_EQ(base::ToVector(new_it->second.trusted_subtrees.at(5)[0].hash),
+            std::vector<uint8_t>(32, 0xbb));
+
+  ASSERT_TRUE(new_it->second.trusted_subtrees.contains(8));
+  ASSERT_EQ(new_it->second.trusted_subtrees.at(8).size(), 1U);
+  EXPECT_EQ(new_it->second.trusted_subtrees.at(8)[0].range.start, 700U);
+  EXPECT_EQ(new_it->second.trusted_subtrees.at(8)[0].range.end, 800U);
+  EXPECT_EQ(base::ToVector(new_it->second.trusted_subtrees.at(8)[0].hash),
+            std::vector<uint8_t>(32, 0xcc));
+}
+
 }  // namespace
 }  // namespace net

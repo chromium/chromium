@@ -5,6 +5,7 @@
 #ifndef NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_
 #define NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -332,6 +333,26 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
     base::flat_map<uint64_t, uint64_t> revoked_indices;
   };
 
+  struct NET_EXPORT Plants05AnchorData {
+    Plants05AnchorData();
+    ~Plants05AnchorData();
+    Plants05AnchorData(const Plants05AnchorData& other);
+    Plants05AnchorData(Plants05AnchorData&& other);
+    Plants05AnchorData& operator=(const Plants05AnchorData& other);
+    Plants05AnchorData& operator=(Plants05AnchorData&& other);
+
+    std::map<uint16_t, std::vector<bssl::TrustedSubtree>> trusted_subtrees;
+
+    struct LogLandmarkRange {
+      uint16_t log_number;
+      uint64_t landmark_min_inclusive;
+      uint64_t landmark_max_inclusive;
+    };
+    std::vector<LogLandmarkRange> trusted_landmark_ranges;
+
+    base::flat_map<uint64_t, uint64_t> revoked_serials;
+  };
+
   // CreateFromMtcMetadataProto converts |proto| into a usable
   // ChromeRootStoreMtcMetadata object. Returns std::nullopt if the passed in
   // proto has errors in it.
@@ -350,13 +371,21 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
   mtc_anchor_data() const {
     return mtc_anchor_data_;
   }
+  const absl::flat_hash_map<std::vector<uint8_t>, Plants05AnchorData>&
+  plants05_anchor_data() const {
+    return plants05_anchor_data_;
+  }
   base::Time update_time() const { return update_time_; }
 
  private:
   ChromeRootStoreMtcMetadata();
 
   // Map from a Merkle Tree Anchor log_id to the data for that anchor.
+  // Used only for the MTC experiment logs.
   absl::flat_hash_map<std::vector<uint8_t>, MtcAnchorData> mtc_anchor_data_;
+  // Map from a CA ID to the Plants05AnchorData for that anchor.
+  absl::flat_hash_map<std::vector<uint8_t>, Plants05AnchorData>
+      plants05_anchor_data_;
   base::Time update_time_;
 };
 
