@@ -318,8 +318,10 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
                 std::nullopt);
 }
 
+// TODO(crbug.com/538642992): DelayedManifestTriggersPipeline is consistently
+// failing.
 IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
-                       DelayedManifestTriggersPipeline) {
+                       DISABLED_DelayedManifestTriggersPipeline) {
   auto observer = CreateAppBannerManagerObserver();
   RunBannerTest(
       web_contents(), observer.get(),
