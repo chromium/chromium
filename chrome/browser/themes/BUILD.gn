@@ -101,6 +101,20 @@ source_set("themes") {
 }
 
 if (!is_android) {
+  source_set("theme_service_changed_waiter") {
+    testonly = true
+
+    sources = [
+      "test/theme_service_changed_waiter.cc",
+      "test/theme_service_changed_waiter.h",
+    ]
+
+    public_deps = [
+      ":themes",
+      "//base",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
 

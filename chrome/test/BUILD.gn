@@ -680,8 +680,6 @@ static_library("test_support") {
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.cc",
       "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h",
       "../browser/signin/signin_browser_test_base.h",
-      "../browser/themes/test/theme_service_changed_waiter.cc",
-      "../browser/themes/test/theme_service_changed_waiter.h",
       "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h",
       "../browser/ui/views/test/split_view_browser_test_mixin.h",
       "../browser/ui/views/test/split_view_interactive_test_mixin.h",
@@ -700,6 +698,7 @@ static_library("test_support") {
       "base/test_browser_window.cc",
       "base/test_browser_window.h",
     ]
+    public_deps += [ "//chrome/browser/themes:theme_service_changed_waiter" ]
     allow_circular_includes_from += [
       ":test_support_ui",
       "//chrome/browser/ui/views/tabs/common:impl",
