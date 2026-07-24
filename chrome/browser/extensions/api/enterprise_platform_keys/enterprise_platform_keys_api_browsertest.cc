@@ -24,7 +24,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
-#include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
@@ -71,10 +70,6 @@ class EPKChallengeKeyTestBase : public PlatformKeysTestBase {
   void SetUpOnMainThread() override {
     PlatformKeysTestBase::SetUpOnMainThread();
 
-    chrome_extensions_client_ =
-        std::make_unique<extensions::ChromeExtensionsClient>();
-    extensions::ExtensionsClient::Set(chrome_extensions_client_.get());
-
     extension_ = ExtensionBuilder("Test").Build();
 
     prefs_ = profile()->GetPrefs();
@@ -91,12 +86,6 @@ class EPKChallengeKeyTestBase : public PlatformKeysTestBase {
                 base::BindRepeating(&EPKChallengeKeyTestBase::
                                         CreateKeyPermissionsManagerService,
                                     base::Unretained(this)));
-  }
-
-  void TearDownOnMainThread() override {
-    extensions::ExtensionsClient::Set(nullptr);
-    chrome_extensions_client_.reset();
-    PlatformKeysTestBase::TearDownOnMainThread();
   }
 
   void SetMockTpmChallenger() {
@@ -173,7 +162,6 @@ class EPKChallengeKeyTestBase : public PlatformKeysTestBase {
 
   scoped_refptr<const extensions::Extension> extension_;
   ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
-  std::unique_ptr<extensions::ChromeExtensionsClient> chrome_extensions_client_;
   raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
   raw_ptr<ash::attestation::MockTpmChallengeKey, DanglingUntriaged>
       mock_tpm_challenge_key_ = nullptr;
