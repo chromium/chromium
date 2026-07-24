@@ -17,12 +17,19 @@ CredentialProviderWebDialogViewWithModal::
     : views::WebDialogView(context, delegate, std::move(handler)) {}
 
 CredentialProviderWebDialogViewWithModal::
-    ~CredentialProviderWebDialogViewWithModal() = default;
+    ~CredentialProviderWebDialogViewWithModal() {
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
+  if (manager && manager->delegate() == this) {
+    manager->SetDelegate(nullptr);
+  }
+  observers_.Notify(&web_modal::ModalDialogHostObserver::OnHostDestroying);
+}
 
 void CredentialProviderWebDialogViewWithModal::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   views::WebDialogView::ViewHierarchyChanged(details);
-  if (details.is_add && GetWidget() && !modal_dialog_manager_) {
+  if (details.is_add && GetWidget()) {
     // Get the existing manager if it exists. If it doesn't, create it.
     auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
         web_contents());
@@ -32,10 +39,19 @@ void CredentialProviderWebDialogViewWithModal::ViewHierarchyChanged(
       manager = web_modal::WebContentsModalDialogManager::FromWebContents(
           web_contents());
     }
-    modal_dialog_manager_ = manager;
-    DCHECK(modal_dialog_manager_);
-    modal_dialog_manager_->SetDelegate(this);
+    manager->SetDelegate(this);
   }
+}
+
+void CredentialProviderWebDialogViewWithModal::NotifyPositionRequiresUpdate() {
+  observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
+
+void CredentialProviderWebDialogViewWithModal::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  views::WebDialogView::OnBoundsChanged(previous_bounds);
+  NotifyPositionRequiresUpdate();
 }
 
 bool CredentialProviderWebDialogViewWithModal::IsWebContentsCreationOverridden(
@@ -94,7 +110,11 @@ gfx::Size CredentialProviderWebDialogViewWithModal::GetMaximumDialogSize() {
 }
 
 void CredentialProviderWebDialogViewWithModal::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  observers_.AddObserver(observer);
+}
 
 void CredentialProviderWebDialogViewWithModal::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  observers_.RemoveObserver(observer);
+}

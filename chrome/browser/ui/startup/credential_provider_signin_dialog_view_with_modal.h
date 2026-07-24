@@ -7,18 +7,20 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+
+namespace gfx {
+class Rect;
+}
 
 namespace content {
 class BrowserContext;
 class WebContents;
 }  // namespace content
-
-namespace web_modal {
-class WebContentsModalDialogManager;
-}
 
 class WebContentsHandler;
 
@@ -48,6 +50,7 @@ class CredentialProviderWebDialogViewWithModal
   // views::WebDialogView:
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool IsWebContentsCreationOverridden(
       content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
@@ -68,20 +71,21 @@ class CredentialProviderWebDialogViewWithModal
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
- private:
-  // web_modal::WebContentsModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
-      content::WebContents* web_contents) override;
-  bool IsWebContentsVisible(content::WebContents* web_contents) override;
-
   // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   gfx::Size GetMaximumDialogSize() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void NotifyPositionRequiresUpdate() override;
 
-  raw_ptr<web_modal::WebContentsModalDialogManager> modal_dialog_manager_;
+ private:
+  // web_modal::WebContentsModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
+  bool IsWebContentsVisible(content::WebContents* web_contents) override;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_CREDENTIAL_PROVIDER_SIGNIN_DIALOG_VIEW_WITH_MODAL_H_
