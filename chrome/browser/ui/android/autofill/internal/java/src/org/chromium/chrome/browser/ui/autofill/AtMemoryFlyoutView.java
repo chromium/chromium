@@ -36,6 +36,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
     private Flow mChipsFlow;
     private View mBackButton;
     private TextView mTitleView;
+    private TextView mSourceTextView;
     private TextView mManageButton;
 
     private final List<ChipView> mActiveChips = new ArrayList<>();
@@ -58,6 +59,7 @@ public class AtMemoryFlyoutView extends LinearLayout {
         mBackButton = findViewById(R.id.flyout_back_button);
         mTitleView = findViewById(R.id.flyout_title);
         mManageButton = findViewById(R.id.flyout_manage_button);
+        mSourceTextView = findViewById(R.id.flyout_source_text);
         mChipsContainer.addOnLayoutChangeListener(mChipsLayoutListener);
     }
 
@@ -82,24 +84,20 @@ public class AtMemoryFlyoutView extends LinearLayout {
                 case SuggestionType.MANAGE_IBAN:
                 case SuggestionType.MANAGE_LOYALTY_CARD:
                 case SuggestionType.MANAGE_ENHANCED_AUTOFILL:
-                    setupManageButton(suggestion, index);
+                    setUpManageButton(suggestion, index);
+                    break;
+                case SuggestionType.AT_MEMORY_SOURCE_ATTRIBUTION:
+                    setUpSourceTextView(suggestion);
                     break;
                 case SuggestionType.AT_MEMORY_SEARCH_RESULT:
-                    ChipView chip = createFlyoutChipView(mChipsContainer, suggestion, index);
-                    chipViewIds.add(chip.getId());
-                    mChipsContainer.addView(chip);
-                    mActiveChips.add(chip);
+                    setUpChip(suggestion, index, chipViewIds);
                     break;
                 default:
                     break;
             }
         }
 
-        int[] ids = new int[chipViewIds.size()];
-        for (int i = 0; i < chipViewIds.size(); i++) {
-            ids[i] = chipViewIds.get(i);
-        }
-        mChipsFlow.setReferencedIds(ids);
+        mChipsFlow.setReferencedIds(toIntArray(chipViewIds));
     }
 
     private void resetViews() {
@@ -107,11 +105,17 @@ public class AtMemoryFlyoutView extends LinearLayout {
             mChipsContainer.removeView(chip);
         }
         mActiveChips.clear();
+        mSourceTextView.setVisibility(View.GONE);
         mManageButton.setVisibility(View.GONE);
         mManageButton.setOnClickListener(null);
     }
 
-    private void setupManageButton(AutofillSuggestion suggestion, int index) {
+    private void setUpSourceTextView(AutofillSuggestion suggestion) {
+        mSourceTextView.setText(suggestion.getLabel());
+        mSourceTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void setUpManageButton(AutofillSuggestion suggestion, int index) {
         mManageButton.setText(suggestion.getLabel());
         mManageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 suggestion.getIconId(), 0, 0, 0);
@@ -122,6 +126,13 @@ public class AtMemoryFlyoutView extends LinearLayout {
                         mSuggestionClickListener.onResult(index);
                     }
                 });
+    }
+
+    private void setUpChip(AutofillSuggestion suggestion, int index, List<Integer> chipViewIds) {
+        ChipView chip = createFlyoutChipView(mChipsContainer, suggestion, index);
+        chipViewIds.add(chip.getId());
+        mChipsContainer.addView(chip);
+        mActiveChips.add(chip);
     }
 
     public void setBackClickListener(Runnable onClickListener) {
@@ -192,5 +203,13 @@ public class AtMemoryFlyoutView extends LinearLayout {
             }
         }
         container.addOnLayoutChangeListener(mChipsLayoutListener);
+    }
+
+    private int[] toIntArray(List<Integer> list) {
+        int[] array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
     }
 }
