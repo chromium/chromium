@@ -79,7 +79,6 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
   CHECK(!owning_model_);
   CHECK(owning_model);
   owning_model_ = owning_model;
-  owning_model_->AddObserver(this);
 
   // Being detached is equivalent to being in the background. So after
   // detachment, if the tab is in the foreground, we must send a notification.
@@ -96,7 +95,6 @@ void TabModel::OnRemovedFromModel() {
   // Going through each field here:
   // Keep `contents_`, obviously.
 
-  owning_model_->RemoveObserver(this);
   owning_model_ = nullptr;
 
   // At this point tab is detached.
@@ -355,18 +353,8 @@ void TabModel::Close() {
   tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
 
-void TabModel::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed()) {
-    return;
-  }
-
-  if (selection.new_contents == GetContents()) {
-    did_enter_foreground_callback_list_.Notify(this);
-    return;
-  }
+void TabModel::DidEnterForeground(base::PassKey<TabStripModel>) {
+  did_enter_foreground_callback_list_.Notify(this);
 }
 
 void TabModel::OnVisibilityChanged(content::Visibility visibility) {

@@ -225,6 +225,82 @@ TEST_F(TabModelTest, SplitViewVisibleAndActiveCallbacks) {
   testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
 }
 
+// Verifies that when the active tab changes, only the newly-activated tab is
+// notified that it entered the foreground. This exercises the direct
+// notification from TabStripModel, and guards against both missing and spurious
+// activation notifications.
+TEST_F(TabModelTest, DidActivateNotifiesOnlyNewlyActiveTab) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  ASSERT_EQ(3, tab_strip.count());
+
+  // Establish a known starting point: the last tab is active.
+  tab_strip.ActivateTabAt(2);
+
+  std::vector<base::CallbackListSubscription> subscriptions;
+
+  // The tab we are about to activate should be notified exactly once, with
+  // itself as the argument.
+  RepeatingTabCallback did_tab_0_activate_callback;
+  EXPECT_CALL(did_tab_0_activate_callback, Run(tab_strip.GetTabAtIndex(0)))
+      .Times(1);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidActivate(
+      did_tab_0_activate_callback.Get()));
+
+  // A tab that is not becoming active (including the one leaving the
+  // foreground) must not be notified.
+  RepeatingTabCallback did_tab_1_activate_callback;
+  EXPECT_CALL(did_tab_1_activate_callback, Run).Times(0);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidActivate(
+      did_tab_1_activate_callback.Get()));
+
+  RepeatingTabCallback did_tab_2_activate_callback;
+  EXPECT_CALL(did_tab_2_activate_callback, Run).Times(0);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(2)->RegisterDidActivate(
+      did_tab_2_activate_callback.Get()));
+
+  tab_strip.ActivateTabAt(0);
+
+  testing::Mock::VerifyAndClearExpectations(&did_tab_0_activate_callback);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_2_activate_callback);
+}
+
+// Verifies that each activation delivers exactly one foreground notification to
+// the tab becoming active, across repeated active-tab changes.
+TEST_F(TabModelTest, DidActivateNotifiesOnEachActivation) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  ASSERT_EQ(2, tab_strip.count());
+
+  tab_strip.ActivateTabAt(0);
+
+  std::vector<base::CallbackListSubscription> subscriptions;
+
+  RepeatingTabCallback did_tab_0_activate_callback;
+  RepeatingTabCallback did_tab_1_activate_callback;
+  subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidActivate(
+      did_tab_0_activate_callback.Get()));
+  subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidActivate(
+      did_tab_1_activate_callback.Get()));
+
+  // Switch back and forth; each tab should be notified once per time it becomes
+  // active. Re-activating the already-active tab should not notify anyone.
+  EXPECT_CALL(did_tab_1_activate_callback, Run).Times(1);
+  tab_strip.ActivateTabAt(1);
+  tab_strip.ActivateTabAt(1);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
+
+  EXPECT_CALL(did_tab_0_activate_callback, Run).Times(1);
+  tab_strip.ActivateTabAt(0);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_0_activate_callback);
+}
+
 TEST_F(TabModelTest, TabModelBlockedStateChanged) {
   TestTabStripModelDelegate delegate;
   TabStripModel tab_strip(&delegate, profile());

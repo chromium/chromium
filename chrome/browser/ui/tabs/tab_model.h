@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -32,7 +31,6 @@ class TabCollection;
 class TabFeatures;
 
 class TabModel final : public TabInterface,
-                       public TabStripModelObserver,
                        public content::WebContentsObserver {
  public:
   // Conceptually, tabs should always be a part of a normal window. There are
@@ -123,6 +121,10 @@ class TabModel final : public TabInterface,
   // Called by TabStripModel when a tab has been inserted into a tab strip.
   void DidInsert(base::PassKey<TabStripModel>);
 
+  // Called by TabStripModel when this tab has become the active tab
+  // (i.e. entered the foreground).
+  void DidEnterForeground(base::PassKey<TabStripModel>);
+
   // TabInterface overrides:
   base::WeakPtr<TabInterface> GetWeakPtr() override;
   content::WebContents* GetContents() const override;
@@ -197,12 +199,6 @@ class TabModel final : public TabInterface,
   };
 
  private:
-  // Overridden from TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
 

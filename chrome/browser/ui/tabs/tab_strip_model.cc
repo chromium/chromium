@@ -704,6 +704,10 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
   for (auto& observer : observers_) {
     observer.OnTabStripModelChanged(this, change, selection);
   }
+
+  if (selection.active_tab_changed() && selection.new_tab) {
+    GetActiveTabModel()->DidEnterForeground(base::PassKey<TabStripModel>());
+  }
 }
 
 TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
