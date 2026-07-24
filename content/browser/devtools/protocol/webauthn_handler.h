@@ -64,8 +64,7 @@ class WebAuthnHandler : public DevToolsDomainHandler,
       std::optional<bool> backup_eligibility,
       std::optional<bool> backup_state,
       std::optional<int> active_cmtg_key_index,
-      std::optional<bool> generate_cmtg_key_on_next_operation,
-      std::optional<int> sign_count) override;
+      std::optional<bool> generate_cmtg_key_on_next_operation) override;
 
  private:
   // Finds the authenticator with the given |id|. Returns Response::OK() if
