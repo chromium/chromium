@@ -51,8 +51,11 @@
   <message name="IDS_AI_MODE_ENTRYPOINT_LABEL" desc="The label of the omnibox AI mode entrypoint" formatter_data="android_java">
     AI Mode
   </message>
-  <message name="IDS_AI_MODE_ENTRYPOINT_TOOLTIP" desc="Tooltip text shown on hover for the omnibox AI Mode entrypoint.">
+  <message name="IDS_AI_MODE_ENTRYPOINT_TOOLTIP_1P" desc="Tooltip text shown on hover for the 1P omnibox AI Mode entrypoint.">
     Ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph> in <ph name="SEARCH_ENGINE_NAME">$2<ex>Google</ex></ph> Search
+  </message>
+  <message name="IDS_AI_MODE_ENTRYPOINT_TOOLTIP_3P" desc="Tooltip text shown on hover for 3P omnibox AI Mode entrypoints.">
+    Ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
   </message>
   <message name="IDS_AI_MODE_ENTRYPOINT_ACC_FOCUSED" desc="Accessibility announcement when the omnibox AI Mode entrypoint gains focus.">
     <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph> button, press Enter to ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
