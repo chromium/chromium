@@ -198,6 +198,8 @@ BASE_DECLARE_FEATURE(kCollapseTabGroupDuringDrag);
 BASE_DECLARE_FEATURE(kTabGroupMenuMoreEntryPoints);
 bool IsTabGroupMenuMoreEntryPointsEnabled();
 
+BASE_DECLARE_FEATURE(kNewTabButtonContextMenu);
+
 BASE_DECLARE_FEATURE(kTabGroupHoverCards);
 bool IsTabGroupHoverCardsEnabled();
 

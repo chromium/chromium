@@ -78,7 +78,7 @@ void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kNewTabButtonContextMenu)) {
     context_menu_model_ = std::make_unique<NewTabButtonMenuModel>(browser_);
 
     int32_t menu_runner_flags =

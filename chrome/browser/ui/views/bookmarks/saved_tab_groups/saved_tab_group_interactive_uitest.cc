@@ -217,14 +217,12 @@ class SavedTabGroupInteractiveTest
   void SetUp() override {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupMenuMoreEntryPoints,
-           features::kBookmarkTabGroupConversion,
+          {features::kBookmarkTabGroupConversion,
            data_sharing::features::kDataSharingFeature},
           {data_sharing::features::kDataSharingJoinOnly});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {features::kTabGroupMenuMoreEntryPoints,
-           features::kBookmarkTabGroupConversion},
+          {features::kBookmarkTabGroupConversion},
           {data_sharing::features::kDataSharingFeature,
            data_sharing::features::kDataSharingJoinOnly});
     }
@@ -1022,8 +1020,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       PressButton(kSavedTabGroupOverflowButtonElementId),
       WaitForHide(kTabGroupEditorBubbleId),
       SelectMenuItem(STGEverythingMenu::kTabGroup), FinishTabstripAnimations(),
-      EnsurePresent(STGTabsMenuModel::kOpenGroup),
-      SelectMenuItem(STGTabsMenuModel::kOpenGroup), FinishTabstripAnimations(),
       WaitForShow(kTabGroupHeaderElementId));
 }
 

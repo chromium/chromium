@@ -523,20 +523,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   tab_strip_model->RemoveObserver(&close_tab_observer);
 }
 
-class TabStripModelTestTabGroupEntryPointsEnabled
-    : public TabStripModelBrowserTest {
- public:
-  TabStripModelTestTabGroupEntryPointsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kTabGroupMenuMoreEntryPoints);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
-                       TestMostRecentlyUsedGroup) {
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, TestMostRecentlyUsedGroup) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   TabGroupModel* tab_group_model = tab_strip_model->group_model();
   ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
