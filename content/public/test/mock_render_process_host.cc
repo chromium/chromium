@@ -212,7 +212,11 @@ bool MockRenderProcessHost::IsJitDisabled() {
 }
 
 bool MockRenderProcessHost::AreV8OptimizationsDisabled() {
-  return false;
+  return are_v8_optimizations_disabled_;
+}
+
+void MockRenderProcessHost::SetAreV8OptimizationsDisabled(bool disabled) {
+  are_v8_optimizations_disabled_ = disabled;
 }
 
 bool MockRenderProcessHost::DisallowV8FeatureFlagOverrides() {

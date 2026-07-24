@@ -96,6 +96,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
+  void SetAreV8OptimizationsDisabled(bool disabled);
   bool DisallowV8FeatureFlagOverrides() override;
   bool IsPdf() override;
   void SetIsPdf(bool is_pdf);
@@ -347,6 +348,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_pdf_ = false;
   base::Process::Priority priority_;
   bool is_unused_;
+  bool are_v8_optimizations_disabled_ = false;
   bool is_for_top_chrome_web_ui_ = false;
   bool has_immersive_xr_session_ = false;
   bool is_ready_ = false;
