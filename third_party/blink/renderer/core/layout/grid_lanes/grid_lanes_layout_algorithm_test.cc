@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -116,6 +118,10 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetAutoPlacementCursor(wtf_size_t cursor,
                               GridLanesRunningPositions& running_positions) {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
+  }
+
+  const GapGeometry* GapGeometryFor(const GridLanesLayoutAlgorithm& algorithm) {
+    return algorithm.gap_geometry_;
   }
 
   const GridLayoutTrackCollection& TrackCollection() {
@@ -2639,6 +2645,400 @@ TEST_F(GridLanesLayoutAlgorithmTest, ResolvedGridAxisFlipMarksPlacementDirty) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   EXPECT_TRUE(GetLayoutBoxByElementId("grid-lanes")->IsGridPlacementDirty());
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 80px 120px 90px;
+      column-gap: 14px;
+      column-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      height: 400px;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      height: 40px;
+      outline: 1px solid blue;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(400)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGridLanes);
+  EXPECT_EQ(gap_geometry->GetMainDirection(), kForColumns);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(14));
+  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 2u);
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(92));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(226));
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(323));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(395));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-rows: 90px 130px 110px;
+      row-gap: 12px;
+      row-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      width: 500px;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      outline: 1px solid blue;
+      width: 40px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(500), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  EXPECT_EQ(gap_geometry->GetMainDirection(), kForRows);
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
+  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 2u);
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(101));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(243));
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(495));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(359));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryEmptyExplicitTracks) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: repeat(3, 50px);
+      column-gap: 10px;
+      column-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      height: 100px;
+    }
+    </style>
+    <div id="grid-lanes"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  EXPECT_EQ(gap_geometry->MainGapCount(), 2u);
+  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+  EXPECT_EQ(gap_geometry->GetMainGaps()[0].GetGapOffset(), LayoutUnit(60));
+  EXPECT_EQ(gap_geometry->GetMainGaps()[1].GetGapOffset(), LayoutUnit(120));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometrySingleTrack) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px;
+      column-gap: 10px;
+      column-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      height: 100px;
+    }
+    </style>
+    <div id="grid-lanes"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  EXPECT_EQ(GapGeometryFor(algorithm), nullptr);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRequiresGapRule) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+      column-gap: 20px;
+      border: 5px solid black;
+      box-sizing: border-box;
+      height: 100px;
+    }
+    </style>
+    <div id="grid-lanes"></div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  EXPECT_EQ(GapGeometryFor(algorithm), nullptr);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: repeat(auto-fit, 100px);
+      column-gap: 10px;
+      column-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      height: 100px;
+      outline: 1px solid blue;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div>Item 1</div>
+      <div>Item 2</div>
+      <div>Item 3</div>
+      <div>Item 4</div>
+      <div>Item 5</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(200)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  ASSERT_EQ(gap_geometry->MainGapCount(), 4u);
+  EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
+  for (const auto& main_gap : gap_geometry->GetMainGaps()) {
+    EXPECT_NE(main_gap.GetGapOffset(), LayoutUnit::Max());
+  }
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryGridAxisAlignment) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+      column-gap: 20px;
+      column-rule: 2px solid black;
+      justify-content: center;
+      border: 5px solid black;
+      box-sizing: border-box;
+      width: 300px;
+      height: 100px;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      height: 40px;
+      outline: 1px solid blue;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div>Item 1</div>
+      <div>Item 2</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(300), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
+  EXPECT_EQ(gap_geometry->GetMainGaps()[0].GetGapOffset(), LayoutUnit(150));
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(40));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(260));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(95));
+}
+
+// Main-gap geometry includes block-end overflow from placed items.
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumnStackingAxisOverflow) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 80px 80px;
+      column-gap: 10px;
+      row-gap: 6px;
+      column-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      height: 60px;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      height: 40px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div style="grid-column: 1"></div>
+      <div style="grid-column: 1"></div>
+      <div style="grid-column: 2"></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(60)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
+
+  // The second item extends past the 55px content-box end.
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(91));
+}
+
+// Main-gap geometry includes inline-end overflow from placed items.
+TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRowStackingAxisOverflow) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-rows: 80px 80px;
+      row-gap: 10px;
+      column-gap: 6px;
+      row-rule: 2px solid black;
+      border: 5px solid black;
+      box-sizing: border-box;
+      width: 60px;
+    }
+    #grid-lanes > div {
+      background: lightblue;
+      width: 40px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div style="grid-row: 1"></div>
+      <div style="grid-row: 1"></div>
+      <div style="grid-row: 2"></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(60), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  ASSERT_NE(gap_geometry, nullptr);
+  ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
+
+  // The second item extends past the 55px content-box end.
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(5));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(91));
 }
 
 }  // namespace blink

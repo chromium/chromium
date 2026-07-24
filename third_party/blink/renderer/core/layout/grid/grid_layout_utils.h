@@ -20,6 +20,7 @@ namespace blink {
 class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
+class GapGeometry;
 class GridLayoutData;
 class GridItems;
 class GridLayoutTrackCollection;
@@ -35,6 +36,26 @@ struct GridItemData;
 struct LogicalSize;
 struct LogicalStaticPosition;
 struct MinMaxSizesResult;
+
+struct GridTrackGap {
+  wtf_size_t line_index;
+  LayoutUnit center_offset;
+};
+
+struct GridTrackGapData {
+  Vector<GridTrackGap> gaps;
+  LayoutUnit content_start;
+  LayoutUnit content_end;
+  // Expanded track count, including collapsed tracks, used by Grid's existing
+  // gap-segment aggregators.
+  wtf_size_t track_count = 0;
+};
+
+// Main/cross is independent of track direction for grid-lanes.
+enum class GridTrackGapType {
+  kMain,
+  kCross,
+};
 
 // Base class for accumulating baseline information across grid and grid-lanes
 // layouts. Provides a unified interface for handling baselines in both grid
@@ -100,6 +121,14 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
                                  AxisEdge block_axis_edge,
                                  LogicalSize container_size,
                                  LogicalStaticPosition*);
+
+// Builds gap metadata and geometry from expanded track positions.
+//
+// An all-collapsed collection returns no gaps.
+GridTrackGapData BuildGridTrackGapData(
+    const GridLayoutTrackCollection& track_collection,
+    GridTrackGapType gap_type,
+    GapGeometry& gap_geometry);
 
 // Per the Grid spec [1] there is special logic for the contribution size to use
 // for intrinsic minimums. This method returns the contribution size of

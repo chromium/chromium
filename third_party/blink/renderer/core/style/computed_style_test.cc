@@ -2437,6 +2437,11 @@ TEST_F(ComputedStyleTest, HasGapRule) {
         column-rule-style: solid;
         row-rule-style: solid;
       }
+      #grid-lanes {
+        display: grid-lanes;
+        column-rule-style: solid;
+        row-rule-style: solid;
+      }
       #no-rule {
         column-rule-style: solid;
         row-rule-style: solid;
@@ -2445,6 +2450,7 @@ TEST_F(ComputedStyleTest, HasGapRule) {
     <div id="multi-col"></div>
     <div id="grid"></div>
     <div id="flex"></div>
+    <div id="grid-lanes"></div>
     <div id="no-rule"></div>
   )HTML");
   document.View()->UpdateAllLifecyclePhasesForTest();
@@ -2460,6 +2466,10 @@ TEST_F(ComputedStyleTest, HasGapRule) {
   const auto& flex = StyleForElement("flex");
   EXPECT_TRUE(flex.HasColumnRule());
   EXPECT_TRUE(flex.HasRowRule());
+
+  const auto& grid_lanes = StyleForElement("grid-lanes");
+  EXPECT_TRUE(grid_lanes.HasColumnRule());
+  EXPECT_TRUE(grid_lanes.HasRowRule());
 
   const auto& no_rule = StyleForElement("no-rule");
   EXPECT_FALSE(no_rule.HasColumnRule());

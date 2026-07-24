@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_node.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_gap_accumulator.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/stacking_baseline_accumulator.h"
@@ -146,6 +147,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   HeapVector<Member<LayoutBox>> oof_children;
   const auto& node = Node();
+  const auto& border_scrollbar_padding = BorderScrollbarPadding();
 
   GridItems* grid_items = nullptr;
   GridSizingTree sizing_tree =
@@ -157,11 +159,20 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   auto* layout_data = &sizing_tree.LayoutData();
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
+  const auto& track_collection =
+      is_for_columns ? layout_data->Columns() : layout_data->Rows();
+
+  std::optional<GridLanesGapAccumulator> gap_accumulator;
+  // TODO(javiercon): Handle gap decorations in fragmented grid lanes.
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+      Style().HasGapRule() &&
+      !InvolvedInBlockFragmentation(container_builder_)) {
+    gap_accumulator.emplace();
+    gap_accumulator->BuildMainGaps(track_collection);
+  }
 
   if (!grid_items->IsEmpty()) {
     const auto& style = Style();
-    const auto& track_collection =
-        is_for_columns ? layout_data->Columns() : layout_data->Rows();
 
     GridLanesRunningPositions running_positions(
         track_collection, style,
@@ -184,10 +195,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   }
 
   // Account for border, scrollbar, and padding in the intrinsic block size.
-  intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
+  intrinsic_block_size_ += border_scrollbar_padding.BlockSum();
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(GetConstraintSpace(), node, GetBreakToken(),
-                              BorderScrollbarPadding(), intrinsic_block_size_);
+                              border_scrollbar_padding, intrinsic_block_size_);
 
   LayoutUnit previously_consumed_block_size;
   if (GetBreakToken()) [[unlikely]] {
@@ -207,17 +218,14 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   // the track sizes, and the stacking axis dimension comes from the placed
   // items.
   if (node.IsScrollContainer()) {
-    const auto& track_collection =
-        is_for_columns ? layout_data->Columns() : layout_data->Rows();
-
     LogicalOffset offset;
     LogicalSize size;
     if (is_for_columns) {
       offset = {track_collection.GetSetOffset(0),
-                BorderScrollbarPadding().block_start};
+                border_scrollbar_padding.block_start};
       size = {track_collection.CalculateSetSpanSize(), stacking_axis_size_};
     } else {
-      offset = {BorderScrollbarPadding().inline_start,
+      offset = {border_scrollbar_padding.inline_start,
                 track_collection.GetSetOffset(0)};
       size = {stacking_axis_size_, track_collection.CalculateSetSpanSize()};
     }
@@ -234,6 +242,24 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     // fragmentation related fields should have been set.
     container_builder_.CheckNoBlockFragmentation();
 #endif
+
+    if (gap_accumulator) {
+      const LayoutUnit container_stacking_content_start =
+          is_for_columns ? border_scrollbar_padding.block_start
+                         : border_scrollbar_padding.inline_start;
+      const LayoutUnit container_stacking_content_end =
+          is_for_columns ? block_size - border_scrollbar_padding.block_end
+                         : container_builder_.InlineSize() -
+                               border_scrollbar_padding.inline_end;
+      const LayoutUnit stacking_content_end =
+          std::max(container_stacking_content_end,
+                   container_stacking_content_start + stacking_axis_size_);
+
+      gap_geometry_ = gap_accumulator->FinalizeGapGeometry(
+          container_stacking_content_start, stacking_content_end);
+      // TODO(javiercon): Attach this geometry to the fragment after
+      // gap-decoration painting supports grid-lanes.
+    }
   }
 
   // Place out-of-flow items after setting the intrinsic block size, since

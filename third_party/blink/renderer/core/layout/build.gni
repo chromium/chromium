@@ -219,6 +219,8 @@ blink_core_sources_layout = [
   "grid_lanes/grid_lane_data.h",
   "grid_lanes/grid_lanes_break_token_data.h",
   "grid_lanes/grid_lanes_direction.h",
+  "grid_lanes/grid_lanes_gap_accumulator.cc",
+  "grid_lanes/grid_lanes_gap_accumulator.h",
   "grid_lanes/grid_lanes_item_group.h",
   "grid_lanes/grid_lanes_layout_algorithm.cc",
   "grid_lanes/grid_lanes_layout_algorithm.h",

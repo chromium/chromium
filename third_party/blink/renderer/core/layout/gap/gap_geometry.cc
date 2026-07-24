@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -249,6 +250,9 @@ void GapGeometry::GenerateMainIntersectionList(
   intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
 
   switch (GetContainerType()) {
+    case ContainerType::kGridLanes:
+      // TODO(javiercon): Implement full intersection support for grid-lanes.
+      break;
     case ContainerType::kGrid:
     case ContainerType::kMultiColumn:
       // For grid, the main axis is rows and intersections occur at the inline
@@ -454,6 +458,9 @@ void GapGeometry::GenerateCrossIntersectionList(
   GapSegmentStateCursor cursor(
       GetGapSegmentStateRangesForGap(direction, gap_index));
   switch (GetContainerType()) {
+    case ContainerType::kGridLanes:
+      // TODO(javiercon): Construct cross gaps for grid-lanes.
+      NOTREACHED();
     case ContainerType::kGrid: {
       GenerateCrossIntersectionListForGrid(direction, intersections, cursor);
       break;

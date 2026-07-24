@@ -8,7 +8,9 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
@@ -16,12 +18,84 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_node.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/grid_track_list.h"
 
 namespace blink {
+
+GridTrackGapData BuildGridTrackGapData(
+    const GridLayoutTrackCollection& track_collection,
+    GridTrackGapType gap_type,
+    GapGeometry& gap_geometry) {
+  const Vector<LayoutUnit> line_positions =
+      LayoutGrid::ComputeExpandedPositions(track_collection);
+
+  GridTrackGapData gap_data;
+  gap_data.track_count = line_positions.size() - 1;
+  if (!track_collection.HasNonCollapsedLine()) {
+    return gap_data;
+  }
+
+  gap_data.content_start = line_positions.front();
+  gap_data.content_end = line_positions.back();
+
+  // Interior lines are an upper bound because collapsed ranges emit no gaps.
+  const wtf_size_t reserve_hint =
+      gap_data.track_count > 1 ? gap_data.track_count - 1 : 0;
+  gap_data.gaps.ReserveInitialCapacity(reserve_hint);
+  if (gap_type == GridTrackGapType::kMain) {
+    gap_geometry.ReserveMainGaps(reserve_hint);
+  } else {
+    gap_geometry.ReserveCrossGaps(reserve_hint);
+  }
+
+  const wtf_size_t first_non_collapsed_line =
+      track_collection.FirstNonCollapsedLineIndex();
+  const LayoutUnit gutter_size = track_collection.GutterSize();
+  const wtf_size_t range_count = track_collection.RangeCount();
+
+  // CSS Gaps defines intersections at gap centers.
+  // https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
+  for (wtf_size_t range_index = 0; range_index < range_count; ++range_index) {
+    // Skip collapsed ranges, as they don't contribute to the gap geometry.
+    if (track_collection.RangeProperties(range_index)
+            .HasProperty(TrackSpanProperties::kIsCollapsed)) {
+      continue;
+    }
+
+    const wtf_size_t start_line = track_collection.RangeStartLine(range_index);
+    const wtf_size_t end_line =
+        start_line + track_collection.RangeTrackCount(range_index);
+    wtf_size_t line_index = start_line;
+
+    // The first non-collapsed range's leading line is the outer edge of the
+    // grid content, so it's not a gap and we skip it. The trailing outer edge
+    // is excluded naturally by the `line_index < end_line` bound on the inner
+    // loop below.
+    if (start_line == first_non_collapsed_line) {
+      ++line_index;
+    }
+
+    constexpr float kMidpointDivisor = 2.0f;
+    for (; line_index < end_line; ++line_index) {
+      const LayoutUnit center_offset = LayoutUnit(
+          line_positions[line_index] - gutter_size / kMidpointDivisor);
+      gap_data.gaps.emplace_back(GridTrackGap{line_index, center_offset});
+      if (gap_type == GridTrackGapType::kMain) {
+        gap_geometry.AddMainGap(center_offset);
+      } else {
+        gap_geometry.AddCrossGap(LogicalOffset(center_offset, LayoutUnit()));
+      }
+    }
+  }
+  CHECK_EQ(gap_data.gaps.size(), gap_type == GridTrackGapType::kMain
+                                     ? gap_geometry.MainGapCount()
+                                     : gap_geometry.CrossGapCount());
+  return gap_data;
+}
 
 LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
                             const GridLayoutData& layout_data,

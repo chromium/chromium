@@ -17,6 +17,7 @@ namespace blink {
 
 class BaselineAccumulator;
 class ComputedStyle;
+class GapGeometry;
 class GridItems;
 class GridLayoutData;
 class GridLayoutTree;
@@ -390,6 +391,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   std::optional<LayoutUnit> contain_intrinsic_block_size_;
   LayoutUnit intrinsic_block_size_;
   LayoutUnit stacking_axis_size_;
+
+  const GapGeometry* gap_geometry_ = nullptr;
 
   LogicalSize grid_lanes_available_size_;
   LogicalSize grid_lanes_min_available_size_;
