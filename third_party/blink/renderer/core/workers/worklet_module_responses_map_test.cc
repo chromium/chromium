@@ -127,7 +127,6 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
                           ModuleImportPhase::kEvaluation);
   }
 
-
   const base::TickClock* GetTickClock() override {
     return PageTestBase::GetTickClock();
   }
@@ -224,13 +223,10 @@ TEST_F(WorkletModuleResponsesMapTest, Failure) {
       global_scope_->GetModuleResponsesMap()->GetEntryError(
           kUrl, ModuleType::kJavaScriptOrWasm);
   ASSERT_TRUE(error.has_value());
-  // Currently all errors are mapped to kUnknown pending full error propagation.
-  EXPECT_EQ(WorkletModuleError::Type::kUnknown, error->type);
+  EXPECT_EQ(WorkletModuleError::Type::kNetwork, error->type);
 }
 
-// TODO(crbug.com/525138979): Enable this test once MIME type check error
-// propagation is implemented in WorkletModuleScriptFetcher.
-TEST_F(WorkletModuleResponsesMapTest, DISABLED_MimeTypeFailure) {
+TEST_F(WorkletModuleResponsesMapTest, MimeTypeFailure) {
   const KURL kUrl("https://example.com/module.js");
   // Register with image/png which is invalid for JS modules.
   url_test_helpers::RegisterMockedURLLoad(
@@ -401,6 +397,34 @@ TEST_F(WorkletModuleResponsesMapTest, Dispose) {
     EXPECT_EQ(ClientImpl::Result::kFailed, client->GetResult());
     EXPECT_FALSE(client->HasParams());
   }
+}
+
+TEST_F(WorkletModuleResponsesMapTest, HttpFailure) {
+  const KURL kUrl("https://example.test/module.js");
+
+  WebURLResponse response(kUrl);
+  response.SetMimeType("text/javascript");
+  response.SetHttpHeaderField(http_names::kContentType, "text/javascript");
+  response.SetHttpStatusCode(404);
+
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      kUrl, response, test::CoreTestDataPath("module.js"));
+
+  ClientImpl* client = MakeGarbageCollected<ClientImpl>();
+  Fetch(kUrl, client);
+
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return client->GetResult() != ClientImpl::Result::kInitial; }));
+
+  EXPECT_EQ(ClientImpl::Result::kFailed, client->GetResult());
+
+  std::optional<WorkletModuleError> error_entry =
+      global_scope_->GetModuleResponsesMap()->GetEntryError(
+          kUrl, ModuleType::kJavaScriptOrWasm);
+  ASSERT_TRUE(error_entry.has_value());
+  EXPECT_EQ(WorkletModuleError::Type::kHttp, error_entry->type);
+  EXPECT_EQ(404, error_entry->http_status_code);
 }
 
 }  // namespace blink

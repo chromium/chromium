@@ -84,6 +84,15 @@ WorkletModuleTreeClient::WorkletModuleTreeClient(
 // https://drafts.css-houdini.org/worklets/#fetch-and-invoke-a-worklet-script
 void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
     ModuleScript* module_script) {
+  if (!script_state_->ContextIsValid()) {
+    PostCrossThreadTask(
+        *outside_settings_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&WorkletPendingTasks::Abort,
+                            WrapCrossThreadPersistent(pending_tasks_.Get()),
+                            /*error_to_rethrow=*/nullptr));
+    return;
+  }
+
   // TODO(nhiroki): Call reporting proxy functions appropriately (e.g.,
   // DidFailToFetchModuleScript(), WillEvaluateModuleScript()).
 

@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/worklet_module_script_fetcher.h"
 
+#include "services/network/public/cpp/header_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -90,13 +93,90 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
     global_scope_->GetModuleResponsesMap()->SetEntryParams(
         url_, expected_module_type_, std::move(params));
-  } else {
-    // Pass placeholder error for now. Real extraction logic will be implemented
-    // later.
-    global_scope_->GetModuleResponsesMap()->SetEntryError(
-        url_, expected_module_type_,
-        WorkletModuleError{.type = WorkletModuleError::Type::kUnknown});
+    return;
   }
+
+  const bool is_cors_or_access_check =
+      script_resource->ErrorOccurred() &&
+      (script_resource->GetResourceError().IsAccessCheck() ||
+       script_resource->GetResourceError().CorsErrorStatus().has_value());
+
+  const bool is_url_cross_origin =
+      global_scope_->DocumentSecurityOrigin() &&
+      !global_scope_->DocumentSecurityOrigin()->IsSameOriginWith(
+          SecurityOrigin::Create(url_).get());
+  const bool is_cors_passing = script_resource->GetResponse().GetType() ==
+                               network::mojom::FetchResponseType::kCors;
+
+  const bool is_opaque_cross_origin =
+      (is_url_cross_origin && !is_cors_passing) || is_cors_or_access_check;
+
+  WorkletModuleError::Type error_type = WorkletModuleError::Type::kUnknown;
+  int http_status_code = 0;
+
+  const bool is_http_error =
+      (script_resource->ErrorOccurred() &&
+       script_resource->GetResourceError().IsCancelledFromHttpError()) ||
+      (script_resource->GetResponse().IsHTTP() &&
+       !network::IsSuccessfulStatus(
+           script_resource->GetResponse().HttpStatusCode()));
+
+  if (is_cors_or_access_check) {
+    error_type = WorkletModuleError::Type::kCors;
+  } else if (is_http_error) {
+    if (!is_opaque_cross_origin) {
+      error_type = WorkletModuleError::Type::kHttp;
+      http_status_code = script_resource->GetResponse().HttpStatusCode();
+    } else {
+      error_type = WorkletModuleError::Type::kNetwork;
+    }
+  } else if (script_resource->ErrorOccurred()) {
+    error_type = WorkletModuleError::Type::kNetwork;
+  } else if (!error_messages.empty()) {
+    if (!script_resource->PassedIntegrityChecks()) {
+      error_type = WorkletModuleError::Type::kIntegrity;
+    } else {
+      error_type = WorkletModuleError::Type::kMime;
+    }
+  }
+
+  if (error_messages.empty()) {
+    String message =
+        "Failed to load worklet module script: " + url_.GetString();
+    switch (error_type) {
+      case WorkletModuleError::Type::kHttp:
+        message = message +
+                  " (HTTP status: " + String::Number(http_status_code) + ")";
+        break;
+      case WorkletModuleError::Type::kCors:
+        message = message + " (CORS or access check error)";
+        break;
+      case WorkletModuleError::Type::kNetwork:
+        message = message + " (Network error)";
+        break;
+      case WorkletModuleError::Type::kIntegrity:
+        message = message + " (SRI integrity check failed)";
+        break;
+      case WorkletModuleError::Type::kMime:
+      case WorkletModuleError::Type::kDisposed:
+      case WorkletModuleError::Type::kUnknown:
+        break;
+    }
+    global_scope_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kError,
+        message, url_.GetString(),
+        /*loader=*/nullptr, script_resource->InspectorId()));
+  } else {
+    for (ConsoleMessage* message : error_messages) {
+      global_scope_->AddConsoleMessage(message);
+    }
+  }
+
+  global_scope_->GetModuleResponsesMap()->SetEntryError(
+      url_, expected_module_type_,
+      WorkletModuleError{.type = error_type,
+                         .http_status_code = http_status_code,
+                         .is_cross_origin = is_opaque_cross_origin});
 }
 
 void WorkletModuleScriptFetcher::Trace(Visitor* visitor) const {

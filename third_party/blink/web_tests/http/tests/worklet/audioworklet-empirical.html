@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AudioWorklet Empirical Tests</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/get-host-info.js"></script>
+<body>
+<script>
+const host_info = get_host_info();
+
+promise_test(async t => {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule('resources/simple-audioworklet.js');
+
+  // Test basic node connectivity
+  const osc = new OscillatorNode(context);
+  const workletNode = new AudioWorkletNode(context, 'simple-processor');
+  const gain = new GainNode(context);
+
+  osc.connect(workletNode);
+  workletNode.connect(gain);
+  gain.connect(context.destination);
+
+  // Verify state
+  assert_equals(workletNode.numberOfInputs, 1);
+  assert_equals(workletNode.numberOfOutputs, 1);
+
+  // Disconnect
+  osc.disconnect(workletNode);
+  workletNode.disconnect(gain);
+  gain.disconnect(context.destination);
+
+  await context.close();
+}, 'Test basic AudioWorkletNode connectivity');
+
+promise_test(async t => {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule('resources/simple-audioworklet.js');
+
+  const workletNode1 = new AudioWorkletNode(context, 'simple-processor');
+  const workletNode2 = new AudioWorkletNode(context, 'simple-processor');
+  const gain = new GainNode(context);
+
+  // Create cycle: workletNode1 -> workletNode2 -> gain -> workletNode1
+  workletNode1.connect(workletNode2);
+  workletNode2.connect(gain);
+  gain.connect(workletNode1);
+
+  // Create another cycle: workletNode1 -> workletNode1
+  // This is allowed by the Web Audio API (it doesn't throw, but might be muted if no DelayNode is present).
+  workletNode1.connect(workletNode1);
+
+  // Clean up
+  workletNode1.disconnect();
+
+  workletNode2.disconnect();
+  gain.disconnect();
+  await context.close();
+}, 'Test cyclic graph involving AudioWorkletNode');
+
+promise_test(async t => {
+  const context = new AudioContext();
+
+  // Failure: 404
+  await promise_rejects_dom(
+    t,
+    'AbortError',
+    context.audioWorklet.addModule('resources/nonexistent-script.js'),
+    'addModule should reject with AbortError on 404'
+  );
+
+  // Failure: CORS
+  // HTTP_REMOTE_ORIGIN should be cross-origin
+  const crossOriginUrl = host_info.HTTP_REMOTE_ORIGIN + '/http/tests/worklet/resources/simple-audioworklet.js';
+  await promise_rejects_dom(
+    t,
+    'AbortError',
+    context.audioWorklet.addModule(crossOriginUrl),
+    'addModule should reject with AbortError on CORS error'
+  );
+
+  // Attempt to instantiate after failure
+  assert_throws_dom('InvalidStateError', () => {
+    new AudioWorkletNode(context, 'simple-processor');
+  }, 'Creating node with unregistered processor should throw InvalidStateError');
+
+  await context.close();
+}, 'Test addModule failure modes (404, CORS) and aftermath');
+
+promise_test(async t => {
+  // Rapid instantiation and teardown while loading fails
+  const promises = [];
+  for (let i = 0; i < 20; i++) {
+    const context = new AudioContext();
+
+    // Trigger multiple failing loads
+    promises.push(context.audioWorklet.addModule('resources/nonexistent-1.js').catch(() => {}));
+    promises.push(context.audioWorklet.addModule('resources/nonexistent-2.js').catch(() => {}));
+
+    // Connect dummy nodes
+    const osc = new OscillatorNode(context);
+    const gain = new GainNode(context);
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    // Close context immediately to trigger disposal
+    if (i % 2 === 0) {
+      context.close();
+    }
+  }
+
+  await Promise.all(promises);
+  if (window.gc) {
+    window.gc();
+  }
+}, 'Test stress lifecycle under concurrent failing addModules');
+</script>
+</body>

@@ -118,10 +118,12 @@ void Worklet::ContextDestroyed() {
 
 void Worklet::AbortPendingTasks() {
   DCHECK(IsMainThread());
-  if (HasPendingTasks()) {
-    HeapVector<Member<WorkletPendingTasks>> tasks_to_abort(pending_tasks_set_);
-    for (const auto& task : tasks_to_abort) {
-      task->Abort(nullptr);
+  while (!pending_tasks_set_.empty()) {
+    auto it = pending_tasks_set_.begin();
+    WorkletPendingTasks* task = it->Get();
+    task->Abort(nullptr);
+    if (pending_tasks_set_.Contains(task)) {
+      pending_tasks_set_.erase(task);
     }
   }
 }
@@ -150,6 +152,10 @@ void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
   DCHECK(IsMainThread());
   if (!GetExecutionContext())
     return;
+
+  if (!pending_tasks_set_.Contains(pending_tasks)) {
+    return;
+  }
 
   // Step 6: "Let credentialOptions be the credentials member of options."
   network::mojom::CredentialsMode credentials_mode =
