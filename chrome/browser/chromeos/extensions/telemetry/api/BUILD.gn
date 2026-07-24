@@ -13,7 +13,7 @@ function_registration("api_registration") {
   sources = chromeos_system_extensions_api_schema_sources
   impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api"
   configs = [ "//build/config:precompiled_headers" ]
-  bundle_name = "ChromeOS"
+  bundle_name = "ChromeOSSystemExtensions"
   root_namespace = chromeos_system_extensions_api_root_namespace
   schema_include_rules = chromeos_system_extensions_api_schema_include_rules
 

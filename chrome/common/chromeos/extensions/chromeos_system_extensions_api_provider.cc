@@ -56,12 +56,12 @@ void ChromeOSSystemExtensionsAPIProvider::AddAPIJSONSources(
 
 bool ChromeOSSystemExtensionsAPIProvider::IsAPISchemaGenerated(
     const std::string& name) {
-  return api::ChromeOSGeneratedSchemas::IsGenerated(name);
+  return api::ChromeOSSystemExtensionsGeneratedSchemas::IsGenerated(name);
 }
 
 std::string_view ChromeOSSystemExtensionsAPIProvider::GetAPISchema(
     const std::string& name) {
-  return api::ChromeOSGeneratedSchemas::Get(name);
+  return api::ChromeOSSystemExtensionsGeneratedSchemas::Get(name);
 }
 
 void ChromeOSSystemExtensionsAPIProvider::RegisterPermissions(

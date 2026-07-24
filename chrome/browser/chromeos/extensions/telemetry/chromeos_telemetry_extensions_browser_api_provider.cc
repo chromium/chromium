@@ -16,7 +16,7 @@ ChromeOSTelemetryExtensionsBrowserAPIProvider::
 
 void ChromeOSTelemetryExtensionsBrowserAPIProvider::RegisterExtensionFunctions(
     ExtensionFunctionRegistry* registry) {
-  api::ChromeOSGeneratedFunctionRegistry::RegisterAll(registry);
+  api::ChromeOSSystemExtensionsGeneratedFunctionRegistry::RegisterAll(registry);
 }
 
 }  // namespace chromeos
