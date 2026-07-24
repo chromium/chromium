@@ -58,6 +58,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
@@ -112,6 +114,7 @@ public class FuseboxCoordinatorUnitTest {
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
     private WindowAndroid mWindowAndroid;
+    private ConstraintLayout mParent;
     private FuseboxCoordinator mCoordinator;
 
     private final SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
@@ -135,9 +138,9 @@ public class FuseboxCoordinatorUnitTest {
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         mWindowAndroid = new WindowAndroid(activity, false);
-        ConstraintLayout parent = new ConstraintLayout(activity);
-        activity.setContentView(parent);
-        LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, parent, true);
+        mParent = new ConstraintLayout(activity);
+        activity.setContentView(mParent);
+        LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, mParent, true);
 
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
 
@@ -152,19 +155,23 @@ public class FuseboxCoordinatorUnitTest {
                                 PageClassification
                                         .INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
-        mCoordinator =
-                new FuseboxCoordinator(
-                        activity,
-                        mWindowAndroid,
-                        parent,
-                        mTabModelSelectorSupplier,
-                        mTemplateUrlServiceSupplier,
-                        mSnackbarManager,
-                        /* scrimAnchorViewSupplier= */ () -> null,
-                        mBackPressManager,
-                        /* onActivationChipClickedWithQuery= */ () -> {},
-                        /* clearUrlBarTextRunnable= */ () -> {},
-                        /* urlBarTextSupplier= */ () -> "");
+        mCoordinator = createCoordinator(/* isForcedPhoneStyleOmnibox= */ false);
+    }
+
+    private FuseboxCoordinator createCoordinator(boolean isForcedPhoneStyleOmnibox) {
+        return new FuseboxCoordinator(
+                mActivityController.get(),
+                mWindowAndroid,
+                mParent,
+                mTabModelSelectorSupplier,
+                mTemplateUrlServiceSupplier,
+                mSnackbarManager,
+                /* scrimAnchorViewSupplier= */ () -> null,
+                mBackPressManager,
+                /* onActivationChipClickedWithQuery= */ () -> {},
+                /* clearUrlBarTextRunnable= */ () -> {},
+                /* urlBarTextSupplier= */ () -> "",
+                isForcedPhoneStyleOmnibox);
     }
 
     private FuseboxSessionState createSession() {
@@ -415,5 +422,38 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(createSession());
         assertEquals(
                 FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
+    }
+
+    @Test
+    public void testGetFuseboxLayoutMode_normalStyleOnPhone() {
+        assertEquals(
+                FuseboxLayoutMode.TOOLBAR,
+                mCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
+    public void testGetFuseboxLayoutMode_normalStyleOnDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        FuseboxCoordinator desktopCoordinator =
+                createCoordinator(/* isForcedPhoneStyleOmnibox= */ false);
+
+        assertEquals(
+                FuseboxLayoutMode.SUGGESTIONS_POPOVER,
+                desktopCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
+    public void testGetFuseboxLayoutMode_forcedPhoneStyleOnDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+
+        FuseboxCoordinator forcedCoordinator =
+                createCoordinator(/* isForcedPhoneStyleOmnibox= */ true);
+
+        assertEquals(
+                FuseboxLayoutMode.TOOLBAR,
+                forcedCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
     }
 }

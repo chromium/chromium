@@ -331,7 +331,8 @@ public class LocationBarCoordinator
                                         TimeUtils.uptimeMillis(),
                                         AutocompleteCoordinator.NavigationTarget.CURRENT_TAB),
                         this::clearEditingAndUserText,
-                        this::getUrlBarTextWithoutAutocomplete);
+                        this::getUrlBarTextWithoutAutocomplete,
+                        uiOverrides.isForcedPhoneStyleOmnibox());
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =
                 mFuseboxCoordinator.getFuseboxStateSupplier();
         fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
