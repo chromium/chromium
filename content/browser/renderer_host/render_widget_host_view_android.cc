@@ -131,6 +131,9 @@ namespace content {
 
 namespace {
 
+BASE_FEATURE(kEvictSurfaceViaDelegatedFrameHost,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 static const base::TimeDelta kClickCountInterval = base::Seconds(0.5);
 static const float kClickCountRadiusSquaredDIP = 25;
 static const base::TimeDelta kThrottleTimeout = base::Milliseconds(200);
@@ -1479,6 +1482,10 @@ viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
 }
 
 viz::SurfaceId RenderWidgetHostViewAndroid::GetCurrentSurfaceId() const {
+  if (base::FeatureList::IsEnabled(kEvictSurfaceViaDelegatedFrameHost)) {
+    return delegated_frame_host_ ? delegated_frame_host_->SurfaceId()
+                                 : viz::SurfaceId();
+  }
   if (sync_compositor_)
     return sync_compositor_->GetSurfaceId();
   return delegated_frame_host_ ? delegated_frame_host_->SurfaceId()
