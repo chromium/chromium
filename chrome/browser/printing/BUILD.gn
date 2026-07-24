@@ -358,6 +358,29 @@ if (enable_printing) {
   }
 }
 
+if (enable_printing) {
+  source_set("print_test_utils") {
+    testonly = true
+
+    sources = [
+      "print_test_utils.cc",
+      "print_test_utils.h",
+    ]
+
+    public_deps = [
+      "//printing",
+      "//printing/backend",
+      "//printing/mojom",
+      "//ui/gfx/geometry",
+    ]
+
+    deps = [
+      ":printing",
+      "//base",
+    ]
+  }
+}
+
 if (enable_print_preview) {
   source_set("test_support") {
     testonly = true
