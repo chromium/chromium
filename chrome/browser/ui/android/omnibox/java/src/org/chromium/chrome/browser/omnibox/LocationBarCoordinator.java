@@ -330,7 +330,7 @@ public class LocationBarCoordinator
                                 mAutocompleteCoordinator.loadTypedOmniboxText(
                                         TimeUtils.uptimeMillis(),
                                         AutocompleteCoordinator.NavigationTarget.CURRENT_TAB),
-                        () -> setOmniboxEditingText(""),
+                        this::clearEditingAndUserText,
                         this::getUrlBarTextWithoutAutocomplete);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =
                 mFuseboxCoordinator.getFuseboxStateSupplier();
@@ -878,6 +878,14 @@ public class LocationBarCoordinator
     @Override
     public void clearOmniboxFocus() {
         mLocationBarMediator.endInput();
+    }
+
+    private void clearEditingAndUserText() {
+        if (mLocationBarMediator == null || mLocationBarMediator.getCurrentInput() == null) {
+            return;
+        }
+        setOmniboxEditingText("");
+        mLocationBarMediator.getCurrentInput().setUserText("");
     }
 
     @Override
