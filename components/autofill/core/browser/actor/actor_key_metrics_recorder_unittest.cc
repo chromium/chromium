@@ -46,7 +46,7 @@ using GetSuggestionsFuture =
     base::test::TestFuture<base::expected<std::vector<ActorFormFillingRequest>,
                                           ActorFormFillingError>>;
 using FillSuggestionsFuture =
-    base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
+    base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>;
 
 // Returns a fill-request with a non-sensical (because null) field id.
 ActorFormFillingService::FillRequest UnfindableFillRequest() {

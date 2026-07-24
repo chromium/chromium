@@ -80,14 +80,15 @@ class ActorFormFillingService {
   // reverse map, pointing from the resolved FieldGlobalId to the PageTarget
   // that describes the FieldGlobalId.
   //
-  // If successful, the callback will be invoked with a void value. If an error
-  // occurs, the callback will be invoked with an ActorFormFillingError.
+  // If successful, the callback will be invoked with a string containing a
+  // summary of the data filled into the form (preceded by a preamble). If an
+  // error occurs, the callback will be invoked with an ActorFormFillingError.
   virtual void FillSuggestions(
       AutofillClient& client,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
       base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
-      base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
-          callback) = 0;
+      base::OnceCallback<void(
+          base::expected<std::string, ActorFormFillingError>)> callback) = 0;
 
   // Scrolls the form into view.
   // `form_index` corresponds to the vector of ActorFormFillingRequests

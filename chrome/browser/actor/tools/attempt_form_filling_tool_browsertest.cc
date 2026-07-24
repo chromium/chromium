@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, GetSuggestionsAndFill) {
           _,
           ElementsAre(MakeActorFormFillingSelection(request.suggestions[0].id)),
           _, _))
-      .WillOnce(RunOnceCallback<3>(base::ok()));
+      .WillOnce(RunOnceCallback<3>(""));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, PopulatesTriggerFieldMap) {
           _,
           ElementsAre(MakeActorFormFillingSelection(request.suggestions[0].id)),
           Eq(expected_trigger_field_map), _))
-      .WillOnce(RunOnceCallback<3>(base::ok()));
+      .WillOnce(RunOnceCallback<3>(""));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(),
@@ -377,6 +377,64 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, PopulatesTriggerFieldMap) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
+}
+
+// Test that the AttemptFormFillingTool returns the chosen suggestion details in
+// `ActionResult::message` of the generated `ActionResult`.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
+                       GetSuggestionsAndFillReturnsDetails) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> address_home_line1 =
+      GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
+  ASSERT_TRUE(address_home_line1);
+
+  autofill::ActorSuggestion suggestion;
+  suggestion.id = autofill::ActorSuggestionId(123);
+  suggestion.title = "Homer Simpson";
+  suggestion.details = "1600 Amphitheatre Pkwy";
+
+  autofill::ActorFormFillingRequest request;
+  request.requested_data = RequestedData::kShippingAddress;
+  request.section_label = "Shipping Address";
+  request.suggestions.push_back(suggestion);
+
+  std::vector<autofill::ActorFormFillingRequest> requests = {request};
+
+  EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
+      .WillOnce(RunOnceCallback<2>(requests));
+
+  // This is just a dummy string because the test verifies only that
+  // AttemptFormFillingTool::OnSuggestionsSelected forwards the generated
+  // extra information in the result message. The generation of this information
+  // is tested in unittests.
+  std::string expected_info = "<result>";
+
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      FillSuggestions(
+          _,
+          ElementsAre(MakeActorFormFillingSelection(request.suggestions[0].id)),
+          _, _))
+      .WillOnce(RunOnceCallback<3>(expected_info));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(),
+      {CreateFormFillingRequest(RequestedData::kShippingAddress,
+                                {PageTarget(*address_home_line1)},
+                                "Shipping Address")});
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // Wait for the result.
+  const auto& action_results = result.Get();
+  ASSERT_EQ(action_results.size(), 1u);
+  const auto& action_result = action_results[0];
+  ExpectOkResult(*action_result.result);
+
+  EXPECT_EQ(action_result.result->message, expected_info);
 }
 
 // Test that dialog events are forwarded to the form filling service.
@@ -738,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, MultipleSuggestions) {
           _,
           ElementsAre(MakeActorFormFillingSelection(request.suggestions[1].id)),
           _, _))
-      .WillOnce(RunOnceCallback<3>(base::ok()));
+      .WillOnce(RunOnceCallback<3>(""));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});
@@ -906,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
           _,
           ElementsAre(MakeActorFormFillingSelection(request.suggestions[0].id)),
           _, _))
-      .WillOnce(RunOnceCallback<3>(base::ok()));
+      .WillOnce(RunOnceCallback<3>(""));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
       *active_tab(), {PageTarget(*address_home_line1)});

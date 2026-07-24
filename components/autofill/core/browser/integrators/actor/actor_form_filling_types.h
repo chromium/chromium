@@ -86,6 +86,11 @@ enum class ActorFormFillingRequestedData {
 std::string_view ActorFormFillingRequestedDataToStringView(
     ActorFormFillingRequestedData data);
 
+// Returns a string representation in ALL_CAPS to match the representation
+// known to the model.
+std::string_view ActorFormFillingRequestedDataToModelStringView(
+    ActorFormFillingRequestedData data);
+
 std::ostream& operator<<(std::ostream& os, ActorFormFillingRequestedData data);
 
 using ActorSuggestionId = base::IdTypeU32<class ActorSuggestionIdMarker>;

@@ -43,6 +43,9 @@ BASE_DECLARE_FEATURE(kAutofillActorFormFillingSplitOutContactInfo);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillActorMode);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kAutofillActorModeExtraInformationPreamble);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillActorRewriteCreditCardTriggerField);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillActorSuppressImport);

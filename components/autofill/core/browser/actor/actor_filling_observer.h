@@ -29,13 +29,16 @@ namespace autofill {
 // The class observes all `AutofillManager`s associated with `autofill_client`
 // and keeps track of the `field_ids` that have been filled. Once all
 // `field_ids` have been filled or the `FillingObserver` is destroyed,
-// `callback` is called.
-// `callback` is always called asynchronously.
+// `callback` is called. The callback receives a map from trigger fields to
+// filled entities (e.g. the selected address) on success.
+// `callback` is always called asynchronously and may thus delete the
+// `ActorFillingObserver` instance.
 class ActorFillingObserver final : public AutofillManager::Observer,
                                    public CreditCardAccessManager::Observer {
  public:
-  using Callback =
-      base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>;
+  using TriggerFieldToFilledEntity = base::flat_map<FieldGlobalId, std::string>;
+  using Callback = base::OnceCallback<void(
+      base::expected<TriggerFieldToFilledEntity, ActorFormFillingError>)>;
 
   explicit ActorFillingObserver(AutofillClient& autofill_client);
   ~ActorFillingObserver() override;
@@ -67,6 +70,14 @@ class ActorFillingObserver final : public AutofillManager::Observer,
   void SetSkipReasonsCallback(SkipReasonsCallback skip_reasons_callback);
 
  private:
+  // Updates `filled_information_[trigger_field_id]` based on the filled field
+  // ids and the filling payload.
+  void UpdateFilledInformation(
+      AutofillManager& manager,
+      FieldGlobalId trigger_field_id,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const FillingPayload& filling_payload);
+
   // AutofillManager::Observer:
   void OnFillOrPreviewForm(
       AutofillManager&,
@@ -110,6 +121,11 @@ class ActorFillingObserver final : public AutofillManager::Observer,
 
   // The fields that have not yet been filled.
   absl::flat_hash_set<FieldGlobalId> remaining_field_ids_;
+
+  // Map of serialized trigger field descriptors to the information that the
+  // user intended to fill. If the trigger field ID pointed to the first name of
+  // an address section the value would be the entire address the user selected.
+  TriggerFieldToFilledEntity filled_information_;
 
   // The callback to execute at completion.
   Callback callback_;

@@ -11,6 +11,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -497,7 +498,8 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   filling_observer_->Activate(base::BindOnce(
       [](base::WeakPtr<ActorOneTimeTokenFillingServiceImpl> service,
          base::OnceCallback<void(bool)> callback,
-         base::expected<void, ActorFormFillingError> result) {
+         base::expected<base::flat_map<FieldGlobalId, std::string>,
+                        ActorFormFillingError> result) {
         using enum ActorOneTimeTokenFillingServiceFillOtp;
         if (result.has_value()) {
           RecordActorOneTimeTokenFillingServiceFillOtp(kSuccess);

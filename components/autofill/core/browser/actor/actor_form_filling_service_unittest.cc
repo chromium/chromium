@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -67,7 +69,7 @@ using GetSuggestionsFuture =
     base::test::TestFuture<base::expected<std::vector<ActorFormFillingRequest>,
                                           ActorFormFillingError>>;
 using FillSuggestionsFuture =
-    base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
+    base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>;
 
 gfx::Image CreateTestImage(int width, int height) {
   SkBitmap bitmap;
@@ -1028,6 +1030,56 @@ auto JournalEntryWithSkipReason(std::string_view field_name,
                              testing::Eq(std::string(field_name))),
               testing::Field(&::actor::mojom::JournalDetails::value,
                              testing::Eq(std::string(expected_reason)))))))));
+}
+
+// Tests that FillSuggestions returns the filled entities.
+TEST_F(ActorFormFillingServiceTest, FillSuggestions_FilledData) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+  FieldGlobalId trigger_id = form.fields()[0].global_id();
+  std::string section_label = "Section Label";
+  FillRequest fill_request = AddressFillRequest({trigger_id}, section_label);
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(client(), {fill_request}, future.GetCallback());
+  ASSERT_THAT(future.Get(), HasValue());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  service().FillForm(client(), /*form_index=*/0,
+                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+
+  base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>
+      fill_future;
+  service().FillSuggestions(
+      client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)}, {},
+      fill_future.GetCallback());
+
+  AutofillProfile expected_profile = GetProfile1();
+  base::ListValue expected_filled_entities = base::ListValue().Append(
+      base::DictValue()
+          .Set("section_label", section_label)
+          .Set("requested_data", "ADDRESS")
+          .Set("value",
+               base::StrCat(
+                   {expected_profile.GetInfo(NAME_FULL, "en-us"), u"\n",
+                    expected_profile.GetInfo(ADDRESS_HOME_ADDRESS, "en-us")})));
+
+  ASSERT_THAT(fill_future.Get(), HasValue());
+
+  // Find the JSON object corresponding to the filled entities. This is a list
+  // of dictionaries. So unless we start adding more complex substructures,
+  // we can find it by looking for the last "[".
+  std::string json = fill_future.Get().value();
+  std::string_view json_section = json;
+  size_t start_pos = json_section.find_last_of("[");
+  ASSERT_TRUE(start_pos != std::string_view::npos);
+  json_section = json_section.substr(start_pos);
+
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_section, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_json);
+
+  EXPECT_THAT(*parsed_json, base::test::IsJson(expected_filled_entities));
 }
 
 TEST(ActorFormFillingServiceJournalTest,

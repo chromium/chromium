@@ -33,7 +33,8 @@ class MockActorFormFillingService : public ActorFormFillingService {
       (AutofillClient& client,
        base::span<const ActorFormFillingSelection> chosen_suggestions,
        (base::flat_map<FieldGlobalId, ::actor::PageTarget>)trigger_field_map,
-       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>),
+       base::OnceCallback<
+           void(base::expected<std::string, ActorFormFillingError>)>),
       (override));
 
   MOCK_METHOD(void, ScrollToForm, (AutofillClient& client, int), (override));

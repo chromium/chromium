@@ -302,9 +302,12 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
   }
   tool_delegate().GetActorFormFillingService().FillSuggestions(
       *client, std::move(selection_response), trigger_field_map_,
-      base::BindOnce([](base::expected<void, ActorFormFillingError> result) {
-        return result.has_value() ? MakeOkResult()
-                                  : FromServiceError(result.error());
+      base::BindOnce([](base::expected<
+                         std::string, autofill::ActorFormFillingError> result) {
+        return result.has_value()
+                   ? MakeOkResultWithMessage(
+                         /*requires_page_stabilization=*/true, result.value())
+                   : FromServiceError(result.error());
       }).Then(std::move(invoke_callback)));
 }
 

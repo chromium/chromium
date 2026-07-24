@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -31,6 +32,7 @@
 #include "base/types/zip.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/actor/core/shared_types.h"
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -80,7 +82,8 @@ void RecordMetrics(std::string_view histogram_prefix,
 void RecordFillSuggestionsMetrics(
     base::TimeTicks start_time,
     bool is_payments_fill,
-    base::expected<void, ActorFormFillingError> result) {
+    const base::expected<base::flat_map<FieldGlobalId, std::string>,
+                         ActorFormFillingError>& result) {
   const ActorFormFillingError outcome =
       result.error_or(kActorFormFillingSuccessForMetrics);
   RecordMetrics("Autofill.Actor.FillSuggestions.Any", start_time, outcome);
@@ -668,7 +671,7 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     AutofillClient& client,
     base::span<const ActorFormFillingSelection> chosen_suggestions,
     base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
-    base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
+    base::OnceCallback<void(base::expected<std::string, ActorFormFillingError>)>
         callback) {
   const bool is_payments_fill = std::ranges::any_of(
       chosen_suggestions, [&](const ActorFormFillingSelection& selection) {
@@ -676,28 +679,67 @@ void ActorFormFillingServiceImpl::FillSuggestions(
             base::FindOrNull(fill_data_, selection.selected_suggestion_id);
         return fill_data && fill_data->HasPaymentsPayload();
       });
-  auto callback_with_metrics = base::BindOnce(
-      [](base::WeakPtr<ActorFormFillingServiceImpl> service,
-         bool is_payments_fill,
-         base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
-             callback,
-         base::expected<void, ActorFormFillingError> result) {
+
+  // Records metrics and transforms the per field message to a filled
+  // information summary. Transforms to an error if the service had errors.
+  auto chain = base::BindOnce(
+      [](bool is_payments_fill, base::TimeTicks start_time,
+         base::WeakPtr<ActorFormFillingServiceImpl> service,
+         base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
+         base::expected<base::flat_map<FieldGlobalId, std::string>,
+                        ActorFormFillingError> result)
+          -> base::expected<std::string, ActorFormFillingError> {
+        RecordFillSuggestionsMetrics(start_time, is_payments_fill, result);
         if (!service) {
-          return;
+          return base::unexpected(ActorFormFillingError::kOther);
         }
-        RecordFillSuggestionsMetrics(base::TimeTicks::Now(), is_payments_fill,
-                                     result);
-        std::move(callback).Run(
-            service->errors_per_session_.empty()
-                ? result
-                : base::unexpected(service->errors_per_session_.front()));
 
+        // The `filling_observer_` generated the callback and won't be needed
+        // anymore.
         service->filling_observer_.reset();
-        service->errors_per_session_.clear();
-      },
-      weak_ptr_factory_.GetWeakPtr(), is_payments_fill, std::move(callback));
 
-  CHECK_DEREF(filling_observer_).Activate(std::move(callback_with_metrics));
+        // Deal with errors (return the first error and clear the errors).
+        std::vector<ActorFormFillingError> errors =
+            std::exchange(service->errors_per_session_, {});
+        if (!errors.empty()) {
+          return base::unexpected(errors[0]);
+        }
+        if (!result.has_value()) {
+          return base::unexpected(result.error());
+        }
+
+        // Generate a list of dictionaries with information about filled values.
+        base::ListValue filled_entities;
+        for (const Section& section : service->sections_) {
+          base::DictValue dict;
+          if (!section.section_label.empty()) {
+            dict.Set("section_label", section.section_label);
+          }
+          dict.Set("requested_data",
+                   ActorFormFillingRequestedDataToModelStringView(
+                       section.requested_data));
+          std::string* value =
+              base::FindOrNull(*result, section.trigger_field_id);
+          dict.Set("value", value ? *value : "");
+          filled_entities.Append(std::move(dict));
+        }
+
+        std::optional<std::string> serialized_value =
+            base::WriteJson(filled_entities);
+        if (!serialized_value) {
+          return base::unexpected(ActorFormFillingError::kOther);
+        }
+        return base::StrCat(
+            {autofill::features::kAutofillActorModeExtraInformationPreamble
+                 .Get(),
+             "\n", *serialized_value});
+      },
+      is_payments_fill, base::TimeTicks::Now(), weak_ptr_factory_.GetWeakPtr(),
+      std::move(trigger_field_map));
+
+  // filling_observer_->Activate() waits for all fill operations to conclude
+  // and then calls the callback chain.
+  filling_observer_->Activate(std::move(chain).Then(std::move(callback)));
 }
 
 void ActorFormFillingServiceImpl::ScrollToForm(AutofillClient& client,

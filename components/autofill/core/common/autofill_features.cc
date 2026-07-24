@@ -67,6 +67,15 @@ BASE_FEATURE(kAutofillActorFormFillingSplitOutContactInfo,
 // context see: go/autofill-actor-mode-implementation
 BASE_FEATURE(kAutofillActorMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This parameter configures a preamble which is returned in the
+// extra_information attribute of the return value of attempt_form_filling. It
+// can be used to pass instructions or information to the model.
+BASE_FEATURE_PARAM(
+    std::string,
+    kAutofillActorModeExtraInformationPreamble,
+    &kAutofillActorMode,
+    "The user chose to fill the following information into the form:");
+
 // Controls whether to rewrite the credit card trigger field to the first
 // credit card number field in the same section.
 BASE_FEATURE(kAutofillActorRewriteCreditCardTriggerField,

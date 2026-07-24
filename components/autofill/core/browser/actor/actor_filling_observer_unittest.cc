@@ -4,16 +4,21 @@
 
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +33,9 @@ using ::base::test::HasValue;
 using test::MakeFieldGlobalId;
 using test::MakeFormGlobalId;
 using ::testing::ContainerEq;
+using ::testing::ElementsAre;
 using ::testing::FieldsAre;
+using ::testing::Pair;
 
 class ActorFillingObserverTest : public ::testing::Test,
                                  public WithTestAutofillClientDriverManager<> {
@@ -39,8 +46,9 @@ class ActorFillingObserverTest : public ::testing::Test,
   }
 
  protected:
-  using Future =
-      base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
+  using Future = base::test::TestFuture<
+      base::expected<ActorFillingObserver::TriggerFieldToFilledEntity,
+                     ActorFormFillingError>>;
 
   const AutofillProfile* AddProfile() {
     AutofillProfile profile = test::GetFullProfile();
@@ -271,6 +279,76 @@ TEST_F(ActorFillingObserverTest, FillingTimeoutWithCreditCardFetch) {
   FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(future.IsReady());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
+}
+
+// Tests that filling credit card information returns a map of trigger field
+// to filled information.
+TEST_F(ActorFillingObserverTest, FilledInformationCreditCard) {
+  std::vector<FieldGlobalId> field_ids = {MakeFieldGlobalId()};
+  FieldGlobalId trigger_field = field_ids[0];
+  Future future;
+
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(field_ids);
+  observer.Activate(future.GetCallback());
+
+  CreditCard credit_card = test::GetCreditCard();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFillOrPreviewForm, MakeFormGlobalId(),
+      trigger_field, mojom::ActionPersistence::kFill, field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      &credit_card);
+
+  ASSERT_THAT(future.Get(), HasValue());
+  ActorFillingObserver::TriggerFieldToFilledEntity filled_data =
+      future.Get().value();
+  EXPECT_THAT(
+      filled_data,
+      ElementsAre(Pair(trigger_field, "redacted credit card information")));
+}
+
+// Test that filling address data returns a map of trigger field to filled
+// information.
+TEST_F(ActorFillingObserverTest, FilledInformationAddressProfile) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
+           {.role = ADDRESS_HOME_LINE1, .heuristic_type = ADDRESS_HOME_LINE1},
+           {.role = PHONE_HOME_WHOLE_NUMBER,
+            .heuristic_type = PHONE_HOME_WHOLE_NUMBER},
+           {.role = EMAIL_ADDRESS, .heuristic_type = EMAIL_ADDRESS}}});
+  autofill_manager().AddSeenForm(
+      form,
+      {NAME_FIRST, ADDRESS_HOME_LINE1, PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS},
+      {NAME_FIRST, ADDRESS_HOME_LINE1, PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS});
+
+  std::vector<FieldGlobalId> field_ids =
+      base::ToVector(form.fields(), &FormFieldData::global_id);
+  FieldGlobalId trigger_field = field_ids[0];
+
+  Future future;
+  ActorFillingObserver observer(autofill_client());
+  observer.ObserveNewFilling(field_ids);
+  observer.Activate(future.GetCallback());
+
+  const AutofillProfile* profile = AddProfile();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFillOrPreviewForm, form.global_id(),
+      trigger_field, mojom::ActionPersistence::kFill, field_ids,
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      profile);
+
+  std::string expected_data = base::UTF16ToUTF8(
+      base::JoinString({profile->GetInfo(NAME_FULL, "en-US"),
+                        profile->GetInfo(ADDRESS_HOME_ADDRESS, "en-US"),
+                        profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, "en-US"),
+                        profile->GetInfo(EMAIL_ADDRESS, "en-US")},
+                       u"\n"));
+
+  ASSERT_THAT(future.Get(), HasValue());
+  ActorFillingObserver::TriggerFieldToFilledEntity filled_data =
+      future.Get().value();
+  EXPECT_THAT(filled_data, ElementsAre(Pair(trigger_field, expected_data)));
 }
 
 }  // namespace

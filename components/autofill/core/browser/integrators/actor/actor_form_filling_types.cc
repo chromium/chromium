@@ -52,6 +52,30 @@ std::ostream& operator<<(std::ostream& os, ActorFormFillingRequestedData data) {
   return os << ActorFormFillingRequestedDataToStringView(data);
 }
 
+std::string_view ActorFormFillingRequestedDataToModelStringView(
+    ActorFormFillingRequestedData data) {
+  // Keep these in sync with the labels chosen in the manifest.gcl file.
+  switch (data) {
+    case ActorFormFillingRequestedData::kUnknown:
+      return "UNKNOWN";
+    case ActorFormFillingRequestedData::kAddress:
+      return "ADDRESS";
+    case ActorFormFillingRequestedData::kShippingAddress:
+      return "SHIPPING_ADDRESS";
+    case ActorFormFillingRequestedData::kBillingAddress:
+      return "BILLING_ADDRESS";
+    case ActorFormFillingRequestedData::kHomeAddress:
+      return "HOME_ADDRESS";
+    case ActorFormFillingRequestedData::kWorkAddress:
+      return "WORK_ADDRESS";
+    case ActorFormFillingRequestedData::kCreditCard:
+      return "CREDIT_CARD";
+    case ActorFormFillingRequestedData::kContactInformation:
+      return "CONTACT_INFORMATION";
+  }
+  NOTREACHED();
+}
+
 ActorSuggestion::ActorSuggestion() = default;
 ActorSuggestion::ActorSuggestion(const ActorSuggestion&) = default;
 ActorSuggestion& ActorSuggestion::operator=(const ActorSuggestion&) = default;
