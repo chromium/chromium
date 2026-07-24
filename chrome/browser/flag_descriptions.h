@@ -1965,10 +1965,6 @@ inline constexpr char kDesktopPWAsTabStripCustomizationsDescription[] =
     "Enable PWAs to customize their tab strip when in tabbed mode by adding "
     "the `tab_strip` manifest field.";
 
-inline constexpr char kSubAppsName[] = "Sub Apps for Isolated Web Apps";
-inline constexpr char kSubAppsDescription[] =
-    "Enable IWAs to install sub apps that have their own manifest and can "
-    "integrate with the OS, in many ways as if it were a separate app.";
 
 inline constexpr char kDevToolsEnableDurableMessagesName[] =
     "Preserve HTTP message bodies across navigations for DevTools";
