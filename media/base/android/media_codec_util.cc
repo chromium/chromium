@@ -328,7 +328,7 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
   auto j_mime = ConvertUTF8ToJavaString(env, CodecToAndroidMimeType(codec));
   auto j_codec_name = Java_MediaCodecUtil_getDefaultCodecName(
       env, j_mime, static_cast<int>(direction), /*requireSoftwareCodec=*/false,
-      /*requireHardwareCodec=*/true);
+      /*requireHardwareCodec=*/true, /*requireSecure=*/false);
 
   auto codec_name =
       base::android::ConvertJavaStringToUTF8(env, j_codec_name.obj());

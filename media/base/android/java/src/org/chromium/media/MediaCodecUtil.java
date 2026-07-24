@@ -136,6 +136,7 @@ class MediaCodecUtil {
      * @param direction Whether this is encoder or decoder.
      * @param requireSoftwareCodec Whether we require a software codec.
      * @param requireHardwareCodec Whether we require a hardware codec.
+     * @param requireSecure Whether we require a secure codec.
      * @return name of the codec or empty string if none exists.
      */
     @CalledByNative
@@ -143,7 +144,8 @@ class MediaCodecUtil {
             String mime,
             int direction,
             boolean requireSoftwareCodec,
-            boolean requireHardwareCodec) {
+            boolean requireHardwareCodec,
+            boolean requireSecure) {
         assert !(requireSoftwareCodec && requireHardwareCodec);
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
         for (MediaCodecInfo info : codecListHelper) {
@@ -156,18 +158,32 @@ class MediaCodecUtil {
             if (requireHardwareCodec && isSoftware) continue;
 
             for (String supportedType : info.getSupportedTypes()) {
-                if (supportedType.equalsIgnoreCase(mime)) return info.getName();
+                if (supportedType.equalsIgnoreCase(mime)) {
+                    try {
+                        CodecCapabilities caps = info.getCapabilitiesForType(mime);
+                        if (caps != null) {
+                            if (requireSecure
+                                    == caps.isFeatureSupported(
+                                            CodecCapabilities.FEATURE_SecurePlayback)) {
+                                return info.getName();
+                            }
+                        }
+                    } catch (IllegalArgumentException e) {
+                        Log.e(TAG, "Cannot retrieve codec information for " + mime, e);
+                    }
+                }
             }
         }
 
         Log.e(
                 TAG,
                 "%s for type %s is not supported on this device [requireSoftware=%b, "
-                        + "requireHardware=%b].",
+                        + "requireHardware=%b, requireSecure=%b].",
                 direction == MediaCodecDirection.ENCODER ? "Encoder" : "Decoder",
                 mime,
                 requireSoftwareCodec,
-                requireHardwareCodec);
+                requireHardwareCodec,
+                requireSecure);
         return "";
     }
 
@@ -307,30 +323,27 @@ class MediaCodecUtil {
                     || (mime.startsWith("audio")
                             && mediaCrypto != null
                             && mediaCrypto.requiresSecureDecoderComponent(mime))) {
-                // Creating secure codecs is not supported directly on older
-                // versions of Android. Therefore, always get the non-secure
-                // codec name and append ".secure" to get the secure codec name.
-                // TODO(xhwang): Now b/15587335 is fixed, we should have better
-                // API support.
                 String decoderName =
-                        getDefaultCodecName(mime, MediaCodecDirection.DECODER, false, false);
+                        getDefaultCodecName(
+                                mime,
+                                MediaCodecDirection.DECODER,
+                                /* requireSoftwareCodec= */ false,
+                                /* requireHardwareCodec= */ false,
+                                /* requireSecure= */ true);
                 if (decoderName.equals("")) return result;
 
-                // To work around an issue that we cannot get the codec info
-                // from the secure decoder, create an insecure decoder first
-                // so that we can query its codec info. http://b/15587335.
-                // Furthermore, it is impossible to create an insecure
-                // decoder if the secure one is already created.
-                MediaCodec insecureCodec = MediaCodec.createByCodecName(decoderName);
+                result.mediaCodec = MediaCodec.createByCodecName(decoderName);
                 result.supportsAdaptivePlayback =
-                        codecSupportsAdaptivePlayback(insecureCodec, mime);
-                insecureCodec.release();
-
-                result.mediaCodec = MediaCodec.createByCodecName(decoderName + ".secure");
+                        codecSupportsAdaptivePlayback(result.mediaCodec, mime);
             } else {
                 if (codecType == CodecType.SOFTWARE) {
                     String decoderName =
-                            getDefaultCodecName(mime, MediaCodecDirection.DECODER, true, false);
+                            getDefaultCodecName(
+                                    mime,
+                                    MediaCodecDirection.DECODER,
+                                    /* requireSoftwareCodec= */ true,
+                                    /* requireHardwareCodec= */ false,
+                                    /* requireSecure= */ false);
                     result.mediaCodec = MediaCodec.createByCodecName(decoderName);
                 } else if (mime.equals(MediaFormat.MIMETYPE_AUDIO_RAW)) {
                     result.mediaCodec = MediaCodec.createByCodecName("OMX.google.raw.decoder");

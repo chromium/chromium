@@ -81,6 +81,13 @@ class MediaCodecBridgeBuilder {
                 format.setInteger("vdec-lowlatency", 1);
             }
 
+            if (codecType == CodecType.SECURE) {
+                // Explicitly configure the format to require secure playback.
+                format.setFeatureEnabled(
+                        android.media.MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback,
+                        true);
+            }
+
             if (!bridge.configureVideo(
                     format,
                     surface,
