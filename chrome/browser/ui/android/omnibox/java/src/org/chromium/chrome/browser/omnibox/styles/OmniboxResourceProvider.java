@@ -311,6 +311,24 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Get dropdown top padding.
+     *
+     * @see #getDropdownTopPadding(Context, ...)
+     */
+    public @Px int getDropdownTopPadding() {
+        return getDropdownTopPadding(mContext);
+    }
+
+    /**
+     * Get dropdown bottom padding.
+     *
+     * @see #getDropdownBottomPadding(Context, ...)
+     */
+    public @Px int getDropdownBottomPadding() {
+        return getDropdownBottomPadding(mContext);
+    }
+
+    /**
      * Get side spacing.
      *
      * @see #getSideSpacing(Context, ...)
@@ -1064,6 +1082,26 @@ public class OmniboxResourceProvider {
         return getSideSpacing(context)
                 + context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_dropdown_side_spacing);
+    }
+
+    /** Returns the top padding for the Omnibox suggestions dropdown list. */
+    public static @Px int getDropdownTopPadding(Context context) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return 0;
+        }
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
+    }
+
+    /** Returns the bottom padding for the Omnibox suggestions dropdown list. */
+    public static @Px int getDropdownBottomPadding(Context context) {
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return 0;
+        }
+        context = maybeReplaceContextForSmallTabletWindow(context);
+        return context.getResources()
+                .getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
     }
 
     /** Gets the margin, in pixels, on either side of an omnibox suggestion. */

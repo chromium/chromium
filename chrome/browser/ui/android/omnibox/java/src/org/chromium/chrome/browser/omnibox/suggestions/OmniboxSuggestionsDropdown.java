@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -332,21 +331,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mSelectionController =
                     new RecyclerViewSelectionController(mLayoutScrollListener, mSelectionMode);
             addOnChildAttachStateChangeListener(mSelectionController);
+            mResourceProvider =
+                    new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
 
-            final Resources resources = context.getResources();
-            mBaseBottomPadding =
-                    resources.getDimensionPixelOffset(
-                            R.dimen.omnibox_suggestion_list_padding_bottom);
-            mBaseTopPadding =
-                    resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
+            mBaseBottomPadding = mResourceProvider.getDropdownBottomPadding();
+            mBaseTopPadding = mResourceProvider.getDropdownTopPadding();
             this.setPaddingRelative(0, mBaseTopPadding, 0, mBaseBottomPadding);
 
             // Disable the scrollbar since it causes the hover events happening near the
             // scrollbar not dispatched to the underlying views.
             setVerticalScrollBarEnabled(false);
 
-            mResourceProvider =
-                    new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
             mViewHolderFactory = new OmniboxViewHolderFactory(mResourceProvider);
             if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
                 mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
