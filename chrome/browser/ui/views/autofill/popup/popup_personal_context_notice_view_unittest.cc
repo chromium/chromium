@@ -91,6 +91,76 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   views::Widget& widget() { return *widget_; }
   ui::test::EventGenerator& generator() { return *generator_; }
 
+  // Verifies that the description is visible and has the correct text.
+  [[nodiscard]] testing::AssertionResult VerifyDescription(
+      const std::u16string& expected_title,
+      const std::u16string& expected_context,
+      const std::u16string& expected_link) {
+    views::StyledLabel* description = view().description_for_testing();
+    if (!description) {
+      return testing::AssertionFailure()
+             << "description_for_testing() is null.";
+    }
+    if (!description->GetVisible()) {
+      return testing::AssertionFailure() << "description_ is not visible.";
+    }
+    std::u16string expected_full_text = base::JoinString(
+        {expected_title, expected_context, expected_link}, u" ");
+    if (description->GetText() != expected_full_text) {
+      return testing::AssertionFailure()
+             << "Expected description text: \"" << expected_full_text
+             << "\", but got: \"" << description->GetText() << "\"";
+    }
+    return testing::AssertionSuccess();
+  }
+
+  // Verifies that the description contains a link with a correct text and
+  // underline style.
+  [[nodiscard]] testing::AssertionResult VerifySettingsLink(
+      const std::u16string& expected_link) {
+    views::StyledLabel* description = view().description_for_testing();
+    if (!description) {
+      return testing::AssertionFailure()
+             << "description_for_testing() is null.";
+    }
+    views::Link* settings_link = description->GetFirstLinkForTesting();
+    if (!settings_link) {
+      return testing::AssertionFailure() << "settings_link is null.";
+    }
+    std::u16string actual_name =
+        settings_link->GetViewAccessibility().GetCachedName();
+    if (actual_name != expected_link) {
+      return testing::AssertionFailure()
+             << "Expected settings link name: \"" << expected_link
+             << "\", but got: \"" << actual_name << "\"";
+    }
+    if ((settings_link->font_list().GetFontStyle() & gfx::Font::UNDERLINE) ==
+        0) {
+      return testing::AssertionFailure()
+             << "settings_link font style does not have UNDERLINE.";
+    }
+    return testing::AssertionSuccess();
+  }
+
+  // Verifies that the "Got it" button is visible and has the correct text.
+  [[nodiscard]] testing::AssertionResult VerifyGotItButton(
+      const std::u16string& expected_ok) {
+    views::MdTextButton* got_it_button = view().got_it_button_for_testing();
+    if (!got_it_button) {
+      return testing::AssertionFailure()
+             << "got_it_button_for_testing() is null.";
+    }
+    if (!got_it_button->GetVisible()) {
+      return testing::AssertionFailure() << "got_it_button_ is not visible.";
+    }
+    if (got_it_button->GetText() != expected_ok) {
+      return testing::AssertionFailure()
+             << "Expected got_it_button text: \"" << expected_ok
+             << "\", but got: \"" << got_it_button->GetText() << "\"";
+    }
+    return testing::AssertionSuccess();
+  }
+
   testing::AssertionResult VerifyAllLinkBordersFocused(bool expected_focused) {
     bool has_link = false;
     // A multi-line link created by `StyledLabel` is split into multiple link
@@ -148,71 +218,44 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAmbientAutofill) {
   std::u16string expected_ok = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
-  // Check that the description is visible and has the correct text.
-  views::StyledLabel* description = view().description_for_testing();
-  ASSERT_NE(description, nullptr);
-  EXPECT_TRUE(description->GetVisible());
-  EXPECT_EQ(
-      base::JoinString({expected_title, expected_context, expected_link}, u" "),
-      description->GetText());
-
-  // Check that the description contains a link with a correct text.
-  views::Link* settings_link = description->GetFirstLinkForTesting();
-  EXPECT_TRUE(settings_link);
-  EXPECT_EQ(expected_link,
-            settings_link->GetViewAccessibility().GetCachedName());
-
-  // Check that the "Got it" button is visible and has the correct text.
-  views::MdTextButton* got_it_button = view().got_it_button_for_testing();
-  ASSERT_NE(got_it_button, nullptr);
-  EXPECT_TRUE(got_it_button->GetVisible());
-  EXPECT_EQ(expected_ok, got_it_button->GetText());
+  EXPECT_TRUE(
+      VerifyDescription(expected_title, expected_context, expected_link));
+  EXPECT_TRUE(VerifySettingsLink(expected_link));
+  EXPECT_TRUE(VerifyGotItButton(expected_ok));
 }
 
-// Tests the initial notice view elements for AtMemory filling source.
-TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
+// Tests the initial notice view elements for AtMemory filling source with MQLS
+// logging enabled.
+TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAtMemoryWithLogging) {
   ON_CALL(controller(), GetMainFillingProduct())
       .WillByDefault(Return(FillingProduct::kAtMemory));
+
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      static_cast<int>(optimization_guide::model_execution::prefs::
+                           ModelExecutionEnterprisePolicyValue::kAllow));
 
   ShowView();
 
   std::u16string expected_title = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
   std::u16string expected_context = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
   std::u16string expected_link = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
   std::u16string expected_ok = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
-  // Check that the description is visible and has the correct text.
-  views::StyledLabel* description = view().description_for_testing();
-  ASSERT_NE(description, nullptr);
-  EXPECT_TRUE(description->GetVisible());
-  EXPECT_EQ(
-      base::JoinString({expected_title, expected_context, expected_link}, u" "),
-      description->GetText());
-
-  // Check that the description contains a link with a correct text and
-  // underline style.
-  views::Link* settings_link = description->GetFirstLinkForTesting();
-  EXPECT_TRUE(settings_link);
-  EXPECT_EQ(expected_link,
-            settings_link->GetViewAccessibility().GetCachedName());
-  EXPECT_NE(settings_link->font_list().GetFontStyle() & gfx::Font::UNDERLINE,
-            0);
-
-  // Check that the "Got it" button is visible and has the correct text.
-  views::MdTextButton* got_it_button = view().got_it_button_for_testing();
-  ASSERT_NE(got_it_button, nullptr);
-  EXPECT_TRUE(got_it_button->GetVisible());
-  EXPECT_EQ(expected_ok, got_it_button->GetText());
+  EXPECT_TRUE(
+      VerifyDescription(expected_title, expected_context, expected_link));
+  EXPECT_TRUE(VerifySettingsLink(expected_link));
+  EXPECT_TRUE(VerifyGotItButton(expected_ok));
 }
 
-// Tests that when `FindAndFillWithGeminiSettings` policy evaluates to 1
-// (allow with no logging), the PI notice string is used for AtMemory context.
+// Tests the initial notice view elements for AtMemory filling source with MQLS
+// logging disabled.
 TEST_F(PopupPersonalContextNoticeViewTest,
-       InitialStateAtMemorySourceWithLoggingDisabledByPolicy) {
+       InitialStateOnAtMemoryWithoutLogging) {
   ON_CALL(controller(), GetMainFillingProduct())
       .WillByDefault(Return(FillingProduct::kAtMemory));
 
@@ -225,20 +268,18 @@ TEST_F(PopupPersonalContextNoticeViewTest,
   ShowView();
 
   std::u16string expected_title = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
-  // When logging is disabled by policy, expect PI notice string instead of
-  // combined MQLS & PI notice string.
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
   std::u16string expected_context = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_NO_LOGGING);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
   std::u16string expected_link = l10n_util::GetStringUTF16(
-      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string expected_ok = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
-  views::StyledLabel* description = view().description_for_testing();
-  ASSERT_NE(description, nullptr);
-  EXPECT_TRUE(description->GetVisible());
-  EXPECT_EQ(
-      base::JoinString({expected_title, expected_context, expected_link}, u" "),
-      description->GetText());
+  EXPECT_TRUE(
+      VerifyDescription(expected_title, expected_context, expected_link));
+  EXPECT_TRUE(VerifySettingsLink(expected_link));
+  EXPECT_TRUE(VerifyGotItButton(expected_ok));
 }
 
 // Tests that clicking on GotIt button triggers the removal of the notice.

@@ -154,17 +154,10 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
 
   if (controller_) {
     FillingProduct product = controller_->GetMainFillingProduct();
-    if (product == FillingProduct::kAtMemory) {
-      title_text = l10n_util::GetStringUTF16(
-          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+    if (product == FillingProduct::kAtMemory &&
+        !IsLoggingDisabledByPolicy(controller_.get())) {
       context_text = l10n_util::GetStringUTF16(
-          IsLoggingDisabledByPolicy(controller_.get())
-              ? IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_NO_LOGGING
-              : IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
-      link_text = l10n_util::GetStringUTF16(
-          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
-      button_text = l10n_util::GetStringUTF16(
-          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
     }
   }
 

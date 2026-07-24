@@ -1683,36 +1683,24 @@
     Your content will not be used to improve AI. Your organization may change these settings at any time.
   </message>
 
-  <!-- Personal Context Notice in Autofill Popup -->
-  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in Autofill popup.">
-    Now autofill info from Gmail and more.
-  </message>
-  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in Autofill popup.">
-    Powered by Gemini with Personal Intelligence.
-  </message>
-  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in Autofill popup.">
-    Manage settings
-  </message>
-  <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in Autofill popup personal context notice.">
-    OK
-  </message>
-
-  <!-- Personal Context Notice in AtMemory Popup -->
-  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in AtMemory popup.">
-    Now you can find and fill info from Gmail and more.
-  </message>
-  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in AtMemory popup.">
-    Powered by Personal Intelligence with Gemini. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill.
-  </message>
-  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_NO_LOGGING" translateable="false" desc="Context text for the personal context notice in AtMemory popup. This is shown when logging is disabled by policy.">
-    Powered by Personal Intelligence with Gemini.
-  </message>
-  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in AtMemory popup.">
-    Manage settings
-  </message>
-  <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in AtMemory popup personal context notice.">
-    OK
-  </message>
+  <!-- Personal Context Notice in Ambient Autofill/AtMemory Popup on Desktop -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE" translateable="false" desc="Title for the personal context notice in Ambient Autofill/AtMemory popup.">
+      Now you can find and fill info from Gmail and more.
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the default personal context notice in AmbientAutofill popup or in AtMemory popup when the logging is disabled by policy.">
+      Powered by Personal Intelligence with Gemini.
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING" translateable="false" desc="Context text for the personal context notice in AtMemory popup when the logging is enabled.">
+      Powered by Personal Intelligence with Gemini. Your requests, page titles, and URLs may be reviewed to improve enhanced autofill.
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in Ambient Autofill/AtMemory popup.">
+      Manage settings
+    </message>
+    <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text for the personal context notice in Ambient Autofill/AtMemory popup.">
+      OK
+    </message>
+  </if>
 
   <!-- Personal Context Notice in Autofill Bottomsheet -->
   <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the autofill personal context notice sheet is opened." formatter_data="android_java">
