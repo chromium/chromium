@@ -1826,6 +1826,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return false;
         }
 
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.GLIC, "glic-bottom-sheet-promo", true)) {
+            return false;
+        }
+
         showGlicPromo();
         return true;
     }

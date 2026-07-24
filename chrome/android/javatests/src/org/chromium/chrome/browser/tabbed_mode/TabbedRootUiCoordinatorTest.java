@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
@@ -387,6 +388,51 @@ public class TabbedRootUiCoordinatorTest {
                 AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarPrefs.getCustomizationSetting());
         // Promo coordinator should be non-null (shown).
         assertNotNull(mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting());
+
+        // Verify that the trigger event was notified to the tracker.
+        verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybeShowGlicPromo_DisabledByParam() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        GlicEnabling.setEnabledForTesting(true);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
+        FeatureOverrides.overrideParam(ChromeFeatureList.GLIC, "glic-bottom-sheet-promo", false);
+
+        // Mock tracker wouldTriggerHelpUi to return false.
+        doReturn(false)
+                .when(mTracker)
+                .wouldTriggerHelpUi(
+                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        // Toolbar is AUTO (not pinned).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                            AdaptiveToolbarButtonVariant.AUTO);
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabbedRootUiCoordinator.maybeShowGlicPromo();
+                });
+
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false));
+        // Toolbar should still be AUTO.
+        assertEquals(
+                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarPrefs.getCustomizationSetting());
+        // Promo coordinator should be null (not shown due to param).
+        assertNull(mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting());
 
         // Verify that the trigger event was notified to the tracker.
         verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
