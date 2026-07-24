@@ -47,6 +47,7 @@
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -85,6 +86,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -828,6 +830,22 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
 
   SaveEntityParams params = delegate->ExtractParams();
   [commands_handler_ showSaveEntityDialog:std::move(params)];
+}
+
+bool ChromeAutofillClientIOS::ShouldShowPersonalContextAmbientAutofillNotice()
+    const {
+  personal_context::PersonalContextFirstRunService* service =
+      IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
+  return service && service->ShouldShowPersonalContextAmbientAutofillNotice();
+}
+
+void ChromeAutofillClientIOS::
+    MarkPersonalContextAmbientAutofillNoticeAsAcknowledged() {
+  personal_context::PersonalContextFirstRunService* service =
+      IOSPersonalContextFirstRunServiceFactory::GetForProfile(profile_);
+  if (service) {
+    service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
+  }
 }
 
 }  // namespace autofill

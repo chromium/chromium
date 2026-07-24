@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/account_settings",
+  "+components/personal_context/first_run",
   "+ios/chrome/browser/autofill/bnpl/public",
   "+ios/chrome/browser/autofill/bnpl/ui",
   "+ios/chrome/browser/bubble/ui_bundled",

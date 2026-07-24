@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+components/application_locale_storage",
   "+components/personal_context/core",
+  "+components/personal_context/first_run",
   "+components/variations/service",
   "+ios/chrome/browser/account_settings/model",
   "+ios/chrome/browser/shared/model/application_context",
