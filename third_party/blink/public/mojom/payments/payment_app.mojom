@@ -48,8 +48,6 @@ interface PaymentManager {
       => (array<string> keys, PaymentHandlerStatus status);
   HasPaymentInstrument(string instrument_key)
       => (PaymentHandlerStatus status);
-  SetPaymentInstrument(string instrument_key, PaymentInstrument instrument)
-      => (PaymentHandlerStatus status);
   ClearPaymentInstruments()
       => (PaymentHandlerStatus status);
   SetUserHint(string user_hint);

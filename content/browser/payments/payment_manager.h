@@ -48,9 +48,6 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
       KeysOfPaymentInstrumentsCallback callback) override;
   void HasPaymentInstrument(const std::string& instrument_key,
                             HasPaymentInstrumentCallback callback) override;
-  void SetPaymentInstrument(const std::string& instrument_key,
-                            payments::mojom::PaymentInstrumentPtr details,
-                            SetPaymentInstrumentCallback callback) override;
   void ClearPaymentInstruments(
       ClearPaymentInstrumentsCallback callback) override;
   void SetUserHint(const std::string& user_hint) override;
@@ -61,16 +58,10 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
   // Called when an error is detected on receiver_.
   void OnConnectionError();
 
-  void SetPaymentInstrumentIntermediateCallback(
-      PaymentManager::SetPaymentInstrumentCallback callback,
-      payments::mojom::PaymentHandlerStatus status);
-
   const raw_ptr<PaymentAppContextImpl>
       payment_app_context_;  // Owns PaymentManager.
   const url::Origin origin_;
   mojo::Receiver<payments::mojom::PaymentManager> receiver_;
-  bool should_set_payment_app_info_;
-  GURL context_url_;
   GURL scope_;
   base::WeakPtrFactory<PaymentManager> weak_ptr_factory_{this};
 };

@@ -36,6 +36,8 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   ~PaymentAppContentUnitTestBase() override;
 
   BrowserContext* browser_context();
+  int64_t RegisterAndActivateServiceWorker(const GURL& scope_url,
+                                           const GURL& sw_script_url);
   PaymentManager* CreateUninitializedPaymentManager(const GURL& scope_url,
                                                     const GURL& sw_script_url);
   PaymentManager* CreatePaymentManager(const GURL& scope_url,
@@ -51,11 +53,12 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   void RespondPendingPaymentRequest(
       payments::mojom::PaymentHandlerResponsePtr response);
 
+  PaymentAppContextImpl* payment_app_context();
+
  private:
   class PaymentAppForWorkerTestHelper;
 
   StoragePartitionImpl* storage_partition();
-  PaymentAppContextImpl* payment_app_context();
 
   std::unique_ptr<BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<PaymentAppForWorkerTestHelper> worker_helper_;

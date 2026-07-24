@@ -10,10 +10,9 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/payments/payment_app_info_fetcher.h"
-#include "content/browser/payments/payment_instrument_icon_fetcher.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -22,7 +21,7 @@ namespace content {
 
 class ServiceWorkerRegistration;
 
-class PaymentAppDatabase {
+class CONTENT_EXPORT PaymentAppDatabase {
  public:
   using PaymentApps = std::map<int64_t, std::unique_ptr<StoredPaymentApp>>;
   using ReadAllPaymentAppsCallback = base::OnceCallback<void(PaymentApps)>;
@@ -36,10 +35,6 @@ class PaymentAppDatabase {
       base::OnceCallback<void(const std::vector<std::string>&,
                               payments::mojom::PaymentHandlerStatus)>;
   using HasPaymentInstrumentCallback =
-      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
-  using WritePaymentInstrumentCallback =
-      base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
-  using FetchAndUpdatePaymentAppInfoCallback =
       base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
   using ClearPaymentInstrumentsCallback =
       base::OnceCallback<void(payments::mojom::PaymentHandlerStatus)>;
@@ -69,14 +64,6 @@ class PaymentAppDatabase {
   void HasPaymentInstrument(const GURL& scope,
                             const std::string& instrument_key,
                             HasPaymentInstrumentCallback callback);
-  void WritePaymentInstrument(const GURL& scope,
-                              const std::string& instrument_key,
-                              payments::mojom::PaymentInstrumentPtr instrument,
-                              WritePaymentInstrumentCallback callback);
-  void FetchAndUpdatePaymentAppInfo(
-      const GURL& context,
-      const GURL& scope,
-      FetchAndUpdatePaymentAppInfoCallback callback);
   void ClearPaymentInstruments(const GURL& scope,
                                ClearPaymentInstrumentsCallback callback);
   void SetPaymentAppUserHint(const GURL& scope, const std::string& user_hint);
@@ -147,45 +134,6 @@ class PaymentAppDatabase {
   void DidHasPaymentInstrument(DeletePaymentInstrumentCallback callback,
                                const std::vector<std::string>& data,
                                blink::ServiceWorkerStatusCode status);
-
-  // WritePaymentInstrument callbacks
-  void DidFindRegistrationToWritePaymentInstrument(
-      const std::string& instrument_key,
-      payments::mojom::PaymentInstrumentPtr instrument,
-      const std::string& decoded_instrument_icon,
-      WritePaymentInstrumentCallback callback,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidWritePaymentInstrument(WritePaymentInstrumentCallback callback,
-                                 blink::ServiceWorkerStatusCode status);
-
-  // FetchAndUpdatePaymentAppInfo callbacks.
-  void FetchPaymentAppInfoCallback(
-      const GURL& scope,
-      FetchAndUpdatePaymentAppInfoCallback callback,
-      std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info);
-  void DidFindRegistrationToUpdatePaymentAppInfo(
-      FetchAndUpdatePaymentAppInfoCallback callback,
-      std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidGetPaymentAppInfoToUpdatePaymentAppInfo(
-      FetchAndUpdatePaymentAppInfoCallback callback,
-      std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info,
-      scoped_refptr<ServiceWorkerRegistration> registration,
-      const std::vector<std::string>& data,
-      blink::ServiceWorkerStatusCode status);
-  void DidUpdatePaymentApp(FetchAndUpdatePaymentAppInfoCallback callback,
-                           bool fetch_app_info_failed,
-                           blink::ServiceWorkerStatusCode status);
-
-  // PaymentInstrumentIconFetcherCallback.
-  void DidFetchedPaymentInstrumentIcon(
-      const GURL& scope,
-      const std::string& instrument_key,
-      payments::mojom::PaymentInstrumentPtr instrument,
-      WritePaymentInstrumentCallback callback,
-      const std::string& icon);
 
   // ClearPaymentInstruments callbacks
   void DidFindRegistrationToClearPaymentInstruments(

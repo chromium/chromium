@@ -62,15 +62,19 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     : public EmbeddedWorkerTestHelper {
  public:
   PaymentAppForWorkerTestHelper()
-      : EmbeddedWorkerTestHelper(base::FilePath()),
-        last_sw_registration_id_(
-            blink::mojom::kInvalidServiceWorkerRegistrationId) {}
+      : EmbeddedWorkerTestHelper(base::FilePath()) {}
 
   PaymentAppForWorkerTestHelper(const PaymentAppForWorkerTestHelper&) = delete;
   PaymentAppForWorkerTestHelper& operator=(
       const PaymentAppForWorkerTestHelper&) = delete;
 
   ~PaymentAppForWorkerTestHelper() override {}
+
+  void set_last_sw_registration_id(int64_t id) {
+    last_sw_registration_id_ = id;
+  }
+
+  void set_last_sw_scope(const GURL& scope) { last_sw_scope_ = scope; }
 
   class EmbeddedWorkerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
    public:
@@ -164,7 +168,10 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
     return std::make_unique<ServiceWorker>(this);
   }
 
-  int64_t last_sw_registration_id_;
+  // The registration ID and scope of the most recent service worker to be
+  // installed or started.
+  int64_t last_sw_registration_id_ =
+      blink::mojom::kInvalidServiceWorkerRegistrationId;
   GURL last_sw_scope_;
 
   // Variables to delay payment request response.
@@ -195,13 +202,12 @@ BrowserContext* PaymentAppContentUnitTestBase::browser_context() {
   return worker_helper_->browser_context();
 }
 
-PaymentManager*
-PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
+int64_t PaymentAppContentUnitTestBase::RegisterAndActivateServiceWorker(
     const GURL& scope_url,
     const GURL& sw_script_url) {
   // Register service worker for payment manager.
   bool called = false;
-  int64_t registration_id;
+  int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
   registration_opt.scope = scope_url;
   const blink::StorageKey key =
@@ -219,6 +225,8 @@ PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);
+  worker_helper_->set_last_sw_registration_id(registration_id);
+  worker_helper_->set_last_sw_scope(scope_url);
 
   // Ensure the worker used for installation has stopped.
   called = false;
@@ -232,6 +240,15 @@ PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
       base::BindOnce(&StopWorkerCallback, &called));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);
+
+  return registration_id;
+}
+
+PaymentManager*
+PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
+    const GURL& scope_url,
+    const GURL& sw_script_url) {
+  RegisterAndActivateServiceWorker(scope_url, sw_script_url);
 
   // This function should eventually return created payment manager
   // but there is no way to get last created payment manager from
