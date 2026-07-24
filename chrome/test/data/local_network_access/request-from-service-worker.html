@@ -1,6 +1,6 @@
 <script>
 async function setup() {
-  await navigator.serviceWorker.register('request-from-service-worker-as-public-address.js');
+  await navigator.serviceWorker.register('request-from-service-worker.js');
   await navigator.serviceWorker.ready;
   return 'ready';
 }

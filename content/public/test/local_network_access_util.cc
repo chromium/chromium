@@ -25,11 +25,11 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     if (url == EnabledHttpWorkerUrl()) {
       body_file =
           "chrome/test/data/local_network_access/"
-          "request-from-worker-as-public-address.html";
+          "request-from-worker.html";
     } else if (url == EnabledHttpSharedWorkerUrl()) {
       body_file =
           "chrome/test/data/local_network_access/"
-          "fetch-from-shared-worker-as-public-address.html";
+          "fetch-from-shared-worker.html";
     }
     HandleEnabledHttpUrlRequest(*request_params, body_file);
     return true;
@@ -39,11 +39,11 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
   // The page is split into separate html and js files to prevent unsafe inline
   // issues on environments with strict csp.
   const GURL enabled_http_page_js_url{
-      "http://enabled.test/request-from-worker-as-public-address-page.js"};
+      "http://enabled.test/request-from-worker-page.js"};
   if (url == enabled_http_page_js_url) {
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "request-from-worker-as-public-address-page.js",
+        "request-from-worker-page.js",
         request_params->client.get());
     return true;
   }
@@ -52,11 +52,11 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
   // The page is split into separate html and js files to prevent unsafe inline
   // issues on environments with strict csp.
   const GURL enabled_http_shared_worker_page_js_url{
-      "http://enabled.test/fetch-from-shared-worker-as-public-address-page.js"};
+      "http://enabled.test/fetch-from-shared-worker-page.js"};
   if (url == enabled_http_shared_worker_page_js_url) {
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "fetch-from-shared-worker-as-public-address-page.js",
+        "fetch-from-shared-worker-page.js",
         request_params->client.get());
     return true;
   }
@@ -73,7 +73,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     // like in https://crbug.com/40860522#comment8.
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "request-from-worker-as-public-address-worker.js",
+        "request-from-worker-worker.js",
         request_params->client.get());
     return true;
   }
@@ -81,7 +81,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
   if (url == enabled_http_shared_worker_js_url_) {
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "fetch-from-shared-worker-as-public-address-worker.js",
+        "fetch-from-shared-worker-worker.js",
         request_params->client.get());
     return true;
   }

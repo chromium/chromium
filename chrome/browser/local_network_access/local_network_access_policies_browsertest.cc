@@ -24,13 +24,13 @@ constexpr char kLnaPath[] =
     "?Access-Control-Allow-Origin: *";
 
 constexpr char kWorkerHtmlPath[] =
-    "/local_network_access/request-from-worker-as-public-address.html";
+    "/local_network_access/request-from-worker.html";
 
 constexpr char kSharedWorkerHtmlPath[] =
-    "/local_network_access/fetch-from-shared-worker-as-public-address.html";
+    "/local_network_access/fetch-from-shared-worker.html";
 
 constexpr char kServiceWorkerHtmlPath[] =
-    "/local_network_access/request-from-service-worker-as-public-address.html";
+    "/local_network_access/request-from-service-worker.html";
 
 class LocalNetworkAccessPoliciesBrowserTest
     : public LocalNetworkAccessBrowserTestBase {};
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
             std::optional<base::Value>(true));
   UpdateProviderPolicy(policies);
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
+      web_contents(), https_public_server().GetURL("a.com", kWorkerHtmlPath)));
 
   GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
   std::string_view script_template = "fetch_from_worker($1);";
@@ -88,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
             std::optional<base::Value>(true));
   UpdateProviderPolicy(policies);
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), https_server().GetURL("a.com", kServiceWorkerHtmlPath)));
+      web_contents(),
+      https_public_server().GetURL("a.com", kServiceWorkerHtmlPath)));
 
   EXPECT_EQ("ready", content::EvalJs(web_contents(), "setup();"));
   GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
@@ -108,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
   UpdateProviderPolicy(policies);
 
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), https_server().GetURL("a.com", kSharedWorkerHtmlPath)));
+      web_contents(),
+      https_public_server().GetURL("a.com", kSharedWorkerHtmlPath)));
 
   // Enable auto-deny of LNA permission request.
   bubble_factory()->set_response_type(

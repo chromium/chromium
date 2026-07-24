@@ -9,13 +9,18 @@ let worker;
 let resolve;
 function start_worker() {
   worker = new Worker(
-    params.has('script') ? params.get('script') : 'request-from-worker-as-public-address-worker.js');
+      params.has('script') ? params.get('script') :
+                             'request-from-worker-worker.js');
 
-  worker.onmessage = e => { resolve(e.data); };
+  worker.onmessage = e => {
+    resolve(e.data);
+  };
 }
 
 function worker_request(url, method) {
-  let p = new Promise(r => { resolve = r; });
+  let p = new Promise(r => {
+    resolve = r;
+  });
   worker.postMessage({url, method});
   return p;
 }
