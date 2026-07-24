@@ -22,7 +22,6 @@ import android.widget.ListView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StyleRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,6 +63,7 @@ import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -106,7 +106,12 @@ class BookmarkBarMediator
     private @ColorRes int mCurrentIconTintRes = R.color.default_icon_color_tint_list;
     @DrawableRes private int mCurrentBackgroundId;
 
-    private final BookmarkBarPopupCoordinator mPopupCoordinator;
+    private final Point mLastTouchPoint = new Point();
+    private int mLastTouchButtonState;
+    private int mLastTouchMetaState;
+    private boolean mIsActiveGestureSecondary;
+
+    private BookmarkBarPopupCoordinator mPopupCoordinator;
     private final BookmarkBarContextMenuMediator mContextMenuMediator;
     private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
@@ -302,6 +307,25 @@ class BookmarkBarMediator
 
     // Private methods.
 
+    private void showContextMenu(
+            ModelList menuModel, View anchorView, @Nullable Point offset, boolean isIncognito) {
+        if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
+            return;
+        }
+        mPopupCoordinator.showContextMenuPopup(menuModel, anchorView, offset, isIncognito);
+    }
+
+    private void showContextMenuForListItem(
+            BookmarkItem item, @Nullable View anchorView, @Nullable Point offset) {
+        if (anchorView == null) return;
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profile, model) -> {
+                    ModelList menuModel =
+                            mContextMenuMediator.buildContextMenuModelList(item, model);
+                    showContextMenu(menuModel, anchorView, offset, profile.isOffTheRecord());
+                });
+    }
+
     // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
     private void onAllBookmarksButtonClick(int metaState, int buttonState) {
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
@@ -320,15 +344,12 @@ class BookmarkBarMediator
     }
 
     private void onBookmarksBarEmptySpaceRightClicked(float x, float y) {
-        if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
-            return;
-        }
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profile, model) -> {
                     ModelList menuModel =
                             mContextMenuMediator.buildBookmarksBarEmptySpaceContextMenuModelList(
                                     model);
-                    mPopupCoordinator.showPopup(
+                    showContextMenu(
                             menuModel,
                             mBookmarkBarView,
                             new Point((int) x, (int) y),
@@ -339,21 +360,10 @@ class BookmarkBarMediator
     private void onBookmarkItemClick(BookmarkItem item, int metaState, int buttonState) {
         final boolean isRightClick = (buttonState & MotionEvent.BUTTON_SECONDARY) != 0;
         if (isRightClick) {
-            if (!ChromeFeatureList.sBookmarksBarContextMenu.isEnabled()) {
-                return;
-            }
             View anchorView = getAnchorViewForBookmark(item);
             if (anchorView == null) return;
-            runIfStillRelevantAfterFinishLoadingBookmarkModel(
-                    (profile, model) -> {
-                        ModelList menuModel =
-                                mContextMenuMediator.buildContextMenuModelList(item, model);
-                        mPopupCoordinator.showPopup(
-                                menuModel,
-                                anchorView,
-                                /* offset= */ null,
-                                profile.isOffTheRecord());
-                    });
+            Point offset = new Point(mLastTouchPoint);
+            showContextMenuForListItem(item, anchorView, offset);
             return;
         }
 
@@ -668,14 +678,12 @@ class BookmarkBarMediator
     // Recursive method that builds the entire model list for a clicked bookmark in the bookmarks
     // bar. The size of the returned model list will just be the number of the direct children
     // because each folder's SUBMENU_PROVIDER contains the children list as a separate model list.
-    @VisibleForTesting
     ModelList buildMenuModelListForFolder(BookmarkModel bookmarkModel, BookmarkId folderId) {
         List<BookmarkId> childIds = bookmarkModel.getChildIds(folderId);
         return buildMenuModelListFromIds(bookmarkModel, childIds);
     }
 
     // A reusable method that returns the ModelList from a specific list of Ids.
-    @VisibleForTesting
     ModelList buildMenuModelListFromIds(BookmarkModel bookmarkModel, List<BookmarkId> bookmarkIds) {
         ModelList modelList = new ModelList();
 
@@ -697,7 +705,38 @@ class BookmarkBarMediator
         return modelList;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    private PropertyModel.Builder createBasePopupMenuItemBuilder(
+            PropertyKey[] keys, BookmarkItem bookmarkItem) {
+        final Profile profile = mProfileSupplier.get();
+        final boolean isIncognito = profile != null && profile.isOffTheRecord();
+
+        return new PropertyModel.Builder(keys)
+                .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
+                .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
+                .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
+                .with(ListMenuItemProperties.ENABLED, true)
+                .with(
+                        ListMenuItemProperties.LONG_CLICK_LISTENER,
+                        (v) -> {
+                            showContextMenuForListItem(bookmarkItem, v, new Point(mLastTouchPoint));
+                            return true;
+                        })
+                .with(
+                        ListMenuItemProperties.TOUCH_LISTENER,
+                        (v, event) -> handlePopupItemTouch(bookmarkItem, v, event))
+                .with(
+                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                        isIncognito
+                                ? R.color.default_icon_color_light
+                                : R.color.default_icon_color_tint_list)
+                .with(
+                        ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                        isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light : 0);
+    }
+
     // Folders do not have urls.
+    @SuppressLint("ClickableViewAccessibility")
     private ListItem createListItemForBookmarkFolder(
             BookmarkItem bookmarkItem, ModelList children) {
 
@@ -723,33 +762,16 @@ class BookmarkBarMediator
         View.OnClickListener clickListener =
                 (v) -> BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
 
-        final Profile profile = mProfileSupplier.get();
-        final boolean isIncognito = profile != null && profile.isOffTheRecord();
-
         final PropertyModel model =
-                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
+                createBasePopupMenuItemBuilder(ListMenuSubmenuItemProperties.ALL_KEYS, bookmarkItem)
                         .with(
                                 ListMenuItemProperties.CONTENT_DESCRIPTION,
                                 mActivity.getString(
                                         R.string.bookmark_bar_folder_content_description,
                                         bookmarkItem.getTitle()))
-                        .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
-                        .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, mFolderIconBitmap)
-                        .with(ListMenuItemProperties.ENABLED, true)
                         .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
-                        .with(
-                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                                isIncognito
-                                        ? R.color.default_icon_color_light
-                                        : R.color.default_icon_color_tint_list)
-                        .with(
-                                ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                isIncognito
-                                        ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
-                                        : 0)
                         .build();
 
         ListItem listItem = new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
@@ -763,72 +785,14 @@ class BookmarkBarMediator
     // items).
     @SuppressLint("ClickableViewAccessibility")
     private ListItem createListItemForBookmarkLeaf(BookmarkItem bookmarkItem) {
-        // Handles all pointer-based input (mouse clicks, touch taps) to support both
-        // simple clicks and Ctrl+clicks in one place.
-        // We return true to consume the event, which prevents any other listeners from
-        // firing and allows us to suppress the "performClick" lint warning.
-        View.OnTouchListener touchListener =
-                (v, event) -> {
-                    int action = event.getActionMasked();
-
-                    // Consume the initial press for middle clicks to ensure we receive subsequent
-                    // motion events (like release).
-                    if (action == MotionEvent.ACTION_DOWN
-                            || action == MotionEvent.ACTION_BUTTON_PRESS) {
-                        return (event.getButtonState() & MotionEvent.BUTTON_TERTIARY) != 0;
-                    }
-
-                    // We only act when the user lifts their finger or releases a mouse button.
-                    boolean isLeftClickRelease = (action == MotionEvent.ACTION_UP);
-                    boolean isMiddleClick =
-                            (action == MotionEvent.ACTION_BUTTON_RELEASE
-                                    && event.getActionButton() == MotionEvent.BUTTON_TERTIARY);
-
-                    if (isLeftClickRelease || isMiddleClick) {
-                        boolean isCtrlPressed = (event.getMetaState() & KeyEvent.META_CTRL_ON) != 0;
-
-                        BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
-                        boolean isOffTheRecord =
-                                assertNonNull(mProfileSupplier.get()).isOffTheRecord();
-                        if (isCtrlPressed || isMiddleClick) {
-                            // Open in new tab.
-                            mBookmarkOpener.openBookmarksInNewTabs(
-                                    List.of(bookmarkItem.getId()),
-                                    isOffTheRecord,
-                                    TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
-                        } else {
-                            // Default behavior (open in current tab).
-                            mBookmarkOpener.openBookmarkInCurrentTab(
-                                    bookmarkItem.getId(), isOffTheRecord);
-                        }
-
-                        // Dismiss the popup after any click.
-                        mPopupCoordinator.dismiss();
-                        // It is critical that this listener returns true to consume the event. This
-                        // prevents the BasicListMenu's generic click handler from firing, which
-                        // would cause a double navigation because this item also has a
-                        // CLICK_LISTENER for accessibility.
-                        return true;
-                    }
-                    return false;
-                };
-
         // When building this model, we add both a touch and click listener. This click listener is
         // to handle AccessibilityServices, which send click events rather than touch events.
         // Without the listener added here, actions performed on a leaf node in the anchored pop up
         // will have no effect. Taps, keyboard, and mice all send touch events and do not send click
         // events, so there are no cases of double events be received.
-        final Profile profile = mProfileSupplier.get();
-        final boolean isIncognito = profile != null && profile.isOffTheRecord();
-
         PropertyModel model =
-                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
-                        .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
-                        .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
+                createBasePopupMenuItemBuilder(ListMenuItemProperties.ALL_KEYS, bookmarkItem)
                         .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, true)
-                        .with(ListMenuItemProperties.ENABLED, true)
-                        .with(ListMenuItemProperties.TOUCH_LISTENER, touchListener)
                         .with(
                                 ListMenuItemProperties.CLICK_LISTENER,
                                 (v) -> {
@@ -836,20 +800,19 @@ class BookmarkBarMediator
                                     BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_URL);
                                     boolean isOffTheRecord =
                                             assertNonNull(mProfileSupplier.get()).isOffTheRecord();
-
-                                    mBookmarkOpener.openBookmarkInCurrentTab(
-                                            bookmarkItem.getId(), isOffTheRecord);
+                                    boolean isCtrlPressed =
+                                            (mLastTouchMetaState & KeyEvent.META_CTRL_ON) != 0;
+                                    if (isCtrlPressed) {
+                                        mBookmarkOpener.openBookmarksInNewTabs(
+                                                List.of(bookmarkItem.getId()),
+                                                isOffTheRecord,
+                                                TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
+                                    } else {
+                                        mBookmarkOpener.openBookmarkInCurrentTab(
+                                                bookmarkItem.getId(), isOffTheRecord);
+                                    }
+                                    mPopupCoordinator.dismiss();
                                 })
-                        .with(
-                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                                isIncognito
-                                        ? R.color.default_icon_color_light
-                                        : R.color.default_icon_color_tint_list)
-                        .with(
-                                ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                isIncognito
-                                        ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
-                                        : 0)
                         .build();
         if (mImageFetcher != null) {
             mImageFetcher.fetchFaviconForBookmark(
@@ -865,6 +828,55 @@ class BookmarkBarMediator
                 ListMenuItemProperties.KEY_LISTENER,
                 createPopupMenuItemKeyListener(model, bookmarkItem));
         return listItem;
+    }
+
+    private boolean handlePopupItemTouch(BookmarkItem bookmarkItem, View v, MotionEvent event) {
+        int action = event.getActionMasked();
+        int buttonState = event.getButtonState();
+
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_BUTTON_PRESS) {
+            mLastTouchPoint.set((int) event.getX(), (int) event.getY());
+            mLastTouchButtonState = buttonState;
+            mLastTouchMetaState = event.getMetaState();
+
+            boolean isSecondary = (buttonState & MotionEvent.BUTTON_SECONDARY) != 0;
+            mIsActiveGestureSecondary =
+                    isSecondary && ChromeFeatureList.sBookmarksBarContextMenu.isEnabled();
+            if (mIsActiveGestureSecondary) {
+                showContextMenuForListItem(bookmarkItem, v, new Point(mLastTouchPoint));
+                return true;
+            }
+
+            boolean isTertiary = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
+            if (isTertiary) {
+                return true;
+            }
+        }
+
+        if (action == MotionEvent.ACTION_UP
+                || action == MotionEvent.ACTION_CANCEL
+                || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+            // Handle middle click on release if it started as tertiary.
+            if ((action == MotionEvent.ACTION_BUTTON_RELEASE
+                            && event.getActionButton() == MotionEvent.BUTTON_TERTIARY)
+                    || (mLastTouchButtonState & MotionEvent.BUTTON_TERTIARY) != 0) {
+                boolean isOffTheRecord = assertNonNull(mProfileSupplier.get()).isOffTheRecord();
+                mBookmarkOpener.openBookmarksInNewTabs(
+                        List.of(bookmarkItem.getId()),
+                        isOffTheRecord,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND);
+                mPopupCoordinator.dismiss();
+                mLastTouchButtonState = 0;
+                return true;
+            }
+
+            if (mIsActiveGestureSecondary) {
+                mIsActiveGestureSecondary = false;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static Bitmap drawableToBitmap(Drawable drawable) {
@@ -896,7 +908,6 @@ class BookmarkBarMediator
             PropertyModel model, BookmarkItem bookmarkItem) {
         // view is the root View object inflated from list_menu_item.xml.
         return (view, keyCode, event) -> {
-            if (bookmarkItem == null) return false;
             // ACTION_DOWN is used because KeyNavigationUtil#isGoBackward depends on isActionDown to
             // be true.
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -1029,6 +1040,9 @@ class BookmarkBarMediator
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
                                 (metaState, buttonState) ->
                                         clickCallback.onClick(item, metaState, buttonState))
+                        .with(
+                                BookmarkBarButtonProperties.POINT_CALLBACK,
+                                point -> mLastTouchPoint.set(point.x, point.y))
                         .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
                         .with(
                                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
@@ -1131,5 +1145,9 @@ class BookmarkBarMediator
 
     @Nullable Bitmap getFolderIconBitmapForTesting() {
         return mFolderIconBitmap;
+    }
+
+    void setPopupCoordinatorForTesting(BookmarkBarPopupCoordinator popupCoordinator) {
+        mPopupCoordinator = popupCoordinator;
     }
 }

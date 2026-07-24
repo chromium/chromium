@@ -10,7 +10,10 @@ import static android.view.KeyEvent.META_CTRL_ON;
 import static android.view.KeyEvent.META_SHIFT_ON;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
@@ -43,6 +46,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.EspressoKey;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -272,6 +276,46 @@ public class BookmarkBarTest {
         onView(bookmarkManagerToolbarWithText("Bookmarks bar")).check(doesNotExist());
         // Check that a popup menu list is displayed.
         onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+        pressBack(); // Dismiss for batched test.
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkItemLongClick() throws ExecutionException {
+        final String title = "Google";
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
+
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(longClick());
+
+        // Check that a popup menu list is displayed.
+        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+        pressBack(); // Dismiss for batched test.
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkBarEmptySpaceLongClick() {
+        onViewWaiting(withId(R.id.bookmark_bar)).perform(longClick());
+
+        // Check that a popup menu list is displayed.
+        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+        pressBack(); // Dismiss for batched test.
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkBarItemsContainerEmptySpaceLongClick() throws ExecutionException {
+        // Add a single bookmark so the items container has a non-zero height.
+        final String title = "Test Bookmark";
+        final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, url));
+
+        onViewWaiting(withId(R.id.bookmark_bar_items_container)).perform(longClick());
+
+        // Check that a popup menu list is displayed.
+        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+        pressBack(); // Dismiss for batched test.
     }
 
     private @Nullable BookmarkId addBookmark(int index, @NonNull String title, @NonNull GURL url)
@@ -391,7 +435,7 @@ public class BookmarkBarTest {
         final var isAltPressed = (metaState & META_ALT_ON) != 0;
         final var isCtrlPressed = (metaState & META_CTRL_ON) != 0;
         final var isShiftPressed = (metaState & META_SHIFT_ON) != 0;
-        return androidx.test.espresso.action.ViewActions.pressKey(
+        return ViewActions.pressKey(
                 new EspressoKey.Builder()
                         .withAltPressed(isAltPressed)
                         .withCtrlPressed(isCtrlPressed)

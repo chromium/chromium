@@ -14,6 +14,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.LONG_CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
@@ -86,6 +87,8 @@ class ListMenuItemWithSubmenuViewBinder {
             view.setOnKeyListener(model.get(KEY_LISTENER));
         } else if (propertyKey == TOUCH_LISTENER) {
             view.setOnTouchListener(model.get(TOUCH_LISTENER));
+        } else if (propertyKey == LONG_CLICK_LISTENER) {
+            view.setOnLongClickListener(model.get(LONG_CLICK_LISTENER));
         } else if (propertyKey == TEXT_APPEARANCE_ID) {
             @StyleRes int textAppearanceId = model.get(TEXT_APPEARANCE_ID);
             if (textAppearanceId != Resources.ID_NULL) {

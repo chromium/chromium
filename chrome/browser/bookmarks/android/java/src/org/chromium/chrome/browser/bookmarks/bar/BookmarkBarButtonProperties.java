@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -70,6 +72,13 @@ class BookmarkBarButtonProperties {
     public static final WritableIntPropertyKey BACKGROUND_DRAWABLE_ID =
             new WritableIntPropertyKey();
 
+    /**
+     * The callback to notify of the last touch coordinate. This is used to track touch coordinates
+     * for properly locating the anchor position of the popup menu.
+     */
+    public static final WritableObjectPropertyKey<Callback<Point>> POINT_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CLICK_CALLBACK,
@@ -81,6 +90,7 @@ class BookmarkBarButtonProperties {
                 FOLDER_CONTENT_DESCRIPTION,
                 TEXT_APPEARANCE_ID,
                 BOOKMARK_ITEM,
-                BACKGROUND_DRAWABLE_ID
+                BACKGROUND_DRAWABLE_ID,
+                POINT_CALLBACK
             };
 }

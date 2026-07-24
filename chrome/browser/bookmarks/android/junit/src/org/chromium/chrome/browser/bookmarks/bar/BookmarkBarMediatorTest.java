@@ -9,9 +9,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +22,7 @@ import android.graphics.Point;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,6 +50,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -292,7 +296,7 @@ public class BookmarkBarMediatorTest {
         // 3. This will trigger #createListItemFor, which should now use the light theme saved in
         // 1., and update the colors. In production, this line will be auomatically called after
         // #onThemeChanged but we are calling it manually in the unit test.
-        mMediator.onBookmarkItemAdded(BookmarkBarItemsProvider.ObservationId.LOCAL, folderItem, 0);
+        mMediator.onBookmarkItemAdded(ObservationId.LOCAL, folderItem, 0);
 
         // Verify that mItemsModel.add() was called, and save the ListItem that was passed.
         ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
@@ -323,8 +327,7 @@ public class BookmarkBarMediatorTest {
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
 
-        mMediator.onBookmarkItemAdded(
-                BookmarkBarItemsProvider.ObservationId.LOCAL, bookmarkItem, 0);
+        mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
         ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
         verify(mItemsModel).add(eq(0), listItemCaptor.capture());
@@ -357,8 +360,7 @@ public class BookmarkBarMediatorTest {
         assertEquals(1, modelList.size());
 
         ListItem listItem = modelList.get(0);
-        View.OnTouchListener touchListener =
-                listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
+        OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
         assertNotNull(touchListener);
 
         View placeholderView = new View(mActivity);
@@ -391,8 +393,7 @@ public class BookmarkBarMediatorTest {
         ModelList modelList =
                 mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
         ListItem listItem = modelList.get(0);
-        View.OnTouchListener touchListener =
-                listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
+        OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
 
         View placeholderView = new View(mActivity);
 
@@ -409,6 +410,39 @@ public class BookmarkBarMediatorTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testPopupMenuItemLongClickListener() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        mBookmarkModel.addBookmark(desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0);
+        View placeholderView = new View(mActivity);
+
+        // Simulate ACTION_DOWN at (50, 60) to record touch coordinates.
+        MotionEvent downEvent = mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getX()).thenReturn(50f);
+        when(downEvent.getY()).thenReturn(60f);
+
+        OnTouchListener touchListener = listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
+        assertNotNull(touchListener);
+        touchListener.onTouch(placeholderView, downEvent);
+
+        // Trigger long click on the view.
+        View.OnLongClickListener longClickListener =
+                listItem.model.get(ListMenuItemProperties.LONG_CLICK_LISTENER);
+        assertNotNull(longClickListener);
+        assertTrue(longClickListener.onLongClick(placeholderView));
+
+        // Verify context menu popup is shown with recorded coordinates.
+        verify(mPopupCoordinator)
+                .showContextMenuPopup(any(), eq(placeholderView), eq(new Point(50, 60)), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testEmptySpaceRightClick_FlagEnabled() {
         ArgumentCaptor<BookmarkBar.RightClickCallback> captor =
                 ArgumentCaptor.forClass(BookmarkBar.RightClickCallback.class);
@@ -419,7 +453,8 @@ public class BookmarkBarMediatorTest {
         callback.onRightClick(100f, 200f);
 
         verify(mPopupCoordinator)
-                .showPopup(any(), eq(mBookmarkBarView), eq(new Point(100, 200)), eq(false));
+                .showContextMenuPopup(
+                        any(), eq(mBookmarkBarView), eq(new Point(100, 200)), eq(false));
     }
 
     @Test
@@ -431,8 +466,7 @@ public class BookmarkBarMediatorTest {
                         mBookmarkModel.getDesktopFolderId(), 0, "Bookmark", JUnitTestGURLs.URL_1);
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
 
-        mMediator.onBookmarkItemAdded(
-                BookmarkBarItemsProvider.ObservationId.LOCAL, bookmarkItem, 0);
+        mMediator.onBookmarkItemAdded(ObservationId.LOCAL, bookmarkItem, 0);
 
         ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
         verify(mItemsModel).add(eq(0), listItemCaptor.capture());
@@ -448,7 +482,7 @@ public class BookmarkBarMediatorTest {
 
         clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
 
-        verify(mPopupCoordinator).showPopup(any(), eq(mockView), any(), eq(false));
+        verify(mPopupCoordinator).showContextMenuPopup(any(), eq(mockView), any(), eq(false));
     }
 
     @Test
@@ -648,6 +682,30 @@ public class BookmarkBarMediatorTest {
                         eq(mTab),
                         eq(mProfile),
                         eq(mBookmarkModel.getRootFolderId()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
+    public void testOnAllBookmarksButtonClick_RightClickOrLongPress_NoContextMenu() {
+        ArgumentCaptor<ClickWithMetaStateCallback> clickCallbackCaptor =
+                ArgumentCaptor.forClass(ClickWithMetaStateCallback.class);
+        verify(mAllBookmarksButtonModel)
+                .set(eq(BookmarkBarButtonProperties.CLICK_CALLBACK), clickCallbackCaptor.capture());
+
+        ClickWithMetaStateCallback clickCallback = clickCallbackCaptor.getValue();
+        assertNotNull(clickCallback);
+
+        View allBookmarksButton = new View(mActivity);
+        allBookmarksButton.setId(R.id.bookmark_bar_all_bookmarks_button);
+        when(mBookmarkBarView.findViewById(R.id.bookmark_bar_all_bookmarks_button))
+                .thenReturn(allBookmarksButton);
+
+        // Simulate right click or long press (BUTTON_SECONDARY).
+        clickCallback.onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
+
+        // Context menu should NOT be shown for the All Bookmarks button.
+        verify(mPopupCoordinator, never()).showContextMenuPopup(any(), any(), any(), anyBoolean());
     }
 
     @Test

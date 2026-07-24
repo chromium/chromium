@@ -27,12 +27,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ChromePopupWindow;
 import org.chromium.ui.widget.UiWidgetFactory;
 
@@ -56,6 +58,7 @@ public class BookmarkBarPopupCoordinatorTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        when(mMockPopupWindow.getBackground()).thenReturn(new ColorDrawable(Color.TRANSPARENT));
 
         mCoordinator =
                 new BookmarkBarPopupCoordinator(
@@ -93,5 +96,18 @@ public class BookmarkBarPopupCoordinatorTest {
         } finally {
             UiWidgetFactory.setInstance(originalFactory);
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testDismiss_dismissesBothPopups() {
+        AnchoredPopupWindow folderPopup = Mockito.mock(AnchoredPopupWindow.class);
+        AnchoredPopupWindow contextMenuPopup = Mockito.mock(AnchoredPopupWindow.class);
+        mCoordinator.mFolderPopup.setPopupWindowForTesting(folderPopup);
+        mCoordinator.mContextMenuPopup.setPopupWindowForTesting(contextMenuPopup);
+
+        mCoordinator.dismiss();
+        verify(folderPopup).dismiss();
+        verify(contextMenuPopup).dismiss();
     }
 }

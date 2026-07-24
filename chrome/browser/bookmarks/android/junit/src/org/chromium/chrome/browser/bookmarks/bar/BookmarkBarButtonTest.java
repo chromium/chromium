@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -158,5 +160,45 @@ public class BookmarkBarButtonTest {
         mButton.performClick();
 
         verify(mClickCallback).onClickWithMeta(KeyEvent.META_SHIFT_ON, MotionEvent.BUTTON_PRIMARY);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnLongClick_FiresCallbackWithSecondaryButton() {
+        mButton.performLongClick();
+        verify(mClickCallback).onClickWithMeta(0, MotionEvent.BUTTON_SECONDARY);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnTouchEvent_RightClickConsumedAndCleared() {
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+
+        assertTrue("Right click down should be consumed", mButton.onTouchEvent(downEvent));
+
+        MotionEvent upEvent = Mockito.mock(MotionEvent.class);
+        when(upEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_UP);
+        assertTrue("Right click up should be consumed", mButton.onTouchEvent(upEvent));
+
+        // After UP, mLastEventButtonState should be 0, so performClick should work normally.
+        mButton.performClick();
+        verify(mClickCallback).onClickWithMeta(anyInt(), eq(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetLastClickPoint() {
+        MotionEvent event = Mockito.mock(MotionEvent.class);
+        when(event.getX()).thenReturn(123f);
+        when(event.getY()).thenReturn(456f);
+        when(event.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+
+        mButton.onTouchEvent(event);
+
+        Point point = mButton.getLastClickPoint();
+        assertEquals(123, point.x);
+        assertEquals(456, point.y);
     }
 }

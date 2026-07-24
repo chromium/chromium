@@ -51,6 +51,8 @@ class BookmarkBarButtonViewBinder {
         } else if (key == BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID) {
             view.setBackgroundResource(
                     model.get(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID));
+        } else if (key == BookmarkBarButtonProperties.POINT_CALLBACK) {
+            view.setPointCallback(model.get(BookmarkBarButtonProperties.POINT_CALLBACK));
         }
     }
 }

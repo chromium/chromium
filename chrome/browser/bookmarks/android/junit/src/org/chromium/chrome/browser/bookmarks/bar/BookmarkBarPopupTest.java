@@ -69,6 +69,7 @@ public class BookmarkBarPopupTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        when(mMockPopupWindow.getBackground()).thenReturn(new ColorDrawable(Color.TRANSPARENT));
 
         mPopup = new BookmarkBarPopup(mActivity, () -> new Pair<>(0, 0)); // controlsHeightSupplier
     }
@@ -196,7 +197,15 @@ public class BookmarkBarPopupTest {
                 });
 
         try {
-            mPopup.show(mAnchorView, null, new ModelList(), /* isIncognito= */ false);
+            mPopup.show(
+                    mAnchorView,
+                    /* offset= */ null,
+                    new ModelList(),
+                    /* isIncognito= */ false,
+                    /* dismissAllCallback= */ () -> {},
+                    /* onDismissListener= */ () -> {},
+                    /* touchListener= */ null,
+                    /* touchInterceptor= */ null);
 
             verify(mMockPopupWindow).setBackgroundDrawable(mDrawableCaptor.capture());
 

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
@@ -15,6 +16,7 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +57,7 @@ class BookmarkBarPopup {
     private @Nullable View mContentView;
     private @Nullable ModelList mModelList;
     private @Nullable ListObserver<Void> mSizeObserver;
+    private final int[] mLocation = new int[2];
 
     BookmarkBarPopup(Activity activity, Supplier<Pair<Integer, Integer>> controlsHeightSupplier) {
         mActivity = activity;
@@ -62,7 +65,15 @@ class BookmarkBarPopup {
         mBrowserControlsRectProvider = new BrowserControlsRectProvider(activity);
     }
 
-    void show(View anchorView, @Nullable Point offset, ModelList menuModel, boolean isIncognito) {
+    void show(
+            View anchorView,
+            @Nullable Point offset,
+            ModelList menuModel,
+            boolean isIncognito,
+            Runnable dismissAllCallback,
+            Runnable onDismissListener,
+            @Nullable OnTouchListener touchListener,
+            @Nullable OnTouchListener touchInterceptor) {
         dismiss();
 
         BasicListMenu popupListMenu =
@@ -77,9 +88,12 @@ class BookmarkBarPopup {
                             }
                         });
         popupListMenu.setupCallbacks(
-                this::dismiss, ListMenuUtils.createHierarchicalMenuController(mActivity));
+                dismissAllCallback, ListMenuUtils.createHierarchicalMenuController(mActivity));
 
         mContentView = popupListMenu.getContentView();
+        if (touchListener != null) {
+            mContentView.setOnTouchListener(touchListener);
+        }
         ListMenuUtils.clipContentViewOutline(mContentView, R.attr.popupBgCornerRadius);
         if (mContentView.getBackground() instanceof GradientDrawable bg) {
             int color =
@@ -93,7 +107,11 @@ class BookmarkBarPopup {
         Pair<Integer, Integer> heights = mControlsHeightSupplier.get();
         mBrowserControlsRectProvider.updateRectAndNotify(heights.first, heights.second);
 
-        ViewRectProvider rectProvider =
+        // Two RectProviders are used here in a chain:
+        // 1. baseRectProvider calculates the raw bounds of the anchor relative to its own window.
+        // 2. translatedRectProvider wraps it to shift those bounds into the main Activity's window
+        //    space, which is required for AnchoredPopupWindow to position itself correctly.
+        ViewRectProvider baseRectProvider =
                 new ViewRectProvider(
                         anchorView,
                         (view, rect, onRectChanged) -> {
@@ -102,24 +120,30 @@ class BookmarkBarPopup {
                             return updater;
                         });
         if (offset != null) {
-            rectProvider.setInsetPx(
+            baseRectProvider.setInsetPx(
                     offset.x,
                     offset.y,
                     anchorView.getWidth() - offset.x,
                     anchorView.getHeight() - offset.y);
         }
 
+        RectProvider translatedRectProvider =
+                new TranslatedRectProvider(baseRectProvider, anchorView, mActivity);
+
         mPopupWindow =
                 new AnchoredPopupWindow(
                         mActivity,
-                        anchorView,
+                        mActivity.getWindow().getDecorView(),
                         new ColorDrawable(Color.TRANSPARENT),
                         popupListMenu::getContentView,
-                        rectProvider,
+                        translatedRectProvider,
                         mBrowserControlsRectProvider);
 
         mPopupWindow.setFocusable(true);
         mPopupWindow.setOutsideTouchable(true);
+        if (touchInterceptor != null) {
+            mPopupWindow.setTouchInterceptor(touchInterceptor);
+        }
         mPopupWindow.setPreferredVerticalOrientation(AnchoredPopupWindow.VerticalOrientation.BELOW);
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setPreferredHorizontalOrientation(
@@ -161,7 +185,11 @@ class BookmarkBarPopup {
                 };
         menuModel.addObserver(mSizeObserver);
 
-        mPopupWindow.addOnDismissListener(this::cleanup);
+        mPopupWindow.addOnDismissListener(
+                () -> {
+                    cleanup();
+                    if (onDismissListener != null) onDismissListener.run();
+                });
 
         configurePopupWindowSize(mPopupWindow, popupListMenu);
         mPopupWindow.show();
@@ -199,6 +227,17 @@ class BookmarkBarPopup {
         mPopupWindow = popupWindow;
     }
 
+    boolean containsTouch(float rawX, float rawY) {
+        if (mPopupWindow == null || !mPopupWindow.isShowing() || mContentView == null) {
+            return false;
+        }
+        mContentView.getLocationOnScreen(mLocation);
+        return rawX >= mLocation[0]
+                && rawX <= mLocation[0] + mContentView.getWidth()
+                && rawY >= mLocation[1]
+                && rawY <= mLocation[1] + mContentView.getHeight();
+    }
+
     @VisibleForTesting
     void configurePopupWindowSize(
             @Nullable AnchoredPopupWindow popupWindow, BasicListMenu popupListMenu) {
@@ -231,12 +270,11 @@ class BookmarkBarPopup {
         int desiredHeight = Math.max(measuredDimensions[1], minTouchableSizePx);
 
         if (mBrowserControlsRectProvider.getRect() != null) {
-            int availableHeight = mBrowserControlsRectProvider.getRect().height();
-
             ListView menuList = popupListMenu.getContentView().findViewById(R.id.menu_list);
-            boolean needsScrollbar = desiredHeight > availableHeight;
-            menuList.setVerticalScrollBarEnabled(needsScrollbar);
-            menuList.setScrollbarFadingEnabled(needsScrollbar);
+            if (menuList != null) {
+                menuList.setVerticalScrollBarEnabled(true);
+                menuList.setScrollbarFadingEnabled(true);
+            }
         }
 
         popupWindow.setDesiredContentSize(desiredWidth, desiredHeight);
@@ -271,11 +309,67 @@ class BookmarkBarPopup {
         }
 
         void updateRectAndNotify(int topControlsHeight, int bottomControlsHeight) {
-            DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
-            mRect.set(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+            View rootView = mActivity.getWindow().getDecorView();
+            mRect.set(0, 0, rootView.getWidth(), rootView.getHeight());
             mRect.top += topControlsHeight;
             mRect.bottom -= bottomControlsHeight;
             notifyRectChanged();
+        }
+    }
+
+    private static class TranslatedRectProvider extends RectProvider {
+        private final Rect mTranslatedRect = new Rect();
+        private final int[] mMainRootCoords = new int[2];
+        private final int[] mAnchorRootCoords = new int[2];
+        private final RectProvider mBaseRectProvider;
+        private final View mAnchorView;
+        private final Activity mActivity;
+
+        TranslatedRectProvider(RectProvider baseRectProvider, View anchorView, Activity activity) {
+            mBaseRectProvider = baseRectProvider;
+            mAnchorView = anchorView;
+            mActivity = activity;
+        }
+
+        @Override
+        public void startObserving(Observer observer) {
+            super.startObserving(observer);
+            mBaseRectProvider.startObserving(
+                    new Observer() {
+                        @Override
+                        public void onRectChanged() {
+                            notifyRectChanged();
+                        }
+
+                        @Override
+                        public void onRectHidden() {
+                            notifyRectHidden();
+                        }
+                    });
+        }
+
+        @Override
+        public void stopObserving() {
+            super.stopObserving();
+            mBaseRectProvider.stopObserving();
+        }
+
+        @Override
+        public Rect getRect() {
+            Rect original = mBaseRectProvider.getRect();
+            if (original == null) return new Rect();
+            mTranslatedRect.set(original);
+
+            // We translate coordinates from the anchor view's root window to the main
+            // Activity's window. This ensures the context menu popup is positioned
+            // correctly even if it's anchored to an item inside a folder popup.
+            mActivity.getWindow().getDecorView().getLocationOnScreen(mMainRootCoords);
+            mAnchorView.getRootView().getLocationOnScreen(mAnchorRootCoords);
+
+            mTranslatedRect.offset(
+                    mAnchorRootCoords[0] - mMainRootCoords[0],
+                    mAnchorRootCoords[1] - mMainRootCoords[1]);
+            return mTranslatedRect;
         }
     }
 }
