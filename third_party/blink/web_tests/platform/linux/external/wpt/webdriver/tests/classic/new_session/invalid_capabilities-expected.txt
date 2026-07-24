@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_invalid_values[unhandledPromptBehavior-value75-<lambda>0]
+  assert 200 == 400
+[FAIL] test_invalid_values[unhandledPromptBehavior-value75-<lambda>1]
+  assert 200 == 400
+[FAIL] test_invalid_values[unhandledPromptBehavior-value76-<lambda>0]
+  assert 200 == 400
+[FAIL] test_invalid_values[unhandledPromptBehavior-value76-<lambda>1]
+  assert 200 == 400
+Harness: the test ran to completion.
