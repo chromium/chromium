@@ -2092,6 +2092,17 @@
        {}
       ]
      ],
+     "border-shape": {
+      "crashtests": {
+       "border-shape-shape-arc-animation-crash.html": [
+        "a0d831da8aae1c75958912def9c0cc307415d75b",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "corner-shape": {
       "corner-shape-zoom-overlap-extreme-values-crash.html": [
        "823531554a82cee1cf2607b3a0c3152dabc3f301",
@@ -336717,6 +336728,45 @@
           }
          ]
         ],
+        "svg-displacement-filter-tainted-fillpaint.sub.html": [
+         "d614ef12f244850302305573863eb79a0ea85be1",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/reference/green-100x100.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "svg-displacement-filter-tainted-sourcealpha.sub.html": [
+         "46957b32447c600e7df5d08b4f694ce34a663adf",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/reference/green-100x100.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "svg-displacement-filter-tainted-strokepaint.sub.html": [
+         "d2e7b0d40e9da12511a298ef1c292ce1cc9642ea",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/reference/green-100x100.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "svg-filter-lh-rlh.html": [
          "b61193fb9fdd107319d98ee8429970221dbfd549",
          [
@@ -359501,7 +359551,7 @@
      ]
     ],
     "hdr-alpha-reftest.html": [
-     "e64a5ec8432d1d0520b58fdd01e2e386167a57a6",
+     "30dd131d379e2b343b1c979221b669134a3977f2",
      [
       null,
       [
@@ -359521,7 +359571,7 @@
           ],
           [
            0,
-           908
+           922
           ]
          ]
         ]
@@ -359708,7 +359758,7 @@
      ]
     ],
     "progressive-1.html": [
-     "4712ad24f536034c10044935330eb949f3db4f7a",
+     "7114c4c4c7aefdc4d9d7d5078e7fd07688f8657b",
      [
       null,
       [
@@ -359728,7 +359778,7 @@
           ],
           [
            0,
-           858
+           875
           ]
          ]
         ]
@@ -359824,7 +359874,7 @@
      ]
     ],
     "sdr-alpha-reftest.html": [
-     "c3e0660a60f975e2b9b52011ec36c324824ee8f1",
+     "443e6691aa8cc7720902e13d27163c052b31ac0d",
      [
       null,
       [
@@ -359844,7 +359894,7 @@
           ],
           [
            0,
-           1254
+           1266
           ]
          ]
         ]
@@ -454794,6 +454844,10 @@
       "dfc6222a60328dc37ddff75faeda1625e9d3d342",
       []
      ],
+     "dictionary-fetch-with-link-header-in-subresources.tentative.https-expected.txt": [
+      "b8c5f7fc0991f843382b2986adc756bbf181c22a",
+      []
+     ],
      "resources": {
       "clear-site-data.py": [
        "0db51bf797f7e7efb0d16671dcdaa4afe0129b71",
@@ -463347,6 +463401,12 @@
          "caf6b53ce39f2fa61c43b35f6c91c6954e7350d6",
          []
         ],
+        "reference": {
+         "green-100x100.html": [
+          "a3ab3bb5b8ea2f5c8577404e76a59da0005aebc2",
+          []
+         ]
+        },
         "svg-filter-lh-rlh-expected.html": [
          "d183f6940deb4399186770a4e97bb136e05f5f61",
          []
@@ -511137,6 +511197,22 @@
     ],
     "datagrams.https.any.worker-expected.txt": [
      "b811c36d12145d164ee0b4b7ed67ce2183ee1169",
+     []
+    ],
+    "export-keying-material.https.any-expected.txt": [
+     "86f315577c5e661ef6154ae6b2378337cf7f60c8",
+     []
+    ],
+    "export-keying-material.https.any.serviceworker-expected.txt": [
+     "86f315577c5e661ef6154ae6b2378337cf7f60c8",
+     []
+    ],
+    "export-keying-material.https.any.sharedworker-expected.txt": [
+     "86f315577c5e661ef6154ae6b2378337cf7f60c8",
+     []
+    ],
+    "export-keying-material.https.any.worker-expected.txt": [
+     "86f315577c5e661ef6154ae6b2378337cf7f60c8",
      []
     ],
     "handlers": {
@@ -665925,7 +666001,7 @@
       ]
      ],
      "dictionary-fetch-with-link-header-in-subresources.tentative.https.html": [
-      "d5c81135a0a435c42c2ab62bafa305c5780330c6",
+      "b02f6c68793e3a9e3641f214afb2879f905f5c2e",
       [
        null,
        {
@@ -893727,6 +893803,85 @@
         ]
        ],
        "timeout": "long"
+      }
+     ]
+    ],
+    "export-keying-material.https.any.js": [
+     "ede99ba17d964b3f58787aab2d9f3f6048872809",
+     [
+      "webtransport/export-keying-material.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/export-keying-material.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/export-keying-material.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webtransport/export-keying-material.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
       }
      ]
     ],

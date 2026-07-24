@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] exportKeyingMaterial with only label returns non-empty Uint8Array
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial with label and context returns non-empty Uint8Array
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] Different labels produce different keying material
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] Different contexts produce different keying material
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] Same label on same connection produces identical keying material
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial rejects with InvalidStateError on closed connection
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] Different connections produce different keying material with same label
+  promise_test: Unhandled rejection with value: object "TypeError: wt1.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial accepts both ArrayBufferView and ArrayBuffer for label
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial throws RangeError when label exceeds 255 bytes
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial throws RangeError when context exceeds 255 bytes
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial accepts long label up to 198 bytes
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+[FAIL] exportKeyingMaterial accepts long context up to 255 bytes
+  promise_test: Unhandled rejection with value: object "TypeError: wt.exportKeyingMaterial is not a function"
+Harness: the test ran to completion.
+
