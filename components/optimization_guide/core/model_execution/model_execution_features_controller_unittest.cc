@@ -97,11 +97,11 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetEnterprisePolicy(UserVisibleFeatureKey feature,
                            ModelExecutionEnterprisePolicyValue value) {
-    const char* key = SettingsUiRegistry::GetInstance()
-                          .GetFeature(feature)
-                          ->enterprise_policy()
-                          .name();
-    ASSERT_TRUE(key);
+    std::string_view key = SettingsUiRegistry::GetInstance()
+                               .GetFeature(feature)
+                               ->enterprise_policy()
+                               .name();
+    ASSERT_FALSE(key.empty());
     return pref_service_->SetInteger(key, static_cast<int>(value));
   }
 

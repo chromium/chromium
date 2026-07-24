@@ -33,8 +33,7 @@ TEST_F(EnterprisePolicyRegistryTest, GetValue) {
   TestingPrefServiceSimple pref_service;
   std::unique_ptr<EnterprisePolicyRegistry> registry =
       EnterprisePolicyRegistry::CreateForTesting();
-  EnterprisePolicyPref enterprise_policy("pref_name");
-  registry->Register(enterprise_policy.name());
+  EnterprisePolicyPref enterprise_policy = registry->Register("pref_name");
   registry->RegisterProfilePrefs(pref_service.registry());
 
   EXPECT_EQ(model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow,
