@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -147,6 +148,40 @@ TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   GetDocument().getElementById(AtomicString("host"))->appendChild(div);
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             GetDocument().Lifecycle().GetState());
+}
+
+// Regression test for crbug.com/520167277.
+// Verifies that slot assignment recalculation works safely when triggered
+// during layout tree rebuild of slot children.
+TEST_F(SlotAssignmentTest, RebuildDistributedChildrenDuringRecalc) {
+  SetBody(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="child1"></div>
+      <div id="child2"></div>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().QuerySelector(AtomicString("#host"));
+  ASSERT_NE(nullptr, host);
+  ShadowRoot* shadow_root = host->GetShadowRoot();
+  ASSERT_NE(nullptr, shadow_root);
+  Element* child1 = GetDocument().QuerySelector(AtomicString("#child1"));
+  Element* child2 = GetDocument().QuerySelector(AtomicString("#child2"));
+  ASSERT_NE(nullptr, child1);
+  ASSERT_NE(nullptr, child2);
+
+  // Force layout tree rebuild for children and mark slot assignment dirty.
+  child1->SetForceReattachLayoutTree();
+  child2->SetForceReattachLayoutTree();
+  shadow_root->SetNeedsAssignmentRecalc();
+
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(shadow_root->NeedsSlotAssignmentRecalc());
 }
 
 }  // namespace blink
