@@ -13,6 +13,11 @@ namespace omnibox_everywhere::prefs {
 // Everywhere is enabled.
 inline constexpr char kHotkeyEnabled[] = "omnibox_everywhere.hotkey_enabled";
 
+// Boolean preference specifying whether Omnibox Everywhere background mode
+// and status tray icon are enabled.
+inline constexpr char kOmniboxEverywhereBackgroundMode[] =
+    "omnibox_everywhere.background_mode";
+
 // Registers Local State preferences for Omnibox Everywhere.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
