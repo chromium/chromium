@@ -26,6 +26,23 @@ struct GetUnit {
       ")"};
 };
 
+// method
+struct ListUnitsByPatterns {
+  static constexpr char kInterfaceName[] = "org.freedesktop.systemd1.Manager";
+  static constexpr char kMethodName[] = "ListUnitsByPatterns";
+  static constexpr gvariant::Type kInType{
+      "("
+      "as"  // states
+      "as"  // patterns
+      ")"};
+  static constexpr gvariant::Type kOutType{
+      "("
+      // Array of (name, description, load_state, active_state, sub_state,
+      // following, unit_path, job_id, job_type, job_path).
+      "a(ssssssouso)"  // units
+      ")"};
+};
+
 // property
 struct Environment {
   static constexpr char kInterfaceName[] = "org.freedesktop.systemd1.Manager";

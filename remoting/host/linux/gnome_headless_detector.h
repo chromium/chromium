@@ -35,9 +35,9 @@ class GnomeHeadlessDetector {
   void Start(GDBusConnectionRef connection, Callback callback);
 
  private:
-  void OnGetUnitReply(
-      base::expected<std::tuple<gvariant::ObjectPath>, Loggable> result);
-  void OnActiveStateReply(base::expected<std::string, Loggable> result);
+  void OnListUnitsByPatternsReply(
+      base::expected<std::tuple<std::vector<GVariantRef<"(ssssssouso)">>>,
+                     Loggable> result);
   void OnExecStartReply(
       base::expected<std::vector<GVariantRef<"(sasbttttuii)">>, Loggable>
           result);
