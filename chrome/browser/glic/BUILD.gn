@@ -504,6 +504,7 @@ source_set("impl") {
     "//ui/base",
     "//ui/base/clipboard:file_info",
     "//ui/base/interaction",
+    "//ui/content_accelerators",
     "//ui/gfx",
     "//ui/snapshot",
     "//ui/webui",
@@ -584,6 +585,7 @@ source_set("impl") {
     ]
   } else {  # is_android
     sources += [
+      "common/view_scoped_registration_delegate_android.cc",
       "glic_settings_util_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.h",

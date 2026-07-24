@@ -102,36 +102,66 @@ namespace glic {
 // Runs `get_value` until it returns `expected_value`. Returns a
 // TestResult<> indicating success or failure.
 // Note, `type_identity_t` ensures T's type is inferred from `expected_value`.
-template <typename T>
-[[nodiscard]] TestResult<> RunUntilEqual(
+template <typename T, typename Compare>
+[[nodiscard]] TestResult<> RunUntilComparisonPasses(
     base::FunctionRef<std::type_identity_t<T>()> get_value,
     const T& expected_value,
+    Compare compare,
+    std::string_view op_name,
     std::string_view message = std::string_view()) {
   using ValueType = std::remove_reference_t<T>;
-  if (get_value() == expected_value) {
+  if (compare(get_value(), expected_value)) {
     return base::ok();
   }
   std::vector<ValueType> ignored_values;
-  if (base::test::RunUntil([get_value, expected_value, &ignored_values]() {
-        ValueType value = get_value();
-        if (value == expected_value) {
-          return true;
-        }
-        if (ignored_values.empty() || ignored_values.back() != value) {
-          ignored_values.push_back(value);
-        }
-        return false;
-      })) {
+  if (base::test::RunUntil(
+          [get_value, expected_value, &ignored_values, compare]() {
+            ValueType value = get_value();
+            if (compare(value, expected_value)) {
+              return true;
+            }
+            if (ignored_values.empty() || ignored_values.back() != value) {
+              ignored_values.push_back(value);
+            }
+            return false;
+          })) {
     return base::ok();
   }
   std::stringstream ss;
-  ss << message << " Expected: " << base::ToString(expected_value)
-     << ", saw values: {";
+  ss << message << " Expected " << op_name << " "
+     << base::ToString(expected_value) << ", saw values: {";
   for (const auto& value : ignored_values) {
     ss << base::ToString(value) << ", ";
   }
   ss << "}";
   return base::unexpected(ss.str());
+}
+
+template <typename T>
+[[nodiscard]] TestResult<> RunUntilEqual(
+    base::FunctionRef<std::type_identity_t<T>()> get_value,
+    const T& expected_value,
+    std::string_view message = std::string_view()) {
+  return RunUntilComparisonPasses<T>(get_value, expected_value,
+                                     std::equal_to<T>(), "==", message);
+}
+
+template <typename T>
+[[nodiscard]] TestResult<> RunUntilGreaterThan(
+    base::FunctionRef<std::type_identity_t<T>()> get_value,
+    const T& threshold,
+    std::string_view message = std::string_view()) {
+  return RunUntilComparisonPasses<T>(get_value, threshold, std::greater<T>(),
+                                     ">", message);
+}
+
+template <typename T>
+[[nodiscard]] TestResult<> RunUntilLessThan(
+    base::FunctionRef<std::type_identity_t<T>()> get_value,
+    const T& threshold,
+    std::string_view message = std::string_view()) {
+  return RunUntilComparisonPasses<T>(get_value, threshold, std::less<T>(), "<",
+                                     message);
 }
 
 template <typename Trigger>

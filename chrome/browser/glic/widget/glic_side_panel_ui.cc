@@ -280,10 +280,6 @@ void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action) {
   delegate_->host().Zoom(zoom_action);
 }
 
-void GlicSidePanelUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
-  // This is floaty-specific. It doesn't make sense in side panel.
-}
-
 bool GlicSidePanelUi::HasSelectionOverlay() {
   if (!tab_ || !tab_->IsActivated()) {
     return false;
@@ -333,6 +329,10 @@ GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
 std::string GlicSidePanelUi::DescribeForTesting() {
   return base::StrCat({"SidePanelUi for tab ",
                        base::NumberToString(tab_->GetHandle().raw_value())});
+}
+
+BrowserWindowInterface* GlicSidePanelUi::GetBrowserWindowInterface() {
+  return tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
 }
 
 }  // namespace glic

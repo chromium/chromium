@@ -34,6 +34,12 @@ class PanelVisibilityDependentHotkeyManager
 
   void InitializeAccelerators();
 
+  bool IsRegisteredAccelerator(const ui::Accelerator& accelerator) const;
+
+  base::WeakPtr<ui::AcceleratorTarget> GetAcceleratorTargetWeakPtr() {
+    return hotkey_manager_->GetWeakPtr();
+  }
+
  private:
   std::unique_ptr<LocalHotkeyManager> hotkey_manager_;
   base::WeakPtr<LocalHotkeyManager::Panel> panel_;

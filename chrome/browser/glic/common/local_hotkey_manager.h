@@ -24,6 +24,8 @@ class View;
 }
 #endif
 
+class BrowserWindowInterface;
+
 namespace glic {
 
 // Manages hotkeys that are active within a specific local scope, such as the
@@ -65,7 +67,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual void Close(const CloseOptions& options) = 0;
     virtual bool ActivateBrowser() = 0;
     virtual void Zoom(mojom::ZoomAction action) = 0;
-    virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
+    virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) {}
+    virtual BrowserWindowInterface* GetBrowserWindowInterface();
 #if !BUILDFLAG(IS_ANDROID)
     virtual bool HasSelectionOverlay() = 0;
     virtual void CloseSelectionOverlay() = 0;
@@ -164,12 +167,14 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  bool IsRegisteredAccelerator(const ui::Accelerator& accelerator) const;
+  std::vector<ui::Accelerator> GetAccelerators(Command command) const;
+
   base::WeakPtr<LocalHotkeyManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  std::vector<ui::Accelerator> GetAccelerators(Command command);
   void RegisterCommand(Command command);
 
   std::unique_ptr<RegistrationDelegate> registration_delegate_;

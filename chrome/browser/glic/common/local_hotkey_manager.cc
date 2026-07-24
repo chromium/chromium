@@ -248,8 +248,20 @@ bool LocalHotkeyManager::CanHandleAccelerators() const {
   return event_handler_->CanHandleAccelerators();
 }
 
+bool LocalHotkeyManager::IsRegisteredAccelerator(
+    const ui::Accelerator& accelerator) const {
+  for (Command command : supported_commands_) {
+    for (const ui::Accelerator& registered_accel : GetAccelerators(command)) {
+      if (registered_accel == accelerator) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 std::vector<ui::Accelerator> LocalHotkeyManager::GetAccelerators(
-    Command command) {
+    Command command) const {
   std::vector<ui::Accelerator> accelerators_to_register;
   if (kCommandToPrefMap.contains(command)) {
     // Configurable hotkey
@@ -290,6 +302,10 @@ void LocalHotkeyManager::RegisterCommand(Command command) {
   if (!new_registrations.empty()) {
     command_registrations_.emplace(command, std::move(new_registrations));
   }
+}
+
+BrowserWindowInterface* LocalHotkeyManager::Panel::GetBrowserWindowInterface() {
+  return nullptr;
 }
 
 }  // namespace glic

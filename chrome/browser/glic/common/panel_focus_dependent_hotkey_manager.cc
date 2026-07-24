@@ -98,4 +98,9 @@ void PanelFocusDependentHotkeyManager::InitializeAccelerators() {
   hotkey_manager_->InitializeAccelerators();
 }
 
+bool PanelFocusDependentHotkeyManager::IsRegisteredAccelerator(
+    const ui::Accelerator& accelerator) const {
+  return hotkey_manager_->IsRegisteredAccelerator(accelerator);
+}
+
 }  // namespace glic
