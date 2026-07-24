@@ -563,6 +563,7 @@ public class FullscreenSigninMediator
         @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
         if (signedInAccount != null && Objects.equals(signedInAccount, mSelectedAccount)) {
             mDelegate.advanceToNextPage();
+            return;
         }
 
         if (mSelectedAccount != null) {
