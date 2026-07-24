@@ -159,11 +159,11 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   // Build and record UKM record for SidePanelShown to true on the current
   // source Id
   std::optional<SidePanelOpenTrigger> open_trigger = entry->last_open_trigger();
-  std::optional<ReadAnythingOpenTrigger> read_anything_trigger =
+  ReadAnythingOpenTrigger read_anything_trigger =
       open_trigger.has_value()
           ? read_anything::SidePanelToReadAnythingOpenTrigger(
                 open_trigger.value())
-          : std::optional<ReadAnythingOpenTrigger>();
+          : ReadAnythingOpenTrigger::kUnknown;
   if (auto* contents = web_contents()) {
     if (content::RenderFrameHost* main_frame =
             contents->GetPrimaryMainFrame()) {
@@ -222,7 +222,7 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     controller->OnEntryHidden();
   } else {
     observers_.Notify(&Observer::Activate, /*active=*/false,
-                      /*trigger=*/std::optional<ReadAnythingOpenTrigger>(),
+                      /*trigger=*/ReadAnythingOpenTrigger::kUnknown,
                       /*completed_session_duration=*/std::nullopt);
   }
 

@@ -124,7 +124,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
       ReadAnythingImmersiveActivationObserver* observer);
 
   // Called when the WebUI is shown/hidden.
-  void OnEntryShown(std::optional<ReadAnythingOpenTrigger> trigger);
+  void OnEntryShown(ReadAnythingOpenTrigger trigger);
   void OnEntryHidden();
 
   // Displays the Reading Mode UI in the Side Panel.

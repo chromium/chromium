@@ -48,7 +48,7 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
   MOCK_METHOD(void,
               Activate,
               (bool active,
-               std::optional<ReadAnythingOpenTrigger>,
+               ReadAnythingOpenTrigger,
                std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
@@ -95,12 +95,11 @@ class ReadAnythingSidePanelControllerTest
 
   void OnEntryShown(SidePanelEntry* entry) {
     if (IsImmersiveEnabled()) {
-      std::optional<ReadAnythingOpenTrigger> read_anything_trigger;
-      if (entry->last_open_trigger().has_value()) {
-        read_anything_trigger =
-            read_anything::SidePanelToReadAnythingOpenTrigger(
-                entry->last_open_trigger().value());
-      }
+      ReadAnythingOpenTrigger read_anything_trigger =
+          entry->last_open_trigger().has_value()
+              ? read_anything::SidePanelToReadAnythingOpenTrigger(
+                    entry->last_open_trigger().value())
+              : ReadAnythingOpenTrigger::kUnknown;
       ReadAnythingController::From(browser()->GetActiveTabInterface())
           ->OnEntryShown(read_anything_trigger);
     } else {
@@ -146,10 +145,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
   entry->set_last_open_trigger(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
   EXPECT_CALL(read_anything_observer_,
-              Activate(true,
-                       std::optional<ReadAnythingOpenTrigger>(
-                           ReadAnythingOpenTrigger::kOmniboxChip),
-                       testing::_))
+              Activate(true, ReadAnythingOpenTrigger::kOmniboxChip, testing::_))
       .Times(1);
   OnEntryShown(entry);
 }
@@ -163,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
               SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(read_anything_observer_,
-              Activate(false, empty_trigger(), testing::_))
+              Activate(false, ReadAnythingOpenTrigger::kUnknown, testing::_))
       .Times(1);
   OnEntryHidden(entry);
 }

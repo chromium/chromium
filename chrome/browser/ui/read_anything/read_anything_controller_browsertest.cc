@@ -71,7 +71,7 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
   MOCK_METHOD(void,
               Activate,
               (bool active,
-               std::optional<ReadAnythingOpenTrigger>,
+               ReadAnythingOpenTrigger,
                std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   base::RunLoop run_loop;
   EXPECT_CALL(observer, Activate(false, testing::_, testing::_))
       .WillOnce([&run_loop](
-                    bool active, std::optional<ReadAnythingOpenTrigger> trigger,
+                    bool active, ReadAnythingOpenTrigger trigger,
                     std::optional<base::TimeDelta> completed_session_duration) {
         EXPECT_TRUE(completed_session_duration.has_value());
         run_loop.Quit();

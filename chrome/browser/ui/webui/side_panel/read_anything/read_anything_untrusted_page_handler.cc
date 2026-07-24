@@ -1200,10 +1200,9 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {
-  if (last_open_trigger_.has_value() &&
-      last_open_trigger_.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
+  if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
     if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
-      last_open_trigger_.reset();
+      last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;
       base::UmaHistogramEnumeration(
           "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
       base::UmaHistogramCustomCounts(
@@ -1234,24 +1233,14 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
 
 void ReadAnythingUntrustedPageHandler::Activate(
     bool active,
-    // TODO (crbug.com/533115262): Replace ReadAnythingOpenTrigger type with
-    // read_anything::mojom::ReadAnythingOpenTrigger type.
-    // TODO (crbug.com/534820738): Remove optional from the
-    // ReadAnythingOpenTrigger type, use kUnknown enum when no open trigger is
-    // defined.
-    std::optional<ReadAnythingOpenTrigger> open_trigger,
+    ReadAnythingOpenTrigger open_trigger,
     std::optional<base::TimeDelta> completed_session_duration) {
   active_ = active;
   if (active_) {
     last_open_trigger_ = open_trigger;
-    if (open_trigger.has_value()) {
-      page_->OnReadingModeShown(
-          static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
-              *open_trigger));
-    } else {
-      page_->OnReadingModeShown(
-          read_anything::mojom::ReadAnythingOpenTrigger::kUnknown);
-    }
+    page_->OnReadingModeShown(
+        static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
+            open_trigger));
     tab_will_detach_ = false;
     if (features::IsImmersiveReadAnythingEnabled()) {
       // Signal that reading mode has been re-opened and is no longer hidden if

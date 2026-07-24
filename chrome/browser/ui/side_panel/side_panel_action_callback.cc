@@ -10,13 +10,15 @@
 
 namespace {
 constexpr std::underlying_type_t<SidePanelOpenTrigger>
-    kInvalidSidePanelOpenTrigger = -1;
+    kDefaultSidePanelOpenTrigger =
+        static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+            SidePanelOpenTrigger::kUnknown);
 }
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
 DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
                              kSidePanelOpenTriggerKey,
-                             kInvalidSidePanelOpenTrigger)
+                             kDefaultSidePanelOpenTrigger)
 
 actions::ActionItem::InvokeActionCallback CreateToggleSidePanelActionCallback(
     SidePanelEntryKey key,

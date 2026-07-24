@@ -77,7 +77,7 @@ void ReadAnythingOmniboxController::OnTabBackgrounded(tabs::TabInterface* tab) {
 
 void ReadAnythingOmniboxController::Activate(
     bool active,
-    std::optional<ReadAnythingOpenTrigger> open_trigger,
+    ReadAnythingOpenTrigger open_trigger,
     std::optional<base::TimeDelta> completed_session_duration) {
   if (active) {
     if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
@@ -87,22 +87,19 @@ void ReadAnythingOmniboxController::Activate(
 
     if (features::IsReadAnythingOmniboxChipEnabled() &&
         base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
-        open_trigger.has_value() &&
-        open_trigger.value() !=
+        open_trigger !=
             ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton &&
         GetCurrentPageActionState().showing) {
       // Ignore the toggle presentation button for this metric, since that can
       // only be used after RM is already open.
       base::UmaHistogramEnumeration(
-          "Accessibility.ReadAnything.EntryPointAfterOmnibox",
-          open_trigger.value());
+          "Accessibility.ReadAnything.EntryPointAfterOmnibox", open_trigger);
     }
     // Hide the omnibox entrypoint now that RM is already showing.
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/false, tab_);
 
-    if (open_trigger.has_value() &&
-        open_trigger.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
+    if (open_trigger == ReadAnythingOpenTrigger::kOmniboxChip) {
       was_triggered_ = true;
     }
   } else if (!features::IsImmersiveReadAnythingEnabled() &&

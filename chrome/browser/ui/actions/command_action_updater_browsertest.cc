@@ -165,5 +165,7 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, true);
   EXPECT_TRUE(browser()->command_controller()->ExecuteCommand(IDC_BACK));
   EXPECT_TRUE(action_invoked_);
-  EXPECT_EQ(last_context_.GetProperty(kSidePanelOpenTriggerKey), -1);
+  EXPECT_EQ(static_cast<SidePanelOpenTrigger>(
+                last_context_.GetProperty(kSidePanelOpenTriggerKey)),
+            SidePanelOpenTrigger::kUnknown);
 }

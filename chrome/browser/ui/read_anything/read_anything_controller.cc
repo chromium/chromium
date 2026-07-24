@@ -197,8 +197,7 @@ void ReadAnythingController::RemoveImmersiveActivationObserver(
   immersive_activation_observers_.RemoveObserver(observer);
 }
 
-void ReadAnythingController::OnEntryShown(
-    std::optional<ReadAnythingOpenTrigger> trigger) {
+void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
   observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
                     /*completed_session_duration=*/std::nullopt);
   active_service_ =
@@ -248,7 +247,7 @@ void ReadAnythingController::OnEntryHidden() {
       RecordEntryHiddenMetrics();
 
   observers_.Notify(&Observer::Activate, /*active=*/false,
-                    /*trigger=*/std::optional<ReadAnythingOpenTrigger>(),
+                    /*trigger=*/ReadAnythingOpenTrigger::kUnknown,
                     completed_session_duration);
 
   if (active_service_) {

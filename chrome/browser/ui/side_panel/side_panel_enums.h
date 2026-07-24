@@ -48,7 +48,8 @@ enum class SidePanelOpenTrigger {
   kContextualTasks = 29,
   kReadAnythingListenToThisPageContextMenu = 30,
   kReadAnythingUnknown = 31,
-  kMaxValue = kReadAnythingUnknown,
+  kUnknown = 32,
+  kMaxValue = kUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:SidePanelOpenTrigger)
 

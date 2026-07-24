@@ -74,6 +74,8 @@ inline std::string ToString(SidePanelOpenTrigger trigger) {
       return "ReadAnythingListenToThisPageContextMenu";
     case SidePanelOpenTrigger::kReadAnythingUnknown:
       return "ReadAnythingUnknown";
+    case SidePanelOpenTrigger::kUnknown:
+      return "Unknown";
   }
   NOTREACHED();
 }

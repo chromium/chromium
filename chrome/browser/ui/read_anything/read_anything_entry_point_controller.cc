@@ -247,13 +247,11 @@ void ReadAnythingEntryPointController::InvokePageAction(
         feature_engagement::kIPHReadingModePageActionLabelFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
-    std::optional<ReadAnythingOpenTrigger> mapped_trigger =
-        SidePanelToReadAnythingOpenTrigger(
-            static_cast<SidePanelOpenTrigger>(side_panel_trigger));
-    if (!mapped_trigger.has_value()) {
+    open_trigger = SidePanelToReadAnythingOpenTrigger(
+        static_cast<SidePanelOpenTrigger>(side_panel_trigger));
+    if (open_trigger == ReadAnythingOpenTrigger::kUnknown) {
       return;
     }
-    open_trigger = mapped_trigger.value();
   }
 
   ToggleUI(bwi, open_trigger);

@@ -36,7 +36,7 @@ class ReadAnythingOmniboxController : public tabs::ContentsObservingTabFeature,
   // ReadAnythingLifecycleObserver:
   void Activate(
       bool active,
-      std::optional<ReadAnythingOpenTrigger> open_trigger,
+      ReadAnythingOpenTrigger open_trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
   void OnDestroyed() override;
   void OnReadingModePresenterChanged() override;
