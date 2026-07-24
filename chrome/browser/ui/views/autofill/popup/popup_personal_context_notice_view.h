@@ -26,6 +26,30 @@ namespace autofill {
 
 class AutofillPopupController;
 
+// Outcomes of interaction with the Ambient Autofill notice.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PersonalContextAmbientAutofillNoticeInteractions)
+enum class PersonalContextAmbientAutofillNoticeInteractions {
+  kShown = 0,
+  kAcknowledged = 1,
+  kDismissed = 2,
+  kManageSettingsButtonClicked = 3,
+  kMaxValue = kManageSettingsButtonClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextAmbientAutofillNoticeInteractions)
+
+// Outcomes of interaction with the AtMemory notice.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PersonalContextAtMemoryNoticeInteractions)
+enum class PersonalContextAtMemoryNoticeInteractions {
+  kShown = 0,
+  kAcknowledged = 1,
+  kMaxValue = kAcknowledged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextAtMemoryNoticeInteractions)
+
 // The view that displays the "Personal context" notice.
 // This notice is shown at the bottom of the Autofill popup to inform the
 // user that personal context is enabled.

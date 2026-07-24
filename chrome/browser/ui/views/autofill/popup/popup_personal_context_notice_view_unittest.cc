@@ -9,6 +9,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -207,7 +208,14 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
 
 // Tests the initial notice view elements for Ambient Autofill filling source.
 TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAmbientAutofill) {
+  base::HistogramTester histogram_tester;
   ShowView();
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PersonalContextAmbientAutofillNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AtMemory.NoticeInteractions", 0);
 
   std::u16string expected_title = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
@@ -235,7 +243,14 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAtMemoryWithLogging) {
       static_cast<int>(optimization_guide::model_execution::prefs::
                            ModelExecutionEnterprisePolicyValue::kAllow));
 
+  base::HistogramTester histogram_tester;
   ShowView();
+
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      PersonalContextAtMemoryNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions", 0);
 
   std::u16string expected_title = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
@@ -282,9 +297,11 @@ TEST_F(PopupPersonalContextNoticeViewTest,
   EXPECT_TRUE(VerifyGotItButton(expected_ok));
 }
 
-// Tests that clicking on GotIt button triggers the removal of the notice.
+// Tests that clicking on GotIt button triggers the removal of the notice and
+// records the interaction histogram for Ambient Autofill source.
 TEST_F(PopupPersonalContextNoticeViewTest,
        GotItButtonTriggersRemoveSuggestion) {
+  base::HistogramTester histogram_tester;
   ShowView();
 
   // Ensure the child views (e.g. got_it_button) are laid out in the widget.
@@ -303,6 +320,52 @@ TEST_F(PopupPersonalContextNoticeViewTest,
 
   generator().MoveMouseTo(got_it_button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PersonalContextAmbientAutofillNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PersonalContextAmbientAutofillNoticeInteractions::kAcknowledged, 1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions", 2);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AtMemory.NoticeInteractions", 0);
+}
+
+// Tests that clicking on GotIt button records metric for AtMemory source.
+TEST_F(PopupPersonalContextNoticeViewTest,
+       GotItButtonRecordsMetricForAtMemorySource) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+
+  base::HistogramTester histogram_tester;
+  ShowView();
+
+  widget().LayoutRootViewIfNecessary();
+
+  views::MdTextButton* got_it_button = view().got_it_button_for_testing();
+
+  EXPECT_CALL(
+      controller(),
+      RemoveSuggestion(
+          kNoticePosition,
+          AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
+      .WillOnce(Return(true));
+
+  generator().MoveMouseTo(got_it_button->GetBoundsInScreen().CenterPoint());
+  generator().ClickLeftButton();
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      PersonalContextAtMemoryNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AtMemory.NoticeInteractions",
+      PersonalContextAtMemoryNoticeInteractions::kAcknowledged, 1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AtMemory.NoticeInteractions", 2);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions", 0);
 }
 
 // Tests that clicking the settings link triggers `OnSettingsLinkClicked`.
@@ -561,6 +624,7 @@ TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnSettingsLinkFocused) {
 // Tests that pressing the Return key when the "Got it" button is focused
 // triggers `OnGotItButtonClicked`.
 TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnGotItButtonFocused) {
+  base::HistogramTester histogram_tester;
   ShowView();
 
   // Focus the "Settings" link first, then navigate to the "Got it" button.
@@ -583,6 +647,17 @@ TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnGotItButtonFocused) {
   input::NativeWebKeyboardEvent return_event = right_event;
   return_event.windows_key_code = ui::VKEY_RETURN;
   EXPECT_TRUE(view().HandleKeyPressEvent(return_event));
+
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PersonalContextAmbientAutofillNoticeInteractions::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions",
+      PersonalContextAmbientAutofillNoticeInteractions::kAcknowledged, 1);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AmbientAutofill.NoticeInteractions", 2);
+  histogram_tester.ExpectTotalCount(
+      "PersonalContext.AtMemory.NoticeInteractions", 0);
 }
 
 // Tests that pressing the Return key when no notice element is focused does not

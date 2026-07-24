@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -153,11 +154,18 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
 
   if (controller_) {
-    FillingProduct product = controller_->GetMainFillingProduct();
-    if (product == FillingProduct::kAtMemory &&
-        !IsLoggingDisabledByPolicy(controller_.get())) {
-      context_text = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
+    if (controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
+      base::UmaHistogramEnumeration(
+          "PersonalContext.AtMemory.NoticeInteractions",
+          PersonalContextAtMemoryNoticeInteractions::kShown);
+      if (!IsLoggingDisabledByPolicy(controller_.get())) {
+        context_text = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_WITH_LOGGING);
+      }
+    } else {
+      base::UmaHistogramEnumeration(
+          "PersonalContext.AmbientAutofill.NoticeInteractions",
+          PersonalContextAmbientAutofillNoticeInteractions::kShown);
     }
   }
 
@@ -266,6 +274,15 @@ bool PopupPersonalContextNoticeView::IsSelectable() const {
 
 void PopupPersonalContextNoticeView::OnGotItButtonClicked() {
   if (controller_) {
+    if (controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
+      base::UmaHistogramEnumeration(
+          "PersonalContext.AtMemory.NoticeInteractions",
+          PersonalContextAtMemoryNoticeInteractions::kAcknowledged);
+    } else {
+      base::UmaHistogramEnumeration(
+          "PersonalContext.AmbientAutofill.NoticeInteractions",
+          PersonalContextAmbientAutofillNoticeInteractions::kAcknowledged);
+    }
     // TODO(crbug.com/520201413): Add metrics to track the cases when
     // `RemoveSuggestion` returns false.
     controller_->RemoveSuggestion(
