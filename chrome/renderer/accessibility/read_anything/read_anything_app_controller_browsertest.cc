@@ -3900,10 +3900,10 @@ class ReadAnythingAppControllerV8SegmentationTest
     : public ReadAnythingAppControllerTest {
  public:
   void SetUp() override {
-    ReadAnythingAppControllerTest::SetUp();
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloudPhraseHighlighting}, {});
+    ReadAnythingAppControllerTest::SetUp();
   }
 };
 
