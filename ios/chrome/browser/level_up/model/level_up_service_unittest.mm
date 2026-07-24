@@ -7,10 +7,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -128,6 +137,52 @@ TEST_F(LevelUpServiceTest, TestTaskCompletionResetsFreshness) {
       0,
       prefs->GetInteger(
           prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+}
+
+TEST_F(LevelUpServiceTest, TestStatValues) {
+  // Initially all stats are 0.
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  // Increment typing saved stat.
+  service_->IncrementStatValue(LevelUpTaskStatType::kTypingSaved, 15);
+  EXPECT_EQ(15, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+
+  // Increment tabs decluttered stat.
+  service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 4);
+  EXPECT_EQ(4, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+}
+
+// Tests that LevelUpTabGroupObserver automatically tracks tab group creation
+// and moving tabs into groups.
+TEST_F(LevelUpServiceTest, TestTabGroupObserverDecluttering) {
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  TestBrowser browser(profile_.get());
+  browser_list->AddBrowser(&browser);
+
+  WebStateList* web_state_list = browser.GetWebStateList();
+  web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
+  web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
+
+  // Create a tab group containing index 0.
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue);
+  const TabGroup* group = web_state_list->CreateGroup(
+      {0}, visual_data, tab_groups::TabGroupId::GenerateNew());
+
+  // Stat count should increment by 1 for tab group creation.
+  EXPECT_EQ(1, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+
+  // Move index 1 into the existing group.
+  web_state_list->MoveToGroup({1}, group);
+
+  // Stat count should increment to 2.
+  EXPECT_EQ(2, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
 }
 
 }  // namespace

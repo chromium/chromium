@@ -843,6 +843,10 @@ chromium-metrics-reviews@google.com.
   <int value="200014" label="LevelUpCompletedTasks"/>
   <int value="200015" label="LevelUpHighestLevel"/>
   <int value="200016" label="LevelUpUIEnabled"/>
+  <int value="200017" label="LevelUpTabsDeclutteredStat"/>
+  <int value="200018" label="LevelUpTypingSavedStat"/>
+  <int value="200019" label="LevelUpPasswordsVerifiedStat"/>
+  <int value="200020" label="LevelUpPhotoSearchesPerformedStat"/>
 <!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
 
 </enum>

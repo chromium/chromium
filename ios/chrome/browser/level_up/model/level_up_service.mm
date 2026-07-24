@@ -8,11 +8,20 @@
 #import <numeric>
 
 #import "base/logging.h"
+#import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -26,18 +35,158 @@ constexpr std::array tasks_per_level = {0, 0, 3, 5};
 // The maximum level, dynamically derived from tasks_per_level.
 constexpr int kMaxLevel = tasks_per_level.size();
 
+const char* GetPrefNameForStatType(LevelUpTaskStatType stat_type) {
+  switch (stat_type) {
+    case LevelUpTaskStatType::kTabsDecluttered:
+      return prefs::kLevelUpTabsDeclutteredStat;
+    case LevelUpTaskStatType::kTypingSaved:
+      return prefs::kLevelUpTypingSavedStat;
+    case LevelUpTaskStatType::kPasswordsVerified:
+      return prefs::kLevelUpPasswordsVerifiedStat;
+    case LevelUpTaskStatType::kPhotoSearchesPerformed:
+      return prefs::kLevelUpPhotoSearchesPerformedStat;
+  }
+}
+
 }  // namespace
 
-LevelUpService::LevelUpService(PrefService* pref_service)
+// Helper observer class that monitors tab group operations (creation,
+// additions, and moves) across all active browsers in the profile to
+// dynamically track and increment the Level Up `kTabsDecluttered` stat. Listens
+// to SessionRestoration events to ignore startup session restoration
+// operations.
+class LevelUpService::LevelUpTabGroupObserver
+    : public BrowserListObserver,
+      public WebStateListObserver,
+      public SessionRestorationObserver {
+ public:
+  LevelUpTabGroupObserver(
+      LevelUpService* service,
+      BrowserList* browser_list,
+      SessionRestorationService* session_restoration_service)
+      : service_(service) {
+    if (browser_list) {
+      browser_list_observation_.Observe(browser_list);
+      for (Browser* browser : browser_list->BrowsersOfType(
+               BrowserList::BrowserType::kRegularAndInactive)) {
+        web_state_list_observation_.AddObservation(browser->GetWebStateList());
+      }
+    }
+    if (session_restoration_service) {
+      session_restoration_observation_.Observe(session_restoration_service);
+    }
+  }
+
+  ~LevelUpTabGroupObserver() override = default;
+
+  void Shutdown() {
+    browser_list_observation_.Reset();
+    web_state_list_observation_.RemoveAllObservations();
+    session_restoration_observation_.Reset();
+  }
+
+  // BrowserListObserver implementation.
+  void OnBrowserAdded(const BrowserList* browser_list,
+                      Browser* browser) override {
+    web_state_list_observation_.AddObservation(browser->GetWebStateList());
+  }
+
+  void OnBrowserRemoved(const BrowserList* browser_list,
+                        Browser* browser) override {
+    web_state_list_observation_.RemoveObservation(browser->GetWebStateList());
+  }
+
+  void OnBrowserListShutdown(BrowserList* browser_list) override {
+    browser_list_observation_.Reset();
+    web_state_list_observation_.RemoveAllObservations();
+  }
+
+  // WebStateListObserver implementation.
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override {
+    if (is_restoring_session_) {
+      return;
+    }
+
+    switch (change.type()) {
+      case WebStateListChange::Type::kStatusOnly: {
+        const auto& status_change = change.As<WebStateListChangeStatusOnly>();
+        if (!status_change.old_group() && status_change.new_group()) {
+          service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered,
+                                       1);
+        }
+        break;
+      }
+      case WebStateListChange::Type::kMove: {
+        const auto& move_change = change.As<WebStateListChangeMove>();
+        if (!move_change.old_group() && move_change.new_group()) {
+          service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered,
+                                       1);
+        }
+        break;
+      }
+      case WebStateListChange::Type::kInsert: {
+        const auto& insert_change = change.As<WebStateListChangeInsert>();
+        if (insert_change.group()) {
+          service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered,
+                                       1);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  void WebStateListDestroyed(WebStateList* web_state_list) override {
+    web_state_list_observation_.RemoveObservation(web_state_list);
+  }
+
+  // SessionRestorationObserver implementation.
+  void WillStartSessionRestoration(Browser* browser) override {
+    is_restoring_session_ = true;
+  }
+
+  void SessionRestorationFinished(
+      Browser* browser,
+      const std::vector<web::WebState*>& restored_web_states) override {
+    is_restoring_session_ = false;
+  }
+
+ private:
+  raw_ptr<LevelUpService> service_;
+  bool is_restoring_session_ = false;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
+  base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_observation_{this};
+};
+
+LevelUpService::LevelUpService(
+    PrefService* pref_service,
+    BrowserList* browser_list,
+    SessionRestorationService* session_restoration_service)
     : pref_service_(pref_service) {
   if (!IsLevelUpEnabled()) {
     return;
   }
   PopulateTasks();
   LoadPrefs();
+
+  tab_group_observer_ = std::make_unique<LevelUpTabGroupObserver>(
+      this, browser_list, session_restoration_service);
 }
 
 LevelUpService::~LevelUpService() = default;
+
+void LevelUpService::Shutdown() {
+  if (tab_group_observer_) {
+    tab_group_observer_->Shutdown();
+  }
+}
 
 bool LevelUpService::IsUIEnabled() const {
   return is_ui_enabled_;
@@ -93,6 +242,21 @@ const TaskInfo* LevelUpService::GetTaskInfo(TaskType task_type) const {
     return it->second.get();
   }
   return nullptr;
+}
+
+int LevelUpService::GetStatValue(LevelUpTaskStatType stat_type) const {
+  const char* pref_name = GetPrefNameForStatType(stat_type);
+  return pref_service_->GetInteger(pref_name);
+}
+
+void LevelUpService::IncrementStatValue(LevelUpTaskStatType stat_type,
+                                        int delta) {
+  if (delta <= 0) {
+    return;
+  }
+  const char* pref_name = GetPrefNameForStatType(stat_type);
+  int current = GetStatValue(stat_type);
+  pref_service_->SetInteger(pref_name, current + delta);
 }
 
 const std::map<TaskType, std::unique_ptr<TaskInfo>>& LevelUpService::GetTasks()
@@ -176,10 +340,6 @@ int LevelUpService::CalculateLevel(size_t completed_count) const {
   return kMaxLevel;
 }
 
-void LevelUpService::Shutdown() {
-  // TODO(crbug.com/513246860): Implement if needed.
-}
-
 // static
 void LevelUpService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -190,5 +350,17 @@ void LevelUpService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLevelUpUIEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kLevelUpTabsDeclutteredStat, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kLevelUpTypingSavedStat, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kLevelUpPasswordsVerifiedStat, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kLevelUpPhotoSearchesPerformedStat, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

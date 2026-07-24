@@ -6,6 +6,8 @@
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -21,11 +23,18 @@ LevelUpServiceFactory* LevelUpServiceFactory::GetInstance() {
 }
 
 LevelUpServiceFactory::LevelUpServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("LevelUpService") {}
+    : ProfileKeyedServiceFactoryIOS("LevelUpService") {
+  DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(SessionRestorationServiceFactory::GetInstance());
+}
 
 LevelUpServiceFactory::~LevelUpServiceFactory() {}
 
 std::unique_ptr<KeyedService> LevelUpServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return std::make_unique<LevelUpService>(profile->GetPrefs());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+  SessionRestorationService* session_restoration_service =
+      SessionRestorationServiceFactory::GetForProfile(profile);
+  return std::make_unique<LevelUpService>(profile->GetPrefs(), browser_list,
+                                          session_restoration_service);
 }

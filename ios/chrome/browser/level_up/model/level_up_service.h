@@ -16,13 +16,18 @@
 #include "ios/chrome/browser/level_up/model/task_info.h"
 #include "ios/chrome/browser/level_up/model/task_types.h"
 
+class BrowserList;
 class PrefService;
+class SessionRestorationService;
 
 // Service that manages the "Level Up" feature, tracking user progress and
 // stats. It also holds the definitions of all tasks.
 class LevelUpService : public KeyedService {
  public:
-  LevelUpService(PrefService* pref_service);
+  LevelUpService(
+      PrefService* pref_service,
+      BrowserList* browser_list = nullptr,
+      SessionRestorationService* session_restoration_service = nullptr);
   ~LevelUpService() override;
 
   // Returns true if the user has enabled the feature UI.
@@ -47,6 +52,12 @@ class LevelUpService : public KeyedService {
   // Returns the TaskInfo for the given TaskType, or nullptr if not found.
   const TaskInfo* GetTaskInfo(TaskType task_type) const;
 
+  // Returns the current count/value for the given stat type.
+  int GetStatValue(LevelUpTaskStatType stat_type) const;
+
+  // Increments the stat type by `delta`.
+  void IncrementStatValue(LevelUpTaskStatType stat_type, int delta = 1);
+
   // Returns all available tasks.
   const std::map<TaskType, std::unique_ptr<TaskInfo>>& GetTasks() const;
 
@@ -57,6 +68,8 @@ class LevelUpService : public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
+  class LevelUpTabGroupObserver;
+
   // Populates the map of available tasks.
   void PopulateTasks();
 
@@ -81,6 +94,7 @@ class LevelUpService : public KeyedService {
   int CalculateLevel(size_t completed_count) const;
 
   raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;
   // Set of completed task identifiers. Stored as strings rather than TaskType
   // enums to support storing unknown tasks received via sync from newer
