@@ -327,4 +327,27 @@ TEST_F(TabAndroidTest, DestroyWebContentsWithOpenDialog_GracefulShutdown) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(TabAndroidTest, DestroyWebContentsSlowShutdown_StopsNavigations) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chrome::android::kTabAndroidGracefulShutdown);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents = web_contents.get();
+
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  // Perform slow shutdown.
+  tab->DestroyWebContentsSlowShutdownForTesting();
+
+  // Verify that web_contents is stopped and new navigations do not proceed.
+  EXPECT_FALSE(raw_web_contents->IsLoading());
+
+  task_environment_.RunUntilIdle();
+}
+
 DEFINE_JNI(TabAndroidTestHelper)
