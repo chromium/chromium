@@ -185,7 +185,9 @@ public class MediaSessionHelper implements MediaImageCallback {
                                     mTimeOfLastUnplugPauseMs = TimeUtils.elapsedRealtimeMillis();
                                     MediaSessionUma.recordPause(
                                             MediaSessionActionSource.HEADSET_UNPLUG);
-                                    mMediaSessionObserver.getMediaSession().suspend(SuspendType.UI);
+                                    mMediaSessionObserver
+                                            .getMediaSession()
+                                            .suspend(SuspendType.SYSTEM);
                                 }
                             }
                         }
@@ -216,7 +218,11 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                     if (mMediaSessionObserver.getMediaSession() == null) return;
 
-                    mMediaSessionObserver.getMediaSession().suspend(SuspendType.UI);
+                    int suspendType =
+                            (actionSource == MediaNotificationListener.ACTION_SOURCE_HEADSET_UNPLUG)
+                                    ? SuspendType.SYSTEM
+                                    : SuspendType.UI;
+                    mMediaSessionObserver.getMediaSession().suspend(suspendType);
                 }
 
                 @Override

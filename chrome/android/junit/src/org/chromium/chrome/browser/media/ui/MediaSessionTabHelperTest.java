@@ -121,8 +121,8 @@ public class MediaSessionTabHelperTest {
         org.chromium.components.browser_ui.media.AudioBecomingNoisyReceiver.getInstance()
                 .onReceive(context, intent);
 
-        // Verify that the media session is suspended (SuspendType.UI = 1)
-        verify(session).suspend(org.chromium.media_session.mojom.MediaSession.SuspendType.UI);
+        // Verify that the media session is suspended (SuspendType.SYSTEM = 0)
+        verify(session).suspend(org.chromium.media_session.mojom.MediaSession.SuspendType.SYSTEM);
         histogramWatcher.assertExpected();
     }
 
