@@ -10,6 +10,44 @@
 
 namespace origin_gating {
 
+std::string GateableEventToString(GateableEvent event) {
+  switch (event) {
+    case origin_gating::GateableEvent::kNavigationRequest:
+      return "NavigationRequest";
+    case origin_gating::GateableEvent::kNavigationResponse:
+      return "NavigationResponse";
+    case origin_gating::GateableEvent::kPageAction:
+      return "PageAction";
+  }
+}
+
+std::string DecisionSourceToString(DecisionSource source) {
+  switch (source) {
+    case DecisionSource::kAllowSameOrigin:
+      return "AllowSameOrigin";
+    case DecisionSource::kAllowHttpLocalhost:
+      return "AllowHttpLocalhost";
+    case DecisionSource::kAllowAboutBlank:
+      return "AllowAboutBlank";
+    case DecisionSource::kCacheWithUserConfirmation:
+      return "CacheWithUserConfirmation";
+    case DecisionSource::kCacheWithoutUserConfirmation:
+      return "CacheWithoutUserConfirmation";
+    case DecisionSource::kEnterprisePolicy:
+      return "EnterprisePolicy";
+    case DecisionSource::kForbidIpAddress:
+      return "ForbidIpAddress";
+    case DecisionSource::kRequireHttps:
+      return "RequireHttps";
+    case DecisionSource::kRequireHttpsOrHttp:
+      return "RequireHttpsOrHttp";
+    case DecisionSource::kActorContainerConfig:
+      return "ActorContainerConfig";
+    case DecisionSource::kNoVerdict:
+      return "NoVerdict";
+  }
+}
+
 DecisionAttribution::DecisionAttribution(DecisionSource source)
     : attribution_(source) {}
 
@@ -54,5 +92,14 @@ bool DecisionAttribution::operator==(std::string_view name) const {
 
 bool DecisionAttribution::operator==(const DecisionAttribution& other) const =
     default;
+
+std::string DecisionAttribution::ToString() const {
+  switch (type()) {
+    case Type::kDecisionSource:
+      return DecisionSourceToString(Source());
+    case Type::kCustomPredicate:
+      return CustomPredicateName();
+  }
+}
 
 }  // namespace origin_gating

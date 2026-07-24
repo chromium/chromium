@@ -417,6 +417,7 @@ class ExecutionEngine : public ToolDelegate,
       const url::Origin& destination_origin,
       State initial_state,
       std::optional<url::Origin> initiator,
+      origin_gating::GateableEvent event,
       std::unique_ptr<origin_gating::GatingDecisionContext> context,
       origin_gating::GatingDecision decision);
 

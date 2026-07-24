@@ -39,6 +39,8 @@ enum class GateableEvent {
   kPageAction,
 };
 
+std::string GateableEventToString(GateableEvent event);
+
 using GateableEventSet = base::EnumSet<GateableEvent,
                                        GateableEvent::kNavigationRequest,
                                        GateableEvent::kPageAction>;
@@ -78,6 +80,8 @@ enum class DecisionSource {
   kNoVerdict,
 };
 
+std::string DecisionSourceToString(DecisionSource source);
+
 // Encapsulates the source of any positive/negative gating verdict.
 class DecisionAttribution {
  public:
@@ -109,6 +113,8 @@ class DecisionAttribution {
   bool operator==(DecisionSource source) const;
   bool operator==(std::string_view name) const;
   bool operator==(const DecisionAttribution& other) const;
+
+  std::string ToString() const;
 
  private:
   bool is_source() const { return type() == Type::kDecisionSource; }

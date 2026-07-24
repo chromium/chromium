@@ -532,8 +532,19 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
 void ResolveGatingDecision(
     std::unique_ptr<DecisionWrapper> decision_wrapper,
     const GURL& url,
+    AggregatedJournal* journal,
+    TaskId task_id,
+    origin_gating::GateableEvent event,
     std::unique_ptr<origin_gating::GatingDecisionContext> context,
     origin_gating::GatingDecision decision) {
+  journal->Log(url, task_id, "OriginGatingDecision",
+               JournalDetailsBuilder()
+                   .Add("origin", url::Origin::Create(url).Serialize())
+                   .Add("event", origin_gating::GateableEventToString(event))
+                   .Add("decision", decision.is_allowed ? "allowed" : "blocked")
+                   .Add("attribution", decision.attribution.ToString())
+                   .Build());
+
   if (decision.is_allowed) {
     decision_wrapper->Accept();
     return;
@@ -832,13 +843,15 @@ ExecutionEngine::ShouldDeferNavigation(
       auto context = std::make_unique<ActorGatingContext>(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
           navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
+      auto event = origin_gating::GateableEvent::kNavigationResponse;
       origin_gating_checker_.ComputeGatingDecision(
-          std::move(context), origin_gating::GateableEvent::kNavigationResponse,
-          source_origin.GetURL(), navigation_handle.GetURL(),
+          std::move(context), event, source_origin.GetURL(),
+          navigation_handle.GetURL(),
           base::BindOnce(&ExecutionEngine::OnComputedGatingDecision,
                          GetWeakPtr(), std::move(callback), source_origin,
                          url::Origin::Create(navigation_handle.GetURL()),
-                         state_, navigation_handle.GetInitiatorOrigin()));
+                         state_, navigation_handle.GetInitiatorOrigin(),
+                         event));
       return content::NavigationThrottle::DEFER;
     }
   }
@@ -852,6 +865,7 @@ void ExecutionEngine::OnComputedGatingDecision(
     const url::Origin& destination_origin,
     State initial_state,
     std::optional<url::Origin> initiator,
+    origin_gating::GateableEvent event,
     std::unique_ptr<origin_gating::GatingDecisionContext> context,
     origin_gating::GatingDecision decision) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -874,6 +888,19 @@ void ExecutionEngine::OnComputedGatingDecision(
         .SetEngineState(static_cast<int64_t>(initial_state));
     builder.Record(ukm::UkmRecorder::Get());
   }
+
+  journal_->Log(
+      destination_origin.GetURL(), task_->id(), "OriginGatingDecision",
+      JournalDetailsBuilder()
+          .Add("source_origin", source_origin.Serialize())
+          .Add("destination_origin", destination_origin.Serialize())
+          .Add("initiator_origin",
+               initiator.has_value() ? initiator->Serialize() : "none")
+          .Add("event", origin_gating::GateableEventToString(event))
+          .Add("decision", decision.is_allowed ? "allowed" : "blocked")
+          .Add("attribution", decision.attribution.ToString())
+          .Build());
+
   std::move(callback).Run(decision.is_allowed);
 }
 
@@ -1006,11 +1033,12 @@ void ExecutionEngine::MayActOnTab(const tabs::TabInterface& tab,
   const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
   auto decision_wrapper = std::make_unique<DecisionWrapper>(
       journal, url, task_id, "MayActOnTab", std::move(callback));
+  auto event = origin_gating::GateableEvent::kPageAction;
   origin_gating_checker_.ComputeGatingDecision(
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
-      origin_gating::GateableEvent::kPageAction,
-      /*source=*/GURL(), url,
-      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url));
+      event, /*source=*/GURL(), url,
+      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url,
+                     &journal, task_id, event));
 }
 
 void ExecutionEngine::HandleNavigationToNewOrigin(
@@ -1675,10 +1703,11 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     DecisionCallbackWithReason callback) {
   auto decision_wrapper = std::make_unique<DecisionWrapper>(
       *journal_, url, task_->id(), "MayActOnUrl", std::move(callback));
+  auto event = origin_gating::GateableEvent::kNavigationRequest;
   origin_gating_checker_.ComputeGatingDecision(
-      /*context=*/nullptr, origin_gating::GateableEvent::kNavigationRequest,
-      /*source=*/GURL(), url,
-      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url));
+      /*context=*/nullptr, event, /*source=*/GURL(), url,
+      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url,
+                     &*journal_, task_->id(), event));
 }
 
 Profile& ExecutionEngine::GetProfile() {
