@@ -69,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Lens"/>
   <variant name="NewTabPage"/>
   <variant name="Omnibox"/>
+  <variant name="OmniboxEverywhere"/>
   <variant name="Unknown"/>
 </variants>
 

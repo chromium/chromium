@@ -176,7 +176,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       "composeboxSource",
       contextual_search::ContextualSearchMetricsRecorder::
           ContextualSearchSourceToString(
-              contextual_search::ContextualSearchSource::kOmnibox));
+              contextual_search::ContextualSearchSource::kOmniboxEverywhere));
   source->AddBoolean("caretColorAnimationDisabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxDisableCaretColorAnimation));
@@ -262,7 +262,7 @@ OmniboxEverywhereUI::GetOrCreateContextualSessionHandle() {
       // invocation source for everywhere omnibox.
       shared_session_handle_ = contextual_search_service->CreateSession(
           omnibox::CreateQueryControllerConfigParams(),
-          contextual_search::ContextualSearchSource::kOmnibox,
+          contextual_search::ContextualSearchSource::kOmniboxEverywhere,
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
       shared_session_handle_->CheckSearchContentSharingSettings(
           profile_->GetPrefs());

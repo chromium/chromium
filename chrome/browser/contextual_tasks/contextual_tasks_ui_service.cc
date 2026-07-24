@@ -226,6 +226,7 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
     contextual_search::ContextualSearchSource source) {
   switch (source) {
     case contextual_search::ContextualSearchSource::kOmnibox:
+    case contextual_search::ContextualSearchSource::kOmniboxEverywhere:
       return EntrypointSource::kFromOmnibox;
     case contextual_search::ContextualSearchSource::kNewTabPage:
       return EntrypointSource::kFromNewTabPage;

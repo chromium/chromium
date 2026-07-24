@@ -37,7 +37,8 @@ enum class ContextualSearchSource {
   kOmnibox = 2,
   kContextualTasks = 3,
   kLens = 4,
-  kMaxValue = kLens,
+  kOmniboxEverywhere = 5,
+  kMaxValue = kOmniboxEverywhere,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchSource,//tools/metrics/actions/actions.xml)

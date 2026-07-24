@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Omnibox"/>
   <int value="3" label="ContextualTasks"/>
   <int value="4" label="Lens"/>
+  <int value="5" label="OmniboxEverywhere"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchSource) -->

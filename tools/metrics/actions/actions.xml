@@ -158,6 +158,7 @@ should be able to be added at any place in this file.
   <variant name="Lens" summary="Lens"/>
   <variant name="NewTabPage" summary="New tab page"/>
   <variant name="Omnibox" summary="Omnibox"/>
+  <variant name="OmniboxEverywhere" summary="Omnibox Everywhere"/>
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
