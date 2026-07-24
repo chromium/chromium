@@ -14,6 +14,9 @@ namespace skills::prefs {
 // String name of the boolean preference for whether Skills is enabled.
 extern const char kChromeSkillsEnabled[];
 
+// String name of the list preference for Enterprise published Skills.
+extern const char kEnterprisePublishedSkills[];
+
 // Registers the profile-specific preferences for the Skills feature.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

@@ -1,0 +1,30 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnterprisePublishedSkills": [
+            {
+              "url": "https://example.com/skill.json",
+              "hash": "abc123hash"
+            }
+          ]
+        },
+        "prefs": {
+          "skills.enterprise_published_skills": {
+            "check_for_mandatory": false,
+            "value": [
+              {
+                "url": "https://example.com/skill.json",
+                "hash": "abc123hash"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
+

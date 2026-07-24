@@ -139,6 +139,8 @@
 #include "components/sharing_message/pref_names.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/skills/internal/enterprise_published_skills_policy_handler.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_policy_handler.h"
@@ -2663,6 +2665,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<
           LocalNetworkAccessIpAddressSpaceOverridesPolicyHandler>());
   handlers->AddHandler(std::make_unique<DefaultSensorsSettingPolicyHandler>());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  handlers->AddHandler(
+      std::make_unique<skills::EnterprisePublishedSkillsPolicyHandler>(
+          chrome_schema));
+#endif
 
   handlers->AddHandler(
       std::make_unique<autofill::AutofillSettingsPolicyHandler>(chrome_schema));

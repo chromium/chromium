@@ -9,9 +9,11 @@
 namespace skills::prefs {
 
 const char kChromeSkillsEnabled[] = "skills.enabled";
+const char kEnterprisePublishedSkills[] = "skills.enterprise_published_skills";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kChromeSkillsEnabled, true);
+  registry->RegisterListPref(kEnterprisePublishedSkills);
 }
 
 }  // namespace skills::prefs

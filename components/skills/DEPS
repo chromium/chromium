@@ -2,9 +2,12 @@ include_rules = [
   "+components/endpoint_fetcher",
   "+components/keyed_service",
   "+components/optimization_guide",
+  "+components/policy",
   "+components/prefs",
   "+components/signin",
+  "+components/strings/grit",
   "+components/sync",
   "+components/sync_preferences",
   "+components/user_prefs",
+  "+ui/base/l10n",
 ]

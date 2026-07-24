@@ -5,7 +5,9 @@
 source_set("internal") {
   visibility = [
     ":*",
-    "//chrome/browser/skills",
+    "//chrome/browser/policy:*",
+    "//chrome/browser/skills:*",
+    "//chrome/browser/skills:browser_tests",
     "//chrome/browser/skills:interactive_ui_tests",
     "//chrome/test:interactive_ui_tests",
     "//components/skills/content",
@@ -26,13 +28,24 @@ source_set("internal") {
   deps = [
     ":downloader",
     "//components/optimization_guide/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/skills:features",
     "//components/skills/proto",
+    "//components/strings:components_strings",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//crypto",
     "//net",
     "//services/network/public/cpp",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "enterprise_published_skills_policy_handler.cc",
+      "enterprise_published_skills_policy_handler.h",
+    ]
+  }
 }
 
 source_set("downloader") {
@@ -82,6 +95,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
+    "//components/policy/core/browser:test_support",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/skills:features",
     "//components/skills/mocks",
@@ -91,9 +106,16 @@ source_set("unit_tests") {
     "//components/sync/base",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//crypto",
+    "//net:test_support",
+    "//services/network:network_service",
     "//services/network:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "enterprise_published_skills_policy_handler_unittest.cc" ]
+  }
 
   visibility = [ "//components/skills:unit_tests" ]
 }

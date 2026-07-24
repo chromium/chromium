@@ -1,0 +1,49 @@
+caption: Configure Skills in Chrome
+desc: |-
+  Setting the policy publishes Generative AI skills to the user in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+  If set, users will see these configured skills by default on the chrome://skills page, in addition to their personal skills. Users can view, modify, and save these skills for their personal use.
+
+  Each skill in the list must be an object containing a <ph name="URL_NAME">url</ph> where the skill content can be downloaded, and a <ph name="HASH_NAME">hash</ph> (SHA-256) of that content to verify its integrity before it is applied. Each skill URL must be immutable. Updating a skill file requires a new URL and hash.
+
+  If more than 10 skills are provided, a warning will be shown and only the first 10 skills will be published.
+
+  If the policy is left unset or set to an empty list, no enterprise skills will be published to the user.
+
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL pointing to the skill definition. Must be unique.
+      hash:
+        type: string
+        description: The SHA-256 hash of the content at the URL.
+    required:
+      - url
+      - hash
+example_value:
+  - url: "https://example.com/skill1.json"
+    hash: "af1056bdd9f733e58c33461b9105a8bcda951c5c6c96b6a5a3a462e23bdb181a"
+  - url: "https://example.com/skill2.yaml"
+    hash: "c05b01a3824c952703b37eace191fcea022f34e5591baf80406a43301e914eb0"
+  - url: "https://example.com/skill3.json"
+    hash: "c628d14f1ef29929249ceac8fb42356b28027a59ba8a0ebcd93eaa424933a749"
+features:
+  dynamic_refresh: true
+  per_profile: true
+  can_be_mandatory: false
+  can_be_recommended: true
+  cloud_only: true
+
+owners:
+  - esalma@google.com
+  - austinzzr@google.com
+  - cbe-productivity-all@google.com
+
+type: dict
+future_on:
+  - chrome.*
+tags: []

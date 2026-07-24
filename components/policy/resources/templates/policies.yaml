@@ -1474,6 +1474,7 @@ policies:
   1473: GeminiChromeFileUploadSettings
   1474: FindAndFillWithGeminiSettings
   1475: OnNetworkRequestEnterpriseConnector
+  1476: EnterprisePublishedSkills
 
 atomic_groups:
   1: Homepage
