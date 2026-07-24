@@ -288,7 +288,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
     Matchers&&... matchers) {
   auto attribution_matcher = AllOf(
       EqualsSuggestion(
-          SuggestionType::kAtMemorySearchResult,
+          SuggestionType::kAtMemorySourceAttribution,
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
       Field(&Suggestion::acceptability,

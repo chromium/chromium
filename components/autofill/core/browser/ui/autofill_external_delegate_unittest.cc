@@ -949,7 +949,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
                   HasMainText(l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
                   Field(&Suggestion::type,
-                        SuggestionType::kAtMemorySearchResult)),
+                        SuggestionType::kAtMemorySourceAttribution)),
               Field(&Suggestion::type, SuggestionType::kSeparator),
               Field(&Suggestion::type,
                     SuggestionType::kManageEnhancedAutofill)))));

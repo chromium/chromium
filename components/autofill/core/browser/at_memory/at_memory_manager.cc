@@ -494,7 +494,7 @@ Suggestion CreateSourceAttributionSuggestion() {
   Suggestion source_info(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE),
-      SuggestionType::kAtMemorySearchResult);
+      SuggestionType::kAtMemorySourceAttribution);
   source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
   source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return source_info;
