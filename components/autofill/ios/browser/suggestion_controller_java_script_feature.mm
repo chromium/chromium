@@ -21,7 +21,7 @@ namespace {
 const char kScriptName[] = "suggestion_controller";
 
 // The timeout for any JavaScript call in this file.
-const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+constexpr base::TimeDelta kJavaScriptExecutionTimeout = base::Seconds(5);
 
 void ProcessPreviousAndNextElementsPresenceResult(
     base::OnceCallback<void(bool, bool)> completion_handler,
@@ -118,7 +118,7 @@ void SuggestionControllerJavaScriptFeature::
       base::ListValue().Append(form_name).Append(field_name),
       base::BindOnce(&ProcessPreviousAndNextElementsPresenceResult,
                      std::move(completion_handler)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      kJavaScriptExecutionTimeout);
 }
 
 }  // namespace autofill

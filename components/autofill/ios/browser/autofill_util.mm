@@ -14,6 +14,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
 #import "base/types/optional_ref.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
@@ -43,7 +44,7 @@ using base::NumberToString;
 using base::StringToUint;
 
 // The timeout for any JavaScript call in this file.
-const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+constexpr base::TimeDelta kJavaScriptExecutionTimeout = base::Seconds(5);
 
 // Runs |callback| with the NSString value of |res|.
 // |callback| must be non-null.
@@ -518,7 +519,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
         name, parameters, base::BindOnce(^(const base::Value* res) {
           std::move(cb).Run(res);
         }),
-        base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+        kJavaScriptExecutionTimeout);
     if (!called) {
       std::move(cb).Run(nil);
     }

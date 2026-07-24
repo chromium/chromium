@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 
 #import "base/feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/common/autofill_optimization_features.h"
@@ -19,7 +20,7 @@ constexpr char kScriptName[] = "bottom_sheet";
 constexpr char kScriptMessageName[] = "BottomSheetMessage";
 
 // The timeout for any JavaScript call in this file.
-constexpr int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+constexpr base::TimeDelta kJavaScriptExecutionTimeout = base::Seconds(5);
 }  // namespace
 
 std::optional<std::string>
@@ -116,5 +117,5 @@ void AutofillBottomSheetJavaScriptFeature::RefocusElementIfNeeded(
   CallJavaScriptFunction(
       frame, "bottomSheet.refocusLastBlurredElement", {},
       base::IgnoreArgs<const base::Value*>(std::move(callback)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      kJavaScriptExecutionTimeout);
 }

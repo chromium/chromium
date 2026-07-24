@@ -11,6 +11,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -29,7 +30,7 @@ const char kScriptName[] = "autofill_controller";
 constexpr char kFormFilledCommand[] = "formFilled";
 
 // The timeout for any JavaScript call in this file.
-const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+constexpr base::TimeDelta kJavaScriptExecutionTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -77,8 +78,7 @@ void AutofillJavaScriptFeature::FetchForms(
   CallJavaScriptFunction(
       frame, "autofill.extractForms",
       base::ListValue().Append(restrict_unowned_fields_to_formless_checkout),
-      CreateStringCallback(std::move(callback)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      CreateStringCallback(std::move(callback)), kJavaScriptExecutionTimeout);
 }
 
 void AutofillJavaScriptFeature::FillActiveFormField(
@@ -88,7 +88,7 @@ void AutofillJavaScriptFeature::FillActiveFormField(
   CallJavaScriptFunction(frame, "autofill.fillActiveFormField",
                          base::ListValue().Append(std::move(data)),
                          CreateBoolCallback(std::move(callback)),
-                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+                         kJavaScriptExecutionTimeout);
 }
 
 void AutofillJavaScriptFeature::FillSpecificFormField(
@@ -98,7 +98,7 @@ void AutofillJavaScriptFeature::FillSpecificFormField(
   CallJavaScriptFunction(frame, "autofill.fillSpecificFormField",
                          base::ListValue().Append(std::move(data)),
                          CreateBoolCallback(std::move(callback)),
-                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+                         kJavaScriptExecutionTimeout);
 }
 
 void AutofillJavaScriptFeature::FillForm(
@@ -107,10 +107,9 @@ void AutofillJavaScriptFeature::FillForm(
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(!callback.is_null());
 
-  CallJavaScriptFunction(frame, "autofill.fillForm",
-                         base::ListValue().Append(std::move(data)),
-                         CreateStringCallback(std::move(callback)),
-                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+  CallJavaScriptFunction(
+      frame, "autofill.fillForm", base::ListValue().Append(std::move(data)),
+      CreateStringCallback(std::move(callback)), kJavaScriptExecutionTimeout);
 }
 
 void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
@@ -125,8 +124,7 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
       base::ListValue()
           .Append(static_cast<int>(form_renderer_id.value()))
           .Append(static_cast<int>(field_renderer_id.value())),
-      CreateStringCallback(std::move(callback)),
-      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+      CreateStringCallback(std::move(callback)), kJavaScriptExecutionTimeout);
 }
 
 void AutofillJavaScriptFeature::FillPredictionData(web::WebFrame* frame,
