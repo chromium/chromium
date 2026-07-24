@@ -17,8 +17,8 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -127,8 +127,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
       parent_local_surface_id_allocator_;
   SurfaceEmbedPaintHoldingHelper paint_holding_helper_;
 
-  mojo::Remote<mojom::SurfaceEmbedHost> host_;
-  mojo::Receiver<mojom::SurfaceEmbed> receiver_{this};
+  mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host_;
+  mojo::AssociatedReceiver<mojom::SurfaceEmbed> receiver_{this};
 };
 
 }  // namespace surface_embed

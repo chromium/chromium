@@ -12,8 +12,8 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -63,8 +63,7 @@ SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params)
     : contents_id_(contents_id) {
-  render_frame->GetBrowserInterfaceBroker().GetInterface(
-      host_.BindNewPipeAndPassReceiver());
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&host_);
 }
 
 SurfaceEmbedWebPlugin::~SurfaceEmbedWebPlugin() = default;
@@ -74,8 +73,8 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   InitializeSurfaceLayer();
 
   CHECK(host_);
-  mojo::PendingRemote<mojom::SurfaceEmbed> pending_remote =
-      receiver_.BindNewPipeAndPassRemote();
+  mojo::PendingAssociatedRemote<mojom::SurfaceEmbed> pending_remote =
+      receiver_.BindNewEndpointAndPassRemote();
   host_.set_disconnect_handler(base::BindOnce(
       &SurfaceEmbedWebPlugin::OnHostDisconnected, base::Unretained(this)));
   receiver_.set_disconnect_handler(base::BindOnce(

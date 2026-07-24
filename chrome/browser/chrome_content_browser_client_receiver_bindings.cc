@@ -38,6 +38,8 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/surface_embed/browser/surface_embed_host.h"
+#include "components/surface_embed/common/features.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -99,6 +101,7 @@
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
@@ -407,6 +410,24 @@ void ChromeContentBrowserClient::
       base::BindRepeating(
           &autofill::ContentAutofillDriverFactory::BindAutofillDriver,
           &render_frame_host));
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(surface_embed::features::kSurfaceEmbed)) {
+    associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
+        base::BindRepeating(
+            [](content::RenderFrameHost* render_frame_host,
+               mojo::PendingAssociatedReceiver<
+                   surface_embed::mojom::SurfaceEmbedHost> receiver) {
+              auto* web_ui = render_frame_host->GetWebUI();
+              if (!web_ui ||
+                  !web_ui->GetController()->GetAs<WebUIBrowserUI>()) {
+                return;
+              }
+              surface_embed::SurfaceEmbedHost::Create(render_frame_host,
+                                                      std::move(receiver));
+            },
+            &render_frame_host));
+  }
+#endif
   associated_registry.AddInterface<autofill::mojom::PasswordGenerationDriver>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,

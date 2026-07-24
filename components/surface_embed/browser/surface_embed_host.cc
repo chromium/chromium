@@ -68,7 +68,7 @@ void SurfaceEmbedHostCollection::RemoveHost(SurfaceEmbedHost* host) {
 // static
 SurfaceEmbedHost* SurfaceEmbedHost::Create(
     content::RenderFrameHost* rfh,
-    mojo::PendingReceiver<mojom::SurfaceEmbedHost> receiver) {
+    mojo::PendingAssociatedReceiver<mojom::SurfaceEmbedHost> receiver) {
   auto* collection =
       SurfaceEmbedHostCollection::GetOrCreateForCurrentDocument(rfh);
   SurfaceEmbedHost* host = collection->CreateHost();
@@ -87,7 +87,7 @@ SurfaceEmbedHost::~SurfaceEmbedHost() {
 }
 
 void SurfaceEmbedHost::Bind(
-    mojo::PendingReceiver<mojom::SurfaceEmbedHost> receiver) {
+    mojo::PendingAssociatedReceiver<mojom::SurfaceEmbedHost> receiver) {
   CHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -100,7 +100,7 @@ void SurfaceEmbedHost::SetDestructionCallbackForTesting(
 }
 
 void SurfaceEmbedHost::SetSurfaceEmbed(
-    mojo::PendingRemote<mojom::SurfaceEmbed> surface_embed) {
+    mojo::PendingAssociatedRemote<mojom::SurfaceEmbed> surface_embed) {
   CHECK(!surface_embed_.is_bound());
   surface_embed_.Bind(std::move(surface_embed));
   surface_embed_.set_disconnect_handler(base::BindOnce(

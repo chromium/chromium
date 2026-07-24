@@ -50,7 +50,7 @@ interface SurfaceEmbed {
 interface SurfaceEmbedHost {
   // Sets the SurfaceEmbed interface for communication with the renderer. This
   // must be called before other methods on SurfaceEmbedHost.
-  SetSurfaceEmbed(pending_remote<SurfaceEmbed> surface_embed);
+  SetSurfaceEmbed(pending_associated_remote<SurfaceEmbed> surface_embed);
 
   // Attaches the child content identified by `content_id` to the parent.
   AttachConnector(mojo_base.mojom.UnguessableToken content_id);

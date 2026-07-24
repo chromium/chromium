@@ -89,6 +89,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -660,17 +661,24 @@ void ShellContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<media::mojom::MediaFoundationPreferences>(
       &BindMediaFoundationPreferences);
 #endif  // BUILDFLAG(IS_WIN)
-  map->Add<surface_embed::mojom::SurfaceEmbedHost>(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingReceiver<surface_embed::mojom::SurfaceEmbedHost>
-             receiver) {
-        // Since ShellContentRenderClient can try to create a
-        // SurfaceEmbedWebPlugin on any page, we have to handle its binding on
-        // any page, so the renderer doesn't get killed. We don't want the
-        // operation to actually succeed in general, however, so we just let the
-        // pipe get closed by going out of scope unbound. Tests that need the
-        // functionality can override this method to provide it.
-      }));
+}
+
+void ShellContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        RenderFrameHost&,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<surface_embed::mojom::SurfaceEmbedHost>(
+      base::BindRepeating(
+          [](mojo::PendingAssociatedReceiver<
+              surface_embed::mojom::SurfaceEmbedHost> receiver) {
+            // Since ShellContentRenderClient can try to create a
+            // SurfaceEmbedWebPlugin on any page, we have to handle its binding
+            // on any page, so the renderer doesn't get killed. We don't want
+            // the operation to actually succeed in general, however, so we
+            // just let the endpoint get closed by going out of scope unbound.
+            // Tests that need the functionality can override this method to
+            // provide it.
+          }));
 }
 
 void ShellContentBrowserClient::OpenURL(
