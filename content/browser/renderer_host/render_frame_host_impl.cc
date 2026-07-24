@@ -15599,18 +15599,30 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     return false;
   }
 
-  // Error pages must commit in a opaque origin. Terminate the renderer
-  // process if this is violated.
-  if (bypass_checks_for_error_page && !params->origin.opaque()) {
-    DEBUG_ALIAS_FOR_ORIGIN(origin_debug_alias, params->origin);
-    bad_message::ReceivedBadMessage(
-        process, bad_message::RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT);
-    return false;
-  }
+  if (bypass_checks_for_error_page) {
+    // Error pages must commit in a opaque origin. Terminate the renderer
+    // process if this is violated.
+    if (!params->origin.opaque()) {
+      DEBUG_ALIAS_FOR_ORIGIN(origin_debug_alias, params->origin);
+      bad_message::ReceivedBadMessage(
+          process, bad_message::RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT);
+      return false;
+    }
 
-  if (!bypass_checks_for_error_page &&
-      !ValidateURLAndOrigin(params->url, params->origin,
-                            is_same_document_navigation, navigation_request)) {
+    // Error pages may legitimately commit a URL that doesn't match the process
+    // lock, so the CanCommitOriginAndUrl checks below are skipped. However, the
+    // committed URL must still match the URL that the browser asked the
+    // renderer to commit, since otherwise the renderer could place an arbitrary
+    // URL into session history and `last_committed_url_`.
+    if (navigation_request && !is_same_document_navigation &&
+        params->url != navigation_request->GetURL()) {
+      bad_message::ReceivedBadMessage(process,
+                                      bad_message::RFH_ERROR_PAGE_URL_MISMATCH);
+      return false;
+    }
+  } else if (!ValidateURLAndOrigin(params->url, params->origin,
+                                   is_same_document_navigation,
+                                   navigation_request)) {
     return false;
   }
 
