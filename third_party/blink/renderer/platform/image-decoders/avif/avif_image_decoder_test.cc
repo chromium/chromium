@@ -1522,14 +1522,11 @@ TEST(StaticAVIFTests, UnsupportedTransferFunctionInColrProperty) {
   EXPECT_TRUE(decoder->Failed());
 }
 
-// TODO(crbug.com/537416045): Enable this test when AVIF decode no longer
-// fails on this image (via an AVIFImageDecoder fallback to the CICP color
-// description and/or the ICC parser accepting such profiles).
-TEST(StaticAVIFTests, DISABLED_UnparsableIccProfileFallsBackToCicp) {
+TEST(StaticAVIFTests, ZeroVersionIccProfileDecodesWithRustIcc) {
   // The 'colr' prof box in this image contains an ICC profile whose header
   // declares an invalid profile version of 0.0, as emitted by some image
-  // export pipelines found in the wild. The Rust ICC parser (moxcms) rejects
-  // such profiles, while skcms accepts them.
+  // export pipelines found in the wild. The Rust ICC parser (moxcms) used
+  // to reject such files, but now accepts them and treats them as v2 profiles.
   //
   // Force the Rust parser to match the production configuration: in content
   // processes, content/common/skia_utils.cc calls ForceSkcms() with the
@@ -1547,12 +1544,10 @@ TEST(StaticAVIFTests, DISABLED_UnparsableIccProfileFallsBackToCicp) {
   decoder->SetData(ReadFileToSharedBuffer(
                        "/images/resources/avif/red-icc-version-zero.avif"),
                    true);
-  // The unparsable ICC profile must be ignored, not fail the decode. Since
-  // the image's nclx color primaries and transfer characteristics are
-  // unspecified, no embedded color profile is set at all.
+  // Rust ICC parser will accept color profile despite having invalid version.
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
-  EXPECT_FALSE(decoder->HasEmbeddedColorProfile());
+  EXPECT_TRUE(decoder->HasEmbeddedColorProfile());
   ASSERT_EQ(decoder->FrameCount(), 1u);
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);

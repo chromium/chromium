@@ -90,6 +90,9 @@ impl TryFrom<u32> for ProfileVersion {
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         // First try exact match for known versions
         match value {
+            // Some otherwise valid ICC profiles have zeroed version bytes.
+            // skcms accepts them; treat them as v2.0 for compatibility.
+            0x00000000 => return Ok(ProfileVersion::V2_0),
             0x02000000 => return Ok(ProfileVersion::V2_0),
             0x02100000 => return Ok(ProfileVersion::V2_1),
             0x02200000 => return Ok(ProfileVersion::V2_2),
@@ -109,10 +112,11 @@ impl TryFrom<u32> for ProfileVersion {
         let minor = (value >> 20) & 0x0F;
 
         // Accept profiles with patch versions (e.g., v2.0.2, v3.4, v4.2.9)
-        // but reject invalid versions (v0.x) and unsupported versions (v5.x+ / ICC MAX)
+        // but reject invalid versions (v0.x) and unsupported versions
+        // (v5.x+ / ICC MAX).
         match major {
             0 => {
-                // Version 0.x is invalid - reject
+                // Non-zero v0.x versions are invalid.
                 Err(CmsError::InvalidProfile)
             }
             2 => {
@@ -1499,7 +1503,11 @@ mod tests {
 
     #[test]
     fn test_profile_version_parsing_patch_versions() {
-        // Patch versions found in real ICC profiles should be accepted
+        // Completely zeroed version bytes found in otherwise valid profiles
+        // should be accepted and treated as v2.0 for compatibility.
+        assert_eq!(ProfileVersion::try_from(0x00000000).unwrap(), ProfileVersion::V2_0);
+
+        // Patch versions found in real ICC profiles should be accepted.
 
         // v2.0.2 (SM245B.icc) - minor bugfix version
         assert!(
@@ -1524,10 +1532,10 @@ mod tests {
     fn test_profile_version_parsing_rejected() {
         // Invalid and unsupported versions should be rejected
 
-        // v0.0 - invalid version (no such ICC spec exists)
+        // Non-zero v0.x versions should still be rejected.
         assert!(
-            ProfileVersion::try_from(0x00000000).is_err(),
-            "v0.0 should be rejected"
+            ProfileVersion::try_from(0x00100000).is_err(),
+            "v0.1 should be rejected"
         );
 
         // v5.0 (iccMAX) - reject because it has different white point requirements
