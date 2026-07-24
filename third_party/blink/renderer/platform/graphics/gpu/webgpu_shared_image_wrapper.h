@@ -142,8 +142,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
 
-using WebGpuRecyclableResourceProvider = WebGpuSharedImageWrapper;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_H_

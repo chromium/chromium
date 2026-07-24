@@ -16,7 +16,7 @@
 namespace blink {
 
 WebGpuRecyclableResourceProviderLease::WebGpuRecyclableResourceProviderLease(
-    std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
+    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
     base::WeakPtr<WebGPURecyclableResourceCache> cache)
     : resource_provider_(std::move(resource_provider)), cache_(cache) {}
 
@@ -49,11 +49,11 @@ WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
     SkAlphaType alpha_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::unique_ptr<WebGpuRecyclableResourceProvider> provider =
+  std::unique_ptr<WebGpuSharedImageWrapper> provider =
       AcquireCachedProvider(size, format, alpha_type, color_space);
   if (!provider) {
-    provider = WebGpuRecyclableResourceProvider::Create(
-        size, format, alpha_type, color_space, hdr_metadata);
+    provider = WebGpuSharedImageWrapper::Create(size, format, alpha_type,
+                                                color_space, hdr_metadata);
     if (!provider)
       return nullptr;
   }
@@ -63,7 +63,7 @@ WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
 }
 
 void WebGPURecyclableResourceCache::ReturnWebGpuRecyclableResourceProvider(
-    std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
+    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =
       resource_provider->GetSharedImageFormat().EstimatedSizeInBytes(
@@ -89,7 +89,7 @@ void WebGPURecyclableResourceCache::ReturnWebGpuRecyclableResourceProvider(
 }
 
 WebGPURecyclableResourceCache::Resource::Resource(
-    std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
+    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
     unsigned int timer_id,
     size_t resource_size)
     : resource_provider_(std::move(resource_provider)),
@@ -101,7 +101,7 @@ WebGPURecyclableResourceCache::Resource::Resource(Resource&& that) noexcept =
 
 WebGPURecyclableResourceCache::Resource::~Resource() = default;
 
-std::unique_ptr<WebGpuRecyclableResourceProvider>
+std::unique_ptr<WebGpuSharedImageWrapper>
 WebGPURecyclableResourceCache::AcquireCachedProvider(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
@@ -110,8 +110,7 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
   // Loop from MRU to LRU
   DequeResourceProvider::iterator it;
   for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {
-    WebGpuRecyclableResourceProvider* resource_provider =
-        it->resource_provider_.get();
+    WebGpuSharedImageWrapper* resource_provider = it->resource_provider_.get();
     if (resource_provider->Size() == size &&
         resource_provider->GetSharedImageFormat() == format &&
         resource_provider->GetAlphaType() == alpha_type &&
@@ -122,7 +121,7 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
 
   // Found one.
   if (it != unused_providers_.end()) {
-    std::unique_ptr<WebGpuRecyclableResourceProvider> provider =
+    std::unique_ptr<WebGpuSharedImageWrapper> provider =
         (std::move(it->resource_provider_));
     total_unused_resources_in_bytes_ -= it->resource_size_;
     // TODO(magchen@): If the cache capacity increases a lot, will erase(it)

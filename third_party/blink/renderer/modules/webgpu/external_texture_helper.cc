@@ -408,7 +408,7 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
-  WebGpuRecyclableResourceProvider* resource_provider =
+  WebGpuSharedImageWrapper* resource_provider =
       provider_lease->resource_provider();
   DCHECK(resource_provider);
 

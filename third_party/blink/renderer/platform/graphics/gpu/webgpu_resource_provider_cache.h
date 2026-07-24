@@ -20,19 +20,18 @@
 namespace blink {
 
 class WebGpuSharedImageWrapper;
-using WebGpuRecyclableResourceProvider = WebGpuSharedImageWrapper;
 class WebGPURecyclableResourceCache;
 class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT WebGpuRecyclableResourceProviderLease {
  public:
   WebGpuRecyclableResourceProviderLease(
-      std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
+      std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
       base::WeakPtr<WebGPURecyclableResourceCache> cache);
 
   ~WebGpuRecyclableResourceProviderLease();
 
-  WebGpuRecyclableResourceProvider* resource_provider() {
+  WebGpuSharedImageWrapper* resource_provider() {
     return resource_provider_.get();
   }
 
@@ -41,7 +40,7 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProviderLease {
   }
 
  private:
-  std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider_;
+  std::unique_ptr<WebGpuSharedImageWrapper> resource_provider_;
   base::WeakPtr<WebGPURecyclableResourceCache> cache_;
   gpu::SyncToken completion_sync_token_;
 };
@@ -63,7 +62,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // When the lease is destroyed, move the resource provider to
   // |unused_providers_| if the cache is not full.
   void ReturnWebGpuRecyclableResourceProvider(
-      std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
+      std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
       const gpu::SyncToken& completion_sync_token);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
@@ -95,14 +94,13 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       kCleanUpDelayInSeconds / kTimerDurationInSeconds;
 
   struct PLATFORM_EXPORT Resource {
-    Resource(
-        std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider,
-        unsigned int timer_id,
-        size_t resource_size);
+    Resource(std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+             unsigned int timer_id,
+             size_t resource_size);
     Resource(Resource&& that) noexcept;
     ~Resource();
 
-    std::unique_ptr<WebGpuRecyclableResourceProvider> resource_provider_;
+    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider_;
     unsigned int timer_id_;
     size_t resource_size_;
   };
@@ -111,7 +109,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
 
   // Search |unused_providers_| and acquire the WebGPU recyclable resource
   // provider with the same cache key for reuse.
-  std::unique_ptr<WebGpuRecyclableResourceProvider> AcquireCachedProvider(
+  std::unique_ptr<WebGpuSharedImageWrapper> AcquireCachedProvider(
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,

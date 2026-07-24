@@ -54,7 +54,7 @@ void WebGPURecyclableResourceCacheTest::TearDown() {
 
 TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
   auto size = gfx::Size(10, 10);
-  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
+  Vector<WebGpuSharedImageWrapper*> returned_resource_providers;
 
   std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_holder_0 =
       recyclable_resource_cache_->LeaseWebGpuRecyclableResourceProvider(
@@ -90,7 +90,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
-  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
+  Vector<WebGpuSharedImageWrapper*> returned_resource_providers;
 
   std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_holder_0 =
       recyclable_resource_cache_->LeaseWebGpuRecyclableResourceProvider(
@@ -134,7 +134,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   auto size1 = gfx::Size(10, 10);
   auto size2 = gfx::Size(20, 20);
 
-  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
+  Vector<WebGpuSharedImageWrapper*> returned_resource_providers;
 
   std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_holder_0 =
       recyclable_resource_cache_->LeaseWebGpuRecyclableResourceProvider(
@@ -204,7 +204,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
 
 TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
   auto resource_size = gfx::Size(10, 10);
-  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
+  Vector<WebGpuSharedImageWrapper*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
@@ -243,7 +243,7 @@ TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
 
 TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
   auto resource_size = gfx::Size(10, 10);
-  Vector<WebGpuRecyclableResourceProvider*> returned_resource_providers;
+  Vector<WebGpuSharedImageWrapper*> returned_resource_providers;
   // The loop count for CleanUpResources before the resource gets cleaned up.
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
