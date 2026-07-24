@@ -207,7 +207,7 @@ def commit_applied_edits(submodule):
 def get_modified_files(submodule, sub_main, branch):
     """Returns the list of modified files in the current branch."""
     # Find modified files list compared to the latest upstream main base
-    files_res = sh(f"git diff --name-only origin/{sub_main}...{branch}",
+    files_res = sh(f"git diff --name-only {sub_main}...{branch}",
                    cwd=submodule)
     return " ".join(files_res.stdout.splitlines()).strip()
 
@@ -215,7 +215,7 @@ def get_modified_files(submodule, sub_main, branch):
 def create_prompt_file(files, submodule, branch, sub_main):
     """Creates the prompt file with target files and git diff."""
     # Capture full git diff compared to upstream main base
-    diff_res = sh(f"git diff origin/{sub_main}...{branch}", cwd=submodule)
+    diff_res = sh(f"git diff {sub_main}...{branch}", cwd=submodule)
     git_diff = diff_res.stdout
 
     # Load prompt template
@@ -369,7 +369,7 @@ def commit_if_changes(submodule):
 def compute_diff_stats(submodule, sub_main, branch):
     """Calculate final modifications compared to upstream main
     after fixes were applied."""
-    final_files_res = sh(f"git diff --name-only origin/{sub_main}...{branch}",
+    final_files_res = sh(f"git diff --name-only {sub_main}...{branch}",
                          cwd=submodule)
     first_file = ""
     files_list = [
@@ -381,7 +381,7 @@ def compute_diff_stats(submodule, sub_main, branch):
         first_file = files_list[0]
 
     # Capture git shortstat to calculate progress
-    shortstat_res = sh(f"git diff origin/{sub_main}...{branch} --shortstat",
+    shortstat_res = sh(f"git diff {sub_main}...{branch} --shortstat",
                        cwd=submodule)
     shortstat = shortstat_res.stdout.strip()
     plus_delta = 0
