@@ -1537,6 +1537,10 @@
       Stored in Google Wallet
     </message>
 
+    <message name="IDS_AUTOFILL_AI_LOADING_DIALOG_LABEL" desc="The string shown in the loading dialog that is opened after successful user authentication. It's is informing the user about an ongoing request to fetch their data from the server.">
+      Filling your info
+    </message>
+
     <message name="IDS_AUTOFILL_AI_SUGGESTION_LONG_PRESS_DIALOG_DESCRIPTION" desc="The description text shown in the dialog after the user long presses a suggestion in the keyboard accessory." formatter_data="android_java">
       Suggested by Gemini. Manage enhanced autofill in settings.
     </message>
