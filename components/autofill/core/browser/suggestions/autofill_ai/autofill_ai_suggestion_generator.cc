@@ -757,40 +757,6 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
       app_locale);
 }
 
-// Returns the set of entity types that are currently being prefetched for the
-// given `field`. We collect all eligible types rather than returning the first
-// match to ensure the UI footer correctly decides between showing a
-// category-specific manage button (if exactly one section is being loaded) and
-// a generic manage button (if multiple sections are being loaded).
-DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
-                                                AutofillClient& client) {
-  AutofillAiPersonalContextAccessManager* access_manager =
-      client.GetAutofillAiPersonalContextAccessManager();
-  if (!access_manager) {
-    return {};
-  }
-  DenseSet<EntityType> types;
-  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  for (EntityType entity_type : DenseSet<EntityType>::all()) {
-    if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
-      if (access_manager->ServerHasSpiiPresenceSignal(entity_type) &&
-          access_manager->GetPrefetchStatusByEntityType(entity_type) ==
-              RequestStatus::kPending) {
-        types.insert(entity_type);
-      }
-    }
-  }
-  return types;
-}
-
-// Returns true if the `field` is of an entity type that is currently being
-// prefetched. This is used to decide if pre-fetching suggestion should be
-// shown for a specific field.
-bool IsFetchingFillableEntity(const AutofillField& field,
-                              AutofillClient& client) {
-  return !GetEntityTypesBeingFetched(field, client).empty();
-}
-
 std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FETCHING_AMBIENT_DATA),
@@ -1134,7 +1100,7 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
       GetFieldsFillableByAutofillAi(*form_structure, client)
           .contains(trigger_field.global_id());
   const bool is_fetching_data_for_field =
-      IsFetchingFillableEntity(*trigger_autofill_field, client);
+      !GetEntityTypesBeingFetched(*trigger_autofill_field, client).empty();
 
   if ((!is_fillable && !is_fetching_data_for_field) ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(

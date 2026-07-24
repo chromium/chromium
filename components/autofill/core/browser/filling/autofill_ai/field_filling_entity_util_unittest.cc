@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -54,6 +55,7 @@ using ::i18n::addressinput::TestdataSource;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pointee;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
@@ -271,6 +273,76 @@ TEST_F(FieldFillingEntityUtilTest, FillingUnavailable) {
   test_api(form()).SetFieldTypes({CREDIT_CARD_NAME_FULL, NAME_FULL},
                                  {CREDIT_CARD_NAME_FULL, NO_SERVER_DATA});
   EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()), IsEmpty());
+}
+
+TEST_F(FieldFillingEntityUtilTest, GetEntityTypesBeingFetched) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(PASSPORT_NUMBER),
+                  AutofillPredictionSource::kServerCrowdsourcing);
+
+  // When access manager is null, returns empty.
+  client().set_personal_context_access_manager(nullptr);
+  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  // When ServerHasSpiiPresenceSignal is false, returns empty.
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(false));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+
+  // When status is not kPending (e.g. kSuccess), returns empty.
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kSuccess));
+  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()), IsEmpty());
+
+  // When ServerHasSpiiPresenceSignal is true and status is kPending, returns
+  // entity type.
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+  EXPECT_THAT(GetEntityTypesBeingFetched(field, client()),
+              UnorderedElementsAre(EntityType(EntityTypeName::kPassport)));
+}
+
+TEST_F(FieldFillingEntityUtilTest, GetFieldsFillableByAutofillAi_BeingFetched) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  test_api(form()).SetFieldTypes({PASSPORT_NUMBER, NAME_FULL},
+                                 {PASSPORT_NUMBER, NO_SERVER_DATA});
+
+  // No entities exist in EntityDataManager.
+  EXPECT_THAT(GetFillableEntityInstances(client()), IsEmpty());
+
+  ON_CALL(access_manager, ServerHasSpiiPresenceSignal)
+      .WillByDefault(Return(false));
+  ON_CALL(access_manager, GetPrefetchStatusByEntityType)
+      .WillByDefault(Return(RequestStatus::kNotStarted));
+
+  // Server has data available and prefetch is pending for Passport.
+  ON_CALL(access_manager,
+          ServerHasSpiiPresenceSignal(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(true));
+  ON_CALL(access_manager,
+          GetPrefetchStatusByEntityType(EntityType(EntityTypeName::kPassport)))
+      .WillByDefault(Return(RequestStatus::kPending));
+
+  // Even though there are no entity instances stored yet, fields belonging to
+  // the pending entity type are considered fillable.
+  EXPECT_THAT(GetFieldsFillableByAutofillAi(form(), client()),
+              ElementsAre(field(0), field(1)));
 }
 
 // Tests that WillFillSensitiveAttributes() correctly identifies whether a

@@ -204,6 +204,28 @@ std::optional<SelectOption> GetOptionForSelect(
 
 }  // namespace
 
+DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
+                                                const AutofillClient& client) {
+  const AutofillAiPersonalContextAccessManager* access_manager =
+      client.GetAutofillAiPersonalContextAccessManager();
+  if (!access_manager) {
+    return {};
+  }
+  DenseSet<EntityType> types;
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
+      if (access_manager->ServerHasSpiiPresenceSignal(entity_type) &&
+          access_manager->GetPrefetchStatusByEntityType(entity_type) ==
+              RequestStatus::kPending) {
+        types.insert(entity_type);
+      }
+    }
+  }
+  return types;
+}
+
 std::vector<const EntityInstance*> GetFillableEntityInstances(
     const AutofillClient& client) {
   const EntityDataManager* const edm = client.GetEntityDataManager();
@@ -237,9 +259,6 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const AutofillClient& client) {
   std::vector<const EntityInstance*> entities =
       GetFillableEntityInstances(client);
-  if (entities.empty()) {
-    return {};
-  }
 
   base::flat_map<
       Section,
@@ -249,6 +268,12 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
 
   // Returns true if there is data present that could fill the `field`.
   auto is_fillable = [&](const AutofillField& field) {
+    // Return true if the `field` is of an entity type that is currently being
+    // prefetched.
+    if (!GetEntityTypesBeingFetched(field, client).empty()) {
+      return true;
+    }
+
     return std::ranges::any_of(entities, [&](const EntityInstance* entity) {
       std::optional<AttributeType> type = GetAttributeTypeForEntityAndField(
           section_to_entity_and_field_and_types, *entity, field);
