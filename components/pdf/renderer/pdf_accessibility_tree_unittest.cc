@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -578,6 +579,39 @@ TEST(PdfAccessibilityTreeUnitTest, InvalidChoiceFieldType) {
 
   EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
                                                            page_objects));
+}
+
+TEST(PdfAccessibilityTreeUnitTest, AreStylesEquivalent) {
+  chrome_pdf::AccessibilityTextStyleInfo style1;
+  style1.font_name = "Arial";
+  style1.is_bold = false;
+  style1.is_italic = false;
+
+  chrome_pdf::AccessibilityTextStyleInfo style2;
+  style2.font_name = "TimesNewRoman";
+  style2.is_bold = false;
+  style2.is_italic = false;
+
+  // Font family names differ, but styling (bold/italic) is identical.
+  EXPECT_TRUE(PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
+
+  // Bold states differ.
+  style2.is_bold = true;
+  EXPECT_FALSE(
+      PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
+
+  // Both bold.
+  style1.is_bold = true;
+  EXPECT_TRUE(PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
+
+  // Italic states differ.
+  style2.is_italic = true;
+  EXPECT_FALSE(
+      PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
+
+  // Both bold and italic.
+  style1.is_italic = true;
+  EXPECT_TRUE(PdfAccessibilityTreeBuilder::AreStylesEquivalent(style1, style2));
 }
 
 }  // namespace pdf

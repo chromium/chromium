@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -219,9 +221,11 @@ bool BreakParagraph(
                               text_runs[text_run_index].bounds.height()));
 }
 
-void BuildStaticNode(ui::AXNodeData** static_text_node,
-                     std::string* static_text) {
-  // If we're in the middle of building a static text node, finish it before
+void BuildStaticNode(
+    ui::AXNodeData** static_text_node,
+    std::string* static_text,
+    std::optional<chrome_pdf::AccessibilityTextStyleInfo>* current_style) {
+  // If a static text node is currently being built, finish it before
   // moving on to the next object.
   if (*static_text_node) {
     (*static_text_node)
@@ -229,6 +233,7 @@ void BuildStaticNode(ui::AXNodeData** static_text_node,
     static_text->clear();
   }
   *static_text_node = nullptr;
+  current_style->reset();
 }
 
 void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
@@ -261,6 +266,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   ui::AXNodeData* static_text_node = nullptr;
   ui::AXNodeData* previous_on_line_node = nullptr;
   std::string static_text;
+  std::optional<chrome_pdf::AccessibilityTextStyleInfo> current_style;
   LineHelper line_helper(builder_->text_runs());
   bool pdf_forms_enabled =
       base::FeatureList::IsEnabled(chrome_pdf::features::kAccessiblePDFForm);
@@ -283,7 +289,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // PDF searchifier only processes pages that have no text, hence OCR text
       // is never added in the middle of a paragraph.
       if (block_node) {
-        BuildStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text, &current_style);
         block_node = nullptr;
       }
       CHECK(ocr_block_start || text_run_index);
@@ -307,7 +313,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // `text_run_index`, then push the link node in the block.
     if (IsObjectWithRangeInTextRun(builder_->links(), current_link_index_,
                                    text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       const chrome_pdf::AccessibilityLinkInfo& link =
           (builder_->links())[current_link_index_++];
       AddLinkToParaNode(link, block_node, &previous_on_line_node,
@@ -319,21 +325,21 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
     } else if (IsObjectInTextRun(builder_->images(), current_image_index_,
                                  text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       AddImageToParaNode((builder_->images())[current_image_index_++],
                          block_node, &text_run_index);
       continue;
     } else if (IsObjectWithRangeInTextRun(builder_->highlights(),
                                           current_highlight_index_,
                                           text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       AddHighlightToParaNode(
           (builder_->highlights())[current_highlight_index_++], block_node,
           &previous_on_line_node, &text_run_index);
     } else if (IsObjectInTextRun(builder_->text_fields(),
                                  current_text_field_index_, text_run_index) &&
                pdf_forms_enabled) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       AddTextFieldToParaNode(
           (builder_->text_fields())[current_text_field_index_++], block_node,
           &text_run_index);
@@ -341,14 +347,14 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     } else if (IsObjectInTextRun(builder_->buttons(), current_button_index_,
                                  text_run_index) &&
                pdf_forms_enabled) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       AddButtonToParaNode((builder_->buttons())[current_button_index_++],
                           block_node, &text_run_index);
       continue;
     } else if (IsObjectInTextRun(builder_->choice_fields(),
                                  current_choice_field_index_, text_run_index) &&
                pdf_forms_enabled) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       AddChoiceFieldToParaNode(
           (builder_->choice_fields())[current_choice_field_index_++],
           block_node, &text_run_index);
@@ -358,10 +364,26 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           builder_->page_index(),
           builder_->text_run_start_indices()[text_run_index]};
 
+      // Under enhanced heuristics, break and start a new static text node if
+      // the style changes. This prevents text runs of different styles (e.g.
+      // bold vs regular) from being merged into a single static text node.
+      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+          static_text_node && current_style &&
+          !PdfAccessibilityTreeBuilder::AreStylesEquivalent(*current_style,
+                                                            text_run.style)) {
+        BuildStaticNode(&static_text_node, &static_text, &current_style);
+      }
+
       // This node is for the text inside the block, it includes the text of all
       // of the text runs.
       if (!static_text_node) {
-        static_text_node = builder_->CreateStaticTextNode(page_char_index);
+        if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+          static_text_node = builder_->CreateStaticTextNodeWithStyle(
+              page_char_index, text_run.style);
+          current_style = text_run.style;
+        } else {
+          static_text_node = builder_->CreateStaticTextNode(page_char_index);
+        }
         block_node->child_ids.push_back(static_text_node->id);
       }
 
@@ -398,14 +420,14 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
 
     if (text_run_index == builder_->text_runs().size() - 1) {
-      BuildStaticNode(&static_text_node, &static_text);
+      BuildStaticNode(&static_text_node, &static_text, &current_style);
       break;
     }
 
     if (!previous_on_line_node) {
       if (BreakParagraph(builder_->text_runs(), text_run_index,
                          paragraph_spacing_threshold_)) {
-        BuildStaticNode(&static_text_node, &static_text);
+        BuildStaticNode(&static_text_node, &static_text, &current_style);
         block_node = nullptr;
       }
     }

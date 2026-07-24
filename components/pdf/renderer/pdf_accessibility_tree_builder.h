@@ -49,6 +49,10 @@ class PdfAccessibilityTreeBuilder {
       delete;
   ~PdfAccessibilityTreeBuilder();
 
+  static bool AreStylesEquivalent(
+      const chrome_pdf::AccessibilityTextStyleInfo& style1,
+      const chrome_pdf::AccessibilityTextStyleInfo& style2);
+
   void BuildPageTree();
 
   // Accessors for tree builders.
@@ -93,6 +97,9 @@ class PdfAccessibilityTreeBuilder {
                                       ax::mojom::Restriction restriction);
   ui::AXNodeData* CreateStaticTextNode(
       const chrome_pdf::PageCharacterIndex& page_char_index);
+  ui::AXNodeData* CreateStaticTextNodeWithStyle(
+      const chrome_pdf::PageCharacterIndex& page_char_index,
+      const chrome_pdf::AccessibilityTextStyleInfo& style);
   ui::AXNodeData* CreateInlineTextBoxNode(
       const chrome_pdf::AccessibilityTextRunInfo& text_run,
       const chrome_pdf::PageCharacterIndex& page_char_index);

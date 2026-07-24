@@ -9,16 +9,15 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_heuristic.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_structure.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
-#include "pdf/pdf_features.h"
 #include "services/strings/grit/services_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -221,6 +220,28 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNode(
     const chrome_pdf::PageCharacterIndex& page_char_index) {
   ui::AXNodeData* static_text_node = CreateStaticTextNode();
   node_id_to_page_char_index_->emplace(static_text_node->id, page_char_index);
+  return static_text_node;
+}
+
+// static
+bool PdfAccessibilityTreeBuilder::AreStylesEquivalent(
+    const chrome_pdf::AccessibilityTextStyleInfo& style1,
+    const chrome_pdf::AccessibilityTextStyleInfo& style2) {
+  return style1.is_bold == style2.is_bold &&
+         style1.is_italic == style2.is_italic;
+}
+
+ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNodeWithStyle(
+    const chrome_pdf::PageCharacterIndex& page_char_index,
+    const chrome_pdf::AccessibilityTextStyleInfo& style) {
+  ui::AXNodeData* static_text_node = CreateStaticTextNode(page_char_index);
+  if (style.is_italic) {
+    static_text_node->AddTextStyle(ax::mojom::TextStyle::kItalic);
+  }
+  if (style.is_bold) {
+    static_text_node->AddTextStyle(ax::mojom::TextStyle::kBold);
+  }
+
   return static_text_node;
 }
 

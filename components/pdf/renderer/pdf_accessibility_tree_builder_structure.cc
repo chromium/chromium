@@ -13,12 +13,71 @@
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_constants_helper.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace pdf {
 
 namespace {
+
+// Groups sequential text runs into one or more kStaticText child nodes of
+// container_node based on style similarity (breaking/splitting static text
+// nodes when styles change).
+void AddTextRunsToContainer(PdfAccessibilityTreeBuilder& builder,
+                            ui::AXNodeData* container_node,
+                            base::span<const size_t> text_run_indices) {
+  const auto& text_runs = builder.text_runs();
+  ui::AXNodeData* static_text_node = nullptr;
+  std::optional<chrome_pdf::AccessibilityTextStyleInfo> current_style;
+  std::string accumulated_text;
+
+  for (size_t run_idx : text_run_indices) {
+    const chrome_pdf::AccessibilityTextRunInfo& text_run = text_runs[run_idx];
+    chrome_pdf::PageCharacterIndex page_char_index = {
+        builder.page_index(), builder.text_run_start_indices()[run_idx]};
+
+    // Break the static text node and start a new one if the style of the
+    // current text run is not equivalent to the previous runs.
+    if (static_text_node && current_style &&
+        !PdfAccessibilityTreeBuilder::AreStylesEquivalent(*current_style,
+                                                          text_run.style)) {
+      static_text_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                           accumulated_text);
+      accumulated_text.clear();
+      static_text_node = nullptr;
+      current_style.reset();
+    }
+
+    if (!static_text_node) {
+      static_text_node = builder.CreateStaticTextNodeWithStyle(page_char_index,
+                                                               text_run.style);
+      container_node->child_ids.push_back(static_text_node->id);
+      current_style = text_run.style;
+    }
+
+    ui::AXNodeData* inline_text_box =
+        builder.CreateInlineTextBoxNode(text_run, page_char_index);
+    static_text_node->child_ids.push_back(inline_text_box->id);
+
+    // Update the bounding boxes. Union the inline box's bounds with both the
+    // current static text node (covers this styled segment) and the parent
+    // paragraph container (covers the entire paragraph).
+    static_text_node->relative_bounds.bounds.Union(
+        inline_text_box->relative_bounds.bounds);
+    container_node->relative_bounds.bounds.Union(
+        inline_text_box->relative_bounds.bounds);
+    base::StrAppend(&accumulated_text, {inline_text_box->GetStringAttribute(
+                                           ax::mojom::StringAttribute::kName)});
+  }
+
+  // Finalize the last active static text node by assigning the remaining
+  // accumulated text string.
+  if (static_text_node) {
+    static_text_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                         accumulated_text);
+  }
+}
 
 // Adds text runs as inline text box children of static_text_node. Returns the
 // accumulated text string.
@@ -53,6 +112,21 @@ ui::AXNodeData* CreateParagraphFromTextRunRange(
     const chrome_pdf::UnassociatedTextRunRange& range) {
   ui::AXNodeData* container_node = builder.CreateAndAppendNode(
       ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly);
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    // Under enhanced heuristics, delegate to AddTextRunsToContainer to build
+    // style-aware static text child nodes. This ensures style transitions (e.g.
+    // bold/italic) are preserved even for text runs not associated with any
+    // logical structure tags.
+    std::vector<size_t> text_run_indices;
+    text_run_indices.reserve(range.end - range.start + 1);
+    for (size_t i = range.start; i <= range.end; ++i) {
+      text_run_indices.push_back(i);
+    }
+
+    AddTextRunsToContainer(builder, container_node, text_run_indices);
+    return container_node;
+  }
 
   chrome_pdf::PageCharacterIndex page_char_index = {
       builder.page_index(), builder.text_run_start_indices()[range.start]};
@@ -133,6 +207,22 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderStructure::CreateNodeWithTextContent(
   }
 
   if (text_run_indices.empty()) {
+    return container_node;
+  }
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    // Under enhanced heuristics, check style boundaries across all text runs,
+    // including trailing unassociated runs (like punctuation). Fetch them and
+    // append them to `text_run_indices` before grouping, so style boundaries
+    // are evaluated seamlessly.
+    auto range =
+        FindUnassociatedTextRunRangeAtIndex(text_run_indices.back() + 1);
+    if (range) {
+      for (size_t run_idx = range->start; run_idx <= range->end; ++run_idx) {
+        text_run_indices.push_back(run_idx);
+      }
+    }
+    AddTextRunsToContainer(*builder_, container_node, text_run_indices);
     return container_node;
   }
 
