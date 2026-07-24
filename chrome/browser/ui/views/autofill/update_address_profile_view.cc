@@ -42,9 +42,7 @@ base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
       return std::nullopt;
     case AddressUIComponentIconType::kName:
       return ::features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
-             : ::features::IsRoundedIconsEnabled()
-                 ? vector_icons::kAccountCircleIcon
-                 : kAccountCircleOldIcon;
+                                                 : kAccountCircleOldIcon;
     case AddressUIComponentIconType::kAddress:
       return ::features::IsRoundedIconsEnabled()
                  ? vector_icons::kLocationOnIcon

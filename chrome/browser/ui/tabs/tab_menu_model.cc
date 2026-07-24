@@ -155,9 +155,7 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
         TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled()   ? kDevicesIcon
-            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
-                                                : kDevicesOldIcon,
+            features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
             ui::kColorMenuIcon, kTabMenuIconSize));
   } else {
     AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
@@ -169,9 +167,7 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
       TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
       send_tab_to_self_submenu_.get(),
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled()   ? kDevicesIcon
-          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
-                                              : kDevicesOldIcon,
+          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
           ui::kColorMenuIcon, kTabMenuIconSize));
 #endif
 
@@ -185,13 +181,11 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
 void TabMenuModel::BuildLegacySendTabToSelfItem() {
 #if BUILDFLAG(IS_MAC)
   if (features::IsMenuSimplificationEnabled()) {
-    AddItemWithIcon(
-        TabStripModel::CommandSendTabToSelf,
-        l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled()   ? kDevicesIcon
-            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
-                                                : kDevicesOldIcon));
+    AddItemWithIcon(TabStripModel::CommandSendTabToSelf,
+                    l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+                    ui::ImageModel::FromVectorIcon(
+                        features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                                          : kDevicesOldIcon));
   } else {
     AddItem(TabStripModel::CommandSendTabToSelf,
             l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
@@ -201,9 +195,7 @@ void TabMenuModel::BuildLegacySendTabToSelfItem() {
       TabStripModel::CommandSendTabToSelf,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled()   ? kDevicesIcon
-          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
-                                              : kDevicesOldIcon));
+          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
 #endif
 }
 

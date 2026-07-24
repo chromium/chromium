@@ -516,8 +516,6 @@ class GetMetadataView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
-                                       : features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
@@ -548,8 +546,6 @@ class ShowMetadataView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
-                                       : features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.
@@ -609,8 +605,6 @@ class InstallView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
-                                       : features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.
@@ -641,8 +635,6 @@ class InstallSuccessView : public InstallerDialogView {
       : InstallerDialogView(
             CreateImageModelFromVector(features::IsRoundedIconsEnabled()
                                            ? kFingerprintIcon
-                                       : features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kFingerprintIcon
                                            : kFingerprintOldIcon,
                                        ui::kColorAccent),
             // The title will be updated to the app name when available.

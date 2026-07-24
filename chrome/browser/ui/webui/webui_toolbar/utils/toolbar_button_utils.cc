@@ -316,9 +316,8 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowAboutThisSite;
     case kActionSidePanelShowCustomizeChrome:
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled() ? kEditIcon
-                       : features::IsRoundedIconsEnabled()
-                           ? vector_icons::kEditIcon
+      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
+                           ? kEditIcon
                            : vector_icons::kEditChromeRefreshOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowCustomizeChrome;

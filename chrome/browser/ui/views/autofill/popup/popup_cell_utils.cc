@@ -448,8 +448,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kAccount:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
                                           ? kAccountCircleFilledIcon
-                                      : ::features::IsRoundedIconsEnabled()
-                                          ? vector_icons::kAccountCircleIcon
                                           : kAccountCircleOldIcon,
                                       kIconSize);
     case Suggestion::Icon::kCardGenericSpark:
@@ -477,9 +475,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kDevice:
       return ImageModelFromVectorIcon(
-          ::features::IsRoundedIconsEnabled()   ? kDevicesIcon
-          : ::features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
-                                                : kDevicesOldIcon,
+          ::features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
           kIconSize);
     case Suggestion::Icon::kVehicle:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
@@ -491,9 +487,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kEdit:
       return ImageModelFromVectorIcon(
-          ::features::IsRoundedIconsEnabled() ? kEditIcon
-          : ::features::IsRoundedIconsEnabled()
-              ? vector_icons::kEditIcon
+          ::features::IsRoundedIconsEnabled()
+              ? kEditIcon
               : vector_icons::kEditChromeRefreshOldIcon,
           kChromeRefreshIconSize);
     case Suggestion::Icon::kEmail:
@@ -545,9 +540,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kGlobe:
       return ImageModelFromVectorIcon(
-          ::features::IsRoundedIconsEnabled()   ? kGlobeIcon
-          : ::features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
-                                                : kGlobeOldIcon,
+          ::features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
           kIconSize);
     case Suggestion::Icon::kGoogle:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

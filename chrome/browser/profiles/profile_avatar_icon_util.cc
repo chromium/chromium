@@ -900,9 +900,8 @@ gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
     int size,
     AvatarVisibilityAgainstBackground visibility) {
   const gfx::VectorIcon& person_icon =
-      features::IsRoundedIconsEnabled() ? kAccountCircleIcon
-      : features::IsRoundedIconsEnabled()
-          ? vector_icons::kAccountCircleIcon
+      features::IsRoundedIconsEnabled()
+          ? kAccountCircleIcon
           : vector_icons::kAccountCircleChromeRefreshOldIcon;
 
   // The palette is generated using the user color, which is independent of the
@@ -931,9 +930,8 @@ gfx::Image GetPlaceholderAvatarIconWithColors(
   CHECK(!icon_params.visibility_against_background.has_value());
 
   const gfx::VectorIcon& person_icon =
-      features::IsRoundedIconsEnabled() ? kAccountCircleIcon
-      : features::IsRoundedIconsEnabled()
-          ? vector_icons::kAccountCircleIcon
+      features::IsRoundedIconsEnabled()
+          ? kAccountCircleIcon
           : vector_icons::kAccountCircleChromeRefreshOldIcon;
 
   const gfx::ImageSkia avatar_icon_without_background =

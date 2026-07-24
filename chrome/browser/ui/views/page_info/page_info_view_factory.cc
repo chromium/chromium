@@ -315,9 +315,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                  ? &(features::IsRoundedIconsEnabled()
                          ? vector_icons::kAccountCircleOffIcon
                          : vector_icons::kAccountCircleOffChromeRefreshOldIcon)
-                 : &(features::IsRoundedIconsEnabled() ? kAccountCircleIcon
-                     : features::IsRoundedIconsEnabled()
-                         ? vector_icons::kAccountCircleIcon
+                 : &(features::IsRoundedIconsEnabled()
+                         ? kAccountCircleIcon
                          : vector_icons::kAccountCircleChromeRefreshOldIcon);
       break;
     case ContentSettingsType::IMAGES:
@@ -418,8 +417,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                  ? &(features::IsRoundedIconsEnabled()
                          ? vector_icons::kSyncDisabledIcon
                          : vector_icons::kSyncOffChromeRefreshOldIcon)
-                 : &(features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
-                     : features::IsRoundedIconsEnabled()
+                 : &(features::IsRoundedIconsEnabled()
                          ? vector_icons::kSyncIcon
                          : vector_icons::kSyncChromeRefreshOldIcon);
       break;
@@ -557,14 +555,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                          : vector_icons::kVideogameAssetChromeRefreshOldIcon);
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = show_blocked_badge
-                 ? &(features::IsRoundedIconsEnabled()
-                         ? vector_icons::kDevicesOffIcon
-                         : vector_icons::kDevicesOffOldIcon)
-                 : &(features::IsRoundedIconsEnabled() ? kDevicesIcon
-                     : features::IsRoundedIconsEnabled()
-                         ? vector_icons::kDevicesIcon
-                         : vector_icons::kDevicesOldIcon);
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kDevicesOffIcon
+                                        : vector_icons::kDevicesOffOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? kDevicesIcon
+                                        : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       icon = show_blocked_badge
@@ -776,10 +772,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : vector_icons::kVideogameAssetOldIcon);
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = &(features::IsRoundedIconsEnabled() ? kDevicesIcon
-               : features::IsRoundedIconsEnabled()
-                   ? vector_icons::kDevicesIcon
-                   : vector_icons::kDevicesOldIcon);
+      icon =
+          &(features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       icon = &(features::IsRoundedIconsEnabled()

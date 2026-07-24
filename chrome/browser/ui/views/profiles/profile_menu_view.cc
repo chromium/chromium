@@ -976,9 +976,8 @@ void ProfileMenuView::BuildCustomizeProfileButton() {
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                           base::Unretained(this)),
-      features::IsRoundedIconsEnabled() ? kEditIcon
-      : features::IsRoundedIconsEnabled()
-          ? vector_icons::kEditIcon
+      features::IsRoundedIconsEnabled()
+          ? kEditIcon
           : vector_icons::kEditChromeRefreshOldIcon);
 }
 
@@ -1042,9 +1041,8 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
       signin_util::SignedInState::kSyncing) {
     // Indicates clearly that Sync is ON.
     message_id = IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON;
-    icon = &(features::IsRoundedIconsEnabled()   ? vector_icons::kSyncIcon
-             : features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
-                                                 : kSyncChromeRefreshOldIcon);
+    icon = &(features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
+                                               : kSyncChromeRefreshOldIcon);
   }
 
   AddFeatureButton(
