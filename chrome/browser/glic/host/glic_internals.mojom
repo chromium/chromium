@@ -72,6 +72,11 @@ enum FreCompletionWaitMode {
   kNever,
 };
 
+struct ScreenshotTestKeyConfiguration {
+  string public_key;
+  string auth_secret;
+};
+
 // Configuration options for invoking Glic from the internals page.
 struct TriggerInvokeFromInternalsOptions {
   InvocationSource invocation_source;
@@ -95,6 +100,8 @@ struct TriggerInvokeFromInternalsOptions {
   ActuationTarget actuation_target;
   // Source-specific payload for the invocation.
   InvocationPayload? payload;
+  bool take_screenshot;
+  ScreenshotTestKeyConfiguration? key_config;
 };
 
 // Page handler for the glic internals WebUI.

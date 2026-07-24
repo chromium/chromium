@@ -217,23 +217,46 @@ export function getHtml(this: GlicInternalsAppElement) {
               .value="${this.invokeTimeoutMs_}"
               @input="${this.onInvokeTimeoutMsInput_}">
           </input>
-          <div style="display: flex; gap: 16px; align-items: center;">
-            <label style="flex: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 16px;
+             align-items: center;">
+            <label style="flex: 1 1 calc(50% - 8px);">
               <input type="checkbox" .checked="${this.invokeAutoSubmit_}"
                   @change="${this.onInvokeAutoSubmitChange_}">
               Auto Submit
             </label>
-            <label style="flex: 1;">
+            <label style="flex: 1 1 calc(50% - 8px);">
               <input type="checkbox" .checked="${this.invokeWaitForPanelOpen_}"
                   @change="${this.onInvokeWaitForPanelOpenChange_}">
               Wait for Panel Open
             </label>
-            <label style="flex: 1;">
+            <label style="flex: 1 1 calc(50% - 8px);">
               <input type="checkbox" .checked="${this.invokeFocusOnShow_}"
                   @change="${this.onInvokeFocusOnShowChange_}">
               Focus Panel on Show
             </label>
+            <label style="flex: 1 1 calc(50% - 8px);">
+              <input type="checkbox"
+                  .checked="${this.invokeTakeScreenshot_}"
+                  @change="${this.onInvokeTakeScreenshotChange_}">
+              Test Take Screenshot
+            </label>
           </div>
+          ${this.invokeTakeScreenshot_ ? html`
+            <div style="display: flex; flex-direction: column; gap: 8px;
+               margin: 8px 0;">
+              <label for="invokePublicKeyInput">
+                Public Key (Base64 - optional)</label>
+              <input id="invokePublicKeyInput" type="text"
+                  .value="${this.invokePublicKey_}"
+                  @input="${this.onInvokePublicKeyInput_}">
+              </input>
+              <label for="invokeAuthSecretInput">Auth Secret (optional)</label>
+              <input id="invokeAuthSecretInput" type="text"
+                  .value="${this.invokeAuthSecret_}"
+                  @input="${this.onInvokeAuthSecretInput_}">
+              </input>
+            </div>
+          ` : html``}
           <div style="display: flex; gap: 16px; align-items: center;">
             ${this.invokeAutoSubmit_ ? html`
               <label style="flex: 1;">

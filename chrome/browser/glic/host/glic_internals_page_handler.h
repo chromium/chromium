@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -15,6 +16,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace glic {
+class GlicInstance;
 class GlicKeyedService;
 
 // Handles the Mojo requests coming from the Glic Internals WebUI.
@@ -52,11 +54,17 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
   void ShowExperimentalOptIn() override;
 
  private:
+  void OnInvokeSuccess(TriggerInvokeFromInternalsActionCallback callback,
+                       bool take_screenshot,
+                       mojom::ScreenshotTestKeyConfigurationPtr key_config);
   GlicKeyedService* GetGlicService();
 
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
   mojo::Receiver<glic::mojom::InternalsPageHandler> receiver_;
+
+  base::WeakPtr<GlicInstance> active_test_instance_;
+  base::WeakPtrFactory<GlicInternalsPageHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

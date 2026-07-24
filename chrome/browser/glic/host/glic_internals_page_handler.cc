@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <sstream>
 
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -17,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -789,10 +792,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   options.on_success = base::BindOnce(
-      [](TriggerInvokeFromInternalsActionCallback cb) {
-        std::move(cb).Run(true, "");
-      },
-      std::move(split_callback.first));
+      &GlicInternalsPageHandler::OnInvokeSuccess,
+      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first),
+      mojo_options->take_screenshot, std::move(mojo_options->key_config));
 
   options.on_error = base::BindOnce(
       [](TriggerInvokeFromInternalsActionCallback cb, GlicInvokeError error) {
@@ -891,13 +893,55 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     if (mojo_options->show_panel.has_value()) {
       auto_submit_options.show_panel = mojo_options->show_panel.value();
     }
-    service->InvokeWithAutoSubmit(
+    active_test_instance_ = service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options),
         std::move(auto_submit_options));
   } else {
-    static_cast<GlicInstanceCoordinatorImpl&>(service->instance_coordinator())
-        .Invoke(std::move(options));
+    active_test_instance_ = service->Invoke(std::move(options));
   }
+}
+
+void GlicInternalsPageHandler::OnInvokeSuccess(
+    TriggerInvokeFromInternalsActionCallback callback,
+    bool take_screenshot,
+    mojom::ScreenshotTestKeyConfigurationPtr key_config) {
+  if (take_screenshot && active_test_instance_) {
+    if (GlicExperimentalTriggeringManager* triggering_manager =
+            active_test_instance_->GetExperimentalTriggeringManager()) {
+      if (!key_config || key_config->public_key.empty() ||
+          key_config->auth_secret.empty()) {
+        VLOG(5) << "Failed to take screenshot: key_config is empty or missing "
+                   "fields.";
+        std::move(callback).Run(false,
+                                "key_config is empty or missing fields.");
+        return;
+      }
+      std::string decoded_public_key;
+      if (!base::Base64Decode(key_config->public_key, &decoded_public_key)) {
+        VLOG(5) << "Failed to Base64 decode public key.";
+        std::move(callback).Run(false, "Failed to Base64 decode public key.");
+        return;
+      }
+
+      std::vector<uint8_t> public_key(decoded_public_key.begin(),
+                                      decoded_public_key.end());
+      std::vector<uint8_t> auth_secret(key_config->auth_secret.begin(),
+                                       key_config->auth_secret.end());
+
+      triggering_manager->CaptureAndUploadEncryptedScreenshot(
+          public_key, auth_secret,
+          base::BindOnce([](const std::optional<std::string>& file_token) {
+            if (file_token) {
+              VLOG(5) << "CaptureAndUploadEncryptedScreenshot "
+                         "success, token: "
+                      << *file_token;
+            } else {
+              VLOG(5) << "CaptureAndUploadEncryptedScreenshot failed";
+            }
+          }));
+    }
+  }
+  std::move(callback).Run(true, "");
 }
 
 void GlicInternalsPageHandler::SetWebContinuityOriginatingHostUrlPreset(

@@ -51,6 +51,9 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokePayloadUniversalCartMetadata_: {type: String},
       invokeFreCompletionWaitMode_: {type: Number},
       freCompletionWaitModeEnumValues_: {type: Array},
+      invokeTakeScreenshot_: {type: Boolean},
+      invokePublicKey_: {type: String},
+      invokeAuthSecret_: {type: String},
 
       selectedTabIndex_: {type: Number},
       invokeConversationType_: {type: String},
@@ -83,6 +86,11 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokePayloadUniversalCartMetadata_: string = '';
   protected accessor invokeFreCompletionWaitMode_: FreCompletionWaitMode =
       FreCompletionWaitMode.kDefault;
+  protected accessor invokeTakeScreenshot_: boolean = false;
+  protected accessor invokePublicKey_: string =
+      'BFlvj1VrkwP8pxa1zSiJZzZ7yeMEO1DOPS' +
+      'bNw6XV8NK3Xo++7ql9NTcxNaciYM2eQ/G1ebnwrtRrHyMXEDhN5ck=';
+  protected accessor invokeAuthSecret_: string = 'aaaaaaaaaaaaaaaa';
   protected accessor invokeConversationType_: string = 'default';
   protected accessor invokeConversationId_: string = '';
   protected accessor invokeSpecificTabIndex_: number = 0;
@@ -367,6 +375,15 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeFreCompletionWaitMode_ =
         Number((e.target as HTMLSelectElement).value);
   }
+  protected onInvokeTakeScreenshotChange_(e: Event) {
+    this.invokeTakeScreenshot_ = (e.target as HTMLInputElement).checked;
+  }
+  protected onInvokePublicKeyInput_(e: Event) {
+    this.invokePublicKey_ = (e.target as HTMLInputElement).value;
+  }
+  protected onInvokeAuthSecretInput_(e: Event) {
+    this.invokeAuthSecret_ = (e.target as HTMLInputElement).value;
+  }
   protected onTriggerInvokeClick_() {
     let surface: TriggerInvokeFromInternalsOptions['surface'];
     if (this.invokeSurfaceType_ === 'newTab') {
@@ -426,6 +443,12 @@ export class GlicInternalsAppElement extends CrLitElement {
       actuationTarget: this.invokeActuationTarget_,
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
       payload: payload,
+      takeScreenshot: this.invokeTakeScreenshot_,
+      keyConfig: (this.invokePublicKey_ || this.invokeAuthSecret_) ? {
+        publicKey: this.invokePublicKey_,
+        authSecret: this.invokeAuthSecret_,
+      } :
+                                                                     null,
     };
 
     const invocationSourceMap =
