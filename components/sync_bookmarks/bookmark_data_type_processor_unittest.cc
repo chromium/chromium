@@ -2473,6 +2473,61 @@ TEST_F(
       "Sync.ClearMetadataWhileStopped.DelayedClear", 1);
 }
 
+TEST_F(BookmarkDataTypeProcessorTest, ShouldRemoveTombstoneOnCommitResponse) {
+  SimulateModelReadyToSyncWithInitialSyncDone();
+
+  const bookmarks::BookmarkNode* bookmark_bar =
+      bookmark_model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* node =
+      bookmark_model()->AddFolder(bookmark_bar, /*index=*/0, u"Title");
+
+  const SyncedBookmarkTrackerEntity* entity =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node);
+  ASSERT_THAT(entity, NotNull());
+  const syncer::ClientTagHash client_tag_hash = entity->GetClientTagHash();
+
+  // Retrieve local changes for the creation request. This calls
+  // GetLocalChanges(), which marks commit as started on the entity in the
+  // tracker.
+  GetLocalChangesFromProcessor(/*max_entries=*/1);
+
+  // Simulate local deletion.
+  bookmark_model()->Remove(node, FROM_HERE);
+  ASSERT_THAT(processor()->GetTrackerForTest()->GetEntityForClientTagHash(
+                  client_tag_hash),
+              NotNull());
+
+  // Simulate commit response for the creation (seq 1).
+  syncer::CommitResponseData response1;
+  response1.id = "server_id";
+  response1.client_tag_hash = client_tag_hash;
+  response1.response_version = 1;
+  response1.sequence_number = 1;
+
+  processor()->OnCommitCompleted(CreateDataTypeState(), {response1},
+                                 syncer::FailedCommitResponseDataList());
+
+  // Entity should still be tracked as a tombstone because deletion is unsynced.
+  ASSERT_THAT(processor()->GetTrackerForTest()->GetEntityForClientTagHash(
+                  client_tag_hash),
+              NotNull());
+
+  // Simulate commit response for the deletion (seq 2).
+  syncer::CommitResponseData response2;
+  response2.id = "server_id";
+  response2.client_tag_hash = client_tag_hash;
+  response2.response_version = 2;
+  response2.sequence_number = 2;
+
+  processor()->OnCommitCompleted(CreateDataTypeState(), {response2},
+                                 syncer::FailedCommitResponseDataList());
+
+  // Tombstone should be removed from tracker.
+  EXPECT_THAT(processor()->GetTrackerForTest()->GetEntityForClientTagHash(
+                  client_tag_hash),
+              IsNull());
+}
+
 TEST_F(BookmarkDataTypeProcessorTest, ShouldWipeBookmarksIfCacheGuidMismatch) {
   ResetDataTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
   SimulateModelReadyToSyncWithInitialSyncDone();

@@ -161,16 +161,6 @@ class SyncedBookmarkTracker {
   void RecordAcceptedRemoteUpdate(const SyncedBookmarkTrackerEntity* entity,
                                   const syncer::UpdateResponseData& update);
 
-  // Updates the tracker after receiving the commit response. `sync_id` should
-  // match the already tracked sync ID for `entity`, with the exception of the
-  // initial commit, where the temporary client-generated ID will be overridden
-  // by the server-provided final ID. `entity` must be owned by this tracker.
-  void UpdateUponCommitResponse(const SyncedBookmarkTrackerEntity* entity,
-                                const std::string& sync_id,
-                                int64_t server_version,
-                                int64_t acked_sequence_number,
-                                const std::string& specifics_hash);
-
   // Updates the server ID for `entity`. `entity` must be owned by this tracker.
   void UpdateServerId(const SyncedBookmarkTrackerEntity* entity,
                       const std::string& sync_id);

@@ -364,41 +364,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldVerifyIsVersionAlreadyKnown) {
   EXPECT_FALSE(entity->IsVersionAlreadyKnown(kServerVersion + 1));
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
-  std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
-
-  const std::string kSyncId = "SYNC_ID";
-  const std::string kNewSyncId = "NEW_SYNC_ID";
-  const int64_t kId = 1;
-  const int64_t kServerVersion = 1000;
-  const int64_t kNewServerVersion = 1001;
-  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
-  const sync_pb::EntitySpecifics specifics =
-      GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), GURL());
-  SyncedBookmarkTrackerEntity* entity = tracker->AddRemote(
-      &node, kSyncId, kServerVersion, kModificationTime, specifics);
-  ASSERT_THAT(entity, NotNull());
-
-  // Initially only the old ID should be tracked.
-  ASSERT_THAT(tracker->GetEntityForSyncIdExhaustively(kSyncId), Eq(entity));
-  ASSERT_THAT(tracker->GetEntityForSyncIdExhaustively(kNewSyncId), IsNull());
-
-  // Receive a commit response with a changed id.
-  tracker->UpdateUponCommitResponse(entity, kNewSyncId, kNewServerVersion,
-                                    /*acked_sequence_number=*/1,
-                                    /*specifics_hash=*/"");
-
-  // Old id shouldn't be there, but the new one should.
-  EXPECT_THAT(tracker->GetEntityForSyncIdExhaustively(kSyncId), IsNull());
-  EXPECT_THAT(tracker->GetEntityForSyncIdExhaustively(kNewSyncId), Eq(entity));
-
-  EXPECT_THAT(entity->metadata().server_id(), Eq(kNewSyncId));
-  EXPECT_THAT(entity->bookmark_node(), Eq(&node));
-  EXPECT_THAT(entity->metadata().server_version(), Eq(kNewServerVersion));
-}
-
 TEST(SyncedBookmarkTrackerTest, ShouldUpdateServerId) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
       SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());

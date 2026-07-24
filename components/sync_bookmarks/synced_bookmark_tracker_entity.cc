@@ -117,17 +117,16 @@ void SyncedBookmarkTrackerEntity::RecordLocalUpdate(
   }
 }
 
+void SyncedBookmarkTrackerEntity::RecordCommitResponse(
+    const syncer::CommitResponseData& ack) {
+  metadata_.RecordCommitResponse(ack);
+}
+
 void SyncedBookmarkTrackerEntity::RecordLocalDeletion(
     PassKey,
     const syncer::DeletionOrigin& origin) {
   metadata_.RecordLocalDeletion(origin);
   metadata_.mutable_proto()->clear_bookmark_favicon_hash();
-}
-
-void SyncedBookmarkTrackerEntity::RecordCommitResponse(
-    PassKey,
-    const syncer::CommitResponseData& ack) {
-  metadata_.RecordCommitResponse(ack);
 }
 
 void SyncedBookmarkTrackerEntity::IncrementSequenceNumber() {

@@ -96,6 +96,8 @@ class SyncedBookmarkTrackerEntity {
   void RecordLocalUpdate(const sync_pb::EntitySpecifics& specifics,
                          base::Time modification_time);
 
+  void RecordCommitResponse(const syncer::CommitResponseData& ack);
+
   void IncrementSequenceNumber();
 
   void UpdateServerVersion(int64_t server_version);
@@ -123,8 +125,6 @@ class SyncedBookmarkTrackerEntity {
 
   void RecordAcceptedRemoteUpdate(PassKey,
                                   const syncer::UpdateResponseData& update);
-
-  void RecordCommitResponse(PassKey, const syncer::CommitResponseData& ack);
 
   // Re-associates a placeholder tombstone with a real bookmark node (e.g. undo
   // deletion).

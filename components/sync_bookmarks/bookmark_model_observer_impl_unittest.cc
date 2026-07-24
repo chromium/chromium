@@ -139,12 +139,17 @@ class BookmarkModelObserverImplTest
   void SimulateCommitResponseForAllLocalChanges() {
     for (const SyncedBookmarkTrackerEntity* entity :
          bookmark_tracker()->GetEntitiesWithLocalChanges()) {
-      const std::string id = entity->metadata().server_id();
-      // Don't simulate change in id for simplicity.
-      bookmark_tracker()->UpdateUponCommitResponse(
-          entity, id, /*server_version=*/1,
-          /*acked_sequence_number=*/entity->metadata().sequence_number(),
-          /*specifics_hash=*/entity->metadata().specifics_hash());
+      syncer::CommitResponseData response;
+      response.id = entity->metadata().server_id();
+      response.client_tag_hash = entity->GetClientTagHash();
+      response.response_version = 1;
+      response.sequence_number = entity->metadata().sequence_number();
+      response.specifics_hash = entity->metadata().specifics_hash();
+
+      SyncedBookmarkTrackerEntity* mutable_entity =
+          bookmark_tracker()->GetEntityForClientTagHash(
+              entity->GetClientTagHash());
+      mutable_entity->RecordCommitResponse(response);
     }
   }
 
@@ -777,45 +782,6 @@ TEST_P(BookmarkModelObserverImplTest,
   // folder1 and bookmark1 are still tracked.
   EXPECT_TRUE(bookmark_tracker()->GetEntityForBookmarkNode(folder1_node));
   EXPECT_TRUE(bookmark_tracker()->GetEntityForBookmarkNode(bookmark1_node));
-}
-
-TEST_P(BookmarkModelObserverImplTest,
-       BookmarkCreationAndRemovalShouldRequireTwoCommitResponsesBeforeRemoval) {
-  const bookmarks::BookmarkNode* bookmark_bar_node =
-      bookmark_model()->bookmark_bar_node();
-  const bookmarks::BookmarkNode* folder_node = bookmark_model()->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, u"folder");
-
-  // Node should be tracked now.
-  ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
-  SyncedBookmarkTrackerEntity* entity =
-      bookmark_tracker()->GetEntityForBookmarkNode(folder_node);
-  const std::string id = entity->metadata().server_id();
-  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
-
-  entity->MarkCommitMayHaveStarted();
-
-  // Remove the folder.
-  bookmark_model()->Remove(folder_node, FROM_HERE);
-
-  // Simulate a commit response for the first commit request (the creation).
-  // Don't simulate change in id for simplicity.
-  bookmark_tracker()->UpdateUponCommitResponse(
-      entity, id, /*server_version=*/1, /*acked_sequence_number=*/1,
-      entity->metadata().specifics_hash());
-
-  // There should still be one local change (the deletion).
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
-
-  // Entity is still tracked.
-  EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
-
-  // Commit the deletion.
-  bookmark_tracker()->UpdateUponCommitResponse(
-      entity, id, /*server_version=*/2, /*acked_sequence_number=*/2,
-      entity->metadata().specifics_hash());
-  // Entity should have been dropped.
-  EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 3U);
 }
 
 TEST_P(BookmarkModelObserverImplTest,

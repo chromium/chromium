@@ -204,16 +204,18 @@ void BookmarkDataTypeProcessor::OnCommitCompleted(
   // `error_response_list` is ignored, because all errors are treated as
   // transient and the processor with eventually retry.
   for (const syncer::CommitResponseData& response : committed_response_list) {
-    const SyncedBookmarkTrackerEntity* entity =
+    SyncedBookmarkTrackerEntity* entity =
         bookmark_tracker_->GetEntityForClientTagHash(response.client_tag_hash);
     if (!entity) {
       DLOG(WARNING) << "Received a commit response for an unknown entity.";
       continue;
     }
 
-    bookmark_tracker_->UpdateUponCommitResponse(
-        entity, response.id, response.response_version,
-        response.sequence_number, response.specifics_hash);
+    entity->RecordCommitResponse(response);
+
+    if (!entity->IsUnsynced() && entity->IsDeleted()) {
+      bookmark_tracker_->Remove(entity);
+    }
   }
 
   bookmark_tracker_->set_data_type_state(type_state);

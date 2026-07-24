@@ -729,35 +729,6 @@ void SyncedBookmarkTracker::RecordAcceptedRemoteUpdate(
       SyncedBookmarkTrackerEntity::PassKey(), update);
 }
 
-void SyncedBookmarkTracker::UpdateUponCommitResponse(
-    const SyncedBookmarkTrackerEntity* entity,
-    const std::string& sync_id,
-    int64_t server_version,
-    int64_t acked_sequence_number,
-    const std::string& specifics_hash) {
-  DCHECK(entity);
-  SyncedBookmarkTrackerEntity* mutable_entity = AsMutableEntity(entity);
-  UpdateServerId(mutable_entity, sync_id);
-
-  // TODO(crbug.com/40823197): Change this function's signature to take
-  // `CommitResponseData` as input instead of constructing one internally, or
-  // alternatively remove this function altogether from the tracker.
-  syncer::CommitResponseData response;
-  response.id = sync_id;
-  response.client_tag_hash = entity->GetClientTagHash();
-  response.response_version = server_version;
-  response.sequence_number = acked_sequence_number;
-  response.specifics_hash = specifics_hash;
-  mutable_entity->RecordCommitResponse(SyncedBookmarkTrackerEntity::PassKey(),
-                                       response);
-
-  // If there are no pending commits, remove tombstones.
-  if (!mutable_entity->IsUnsynced() && mutable_entity->IsDeleted()) {
-    Remove(mutable_entity);
-    return;
-  }
-}
-
 void SyncedBookmarkTracker::UpdateServerId(
     const SyncedBookmarkTrackerEntity* entity,
     const std::string& sync_id) {
