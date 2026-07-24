@@ -38,6 +38,9 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   getCurrentLineFocusType(): LineFocusType {
+    if (!this.isEnabled()) {
+      return LineFocusType.NONE;
+    }
     return this.model_.getCurrentStyleMode().getStyle().type;
   }
 
@@ -64,7 +67,8 @@ export class LineFocusController implements MoveModeDelegate {
     }
 
     if (isLineFocusShortcut(e)) {
-      this.toggle_(container, height);
+      this.toggle(!this.isEnabled(), container, height);
+      this.logger_.logLineFocusToggled(this.isEnabled());
       return true;
     }
 
@@ -122,14 +126,19 @@ export class LineFocusController implements MoveModeDelegate {
     const lineFocusValues = getLineFocusValues();
     const lastEnabled = lineFocusValues[lastEnabledValue];
     if (lastEnabled) {
-      this.model_.setLastEnabledLineFocusStyle(lastEnabled.style);
-      const style = isOn ? lastEnabled.style : LineFocusStyle.OFF;
-      this.setStyleAndMovement_(style, lastEnabled.movement, container, height);
+      this.model_.setSessionActive(isOn);
+      this.setStyleAndMovement_(
+          lastEnabled.style, lastEnabled.movement, container, height);
       this.listeners_.forEach(l => l.onLineFocusModesChanged());
     }
   }
 
   onStyleChange(style: LineFocusStyle, container: HTMLElement, height: number) {
+    const isOn = style !== LineFocusStyle.OFF;
+    if (!isOn && this.model_.isSessionActive()) {
+      this.onSessionEnd();
+    }
+    this.model_.setSessionActive(isOn);
     this.setStyleAndMovement_(
         style, this.getCurrentLineFocusMovement(), container, height);
   }
@@ -152,7 +161,7 @@ export class LineFocusController implements MoveModeDelegate {
 
   private updateStrategies_(
       style: LineFocusStyle, movement: LineFocusMovement) {
-    if (style.type === LineFocusType.NONE) {
+    if (!this.model_.isSessionActive()) {
       const styleMode = new LineFocusNoneStyleMode(style, this.model_);
       this.model_.setCurrentStyleMode(styleMode);
       this.model_.setCurrentMoveMode(
@@ -176,9 +185,11 @@ export class LineFocusController implements MoveModeDelegate {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
-    const lineFocusValue = this.lineFocusToEnumValue_(style, movement);
-    const lastNonDisabledLineFocus = this.lineFocusToEnumValue_(
-        this.model_.getLastEnabledLineFocusStyle(), movement);
+    const lineFocusValue = this.model_.isSessionActive() ?
+        this.lineFocusToEnumValue_(style, movement) :
+        chrome.readingMode.lineFocusOff;
+    const lastNonDisabledLineFocus =
+        this.lineFocusToEnumValue_(style, movement);
     if (lineFocusValue !== null && lastNonDisabledLineFocus !== null) {
       chrome.readingMode.onLineFocusChanged(
           lineFocusValue, lastNonDisabledLineFocus);
@@ -187,9 +198,6 @@ export class LineFocusController implements MoveModeDelegate {
 
   private lineFocusToEnumValue_(
       style: LineFocusStyle, movement: LineFocusMovement): number|null {
-    if (style === LineFocusStyle.OFF) {
-      return chrome.readingMode.lineFocusOff;
-    }
     const lineFocusValues = getLineFocusValues();
     const key = Object.keys(lineFocusValues).find(key => {
       const lineFocus = lineFocusValues[Number(key)];
@@ -198,16 +206,25 @@ export class LineFocusController implements MoveModeDelegate {
     return key ? Number(key) : null;
   }
 
-  private toggle_(container: HTMLElement, height: number) {
+  toggle(isOn: boolean, container: HTMLElement, height: number) {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
+    if (this.isEnabled() === isOn) {
+      return;
+    }
 
-    const lastStyle = this.model_.getLastEnabledLineFocusStyle();
-    const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
+    if (!isOn && this.model_.isSessionActive()) {
+      this.onSessionEnd();
+    }
+
+    this.model_.setSessionActive(isOn);
+    const currentStyle = this.getCurrentLineFocusStyle();
+    const newStyle = (isOn && currentStyle === LineFocusStyle.OFF) ?
+        LineFocusStyle.defaultValue() :
+        currentStyle;
     this.setStyleAndMovement_(
         newStyle, this.getCurrentLineFocusMovement(), container, height);
-    this.logger_.logLineFocusToggled(this.isEnabled());
     this.listeners_.forEach(l => l.onLineFocusModesChanged());
   }
 

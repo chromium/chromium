@@ -15,7 +15,6 @@ suite('LineFocusMoveMode', () => {
   let styleMode: LineFocusLineStyleMode;
   let windowMode: LineFocusWindowStyleMode;
   let delegate: MoveModeDelegate;
-  let sessionEnded: boolean;
   let notifiedMove: boolean;
   let scrollDiffReceived: number;
   let bufferValReceived: boolean|undefined;
@@ -67,14 +66,10 @@ suite('LineFocusMoveMode', () => {
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);
     windowMode =
         new LineFocusWindowStyleMode(LineFocusStyle.MEDIUM_WINDOW, model);
-    sessionEnded = false;
     notifiedMove = false;
     scrollDiffReceived = 0;
     bufferValReceived = undefined;
     delegate = {
-      onSessionEnd() {
-        sessionEnded = true;
-      },
       notifyMove() {
         notifiedMove = true;
       },
@@ -109,7 +104,6 @@ suite('LineFocusMoveMode', () => {
 
       assertTrue(started);
       assertTrue(model.isSessionActive());
-      assertEquals(styleMode.getStyle(), model.getLastEnabledLineFocusStyle());
     });
 
     test('onActivated should not adapt multi-line window', () => {
@@ -425,7 +419,6 @@ suite('LineFocusMoveMode', () => {
 
       assertTrue(started);
       assertTrue(model.isSessionActive());
-      assertEquals(styleMode.getStyle(), model.getLastEnabledLineFocusStyle());
     });
 
     test('onActivated should adapt multi-line window', () => {
@@ -980,7 +973,7 @@ suite('LineFocusMoveMode', () => {
       assertEquals(LineFocusMovement.CURSOR, cursorMode.getMovement());
     });
 
-    test('onActivated ends active session and resets model', () => {
+    test('onActivated resets model', () => {
       model.setSessionActive(true);
       model.setTop(100);
       model.setWindowHeight(100);
@@ -988,19 +981,9 @@ suite('LineFocusMoveMode', () => {
 
       mode.onActivated(container, 100);
 
-      assertTrue(sessionEnded);
       assertFalse(model.isSessionActive());
       assertEquals(0, model.getTop());
       assertEquals(0, model.getWindowHeight());
-    });
-
-    test('onActivated does not end inactive session', () => {
-      model.setSessionActive(false);
-      const container = document.createElement('div');
-
-      mode.onActivated(container, 100);
-
-      assertFalse(sessionEnded);
     });
 
     test('onActivated does not update positions', () => {

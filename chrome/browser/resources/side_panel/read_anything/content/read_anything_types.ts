@@ -53,58 +53,54 @@ interface LineFocusValue {
   movement: LineFocusMovement;
 }
 
-let lineFocusValues: Record<number, LineFocusValue>;
 export const getLineFocusValues = (): Record<number, LineFocusValue> => {
-  if (!lineFocusValues || !lineFocusValues[chrome.readingMode.lineFocusOff]) {
-    lineFocusValues = {
-      [chrome.readingMode.lineFocusOff]: {
-        value: chrome.readingMode.lineFocusOff,
-        style: LineFocusStyle.OFF,
-        movement: LineFocusMovement.STATIC,
-      },
-      [chrome.readingMode.lineFocusSmallCursorWindow]: {
-        value: chrome.readingMode.lineFocusSmallCursorWindow,
-        style: LineFocusStyle.SMALL_WINDOW,
-        movement: LineFocusMovement.CURSOR,
-      },
-      [chrome.readingMode.lineFocusSmallStaticWindow]: {
-        value: chrome.readingMode.lineFocusSmallStaticWindow,
-        style: LineFocusStyle.SMALL_WINDOW,
-        movement: LineFocusMovement.STATIC,
-      },
-      [chrome.readingMode.lineFocusMediumCursorWindow]: {
-        value: chrome.readingMode.lineFocusMediumCursorWindow,
-        style: LineFocusStyle.MEDIUM_WINDOW,
-        movement: LineFocusMovement.CURSOR,
-      },
-      [chrome.readingMode.lineFocusMediumStaticWindow]: {
-        value: chrome.readingMode.lineFocusMediumStaticWindow,
-        style: LineFocusStyle.MEDIUM_WINDOW,
-        movement: LineFocusMovement.STATIC,
-      },
-      [chrome.readingMode.lineFocusLargeCursorWindow]: {
-        value: chrome.readingMode.lineFocusLargeCursorWindow,
-        style: LineFocusStyle.LARGE_WINDOW,
-        movement: LineFocusMovement.CURSOR,
-      },
-      [chrome.readingMode.lineFocusLargeStaticWindow]: {
-        value: chrome.readingMode.lineFocusLargeStaticWindow,
-        style: LineFocusStyle.LARGE_WINDOW,
-        movement: LineFocusMovement.STATIC,
-      },
-      [chrome.readingMode.lineFocusCursorLine]: {
-        value: chrome.readingMode.lineFocusCursorLine,
-        style: LineFocusStyle.UNDERLINE,
-        movement: LineFocusMovement.CURSOR,
-      },
-      [chrome.readingMode.lineFocusStaticLine]: {
-        value: chrome.readingMode.lineFocusStaticLine,
-        style: LineFocusStyle.UNDERLINE,
-        movement: LineFocusMovement.STATIC,
-      },
-    };
-  }
-  return lineFocusValues;
+  return {
+    [chrome.readingMode.lineFocusOff]: {
+      value: chrome.readingMode.lineFocusOff,
+      style: LineFocusStyle.OFF,
+      movement: LineFocusMovement.STATIC,
+    },
+    [chrome.readingMode.lineFocusSmallCursorWindow]: {
+      value: chrome.readingMode.lineFocusSmallCursorWindow,
+      style: LineFocusStyle.SMALL_WINDOW,
+      movement: LineFocusMovement.CURSOR,
+    },
+    [chrome.readingMode.lineFocusSmallStaticWindow]: {
+      value: chrome.readingMode.lineFocusSmallStaticWindow,
+      style: LineFocusStyle.SMALL_WINDOW,
+      movement: LineFocusMovement.STATIC,
+    },
+    [chrome.readingMode.lineFocusMediumCursorWindow]: {
+      value: chrome.readingMode.lineFocusMediumCursorWindow,
+      style: LineFocusStyle.MEDIUM_WINDOW,
+      movement: LineFocusMovement.CURSOR,
+    },
+    [chrome.readingMode.lineFocusMediumStaticWindow]: {
+      value: chrome.readingMode.lineFocusMediumStaticWindow,
+      style: LineFocusStyle.MEDIUM_WINDOW,
+      movement: LineFocusMovement.STATIC,
+    },
+    [chrome.readingMode.lineFocusLargeCursorWindow]: {
+      value: chrome.readingMode.lineFocusLargeCursorWindow,
+      style: LineFocusStyle.LARGE_WINDOW,
+      movement: LineFocusMovement.CURSOR,
+    },
+    [chrome.readingMode.lineFocusLargeStaticWindow]: {
+      value: chrome.readingMode.lineFocusLargeStaticWindow,
+      style: LineFocusStyle.LARGE_WINDOW,
+      movement: LineFocusMovement.STATIC,
+    },
+    [chrome.readingMode.lineFocusCursorLine]: {
+      value: chrome.readingMode.lineFocusCursorLine,
+      style: LineFocusStyle.UNDERLINE,
+      movement: LineFocusMovement.CURSOR,
+    },
+    [chrome.readingMode.lineFocusStaticLine]: {
+      value: chrome.readingMode.lineFocusStaticLine,
+      style: LineFocusStyle.UNDERLINE,
+      movement: LineFocusMovement.STATIC,
+    },
+  };
 };
 
 // Events emitted from the toolbar to the app
