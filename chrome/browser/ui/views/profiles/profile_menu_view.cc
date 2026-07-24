@@ -368,9 +368,12 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           &browser(),
           trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      ShowSyncPassphraseDialogAndDecryptData(browser());
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase: {
+      Browser* browser_ptr = &browser();
+      GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+      ShowSyncPassphraseDialogAndDecryptData(*browser_ptr);
       break;
+    }
     case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
       chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
       break;
