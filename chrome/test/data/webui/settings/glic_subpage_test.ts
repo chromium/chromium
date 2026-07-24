@@ -777,6 +777,15 @@ suite('GlicSubpage', function() {
       assertTrue(isVisible(webActuationToggle));
     });
 
+    test('WebActuationSublabelAriaAttributes', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      const sublabelLink = webActuationToggle.shadowRoot!.querySelector('a');
+      assertTrue(!!sublabelLink);
+      assertTrue(sublabelLink.hasAttribute('aria-label'));
+      assertTrue(sublabelLink.hasAttribute('aria-description'));
+    });
+
     test('ToggleEnabled', async () => {
       page.set('webActuationEnabledPref_.value', true);
       await flushTasks();

@@ -929,14 +929,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED},
       {"glicWebActuationToggle",
        IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE},
-      {"glicWebActuationToggleSublabelV2",
-       IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_V2},
-      {"glicWebActuationToggleLearnMoreAriaLabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_LEARN_MORE_ARIA_LABEL},
-      {"glicWebActuationToggleConsiderSafelyAriaLabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL},
-      {"glicWebActuationToggleConsiderUnexpectedResultsAriaLabel",
-       IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL},
       {"glicActorLoginPermissionsSectionTitle",
        IDS_SETTINGS_GLIC_ACTOR_LOGIN_PERMISSIONS_SECTION_TITLE},
       {"glicActorLoginPermissionsSectionSublabel",
@@ -1059,15 +1051,44 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
                     features::kGlicExtensionsManagementUrl.Get());
   add_localized_url("glicWebActuationToggleLearnMoreUrl",
                     features::kGlicWebActuationToggleLearnMoreURL.Get());
-  html_source->AddString(
-      "glicWebActuationToggleConsider2V2",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2,
-          base::UTF8ToUTF16(
-              features::kGlicWebActuationToggleConsiderSafelyURL.Get()),
-          base::UTF8ToUTF16(
-              features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
-                  .Get())));
+  if (base::FeatureList::IsEnabled(features::kGlicSettingsA11yContextFix)) {
+    html_source->AddString(
+        "glicWebActuationToggleSublabelV2",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL_V2,
+            base::EscapeForHTML(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_LEARN_MORE_ARIA_LABEL)),
+            base::EscapeForHTML(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB))));
+    html_source->AddString(
+        "glicWebActuationToggleConsider2V2",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2,
+            base::EscapeForHTML(base::UTF8ToUTF16(
+                features::kGlicWebActuationToggleConsiderSafelyURL.Get())),
+            base::EscapeForHTML(base::UTF8ToUTF16(
+                features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
+                    .Get())),
+            base::EscapeForHTML(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL)),
+            base::EscapeForHTML(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_UNEXPECTED_RESULTS_ARIA_LABEL)),
+            base::EscapeForHTML(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB))));
+  } else {
+    html_source->AddLocalizedString(
+        "glicWebActuationToggleSublabelV2",
+        IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE_SUBLABEL);
+    html_source->AddString(
+        "glicWebActuationToggleConsider2V2",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
+            base::EscapeForHTML(base::UTF8ToUTF16(
+                features::kGlicWebActuationToggleConsiderSafelyURL.Get())),
+            base::EscapeForHTML(base::UTF8ToUTF16(
+                features::kGlicWebActuationToggleConsiderUnexpectedResultsURL
+                    .Get()))));
+  }
 
   const std::string experimental_triggering_learn_more_url =
       google_util::AppendGoogleLocaleParam(
@@ -1115,9 +1136,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
             IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3,
             base::UTF8ToUTF16(experimental_triggering_safety_url)));
   }
-  html_source->AddBoolean(
-      "glicSettingsA11yContextFixEnabled",
-      base::FeatureList::IsEnabled(features::kGlicSettingsA11yContextFix));
+
   html_source->AddBoolean(
       "glicExtensionsFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicExtensions));
