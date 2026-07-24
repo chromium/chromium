@@ -53,9 +53,9 @@ export class SecureDnsInputElement extends PolymerElement {
     };
   }
 
-  value: string;
-  private readonly showError_: string;
-  private errorText_: string;
+  declare value: string;
+  declare private readonly showError_: boolean;
+  declare private errorText_: string;
   private browserProxy_: SecurityPageBrowserProxy =
       SecurityPageBrowserProxyImpl.getInstance();
 

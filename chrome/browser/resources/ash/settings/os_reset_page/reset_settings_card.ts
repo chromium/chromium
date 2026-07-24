@@ -77,10 +77,10 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   ]);
 
   private osResetBrowserProxy_: OsResetBrowserProxy;
-  private installedESimProfiles_: ESimProfileRemote[];
-  private readonly isSanitizeAllowed_: boolean;
+  declare private installedESimProfiles_: ESimProfileRemote[];
+  declare private readonly isSanitizeAllowed_: boolean;
   private route_: Route;
-  private showPowerwashDialog_: boolean;
+  declare private showPowerwashDialog_: boolean;
 
   constructor() {
     super();

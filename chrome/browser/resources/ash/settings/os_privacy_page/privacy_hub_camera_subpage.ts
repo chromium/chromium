@@ -102,17 +102,17 @@ export class SettingsPrivacyHubCameraSubpage extends
     };
   }
 
-  private appList_: App[];
+  declare private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
   private browserProxy_: PrivacyHubBrowserProxy;
-  private cameraAccessStateText_: string;
-  private cameraFallbackMechanismEnabled_: boolean;
-  private cameraSwitchForceDisabled_: boolean;
-  private connectedCameraNames_: string[];
-  private isCameraListEmpty_: boolean;
+  declare private cameraAccessStateText_: string;
+  declare private cameraFallbackMechanismEnabled_: boolean;
+  declare private cameraSwitchForceDisabled_: boolean;
+  declare private connectedCameraNames_: string[];
+  declare private isCameraListEmpty_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
-  private shouldDisableCameraToggle_: boolean;
-  private systemApps_: App[];
+  declare private shouldDisableCameraToggle_: boolean;
+  declare private systemApps_: App[];
 
   constructor() {
     super();

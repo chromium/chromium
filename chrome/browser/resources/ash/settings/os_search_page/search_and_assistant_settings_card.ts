@@ -122,7 +122,7 @@ export class SearchAndAssistantSettingsCardElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -135,16 +135,16 @@ export class SearchAndAssistantSettingsCardElement extends
     Setting.kScannerOnOff,
   ]);
 
-  private readonly enterprisePolicyToggleUncheckedValues_: number[];
-  private isHmrAllowedByEnterprisePolicy_: boolean;
-  private isHmwAllowedByEnterprisePolicy_: boolean;
-  private isLobsterAllowedByEnterprisePolicy_: boolean;
-  private readonly isLobsterSettingsToggleVisible_: boolean;
-  private readonly isMagicBoostNoticeBannerVisible_: boolean;
-  private isMagicBoostFeatureEnabled_: boolean;
-  private isQuickAnswersSupported_: boolean;
-  private isScannerAllowedByEnterprisePolicy_: boolean;
-  private readonly isScannerSettingsToggleVisible_: boolean;
+  declare private readonly enterprisePolicyToggleUncheckedValues_: number[];
+  declare private isHmrAllowedByEnterprisePolicy_: boolean;
+  declare private isHmwAllowedByEnterprisePolicy_: boolean;
+  declare private isLobsterAllowedByEnterprisePolicy_: boolean;
+  declare private readonly isLobsterSettingsToggleVisible_: boolean;
+  declare private readonly isMagicBoostNoticeBannerVisible_: boolean;
+  declare private isMagicBoostFeatureEnabled_: boolean;
+  declare private isQuickAnswersSupported_: boolean;
+  declare private isScannerAllowedByEnterprisePolicy_: boolean;
+  declare private readonly isScannerSettingsToggleVisible_: boolean;
 
   constructor() {
     super();

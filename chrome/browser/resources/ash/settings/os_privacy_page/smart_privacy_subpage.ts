@@ -102,9 +102,9 @@ export class SettingsSmartPrivacySubpage extends
     Setting.kSnoopingProtection,
   ]);
 
-  private isQuickDimEnabled_: boolean;
-  private isSnoopingProtectionEnabled_: boolean;
-  private smartPrivacyQuickLockRangeMs_: SliderTick[];
+  declare private isQuickDimEnabled_: boolean;
+  declare private isSnoopingProtectionEnabled_: boolean;
+  declare private smartPrivacyQuickLockRangeMs_: SliderTick[];
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

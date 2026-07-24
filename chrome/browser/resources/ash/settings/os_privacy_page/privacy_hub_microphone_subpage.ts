@@ -99,15 +99,15 @@ export class SettingsPrivacyHubMicrophoneSubpage extends
     };
   }
 
-  private appList_: App[];
+  declare private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
   private browserProxy_: PrivacyHubBrowserProxy;
-  private connectedMicrophoneNames_: string[];
-  private isMicListEmpty_: boolean;
-  private microphoneHardwareToggleActive_: boolean;
+  declare private connectedMicrophoneNames_: string[];
+  declare private isMicListEmpty_: boolean;
+  declare private microphoneHardwareToggleActive_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
-  private shouldDisableMicrophoneToggle_: boolean;
-  private systemApps_: App[];
+  declare private shouldDisableMicrophoneToggle_: boolean;
+  declare private systemApps_: App[];
 
   constructor() {
     super();

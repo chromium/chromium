@@ -45,7 +45,7 @@ export class SettingsSearchEngineElement extends
   }
 
   private browserProxy_: SearchEnginesBrowserProxy;
-  private currentSearchEngine_: SearchEngine;
+  declare private currentSearchEngine_: SearchEngine;
 
   constructor() {
     super();

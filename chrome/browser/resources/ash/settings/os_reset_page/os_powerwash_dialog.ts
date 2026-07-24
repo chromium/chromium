@@ -81,13 +81,13 @@ export class OsSettingsPowerwashDialogElement extends PolymerElement {
     };
   }
 
-  installedESimProfiles: ESimProfileRemote[];
-  requestTpmFirmwareUpdate: boolean;
-  private hasContinueBeenTapped_: boolean;
-  private isESimCheckboxChecked_: boolean;
+  declare installedESimProfiles: ESimProfileRemote[];
+  declare requestTpmFirmwareUpdate: boolean;
+  declare private hasContinueBeenTapped_: boolean;
+  declare private isESimCheckboxChecked_: boolean;
   private lifetimeBrowserProxy_: LifetimeBrowserProxy;
   private osResetBrowserProxy_: OsResetBrowserProxy;
-  private shouldShowESimWarning_: boolean;
+  declare private shouldShowESimWarning_: boolean;
 
   constructor() {
     super();

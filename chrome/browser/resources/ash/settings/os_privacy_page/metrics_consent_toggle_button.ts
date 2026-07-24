@@ -55,9 +55,10 @@ class SettingsMetricsConsentToggleButtonElement extends
     };
   }
 
-  private isMetricsConsentConfigurable_: boolean;
+  declare private isMetricsConsentConfigurable_: boolean;
   private metricsConsentBrowserProxy_: MetricsConsentBrowserProxy;
-  private metricsConsentPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private metricsConsentPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   constructor() {
     super();

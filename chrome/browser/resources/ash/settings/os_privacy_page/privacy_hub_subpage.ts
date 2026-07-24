@@ -164,20 +164,20 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   ]);
 
   private browserProxy_: PrivacyHubBrowserProxy;
-  private showPrivacyHubLocationControl_: boolean;
-  private shouldUseMetricsConsentRestructure_: boolean;
-  private locationSubLabel_: string;
-  private cameraFallbackMechanismEnabled_: boolean;
-  private cameraRowSubtext_: string;
-  private isCameraListEmpty_: boolean;
-  private isMicListEmpty_: boolean;
-  private microphoneRowSubtext_: string;
-  private microphoneHardwareToggleActive_: boolean;
-  private microphoneToggleTooltipText_: string;
-  private shouldDisableMicrophoneToggle_: boolean;
-  private cameraSwitchForceDisabled_: boolean;
-  private shouldDisableCameraToggle_: boolean;
-  private showSpeakOnMuteDetectionPage_: boolean;
+  declare private showPrivacyHubLocationControl_: boolean;
+  declare private shouldUseMetricsConsentRestructure_: boolean;
+  declare private locationSubLabel_: string;
+  declare private cameraFallbackMechanismEnabled_: boolean;
+  declare private cameraRowSubtext_: string;
+  declare private isCameraListEmpty_: boolean;
+  declare private isMicListEmpty_: boolean;
+  declare private microphoneRowSubtext_: string;
+  declare private microphoneHardwareToggleActive_: boolean;
+  declare private microphoneToggleTooltipText_: string;
+  declare private shouldDisableMicrophoneToggle_: boolean;
+  declare private cameraSwitchForceDisabled_: boolean;
+  declare private shouldDisableCameraToggle_: boolean;
+  declare private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
     super();

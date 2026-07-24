@@ -74,9 +74,9 @@ export class SettingsSearchSubpageElement extends
     Setting.kQuickAnswersUnitConversion,
   ]);
 
-  private quickAnswersSubLabel_: string;
-  private quickAnswersSubToggleEnabled_: boolean;
-  private translationSubLabel_: string;
+  declare private quickAnswersSubLabel_: string;
+  declare private quickAnswersSubToggleEnabled_: boolean;
+  declare private translationSubLabel_: string;
 
   constructor() {
     super();

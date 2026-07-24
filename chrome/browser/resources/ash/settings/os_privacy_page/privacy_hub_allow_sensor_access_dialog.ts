@@ -60,9 +60,9 @@ class PrivacyHubAllowSensorAccessDialog extends
     };
   }
 
-  permissionType: PermissionTypeIndex;
-  private body_: string;
-  private title_: string;
+  declare permissionType: PermissionTypeIndex;
+  declare private body_: string;
+  declare private title_: string;
 
   override ready(): void {
     super.ready();

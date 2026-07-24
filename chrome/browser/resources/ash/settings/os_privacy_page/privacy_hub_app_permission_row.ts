@@ -106,16 +106,16 @@ export class SettingsPrivacyHubAppPermissionRow extends
     };
   }
 
-  app: App;
-  permissionType: PermissionTypeIndex;
-  private androidSettingsLinkAriaDescription_: string;
-  private ariaDescription_: string;
-  private checked_: boolean;
-  private isPermissionManaged_: boolean;
+  declare app: App;
+  declare permissionType: PermissionTypeIndex;
+  declare private androidSettingsLinkAriaDescription_: string;
+  declare private ariaDescription_: string;
+  declare private checked_: boolean;
+  declare private isPermissionManaged_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
-  private permissionText_: string;
-  private shouldDisableToggle_: boolean;
-  private shouldRedirectToAndroidSettings_: boolean;
+  declare private permissionText_: string;
+  declare private shouldDisableToggle_: boolean;
+  declare private shouldRedirectToAndroidSettings_: boolean;
 
   static get observers() {
     return ['onPermissionChange_(app.permissions.*)'];

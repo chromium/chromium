@@ -140,17 +140,17 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     };
   }
 
-  private secureDnsDescription_: string;
-  private secureDnsToggle_: chrome.settingsPrivate.PrefObject<boolean>;
-  private showSecureDnsOptions_: boolean;
-  private resolverOptions_: ResolverOption[];
-  private privacyPolicyString_: TrustedHTML;
-  private secureDnsInputValue_: string;
+  declare private secureDnsDescription_: string;
+  declare private secureDnsToggle_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private showSecureDnsOptions_: boolean;
+  declare private resolverOptions_: ResolverOption[];
+  declare private privacyPolicyString_: TrustedHTML;
+  declare private secureDnsInputValue_: string;
   private browserProxy_: SecurityPageBrowserProxy =
       SecurityPageBrowserProxyImpl.getInstance();
-  private showNetworkDefaultDescription_: boolean;
-  private showPrivacyPolicyDescription_: boolean;
-  private networkDefaultAriaDescribedBy_: string|null;
+  declare private showNetworkDefaultDescription_: boolean;
+  declare private showPrivacyPolicyDescription_: boolean;
+  declare private networkDefaultAriaDescribedBy_: string|null;
 
 
   override connectedCallback(): void {

@@ -24,7 +24,7 @@ class PrivacyHubGeolocationWarningText extends PolymerElement {
     };
   }
 
-  warningTextWithAnchor: string;
+  declare warningTextWithAnchor: string;
 
   private launchGeolocationDialog_(e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.

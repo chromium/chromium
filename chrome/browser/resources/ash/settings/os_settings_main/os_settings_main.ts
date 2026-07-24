@@ -63,10 +63,10 @@ export class OsSettingsMainElement extends PolymerElement {
     };
   }
 
-  prefs: PrefsState;
-  toolbarSpinnerActive: boolean;
-  pageAvailability: OsPageAvailability;
-  private isShowingSubpage_: boolean;
+  declare prefs: PrefsState;
+  declare toolbarSpinnerActive: boolean;
+  declare pageAvailability: OsPageAvailability;
+  declare private isShowingSubpage_: boolean;
 
   override ready(): void {
     super.ready();

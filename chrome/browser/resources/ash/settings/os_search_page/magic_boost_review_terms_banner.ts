@@ -43,8 +43,8 @@ export class MagicBoostReviewTermsBanner extends PolymerElement {
       },
     };
   }
-  description: string;
-  buttonLabel: string;
+  declare description: string;
+  declare buttonLabel: string;
 
   private onReviewButtonClick_(): void {
     this.magicBoostNoticeProxy_.showNotice();

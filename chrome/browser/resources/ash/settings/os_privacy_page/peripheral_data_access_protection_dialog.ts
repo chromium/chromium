@@ -41,7 +41,7 @@ class SettingsPeripheralDataAccessProtectionDialogElement extends
     };
   }
 
-  prefName: string;
+  declare prefName: string;
 
   /**
    * Closes the warning dialog and transitions to the disabling dialog.

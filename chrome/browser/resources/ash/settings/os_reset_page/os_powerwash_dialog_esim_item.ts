@@ -43,8 +43,8 @@ class OsSettingsPowerwashDialogEsimItemElement extends
     };
   }
 
-  profile: ESimProfileRemote|null;
-  private profileProperties_: ESimProfileProperties|null;
+  declare profile: ESimProfileRemote|null;
+  declare private profileProperties_: ESimProfileProperties|null;
 
   private onProfileChanged_(): void {
     if (!this.profile) {

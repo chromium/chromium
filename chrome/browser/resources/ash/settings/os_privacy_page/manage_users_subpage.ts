@@ -76,7 +76,7 @@ export class SettingsManageUsersSubpageElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -87,9 +87,9 @@ export class SettingsManageUsersSubpageElement extends
     Setting.kRemoveFromUserAllowlistV2,
   ]);
 
-  private isOwner_: boolean;
-  private isUserListManaged_: boolean;
-  private isChild_: boolean;
+  declare private isOwner_: boolean;
+  declare private isUserListManaged_: boolean;
+  declare private isChild_: boolean;
 
   constructor() {
     super();

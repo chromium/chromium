@@ -72,9 +72,9 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
     };
   }
 
-  private isManaged_: boolean;
-  showDeviceInfo: boolean;
-  private managedByIcon_: string;
+  declare private isManaged_: boolean;
+  declare showDeviceInfo: boolean;
+  declare private managedByIcon_: string;
 
   override ready(): void {
     super.ready();
