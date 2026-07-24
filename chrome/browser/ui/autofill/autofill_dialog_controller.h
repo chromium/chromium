@@ -22,6 +22,9 @@ class AutofillDialogController {
 
   virtual void ShowLoadingDialog(const std::u16string& title) = 0;
 
+  // Dismisses the dialog if it is showing.
+  virtual void Dismiss() = 0;
+
   // User clicked the positive button on the dialog.
   virtual void OnPositiveButtonClicked() = 0;
 

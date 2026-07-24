@@ -68,6 +68,15 @@ TEST_F(AutofillDialogControllerImplTest, ShowLoadingDialog) {
   EXPECT_THAT(controller_->GetButtonText(), IsEmpty());
 }
 
+// Test that `Dismiss` hides the dialog view
+TEST_F(AutofillDialogControllerImplTest, Dismiss) {
+  EXPECT_CALL(*mock_view_ptr_, Show()).Times(0);
+  EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+  EXPECT_CALL(*mock_view_ptr_, Dismiss());
+  controller_->ShowLoadingDialog(u"Title");
+  controller_->Dismiss();
+}
+
 // Test that only one dialog is shown at a time.
 TEST_F(AutofillDialogControllerImplTest, ShowDialogTwice) {
   EXPECT_CALL(*mock_view_ptr_, Show());

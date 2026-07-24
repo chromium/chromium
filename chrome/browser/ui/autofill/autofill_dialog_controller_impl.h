@@ -31,6 +31,7 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
             const std::u16string& button_text,
             base::OnceClosure on_positive_button_clicked_callback) override;
   void ShowLoadingDialog(const std::u16string& title) override;
+  void Dismiss() override;
 
   void OnPositiveButtonClicked() override;
   void OnDismissed() override;
@@ -49,10 +50,6 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   void DismissForTest() { Dismiss(); }
 
  private:
-  // Dismisses the dialog if it is showing. Calling Dismiss without calling
-  // Show is no-op.
-  void Dismiss();
-
   raw_ref<content::WebContents> web_contents_;
 
   std::unique_ptr<AutofillDialogView> autofill_dialog_view_;
