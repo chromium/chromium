@@ -85,6 +85,9 @@ class WebStateList;
 // ID.
 - (BOOL)shouldShowRPId:(NSString*)rpId;
 
+// Handles editing the suggestion.
+- (void)openEditForSuggestion:(FormSuggestion*)suggestion;
+
 @end
 
 // Methods to allow injection in tests.

@@ -564,7 +564,8 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenNotStateless) {
                   FieldRendererId(UNSAFE_TODO(kUsernameUniqueIDs[form_i])),
                   /*username_value=*/base::ASCIIToUTF16(kUsernames[1]),
                   /*password_element_id=*/password_field_id,
-                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1])));
+                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1]),
+                  /*realm=*/std::string()));
   }
 }
 
@@ -604,7 +605,8 @@ TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData) {
                   FieldRendererId(UNSAFE_TODO(kUsernameUniqueIDs[form_i])),
                   /*username_value=*/base::ASCIIToUTF16(kUsernames[1]),
                   /*password_element_id=*/password_field_id,
-                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1])));
+                  /*password_value=*/base::ASCIIToUTF16(kPasswords[1]),
+                  /*realm=*/std::string()));
   }
 }
 
@@ -679,7 +681,8 @@ TEST_P(AccountSelectFillDataFieldAndCredentialTypeTest,
                   /*password_element_id=*/password_field_id,
                   /*password_value=*/
                   is_backup_credential ? kBackupPassword
-                                       : base::ASCIIToUTF16(kPasswords[0])));
+                                       : base::ASCIIToUTF16(kPasswords[0]),
+                  /*realm=*/std::string()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

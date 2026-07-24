@@ -292,6 +292,15 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   }
 }
 
+- (password_manager::FillDataRetrievalResult)
+    passwordFillDataForUsername:(NSString*)username
+             isBackupCredential:(BOOL)isBackupCredential
+                     forFrameId:(const std::string&)frameId {
+  return [self.suggestionHelper passwordFillDataForUsername:username
+                                         isBackupCredential:isBackupCredential
+                                                 forFrameId:frameId];
+}
+
 - (BOOL)IsOffTheRecord {
   DCHECK(_delegate.passwordManagerClient);
   return _delegate.passwordManagerClient->IsOffTheRecord();

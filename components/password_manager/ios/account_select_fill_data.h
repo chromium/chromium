@@ -65,6 +65,7 @@ struct FillData {
   std::u16string username_value;
   autofill::FieldRendererId password_element_id;
   std::u16string password_value;
+  std::string realm;
 };
 
 // Represents an error when retrieving FormInfo.

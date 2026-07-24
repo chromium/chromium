@@ -104,6 +104,12 @@ class PasswordManagerClient;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Retrieves password fill data for a given username and frame.
+- (password_manager::FillDataRetrievalResult)
+    passwordFillDataForUsername:(NSString*)username
+             isBackupCredential:(BOOL)isBackupCredential
+                     forFrameId:(const std::string&)frameId;
+
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_SHARED_PASSWORD_CONTROLLER_H_

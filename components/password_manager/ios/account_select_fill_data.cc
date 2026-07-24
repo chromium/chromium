@@ -227,6 +227,7 @@ FillDataRetrievalResult AccountSelectFillData::GetFillData(
   result->password_value = is_backup_credential
                                ? credential.backup_password.value()
                                : credential.password;
+  result->realm = credential.realm;
   return std::move(result);
 }
 

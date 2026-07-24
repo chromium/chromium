@@ -7,8 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+namespace autofill {
+class CreditCard;
+class AutofillProfile;
+}  // namespace autofill
+
 namespace manual_fill {
 enum class ManualFillDataType;
+}
+
+namespace password_manager {
+struct CredentialUIEntry;
 }
 
 enum class SuggestionFeatureForIPH;
@@ -29,6 +38,18 @@ enum class SuggestionFeatureForIPH;
 // The mediator notifies that the autofill suggestion has been selected.
 - (void)notifyAutofillSuggestionWithIPHSelectedFor:
     (SuggestionFeatureForIPH)featureForIPH;
+
+// The mediator requests to open the password details in edit mode.
+- (void)openPasswordDetailsInEditMode:
+    (const password_manager::CredentialUIEntry&)credential;
+
+// The mediator requests to open the credit card details in edit mode.
+- (void)openCreditCardDetails:(const autofill::CreditCard&)card
+                   inEditMode:(BOOL)editMode;
+
+// The mediator requests to open the address details in edit mode.
+- (void)openAddressDetailsInEditModeForSuggestion:
+    (const autofill::AutofillProfile&)address;
 
 @end
 

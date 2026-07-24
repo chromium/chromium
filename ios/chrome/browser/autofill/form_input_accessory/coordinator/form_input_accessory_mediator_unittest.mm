@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator+testing.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
@@ -19,6 +22,8 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -127,7 +132,10 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
   FormInputAccessoryMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()),
         web_state_list_(&web_state_list_delegate_),
-        test_form_activity_tab_helper_(test_web_state_.get()) {}
+        test_form_activity_tab_helper_(test_web_state_.get()) {
+    profile_ = TestProfileIOS::Builder().Build();
+    test_web_state_->SetBrowserState(profile_.get());
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -155,16 +163,20 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     consumer_ = OCMProtocolMock(@protocol(FormInputAccessoryConsumer));
     handler_ = OCMProtocolMock(@protocol(FormInputAccessoryMediatorHandler));
 
-    mediator_ =
-        [[FormInputAccessoryMediator alloc] initWithConsumer:consumer_
-                                                     handler:handler_
-                                                webStateList:&web_state_list_
-                                         personalDataManager:nullptr
-                                        profilePasswordStore:nullptr
-                                        accountPasswordStore:nullptr
-                                        securityAlertHandler:nil
-                                      reauthenticationModule:nil
-                                           engagementTracker:nullptr];
+    personal_data_manager_ =
+        std::make_unique<autofill::TestPersonalDataManager>();
+    personal_data_manager_->SetPrefService(profile_->GetPrefs());
+
+    mediator_ = [[FormInputAccessoryMediator alloc]
+              initWithConsumer:consumer_
+                       handler:handler_
+                  webStateList:&web_state_list_
+           personalDataManager:personal_data_manager_.get()
+          profilePasswordStore:nullptr
+          accountPasswordStore:nullptr
+          securityAlertHandler:nil
+        reauthenticationModule:nil
+             engagementTracker:nullptr];
   }
 
   void TearDown() override {
@@ -236,6 +248,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;
   FakeWebStateListDelegate web_state_list_delegate_;
@@ -245,6 +258,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
   id provider_;
   NSArray* received_suggestions_ = nil;
   autofill::TestFormActivityTabHelper test_form_activity_tab_helper_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
   FormInputAccessoryMediator* mediator_;
 };
 
@@ -839,6 +853,7 @@ TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Suppressed) {
   task_environment_.FastForwardBy(kDelayForAcceptingOptionalUpdates);
   EXPECT_EQ(count, 0);
 }
+
 // Tests that shouldShowRPId returns YES if and only if the suggestion RP ID
 // does not match the active WebState's host.
 TEST_F(FormInputAccessoryMediatorTest, ShouldShowRPId) {
@@ -868,4 +883,88 @@ TEST_F(FormInputAccessoryMediatorTest, ShouldShowRPId) {
   EXPECT_FALSE([mediator shouldShowRPId:nil]);
 
   [mediator disconnect];
+}
+
+// Tests that `openEditForSuggestion:` calls the handler with correct password
+// details.
+TEST_F(FormInputAccessoryMediatorTest, OpenPasswordEditTriggered) {
+  // Setup PasswordTabHelper.
+  PasswordTabHelper::CreateForWebState(web_state_list_.GetActiveWebState());
+
+  // Setup a password suggestion.
+  autofill::Suggestion::PasswordSuggestionDetails details;
+  details.username = u"test_user";
+  details.password = u"test_password";
+  details.signon_realm = "https://example.com";
+
+  autofill::Suggestion::Payload payload(details);
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"test_user"
+       displayDescription:@"example.com"
+                     icon:nil
+                     type:autofill::SuggestionType::kPasswordEntry
+                  payload:payload
+           requiresReauth:NO];
+
+  // Set expectations on the mock handler.
+  OCMExpect(
+      [handler_
+          openPasswordDetailsInEditMode:password_manager::CredentialUIEntry()])
+      .ignoringNonObjectArgs();
+
+  // Trigger the mediator edit action.
+  [mediator_ openEditForSuggestion:suggestion];
+
+  // Verify expectations.
+  EXPECT_OCMOCK_VERIFY(handler_);
+}
+
+// Tests that `openEditForSuggestion:` calls the handler with correct credit
+// card details.
+TEST_F(FormInputAccessoryMediatorTest, OpenCreditCardEditTriggered) {
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+  personal_data_manager_->payments_data_manager().AddCreditCard(card);
+
+  autofill::Suggestion::Payload payload(
+      autofill::Suggestion::Guid(card.guid()));
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"Visa"
+       displayDescription:@"1111"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:payload
+           requiresReauth:NO];
+
+  OCMExpect([handler_ openCreditCardDetails:card inEditMode:YES])
+      .ignoringNonObjectArgs();
+
+  [mediator_ openEditForSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(handler_);
+}
+
+// Tests that `openEditForSuggestion:` calls the handler with correct address
+// details.
+TEST_F(FormInputAccessoryMediatorTest, OpenAddressEditTriggered) {
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  personal_data_manager_->address_data_manager().AddProfile(profile);
+
+  autofill::Suggestion::AutofillProfilePayload profile_payload(
+      autofill::Suggestion::Guid(profile.guid()));
+  autofill::Suggestion::Payload payload(profile_payload);
+
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"John Doe"
+       displayDescription:@"123 Main St"
+                     icon:nil
+                     type:autofill::SuggestionType::kAddressEntry
+                  payload:payload
+           requiresReauth:NO];
+
+  OCMExpect([handler_ openAddressDetailsInEditModeForSuggestion:profile])
+      .ignoringNonObjectArgs();
+
+  [mediator_ openEditForSuggestion:suggestion];
+
+  EXPECT_OCMOCK_VERIFY(handler_);
 }

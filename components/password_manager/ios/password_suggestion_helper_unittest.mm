@@ -955,7 +955,8 @@ TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateless) {
           /*username_element_id=*/username_renderer_id,
           /*username_value=*/UTF8ToUTF16(std::string(kFillDataUsername)),
           /*password_element_id=*/password_renderer_id,
-          /*password_value=*/kFillDataBackupPassword));
+          /*password_value=*/kFillDataBackupPassword,
+          /*realm=*/std::string()));
 }
 
 // Tests getting fill data for a backup credential when in stateful mode.
@@ -998,7 +999,8 @@ TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateful) {
           /*username_element_id=*/username_renderer_id,
           /*username_value=*/UTF8ToUTF16(std::string(kFillDataUsername)),
           /*password_element_id=*/password_renderer_id,
-          /*password_value=*/kFillDataBackupPassword));
+          /*password_value=*/kFillDataBackupPassword,
+          /*realm=*/std::string()));
 }
 
 // Tests that the helper is correctly reset.
