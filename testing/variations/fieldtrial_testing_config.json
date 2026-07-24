@@ -15967,6 +15967,24 @@
             ]
         }
     ],
+    "LazyInitializeSpellcheckCharAttribute": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260723",
+                    "enable_features": [
+                        "LazyInitializeSpellcheckCharAttribute"
+                    ]
+                }
+            ]
+        }
+    ],
     "LegacyKeyRepeatSynthesis": [
         {
             "platforms": [
