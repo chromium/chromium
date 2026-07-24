@@ -7,8 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsStartupUrlDialogElement,SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy} from 'chrome://settings/settings.js';
+import type {SettingsStartupUrlDialogElement, SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy} from 'chrome://settings/settings.js';
 import {EDIT_STARTUP_URL_EVENT, PrefsBrowserProxy, PrefService, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -91,7 +90,6 @@ suite('StartupUrlDialog', function() {
 
   test('Initialization_Add', function() {
     document.body.appendChild(dialog);
-    flush();
     assertTrue(dialog.$.dialog.open);
 
     // Assert that the "Add" button is disabled.
@@ -230,7 +228,6 @@ suite('StartupUrlsPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-startup-urls-page');
     document.body.appendChild(page);
-    await microtasksFinished();
   });
 
   teardown(function() {
@@ -244,37 +241,34 @@ suite('StartupUrlsPage', function() {
 
   test('UseCurrentPages', async function() {
     const useCurrentPagesButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#useCurrentPages > a');
+        page.shadowRoot.querySelector<HTMLElement>('#useCurrentPages > a');
     assertTrue(!!useCurrentPagesButton);
     useCurrentPagesButton.click();
     await browserProxy.whenCalled('useCurrentPages');
   });
 
-  test('AddPage_OpensDialog', function() {
+  test('AddPage_OpensDialog', async function() {
     const addPageButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#addPage > a');
+        page.shadowRoot.querySelector<HTMLElement>('#addPage > a');
     assertTrue(!!addPageButton);
-    assertFalse(
-        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+    assertFalse(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
 
     addPageButton.click();
-    flush();
-    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+    await microtasksFinished();
+    assertTrue(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
   });
 
-  test('EditPage_OpensDialog', function() {
-    assertFalse(
-        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
-    page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
-      bubbles: true,
-      composed: true,
-      detail: {model: createSampleUrlEntry(), anchor: null},
-    }));
-    flush();
-    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+  test('EditPage_OpensDialog', async function() {
+    assertFalse(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
+    page.fire(EDIT_STARTUP_URL_EVENT, {
+      model: createSampleUrlEntry(),
+      anchor: null,
+    });
+    await microtasksFinished();
+    assertTrue(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
   });
 
-  test('StartupPagesChanges_CloseOpenEditDialog', function() {
+  test('StartupPagesChanges_CloseOpenEditDialog', async function() {
     const entry1 = {
       modelIndex: 2,
       title: 'Test page 1',
@@ -290,27 +284,25 @@ suite('StartupUrlsPage', function() {
     };
 
     webUIListenerCallback('update-startup-pages', [entry1, entry2]);
-    page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
-      bubbles: true,
-      composed: true,
-      detail: {model: entry2, anchor: null},
-    }));
-    flush();
+    page.fire(EDIT_STARTUP_URL_EVENT, {
+      model: entry2,
+      anchor: null,
+    });
+    await microtasksFinished();
 
-    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+    assertTrue(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
     webUIListenerCallback('update-startup-pages', [entry1]);
-    flush();
+    await microtasksFinished();
 
-    assertFalse(
-        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+    assertFalse(!!page.shadowRoot.querySelector('settings-startup-url-dialog'));
   });
 
   test('StartupPages_WhenExtensionControlled', async function() {
     assertFalse(!!prefService.getPref('session.startup_urls').controlledBy);
     assertFalse(
-        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
-    assertTrue(!!page.shadowRoot!.querySelector('#addPage'));
-    assertTrue(!!page.shadowRoot!.querySelector('#useCurrentPages'));
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertTrue(!!page.shadowRoot.querySelector('#addPage'));
+    assertTrue(!!page.shadowRoot.querySelector('#useCurrentPages'));
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'session.startup_urls',
@@ -324,9 +316,9 @@ suite('StartupUrlsPage', function() {
     await microtasksFinished();
 
     assertTrue(
-        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
-    assertFalse(!!page.shadowRoot!.querySelector('#addPage'));
-    assertFalse(!!page.shadowRoot!.querySelector('#useCurrentPages'));
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertFalse(!!page.shadowRoot.querySelector('#addPage'));
+    assertFalse(!!page.shadowRoot.querySelector('#useCurrentPages'));
   });
 });
 
@@ -345,49 +337,44 @@ suite('StartupUrlEntry', function() {
   let browserProxy: TestStartupUrlsPageBrowserProxy;
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('settings-startup-url-entry');
     element.model = createSampleUrlEntry();
     document.body.appendChild(element);
-    flush();
-  });
-
-  teardown(function() {
-    element.remove();
   });
 
   test('MenuOptions_Remove', async function() {
     element.editable = true;
-    flush();
+    await microtasksFinished();
 
     // Bring up the popup menu.
-    assertFalse(!!element.shadowRoot!.querySelector('cr-action-menu'));
-    element.shadowRoot!.querySelector<HTMLElement>('#dots')!.click();
-    flush();
-    assertTrue(!!element.shadowRoot!.querySelector('cr-action-menu'));
+    assertFalse(!!element.shadowRoot.querySelector('cr-action-menu'));
+    element.shadowRoot.querySelector<HTMLElement>('#dots')!.click();
+    await microtasksFinished();
+    assertTrue(!!element.shadowRoot.querySelector('cr-action-menu'));
 
     const removeButton =
-        element.shadowRoot!.querySelector<HTMLElement>('#remove');
+        element.shadowRoot.querySelector<HTMLElement>('#remove');
     removeButton!.click();
     const modelIndex = await browserProxy.whenCalled('removeStartupPage');
     assertEquals(element.model.modelIndex, modelIndex);
   });
 
-  test('Editable', function() {
+  test('Editable', async function() {
     assertFalse(element.editable);
-    assertFalse(!!element.shadowRoot!.querySelector('#dots'));
+    assertFalse(!!element.shadowRoot.querySelector('#dots'));
 
     element.editable = true;
-    flush();
-    assertTrue(!!element.shadowRoot!.querySelector('#dots'));
+    await microtasksFinished();
+    assertTrue(!!element.shadowRoot.querySelector('#dots'));
   });
 
-  test('MoreActionsButtonTitle', function() {
+  test('MoreActionsButtonTitle', async function() {
     element.editable = true;
-    flush();
-    const dots = element.shadowRoot!.querySelector<HTMLElement>('#dots');
+    await microtasksFinished();
+    const dots = element.shadowRoot.querySelector<HTMLElement>('#dots');
     assertTrue(!!dots);
     const title = dots.getAttribute('title');
     assertTrue(!!title);

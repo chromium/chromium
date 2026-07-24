@@ -10,19 +10,19 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './startup_url_entry.html.js';
+import {getCss} from './startup_url_entry.css.js';
+import {getHtml} from './startup_url_entry.html.js';
 import type {StartupPageInfo} from './startup_urls_page_browser_proxy.js';
 import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
@@ -33,7 +33,7 @@ import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy
 export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
 const SettingsStartupUrlEntryElementBase =
-    I18nMixin(FocusRowMixin(PolymerElement));
+    I18nMixinLit(FocusRowMixinLit(CrLitElement));
 
 export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
@@ -41,54 +41,53 @@ export class SettingsStartupUrlEntryElement extends
     return 'settings-startup-url-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       editable: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      model: Object,
+      model: {type: Object},
     };
   }
 
-  declare editable: boolean;
-  declare model: StartupPageInfo;
+  accessor editable: boolean = false;
+  accessor model: StartupPageInfo;
 
-  private getMoreActionsTitle_(title: string): string {
-    return this.i18n('moreActionsFor', title);
+  protected getMoreActionsTitle_(): string {
+    return this.i18n('moreActionsFor', this.model.title);
   }
 
-  private onRemoveClick_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+  protected onRemoveClick_() {
+    this.shadowRoot.querySelector('cr-action-menu')!.close();
     StartupUrlsPageBrowserProxyImpl.getInstance().removeStartupPage(
         this.model.modelIndex);
   }
 
-  private onEditClick_(e: Event) {
+  protected onEditClick_(e: Event) {
     e.preventDefault();
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
-    this.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
-      bubbles: true,
-      composed: true,
-      detail: {
-        model: this.model,
-        anchor: this.shadowRoot!.querySelector('#dots'),
-      },
-    }));
+    this.shadowRoot.querySelector('cr-action-menu')!.close();
+    this.fire(EDIT_STARTUP_URL_EVENT, {
+      model: this.model,
+      anchor: this.shadowRoot.querySelector('#dots'),
+    });
   }
 
-  private onDotsClick_() {
+  protected onDotsClick_() {
     const actionMenu =
-        this.shadowRoot!
-            .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
+        this.shadowRoot
+            .querySelector<CrLazyRenderLitElement<CrActionMenuElement>>(
                 '#menu')!.get();
-    const dots = this.shadowRoot!.querySelector<HTMLElement>('#dots');
+    const dots = this.shadowRoot.querySelector<HTMLElement>('#dots');
     assert(dots);
     actionMenu.showAt(dots);
   }
