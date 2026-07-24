@@ -8,29 +8,29 @@
 #include <variant>
 
 #include "base/notreached.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    accessibility_annotator::MemoryDataType memory_data_type) {
-#define INTENT_TO_FIELD_TYPE(intent, field_type)        \
-  case accessibility_annotator::MemoryDataType::intent: \
+    MemoryDataType memory_data_type) {
+#define INTENT_TO_FIELD_TYPE(intent, field_type) \
+  case MemoryDataType::intent:                   \
     return field_type
-#define INTENT_TO_ENTITY_TYPE(intent, entity_type)      \
-  case accessibility_annotator::MemoryDataType::intent: \
+#define INTENT_TO_ENTITY_TYPE(intent, entity_type) \
+  case MemoryDataType::intent:                     \
     return EntityType(EntityTypeName::entity_type)
-#define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type)                \
-  case accessibility_annotator::MemoryDataType::intent_and_attribute_type: \
+#define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type) \
+  case MemoryDataType::intent_and_attribute_type:           \
     return AttributeType(AttributeTypeName::intent_and_attribute_type)
 #define INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(intent, attribute_type) \
-  case accessibility_annotator::MemoryDataType::intent:            \
+  case MemoryDataType::intent:                                     \
     return AttributeType(AttributeTypeName::attribute_type)
 
   switch (memory_data_type) {
@@ -107,14 +107,13 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentShippedDate);
     INTENT_TO_ATTRIBUTE_TYPE(kShipmentDeliveryZipCode);
-    case accessibility_annotator::MemoryDataType::
-        kShipmentEstimatedDeliveryDate:
-    case accessibility_annotator::MemoryDataType::kUnknown:
-    case accessibility_annotator::MemoryDataType::kIbanNickname:
-    case accessibility_annotator::MemoryDataType::kCreditCardNickname:
-    case accessibility_annotator::MemoryDataType::kFlightReservationArrivalDate:
-    case accessibility_annotator::MemoryDataType::kOrderGrandTotal:
-    case accessibility_annotator::MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kUnknown:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kShipmentDeliveryAddress:
       return std::nullopt;
   }
   NOTREACHED();

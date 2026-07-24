@@ -13,7 +13,6 @@
 
 namespace autofill {
 
-using ::accessibility_annotator::MemoryDataType;
 
 TEST(MemorySearchResultTest, ObfuscatesIban) {
   std::u16string raw_iban = u"DE91 1000 0000 0123 4567 89";

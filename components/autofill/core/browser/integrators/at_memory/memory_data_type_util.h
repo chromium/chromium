@@ -8,7 +8,8 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 
@@ -16,7 +17,7 @@ namespace autofill {
 
 // Returns true if the given `type` is considered sensitive personal
 // information.
-bool IsSpiiMemoryDataType(accessibility_annotator::MemoryDataType type);
+bool IsSpiiMemoryDataType(MemoryDataType type);
 
 // Converts a set of memory entry values into `personal_context::proto::Entity`.
 // `value` is the primary value of the memory entry corresponding to the
@@ -25,8 +26,14 @@ bool IsSpiiMemoryDataType(accessibility_annotator::MemoryDataType type);
 // expiration date, issuing country) for the memory entry.
 personal_context::proto::Entity ToPersonalContextEntity(
     std::u16string_view value,
-    accessibility_annotator::MemoryDataType memory_data_type,
+    MemoryDataType memory_data_type,
     base::span<const EntryMetadata> metadata_list);
+
+// Translates Autofill attribute names to entry types.
+MemoryDataType AttributeTypeToMemoryDataType(AttributeType type);
+
+// Returns the localized name of the entry type.
+std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type);
 
 }  // namespace autofill
 

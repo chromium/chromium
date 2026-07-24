@@ -7,18 +7,17 @@
 #include <optional>
 #include <variant>
 
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 namespace {
 
-using accessibility_annotator::MemoryDataType;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Optional;
@@ -177,22 +176,19 @@ TEST(AtMemoryDataTypeTest, ToAutofillPolicyDataCategory) {
 TEST(AtMemoryDataTypeTest, AttributeTypeToMemoryDataType) {
   EXPECT_THAT(AttributeTypeToMemoryDataType(
                   AttributeType(AttributeTypeName::kVehicleMake)),
-              Eq(accessibility_annotator::MemoryDataType::kVehicleMake));
+              Eq(MemoryDataType::kVehicleMake));
   EXPECT_THAT(AttributeTypeToMemoryDataType(
                   AttributeType(AttributeTypeName::kPassportNumber)),
-              Eq(accessibility_annotator::MemoryDataType::kPassportNumber));
-  EXPECT_THAT(
-      AttributeTypeToMemoryDataType(
-          AttributeType(AttributeTypeName::kShipmentTrackingNumber)),
-      Eq(accessibility_annotator::MemoryDataType::kShipmentTrackingNumber));
-  EXPECT_THAT(
-      AttributeTypeToMemoryDataType(
-          AttributeType(AttributeTypeName::kShipmentOrderIds)),
-      Eq(accessibility_annotator::MemoryDataType::kShipmentAssociatedOrderId));
-  EXPECT_THAT(
-      AttributeTypeToMemoryDataType(
-          AttributeType(AttributeTypeName::kShipmentShippedDate)),
-      Eq(accessibility_annotator::MemoryDataType::kShipmentShippedDate));
+              Eq(MemoryDataType::kPassportNumber));
+  EXPECT_THAT(AttributeTypeToMemoryDataType(
+                  AttributeType(AttributeTypeName::kShipmentTrackingNumber)),
+              Eq(MemoryDataType::kShipmentTrackingNumber));
+  EXPECT_THAT(AttributeTypeToMemoryDataType(
+                  AttributeType(AttributeTypeName::kShipmentOrderIds)),
+              Eq(MemoryDataType::kShipmentAssociatedOrderId));
+  EXPECT_THAT(AttributeTypeToMemoryDataType(
+                  AttributeType(AttributeTypeName::kShipmentShippedDate)),
+              Eq(MemoryDataType::kShipmentShippedDate));
 }
 
 TEST(AtMemoryDataTypeTest, GetMemoryDataTypeNameForI18n) {

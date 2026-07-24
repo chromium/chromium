@@ -91,7 +91,7 @@ class AtMemoryQueryService : public KeyedService {
       const AutofillClient& client,
       const std::u16string& auth_message,
       std::u16string_view masked_value,
-      accessibility_annotator::MemoryDataType data_type,
+      MemoryDataType data_type,
       base::span<const EntryMetadata> metadata_list,
       FetchUnmaskedPiiEntitiesCallback callback);
 
@@ -115,12 +115,11 @@ class AtMemoryQueryService : public KeyedService {
   // Called when the authentication is completed.
   // Performs the final PII unmasking request to `PersonalContextService` if
   // authentication succeeded.
-  void OnAuthenticationCompleted(
-      std::u16string masked_value,
-      accessibility_annotator::MemoryDataType data_type,
-      std::vector<EntryMetadata> metadata_list,
-      FetchUnmaskedPiiEntitiesCallback callback,
-      bool auth_succeeded);
+  void OnAuthenticationCompleted(std::u16string masked_value,
+                                 MemoryDataType data_type,
+                                 std::vector<EntryMetadata> metadata_list,
+                                 FetchUnmaskedPiiEntitiesCallback callback,
+                                 bool auth_succeeded);
 
   std::unique_ptr<AutofillDataProvider> data_provider_;
   raw_ptr<personal_context::PersonalContextService> personal_context_service_ =

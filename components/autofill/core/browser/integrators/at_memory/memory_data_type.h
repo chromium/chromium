@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_DATA_TYPE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_DATA_TYPE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_H_
 
-namespace accessibility_annotator {
+namespace autofill {
 
 // Represents the type of data a query or piece of information is related to.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -92,10 +92,8 @@ enum class MemoryDataType {
   kMaxValue = kCreditCardNickname,
 };
 // LINT.ThenChange(
-//     //components/accessibility_annotator/core/annotation_reducer/util.cc:MemoryDataType,
-//     //components/accessibility_annotator/core/annotation_reducer/util.cc:AnswerTypeToMemoryDataType,
 //     //tools/metrics/histograms/metadata/autofill/enums.xml:MemoryDataType)
 
-}  // namespace accessibility_annotator
+}  // namespace autofill
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_DATA_TYPE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_H_

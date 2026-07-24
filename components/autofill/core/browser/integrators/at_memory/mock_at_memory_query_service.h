@@ -34,7 +34,7 @@ class MockAtMemoryQueryService : public AtMemoryQueryService {
               (const AutofillClient& client,
                const std::u16string& auth_message,
                std::u16string_view masked_value,
-               accessibility_annotator::MemoryDataType data_type,
+               MemoryDataType data_type,
                base::span<const EntryMetadata> metadata_list,
                FetchUnmaskedPiiEntitiesCallback callback),
               (override));

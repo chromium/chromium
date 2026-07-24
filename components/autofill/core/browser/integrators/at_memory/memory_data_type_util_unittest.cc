@@ -13,7 +13,6 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::MemoryDataType;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
 // entry attributes and metadata into the corresponding fields of the personal

@@ -17,11 +17,11 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -34,7 +34,6 @@
 
 namespace autofill {
 
-using ::accessibility_annotator::MemoryDataType;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
@@ -70,7 +69,7 @@ Matcher<MemorySearchResult> IsMemorySearchResult(
 
 std::vector<MemorySearchResult> RetrieveAllHelper(
     AutofillDataProvider& retriever,
-    accessibility_annotator::MemoryDataType type) {
+    MemoryDataType type) {
   base::test::TestFuture<std::vector<MemorySearchResult>> future;
   retriever.RetrieveAll({type}, future.GetCallback());
   return future.Take();
@@ -118,10 +117,8 @@ class AutofillDataProviderTest : public testing::Test {
 
 // Tests that RetrieveAll returns an empty list when no data is available
 TEST_F(AutofillDataProviderTest, RetrieveAll_Empty) {
-  EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressCity),
-      IsEmpty());
+  EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kAddressCity),
+              IsEmpty());
 }
 
 // Tests that RetrieveAll fetches and formats address-related data from
@@ -132,8 +129,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressCity),
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressCity),
       UnorderedElementsAre(IsMemorySearchResult(
           u"Elysium", u"City",
           UnorderedElementsAre(
@@ -146,8 +142,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressZip),
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressZip),
       UnorderedElementsAre(IsMemorySearchResult(
           u"91111", u"Zip",
           UnorderedElementsAre(
@@ -160,8 +155,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressState),
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressState),
       UnorderedElementsAre(IsMemorySearchResult(
           u"CA", u"State",
           UnorderedElementsAre(
@@ -173,9 +167,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
-  EXPECT_THAT(RetrieveAllHelper(
-                  retriever(),
-                  accessibility_annotator::MemoryDataType::kAddressCountry),
+  EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kAddressCountry),
               UnorderedElementsAre(IsMemorySearchResult(
                   u"United States", u"Country",
                   UnorderedElementsAre(
@@ -188,8 +180,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
                   /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kNameFull),
+      RetrieveAllHelper(retriever(), MemoryDataType::kNameFull),
       UnorderedElementsAre(IsMemorySearchResult(
           u"John H. Doe", u"Name",
           UnorderedElementsAre(
@@ -202,8 +193,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kEmail),
+      RetrieveAllHelper(retriever(), MemoryDataType::kEmail),
       UnorderedElementsAre(IsMemorySearchResult(
           u"johndoe@hades.com", u"Email",
           UnorderedElementsAre(
@@ -217,8 +207,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
           /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kPhone),
+      RetrieveAllHelper(retriever(), MemoryDataType::kPhone),
       UnorderedElementsAre(IsMemorySearchResult(
           u"16502111111", u"Phone",
           UnorderedElementsAre(
@@ -233,8 +222,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressData) {
 
   // Requesting for address should return only the full address.
   EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressFull),
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressFull),
       UnorderedElementsAre(IsMemorySearchResult(
           u"Underworld, 666 Erebus St., Apt 8, Elysium, CA 91111, "
           u"United States",
@@ -257,8 +245,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_IbanData) {
   client().GetPersonalDataManager().test_payments_data_manager().AddIbanForTest(
       std::make_unique<Iban>(iban));
 
-  std::vector<MemorySearchResult> results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kIban);
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kIban);
   EXPECT_THAT(results, UnorderedElementsAre(IsMemorySearchResult(
                            GetObfuscatedIban(iban.value()), u"IBAN",
                            UnorderedElementsAre(IsMetadata(
@@ -275,8 +263,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
   client().GetPersonalDataManager().test_payments_data_manager().AddCreditCard(
       credit_card);
 
-  std::vector<MemorySearchResult> number_results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kCreditCardNumber);
+  std::vector<MemorySearchResult> number_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardNumber);
   EXPECT_THAT(
       number_results,
       UnorderedElementsAre(IsMemorySearchResult(
@@ -294,9 +282,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
                          std::u16string(3, kMidlineEllipsisPlainDot))),
           /*is_obfuscated=*/true, credit_card.guid())));
 
-  std::vector<MemorySearchResult> cvc_results = RetrieveAllHelper(
-      retriever(),
-      accessibility_annotator::MemoryDataType::kCreditCardSecurityCode);
+  std::vector<MemorySearchResult> cvc_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardSecurityCode);
   EXPECT_THAT(
       cvc_results,
       UnorderedElementsAre(IsMemorySearchResult(
@@ -315,9 +302,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
                   credit_card.ObfuscatedNumberWithVisibleLastFourDigits())),
           /*is_obfuscated=*/true, credit_card.guid())));
 
-  std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
-      retriever(),
-      accessibility_annotator::MemoryDataType::kCreditCardNameOnCard);
+  std::vector<MemorySearchResult> name_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardNameOnCard);
   EXPECT_THAT(
       name_results,
       UnorderedElementsAre(IsMemorySearchResult(
@@ -336,9 +322,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData) {
                          std::u16string(3, kMidlineEllipsisPlainDot))),
           /*is_obfuscated=*/false, credit_card.guid())));
 
-  std::vector<MemorySearchResult> exp_results = RetrieveAllHelper(
-      retriever(),
-      accessibility_annotator::MemoryDataType::kCreditCardExpirationDate);
+  std::vector<MemorySearchResult> exp_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardExpirationDate);
   EXPECT_THAT(
       exp_results,
       UnorderedElementsAre(IsMemorySearchResult(
@@ -368,9 +353,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_CreditCardData_EmptyFields) {
   client().GetPersonalDataManager().test_payments_data_manager().AddCreditCard(
       credit_card);
 
-  std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
-      retriever(),
-      accessibility_annotator::MemoryDataType::kCreditCardNameOnCard);
+  std::vector<MemorySearchResult> name_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardNameOnCard);
   // There should be no CVC entry, nor credit card number since they were empty.
   EXPECT_THAT(
       name_results,
@@ -405,9 +389,8 @@ TEST_F(AutofillDataProviderTest,
 
   // Direct retrieval for `kCreditCardSecurityCode` should return 4 dots for
   // card with 4-digit CVC.
-  std::vector<MemorySearchResult> cvc_results = RetrieveAllHelper(
-      retriever(),
-      accessibility_annotator::MemoryDataType::kCreditCardSecurityCode);
+  std::vector<MemorySearchResult> cvc_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardSecurityCode);
   EXPECT_THAT(
       cvc_results,
       UnorderedElementsAre(IsMemorySearchResult(
@@ -427,8 +410,8 @@ TEST_F(AutofillDataProviderTest,
   // Metadata retrieval for `kCreditCardNumber` should include CVC metadata
   // with 4 dots for the card with stored 4-digit CVC, and omit CVC metadata
   // for the card without a stored CVC.
-  std::vector<MemorySearchResult> number_results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kCreditCardNumber);
+  std::vector<MemorySearchResult> number_results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kCreditCardNumber);
   EXPECT_THAT(
       number_results,
       UnorderedElementsAre(
@@ -466,8 +449,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiEntityData) {
   WaitForDatabase();
 
   // Asking for Vehicle should return combined result and individual attributes.
-  std::vector<MemorySearchResult> results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kVehicle);
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kVehicle);
   EXPECT_THAT(
       results,
       ElementsAre(IsMemorySearchResult(
@@ -489,15 +472,14 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_PassportData) {
   entity_data_manager().AddOrUpdateEntityInstance(passport);
   WaitForDatabase();
 
-  std::vector<MemorySearchResult> results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kPassportFull);
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kPassportFull);
   ASSERT_FALSE(results.empty());
 
-  auto it = std::find_if(
-      results.begin(), results.end(), [](const MemorySearchResult& r) {
-        return r.type ==
-               accessibility_annotator::MemoryDataType::kPassportNumber;
-      });
+  auto it = std::find_if(results.begin(), results.end(),
+                         [](const MemorySearchResult& r) {
+                           return r.type == MemoryDataType::kPassportNumber;
+                         });
   ASSERT_NE(it, results.end());
 
   std::u16string expected_obfuscated_value =
@@ -508,9 +490,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_PassportData) {
   EXPECT_EQ(std::get<std::string>(it->identifier), passport.guid().value());
   ASSERT_FALSE(it->metadata_list.empty());
   EXPECT_THAT(it->metadata_list,
-              testing::Not(Contains(IsMetadata(
-                  accessibility_annotator::MemoryDataType::kPassportNumber,
-                  expected_obfuscated_value))));
+              testing::Not(Contains(IsMetadata(MemoryDataType::kPassportNumber,
+                                               expected_obfuscated_value))));
 }
 
 // Tests that RetrieveAll correctly fetches data for a specific attribute.
@@ -520,9 +501,7 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AutofillAiAttributeData) {
   WaitForDatabase();
 
   EXPECT_THAT(
-      RetrieveAllHelper(
-          retriever(),
-          accessibility_annotator::MemoryDataType::kVehiclePlateNumber),
+      RetrieveAllHelper(retriever(), MemoryDataType::kVehiclePlateNumber),
       UnorderedElementsAre(IsMemorySearchResult(
           u"123456", u"License plate",
           ElementsAre(
@@ -543,8 +522,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_VehicleFallbackToFirstNonEmpty) {
   entity_data_manager().AddOrUpdateEntityInstance(vehicle);
   WaitForDatabase();
 
-  std::vector<MemorySearchResult> results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kVehicle);
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kVehicle);
   EXPECT_THAT(
       results,
       ElementsAre(IsMemorySearchResult(
@@ -563,10 +542,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressFull_EmptyProfile) {
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
-  EXPECT_THAT(
-      RetrieveAllHelper(retriever(),
-                        accessibility_annotator::MemoryDataType::kAddressFull),
-      IsEmpty());
+  EXPECT_THAT(RetrieveAllHelper(retriever(), MemoryDataType::kAddressFull),
+              IsEmpty());
 }
 
 // Tests that RetrieveAll correctly formats address suggestions for
@@ -580,8 +557,8 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_AddressFull_PartialAddress) {
   // Missing State, Zip
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
-  std::vector<MemorySearchResult> results = RetrieveAllHelper(
-      retriever(), accessibility_annotator::MemoryDataType::kAddressFull);
+  std::vector<MemorySearchResult> results =
+      RetrieveAllHelper(retriever(), MemoryDataType::kAddressFull);
 
   EXPECT_THAT(
       results,

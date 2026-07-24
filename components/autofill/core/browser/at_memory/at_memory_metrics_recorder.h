@@ -95,7 +95,7 @@ class AtMemoryMetricsRecorder {
   // Records that a suggestion was accepted during this session.
   using MemorySourcesBitmask = std::underlying_type_t<MemoryEntrySourceType>;
   void OnSuggestionAccepted(
-      accessibility_annotator::MemoryDataType memory_data_type,
+      MemoryDataType memory_data_type,
       MemorySourcesBitmask sources_bitmask = 0,
       base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
           metadata = std::nullopt);
@@ -178,7 +178,7 @@ class AtMemoryMetricsRecorder {
     // Whether a non-empty query response has been received.
     bool suggestions_received = false;
 
-    std::optional<accessibility_annotator::MemoryDataType> accepted_data_type;
+    std::optional<MemoryDataType> accepted_data_type;
 
     std::optional<MemorySourcesBitmask> accepted_sources_bitmask;
   } suggestion_acceptance_;

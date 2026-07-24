@@ -24,13 +24,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -47,7 +46,6 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::MemoryDataType;
 using ::personal_context::proto::AtMemoryQueryResponse;
 
 MemoryDataType ToMemoryDataType(
@@ -997,7 +995,7 @@ void AtMemoryQueryService::AuthenticateAndFetchPiiEntity(
     const AutofillClient& client,
     const std::u16string& auth_message,
     std::u16string_view masked_value,
-    accessibility_annotator::MemoryDataType data_type,
+    MemoryDataType data_type,
     base::span<const EntryMetadata> metadata_list,
     FetchUnmaskedPiiEntitiesCallback callback) {
   if (device_authenticator_) {
@@ -1137,7 +1135,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
 
 void AtMemoryQueryService::OnAuthenticationCompleted(
     std::u16string masked_value,
-    accessibility_annotator::MemoryDataType data_type,
+    MemoryDataType data_type,
     std::vector<EntryMetadata> metadata_list,
     FetchUnmaskedPiiEntitiesCallback callback,
     bool auth_succeeded) {

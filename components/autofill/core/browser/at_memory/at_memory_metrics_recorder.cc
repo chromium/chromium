@@ -216,7 +216,7 @@ void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
 }
 
 void AtMemoryMetricsRecorder::OnSuggestionAccepted(
-    accessibility_annotator::MemoryDataType memory_data_type,
+    MemoryDataType memory_data_type,
     MemorySourcesBitmask sources_bitmask,
     base::optional_ref<const AutofillSuggestionDelegate::SuggestionMetadata>
         metadata) {

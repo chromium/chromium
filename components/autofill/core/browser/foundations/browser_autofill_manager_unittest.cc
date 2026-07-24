@@ -5419,8 +5419,8 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
 
   // Prepare search results containing a SPII entry.
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(accessibility_annotator::MemoryDataType::kPassportNumber,
-                       u"Passport", u"123456789");
+  entries.emplace_back(MemoryDataType::kPassportNumber, u"Passport",
+                       u"123456789");
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
                               std::move(entries));
 

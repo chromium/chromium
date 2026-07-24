@@ -13,11 +13,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 
 namespace autofill {
 
-using ::accessibility_annotator::MemoryDataType;
 
 // Key-value metadata providing additional context for an entry.
 struct EntryMetadata {

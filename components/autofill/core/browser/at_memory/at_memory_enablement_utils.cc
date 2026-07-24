@@ -300,7 +300,7 @@ std::optional<AtMemoryAction> MapCategoryToAtMemoryAction(
 }
 
 std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
-    accessibility_annotator::MemoryDataType type) {
+    MemoryDataType type) {
   return ToAtMemoryDataType(type)
       .and_then(&ToAutofillPolicyDataCategory)
       .and_then(&MapCategoryToAtMemoryAction);

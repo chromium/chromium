@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
@@ -33,7 +32,6 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
@@ -45,6 +43,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -67,7 +66,6 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::MemoryDataType;
 
 std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
   auto create_suggestion = [](SuggestionType suggestion_type, int string_id) {
@@ -669,7 +667,7 @@ std::vector<EntryMetadata> GetMetadataFromSuggestion(
   return metadata;
 }
 
-bool ShouldEraseMemorySearchResult(accessibility_annotator::MemoryDataType type,
+bool ShouldEraseMemorySearchResult(MemoryDataType type,
                                    base::span<const MemoryEntrySource> sources,
                                    AutofillClient& client,
                                    bool is_context_secure) {

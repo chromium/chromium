@@ -11,7 +11,6 @@ source_set("annotation_reducer") {
     "ingested_content_annotation.h",
     "ingested_content_annotation_utils.cc",
     "ingested_content_annotation_utils.h",
-    "memory_data_type.h",
   ]
 
   public_deps = [

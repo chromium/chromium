@@ -24,11 +24,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -213,8 +213,7 @@ struct Suggestion {
 
     AtMemoryPayload();
     // `value` is the value to be shown in the suggestion UI and the preview.
-    AtMemoryPayload(std::u16string value,
-                    accessibility_annotator::MemoryDataType memory_data_type);
+    AtMemoryPayload(std::u16string value, MemoryDataType memory_data_type);
     AtMemoryPayload(const AtMemoryPayload&);
     AtMemoryPayload(AtMemoryPayload&&);
     AtMemoryPayload& operator=(const AtMemoryPayload&);
@@ -233,9 +232,8 @@ struct Suggestion {
     // The identifier for the entry (e.g. IBAN Guid or InstrumentId).
     Identifier identifier;
 
-    // The type of the entry from accessibility annotator.
-    accessibility_annotator::MemoryDataType memory_data_type =
-        accessibility_annotator::MemoryDataType::kUnknown;
+    // The memory data type of the entry.
+    MemoryDataType memory_data_type = MemoryDataType::kUnknown;
 
     // Whether the entry is sourced from `PersonalContextService`.
     bool is_personal_context_sourced = false;

@@ -20,10 +20,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -43,7 +43,6 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::MemoryDataType;
 using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
@@ -1418,8 +1417,7 @@ TEST_F(AtMemoryQueryServiceTest,
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1447,8 +1445,7 @@ TEST_F(AtMemoryQueryServiceTest,
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1476,8 +1473,7 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_AuthFails) {
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1510,8 +1506,7 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_FetchFails) {
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1547,8 +1542,7 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_ParseFails) {
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1587,8 +1581,7 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_Success) {
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"4321",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {{metadata}},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {{metadata}}, future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), u"987654321");
@@ -1610,8 +1603,7 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_Offline) {
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, future.GetCallback());
 
   EXPECT_THAT(
       future.Get(),
@@ -1642,15 +1634,13 @@ TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_AuthInProgress) {
 
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      base::DoNothing());
+      MemoryDataType::kPassportNumber, {}, base::DoNothing());
 
   // Second call should return `kReauthInProgress` immediately.
   TestFuture<AtMemoryQueryService::SpiiRetrievalResult> second_future;
   service->AuthenticateAndFetchPiiEntity(
       autofill_client(), u"auth message 2", u"1234",
-      accessibility_annotator::MemoryDataType::kPassportNumber, {},
-      second_future.GetCallback());
+      MemoryDataType::kPassportNumber, {}, second_future.GetCallback());
 
   EXPECT_THAT(
       second_future.Get(),

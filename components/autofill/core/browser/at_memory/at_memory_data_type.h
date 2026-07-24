@@ -8,11 +8,11 @@
 #include <optional>
 #include <variant>
 
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 
 namespace autofill {
 
@@ -21,10 +21,9 @@ namespace autofill {
 // attribute or to a broader category (e.g. a vehicle, or vehicle's VIN).
 using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
 
-// Translates an entry type from the accessibility annotator to an
-// Autofill-specific data type.
+// Translates a MemoryDataType to an Autofill-specific data type.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    accessibility_annotator::MemoryDataType memory_data_type);
+    MemoryDataType memory_data_type);
 
 // Maps AtMemoryDataType to AutofillPolicyDataCategory.
 std::optional<AutofillClient::AutofillPolicyDataCategory>

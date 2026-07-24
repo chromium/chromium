@@ -13,8 +13,8 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/optional_ref.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 class GoogleGroupsManager;
@@ -85,7 +85,7 @@ class AutofillOptimizationGuideDecider;
 // Translates an entry type from the accessibility annotator to an
 // Autofill-specific AtMemoryAction for retrieving data for filling.
 std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
-    accessibility_annotator::MemoryDataType type);
+    MemoryDataType type);
 
 // Returns whether all permission-related requirements are met for `action`.
 //
