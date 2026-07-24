@@ -4,9 +4,11 @@
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
     private final View mContentView;
     private final ScrollView mScrollView;
+    private final ImageView mDisclaimerLogo;
     private final TextView mTitleView;
     private final TextViewWithLeading mDescriptionView;
     private final TextView mProfileInformationTitle;
@@ -49,6 +52,7 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
                 LayoutInflater.from(context)
                         .inflate(R.layout.enterprise_signals_disclaimer_layout, null);
         mScrollView = mContentView.findViewById(R.id.disclaimer_scroll_view);
+        mDisclaimerLogo = mContentView.findViewById(R.id.disclaimer_logo);
         mTitleView = mContentView.findViewById(R.id.disclaimer_title);
         mDescriptionView = mContentView.findViewById(R.id.disclaimer_description);
         mProfileInformationTitle = mContentView.findViewById(R.id.profile_information_title);
@@ -63,6 +67,17 @@ class EnterpriseSignalsDisclaimerBottomSheetView implements BottomSheetContent {
                 controller, R.id.profile_info_card, /* isTop= */ true, /* isBottom= */ false);
         styleContainmentCard(
                 controller, R.id.device_info_card, /* isTop= */ false, /* isBottom= */ true);
+    }
+
+    /**
+     * Sets the profile picture displayed in the disclaimer.
+     *
+     * @param profilePicture The {@link Drawable} for the profile picture.
+     */
+    public void setProfilePicture(@Nullable Drawable profilePicture) {
+        if (profilePicture != null) {
+            mDisclaimerLogo.setImageDrawable(profilePicture);
+        }
     }
 
     /**

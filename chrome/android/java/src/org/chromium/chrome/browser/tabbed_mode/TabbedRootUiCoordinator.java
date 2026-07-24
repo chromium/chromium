@@ -180,6 +180,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator.StatusIndicatorObserver;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
@@ -310,6 +311,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1318,10 +1320,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // TODO(b/512836948): This is temporary for testing purposes. A proper way to launch and
         // control the dialog shall be introduced later on.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)) {
-            mEnterpriseSignalsDisclaimerCoordinator =
-                    new EnterpriseSignalsDisclaimerCoordinator(
-                            mActivity, assertNonNull(getBottomSheetController()));
-            mEnterpriseSignalsDisclaimerCoordinator.show();
+            final Profile profile = mProfileSupplier.asNonNull().get().getOriginalProfile();
+            final SigninManager signinManager =
+                    Objects.requireNonNull(
+                            IdentityServicesProvider.get().getSigninManager(profile));
+            final IdentityManager identityManager =
+                    Objects.requireNonNull(signinManager.getIdentityManager());
+            final @Nullable AccountInfo primaryAccount = identityManager.getPrimaryAccountInfo();
+            if (primaryAccount != null) {
+                signinManager.isAccountManaged(
+                        primaryAccount,
+                        (Boolean isManaged) -> {
+                            if (isManaged) {
+                                mEnterpriseSignalsDisclaimerCoordinator =
+                                        new EnterpriseSignalsDisclaimerCoordinator(
+                                                mActivity,
+                                                assertNonNull(getBottomSheetController()),
+                                                signinManager);
+                                mEnterpriseSignalsDisclaimerCoordinator.show();
+                            }
+                        });
+            }
         }
     }
 

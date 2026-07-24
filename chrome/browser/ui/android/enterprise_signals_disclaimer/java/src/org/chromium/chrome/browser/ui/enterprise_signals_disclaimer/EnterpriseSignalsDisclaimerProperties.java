@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
+import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
@@ -13,6 +14,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Properties defined for the enterprise signals disclaimer. */
 @NullMarked
 class EnterpriseSignalsDisclaimerProperties {
+    public static final WritableObjectPropertyKey<Drawable> PROFILE_PICTURE =
+            new WritableObjectPropertyKey<>("profile_picture");
     public static final WritableObjectPropertyKey<String> TITLE =
             new WritableObjectPropertyKey<>("title");
     public static final WritableObjectPropertyKey<String> DESCRIPTION =
@@ -36,6 +39,7 @@ class EnterpriseSignalsDisclaimerProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                PROFILE_PICTURE,
                 TITLE,
                 DESCRIPTION,
                 PROFILE_INFORMATION_TITLE,

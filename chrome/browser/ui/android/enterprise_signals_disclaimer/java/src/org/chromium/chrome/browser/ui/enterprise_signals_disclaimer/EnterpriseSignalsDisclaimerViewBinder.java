@@ -22,7 +22,10 @@ class EnterpriseSignalsDisclaimerViewBinder {
             PropertyModel model,
             EnterpriseSignalsDisclaimerBottomSheetView view,
             PropertyKey propertyKey) {
-        if (propertyKey == EnterpriseSignalsDisclaimerProperties.TITLE) {
+        if (propertyKey == EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE) {
+            view.setProfilePicture(
+                    model.get(EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE));
+        } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.TITLE) {
             view.setTitle(model.get(EnterpriseSignalsDisclaimerProperties.TITLE));
         } else if (propertyKey == EnterpriseSignalsDisclaimerProperties.DESCRIPTION) {
             view.setDescription(model.get(EnterpriseSignalsDisclaimerProperties.DESCRIPTION));

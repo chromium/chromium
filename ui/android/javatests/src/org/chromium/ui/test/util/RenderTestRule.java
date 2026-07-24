@@ -132,6 +132,7 @@ public class RenderTestRule extends TestWatcher {
         Component.BLINK_CONTACTS,
         Component.BLINK_FORMS_COLOR,
         Component.BLINK_PAYMENTS,
+        Component.ENTERPRISE,
         Component.FREEZE_DRIED_TABS,
         Component.PRIVACY,
         Component.PRIVACY_INCOGNITO,
@@ -188,6 +189,7 @@ public class RenderTestRule extends TestWatcher {
         String BLINK_FORMS_COLOR = "Blink>Forms>Color";
         String BLINK_PAYMENTS = "Blink>Payments";
         String BLINK_VIEW_TRANSITIONS = "Blink>ViewTransitions";
+        String ENTERPRISE = "Enterprise";
         String FREEZE_DRIED_TABS = "Internals>FreezeDriedTabs";
         String PRIVACY = "Privacy";
         String PRIVACY_INCOGNITO = "Privacy>Incognito";

@@ -123,28 +123,28 @@ public final class BadgeConfig {
         }
 
         /** Sets the badge size to the given dimension resource ID. */
-        Builder withBadgeSize(@DimenRes int badgeSizeDimResId) {
+        public Builder withBadgeSize(@DimenRes int badgeSizeDimResId) {
             assert badgeSizeDimResId != 0;
             mBadgeSizeResId = badgeSizeDimResId;
             return this;
         }
 
         /** Sets the border size to the given dimension resource ID. */
-        Builder withBorderSize(@DimenRes int borderSizeDimResId) {
+        public Builder withBorderSize(@DimenRes int borderSizeDimResId) {
             assert borderSizeDimResId != 0;
             mBorderSizeResId = borderSizeDimResId;
             return this;
         }
 
         /** Sets the X position to the given dimension resource ID. */
-        Builder withXPosition(@DimenRes int positionXResId) {
+        public Builder withXPosition(@DimenRes int positionXResId) {
             assert positionXResId != 0;
             mPositionXResId = positionXResId;
             return this;
         }
 
         /** Sets the Y position to the given dimension resource ID. */
-        Builder withYPosition(@DimenRes int positionYResId) {
+        public Builder withYPosition(@DimenRes int positionYResId) {
             assert positionYResId != 0;
             mPositionYResId = positionYResId;
             return this;

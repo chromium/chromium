@@ -21,14 +21,14 @@ found in the LICENSE file.
         android:paddingTop="24dp"
         android:paddingBottom="24dp">
 
-    <!-- TODO(b/512836948): replace with the profile picture -->
     <ImageView
         android:id="@+id/disclaimer_logo"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width=
+          "@dimen/enterprise_signals_disclaimer_profile_picture_size"
+        android:layout_height=
+          "@dimen/enterprise_signals_disclaimer_profile_picture_size"
         android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="no"
-        android:src="@drawable/enterprise_icon" />
+        android:importantForAccessibility="no" />
 
     <TextView
         android:id="@+id/disclaimer_title"
@@ -56,7 +56,7 @@ found in the LICENSE file.
         android:layout_marginBottom="2dp"
         android:padding="16dp"
         android:orientation="horizontal"
-        app:backgroundStyle="card">
+        app:backgroundColor="@macro/default_card_bg_color">
 
         <ImageView
             android:id="@+id/profile_info_icon"
@@ -100,7 +100,7 @@ found in the LICENSE file.
         android:layout_marginBottom="24dp"
         android:padding="16dp"
         android:orientation="horizontal"
-        app:backgroundStyle="card">
+        app:backgroundColor="@macro/default_card_bg_color">
 
         <ImageView
             android:id="@+id/device_info_icon"
@@ -143,7 +143,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="4dp" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/disclaimer_cancel_button"

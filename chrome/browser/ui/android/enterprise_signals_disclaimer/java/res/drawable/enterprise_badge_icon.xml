@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@macro/default_card_bg_color" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/color_on_surface_with_alpha_10" />
+        </shape>
+    </item>
+    <item
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp"
+        android:bottom="4dp"
+        android:drawable="@drawable/enterprise_icon" />
+</layer-list>
