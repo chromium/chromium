@@ -639,6 +639,11 @@ class TabDragController : public views::WidgetObserver,
   // Last location used in screen coordinates.
   gfx::Point last_point_in_screen_ = gfx::Point();
 
+#if BUILDFLAG(IS_MAC)
+  // The ID of the display the window was last sized for during a drag.
+  int64_t last_sized_display_id_ = display::kInvalidDisplayId;
+#endif
+
   // The following are needed when detaching into a browser
   // (`detach_into_browser_` is true).
 

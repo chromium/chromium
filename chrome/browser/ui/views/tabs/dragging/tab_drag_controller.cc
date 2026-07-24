@@ -434,6 +434,14 @@ TabDragController::Liveness TabDragController::Init(
       views::View::ConvertPointToScreen(source_view, offset_from_source_view);
   ref->event_source_ = event_source;
   ref->last_point_in_screen_ = start_point_in_screen_;
+#if BUILDFLAG(IS_MAC)
+  // Tracked for Mac only to enable resizing when dragging windows across
+  // displays.
+  ref->last_sized_display_id_ =
+      display::Screen::Get()
+          ->GetDisplayNearestPoint(start_point_in_screen_)
+          .id();
+#endif
   // Detachable tabs are not supported on Mac if the window is an out-of-process
   // (remote_cocoa) window, i.e. a PWA window.
   // TODO(crbug.com/40128833): Make detachable tabs work in PWAs on Mac.
@@ -1002,6 +1010,25 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   }
 
   if (current_state_ == DragState::kDraggingWindow) {
+#if BUILDFLAG(IS_MAC)
+    // On Mac, resizing the window during dragging ensures that it fits within
+    // the target display's work area. This is not enabled or tested on other
+    // desktop platforms because their interactive UI test environments do not
+    // support mocking multi-display layouts.
+    display::Display current_display =
+        display::Screen::Get()->GetDisplayNearestPoint(point_in_screen);
+    if (current_display.id() != last_sized_display_id_) {
+      last_sized_display_id_ = current_display.id();
+      gfx::Size new_size = CalculateDraggedWindowSize(attached_context_);
+      views::Widget* browser_widget = GetAttachedBrowserWidget();
+      gfx::Rect bounds = browser_widget->GetWindowBoundsInScreen();
+      if (bounds.size() != new_size) {
+        bounds.set_size(new_size);
+        browser_widget->SetBounds(bounds);
+      }
+    }
+#endif
+
     bring_to_front_timer_.Start(
         FROM_HERE, base::Milliseconds(750),
         base::BindOnce(&TabDragController::BringWindowUnderPointToFront,
@@ -2531,10 +2558,13 @@ gfx::Size TabDragController::CalculateDraggedWindowSize(
           ->GetDisplayNearestPoint(last_point_in_screen_)
           .work_area()
           .size();
-  if (new_size.width() >= work_area.width() &&
-      new_size.height() >= work_area.height()) {
-    new_size = work_area;
-    new_size.Enlarge(-2 * kMaximizedWindowInset, -2 * kMaximizedWindowInset);
+  if (new_size.width() > work_area.width()) {
+    new_size.set_width(
+        std::max(0, work_area.width() - 2 * kMaximizedWindowInset));
+  }
+  if (new_size.height() > work_area.height()) {
+    new_size.set_height(
+        std::max(0, work_area.height() - 2 * kMaximizedWindowInset));
   }
 
   if (source->GetWidget()->IsMaximized()) {

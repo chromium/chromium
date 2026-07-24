@@ -44,6 +44,15 @@ class CocoaWindowMoveLoop {
   // created.
   NSPoint initial_mouse_in_screen_;
 
+  // The baseline window frame before dragging, or the newly updated baseline
+  // frame if the window was resized or moved programmatically during the drag.
+  NSRect initial_frame_;
+
+  // The last window frame that was explicitly set by this move loop. Used to
+  // detect if the window frame was changed programmatically from outside of
+  // the move loop (e.g. by TabDragController to fit a new display work area).
+  NSRect last_set_frame_;
+
   // Pointer to a stack variable holding the exit reason.
   raw_ptr<LoopExitReason> exit_reason_ref_ = nullptr;
   base::OnceClosure quit_closure_;
