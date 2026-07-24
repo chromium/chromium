@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -169,6 +170,30 @@ std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(
   entry->SetProperty(kSidePanelTitleKey, std::u16string(u"Test Panel"));
   return entry;
 }
+
+class AutoOpenSidePanelTabModelObserver : public TabModelObserver {
+ public:
+  AutoOpenSidePanelTabModelObserver(BrowserWindowInterface* browser,
+                                    SidePanelCoordinatorAndroid* coordinator)
+      : browser_(browser), coordinator_(coordinator) {}
+  ~AutoOpenSidePanelTabModelObserver() override = default;
+
+  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
+    auto key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+    auto* registry = SidePanelRegistry::From(tab);
+    if (!registry->GetEntryForKey(key)) {
+      registry->Register(
+          CreateSidePanelEntry(key, browser_, /*use_thin_web_view=*/true));
+    }
+    coordinator_->SidePanelUIBase::Show(key,
+                                        SidePanelOpenTrigger::kToolbarButton,
+                                        /*suppress_animations=*/true);
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<SidePanelCoordinatorAndroid> coordinator_;
+};
 
 BrowserWindowInterface* CreateBrowserWindowAsync(Profile* profile) {
   BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
@@ -2999,4 +3024,33 @@ IN_PROC_BROWSER_TEST_F(
 
   // Assert: Tab_1's tab-scoped entry should re-appear.
   EXPECT_EQ(tab_1_scoped_entry_key.id(), coordinator_->GetCurrentEntryId());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       RapidTabSwitch_AutoOpenSidePanel) {
+  // Simulate GLiC's "automatically open side panel for a new tab" behavior.
+  AutoOpenSidePanelTabModelObserver observer(browser_, coordinator_);
+  auto* tab_model = static_cast<TabModel*>(tab_list_);
+  tab_model->AddObserver(&observer);
+
+  // Switch tabs rapidly to trigger side panel creation and show.
+  // We open three new tabs here:
+  // - Tab 2: Opens the side panel initially.
+  // - Tab 3: Replaces Tab 2's panel (1st replacement).
+  // - Tab 4: Replaces Tab 3's panel (2nd replacement, forces the 1st
+  // replacement to complete synchronously).
+  tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+  tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+  tab_list_->OpenTab(GURL("about:blank"), tab_list_->GetTabCount());
+
+  // Wait for the final tab's panel to open.
+  WaitUntilOpened(coordinator_);
+  EXPECT_EQ(SidePanelEntryId::kGlic, coordinator_->GetCurrentEntryId());
+
+  // Wait for the background delayed detachment of the intermediate tab's side
+  // panel to finish successfully.
+  ASSERT_TRUE(base::test::RunUntil(
+      [this]() { return !coordinator_->HasPendingReplacedEntryForTesting(); }));
+
+  tab_model->RemoveObserver(&observer);
 }

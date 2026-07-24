@@ -625,6 +625,17 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
     std::unique_ptr<SidePanelNativeViewAndroid> native_view) {
   SPLOG("StartReplacingPanelContent.");
 
+  // If there is already a pending replacement waiting for Java to finish, we
+  // MUST synchronously complete it right now before we overwrite
+  // `pending_replaced_entry_`. Otherwise, Java will synchronously complete it
+  // later during this function call, but it will incorrectly invoke
+  // OnEntryHidden() on the NEW pending_replaced_entry_ instead of the OLD one,
+  // permanently breaking state!
+  if (pending_replaced_entry_) {
+    Java_SidePanelCoordinatorAndroidImpl_completePendingContentReplacement(
+        AttachCurrentThread(), java_coordinator());
+  }
+
   // Always clear the current tab's active entry before replacing the current
   // entry.
   //
@@ -659,6 +670,7 @@ void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
   }
 
   UniqueKey current_key = GetCurrentKeyNonNull();
+  CHECK(!pending_replaced_entry_) << "Another entry is waiting to be replaced";
   pending_replaced_entry_ = GetEntryForUniqueKey(current_key);
   CHECK(pending_replaced_entry_) << "No SidePanelEntry to replace";
 

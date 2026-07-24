@@ -157,8 +157,6 @@ final class SidePanelContainerCoordinatorImpl
         // TODO(crbug.com/513302000): assert the side panel is currently open.
         // TODO(crbug.com/513302000): assert the side panel isn't preparing for auto-restore/close.
 
-        completePendingContentReplacementInternal();
-
         assert mCurrentContent != null : "no content to replace";
         View oldContentView = mCurrentContent.mView;
         mCurrentContent = newContent;
