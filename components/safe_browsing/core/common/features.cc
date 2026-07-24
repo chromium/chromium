@@ -148,10 +148,14 @@ BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionImageEmbeddingMatch,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 const base::FeatureParam<bool> kCsdImageEmbeddingMatchWithIntelligentScan{
     &kClientSideDetectionImageEmbeddingMatch,
-    "CsdImageEmbeddingMatchWithIntelligentScan", /*default_value=*/false};
+    "CsdImageEmbeddingMatchWithIntelligentScan", /*default_value=*/true};
 
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 

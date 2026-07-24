@@ -3657,9 +3657,15 @@ TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
   // Phishing detection should have been done (not skipped).
   EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
 
+  ClientSideDetectionType expected_logged_type = request_type;
+  if (request_type == ClientSideDetectionType::TRIGGER_MODELS &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
+    expected_logged_type = ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
+  }
+
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.PhishingDetectorResult." +
-          GetRequestTypeName(request_type),
+          GetRequestTypeName(expected_logged_type),
       mojom::PhishingDetectorResult::SUCCESS, 1);
 }
 
@@ -3698,9 +3704,15 @@ TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
   // Phishing detection should have been done (not skipped).
   EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
 
+  ClientSideDetectionType expected_logged_type = request_type;
+  if (request_type == ClientSideDetectionType::TRIGGER_MODELS &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
+    expected_logged_type = ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
+  }
+
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.PhishingDetectorResult." +
-          GetRequestTypeName(request_type),
+          GetRequestTypeName(expected_logged_type),
       mojom::PhishingDetectorResult::SUCCESS, 1);
 }
 
