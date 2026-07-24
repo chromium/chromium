@@ -238,11 +238,11 @@ class AutofillDriverRouter {
   void DidDetectJavaScriptAutofill(
       RoutedCallback<const FormData&,
                      const FieldGlobalId&,
-                     const std::vector<FieldGlobalId>&> callback,
+                     const std::vector<JavaScriptFieldModification>&> callback,
       AutofillDriver& source,
       FormData form,
       FieldGlobalId trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids);
+      std::vector<JavaScriptFieldModification> field_modifications);
   void FocusOnFormField(
       RoutedCallback<const FormData&, const FieldGlobalId&> callback,
       AutofillDriver& source,

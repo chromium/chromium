@@ -2473,7 +2473,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
     const FormData& form,
     const FieldGlobalId& trigger_field_id,
-    const std::vector<FieldGlobalId>& field_ids) {
+    const std::vector<JavaScriptFieldModification>& field_modifications) {
   auto [form_structure, trigger_field] =
       FindMutableFormAndField(form.global_id(), trigger_field_id);
   if (!form_structure || !trigger_field ||
@@ -2481,9 +2481,9 @@ void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
     return;
   }
 
-  size_t address_fields_count =
-      std::ranges::count_if(field_ids, [&](const FieldGlobalId& field_id) {
-        const AutofillField* field = form_structure->GetFieldById(field_id);
+  size_t address_fields_count = std::ranges::count_if(
+      field_modifications, [&](const JavaScriptFieldModification& mod) {
+        const AutofillField* field = form_structure->GetFieldById(mod.field_id);
         return field &&
                field->Type().GetGroups().contains(FieldTypeGroup::kAddress);
       });

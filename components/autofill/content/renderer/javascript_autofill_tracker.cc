@@ -6,10 +6,11 @@
 
 #include <algorithm>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -61,6 +62,26 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
   NOTREACHED();
 }
 
+mojom::JavaScriptModificationType GetJavaScriptModificationType(
+    std::u16string_view old_value,
+    std::u16string_view new_value) {
+  if (old_value == new_value) {
+    return mojom::JavaScriptModificationType::kTrivial;
+  }
+  if (old_value.empty()) {
+    return mojom::JavaScriptModificationType::kEmptyToNonEmpty;
+  }
+  if (new_value.empty()) {
+    return mojom::JavaScriptModificationType::kClearing;
+  }
+  if (new_value.size() > old_value.size() &&
+      base::StartsWith(new_value, old_value,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return mojom::JavaScriptModificationType::kPrefixCompletion;
+  }
+  return mojom::JavaScriptModificationType::kReassignment;
+}
+
 }  // namespace
 
 JavaScriptAutofillTracker::JavaScriptAutofillTracker(
@@ -75,7 +96,8 @@ JavaScriptAutofillTracker::~JavaScriptAutofillTracker() {
 }
 
 void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
-    const blink::WebFormControlElement& element) {
+    const blink::WebFormControlElement& element,
+    const blink::WebString& old_value) {
   // In order to add a log record to `js_logs_`, the following conditions must
   // be satisfied:
 
@@ -96,9 +118,10 @@ void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
     return;
   }
 
-  js_logs_.push_back(JsChangeRecord{
-      .modified_field_id = form_util::GetFieldRendererId(element),
-  });
+  js_logs_.push_back(mojom::JavaScriptFieldModification::New(
+      form_util::GetFieldRendererId(element),
+      GetJavaScriptModificationType(old_value.Utf16(),
+                                    element.Value().Utf16())));
 }
 
 void JavaScriptAutofillTracker::Reset() {
@@ -145,7 +168,7 @@ void JavaScriptAutofillTracker::HandleMousedown() {
 
 void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     FieldRendererId trigger_element_id) {
-  std::vector<JsChangeRecord> logs = std::move(js_logs_);
+  std::vector<mojom::JavaScriptFieldModificationPtr> logs = std::move(js_logs_);
   js_logs_.clear();
   if (logs.empty()) {
     return;
@@ -161,24 +184,32 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     return;
   }
 
-  std::erase_if(logs, [target_form =
-                           trigger_element.GetOwningFormForAutofill()](
-                          const JsChangeRecord& record) {
-    blink::WebFormControlElement element =
-        form_util::GetFormControlByRendererId(record.modified_field_id);
-    return !element || element.GetOwningFormForAutofill() != target_form;
-  });
+  std::erase_if(
+      logs, [target_form = trigger_element.GetOwningFormForAutofill()](
+                const mojom::JavaScriptFieldModificationPtr& record) {
+        blink::WebFormControlElement element =
+            form_util::GetFormControlByRendererId(record->field_id);
+        return !element || element.GetOwningFormForAutofill() != target_form;
+      });
 
-  base::flat_set<FieldRendererId> unique_fields =
-      base::MakeFlatSet<FieldRendererId>(logs, /*comp=*/{},
-                                         &JsChangeRecord::modified_field_id);
+  std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications;
+  absl::flat_hash_set<FieldRendererId> seen_fields;
 
-  if (unique_fields.size() < kJsAutofillMinFieldsChanged ||
-      unique_fields.size() >= kJsAutofillMaxFieldsChanged) {
+  // `logs` is moved here to ensure it is not used below, since
+  // `field_modifications` should be used in what follows as it contains the
+  // filtered list of logs.
+  for (mojom::JavaScriptFieldModificationPtr& record : std::move(logs)) {
+    if (seen_fields.insert(record->field_id).second) {
+      field_modifications.push_back(std::move(record));
+    }
+  }
+
+  if (field_modifications.size() < kJsAutofillMinFieldsChanged ||
+      field_modifications.size() >= kJsAutofillMaxFieldsChanged) {
     return;
   }
 
-  callback_.Run(trigger_element, base::ToVector(unique_fields));
+  callback_.Run(trigger_element, std::move(field_modifications));
 }
 
 }  // namespace autofill

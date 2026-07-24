@@ -47,7 +47,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
         R"(document.getElementById('%s').value = '%s';)", id, value));
   };
 
-  const std::vector<JavaScriptAutofillTracker::JsChangeRecord>& logs =
+  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 
@@ -63,7 +63,9 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   js_set_value("text_1", "js_val_2");
 
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].modified_field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0]->modification_type,
+            mojom::JavaScriptModificationType::kReassignment);
 
   // Clear logs by waiting for timer.
   task_environment_.FastForwardBy(base::Milliseconds(200));
@@ -93,7 +95,36 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   js_set_value("text_1", "js_val_3");  // Same value (set in step 3).
 
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0].modified_field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0]->modification_type,
+            mojom::JavaScriptModificationType::kTrivial);
+
+  // 6. JS change to a prefix completion -> should log kPrefixCompletion.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  Focus("text_1");
+  SimulateElementClickAndWait("text_1");
+  js_set_value("text_1", "js_val_3_more");
+  ASSERT_EQ(logs.size(), 1u);
+  EXPECT_EQ(logs[0]->modification_type,
+            mojom::JavaScriptModificationType::kPrefixCompletion);
+
+  // 7. JS change from non-empty to empty -> should log kClearing.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  Focus("text_1");
+  SimulateElementClickAndWait("text_1");
+  js_set_value("text_1", "");
+  ASSERT_EQ(logs.size(), 1u);
+  EXPECT_EQ(logs[0]->modification_type,
+            mojom::JavaScriptModificationType::kClearing);
+
+  // 8. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  Focus("text_1");
+  SimulateElementClickAndWait("text_1");
+  js_set_value("text_1", "new_val");
+  ASSERT_EQ(logs.size(), 1u);
+  EXPECT_EQ(logs[0]->modification_type,
+            mojom::JavaScriptModificationType::kEmptyToNonEmpty);
 }
 
 // Test that if JavaScript modifies fields in a different form than the
@@ -117,7 +148,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
         R"(document.getElementById('%s').value = '%s';)", id, value));
   };
 
-  const std::vector<JavaScriptAutofillTracker::JsChangeRecord>& logs =
+  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 

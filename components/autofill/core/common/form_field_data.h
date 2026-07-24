@@ -34,6 +34,15 @@ class PickleIterator;
 
 namespace autofill {
 
+// Represents a form field modification performed by custom JavaScript autofill.
+struct JavaScriptFieldModification {
+  FieldGlobalId field_id;
+  mojom::JavaScriptModificationType modification_type;
+
+  friend bool operator==(const JavaScriptFieldModification&,
+                         const JavaScriptFieldModification&) = default;
+};
+
 class LogBuffer;
 
 // The flags describing form field properties.

@@ -625,6 +625,28 @@ enum EmailVerificationState {
 };
 // LINT.ThenChange(//third_party/blink/public/common/webid/email_verification_state.h:EmailVerificationState)
 
+// Represents the type of modification made by JavaScript to a form field's
+// value.
+enum JavaScriptModificationType {
+  // The value did not change at all (i.e. JS tried setting the value to X but
+  // the field value was already X).
+  kTrivial = 0,
+  // The value changed in no particular way.
+  kReassignment = 1,
+  // The field was empty and a non-empty value was set by JavaScript.
+  kEmptyToNonEmpty = 2,
+  // The field was non-empty and cleared by JavaScript.
+  kClearing = 3,
+  // The field was non-empty and the old value is a prefix of the new value.
+  kPrefixCompletion = 4,
+};
+
+// Represents a form field modification performed by custom JavaScript autofill.
+struct JavaScriptFieldModification {
+  FieldRendererId field_id;
+  JavaScriptModificationType modification_type;
+};
+
 // Observer interface to receive visibility notifications for a field.
 interface AutofillVisibilityObserver {
   // Called when the observed field meets the visibility criteria (e.g., visible

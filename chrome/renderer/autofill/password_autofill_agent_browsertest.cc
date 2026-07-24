@@ -481,12 +481,13 @@ class FakeAutofillDriver : public mojom::AutofillDriver {
               FormWithEmailVerificationTokenSubmitted,
               (const FormData& form, FieldRendererId field_id),
               (override));
-  MOCK_METHOD(void,
-              DidDetectJavaScriptAutofill,
-              (const FormData& form,
-               FieldRendererId trigger_field_id,
-               const std::vector<FieldRendererId>& field_ids),
-              (override));
+  MOCK_METHOD(
+      void,
+      DidDetectJavaScriptAutofill,
+      (const FormData& form,
+       FieldRendererId trigger_field_id,
+       std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications),
+      (override));
 
  private:
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};

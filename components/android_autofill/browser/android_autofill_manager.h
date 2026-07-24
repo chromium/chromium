@@ -129,7 +129,8 @@ class AndroidAutofillManager : public AutofillManager,
   void OnDidDetectJavaScriptAutofillImpl(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids) override {}
+      const std::vector<autofill::JavaScriptFieldModification>&
+          field_modifications) override {}
 
   void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) override {}

@@ -131,6 +131,15 @@ FieldGlobalId Lift(ContentAutofillDriver& source, FieldRendererId id) {
   return FieldGlobalId(source.GetFrameToken(), id);
 }
 
+JavaScriptFieldModification Lift(
+    ContentAutofillDriver& source,
+    const mojom::JavaScriptFieldModificationPtr& mod) {
+  return JavaScriptFieldModification{
+      .field_id = Lift(source, mod->field_id),
+      .modification_type = mod->modification_type,
+  };
+}
+
 PasswordSuggestionRequest Lift(ContentAutofillDriver& source,
                                PasswordSuggestionRequest request) {
   request.form_data = Lift(source, std::move(request.form_data));
@@ -192,7 +201,8 @@ template <typename T>
                  gfx::Rect,
                  std::u16string,
                  std::vector<FormGlobalId>,
-                 std::vector<FieldGlobalId>>)
+                 std::vector<FieldGlobalId>,
+                 std::vector<JavaScriptFieldModification>>)
 T&& WithNewVersion(T&& x) {
   return std::forward<T>(x);
 }
@@ -752,11 +762,11 @@ void ContentAutofillDriver::FormWithEmailVerificationTokenSubmitted(
 void ContentAutofillDriver::DidDetectJavaScriptAutofill(
     const FormData& form,
     FieldRendererId trigger_field_id,
-    const std::vector<FieldRendererId>& field_ids) {
+    std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications) {
   RouteToManager(*this, router(),
                  &AutofillDriverRouter::DidDetectJavaScriptAutofill,
                  &AutofillManager::OnDidDetectJavaScriptAutofill, form,
-                 trigger_field_id, field_ids);
+                 trigger_field_id, field_modifications);
 }
 
 const mojo::AssociatedRemote<mojom::AutofillAgent>&

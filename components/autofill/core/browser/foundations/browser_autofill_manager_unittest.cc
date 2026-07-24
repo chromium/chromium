@@ -7236,12 +7236,16 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(form_structure->field(2)->Type().GetGroups().contains(
       FieldTypeGroup::kAddress));
 
-  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
-                                          form.fields()[1].global_id(),
-                                          form.fields()[2].global_id()};
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[1].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[2].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids,
+      form, form.fields()[0].global_id(), field_modifications,
       AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
@@ -7261,11 +7265,14 @@ TEST_F(BrowserAutofillManagerTest,
   ASSERT_TRUE(form_structure);
 
   // Only 2 fields in the signal.
-  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
-                                          form.fields()[1].global_id()};
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[1].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids,
+      form, form.fields()[0].global_id(), field_modifications,
       AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
@@ -7286,12 +7293,16 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(form_structure->field(0)->Type().GetGroups().contains(
       FieldTypeGroup::kAddress));
 
-  std::vector<FieldGlobalId> field_ids = {form.fields()[0].global_id(),
-                                          form.fields()[1].global_id(),
-                                          form.fields()[2].global_id()};
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[1].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[2].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids,
+      form, form.fields()[0].global_id(), field_modifications,
       AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());

@@ -393,7 +393,7 @@ class AutofillManager
   virtual void OnDidDetectJavaScriptAutofill(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids,
+      const std::vector<JavaScriptFieldModification>& field_modifications,
       RendererEventPassKey pass_key);
 
   // Other events.
@@ -566,7 +566,7 @@ class AutofillManager
   virtual void OnDidDetectJavaScriptAutofillImpl(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids) = 0;
+      const std::vector<JavaScriptFieldModification>& field_modifications) = 0;
   virtual void OnLoadedServerPredictionsImpl(
       base::span<const raw_ref<FormStructure>> forms) = 0;
 

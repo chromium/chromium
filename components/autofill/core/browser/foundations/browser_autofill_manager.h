@@ -384,7 +384,8 @@ class BrowserAutofillManager : public AutofillManager {
   void OnDidDetectJavaScriptAutofillImpl(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids) override;
+      const std::vector<JavaScriptFieldModification>& field_modifications)
+      override;
   void OnFormSubmittedImpl(const FormData& form,
                            mojom::SubmissionSource source) override;
   void OnFormWithEmailVerificationTokenSubmittedImpl(

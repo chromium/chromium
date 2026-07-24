@@ -11,7 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
 namespace blink {
@@ -25,16 +28,10 @@ namespace autofill {
 // by web pages.
 class JavaScriptAutofillTracker {
  public:
-  // Holds information about a single JS-triggered value change event.
-  struct JsChangeRecord {
-    // The ID of the field whose value was modified by JS.
-    FieldRendererId modified_field_id;
-  };
-
   // Callback signature invoked when a JS-autofill event is detected.
   using DidDetectCallback = base::RepeatingCallback<void(
       blink::WebFormControlElement trigger_field,
-      const std::vector<FieldRendererId>& field_ids)>;
+      std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications)>;
 
   JavaScriptAutofillTracker(blink::WebLocalFrame* web_frame,
                             DidDetectCallback callback);
@@ -43,7 +40,8 @@ class JavaScriptAutofillTracker {
       delete;
   ~JavaScriptAutofillTracker();
 
-  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element);
+  void OnJavaScriptChangedValue(const blink::WebFormControlElement& element,
+                                const blink::WebString& old_value);
 
   // Invoked directly from Blink just prior to initiating DOM mousedown event
   // dispatch. Initializes the detection timer before any webpage JavaScript can
@@ -68,7 +66,7 @@ class JavaScriptAutofillTracker {
   DidDetectCallback callback_;
 
   // A rolling log of recent JavaScript-triggered value changes.
-  std::vector<JsChangeRecord> js_logs_;
+  std::vector<mojom::JavaScriptFieldModificationPtr> js_logs_;
 
   // Timer used to wait for a sequence of JS changes to complete before
   // analyzing them.
