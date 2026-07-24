@@ -362,9 +362,21 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                  prefService:browser_->GetProfile()->GetPrefs()];
 
     base::WeakPtr<GeminiBrowserAgent> weak_this = weak_factory_.GetWeakPtr();
-    bwg_session_handler_.tabDetachRequestCallback = ^(NSString* tabID) {
+    bwg_session_handler_.tabDetachRequestCallback = ^(NSString* tab_id) {
       if (weak_this) {
-        weak_this->DetachTabWithID(tabID);
+        weak_this->DetachTabWithID(tab_id);
+      }
+    };
+    bwg_session_handler_.tabAttachedCallback = ^(NSString* tab_id) {
+      if (weak_this) {
+        weak_this->UpdateLocalTabAttachmentState(
+            tab_id, ios::provider::GeminiPageContextAttachmentState::kAttached);
+      }
+    };
+    bwg_session_handler_.tabDetachedCallback = ^(NSString* tab_id) {
+      if (weak_this) {
+        weak_this->UpdateLocalTabAttachmentState(
+            tab_id, ios::provider::GeminiPageContextAttachmentState::kDetached);
       }
     };
     bwg_session_handler_.attachedTabsCountProvider = ^{
