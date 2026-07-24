@@ -193,7 +193,10 @@ public class Profile {
             throw new IllegalArgumentException("URL cannot be null for enqueuePreconnect.");
         }
         validatePreconnectUrl(url);
-        mAwInit.getRunQueue().addTask(() -> preconnect(url));
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.ApiCall.ENQUEUE_PRECONNECT", mTraceArgs)) {
+            mAwInit.getRunQueue().addTask(() -> preconnect(url));
+        }
     }
 
     /**
