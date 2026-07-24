@@ -47,7 +47,6 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "components/viz/service/display_embedder/software_output_device_ozone.h"
-#include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
