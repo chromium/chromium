@@ -62,6 +62,7 @@ SelectPopup::~SelectPopup() {
 void SelectPopup::ShowMenu(
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
     const gfx::Rect& bounds,
+    double item_font_size,
     std::vector<blink::mojom::MenuItemPtr> items,
     int selected_item,
     bool multiple,
@@ -129,9 +130,12 @@ void SelectPopup::ShowMenu(
   gfx::RectF bounds_dip = gfx::RectF(bounds);
   bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
   view->SetAnchorRect(popup_view, bounds_dip);
-  Java_SelectPopup_show(
-      env, j_obj, popup_view, reinterpret_cast<int64_t>(popup_client_.get()),
-      items_array, enabled_array, multiple, selected_array, right_aligned);
+
+  int item_height = bounds.height();
+  Java_SelectPopup_show(env, j_obj, popup_view,
+                        reinterpret_cast<int64_t>(popup_client_.get()),
+                        items_array, enabled_array, multiple, selected_array,
+                        right_aligned, item_height, item_font_size);
 }
 
 void SelectPopup::HideMenu() {

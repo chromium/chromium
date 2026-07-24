@@ -453,7 +453,7 @@ void WebContentsViewAndroid::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr> menu_items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  GetSelectPopup()->ShowMenu(std::move(popup_client), bounds,
+  GetSelectPopup()->ShowMenu(std::move(popup_client), bounds, item_font_size,
                              std::move(menu_items), selected_item,
                              allow_multiple_selection, right_aligned);
 }

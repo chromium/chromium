@@ -29,11 +29,14 @@ class SelectPopup {
   ~SelectPopup();
 
   // Creates a popup menu with |items|.
+  // |bounds| is the bounds of the source <select> element in physical pixels.
+  // |item_font_size| is the font size of the select element.
   // |multiple| defines if it should support multi-select.
   // If not |multiple|, |selected_item| sets the initially selected item.
   // Otherwise, item's "checked" flag selects it.
   void ShowMenu(mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
                 const gfx::Rect& bounds,
+                double item_font_size,
                 std::vector<blink::mojom::MenuItemPtr> items,
                 int selected_item,
                 bool multiple,
