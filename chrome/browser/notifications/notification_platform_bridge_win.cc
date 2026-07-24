@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -22,12 +23,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/hash.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,6 +62,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/hash.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
@@ -920,7 +920,9 @@ class NotificationPlatformBridgeWinImpl
     std::string payload = base::StringPrintf(
         "%s|%s|%s|%d", notification_id.c_str(), profile_id.c_str(),
         base::WideToUTF8(app_user_model_id).c_str(), incognito);
-    return base::NumberToWString(base::Hash(payload));
+    // The tag has a max length of 63 characters (plus null terminator).
+    // Base64Encode yields 44 chars.
+    return base::ASCIIToWide(base::Base64Encode(crypto::hash::Sha256(payload)));
   }
 
   HRESULT OnFailed(winui::Notifications::IToastNotification* notification,

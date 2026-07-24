@@ -10,12 +10,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/hash/hash.h"
+#include "base/base64.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_hstring.h"
@@ -25,6 +25,7 @@
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/notifications/win/notification_template_builder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -65,13 +66,14 @@ class NotificationPlatformBridgeWinTest : public testing::Test {
       bool renotify,
       const std::string& profile_id,
       const std::wstring& app_user_model_id,
-      bool incognito) {
+      bool incognito,
+      std::string_view notification_id = kNotificationId) {
     DCHECK(bridge);
 
     GURL origin(kOrigin);
     auto notification = std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, u"title",
-        u"message", ui::ImageModel(), u"display_source", origin,
+        message_center::NOTIFICATION_TYPE_SIMPLE, notification_id.data(),
+        u"title", u"message", ui::ImageModel(), u"display_source", origin,
         message_center::NotifierId(origin),
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification->set_renotify(renotify);
@@ -127,7 +129,9 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTag) {
   base::win::ScopedHString tag(hstring_tag);
   std::string tag_data = std::string(kNotificationId) + "|" + kProfileId + "|" +
                          kAppUserModelIdUTF8 + "|0";
-  ASSERT_EQ(base::NumberToWString(base::Hash(tag_data)), tag.Get());
+  ASSERT_EQ(
+      base::ASCIIToWide(base::Base64Encode(crypto::hash::Sha256(tag_data))),
+      tag.Get());
 
   // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
   task_environment_.RunUntilIdle();
@@ -223,6 +227,25 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTagUniqueness) {
     ASSERT_NE(tagA.Get(), tagB.Get());
   }
 
+  // Same profile, different id -> Unique tags.
+  {
+    toastA = GetToast(&bridge, launch_id, /*renotify=*/false, "Profile1",
+                      kAppUserModelId, /*incognito=*/true, "notification1");
+    toastB = GetToast(&bridge, launch_id, /*renotify=*/false, "Profile1",
+                      kAppUserModelId, /*incognito=*/true, "notification2");
+
+    ASSERT_TRUE(toastA);
+    ASSERT_TRUE(toastB);
+
+    ASSERT_HRESULT_SUCCEEDED(toastA->get_Tag(&hstring_tagA));
+    base::win::ScopedHString tagA(hstring_tagA);
+
+    ASSERT_HRESULT_SUCCEEDED(toastB->get_Tag(&hstring_tagB));
+    base::win::ScopedHString tagB(hstring_tagB);
+
+    ASSERT_NE(tagA.Get(), tagB.Get());
+  }
+
   // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
   task_environment_.RunUntilIdle();
 }
@@ -254,7 +277,8 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
   // Register a single notification with a specific tag.
   std::string tag_data = std::string(kNotificationId) + "|" + kProfileId + "|" +
                          kAppUserModelIdUTF8 + "|0";
-  std::wstring tag = base::NumberToWString(base::Hash(tag_data));
+  std::wstring tag =
+      base::ASCIIToWide(base::Base64Encode(crypto::hash::Sha256(tag_data)));
   // Microsoft::WRL::Make() requires FakeIToastNotification to derive from
   // RuntimeClass.
   notifications.push_back(Microsoft::WRL::Make<FakeIToastNotification>(
