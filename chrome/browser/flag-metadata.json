@@ -6771,6 +6771,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "magichrome-passkey-signin",
+    "owners": [ "msalama@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "mahi-panel-resizable",
     "owners": [
       "jaydenz@chromium.org",
