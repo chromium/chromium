@@ -121,12 +121,32 @@ SAN
                 </TD>
                 <TD >
                     <DIV >
-                        <SPAN class=san-entry >
+                        <#comment >
+                        </#comment>
+                        <DIV class= san  >
+                            <#comment >
+                            </#comment>
+                            <#comment >
+                            </#comment>
+                            <SPAN class= san-entry  >
+                                <#comment >
+                                </#comment>
 foo.test
-                        </SPAN>
-                        <SPAN class=san-entry >
+                            </SPAN>
+                            <#comment >
+                            </#comment>
+                            <#comment >
+                            </#comment>
+                            <SPAN class= san-entry  >
+                                <#comment >
+                                </#comment>
 *.test
-                        </SPAN>
+                            </SPAN>
+                            <#comment >
+                            </#comment>
+                            <#comment >
+                            </#comment>
+                        </DIV>
                     </DIV>
                 </TD>
             </TR>
