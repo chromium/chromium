@@ -45,7 +45,7 @@ class PrintJobClearHistoryDialogElement extends
     };
   }
 
-  private shouldDisableClearButton: boolean;
+  declare private shouldDisableClearButton: boolean;
   private mojoInterfaceProvider = getMetadataProvider();
 
   override connectedCallback(): void {

@@ -37,8 +37,8 @@ export class FileTypeSelectElement extends FileTypeSelectElementBase {
     };
   }
 
-  disabled: boolean;
-  selectedFileType: string;
+  declare disabled: boolean;
+  declare selectedFileType: string;
 }
 
 declare global {

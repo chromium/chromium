@@ -61,12 +61,12 @@ export class MultiPageScanElement extends MultiPageScanElementBase {
     };
   }
 
-  appState: AppState;
-  pageNumber: number;
-  private scanButtonText: string;
-  private showCancelButton: boolean;
-  private cancelButtonDisabled: boolean;
-  private showCancelingText: boolean;
+  declare appState: AppState;
+  declare pageNumber: number;
+  declare private scanButtonText: string;
+  declare private showCancelButton: boolean;
+  declare private cancelButtonDisabled: boolean;
+  declare private showCancelingText: boolean;
 
   private appStateChanged(): void {
     this.showCancelButton = this.appState === AppState.MULTI_PAGE_SCANNING ||

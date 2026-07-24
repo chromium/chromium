@@ -41,9 +41,16 @@ export class ActionToolbarElement extends ActionToolbarElementBase {
     };
   }
 
-  pageIndex: number = 0;
-  numTotalPages: number = 0;
-  private pageNumberText: string = '';
+  constructor() {
+    super();
+    this.pageIndex = 0;
+    this.numTotalPages = 0;
+    this.pageNumberText = '';
+  }
+
+  declare pageIndex: number;
+  declare numTotalPages: number;
+  declare private pageNumberText: string;
 
   private computePageNumberText(): string {
     if (!this.numTotalPages || this.pageIndex >= this.numTotalPages) {

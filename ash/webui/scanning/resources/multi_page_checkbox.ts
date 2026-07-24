@@ -38,8 +38,8 @@ export class MultiPageCheckboxElement extends MultiPageCheckboxElementBase {
     };
   }
 
-  multiPageScanChecked: boolean;
-  disabled: boolean;
+  declare multiPageScanChecked: boolean;
+  declare disabled: boolean;
 
   private onCheckboxClick(): void {
     if (this.disabled) {

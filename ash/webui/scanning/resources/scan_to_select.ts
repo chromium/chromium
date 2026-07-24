@@ -50,9 +50,9 @@ export class ScanToSelectElement extends ScanToSelectElementBase {
     };
   }
 
-  disabled: boolean;
-  selectedFolder: string;
-  selectedFilePath: string;
+  declare disabled: boolean;
+  declare selectedFolder: string;
+  declare selectedFilePath: string;
   private browserProxy = ScanningBrowserProxyImpl.getInstance();
 
   constructor() {

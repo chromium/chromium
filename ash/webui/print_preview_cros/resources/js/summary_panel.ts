@@ -35,8 +35,8 @@ export class SummaryPanelElement extends PolymerElement {
 
   private controller: SummaryPanelController;
   private eventTracker = new EventTracker();
-  private sheetsUsedText: string;
-  private printButtonDisabled: boolean;
+  declare private sheetsUsedText: string;
+  declare private printButtonDisabled: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

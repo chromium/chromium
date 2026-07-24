@@ -226,18 +226,18 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
     };
   }
 
-  jobEntry: PrintJobInfo;
+  declare jobEntry: PrintJobInfo;
   private mojoInterfaceProvider: PrintingMetadataProviderInterface;
-  private jobTitle: string;
-  private printerName: string;
-  private creationTime: string;
-  private completionStatus: string;
-  private ongoingErrorStatus: string;
-  private readableProgress: string;
-  private jobEntryAriaLabel: string;
-  private showFullOngoingStatus: boolean;
-  private fileIcon: string;
-  private fileIconClass: string;
+  declare private jobTitle: string;
+  declare private printerName: string;
+  declare private creationTime: string;
+  declare private completionStatus: string;
+  declare private ongoingErrorStatus: string;
+  declare private readableProgress: string;
+  declare private jobEntryAriaLabel: string;
+  declare private showFullOngoingStatus: boolean;
+  declare private fileIcon: string;
+  declare private fileIconClass: string;
 
   static get observers(): string[] {
     return [

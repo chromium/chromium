@@ -34,7 +34,7 @@ export class DestinationSelectElement extends PolymerElement {
 
   private controller: DestinationSelectController;
   private eventTracker = new EventTracker();
-  private showLoadingUi: boolean;
+  declare private showLoadingUi: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

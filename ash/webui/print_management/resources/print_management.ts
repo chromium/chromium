@@ -145,6 +145,7 @@ export class PrintManagementElement extends PrintManagementElementBase
 
   constructor() {
     super();
+    this.printJobsLoaded = false;
 
     this.mojoInterfaceProvider = getMetadataProvider();
     this.pageHandler = getPrintManagementHandler();
@@ -160,19 +161,19 @@ export class PrintManagementElement extends PrintManagementElementBase
 
   private mojoInterfaceProvider: PrintingMetadataProviderInterface;
   private pageHandler: PrintManagementHandlerInterface;
-  private isPolicyControlled: boolean;
-  private printJobs: PrintJobInfo[];
-  private printJobHistoryExpirationPeriod: string;
-  private activeHistoryInfoIcon: string;
-  private ongoingPrintJobs: PrintJobInfo[];
-  private lastFocused: Element;
-  private listBlurred: boolean;
-  private showClearAllButton: boolean;
-  private showClearAllDialog: boolean;
-  private deletePrintJobHistoryAllowedByPolicy: boolean;
-  private shouldDisableClearAllButton: boolean;
-  private printJobsObserverReceiver: PrintJobsObserverReceiver;
-  private printJobsLoaded: boolean = false;
+  declare private isPolicyControlled: boolean;
+  declare private printJobs: PrintJobInfo[];
+  declare private printJobHistoryExpirationPeriod: string;
+  declare private activeHistoryInfoIcon: string;
+  declare private ongoingPrintJobs: PrintJobInfo[];
+  declare private lastFocused: Element;
+  declare private listBlurred: boolean;
+  declare private showClearAllButton: boolean;
+  declare private showClearAllDialog: boolean;
+  declare private deletePrintJobHistoryAllowedByPolicy: boolean;
+  declare private shouldDisableClearAllButton: boolean;
+  declare private printJobsObserverReceiver: PrintJobsObserverReceiver;
+  declare private printJobsLoaded: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

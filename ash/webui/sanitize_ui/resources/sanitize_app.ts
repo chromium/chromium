@@ -42,7 +42,7 @@ export class SanitizeAppElement extends SanitizeAppElementBase {
     };
   }
 
-  private showDone: boolean;
+  declare private showDone: boolean;
 }
 
 declare global {

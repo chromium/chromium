@@ -86,9 +86,9 @@ export class SanitizeDoneElement extends SanitizeDoneElementBase {
     };
   }
 
-  private extensionsExpanded_: boolean;
-  private chromeOSSettingsInfoExpanded_: boolean;
-  private chromeSettingsInfoExpanded_: boolean;
+  declare private extensionsExpanded_: boolean;
+  declare private chromeOSSettingsInfoExpanded_: boolean;
+  declare private chromeSettingsInfoExpanded_: boolean;
 }
 
 declare global {

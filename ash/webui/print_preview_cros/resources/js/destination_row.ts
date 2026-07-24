@@ -29,8 +29,13 @@ export class DestinationRowElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.destination = null;
+  }
+
   private controller = new DestinationRowController();
-  destination: Destination|null = null;
+  declare destination: Destination|null;
 
   getControllerForTesting(): DestinationRowController {
     return this.controller;

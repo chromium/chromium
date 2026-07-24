@@ -59,11 +59,11 @@ export class ScannerSelectElement extends ScannerSelectElementBase {
     return ['scannersChanged(scanners.*)'];
   }
 
-  disabled: boolean;
-  scanners: Scanner[];
-  selectedScannerId: string;
-  scannerInfoMap: Map<string, ScannerInfo>;
-  lastUsedScannerId: string;
+  declare disabled: boolean;
+  declare scanners: Scanner[];
+  declare selectedScannerId: string;
+  declare scannerInfoMap: Map<string, ScannerInfo>;
+  declare lastUsedScannerId: string;
 
   private getScannerDisplayName(scanner: Scanner): string {
     return getScannerDisplayName(scanner);

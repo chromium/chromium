@@ -59,12 +59,12 @@ export class ScanDoneSectionElement extends ScanDoneSectionElementBase {
     return ['setFileSavedTextContent(numFilesSaved, selectedFolder)'];
   }
 
-  numFilesSaved: number;
-  scannedFilePaths: FilePath[];
-  selectedFileType: string;
-  selectedFolder: string;
-  fileSavedTextContent: TrustedHTML|string;
-  editButtonLabel: string;
+  declare numFilesSaved: number;
+  declare scannedFilePaths: FilePath[];
+  declare selectedFileType: string;
+  declare selectedFolder: string;
+  declare fileSavedTextContent: TrustedHTML|string;
+  declare editButtonLabel: string;
   // ScanningBrowserProxy is initialized when scanning_app.js is created.
   private browserProxy = ScanningBrowserProxyImpl.getInstance();
 

@@ -42,8 +42,8 @@ export class LoadingPageElement extends LoadingPageElementBase {
     };
   }
 
-  appState: AppState;
-  private noScannersAvailable: boolean;
+  declare appState: AppState;
+  declare private noScannersAvailable: boolean;
 
   private appStateChanged(): void {
     this.noScannersAvailable = this.appState === AppState.NO_SCANNERS;
