@@ -524,15 +524,23 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // Update our `omniboxViewState` to match what got entered into `textInput`.
   // Also bumps the version.
   private updateStateFromTextInput(): void {
-    this.userText = this.$.textInput.value;
+    const newValue = this.$.textInput.value;
+    const oldValue = this.userText;
+    const oldInline = this.omniboxViewState.inlineAutocompletion;
+    const oldAll = oldValue + oldInline;
 
-    // Sync up the read-only view to have the right text.
+    this.userText = newValue;
     ++this.omniboxViewState.uiVersion;
-    // If we got here (rather than blocking things in onInputKeyDown),
-    // there is no longer any inline completion.
-    this.omniboxViewState.inlineAutocompletion = '';
+
+    if (this.isComposing && oldInline.length > 0 &&
+        newValue.length > oldValue.length && oldAll.startsWith(newValue)) {
+      this.omniboxViewState.inlineAutocompletion =
+          oldAll.substring(newValue.length);
+    } else {
+      this.omniboxViewState.inlineAutocompletion = '';
+    }
+
     this.omniboxViewState.selection = this.getMojoSelection();
-    // Sync up the read-only view to have the right text.
     this.updateTextPiecesFromUserText();
   }
 

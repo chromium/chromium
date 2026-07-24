@@ -438,6 +438,51 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('hidden', style.get('visibility')?.toString());
   });
 
+  test('IME composition deflicker', async () => {
+    // 1. Set up initial state with some text and completion.
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com/artic',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+      ],
+      inlineAutocompletion: 'les/1/',
+      selection: {start: 17, end: 17},
+      uiVersion: 1,
+      browserVersion: 1,
+    };
+    await microtasksFinished();
+
+    // Start composition.
+    omnibox.isComposing = true;
+
+    // Set the input value to match.
+    getTextInput().value = 'example.com/artic';
+
+    // 2. Simulate user typing next character of completion via IME.
+    // The IME updates the input value to 'example.com/articl'.
+    getTextInput().value = 'example.com/articl';
+
+    // Trigger the input event.
+    getTextInput().dispatchEvent(new InputEvent('input'));
+
+    // 3. Verify that the inline autocompletion was NOT cleared,
+    // but instead sliced to 'es/1/'.
+    assertEquals('es/1/', omnibox.omniboxViewState.inlineAutocompletion);
+
+    // 4. Verify that we sent the updated input to the browser.
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].textInput);
+    assertEquals('example.com/articl', args[0].textInput.text);
+    assertEquals('es/1/', args[0].textInput.inlineAutocompletion);
+    // Version should be incremented.
+    assertEquals(2, omnibox.omniboxViewState.uiVersion);
+  });
+
   test('Additional text', async () => {
     omnibox.browserOmniboxState = {
       ...initialState,
