@@ -117,7 +117,7 @@ TEST_F(L10nUtilTest, GetAppLocale) {
   auto filenames = std::to_array<std::string>({
       "am",
       "ca",
-      "ca@valencia",
+      "ca-u-va-valencia",
       "en-GB",
       "en-US",
       "es",
@@ -197,15 +197,18 @@ TEST_F(L10nUtilTest, GetAppLocale) {
     EXPECT_STREQ("ca", icu::Locale::getDefault().getLanguage());
 
     SetDefaultLocaleForTest("ca@valencia", env.get());
-    EXPECT_EQ("ca@valencia", l10n_util::GetApplicationLocale(std::string()));
+    EXPECT_EQ("ca-u-va-valencia",
+              l10n_util::GetApplicationLocale(std::string()));
     EXPECT_STREQ("ca", icu::Locale::getDefault().getLanguage());
 
     SetDefaultLocaleForTest("ca_ES@valencia", env.get());
-    EXPECT_EQ("ca@valencia", l10n_util::GetApplicationLocale(std::string()));
+    EXPECT_EQ("ca-u-va-valencia",
+              l10n_util::GetApplicationLocale(std::string()));
     EXPECT_STREQ("ca", icu::Locale::getDefault().getLanguage());
 
     SetDefaultLocaleForTest("ca_ES.UTF8@valencia", env.get());
-    EXPECT_EQ("ca@valencia", l10n_util::GetApplicationLocale(std::string()));
+    EXPECT_EQ("ca-u-va-valencia",
+              l10n_util::GetApplicationLocale(std::string()));
     EXPECT_STREQ("ca", icu::Locale::getDefault().getLanguage());
   }
 

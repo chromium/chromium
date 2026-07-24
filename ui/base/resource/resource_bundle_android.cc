@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -274,17 +275,18 @@ void ResourceBundle::LoadCommonResources() {
 }
 
 // static
-bool ResourceBundle::LocaleDataPakExists(std::string_view locale,
+bool ResourceBundle::LocaleDataPakExists(const base::i18n::LanguageTag& locale,
                                          Gender gender) {
   const bool in_split = !g_locale_paks_in_apk;
-  const bool exists = ::ui::LocaleDataPakExists(locale, gender, in_split,
-                                                /*log_error=*/false);
+  const bool exists =
+      ::ui::LocaleDataPakExists(locale.tag_string(), gender, in_split,
+                                /*log_error=*/false);
   if (exists || !in_split) {
     return exists;
   }
 
   // Fall back to checking on disk, which is necessary only for tests.
-  const auto path = GetLocaleFilePath(locale);
+  const auto path = GetLocaleFilePath(locale.tag_string());
   return !path.empty() && base::PathExists(path);
 }
 

@@ -22,6 +22,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/i18n/bcp47_extensions.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -396,10 +397,10 @@ void ResourceBundle::LoadAdditionalLocaleDataWithPakFileRegion(
 
 #if !BUILDFLAG(IS_ANDROID)
 // static
-bool ResourceBundle::LocaleDataPakExists(std::string_view locale,
+bool ResourceBundle::LocaleDataPakExists(const base::i18n::LanguageTag& locale,
                                          Gender gender) {
   // TODO: Support gender translations on non-Android platforms.
-  const auto path = GetLocaleFilePath(locale);
+  const auto path = GetLocaleFilePath(locale.tag_string());
   if (path.empty()) {
     return false;
   }

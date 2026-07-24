@@ -118,23 +118,12 @@ bool IsLocalePartiallyPopulated(const std::string& locale_name) {
 // If `perform_io` is false, this will not perform any I/O but may return false
 // positives on Android and iOS. See the `kPlatformLocales` documentation for
 // more information.
-bool HasStringsForLocale(std::string_view locale,
+bool HasStringsForLocale(const LanguageTag& language_tag,
                          l10n_util::CheckLocaleMode mode) {
   if (mode == l10n_util::CheckLocaleMode::kUseKnownLocalesList) {
-    std::optional<LanguageTag> language_tag =
-        LanguageTagConverter::GetInstance().FromString(locale);
-    if (!language_tag) {
-      return false;
-    }
     // Only accept exact matches.
-    std::optional<LanguageTag> matched =
-        ui_l10n::GetPlatformLanguageMatcher().Match(*language_tag);
-    return matched && matched == language_tag;
+    return ui_l10n::GetPlatformLanguageMatcher().HasExactMatch(language_tag);
   }
-  // If locale has any illegal characters in it, we don't want to try to
-  // load it because it may be pointing outside the locale data file directory.
-  if (!base::i18n::IsFilenameLegal(base::ASCIIToUTF16(locale)))
-    return false;
 
   // IsLocalePartiallyPopulated() can be called here for an early return w/o
   // checking the resource availability below. It'd help when Chrome is run
@@ -142,7 +131,7 @@ bool HasStringsForLocale(std::string_view locale,
   // but it'd slow down the start up time a little bit for locales Chrome is
   // localized to. So, we don't call it here.
   return ui::ResourceBundle::LocaleDataPakExists(
-      locale, ui::ResourceBundle::Gender::kDefault);
+      language_tag, ui::ResourceBundle::Gender::kDefault);
 }
 
 // On Linux, the text layout engine Pango determines paragraph directionality
@@ -212,8 +201,13 @@ std::string_view GetCountry(std::string_view locale) {
 // and generic locale fallback based on ICU/CLDR.
 std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
                                                  CheckLocaleMode mode) {
-  if (HasStringsForLocale(locale, mode)) {
-    return std::optional<std::string>(locale);
+  std::optional<LanguageTag> locale_tag =
+      LanguageTagConverter::GetInstance().FromString(locale);
+  if (!locale_tag) {
+    return std::nullopt;
+  }
+  if (HasStringsForLocale(*locale_tag, mode)) {
+    return std::string(locale_tag->tag_string());
   }
 
   // If there's a variant, skip over it so we can try without the region
@@ -268,7 +262,10 @@ std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
         tmp_locale.append("-GB");
       }
     }
-    if (HasStringsForLocale(tmp_locale, mode)) {
+    if (HasStringsForLocale(LanguageTagConverter::GetInstance()
+                                .FromString(tmp_locale)
+                                .value_or(GetKnownLanguageTag("und")),
+                            mode)) {
       return tmp_locale;
     }
   }
@@ -284,7 +281,10 @@ std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
   };
   for (const auto& alias : kAliasMap) {
     if (base::EqualsCaseInsensitiveASCII(lang, alias.source)) {
-      if (HasStringsForLocale(alias.dest, mode)) {
+      if (HasStringsForLocale(LanguageTagConverter::GetInstance()
+                                  .FromString(alias.dest)
+                                  .value_or(GetKnownLanguageTag("und")),
+                              mode)) {
         return std::optional<std::string>(alias.dest);
       }
     }
@@ -372,7 +372,7 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
 
   // Fallback on en-US.
   const std::string fallback_locale("en-US");
-  if (HasStringsForLocale(fallback_locale,
+  if (HasStringsForLocale(GetKnownLanguageTag("en-US"),
                           CheckLocaleMode::kVerifyLocalizationDataExists)) {
     return fallback_locale;
   }

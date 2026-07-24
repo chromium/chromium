@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
@@ -44,6 +45,10 @@
 #include "ui/display/win/dpi.h"
 #endif
 
+namespace ui {
+namespace {
+
+using ::base::i18n::GetKnownLanguageTag;
 using ::testing::_;
 using ::testing::Between;
 using ::testing::DoAll;
@@ -51,9 +56,6 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::ReturnArg;
 using ::testing::SetArgPointee;
-
-namespace ui {
-namespace {
 
 const unsigned char kPngMagic[8] = { 0x89, 'P', 'N', 'G', 13, 10, 26, 10 };
 const size_t kPngChunkMetadataSize = 12;
@@ -397,9 +399,9 @@ TEST_F(ResourceBundleTest, DelegateGetLocalizedStringWithOverride) {
 TEST_F(ResourceBundleTest, LocaleDataPakExists) {
   // Check that ResourceBundle::LocaleDataPakExists returns the correct results.
   EXPECT_TRUE(ResourceBundle::LocaleDataPakExists(
-      "en-US", ResourceBundle::Gender::kDefault));
+      GetKnownLanguageTag("en-US"), ResourceBundle::Gender::kDefault));
   EXPECT_FALSE(ResourceBundle::LocaleDataPakExists(
-      "not_a_real_locale", ResourceBundle::Gender::kDefault));
+      GetKnownLanguageTag("en-JP"), ResourceBundle::Gender::kDefault));
 }
 
 class ResourceBundleImageTest : public ResourceBundleTest {
