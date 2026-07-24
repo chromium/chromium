@@ -28055,21 +28055,6 @@
             ]
         }
     ],
-    "WinSboxHighGPUJobMemoryLimits": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinSboxHighGPUJobMemoryLimits"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxModuleTamperingProtection": [
         {
             "platforms": [
