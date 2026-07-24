@@ -124,6 +124,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     }
 
     @Override
+    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
+        LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
+        // Ensure we use the themed context if available.
+        return inflater.cloneInContext(getContext());
+    }
+
+    @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
         // Main menu, which is the first page in one column mode (i.e. window is
         // small enough), or shown at left side pane in two column mode.
@@ -162,7 +169,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
         FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
-            if (!(processed.fragment instanceof MainSettings)) {
+            // Sliding panel layout can be null in tests.
+            if (getSlidingPaneLayout() != null && !(processed.fragment instanceof MainSettings)) {
                 getSlidingPaneLayout().openPane();
             }
             return processed.fragment;
@@ -369,8 +377,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (fragmentName == null) {
             return null;
         }
+        // MainSettings is explicitly created, don't create a second instance.
+        if (SettingsInTab.isEnabled() && MainSettings.class.getName().equals(fragmentName)) {
+            return null;
+        }
+        // Use requireContext() instead of requireActivity() to include themed contexts used by
+        // SettingsInTab.
         return new FragmentData(
-                Fragment.instantiate(requireActivity(), fragmentName, arguments),
+                Fragment.instantiate(requireContext(), fragmentName, arguments),
                 addToBackStack,
                 tag);
     }

@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.TypedValue;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,8 +30,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -42,9 +48,16 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -141,6 +154,17 @@ public class MultiColumnSettingsUnitTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
+
+        SigninManager mockSigninManager = Mockito.mock(SigninManager.class);
+        TemplateUrlService mockTemplateUrlService = Mockito.mock(TemplateUrlService.class);
+        SyncService mockSyncService = Mockito.mock(SyncService.class);
+
+        IdentityServicesProvider.setSigninManagerForTesting(mockSigninManager);
+        TemplateUrlServiceFactory.setInstanceForTesting(mockTemplateUrlService);
+        SyncServiceFactory.setInstanceForTesting(mockSyncService);
+
+        ResettersForTesting.register(
+                () -> Mockito.reset(mockSigninManager, mockTemplateUrlService, mockSyncService));
     }
 
     // Creation of fragments (specifically, ObservableSupplierImpl) requires
@@ -294,10 +318,18 @@ public class MultiColumnSettingsUnitTest {
                 });
     }
 
-    @UsedByReflection("MultiColumnSettingsUnitTest.java")
-    public static class TestHeaderFragment extends PreferenceFragmentCompat {
-        @UsedByReflection("MultiColumnSettingsUnitTest.java")
-        public TestHeaderFragment() {}
+    public static class TestMainSettings extends MainSettings {
+        private final Profile mMockProfile = Mockito.mock(Profile.class);
+
+        public TestMainSettings() {
+            setProfile(mMockProfile);
+            setSkipUpdatePreferencesForTesting(true);
+        }
+
+        @Override
+        public Profile getProfile() {
+            return mMockProfile;
+        }
 
         @Override
         public void onCreatePreferences(
@@ -307,11 +339,12 @@ public class MultiColumnSettingsUnitTest {
     }
 
     public static class TestMultiColumnSettings extends MultiColumnSettings {
+        private final MainSettings mMainSettings = new TestMainSettings();
         private Fragment mInitialDetailFragment;
 
         @Override
         public PreferenceFragmentCompat onCreatePreferenceHeader() {
-            return new TestHeaderFragment();
+            return mMainSettings;
         }
 
         @Override
@@ -360,6 +393,81 @@ public class MultiColumnSettingsUnitTest {
                     assertFalse(
                             "EXTRA_FRAGMENT_TAG should be consumed and removed from intent",
                             intent.hasExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testProcessPendingFragmentIntent_MainSettings_ReturnsNull() {
+        Intent intent = new Intent();
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, MainSettings.class.getName());
+
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setPendingFragmentIntent(intent);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    // Ensure we don't instantiate a second instance of MainSettings as a detail
+                    // fragment.
+                    assertNull(
+                            "MainSettings intent should not instantiate a detail fragment",
+                            settings.onCreateInitialDetailFragment());
+
+                    // Verify that MainSettings is created as the header fragment.
+                    var header = settings.onCreatePreferenceHeader();
+                    assertNotNull("MainSettings header fragment should be created", header);
+                    assertTrue(
+                            "Header fragment should be instance of MainSettings",
+                            header instanceof TestMainSettings);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testProcessPendingFragmentIntent_SubpageFragment_InstantiatesWithThemedContext() {
+        Intent intent = new Intent();
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, TestFragment.class.getName());
+
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setPendingFragmentIntent(intent);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Fragment detailFragment = settings.onCreateInitialDetailFragment();
+                    assertNotNull("Detail fragment should be instantiated", detailFragment);
+                    assertTrue(
+                            "Detail fragment should be TestFragment instance",
+                            detailFragment instanceof TestFragment);
+
+                    // Verify that settings.requireContext() (which was passed to
+                    // Fragment.instantiate) carries R.style.Theme_Chromium_Settings by checking
+                    // that preferenceTheme resolves.
+                    Context context = settings.requireContext();
+                    TypedValue tv = new TypedValue();
+                    assertTrue(
+                            "Theme should resolve preferenceTheme attribute from"
+                                    + " Theme_Chromium_Settings",
+                            context.getTheme().resolveAttribute(R.attr.preferenceTheme, tv, true));
                 });
     }
 

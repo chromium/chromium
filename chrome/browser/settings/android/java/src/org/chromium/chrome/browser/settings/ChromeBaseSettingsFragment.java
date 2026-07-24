@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
@@ -57,6 +59,13 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     @Override
     public Context getContext() {
         return mThemedContext != null ? mThemedContext : assumeNonNull(super.getContext());
+    }
+
+    @Override
+    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
+        LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
+        // Ensure we use the themed context if available.
+        return inflater.cloneInContext(getContext());
     }
 
     /**
