@@ -205,3 +205,11 @@ icon-from-table {
     inset: 0;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  #container::before,
+  #container::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
