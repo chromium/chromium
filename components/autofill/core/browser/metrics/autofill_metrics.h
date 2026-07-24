@@ -454,7 +454,8 @@ class AutofillMetrics {
   enum class AtMemoryTriggerSource {
     kTypedTrigger = 0,
     kContextMenu = 1,
-    kMaxValue = kContextMenu
+    kKeyboardShortcut = 2,
+    kMaxValue = kKeyboardShortcut
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

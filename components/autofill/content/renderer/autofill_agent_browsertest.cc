@@ -1958,38 +1958,48 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemorySearchTrigger) {
   {
     testing::InSequence s;
     // 1. "a" -> No @memory trigger.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(1));
 
     // 2. "a@" -> No @memory trigger.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(2));
 
     // 3. "a@@" -> @memory has triggered.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(1);
     EXPECT_CALL(check_point, Call(3));
 
     // 4. "a@@b" -> No @memory trigger.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(4));
   }
 
   // Ignore standard Autofill calls for this test.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
 
   // Typing sequence: "a", "a@", "a@@", "a@@b"
@@ -2014,12 +2024,13 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTrigger) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
-          _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
+          _, _, _,
+          Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2043,12 +2054,13 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerTextArea) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
-          _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
+          _, _, _,
+          Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2074,12 +2086,13 @@ TEST_F(AutofillAgentTest_AtMemory,
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
-          _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
+          _, _, _,
+          Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2102,13 +2115,17 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerRepeatBlocked) {
   WaitForFormsSeen();
   Focus("f");
 
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(0);
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
@@ -2126,14 +2143,17 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerRepeatBlocked) {
 TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerTypedIntoEmptyField) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
   // Expect the specific @memory trigger.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
   // 2. Act:
   LoadHTML(R"(<input id="f">)");
@@ -2146,14 +2166,17 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerTypedIntoEmptyField) {
 TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerInMiddle) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
   // Expect the specific @memory trigger.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
   // 2. Act:
   LoadHTML(R"(<input id="f">)");
@@ -2166,14 +2189,17 @@ TEST_F(AutofillAgentTest_AtMemory, MemorySearchTriggerInMiddle) {
 TEST_F(AutofillAgentTest_AtMemory, MemorySearchNotTriggeredOnPasswordField) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
   // Expect no @memory trigger.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(_, _, _,
-                                 AutofillSuggestionTriggerSource::kAtMemory, _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
       .Times(0);
 
   // 2. Act:
@@ -2261,14 +2287,17 @@ TEST_F(AutofillAgentTest_AtMemory,
 // Tests that a non-standard trigger string works in <input> fields.
 TEST_F(AutofillAgentTest_AtMemory, NonStandardTriggerString) {
   // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
   // Expect the specific @memory trigger.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
   SetTrigger("Foo");
   LoadHTML(R"(<input id="f">)");
@@ -2293,9 +2322,10 @@ class AutofillAgentTest_AtMemoryContentEditable
 
 // Tests that @memory popup is triggered if we type just the "@@".
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerViaTyping) {
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(_, _, _,
-                                 AutofillSuggestionTriggerSource::kAtMemory, _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _))
       .Times(1);
 
   SimulateSlowTyping("@@");
@@ -2309,23 +2339,29 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerSequence) {
     testing::InSequence s;
 
     // 1. Typing first "@" -> No @memory trigger.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(1));
 
     // 2. Typing second "@" -> @memory triggers.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(1);
     EXPECT_CALL(check_point, Call(2));
 
     // 3. Typing something else -> No @memory trigger.
-    EXPECT_CALL(autofill_driver(),
-                AskForValuesToFill(
-                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(3));
   }
@@ -2334,7 +2370,9 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerSequence) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, testing::Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+          _, _, _,
+          testing::Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
 
   SimulateSlowTyping("@");
@@ -2348,27 +2386,33 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerSequence) {
 // Tests that @memory popup triggers in the presence of non-trivial symbols.
 TEST_F(AutofillAgentTest_AtMemoryContentEditable,
        TriggerWithComplexPrecedingText) {
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(1);
   SimulateSlowTyping("Memory log #123 (Feb 2026): @@");
 }
 
 // Tests that @memory popup doesn't trigger on a single "@".
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, NoTriggerOnSingleAt) {
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(0);
   SimulateSlowTyping("@");
 }
 
 // Tests that @memory popup doesn't trigger on selection.
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, NoTriggerOnSelection) {
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(0);
 
   // Manually set text and select it all.
@@ -2387,9 +2431,11 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, NoTriggerOnSelection) {
 // Tests that @memory popup triggers each time the new trigger is typed.
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, MultipleTriggers) {
   // Verify that it triggers every time @@ is completed.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(2);
 
   SimulateSlowTyping("@@");
@@ -2502,14 +2548,17 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
 // fields.
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, NonStandardTriggerString) {
   // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
+          _))
       .Times(AnyNumber());
   // Expect the specific @memory trigger.
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, AutofillSuggestionTriggerSource::kAtMemory, _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
 
   SetTrigger("Foo");
   LoadHTML(R"(<div contenteditable id="f">)");
@@ -2529,12 +2578,13 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, AtMemoryShortcutTrigger) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
-          _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
+          _, _, _,
+          Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(

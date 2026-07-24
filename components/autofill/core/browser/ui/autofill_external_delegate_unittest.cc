@@ -542,8 +542,9 @@ class AutofillExternalDelegateTest : public testing::Test,
     autofill_client().set_at_memory_query_service(std::move(mock_service));
   }
 
-  void StartAtMemorySession(AutofillSuggestionTriggerSource trigger_source =
-                                AutofillSuggestionTriggerSource::kAtMemory) {
+  void StartAtMemorySession(
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString) {
     // Initialize the delegate's query form and field state.
     IssueOnQuery(trigger_source);
     // Assign a valid session ID to enable suggestion update callbacks.
@@ -729,14 +730,14 @@ TEST_F(AutofillExternalDelegateTest, SelectAutocompleteAtMemoryButton) {
   EXPECT_CALL(autofill_driver(),
               RendererShouldTriggerSuggestions(
                   queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kAtMemory));
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kAutocompleteAtMemoryButton),
       SuggestionPosition{.multi_index = {0}});
 }
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
 
@@ -748,7 +749,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
 // hide the popup.
 TEST_F(AutofillExternalDelegateTest,
        AtMemorySearchAffordanceAcceptanceDoesNotHidePopup) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   EXPECT_CALL(autofill_client(), HideSuggestions).Times(0);
 
@@ -764,7 +765,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryUsesCaretAnchorWithValidCaret) {
   gfx::Rect caret_bounds(10, 10, 1, 1);
   FormData form = CreateTestFormWithBounds(field_bounds);
 
-  IssueOnQuery(form, caret_bounds, AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(form, caret_bounds,
+               AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   const PopupAnchorType expected_anchor_type =
 #if BUILDFLAG(IS_ANDROID)
@@ -793,7 +795,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryUsesBottomSheetAnchor) {
   FormData form = CreateTestFormWithBounds(field_bounds);
 
   IssueOnQuery(form, empty_caret_bounds,
-               AutofillSuggestionTriggerSource::kAtMemory);
+               AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   const PopupAnchorType expected_anchor_type =
 #if BUILDFLAG(IS_ANDROID)
@@ -847,7 +849,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryContextMenuUsesCaretAnchor) {
 
 TEST_F(AutofillExternalDelegateTest, AtMemoryPopupDisplayed_TypedTrigger) {
   base::HistogramTester histogram_tester;
-  StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemory);
+  StartAtMemorySession(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
@@ -1008,7 +1010,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
 // results.
 TEST_F(AutofillExternalDelegateTest,
        AtMemorySubsequentSearchClearsPreviousSuggestions) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
@@ -1073,7 +1075,7 @@ TEST_F(AutofillExternalDelegateTest,
 // Tests that when a partial response is received, the controller continues
 // to accept subsequent responses for the same query.
 TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
@@ -1127,7 +1129,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
 // Tests that when a non-partial response (e.g., final success) is received,
 // the controller stops accepting subsequent responses for the same query.
 TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
@@ -1181,7 +1183,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
 // previous queries are ignored.
 TEST_F(AutofillExternalDelegateTest,
        AtMemoryLateResponseIgnoredIfFilterCleared) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
@@ -1221,7 +1223,7 @@ TEST_F(AutofillExternalDelegateTest,
 // Tests that results from a stale query (interrupted by a new query) are
 // ignored and do not update the suggestions.
 TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   autofill_client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(1));
@@ -1302,7 +1304,7 @@ TEST_P(AutofillExternalDelegateAutoSuggestInactivityTest,
   EXPECT_CALL(autofill_driver(),
               RendererShouldTriggerSuggestions(
                   queried_field().global_id(),
-                  AutofillSuggestionTriggerSource::kAtMemory));
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   external_delegate().DidAcceptSuggestion(
       Suggestion(SuggestionType::kAtMemoryInactivityNudge),
       SuggestionPosition{.multi_index = {0}});
@@ -3997,7 +3999,7 @@ TEST_F(AutofillExternalDelegateTest,
 // AtMemory.
 TEST_F(AutofillExternalDelegateTest,
        RemoveSuggestion_PersonalContextNotice_AtMemory) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
   EXPECT_FALSE(
       autofill_client().is_personal_context_at_memory_notice_acknowledged());
   EXPECT_TRUE(external_delegate().RemoveSuggestion(
@@ -4152,13 +4154,13 @@ TEST_F(AutofillExternalDelegateTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  EXPECT_CALL(
-      autofill_client(),
-      UpdateAutofillSuggestions(ElementsAre(Field(&Suggestion::is_loading,
-                                                  Suggestion::IsLoading(true))),
-                                FillingProduct::kAtMemory,
-                                AutofillSuggestionTriggerSource::kAtMemory,
-                                AutofillSuggestionsIgnoreFocusLoss(true)));
+  EXPECT_CALL(autofill_client(),
+              UpdateAutofillSuggestions(
+                  ElementsAre(Field(&Suggestion::is_loading,
+                                    Suggestion::IsLoading(true))),
+                  FillingProduct::kAtMemory,
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                  AutofillSuggestionsIgnoreFocusLoss(true)));
 
   external_delegate().DidAcceptSuggestion(
       suggestion, SuggestionPosition{.multi_index = {0}});
@@ -4167,7 +4169,7 @@ TEST_F(AutofillExternalDelegateTest,
 // Tests that accepting an AtMemory suggestion for an IBAN attempts to fetch the
 // value from the IbanAccessManager.
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   Iban iban = test::GetLocalIban();
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
@@ -4198,7 +4200,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
 // Tests that accepting an AtMemory suggestion for a Credit Card attempts to
 // fetch the value from the CreditCardAccessManager.
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsCreditCard) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   CreditCard card = test::GetCreditCard();
   pdm().payments_data_manager().AddCreditCard(card);
@@ -4242,8 +4244,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsAutofillAi) {
   EntityInstance passport = GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory, PASSPORT_NUMBER,
-               "passport");
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+               PASSPORT_NUMBER, "passport");
 
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
 
@@ -4284,8 +4286,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
       masked_passport.attribute(kPassportNumberType)->GetCompleteRawInfo());
   AddOrUpdateEntityInstance(masked_passport);
 
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory, PASSPORT_NUMBER,
-               "passport");
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+               PASSPORT_NUMBER, "passport");
 
   Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
 

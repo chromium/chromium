@@ -82,8 +82,9 @@ void AtMemoryAccessoryControllerImpl::OnOptionSelected(
   if (!driver) {
     return;
   }
+  // TODO(crbug.com/527392582): This is the wrong source.
   driver->RendererShouldTriggerSuggestions(
-      field_id, AutofillSuggestionTriggerSource::kAtMemory);
+      field_id, AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 }
 
 void AtMemoryAccessoryControllerImpl::OnToggleChanged(

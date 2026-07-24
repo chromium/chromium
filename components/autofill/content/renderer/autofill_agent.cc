@@ -1001,7 +1001,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
           frame, frame->GetInputMethodController()->GetSelectionOffsets(),
           GetRendererPreferences())) {
     ShowSuggestionsForContentEditable(
-        element, AutofillSuggestionTriggerSource::kAtMemory);
+        element, AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
     return;
   }
 
@@ -1028,7 +1028,8 @@ void AutofillAgent::OnTextFieldValueChanged(
   ClearPreviewedForm();
 
   if (ShouldTriggerAtMemorySearch(element, GetRendererPreferences())) {
-    ShowSuggestions(element, AutofillSuggestionTriggerSource::kAtMemory,
+    ShowSuggestions(element,
+                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
                     form_cache, std::nullopt);
     return;
   }
@@ -1163,19 +1164,17 @@ bool AutofillAgent::DidReceiveKeyDown(const WebElement& element,
           control.FormControlTypeForAutofill() !=
               blink::mojom::FormControlType::kInputPassword) {
         if (!actual_accelerator.IsRepeat()) {
-          // TODO(crbug.com/494158096): Introduce a new trigger source for the
-          // AtMemory keyboard shortcut.
-          ShowSuggestions(control,
-                          AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
-                          SynchronousFormCache(), std::nullopt);
+          ShowSuggestions(
+              control,
+              AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+              SynchronousFormCache(), std::nullopt);
         }
         return true;  // Prevent default.
       } else if (element.IsContentEditable()) {
         if (!actual_accelerator.IsRepeat()) {
-          // TODO(crbug.com/494158096): Introduce a new trigger source for the
-          // AtMemory keyboard shortcut.
           ShowSuggestionsForContentEditable(
-              element, AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
+              element,
+              AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut);
         }
         return true;  // Prevent default.
       }
@@ -1444,11 +1443,36 @@ void AutofillAgent::TriggerSuggestions(
                     password_request);
     return;
   }
-  if (trigger_source ==
-          AutofillSuggestionTriggerSource::kComposeDialogLostFocus ||
-      trigger_source ==
-          AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge ||
-      trigger_source == AutofillSuggestionTriggerSource::kAtMemoryContextMenu) {
+
+  bool may_trigger_on_contenteditable = [&]() {
+    using enum AutofillSuggestionTriggerSource;
+    switch (trigger_source) {
+      case kComposeDialogLostFocus:
+      case kComposeDelayedProactiveNudge:
+      case kAtMemoryContextMenu:
+      case kAtMemoryKeyboardShortcut:
+      case kAtMemoryTriggerString:
+        return true;
+      case kUnspecified:
+      case kFormControlElementClicked:
+      case kTextareaFocusedWithoutClick:
+      case kContentEditableClicked:
+      case kTextFieldValueChanged:
+      case kTextFieldDidReceiveKeyDown:
+      case kOpenTextDataListChooser:
+      case kPasswordManager:
+      case kiOS:
+      case kManualFallbackPasswords:
+      case kPasswordManagerProcessedFocusedField:
+      case kPlusAddressUpdatedInBrowserProcess:
+      case kProactivePasswordRecovery:
+      case kGlic:
+      case kAtMemoryInactivityNudge:
+        return false;
+    }
+    NOTREACHED();
+  }();
+  if (may_trigger_on_contenteditable) {
     if (WebElement content_editable =
             form_util::GetContentEditableByRendererId(field_id)) {
       ShowSuggestionsForContentEditable(content_editable, trigger_source);

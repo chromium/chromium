@@ -150,11 +150,14 @@ void AtMemoryMetricsRecorder::OnPopupShown(
   }
 
   switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemory:
-      source_ = AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger;
-      break;
     case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
       source_ = AutofillMetrics::AtMemoryTriggerSource::kContextMenu;
+      break;
+    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
+      source_ = AutofillMetrics::AtMemoryTriggerSource::kKeyboardShortcut;
+      break;
+    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
+      source_ = AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger;
       break;
     case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:

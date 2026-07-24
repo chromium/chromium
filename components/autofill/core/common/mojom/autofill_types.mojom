@@ -523,6 +523,7 @@ enum FieldActionType {
   kReplaceAtMemoryTrigger,  // Replaces the "@@" trigger preceding the cursor.
 };
 
+// LINT.IfChange(AutofillSuggestionTriggerSource)
 // Describes which action triggered Autofill suggestions. This has implications
 // how the suggestions behave, as described below.
 // Some further properties of suggestions are implied by the source. See
@@ -607,12 +608,15 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by the GLIC service.
   kGlic = 21,
   // Suggestions triggered by the @memory feature (typing "@@").
-  kAtMemory = 22,
+  kAtMemoryTriggerString = 22,
   // Suggestions triggered by the @memory feature via context menu.
   kAtMemoryContextMenu = 23,
   // Suggestions triggered by the inactivity timer.
   kAtMemoryInactivityNudge = 24,
+  // Suggestions triggered by the @memory keyboard shortcut.
+  kAtMemoryKeyboardShortcut = 25,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionTriggerSource)
 
 // LINT.IfChange(EmailVerificationState)
 // Represents the visual verification state of an email input element.

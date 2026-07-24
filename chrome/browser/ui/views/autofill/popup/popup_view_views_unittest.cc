@@ -223,7 +223,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     ON_CALL(autofill_popup_controller_, GetMainFillingProduct)
         .WillByDefault([&controller = autofill_popup_controller_]() {
           if (controller.GetAutofillSuggestionTriggerSource() ==
-              AutofillSuggestionTriggerSource::kAtMemory) {
+              AutofillSuggestionTriggerSource::kAtMemoryTriggerString) {
             return FillingProduct::kAtMemory;
           }
           return controller.GetLineCount() > 0
@@ -3041,7 +3041,8 @@ TEST_F(PopupViewViewsTest, TabSelected_A11yAnnouncesBnplFootnote) {
 
 TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(Return(AutofillSuggestionTriggerSource::kAtMemory));
+      .WillByDefault(
+          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   CreateAndShowView(/*ids=*/{}, CreateParamsForTestWidget(),
                     AutofillPopupView::SearchBarConfig{
                         .placeholder = u"Recall from memory",
@@ -3061,7 +3062,8 @@ TEST_F(PopupViewViewsTest, SearchBar_RemainVisibleEvenWithNoSuggestions) {
 
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(Return(AutofillSuggestionTriggerSource::kAtMemory));
+      .WillByDefault(
+          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
@@ -3117,7 +3119,8 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
 // back and forth.
 TEST_F(PopupViewViewsTest, AtMemory_KeyboardArrowsNavigationBetweenPopups) {
   ON_CALL(controller(), GetAutofillSuggestionTriggerSource)
-      .WillByDefault(Return(AutofillSuggestionTriggerSource::kAtMemory));
+      .WillByDefault(
+          Return(AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
 
   controller().set_suggestions({
       CreateSuggestionWithChildren(

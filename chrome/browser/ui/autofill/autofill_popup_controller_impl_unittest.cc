@@ -75,7 +75,7 @@ class AutofillPopupControllerImplTest
     // 1. Set the trigger source inside the delegate.
     manager().external_delegate().OnQuery(
         FormData(), FormFieldData(), gfx::Rect(),
-        AutofillSuggestionTriggerSource::kAtMemory);
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
     // 2. Setup the bridge so the mock delegate executes real initialization
     // logic.
@@ -93,7 +93,7 @@ class AutofillPopupControllerImplTest
     // 3. Actually show the suggestions, which triggers the search session
     // initialization in AtMemoryController.
     ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
-                    AutofillSuggestionTriggerSource::kAtMemory);
+                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
   }
 
   // Simulates a user typing a query into the @memory search bar and explicitly
@@ -578,10 +578,12 @@ TEST_P(AutofillPopupControllerImplTestWithTriggerSource,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    All, AutofillPopupControllerImplTestWithTriggerSource,
+    All,
+    AutofillPopupControllerImplTestWithTriggerSource,
     ::testing::Values(
         AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess,
-        AutofillSuggestionTriggerSource::kAtMemory,
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+        AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
         AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
         AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge));
 
@@ -1029,7 +1031,7 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        AtMemory_NoFilter_NoSuggestionsMessageNotShown) {
   ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
-                  AutofillSuggestionTriggerSource::kAtMemory);
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
   EXPECT_FALSE(client().suggestion_controller(manager())
                    .ShouldShowNoSuggestionsMessage());
 }
@@ -1168,7 +1170,7 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        RemoveLastSuggestion_DoesNotHidePopupForAtMemory) {
   ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
-                  AutofillSuggestionTriggerSource::kAtMemory);
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
 
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(manager().external_delegate(),

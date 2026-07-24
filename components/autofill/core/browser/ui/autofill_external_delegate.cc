@@ -1024,8 +1024,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     }
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAutocompleteAtMemoryButton:
+      // TODO(crbug.com/527392582): kAtMemoryTriggerString is the wrong source.
       manager_->driver().RendererShouldTriggerSuggestions(
-          last_query_.field_id, AutofillSuggestionTriggerSource::kAtMemory);
+          last_query_.field_id,
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
       break;
     case SuggestionType::kAtMemorySearchResult: {
       const IsAsync is_async =
