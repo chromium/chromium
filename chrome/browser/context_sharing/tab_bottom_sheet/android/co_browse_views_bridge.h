@@ -40,7 +40,8 @@ class CoBrowseViewsBridge {
       context_sharing::TabBottomSheetClientType client_type,
       context_sharing::CoBrowseContainerType container_type,
       const base::android::JavaRef<jobject>& bottom_sheet_content_provider =
-          nullptr);
+          nullptr,
+      bool enable_pinch_to_zoom = false);
   ~CoBrowseViewsBridge();
 
   CoBrowseViewsBridge(const CoBrowseViewsBridge&) = delete;
@@ -65,6 +66,7 @@ class CoBrowseViewsBridge {
   const raw_ref<tabs::TabInterface> tab_;
   const context_sharing::TabBottomSheetClientType client_type_;
   const context_sharing::CoBrowseContainerType container_type_;
+  const bool enable_pinch_to_zoom_;
   base::android::ScopedJavaGlobalRef<jobject> java_co_browse_views_;
   base::android::ScopedJavaGlobalRef<jobject> bottom_sheet_content_provider_;
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;

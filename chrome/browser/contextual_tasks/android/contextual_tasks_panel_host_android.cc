@@ -165,7 +165,8 @@ ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
         *tab_android,
         context_sharing::TabBottomSheetClientType::kContextualTasks,
         context_sharing::CoBrowseContainerType::kBottomSheet,
-        CreateBottomSheetContentProvider());
+        CreateBottomSheetContentProvider(),
+        /*enable_pinch_to_zoom=*/true);
     tab_bottom_sheet_bridge_ =
         std::make_unique<context_sharing::TabBottomSheetBridge>(this,
                                                                 tab_android);

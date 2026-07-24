@@ -41,10 +41,12 @@ CoBrowseViewsBridge::CoBrowseViewsBridge(
     tabs::TabInterface& tab,
     context_sharing::TabBottomSheetClientType client_type,
     context_sharing::CoBrowseContainerType container_type,
-    const base::android::JavaRef<jobject>& bottom_sheet_content_provider)
+    const base::android::JavaRef<jobject>& bottom_sheet_content_provider,
+    bool enable_pinch_to_zoom)
     : tab_(tab),
       client_type_(client_type),
       container_type_(container_type),
+      enable_pinch_to_zoom_(enable_pinch_to_zoom),
       bottom_sheet_content_provider_(bottom_sheet_content_provider),
       tab_insert_subscription_(tab.RegisterDidInsert(
           base::BindRepeating(&CoBrowseViewsBridge::OnTabInserted,
@@ -99,7 +101,7 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
                                          bool request_focus) {
   guest_web_contents_ = web_contents;
   if (web_contents) {
-    web_contents->SetIgnoreZoomGestures(true);
+    web_contents->SetIgnoreZoomGestures(!enable_pinch_to_zoom_);
     if (!zoom::ZoomController::FromWebContents(web_contents)) {
       zoom::ZoomController::CreateForWebContents(web_contents);
     }
