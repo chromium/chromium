@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
@@ -52,11 +53,33 @@ void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {
   if (!largest_contentful_paint_calculator_) {
     return;
   }
+  const LargestContentfulPaintDetails& lcp_details =
+      largest_contentful_paint_calculator_->LatestLcpDetails();
   DOMWindowPerformance::performance(*window_.Get())
       ->timingForReporting()
-      ->SetLargestContentfulPaintDetailsForMetrics(
-          largest_contentful_paint_calculator_->LatestLcpDetails());
+      ->SetLargestContentfulPaintDetailsForMetrics(lcp_details);
   paint_timing::NotifyLoaderPerformanceTimingChanged(window_);
+
+  // Notify the browser of the updated largest contentful paint candidate so
+  // that startup profiling can observe it (mirrors the FCP notification), and
+  // pass the candidate's renderer-side presentation timestamp so the browser
+  // does not have to approximate the timing on IPC arrival. The candidate is
+  // the larger of the image and text records, with ties broken by the earlier
+  // paint time, matching LargestContentfulPaintCalculator's own selection in
+  // UpdateLatestLcpDetailsTypeIfNeeded().
+  const bool text_is_larger = lcp_details.largest_text_paint_size >
+                                  lcp_details.largest_image_paint_size ||
+                              (lcp_details.largest_text_paint_size ==
+                                   lcp_details.largest_image_paint_size &&
+                               lcp_details.largest_text_paint_time <
+                                   lcp_details.largest_image_paint_time);
+  const base::TimeTicks presentation_time =
+      text_is_larger ? lcp_details.largest_text_paint_time
+                     : lcp_details.largest_image_paint_time;
+  // LocalFrame::OnLargestContentfulPaint() filters to the outermost main frame.
+  if (LocalFrame* frame = window_->GetFrame()) {
+    frame->OnLargestContentfulPaint(presentation_time);
+  }
 }
 
 void LargestContentfulPaintManager::OnFirstInputOrScroll() {

@@ -254,7 +254,8 @@ void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void ContextualCueingHelper::OnFirstContentfulPaintInPrimaryMainFrame() {
+void ContextualCueingHelper::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
   if (!IsZeroStateSuggestionsEnabled()) {
     return;
   }

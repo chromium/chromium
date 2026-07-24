@@ -629,7 +629,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidFirstVisuallyNonEmptyPaint();
 
   // Called once the first contentful paint happens on the main frame.
-  void OnFirstContentfulPaint(const base::TimeDelta& duration);
+  void OnFirstContentfulPaint(const base::TimeTicks& presentation_time);
+
+  // Called when the outermost main frame's largest contentful paint candidate
+  // changed.
+  void OnLargestContentfulPaint(const base::TimeTicks& presentation_time);
 
   scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
 

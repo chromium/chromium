@@ -94,13 +94,14 @@ class CONTENT_EXPORT PageImpl : public Page {
     has_recorded_partitioned_cookie_use_ = recorded;
   }
 
-  std::optional<base::TimeDelta> GetFirstContentfulPaintInMainDocumentDuration()
+  std::optional<base::TimeTicks> GetFirstContentfulPaintInMainDocumentTime()
       const {
-    return first_contentful_paint_in_main_document_duration_;
+    return first_contentful_paint_in_main_document_time_;
   }
 
-  void SetFirstContentfulPaintInMainDocumentDuration(base::TimeDelta duration) {
-    first_contentful_paint_in_main_document_duration_ = duration;
+  void SetFirstContentfulPaintInMainDocumentTime(
+      base::TimeTicks presentation_time) {
+    first_contentful_paint_in_main_document_time_ = presentation_time;
   }
 
   bool is_main_document_element_available() const {
@@ -272,9 +273,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // for this page.
   bool has_recorded_partitioned_cookie_use_ = false;
 
-  // Time taken for first contentful paint to occur.
-  std::optional<base::TimeDelta>
-      first_contentful_paint_in_main_document_duration_;
+  // Renderer-side presentation timestamp of the first contentful paint in the
+  // main document.
+  std::optional<base::TimeTicks> first_contentful_paint_in_main_document_time_;
 
   // True if we've received a notification that the window.document element
   // became available for the main document.

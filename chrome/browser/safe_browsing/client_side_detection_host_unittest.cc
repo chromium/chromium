@@ -624,7 +624,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     content::WebContentsTester::For(web_contents())
         ->TestDidFirstVisuallyNonEmptyPaint();
     if (csd_host_) {
-      csd_host_->OnFirstContentfulPaintInPrimaryMainFrame();
+      csd_host_->OnFirstContentfulPaintInPrimaryMainFrame(
+          base::TimeTicks::Now());
     }
   }
 
@@ -638,7 +639,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         NotifyClientSideDetectionObservers();
       } else {
         if (csd_host_) {
-          csd_host_->OnFirstContentfulPaintInPrimaryMainFrame();
+          csd_host_->OnFirstContentfulPaintInPrimaryMainFrame(
+              base::TimeTicks::Now());
         }
         content::WebContentsTester::For(web_contents())
             ->TestDidFirstVisuallyNonEmptyPaint();

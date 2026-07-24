@@ -118,19 +118,13 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   void RecordFirstWebContentsNonEmptyPaintForOsLaunch(base::TimeTicks now);
 
   // Call this with the time when the first web contents had a first contentful
-  // paint. |navigation_start| identifies the page load. Records at most once
-  // per session.
-  void RecordFirstWebContentsFirstContentfulPaint(
-      base::TimeTicks navigation_start,
-      base::TimeTicks fcp_ticks);
+  // paint. Records at most once per session.
+  void RecordFirstWebContentsFirstContentfulPaint(base::TimeTicks fcp_ticks);
 
   // Call this with the time when the first web contents had a largest
-  // contentful paint. |navigation_start| must match the value passed to
-  // RecordFirstWebContentsFirstContentfulPaint() to ensure FCP and LCP are
-  // from the same page load. Records at most once per session.
-  void RecordFirstWebContentsLargestContentfulPaint(
-      base::TimeTicks navigation_start,
-      base::TimeTicks lcp_ticks);
+  // contentful paint. Only recorded if the first contentful paint was already
+  // recorded for this session. Records at most once per session.
+  void RecordFirstWebContentsLargestContentfulPaint(base::TimeTicks lcp_ticks);
 
   // Call this with the time when the first web contents began navigating its
   // main frame / successfully committed its navigation for the main frame.
@@ -245,10 +239,6 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   bool did_record_startup_fcp_ = false;
   bool did_record_startup_lcp_ = false;
-
-  // The navigation start of the page that recorded FCP. Used to ensure LCP
-  // comes from the same page load.
-  base::TimeTicks startup_fcp_navigation_start_;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

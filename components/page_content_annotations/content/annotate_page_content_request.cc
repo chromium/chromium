@@ -400,7 +400,8 @@ void AnnotatedPageContentRequest::DidStopLoading() {
   MaybeScheduleExtraction();
 }
 
-void AnnotatedPageContentRequest::OnFirstContentfulPaintInPrimaryMainFrame() {
+void AnnotatedPageContentRequest::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
   if (use_page_settled_monitor_) {
     // PageSettledMonitor handles its own contentful paint signal.
     return;

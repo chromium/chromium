@@ -45,8 +45,14 @@ enum class StartupProfilingFinishReason {
   kMaxValue = kAbandonNonInteractiveStartup,
 };
 
-// Note: Instances of this class self destroy when the first non-empty paint
-// happens, or when an event prevents it from being recorded.
+// Note: Instances of this class self destroy. For profilers that do not observe
+// paint timing metrics (see `ShouldObservePaintTimingMetrics()`), this happens
+// when the first non-empty paint happens, or when an event prevents it from
+// being recorded. For profilers that do observe paint timing metrics, the first
+// non-empty paint records its metric but the profiler keeps observing to
+// capture the first contentful paint and the final largest contentful paint;
+// it self destructs when the page is hidden, a new navigation starts, or the
+// contents is destroyed.
 class FirstWebContentsProfilerBase : public content::WebContentsObserver {
  public:
   FirstWebContentsProfilerBase(const FirstWebContentsProfilerBase&) = delete;
@@ -76,6 +82,22 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
   virtual void RecordFirstNonEmptyPaint() = 0;
   virtual void RecordFirstNonEmptyPaintForOsLaunch() = 0;
 
+  // Records the first contentful paint of the profiled WebContents. Only called
+  // when `ShouldObservePaintTimingMetrics()` returns true. |fcp_ticks| is the
+  // renderer-side presentation timestamp of the first contentful paint.
+  virtual void RecordFirstContentfulPaint(base::TimeTicks fcp_ticks) {}
+
+  // Records the largest contentful paint of the profiled WebContents. Only
+  // called when `ShouldObservePaintTimingMetrics()` returns true. |lcp_ticks|
+  // is the renderer-side presentation timestamp of the latest largest
+  // contentful paint candidate.
+  virtual void RecordLargestContentfulPaint(base::TimeTicks lcp_ticks) {}
+
+  // Whether this profiler should keep observing past the first non-empty paint
+  // to record the first contentful paint and the final largest contentful
+  // paint. Defaults to false; profilers that record FCP/LCP override this.
+  virtual bool ShouldObservePaintTimingMetrics();
+
  private:
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -83,10 +105,23 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFirstVisuallyNonEmptyPaint() override;
+  void OnFirstContentfulPaintInPrimaryMainFrame(
+      base::TimeTicks presentation_time) override;
+  void OnLargestContentfulPaintInPrimaryMainFrame(
+      base::TimeTicks presentation_time) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 
-  // Logs |finish_reason| to UMA and deletes this profiler.
+  // Records the first contentful paint if it has been observed and the profiler
+  // has committed to recording paint timing metrics.
+  void MaybeRecordFirstContentfulPaint();
+
+  // Records the latest observed largest contentful paint candidate, if any.
+  void MaybeRecordLargestContentfulPaint();
+
+  // Logs |finish_reason| to UMA (unless already logged) and deletes this
+  // profiler. When paint timing metrics are being observed, the final largest
+  // contentful paint is recorded before deletion.
   void FinishedCollectingMetrics(StartupProfilingFinishReason finish_reason);
 
   // Whether a main frame navigation finished since this was created.
@@ -95,6 +130,26 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
   // Whether a navigation was pending at the time this profiler was constructed,
   // or if a navigation start was observed post-construction.
   bool first_navigation_started_ = false;
+
+  // Whether the finish reason has been recorded. When observing paint
+  // timing metrics, this is set at the first non-empty paint (with kDone)
+  // while the profiler keeps observing for FCP/LCP. Once set, a later
+  // terminal event (a new navigation, the tab being hidden/deprioritized,
+  // or the contents being destroyed) stops observation and deletes the
+  // profiler, but does not overwrite the finish reason: it stays kDone,
+  // matching the pre-existing NonEmptyPaint3 behavior. Only the FCP/LCP
+  // that arrived before that event are recorded; the terminal event
+  // doubles as the LCP finalization point.
+  bool finish_reason_recorded_ = false;
+
+  // The renderer-side presentation timestamp of the first contentful paint,
+  // and whether it has been recorded yet.
+  base::TimeTicks first_contentful_paint_ticks_;
+  bool did_record_first_contentful_paint_ = false;
+
+  // The renderer-side presentation timestamp of the latest largest contentful
+  // paint candidate.
+  base::TimeTicks last_largest_contentful_paint_ticks_;
 };
 
 }  // namespace metrics

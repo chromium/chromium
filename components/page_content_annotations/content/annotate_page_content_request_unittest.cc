@@ -282,7 +282,7 @@ class AnnotatePageContentRequestTest
   }
 
   void SimulatePageStablization() {
-    request_->OnFirstContentfulPaintInPrimaryMainFrame();
+    request_->OnFirstContentfulPaintInPrimaryMainFrame(base::TimeTicks::Now());
     WaitForPageSettled();
   }
 

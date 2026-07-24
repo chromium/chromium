@@ -333,7 +333,11 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   float ZoomFactorForViewportLayout() override;
 
-  void OnFirstContentfulPaint(const base::TimeDelta& duration) override;
+  void OnFirstContentfulPaint(
+      const base::TimeTicks& presentation_time) override;
+
+  void OnLargestContentfulPaint(
+      const base::TimeTicks& presentation_time) override;
 
  private:
   bool IsChromeClientImpl() const override { return true; }

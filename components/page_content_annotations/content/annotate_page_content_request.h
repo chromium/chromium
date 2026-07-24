@@ -155,7 +155,8 @@ class AnnotatedPageContentRequest
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
-  void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  void OnFirstContentfulPaintInPrimaryMainFrame(
+      base::TimeTicks presentation_time) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   void DidFinishNavigationWithPageSettledMonitor(

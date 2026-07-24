@@ -321,7 +321,6 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   is_browser_window_display_metric_emitted_ = false;
   did_record_startup_fcp_ = false;
   did_record_startup_lcp_ = false;
-  startup_fcp_navigation_start_ = base::TimeTicks();
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -488,7 +487,6 @@ void BrowserStartupMetricRecorder::
 }
 
 void BrowserStartupMetricRecorder::RecordFirstWebContentsFirstContentfulPaint(
-    base::TimeTicks navigation_start,
     base::TimeTicks fcp_ticks) {
   if (did_record_startup_fcp_) {
     return;
@@ -504,7 +502,6 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsFirstContentfulPaint(
   }
 
   did_record_startup_fcp_ = true;
-  startup_fcp_navigation_start_ = navigation_start;
 
   EmitHistogramWithTemperatureAndTraceEvent(
       &base::UmaHistogramLongTimes100,
@@ -513,14 +510,9 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsFirstContentfulPaint(
 }
 
 void BrowserStartupMetricRecorder::RecordFirstWebContentsLargestContentfulPaint(
-    base::TimeTicks navigation_start,
     base::TimeTicks lcp_ticks) {
   // Only record LCP if FCP was already recorded for the same page load.
   if (!did_record_startup_fcp_ || did_record_startup_lcp_) {
-    return;
-  }
-
-  if (navigation_start != startup_fcp_navigation_start_) {
     return;
   }
 

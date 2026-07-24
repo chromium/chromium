@@ -1091,7 +1091,8 @@ void ClientSideDetectionHost::DidFirstVisuallyNonEmptyPaint() {
   }
 }
 
-void ClientSideDetectionHost::OnFirstContentfulPaintInPrimaryMainFrame() {
+void ClientSideDetectionHost::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification) &&
       !IsEnhancedProtectionEnabled()) {
     return;

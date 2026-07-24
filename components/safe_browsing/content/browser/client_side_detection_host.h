@@ -187,7 +187,8 @@ class ClientSideDetectionHost
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
   void DidFirstVisuallyNonEmptyPaint() override;
-  void OnFirstContentfulPaintInPrimaryMainFrame() override;
+  void OnFirstContentfulPaintInPrimaryMainFrame(
+      base::TimeTicks presentation_time) override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;

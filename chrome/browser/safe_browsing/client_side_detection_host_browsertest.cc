@@ -193,7 +193,8 @@ class PaintObserverWaiter : public content::WebContentsObserver {
     }
   }
 
-  void OnFirstContentfulPaintInPrimaryMainFrame() override {
+  void OnFirstContentfulPaintInPrimaryMainFrame(
+      base::TimeTicks presentation_time) override {
     did_fcp_ = true;
     if (did_paint_) {
       run_loop_.Quit();

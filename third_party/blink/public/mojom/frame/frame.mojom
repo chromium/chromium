@@ -1468,5 +1468,14 @@ interface LocalMainFrameHost {
   DraggableRegionsChanged(array<DraggableRegion> regions);
 
   // Called when the main frame did a first contentful paint.
-  OnFirstContentfulPaint(mojo_base.mojom.TimeDelta duration);
+  // `presentation_time` is the renderer-side presentation timestamp of the
+  // paint.
+  OnFirstContentfulPaint(mojo_base.mojom.TimeTicks presentation_time);
+
+  // Called when the outermost main frame's largest contentful paint candidate
+  // changed. May be dispatched multiple times as larger elements paint; the
+  // last notification (before user input freezes the metric) corresponds to the
+  // page's largest contentful paint. `presentation_time` is the renderer-side
+  // presentation timestamp of the current candidate.
+  OnLargestContentfulPaint(mojo_base.mojom.TimeTicks presentation_time);
 };

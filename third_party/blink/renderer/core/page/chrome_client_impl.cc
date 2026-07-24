@@ -1580,8 +1580,14 @@ gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(
   return window;
 }
 
-void ChromeClientImpl::OnFirstContentfulPaint(const base::TimeDelta& duration) {
-  web_view_->OnFirstContentfulPaint(duration);
+void ChromeClientImpl::OnFirstContentfulPaint(
+    const base::TimeTicks& presentation_time) {
+  web_view_->OnFirstContentfulPaint(presentation_time);
+}
+
+void ChromeClientImpl::OnLargestContentfulPaint(
+    const base::TimeTicks& presentation_time) {
+  web_view_->OnLargestContentfulPaint(presentation_time);
 }
 
 }  // namespace blink

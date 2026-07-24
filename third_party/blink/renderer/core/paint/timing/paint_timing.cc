@@ -696,9 +696,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
   if (GetFrame()) {
     PerformanceTimingForReporting* timing_for_reporting =
         performance->timingForReporting();
-    GetFrame()->OnFirstContentfulPaint(
-        paint_timing_info.presentation_time,
-        timing_for_reporting->NavigationStartAsMonotonicTime());
+    GetFrame()->OnFirstContentfulPaint(paint_timing_info.presentation_time);
     GetFrame()->Loader().Progress().DidFirstContentfulPaint();
 
     auto* coordinator = GetSupplementable()->GetResourceCoordinator();

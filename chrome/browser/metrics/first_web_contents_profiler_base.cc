@@ -140,7 +140,46 @@ void FirstWebContentsProfilerBase::DidFirstVisuallyNonEmptyPaint() {
   }
 
   RecordFirstNonEmptyPaint();
-  FinishedCollectingMetrics(StartupProfilingFinishReason::kDone);
+
+  if (!ShouldObservePaintTimingMetrics()) {
+    FinishedCollectingMetrics(StartupProfilingFinishReason::kDone);
+    return;
+  }
+
+  // Record the successful finish reason now (preserving its timing), but keep
+  // observing to capture the first contentful paint and the final largest
+  // contentful paint, which occur after the first non-empty paint. The profiler
+  // self-destructs when the page is hidden, a new navigation starts, or the
+  // contents is destroyed.
+  RecordFinishReason(StartupProfilingFinishReason::kDone);
+  finish_reason_recorded_ = true;
+  MaybeRecordFirstContentfulPaint();
+}
+
+void FirstWebContentsProfilerBase::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
+  if (!ShouldObservePaintTimingMetrics() || WasStartupInterrupted()) {
+    return;
+  }
+
+  if (first_contentful_paint_ticks_.is_null()) {
+    first_contentful_paint_ticks_ = presentation_time;
+  }
+  MaybeRecordFirstContentfulPaint();
+}
+
+void FirstWebContentsProfilerBase::OnLargestContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
+  if (!ShouldObservePaintTimingMetrics() || WasStartupInterrupted()) {
+    return;
+  }
+
+  // The largest contentful paint may be updated multiple times; keep the latest
+  // candidate. It is recorded when profiling ends. Ignore a null timestamp so a
+  // spurious notification cannot clobber a previously observed valid candidate.
+  if (!presentation_time.is_null()) {
+    last_largest_contentful_paint_ticks_ = presentation_time;
+  }
 }
 
 void FirstWebContentsProfilerBase::OnVisibilityChanged(
@@ -158,9 +197,36 @@ void FirstWebContentsProfilerBase::WebContentsDestroyed() {
       StartupProfilingFinishReason::kAbandonContentDestroyed);
 }
 
+void FirstWebContentsProfilerBase::MaybeRecordFirstContentfulPaint() {
+  if (!finish_reason_recorded_ || did_record_first_contentful_paint_ ||
+      first_contentful_paint_ticks_.is_null()) {
+    return;
+  }
+  did_record_first_contentful_paint_ = true;
+  RecordFirstContentfulPaint(first_contentful_paint_ticks_);
+}
+
+void FirstWebContentsProfilerBase::MaybeRecordLargestContentfulPaint() {
+  if (last_largest_contentful_paint_ticks_.is_null()) {
+    return;
+  }
+  RecordLargestContentfulPaint(last_largest_contentful_paint_ticks_);
+}
+
+bool FirstWebContentsProfilerBase::ShouldObservePaintTimingMetrics() {
+  return false;
+}
+
 void FirstWebContentsProfilerBase::FinishedCollectingMetrics(
     StartupProfilingFinishReason finish_reason) {
-  RecordFinishReason(finish_reason);
+  if (finish_reason_recorded_) {
+    // The finish reason was already recorded (kDone) at the first non-empty
+    // paint while observing paint timing metrics. Record the final largest
+    // contentful paint before deleting.
+    MaybeRecordLargestContentfulPaint();
+  } else {
+    RecordFinishReason(finish_reason);
+  }
   delete this;
 }
 

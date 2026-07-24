@@ -276,7 +276,8 @@ void NavigationWebMessageSender::DidFinishLoad(
   PostMessageWithType(kPageLoadEndMessage);
 }
 
-void NavigationWebMessageSender::OnFirstContentfulPaintInPrimaryMainFrame() {
+void NavigationWebMessageSender::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
   if (!page().IsPrimary()) {
     return;
   }
