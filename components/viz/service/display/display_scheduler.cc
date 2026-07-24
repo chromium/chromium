@@ -340,11 +340,14 @@ bool DisplayScheduler::DrawAndSwap(const BeginFrameArgs& begin_frame_args) {
         damage_tracker_
             ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
             : std::nullopt;
+    bool is_handling_interaction =
+        damage_tracker_ ? damage_tracker_->HasDamageDueToInteraction() : false;
     int max_allowed_buffers = GetMaxAllowedBuffers(begin_frame_args.interval);
     const auto* selected_deadline =
         &deadlines.deadlines[decider_.SelectDeadline(
             deadlines, begin_frame_args.interval, max_allowed_buffers,
-            begin_frame_args.frame_time, earliest_input_time)];
+            begin_frame_args.frame_time, earliest_input_time,
+            is_handling_interaction)];
     // TODO(crbug.com/500826814): Move this logic into FrameDeadlineDecider.
     if (base::FeatureList::IsEnabled(features::kSelectFutureFrameDeadline)) {
       base::TimeTicks now = NowTicks();
@@ -636,9 +639,12 @@ bool DisplayScheduler::CanDrawForPreviousFrame(
           ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
           : std::nullopt;
   int max_allowed_buffers = GetMaxAllowedBuffers(begin_frame_args.interval);
-  size_t deadline_index = decider_.QueryDeadline(
-      deadlines, begin_frame_args.interval, max_allowed_buffers,
-      begin_frame_args.frame_time, earliest_input_time);
+  bool is_handling_interaction =
+      damage_tracker_ ? damage_tracker_->HasDamageDueToInteraction() : false;
+  size_t deadline_index =
+      decider_.QueryDeadline(deadlines, begin_frame_args.interval,
+                             max_allowed_buffers, begin_frame_args.frame_time,
+                             earliest_input_time, is_handling_interaction);
   const auto& selected_deadline = deadlines.deadlines[deadline_index];
 
   base::TimeTicks latch_time =

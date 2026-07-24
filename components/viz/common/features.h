@@ -120,7 +120,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAndroidCustomFrameDeadlines);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kAndroidCustomFrameDeadlinePresentationOffset;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kAndroidCustomFrameDeadlineMaxIdleDuration;
+    kAndroidCustomFrameDeadlineMaxNonInteractiveIdleDuration;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kAndroidCustomFrameDeadlineMaxInteractionIdleDuration;
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);

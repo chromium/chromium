@@ -28,12 +28,12 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   // Queries the best deadline index for the given parameters without modifying
   // any internal state of the decider. This is safe to call multiple times or
   // from const methods.
-  size_t QueryDeadline(
-      const PossibleDeadlines& possible_deadlines,
-      base::TimeDelta vsync_interval,
-      int max_allowed_buffers,
-      base::TimeTicks frame_time,
-      std::optional<base::TimeTicks> earliest_input_time) const;
+  size_t QueryDeadline(const PossibleDeadlines& possible_deadlines,
+                       base::TimeDelta vsync_interval,
+                       int max_allowed_buffers,
+                       base::TimeTicks frame_time,
+                       std::optional<base::TimeTicks> earliest_input_time,
+                       bool is_handling_interaction) const;
 
   // Selects the best deadline index and updates the internal state of the
   // decider to lock to the selected deadline for the current sequence.
@@ -44,13 +44,15 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
                         base::TimeDelta vsync_interval,
                         int max_allowed_buffers,
                         base::TimeTicks frame_time,
-                        std::optional<base::TimeTicks> earliest_input_time);
+                        std::optional<base::TimeTicks> earliest_input_time,
+                        bool is_handling_interaction);
 
   // Called when the display becomes invisible.
   void OnDisplayInvisible();
 
  private:
-  bool IsPartOfOngoingFrameSequence(base::TimeTicks frame_time) const;
+  bool IsPartOfOngoingFrameSequence(base::TimeTicks frame_time,
+                                    bool is_handling_interaction) const;
 
   size_t FindClosestDeadlineByPresentation(
       const PossibleDeadlines& possible_deadlines) const;
@@ -59,10 +61,12 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
     base::TimeDelta present_delta;
     size_t deadline_index = 0;
     base::TimeTicks last_frame_time;
+    bool is_interaction_active = false;
   };
 
   std::optional<FrameSequenceState> frame_sequence_state_;
-  const base::TimeDelta max_idle_duration_;
+  const base::TimeDelta max_non_interactive_idle_duration_;
+  const base::TimeDelta max_interactive_idle_duration_;
   const bool use_platform_preferred_deadlines_;
 };
 
