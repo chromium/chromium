@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,15 +68,51 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
   std::optional<tab_groups::TabGroupId> focused_group_id =
       GetFocusedGroupId(tab_container_view);
 
+  const std::vector<views::View*> children =
+      tab_container_view->collection_node_->GetDirectChildren();
+  if (children.empty()) {
+    return layouts;
+  }
+
+  std::vector<int> child_preferred_widths;
+  std::vector<int> child_min_widths;
+  int total_preferred_width = 0;
+  int total_min_width = 0;
+
+  for (views::View* child : children) {
+    int child_pref_width =
+        child->GetPreferredSize(views::SizeBounds({}, size_bounds.height()))
+            .width();
+    int child_min_width = child->GetMinimumSize().width();
+
+    child_preferred_widths.push_back(child_pref_width);
+    child_min_widths.push_back(child_min_width);
+    total_preferred_width += child_pref_width;
+    total_min_width += child_min_width;
+  }
+
+  int available_width = total_preferred_width;
+  if (size_bounds.width().is_bounded()) {
+    available_width = size_bounds.width().value();
+  }
+
+  int computed_width = total_preferred_width;
+  if (available_width > 0) {
+    computed_width =
+        std::clamp(available_width, total_min_width, total_preferred_width);
+  }
+
+  std::vector<int> allocated_widths = CalculateProportionalChildWidths(
+      computed_width, child_preferred_widths, child_min_widths,
+      total_preferred_width, total_min_width);
+
   int x = 0;
   const int container_height = size_bounds.height().value_or(
       GetLayoutConstant(LayoutConstant::kTabHeight));
 
-  for (auto* child :
-       tab_container_view->collection_node_->GetDirectChildren()) {
-    int child_width =
-        child->GetPreferredSize(views::SizeBounds({}, size_bounds.height()))
-            .width();
+  for (size_t i = 0; i < children.size(); ++i) {
+    views::View* child = children[i];
+    int child_width = allocated_widths[i];
 
     auto drag_data = tab_container_view->GetVisualDataForDraggedView(*child);
     bool should_show_child = !(drag_data && drag_data->should_hide);

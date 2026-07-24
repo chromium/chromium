@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -185,14 +186,40 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
                                        gfx::Rect());
   }
 
+  const std::vector<views::View*> children =
+      tab_group_view->collection_node_->GetDirectChildren();
+
   int x = header_width;
 
   // Layout children in order following the group header.
-  for (views::View* child :
-       tab_group_view->collection_node_->GetDirectChildren()) {
-    int child_width =
+  std::vector<int> child_preferred_widths;
+  std::vector<int> child_min_widths;
+  int total_preferred_width = 0;
+  int total_min_width = 0;
+
+  for (views::View* child : children) {
+    int child_pref_width =
         child->GetPreferredSize(views::SizeBounds({}, container_height))
             .width();
+    int child_min_width = child->GetMinimumSize().width();
+
+    child_preferred_widths.push_back(child_pref_width);
+    child_min_widths.push_back(child_min_width);
+    total_preferred_width += child_pref_width;
+    total_min_width += child_min_width;
+  }
+
+  int available_width =
+      size_bounds.width().value_or(total_preferred_width + header_width);
+  int width_for_children = std::max(0, available_width - header_width);
+
+  std::vector<int> allocated_widths = CalculateProportionalChildWidths(
+      width_for_children, child_preferred_widths, child_min_widths,
+      total_preferred_width, total_min_width);
+
+  for (size_t i = 0; i < children.size(); ++i) {
+    views::View* child = children[i];
+    int child_width = allocated_widths[i];
 
     gfx::Rect bounds(x, 0, child_width, container_height);
     auto drag_data = tab_group_view->GetVisualDataForDraggedView(*child);

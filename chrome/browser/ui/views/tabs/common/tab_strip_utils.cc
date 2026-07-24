@@ -45,3 +45,53 @@ TabStripView* GetTabStripView(views::View* view) {
   }
   return nullptr;
 }
+
+std::vector<int> CalculateProportionalChildWidths(
+    int available_width,
+    const std::vector<int>& child_preferred_widths,
+    const std::vector<int>& child_min_widths,
+    int total_preferred_width,
+    int total_min_width) {
+  const size_t num_children = child_preferred_widths.size();
+  std::vector<int> allocated_widths(num_children, 0);
+  if (num_children == 0) {
+    return allocated_widths;
+  }
+
+  // If the children's preferred widths fit in the available space, let them
+  // take their preferred widths.
+  if (available_width >= total_preferred_width) {
+    allocated_widths = child_preferred_widths;
+    // Children must have at least their minimum widths if available space is
+    // constrained.
+  } else if (available_width <= total_min_width) {
+    allocated_widths = child_min_widths;
+    // Otherwise proportionally shrink children between their preferred and
+    // minimum sizes.
+  } else {
+    int remaining_available = available_width;
+    int total_shrink_needed = total_preferred_width - available_width;
+    int total_shrink_capacity = total_preferred_width - total_min_width;
+
+    for (size_t i = 0; i < num_children; ++i) {
+      int shrink_capacity = child_preferred_widths[i] - child_min_widths[i];
+      int child_shrink = 0;
+      if (total_shrink_capacity > 0 && total_shrink_needed > 0) {
+        child_shrink =
+            (total_shrink_needed * shrink_capacity) / total_shrink_capacity;
+        child_shrink = std::min(
+            child_shrink, child_preferred_widths[i] - child_min_widths[i]);
+      }
+      int child_width = child_preferred_widths[i] - child_shrink;
+      // The last child gets all remaining space to absorb rounding errors.
+      if (i == num_children - 1) {
+        child_width = remaining_available;
+      }
+
+      allocated_widths[i] = child_width;
+      remaining_available -= child_width;
+    }
+  }
+
+  return allocated_widths;
+}

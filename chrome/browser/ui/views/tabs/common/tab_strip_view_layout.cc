@@ -23,6 +23,9 @@ int CalculatePinnedContainerMainAxisSize(int pinned_preferred,
                                          int unpinned_preferred,
                                          int available,
                                          int min_pinned) {
+  if (pinned_preferred == 0) {
+    return 0;
+  }
   return std::max(
       std::min(pinned_preferred,
                std::max(available / 2, available - unpinned_preferred)),
@@ -98,15 +101,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   int unpinned_width = unpinned_preferred_width;
   if (size_bounds.width().is_bounded()) {
     const int available_width = size_bounds.width().value();
-    int min_unpinned_width = 0;
-    if (const auto* unpinned_container =
-            tab_strip_view->GetUnpinnedTabsContainer()) {
-      min_unpinned_width = unpinned_container->GetMinimumSize().width();
-    }
-    unpinned_width =
-        std::max(std::min(unpinned_preferred_width,
-                          std::max(available_width - pinned_width, 0)),
-                 min_unpinned_width);
+    unpinned_width = std::min(unpinned_preferred_width,
+                              std::max(available_width - pinned_width, 0));
   }
   gfx::Rect unpinned_bounds(x, 0, unpinned_width, container_height);
   layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,

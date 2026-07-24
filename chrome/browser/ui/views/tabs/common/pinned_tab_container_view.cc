@@ -83,7 +83,8 @@ views::ProposedLayout PinnedTabContainerView::CalculateProposedLayout(
 }
 
 gfx::Size PinnedTabContainerView::GetMinimumSize() const {
-  if (!collection_node_ || ShouldHidePinnedTabs()) {
+  if (!collection_node_ || ShouldHidePinnedTabs() ||
+      collection_node_->GetDirectChildren().empty()) {
     return gfx::Size();
   }
 
