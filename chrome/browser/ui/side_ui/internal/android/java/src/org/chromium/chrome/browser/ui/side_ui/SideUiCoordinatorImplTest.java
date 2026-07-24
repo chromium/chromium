@@ -50,6 +50,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -787,6 +788,7 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/538387539")
     public void testUpdateUi_UpdatesWebContentHairline() {
         doReturn(50f).when(mBrowserControlsStateProvider).getTopVisibleContentOffset();
 
