@@ -362,6 +362,16 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
 
   ReportGeolocationViolation(DomWindow());
 
+  // If a request is initiated while the page is hidden, the |GeoNotifier| has
+  // already been created and appended to |one_shots_| or |watchers_|, but we
+  // return early here BEFORE arming its timeout timer and BEFORE dispatching a
+  // Mojo hardware query to the browser. This leaves the request in a dormant,
+  // timer-less state, which will be safely evaluated and started by
+  // `PageVisibilityChanged()` as soon as the tab becomes visible.
+  if (GetPage() && !GetPage()->IsPageVisible()) {
+    return;
+  }
+
   if (HaveSuitableCachedPosition(notifier->Options())) {
     notifier->SetUseCachedPosition();
     return;
@@ -460,6 +470,38 @@ void Geolocation::StopTimers() {
   }
 }
 
+void Geolocation::StartTimers() {
+  // One-shots are synchronously removed from |one_shots_| as soon as their
+  // callback is invoked. Therefore, any notifier remaining in |one_shots_| when
+  // the tab unhides is guaranteed to be pending its first callback. If a
+  // suitable cached position is available (or was already requested), fulfill
+  // it immediately; otherwise start/resume its timeout timer.
+  for (const auto& notifier : *one_shots_) {
+    if (notifier->UseCachedPosition() ||
+        HaveSuitableCachedPosition(notifier->Options())) {
+      notifier->SetUseCachedPosition();
+    } else {
+      notifier->StartTimer();
+    }
+  }
+
+  // Active watchers remain in |watchers_| to receive subsequent updates even
+  // after their initial callback has successfully fired. We must explicitly
+  // check |!InitialCallbackRun()| to ensure we only process initial setup
+  // for pending watchers, avoiding spurious timeouts or re-firing cached
+  // positions on already-connected watchers.
+  for (const auto& notifier : watchers_->Notifiers()) {
+    if (!notifier->InitialCallbackRun()) {
+      if (notifier->UseCachedPosition() ||
+          HaveSuitableCachedPosition(notifier->Options())) {
+        notifier->SetUseCachedPosition();
+      } else {
+        notifier->StartTimer();
+      }
+    }
+  }
+}
+
 void Geolocation::HandleError(GeolocationPositionError* error) {
   DCHECK(error);
 
@@ -490,9 +532,10 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
   // later.
   //
   // A notifier may call |clearWatch|, and in that case, that watcher notifier
-  // already scheduled must be immediately cancelled according to the spec. But
-  // the current implementation doesn't support such case.
-  // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
+  // already scheduled must be immediately cancelled according to the spec.
+  // But the current implementation doesn't support such case.
+  // TODO(mattreynolds): Support watcher cancellation inside notifier
+  // callbacks.
   for (auto& notifier : *one_shots_being_invoked_) {
     if (error->IsFatal() || !notifier->UseCachedPosition())
       notifier->RunErrorCallback(error);
@@ -540,13 +583,16 @@ void Geolocation::MakeSuccessCallbacks() {
   // Invoke the callbacks.
   //
   // A notifier may call |clearWatch|, and in that case, that watcher notifier
-  // already scheduled must be immediately cancelled according to the spec. But
-  // the current implementation doesn't support such case.
-  // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
-  for (auto& notifier : *one_shots_being_invoked_)
+  // already scheduled must be immediately cancelled according to the spec.
+  // But the current implementation doesn't support such case.
+  // TODO(mattreynolds): Support watcher cancellation inside notifier
+  // callbacks.
+  for (auto& notifier : *one_shots_being_invoked_) {
     notifier->RunSuccessCallback(last_position_);
-  for (auto& notifier : watchers_being_invoked_)
+  }
+  for (auto& notifier : watchers_being_invoked_) {
     notifier->RunSuccessCallback(last_position_);
+  }
 
   one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
@@ -560,13 +606,26 @@ void Geolocation::PositionChanged() {
 }
 
 void Geolocation::UpdateGeolocationState() {
+  // This visibility check serves as the ultimate perimeter safeguard against
+  // querying location from the browser backend while backgrounded. In
+  // embeddings like Android WebView, or via raced OS-level UI dialogs,
+  // permission can be asynchronously granted
+  // (`OnGeolocationPermissionStatusUpdated`) while the page/view is currently
+  // hidden. Returning early here defers the hardware dispatch to Mojo; the
+  // state will be re-evaluated and triggered from scratch by
+  // `PageVisibilityChanged()` as soon as the tab or view becomes visible
+  // again.
+  if (GetPage() && !GetPage()->IsPageVisible()) {
+    return;
+  }
+
   if (!EnsureGeolocationConnection() || permission_request_in_progress_) {
     // Return early while waiting for asynchronous setup to complete; this
-    // function will be recalled by `OnGeolocationPermissionStatusUpdated`. The
-    // accuracy is updated here to ensure the SetHighAccuracyHint Mojo call is
-    // handled promptly after `GeolocationImpl`'s construction. This prevents
-    // reporting positions with incorrect accuracy, as location request can
-    // occur immediately after construction.
+    // function will be recalled by `OnGeolocationPermissionStatusUpdated`.
+    // The accuracy is updated here to ensure the SetHighAccuracyHint Mojo
+    // call is handled promptly after `GeolocationImpl`'s construction. This
+    // prevents reporting positions with incorrect accuracy, as location
+    // request can occur immediately after construction.
     UpdateAccuracyHint();
     return;
   }
@@ -580,10 +639,10 @@ void Geolocation::UpdateGeolocationState() {
 }
 
 void Geolocation::StopUpdating() {
-  updating_ = false;
   ResetGeolocationConnection();
   accuracy_ = mojom::blink::GeolocationAccuracy::kApproximate;
   enable_high_accuracy_ = false;
+  StopTimers();
 }
 
 bool Geolocation::EnsureGeolocationConnection() {
@@ -610,6 +669,7 @@ bool Geolocation::EnsureGeolocationConnection() {
 }
 
 void Geolocation::ResetGeolocationConnection() {
+  updating_ = false;
   geolocation_.reset();
   geolocation_service_.reset();
 }
@@ -623,6 +683,16 @@ void Geolocation::OnPositionUpdated(
     device::mojom::blink::GeopositionResultPtr result) {
   updating_ = false;
   if (!GetExecutionContext()) {
+    return;
+  }
+
+  // If a location result arrives from the browser process while the page is
+  // hidden (e.g. due to an in-flight Mojo response racing with a tab switch),
+  // we drop the update immediately. This guarantees that no location data is
+  // delivered to JavaScript or stored in |last_position_| while backgrounded,
+  // relying entirely on `PageVisibilityChanged()` to query fresh data upon
+  // unhiding.
+  if (GetPage() && !GetPage()->IsPageVisible()) {
     return;
   }
 
@@ -661,6 +731,12 @@ void Geolocation::OnPositionUpdated(
 
 void Geolocation::PageVisibilityChanged() {
   if (GetPage() && GetPage()->IsPageVisible() && HasListeners()) {
+    // When a page becomes visible again, we must restart the timeout timers
+    // for all pending position requests. This ensures requests added while
+    // the tab was hidden begin their timers, and mid-flight requests paused
+    // by tab-switching are resumed with their remaining duration accounted
+    // for.
+    StartTimers();
     UpdateGeolocationState();
   } else {
     StopUpdating();
