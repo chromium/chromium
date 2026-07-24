@@ -9,12 +9,12 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/filter_navigation_metadata.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics_util.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 
@@ -22,73 +22,6 @@ namespace multistep_filter {
 
 namespace {
 
-bool IsSameEtldPlusOne(const UrlFilterSuggestion& suggestion) {
-  return GetEtldPlusOneForHost(base::UTF16ToUTF8(suggestion.source_host)) ==
-         GetEtldPlusOneForHost(suggestion.triggering_host);
-}
-
-base::TimeDelta GetClampedDifference(base::TimeTicks end,
-                                     base::TimeTicks start) {
-  if (end.is_null() || start.is_null() || end < start) {
-    return base::TimeDelta();
-  }
-  return end - start;
-}
-
-base::TimeDelta GetClampedDifference(base::Time end, base::Time start) {
-  if (end.is_null() || start.is_null() || end < start) {
-    return base::TimeDelta();
-  }
-  return end - start;
-}
-
-// A struct containing the retention slices that should be logged for a given
-// snapshot.
-struct RetentionSlices {
-  bool first_impression = false;
-  bool accepted_last_time = false;
-  bool rejected_last_time = false;
-  bool accepted_at_least_once = false;
-  bool saw_cues_but_never_accepted = false;
-
-  // Calls the given callback for each retention slice that should be logged.
-  void ForEachActive(base::FunctionRef<void(std::string_view)> callback) const {
-    if (first_impression) {
-      callback(kRetentionSliceFirstImpression);
-    }
-    if (accepted_last_time) {
-      callback(kRetentionSliceAcceptedLastTime);
-    }
-    if (rejected_last_time) {
-      callback(kRetentionSliceRejectedLastTime);
-    }
-    if (accepted_at_least_once) {
-      callback(kRetentionSliceAcceptedAtLeastOnce);
-    }
-    if (saw_cues_but_never_accepted) {
-      callback(kRetentionSliceSawCuesButNeverAccepted);
-    }
-  }
-};
-
-RetentionSlices GetRetentionSlices(const RetentionStateSnapshot& snapshot) {
-  RetentionSlices slices;
-  if (snapshot.suggestion_impressions == 0) {
-    slices.first_impression = true;
-    return slices;
-  }
-  if (snapshot.is_last_suggestion_accepted) {
-    slices.accepted_last_time = true;
-  } else {
-    slices.rejected_last_time = true;
-  }
-  if (snapshot.suggestion_acceptances > 0) {
-    slices.accepted_at_least_once = true;
-  } else {
-    slices.saw_cues_but_never_accepted = true;
-  }
-  return slices;
-}
 
 void LogAcceptanceHistogram(std::string_view base_histogram,
                             std::string_view task_type,
@@ -99,12 +32,13 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
       base::StrCat(
           {base_histogram, kMultistepFilterByTaskHistogramPrefix, task_type}),
       decision);
-  GetRetentionSlices(snapshot).ForEachActive([&](std::string_view slice) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({base_histogram,
-                      kMultistepFilterByRetentionHistogramPrefix, slice}),
-        decision);
-  });
+  EnumerateActiveRetentionSlices(
+      GetRetentionState(snapshot), [&](std::string_view slice) {
+        base::UmaHistogramEnumeration(
+            base::StrCat({base_histogram,
+                          kMultistepFilterByRetentionHistogramPrefix, slice}),
+            decision);
+      });
 }
 
 // Logs the overall technical filter application outcome after a user accepts
@@ -136,8 +70,9 @@ void LogApplicationOutcome(
       session.outcome);
 
   // Log by retention state:
-  GetRetentionSlices(session.retention_snapshot)
-      .ForEachActive([&](std::string_view slice) {
+  EnumerateActiveRetentionSlices(
+      GetRetentionState(session.retention_snapshot),
+      [&](std::string_view slice) {
         base::UmaHistogramEnumeration(
             base::StrCat({kMultistepFilterApplicationOutcomeHistogram,
                           kMultistepFilterByRetentionHistogramPrefix, slice}),

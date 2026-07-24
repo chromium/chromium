@@ -11,6 +11,10 @@
 
 namespace multistep_filter {
 
+// =============================================================================
+// ENUMS
+// =============================================================================
+
 // LINT.IfChange(MultistepFilterApplicationOutcome)
 // Records the overall technical filter application outcome after a user accepts
 // a Multistep Filter suggestion.
@@ -21,6 +25,38 @@ enum class MultistepFilterApplicationOutcome {
   kMaxValue = kAbandonedBeforeVerification,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterApplicationOutcome)
+
+// LINT.IfChange(MultistepFilterFacetType)
+// If you add a new facet here, also update `MapStringToFacetType` in
+// `multistep_filter_metrics_util.h/cc`.
+enum class MultistepFilterFacetType {
+  kUnknown = 0,
+  kAgeChild = 1,
+  kAmenityFreeBreakfast = 2,
+  kAmenityFreeWifi = 3,
+  kCabinClass = 4,
+  kCountAdult = 5,
+  kCountChild = 6,
+  kCountInfant = 7,
+  kCountInfantInLap = 8,
+  kCountInfantInSeat = 9,
+  kCountRoom = 10,
+  kDateCheckin = 11,
+  kDateCheckout = 12,
+  kDateInbound = 13,
+  kDateOutbound = 14,
+  kLocationDestination = 15,
+  kLocationInbound = 16,
+  kLocationOutbound = 17,
+  kPolicyFreeCancellation = 18,
+  kPolicyPetsAllowed = 19,
+  kRatingReviewMin = 20,
+  kRatingStarMin = 21,
+  kStops = 22,
+  kTripType = 23,
+  kMaxValue = kTripType,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/histograms.xml:MultistepFilterFacetType)
 
 // LINT.IfChange(MultistepFilterPostSuggestionApplicationUserEngagement)
 // Records post-acceptance behavior (tab close, navigation away from the
@@ -41,6 +77,29 @@ enum class MultistepFilterPostSuggestionApplicationUserEngagement {
   kMaxValue = kAbandonedAfterSessionWindowSessionOverride,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationUserEngagement)
+
+// If you add a new retention state here, also update `GetRetentionState` and
+// `ForEachActiveRetentionSlice` in `multistep_filter_metrics_util.h/cc`.
+enum class MultistepFilterRetentionState {
+  kFirstImpression = 0,
+  kAcceptedLastTime = 1,
+  kRejectedLastTime_AcceptedAtLeastOnce = 2,
+  kRejectedLastTime_NeverAccepted = 3,
+  kMaxValue = kRejectedLastTime_NeverAccepted,
+};
+
+// If you add a new task type here, also update `MapStringToTaskType` in
+// `multistep_filter_metrics_util.h/cc`.
+enum class MultistepFilterTaskType {
+  kUnknown = 0,
+  kSearchFlights = 1,
+  kSearchAccommodations = 2,
+  kMaxValue = kSearchAccommodations,
+};
+
+// =============================================================================
+// HISTOGRAM NAMES & PREFIXES
+// =============================================================================
 
 // Suffix for histograms that are broken down by task type.
 inline constexpr char kMultistepFilterByTaskHistogramPrefix[] = ".ByTask.";
@@ -105,9 +164,60 @@ inline constexpr char
         "MultistepFilter.Time.NavigationToSuggestionAccepted";
 inline constexpr char kMultistepFilterTimeSuggestionShownToAcceptedHistogram[] =
     "MultistepFilter.Time.SuggestionShownToAccepted";
+
+// Post-acceptance metrics.
 inline constexpr char
     kMultistepFilterPostSuggestionApplicationUserEngagementHistogram[] =
         "MultistepFilter.PostSuggestionApplication.UserEngagement";
+
+// =============================================================================
+// TASK TYPE NAMES
+// =============================================================================
+
+inline constexpr char kMultistepFilterTaskTypeSearchAccommodations[] =
+    "SEARCH_ACCOMMODATIONS";
+inline constexpr char kMultistepFilterTaskTypeSearchFlights[] =
+    "SEARCH_FLIGHTS";
+
+// =============================================================================
+// FILTER FACET NAMES
+// =============================================================================
+
+inline constexpr char kMultistepFilterFacetTypeAgeChild[] = "AGE_CHILD";
+inline constexpr char kMultistepFilterFacetTypeAmenityFreeBreakfast[] =
+    "AMENITY_FREE_BREAKFAST";
+inline constexpr char kMultistepFilterFacetTypeAmenityFreeWifi[] =
+    "AMENITY_FREE_WIFI";
+inline constexpr char kMultistepFilterFacetTypeCabinClass[] = "CABIN_CLASS";
+inline constexpr char kMultistepFilterFacetTypeCountAdult[] = "COUNT_ADULT";
+inline constexpr char kMultistepFilterFacetTypeCountChild[] = "COUNT_CHILD";
+inline constexpr char kMultistepFilterFacetTypeCountInfant[] = "COUNT_INFANT";
+inline constexpr char kMultistepFilterFacetTypeCountInfantInLap[] =
+    "COUNT_INFANT_IN_LAP";
+inline constexpr char kMultistepFilterFacetTypeCountInfantInSeat[] =
+    "COUNT_INFANT_IN_SEAT";
+inline constexpr char kMultistepFilterFacetTypeCountRoom[] = "COUNT_ROOM";
+inline constexpr char kMultistepFilterFacetTypeDateCheckin[] = "DATE_CHECKIN";
+inline constexpr char kMultistepFilterFacetTypeDateCheckout[] = "DATE_CHECKOUT";
+inline constexpr char kMultistepFilterFacetTypeDateInbound[] = "DATE_INBOUND";
+inline constexpr char kMultistepFilterFacetTypeDateOutbound[] = "DATE_OUTBOUND";
+inline constexpr char kMultistepFilterFacetTypeLocationDestination[] =
+    "LOCATION_DESTINATION";
+inline constexpr char kMultistepFilterFacetTypeLocationInbound[] =
+    "LOCATION_INBOUND";
+inline constexpr char kMultistepFilterFacetTypeLocationOutbound[] =
+    "LOCATION_OUTBOUND";
+inline constexpr char kMultistepFilterFacetTypePolicyFreeCancellation[] =
+    "POLICY_FREE_CANCELLATION";
+inline constexpr char kMultistepFilterFacetTypePolicyPetsAllowed[] =
+    "POLICY_PETS_ALLOWED";
+inline constexpr char kMultistepFilterFacetTypeRatingReviewMin[] =
+    "RATING_REVIEW_MIN";
+inline constexpr char kMultistepFilterFacetTypeRatingStarMin[] =
+    "RATING_STAR_MIN";
+inline constexpr char kMultistepFilterFacetTypeStops[] = "STOPS";
+inline constexpr char kMultistepFilterFacetTypeTripType[] = "TRIP_TYPE";
+
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_METRICS_H_

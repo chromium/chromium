@@ -8,6 +8,8 @@ found in the LICENSE file.
 
 <histograms>
 
+<!-- LINT.IfChange(MultistepFilterFacetType) -->
+
 <variants name="MultistepFilterFacetType">
   <variant name="AGE_CHILD" summary="AGE_CHILD"/>
   <variant name="AMENITY_FREE_BREAKFAST" summary="AMENITY_FREE_BREAKFAST"/>
@@ -33,6 +35,8 @@ found in the LICENSE file.
   <variant name="STOPS" summary="STOPS"/>
   <variant name="TRIP_TYPE" summary="TRIP_TYPE"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterFacetType) -->
 
 <variants name="MultistepFilterRetentionSlice">
   <variant name="AcceptedAtLeastOnce"
