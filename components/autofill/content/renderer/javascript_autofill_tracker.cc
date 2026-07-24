@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -20,9 +21,13 @@ namespace autofill {
 
 namespace {
 
-// The min/max number of fields that must be modified by JS to be considered
-// as a custom JS autofill.
+// The minimum number of fields that must be modified by JS during the tracking
+// window to detect it as a custom JS autofill without enforcing additional
+// conditions.
 constexpr size_t kJsAutofillMinFieldsChanged = 3;
+
+// The number of fields modified by JS during the tracking window after which it
+// stops being detected as a custom JS autofill.
 constexpr size_t kJsAutofillMaxFieldsChanged = 10;
 
 // The maximum time gap between JS modifications to be considered part of the
@@ -204,8 +209,19 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     }
   }
 
-  if (field_modifications.size() < kJsAutofillMinFieldsChanged ||
+  if (field_modifications.empty() ||
       field_modifications.size() >= kJsAutofillMaxFieldsChanged) {
+    return;
+  }
+
+  // If too few fields were modified by JavaScript, then an extra condition is
+  // enforced, which is that at least one field should be prefix-completed, in
+  // order to reduce IPC noise and false positives.
+  if (field_modifications.size() < kJsAutofillMinFieldsChanged &&
+      !std::ranges::contains(
+          field_modifications,
+          mojom::JavaScriptModificationType::kPrefixCompletion,
+          &mojom::JavaScriptFieldModification::modification_type)) {
     return;
   }
 

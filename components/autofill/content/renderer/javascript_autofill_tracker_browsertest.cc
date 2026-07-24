@@ -26,6 +26,13 @@ namespace {
 class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
  public:
   JavaScriptAutofillTrackerTest() = default;
+
+  void ActivateFocusAndClick(const char* element_id) {
+    GetMainFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kInteraction);
+    Focus(element_id);
+    SimulateElementClickAndWait(element_id);
+  }
 };
 
 // Test that the log is updated when JavaScript sets a value.
@@ -56,10 +63,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   EXPECT_TRUE(logs.empty());
 
   // 2. JS change with user activation and mousedown -> should log.
-  GetMainFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
-  Focus("text_1");
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("text_1", "js_val_2");
 
   ASSERT_EQ(logs.size(), 1u);
@@ -80,18 +84,12 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
 
   // 4. JS change with user activation and focused element, but modified
   // element is NOT autofillable (button) -> should not log.
-  Focus("text_1");
-  GetMainFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("button_id", "js_val_button");
   EXPECT_TRUE(logs.empty());
 
   // 5. JS change to the SAME value with user activation -> should log.
-  Focus("text_1");
-  GetMainFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("text_1", "js_val_3");  // Same value (set in step 3).
 
   ASSERT_EQ(logs.size(), 1u);
@@ -101,8 +99,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
 
   // 6. JS change to a prefix completion -> should log kPrefixCompletion.
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  Focus("text_1");
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("text_1", "js_val_3_more");
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0]->modification_type,
@@ -110,8 +107,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
 
   // 7. JS change from non-empty to empty -> should log kClearing.
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  Focus("text_1");
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("text_1", "");
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0]->modification_type,
@@ -119,8 +115,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
 
   // 8. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  Focus("text_1");
-  SimulateElementClickAndWait("text_1");
+  ActivateFocusAndClick("text_1");
   js_set_value("text_1", "new_val");
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0]->modification_type,
@@ -152,12 +147,8 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 
-  GetMainFrame()->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
-
   // Focus and click a field in form_1.
-  Focus("text_1_1");
-  SimulateElementClickAndWait("text_1_1");
+  ActivateFocusAndClick("text_1_1");
 
   // Modify 3 fields in form_2.
   js_set_value("text_2_1", "val_1");
@@ -179,8 +170,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
   // DidDetectJavaScriptAutofill() should be called.
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(1);
 
-  Focus("text_2_1");
-  SimulateElementClickAndWait("text_2_1");
+  ActivateFocusAndClick("text_2_1");
   js_set_value("text_2_1", "val_1_new");
   js_set_value("text_2_2", "val_2_new");
   js_set_value("text_2_3", "val_3_new");
@@ -189,6 +179,63 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 
   task_environment_.FastForwardBy(base::Milliseconds(200));
   EXPECT_TRUE(logs.empty());
+}
+
+// Test that if fewer than 3 fields are modified by JavaScript, detection is
+// still triggered if at least one field underwent prefix completion
+// (kPrefixCompletion).
+TEST_F(JavaScriptAutofillTrackerTest,
+       DetectFewerThanMinFieldsWithPrefixCompletion) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="text_1" value="app">
+        <input id="text_2">
+      </form>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(1);
+
+  auto js_set_value = [this](const char* id, const char* value) {
+    ExecuteJavaScriptForTests(base::StringPrintf(
+        R"(document.getElementById('%s').value = '%s';)", id, value));
+  };
+
+  ActivateFocusAndClick("text_1");
+
+  // JS extends "app" to "apple" (kPrefixCompletion).
+  js_set_value("text_1", "apple");
+
+  // Even though only 1 field changed (< 3), kPrefixCompletion triggers
+  // detection.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+}
+
+// Test that if fewer than 3 fields are modified by JavaScript and NONE of them
+// underwent prefix completion, detection is NOT triggered.
+TEST_F(JavaScriptAutofillTrackerTest,
+       IgnoreFewerThanMinFieldsWithoutPrefixCompletion) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="text_1">
+        <input id="text_2">
+      </form>)");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  auto js_set_value = [this](const char* id, const char* value) {
+    ExecuteJavaScriptForTests(base::StringPrintf(
+        R"(document.getElementById('%s').value = '%s';)", id, value));
+  };
+
+  ActivateFocusAndClick("text_1");
+
+  // JS sets text_1 to "apple" from empty (kEmptyToNonEmpty) and text_2 to
+  // "banana" (kEmptyToNonEmpty).
+  js_set_value("text_1", "apple");
+  js_set_value("text_2", "banana");
+
+  // 2 fields changed (< 3), but neither is kPrefixCompletion -> should NOT
+  // trigger detection.
+  task_environment_.FastForwardBy(base::Milliseconds(200));
 }
 
 }  // namespace
