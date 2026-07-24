@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +51,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
@@ -1311,5 +1313,37 @@ public class VerticalTabListCoordinatorUnitTest {
         containerView.dispatchGenericMotionEvent(hoverExit);
         verify(mMockRailCollapseListener)
                 .onRailCollapseStateChangeRequested(RailCollapseState.COLLAPSED);
+    }
+
+    @Test
+    @SmallTest
+    public void testDragListenerRegisteredForBothRecyclerViews() {
+        createCoordinator();
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        TabListRecyclerView pinnedRecyclerView =
+                container.findViewById(R.id.pinned_tabs_recycler_view);
+
+        assertNotNull("Main RecyclerView must not be null.", mainRecyclerView);
+        assertNotNull("Pinned RecyclerView must not be null.", pinnedRecyclerView);
+
+        Object mainListenerInfo = ReflectionHelpers.getField(mainRecyclerView, "mListenerInfo");
+        Object pinnedListenerInfo = ReflectionHelpers.getField(pinnedRecyclerView, "mListenerInfo");
+
+        assertNotNull("Main ListenerInfo must not be null.", mainListenerInfo);
+        assertNotNull("Pinned ListenerInfo must not be null.", pinnedListenerInfo);
+
+        View.OnDragListener mainDragListener =
+                ReflectionHelpers.getField(mainListenerInfo, "mOnDragListener");
+        View.OnDragListener pinnedDragListener =
+                ReflectionHelpers.getField(pinnedListenerInfo, "mOnDragListener");
+
+        assertNotNull("Main RecyclerView must have OnDragListener registered.", mainDragListener);
+        assertNotNull(
+                "Pinned RecyclerView must have OnDragListener registered.", pinnedDragListener);
+        assertNotSame(
+                "Each RecyclerView must have a separate TabSwitcherDragHandler instance.",
+                mainDragListener,
+                pinnedDragListener);
     }
 }
