@@ -61,7 +61,6 @@ class ActorOneTimeTokenFillingServiceImpl
       tabs::TabHandle tab_handle,
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
-      bool is_login_flow,
       base::OnceCallback<
           void(base::expected<std::string,
                               one_time_tokens::OneTimeTokenRetrievalError>)>
@@ -105,7 +104,6 @@ class ActorOneTimeTokenFillingServiceImpl
   raw_ptr<Profile> profile_ = nullptr;
   std::optional<ActorLoginContext> active_login_context_;
   url::Origin otp_frame_origin_;
-  bool is_login_flow_ = false;
   std::unique_ptr<affiliations::DomainRelationChecker> domain_relation_checker_;
   one_time_tokens::ExpiringSubscription subscription_;
   base::OnceCallback<void(
