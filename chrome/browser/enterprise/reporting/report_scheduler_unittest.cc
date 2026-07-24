@@ -986,12 +986,11 @@ class EnabledProfileSecuritySignalsReportSchedulerTest
     : public ReportSchedulerTest {
  protected:
   bool profile_security_signals_enabled() override { return true; }
-  bool upload_report_on_profile_open_enabled() override {
-#if BUILDFLAG(IS_ANDROID)
-    return false;
-#else
-    return true;
-#endif
+  bool upload_report_on_profile_open_enabled() override { return true; }
+
+  void SetCloudProfileReportingPolicy(TestingProfile* profile, bool enabled) {
+    profile->GetTestingPrefService()->SetManagedPref(
+        kCloudProfileReportingEnabled, base::Value(enabled));
   }
 
   void SetUserSecuritySignalsPolicy(
@@ -1007,7 +1006,6 @@ class EnabledProfileSecuritySignalsReportSchedulerTest
   }
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 class UploadReportOnProfileOpenReportSchedulerTest
     : public ReportSchedulerTest {
  protected:
@@ -1030,7 +1028,7 @@ TEST_F(UploadReportOnProfileOpenReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+      kCloudProfileReportingEnabled, base::Value(true));
   CreateSchedulerForProfileReporting(profile);
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
@@ -1050,7 +1048,6 @@ TEST_F(UploadReportOnProfileOpenReportSchedulerTest,
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that cookies will be used as part of the upload when both the security
 // signals policy is disabled but kUserSecurityAuthenticatedReporting is
@@ -1059,20 +1056,17 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
        ProfileReportingDisabled_UserSecuritySignalsPolicyEnabled_WithCookies) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
-  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
-                                       ? ReportTrigger::kTriggerProfileOpened
-                                       : ReportTrigger::kTriggerSecurity;
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(
-                              ReportGenerationConfig(
-                                  expected_trigger, ReportType::kProfileReport,
-                                  SecuritySignalsMode::kSignalsOnly,
-                                  /*use_cookies=*/true),
-                              _, _))
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerProfileOpened,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kSignalsOnly,
+                                         /*use_cookies=*/true),
+                  _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
+  SetCloudProfileReportingPolicy(profile, false);
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/true, /*use_cookies=*/true);
   CreateSchedulerForProfileReporting(profile);
 
@@ -1097,15 +1091,13 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .Times(2)
       .WillRepeatedly(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
-  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
-                                       ? ReportTrigger::kTriggerProfileOpened
-                                       : ReportTrigger::kTriggerTimer;
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(
-                              ReportGenerationConfig(
-                                  expected_trigger, ReportType::kProfileReport,
-                                  SecuritySignalsMode::kNoSignals,
-                                  /*use_cookies=*/false),
-                              _, _))
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(
+                  ReportGenerationConfig(ReportTrigger::kTriggerProfileOpened,
+                                         ReportType::kProfileReport,
+                                         SecuritySignalsMode::kNoSignals,
+                                         /*use_cookies=*/false),
+                  _, _))
       .WillOnce([&](const ReportGenerationConfig&, ReportRequestQueue,
                     ReportUploader::ReportCallback callback) {
         // Trigger a signals-only report before the no-signals status report
@@ -1115,8 +1107,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
         std::move(callback).Run(ReportUploader::kSuccess);
       });
 
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
 
   auto second_uploader = std::make_unique<MockReportUploader>();
   EXPECT_CALL(*second_uploader,
@@ -1127,10 +1118,6 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
                                          /*use_cookies=*/true),
                   _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
-
-  if (!upload_report_on_profile_open_enabled()) {
-    SetLastUploadInHour(base::Hours(25), profile);
-  }
 
   CreateSchedulerForProfileReporting(profile);
   scheduler_->QueueReportUploaderForTesting(std::move(second_uploader));
@@ -1159,8 +1146,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
+  SetCloudProfileReportingPolicy(profile, false);
   CreateSchedulerForProfileReporting(profile);
 
   // Fast forward to let the startup report complete.
@@ -1194,8 +1180,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
        UploadManualReportForProfileReporting_PoliciesDisabled) {
   // First set of expectations is for the timed security upload.
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
+  SetCloudProfileReportingPolicy(profile, false);
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
 
   CreateSchedulerForProfileReporting(profile);
@@ -1207,7 +1192,6 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   histogram_tester_.ExpectTotalCount(kSignalsReportingModeMetricName, 0);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that no cookies will be used as part of the upload when the security
 // signals policy is disabled.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
@@ -1225,8 +1209,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
   CreateSchedulerForProfileReporting(profile);
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
@@ -1253,8 +1236,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
 
   CreateSchedulerForProfileReporting(profile);
 
@@ -1262,10 +1244,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 
   // Flip-flop the preference.
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, false);
+  SetCloudProfileReportingPolicy(profile, true);
 
   // Verify that timer is started.
   EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
@@ -1290,8 +1270,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
 
   SetLastUploadInHour(base::Hours(1), profile);
 
@@ -1336,8 +1315,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/true, /*use_cookies=*/true);
   SetLastUploadInHour(base::Hours(1), profile);
 
@@ -1376,8 +1354,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetCloudProfileReportingPolicy(profile, true);
 
   SetLastUploadInHour(base::Hours(25), profile);
 
@@ -1397,7 +1374,6 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that a security report trigger is aborted and not active if security
 // signals reporting is disabled.
@@ -1409,8 +1385,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
 
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
+  SetCloudProfileReportingPolicy(profile, false);
 
   CreateSchedulerForProfileReporting(profile);
 

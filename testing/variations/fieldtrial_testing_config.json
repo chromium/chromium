@@ -25225,6 +25225,7 @@
     "UploadReportOnProfileOpenStudy": [
         {
             "platforms": [
+                "android",
                 "linux",
                 "mac",
                 "windows"
