@@ -559,9 +559,15 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }
-    this.updateLineFocusState_();
+    // Clear the content position if line focus is turned off.
+    if (!this.lineFocusController_.isEnabled()) {
+      this.speechController_.onLineFocusChange(null);
+    }
+
+    this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
     this.lineFocusMovement_ =
         this.lineFocusController_.getCurrentLineFocusMovement();
+    this.setLineFocusStyle_();
     this.requestUpdate();
   }
 
@@ -787,17 +793,14 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusController_.onStyleChange(
           event.detail.data, this.$.container,
           this.$.appFlexParent.clientHeight);
-      this.updateLineFocusState_();
-    }
-  }
+      this.lineFocusStyle_ =
+          this.lineFocusController_.getCurrentLineFocusStyle();
+      this.setLineFocusStyle_();
 
-  private updateLineFocusState_() {
-    this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
-    this.setLineFocusStyle_();
-
-    // Clear the content position if line focus is turned off.
-    if (!this.lineFocusController_.isEnabled()) {
-      this.speechController_.onLineFocusChange(null);
+      // Clear the content position if line focus is turned off.
+      if (!this.lineFocusController_.isEnabled()) {
+        this.speechController_.onLineFocusChange(null);
+      }
     }
   }
 
@@ -911,13 +914,14 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected getLineFocusClass_(): string {
-    if (!chrome.readingMode.isLineFocusEnabled ||
-        !this.lineFocusController_.isEnabled() ||
-        this.contentState_.type !== ContentType.HAS_CONTENT) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
       return '';
     }
 
-    const type = this.lineFocusController_.getCurrentLineFocusType();
+    const type = (this.contentState_.type === ContentType.HAS_CONTENT) ?
+        this.lineFocusController_.getCurrentLineFocusType() :
+        LineFocusType.NONE;
+
     switch (type) {
       case LineFocusType.WINDOW:
         return 'window-mode';
