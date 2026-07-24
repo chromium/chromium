@@ -5,10 +5,11 @@
 // This test is only built and run on platforms allowing print media
 // localization.
 
+#include "components/printing/common/print_media_l10n.h"
+
 #include <string>
 #include <vector>
 
-#include "chrome/common/printing/print_media_l10n.h"
 #include "printing/backend/print_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"

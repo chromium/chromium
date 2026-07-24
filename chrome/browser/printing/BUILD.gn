@@ -243,6 +243,7 @@ if (enable_printing) {
             "//components/content_settings/browser",
             "//components/content_settings/core/browser",
             "//components/content_settings/core/common",
+            "//components/printing/common:print_media_l10n",
             "//components/session_manager/core",
           ]
         }

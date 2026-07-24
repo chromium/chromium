@@ -39,7 +39,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
-#include "chrome/common/printing/print_media_l10n.h"
+#include "components/printing/common/print_media_l10n.h"
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 namespace printing {

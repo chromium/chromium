@@ -11,7 +11,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "chrome/browser/printing/web_api/web_printing_utils.h"
-#include "chrome/common/printing/print_media_l10n.h"
+#include "components/printing/common/print_media_l10n.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/print_backend.h"

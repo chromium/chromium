@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_PRINTING_PRINT_MEDIA_L10N_H_
-#define CHROME_COMMON_PRINTING_PRINT_MEDIA_L10N_H_
+#ifndef COMPONENTS_PRINTING_COMMON_PRINT_MEDIA_L10N_H_
+#define COMPONENTS_PRINTING_COMMON_PRINT_MEDIA_L10N_H_
 
 #include <string>
 #include <vector>
@@ -43,4 +43,4 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers);
 
 }  // namespace printing
 
-#endif  // CHROME_COMMON_PRINTING_PRINT_MEDIA_L10N_H_
+#endif  // COMPONENTS_PRINTING_COMMON_PRINT_MEDIA_L10N_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/printing/print_media_l10n.h"
+#include "components/printing/common/print_media_l10n.h"
 
 #include <string>
 #include <string_view>
@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/device_event_log/device_event_log.h"
 #include "components/strings/grit/components_strings.h"
 #include "printing/backend/print_backend_utils.h"
 #include "printing/units.h"
@@ -822,8 +821,9 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers) {
     const gfx::Size& size_a = a.paper.size_um();
     const gfx::Size& size_b = b.paper.size_um();
 
-    if (size_a.width() != size_b.width())
+    if (size_a.width() != size_b.width()) {
       return size_a.width() < size_b.width();
+    }
     return size_a.height() < size_b.height();
   };
   std::sort(mm_sizes.begin(), mm_sizes.end(), size_sort);
@@ -837,12 +837,14 @@ void SortPaperDisplayNames(std::vector<PaperWithSizeInfo>& papers) {
 
     UCollationResult comp = base::i18n::CompareString16WithCollator(
         *collator, a.size_info.display_name, b.size_info.display_name);
-    if (comp != UCOL_EQUAL)
+    if (comp != UCOL_EQUAL) {
       return comp == UCOL_LESS;
+    }
 
     // Same name.  Sort by width, then height.
-    if (size_a.width() != size_b.width())
+    if (size_a.width() != size_b.width()) {
       return size_a.width() < size_b.width();
+    }
     return size_a.height() < size_b.height();
   };
   std::sort(named_sizes.begin(), named_sizes.end(), name_sort);

@@ -8,6 +8,25 @@ import("//printing/buildflags/buildflags.gni")
 
 assert(enable_printing)
 
+if (enable_print_media_l10n) {
+  source_set("print_media_l10n") {
+    sources = [
+      "print_media_l10n.cc",
+      "print_media_l10n.h",
+    ]
+
+    public_deps = [ "//printing/backend" ]
+
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//components/strings:components_strings_grit",
+      "//printing:printing_base",
+      "//ui/base",
+    ]
+  }
+}
+
 static_library("common") {
   sources = [
     "cloud_print_cdd_conversion.cc",
@@ -79,6 +98,11 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [ "//printing" ]
+  }
+
+  if (enable_print_media_l10n) {
+    sources += [ "print_media_l10n_unittest.cc" ]
+    deps += [ ":print_media_l10n" ]
   }
 
   if (is_linux && use_dbus) {
