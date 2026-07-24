@@ -972,4 +972,10 @@ public abstract class ToolbarLayout extends FrameLayout
     void setSigninButtonCoordinatorForTesting(SigninButtonCoordinator coordinator) {
         mSigninButtonCoordinator = coordinator;
     }
+
+    @Override
+    public @Nullable View getContainerView() {
+        View controlContainer = getRootView().findViewById(R.id.control_container);
+        return controlContainer != null ? controlContainer : this;
+    }
 }

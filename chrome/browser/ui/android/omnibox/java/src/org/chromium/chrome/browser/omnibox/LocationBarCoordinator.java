@@ -343,7 +343,8 @@ public class LocationBarCoordinator
 
         if (mLocationBarLayout instanceof LocationBarTablet tabletLayout) {
             mLocationBarHolder = (ViewGroup) tabletLayout.getParent();
-            tabletLayout.setHolder(mLocationBarHolder);
+            tabletLayout.setHolderAndContainer(
+                    mLocationBarHolder, mLocationBarEmbedder.getContainerView());
         }
 
         View alignmentView = mLocationBarLayout.getAlignmentView();

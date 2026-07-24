@@ -104,7 +104,7 @@ public class LocationBarTabletUnitTest {
         doReturn(ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false))
                 .when(mLocationBarDataProvider)
                 .getPrimaryColor();
-        mLocationBarTablet.setHolder(mHolderView);
+        mLocationBarTablet.setHolderAndContainer(mHolderView, null);
         mLocationBarTablet.initialize(
                 mAutocompleteCoordinator,
                 mUrlBarCoordinator,

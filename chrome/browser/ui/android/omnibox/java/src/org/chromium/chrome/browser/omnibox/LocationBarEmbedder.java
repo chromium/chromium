@@ -67,4 +67,12 @@ public interface LocationBarEmbedder {
     default @BackPressHandler.Type int getBackPressHandlerType() {
         return BackPressHandler.Type.LOCATION_BAR;
     }
+
+    /**
+     * Returns the container {@link View} defining available width for location bar expansion, or
+     * {@code null} if default display bounds should be used.
+     */
+    default @Nullable View getContainerView() {
+        return null;
+    }
 }

@@ -96,6 +96,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     // us to reparent the LocationBar without needing to explicitly reposition other elements of the
     // toolbar.
     private View mHolder;
+    private @Nullable View mContainerView;
     private @FuseboxLayoutMode int mLayoutMode;
     private boolean mIsReparentedToPopover;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
@@ -188,9 +189,18 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mScreenWidthDp = getResources().getConfiguration().screenWidthDp;
     }
 
+    /**
+     * Sets the holder ViewGroup and optional container View used to determine available width and
+     * calculate margins for the fusebox expansion.
+     *
+     * @param holder The parent {@link ViewGroup} containing the location bar.
+     * @param containerView The container {@link View} defining the available width for expansion,
+     *     or {@code null} if the window width should be used.
+     */
     @Initializer
-    public void setHolder(ViewGroup holder) {
+    public void setHolderAndContainer(ViewGroup holder, @Nullable View containerView) {
         mHolder = holder;
+        mContainerView = containerView;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -619,7 +629,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                             : resources.getDimensionPixelSize(
                                     R.dimen.location_bar_tablet_fusebox_popup_inset);
             parentParams.topMargin = isPopover ? 0 : -expansionPx;
-            setMarginsForWindowWidth(parentParams, expansionPx);
+            setMarginsForAvailableWidth(parentParams, expansionPx);
             parentParams.gravity = Gravity.TOP;
             int topExpansionPx =
                     isPopover
@@ -707,11 +717,16 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mStatusView.setLayoutParams(statusViewLayoutParams);
     }
 
-    private void setMarginsForWindowWidth(
+    private void setMarginsForAvailableWidth(
             MarginLayoutParams layoutParams, int minHorizontalExpansionPx) {
         Resources resources = getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
-        int windowWidthPx = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
+
+        int availableWidth =
+                mContainerView != null
+                        ? mContainerView.getWidth()
+                        : DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
+
         int measuredWidthWithoutExpansion =
                 getMeasuredWidth()
                         + Math.min(0, layoutParams.leftMargin)
@@ -720,7 +735,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         boolean isPhoneWidthScreen = screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         int targetWidthPx =
                 isPhoneWidthScreen
-                        ? windowWidthPx
+                        ? availableWidth
                         : Math.max(
                                 minTabletWidthPx,
                                 measuredWidthWithoutExpansion + 2 * minHorizontalExpansionPx);
@@ -729,9 +744,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         int currentLeft = mPositionArray[0] - layoutParams.leftMargin;
         // Our view is relatively centered already; make it exactly centered when expanded.
         boolean isViewApproximatelyCentered =
-                windowWidthPx - 2 * currentLeft <= minTabletWidthPx || isPhoneWidthScreen;
+                availableWidth - 2 * currentLeft <= minTabletWidthPx || isPhoneWidthScreen;
         if (isViewApproximatelyCentered) {
-            int targetLeft = (windowWidthPx - targetWidthPx) / 2;
+            int targetLeft = (availableWidth - targetWidthPx) / 2;
             int targetRight = targetLeft + targetWidthPx;
 
             int currentRight = currentLeft + measuredWidthWithoutExpansion;
