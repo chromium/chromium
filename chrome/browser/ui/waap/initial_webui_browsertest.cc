@@ -97,7 +97,11 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
  public:
   explicit ToolbarDependencyProvider(Browser* browser) : browser_(browser) {}
 
-  ~ToolbarDependencyProvider() = default;
+  ~ToolbarDependencyProvider() override = default;
+
+  base::WeakPtr<DependencyProvider> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // This might blow up in the future. We are implicitly assuming that the
   // delegate isn't going to be used in this test.
@@ -130,6 +134,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;
+  base::WeakPtrFactory<DependencyProvider> weak_factory_{this};
 };
 
 class WebUIToolbarInitializer : public WebUIControllerInitalizer {

@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -366,6 +367,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 
   content::WebContents* web_contents = web_view->GetWebContents();
   if (web_contents) {
+    WebUIToolbarUIDependencyProviderUserData::CreateForWebContents(web_contents,
+                                                                   this);
     scoped_accessibility_mode_ =
         content::BrowserAccessibilityState::GetInstance()
             ->CreateScopedModeForWebContents(
@@ -387,7 +390,12 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   }
 }
 
-WebUIToolbarWebView::~WebUIToolbarWebView() = default;
+WebUIToolbarWebView::~WebUIToolbarWebView() {
+  if (web_contents()) {
+    web_contents()->RemoveUserData(
+        WebUIToolbarUIDependencyProviderUserData::UserDataKey());
+  }
+}
 
 int WebUIToolbarWebView::GetLocationBarWidthForTesting() const {
   CHECK(location_bar_);
@@ -806,6 +814,11 @@ void WebUIToolbarWebView::OnPreferredSizeChanged() {
 const toolbar_ui_api::mojom::NavigationControlsState&
 WebUIToolbarWebView::GetState() const {
   return last_queued_state_;
+}
+
+base::WeakPtr<WebUIToolbarUI::DependencyProvider>
+WebUIToolbarWebView::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*

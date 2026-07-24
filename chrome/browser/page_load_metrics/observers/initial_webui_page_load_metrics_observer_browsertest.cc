@@ -91,7 +91,11 @@ class WebUIControllerInitalizer : protected content::WebContentsObserver {
 class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
  public:
   explicit ToolbarDependencyProvider(Browser* browser) : browser_(browser) {}
-  ~ToolbarDependencyProvider() = default;
+  ~ToolbarDependencyProvider() override = default;
+
+  base::WeakPtr<DependencyProvider> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
 
   browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
   GetBrowserControlsDelegate() override {
@@ -122,6 +126,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
  private:
   raw_ptr<Browser> browser_;
+  base::WeakPtrFactory<DependencyProvider> weak_factory_{this};
 };
 
 class WebUIToolbarInitializer : public WebUIControllerInitalizer {

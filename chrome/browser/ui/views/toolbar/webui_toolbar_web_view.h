@@ -170,6 +170,7 @@ class WebUIToolbarWebView
   WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
 
   // WebUIToolbarUI::DependencyProvider:
+  base::WeakPtr<DependencyProvider> GetWeakPtr() override;
   browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
   GetBrowserControlsDelegate() override;
   toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
@@ -580,6 +581,8 @@ class WebUIToolbarWebView
   //
   // See GetFlexSpecification() for more information.
   bool location_bar_takes_priority_ = false;
+
+  base::WeakPtrFactory<DependencyProvider> weak_factory_{this};
 
   // This WeakPtrFactory is used to keep tabs on pending state pushes, and then
   // used to cancel them if the state is later updated again before we post a

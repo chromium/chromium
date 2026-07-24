@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
@@ -20,6 +21,7 @@
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,6 +43,7 @@ class HelpBubbleHandler;
 // Init() is called.
 namespace content {
 class NavigationHandle;
+class WebUIDataSource;
 }
 
 class WebUIToolbarUI : public TopChromeWebUIController,
@@ -50,6 +53,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // Provides dependencies to this controller during init.
   class DependencyProvider {
    public:
+    virtual ~DependencyProvider() = default;
+    virtual base::WeakPtr<DependencyProvider> GetWeakPtr() = 0;
     // Cannot be null.
     virtual browser_controls_api::BrowserControlsService::
         BrowserControlsServiceDelegate*
@@ -84,7 +89,7 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
           receiver);
 
-  void BindInterface(
+  virtual void BindInterface(
       mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver);
 
   // Implements support for help bubbles (IPH, tutorials, etc.) in settings
@@ -93,7 +98,7 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           receiver);
 
-  void OnNavigationControlsStateChanged(
+  virtual void OnNavigationControlsStateChanged(
       const toolbar_ui_api::mojom::NavigationControlsState& state);
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
 
@@ -184,6 +189,33 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   /////////////////////////////////////////////////////////////////////////////
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+// A wrapper associating a `WebUIToolbarUI::DependencyProvider` with a
+// `content::WebContents` using `WebContentsUserData`.
+// This allows the `WebUIToolbarUI` controller to retrieve the provider during
+// construction, before `Init()` is called, to perform early, synchronous
+// initialization of the toolbar state.
+class WebUIToolbarUIDependencyProviderUserData
+    : public content::WebContentsUserData<
+          WebUIToolbarUIDependencyProviderUserData> {
+ public:
+  ~WebUIToolbarUIDependencyProviderUserData() override;
+
+  WebUIToolbarUI::DependencyProvider* provider() const {
+    return provider_.get();
+  }
+
+ private:
+  explicit WebUIToolbarUIDependencyProviderUserData(
+      content::WebContents* contents,
+      WebUIToolbarUI::DependencyProvider* provider);
+
+  friend class content::WebContentsUserData<
+      WebUIToolbarUIDependencyProviderUserData>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtr<WebUIToolbarUI::DependencyProvider> provider_;
 };
 
 class WebUIToolbarConfig : public DefaultTopChromeWebUIConfig<WebUIToolbarUI> {

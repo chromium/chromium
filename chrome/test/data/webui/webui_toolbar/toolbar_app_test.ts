@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, NavigationControlsStateListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import {AvatarToolbarButtonState} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -178,6 +178,7 @@ function createMockNavigationState() {
 suite('ToolbarAppTest', () => {
   let app: ToolbarAppElement;
   let browserProxy: TestToolbarBrowserProxy;
+  let originalGetVariableValue: any;
 
   let startTrackingCalls: Array<[HTMLElement, string]> = [];
   let stopTrackingCalls: HTMLElement[] = [];
@@ -205,6 +206,20 @@ suite('ToolbarAppTest', () => {
     browserProxy = new TestToolbarBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
 
+    // Reset C++ injected values to ensure tests start in a clean state.
+    const loadTimeDataData = (loadTimeData as any).data_;
+    if (loadTimeDataData) {
+      delete loadTimeDataData['isNavigationLoading'];
+      delete loadTimeDataData['reloadCanShowMenu'];
+      delete loadTimeDataData['backButtonEnabled'];
+      delete loadTimeDataData['forwardButtonEnabled'];
+      delete loadTimeDataData['homeButtonShouldBeShown'];
+      delete loadTimeDataData['batterySaverButtonVisible'];
+      delete loadTimeDataData['layoutConstantsVersion'];
+      delete loadTimeDataData['touchUi'];
+      delete loadTimeDataData['isFallbackPrewarming'];
+    }
+
     loadTimeData.overrideValues({
       enableReloadButton: true,
       enableSplitTabsButton: true,
@@ -217,6 +232,39 @@ suite('ToolbarAppTest', () => {
       splitTabsIndicatorHeight: 10,
       splitTabsIndicatorSpacing: 10,
     });
+
+    originalGetVariableValue = chrome.getVariableValue;
+    chrome.getVariableValue = (key: string) => {
+      if (key === 'initialState') {
+        const state: Record<string, any> = {};
+        const keys = [
+          'isNavigationLoading',
+          'backButtonEnabled',
+          'forwardButtonEnabled',
+          'initialWebUISurfaceSyncEnabled',
+          'isFallbackPrewarming',
+          'reloadCanShowMenu',
+          'homeButtonShouldBeShown',
+          'batterySaverButtonVisible',
+          'layoutConstantsVersion',
+          'touchUi',
+        ];
+        for (const k of keys) {
+          if (loadTimeData.valueExists(k)) {
+            state[k] = loadTimeData.getValue(k);
+          }
+        }
+        return JSON.stringify(state);
+      }
+      return originalGetVariableValue(key);
+    };
+
+    resetInitialStateForTesting();
+  });
+
+  teardown(() => {
+    chrome.getVariableValue = originalGetVariableValue;
+    resetInitialStateForTesting();
   });
 
   test('Sync Disabled (Initial Sync Feature is False)', async () => {
@@ -237,6 +285,7 @@ suite('ToolbarAppTest', () => {
   test('Sync Enabled (Initial Sync Feature is True)', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     app = document.createElement('toolbar-app');
@@ -262,9 +311,37 @@ suite('ToolbarAppTest', () => {
     assertEquals(9, startTrackingCalls.length);
   });
 
+  test('Sync Enabled - Synchronous Boot (Initial State Present)', async () => {
+    loadTimeData.overrideValues({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: false,
+      isNavigationLoading: false,
+      backButtonEnabled: true,
+      forwardButtonEnabled: false,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+
+    await microtasksFinished();
+
+    // Verify app initializes synchronously without needing a Mojo update
+    assertEquals(
+        1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
+    assertEquals(9, startTrackingCalls.length);
+
+    // Verify initial boot snapshot captures the correct values
+    const snapshot = (app as any).initialBootSnapshot_;
+    assertTrue(snapshot.initializedSync);
+    assertFalse(snapshot.isNavigationLoading);
+    assertTrue(snapshot.backButtonEnabled);
+    assertFalse(snapshot.forwardButtonEnabled);
+  });
+
   test('Sync Enabled - Synchronous Mojo Update', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     app = document.createElement('toolbar-app');
@@ -283,6 +360,7 @@ suite('ToolbarAppTest', () => {
   test('Sync Enabled - Multiple Rapid Mojo Updates', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     app = document.createElement('toolbar-app');
@@ -302,6 +380,7 @@ suite('ToolbarAppTest', () => {
   test('Sync Enabled - Synchronous Detach Reattach', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     app = document.createElement('toolbar-app');
@@ -327,6 +406,7 @@ suite('ToolbarAppTest', () => {
   test('Sync Enabled - Asynchronous Detach Reattach', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     app = document.createElement('toolbar-app');
@@ -368,6 +448,7 @@ suite('ToolbarAppTest', () => {
       async () => {
         loadTimeData.overrideValues({
           initialWebUISurfaceSyncEnabled: true,
+          isFallbackPrewarming: true,
         });
 
         app = document.createElement('toolbar-app');
@@ -396,6 +477,7 @@ suite('ToolbarAppTest', () => {
   test('Event Listener Clean Up on Detach', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     const activeScrollListeners = new Set<Function>();
@@ -448,6 +530,7 @@ suite('ToolbarAppTest', () => {
   test('Sync Enabled - Multiple Rapid Reconnects and Updates', async () => {
     loadTimeData.overrideValues({
       initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
     });
 
     // We will attach and detach the app multiple times rapidly, interleaved

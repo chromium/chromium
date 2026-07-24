@@ -10,7 +10,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
@@ -43,10 +46,12 @@
 #include "chrome/grit/webui_toolbar_shared_resources_map.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -57,6 +62,108 @@
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebUIToolbarUIDependencyProviderUserData);
+
+WebUIToolbarUIDependencyProviderUserData::
+    WebUIToolbarUIDependencyProviderUserData(
+        content::WebContents* contents,
+        WebUIToolbarUI::DependencyProvider* provider)
+    : content::WebContentsUserData<WebUIToolbarUIDependencyProviderUserData>(
+          *contents),
+      provider_(provider ? provider->GetWeakPtr() : nullptr) {}
+
+WebUIToolbarUIDependencyProviderUserData::
+    ~WebUIToolbarUIDependencyProviderUserData() = default;
+
+namespace {
+
+constexpr char kIsNavigationLoading[] = "isNavigationLoading";
+constexpr char kReloadCanShowMenu[] = "reloadCanShowMenu";
+constexpr char kBackButtonEnabled[] = "backButtonEnabled";
+constexpr char kForwardButtonEnabled[] = "forwardButtonEnabled";
+constexpr char kHomeButtonShouldBeShown[] = "homeButtonShouldBeShown";
+constexpr char kBatterySaverButtonVisible[] = "batterySaverButtonVisible";
+constexpr char kLayoutConstantsVersion[] = "layoutConstantsVersion";
+constexpr char kTouchUi[] = "touchUi";
+constexpr char kInitialWebUISurfaceSyncEnabled[] =
+    "initialWebUISurfaceSyncEnabled";
+constexpr char kIsFallbackPrewarming[] = "isFallbackPrewarming";
+
+// Retrieves the current navigation controls state from the provider's fetcher
+// and populates a nested dictionary `initialState`.
+//
+// This method extracts only the critical subset of `NavigationControlsState`
+// required for the initial paint of the toolbar on startup. This critical
+// subset includes reload, back, forward, and home button states, touch UI mode,
+// battery saver visibility, and layout constants version. These fields are
+// required immediately during TypeScript construction to prevent visual layout
+// shifts or delayed rendering. Other non-critical states are omitted here and
+// will be updated later asynchronously via Mojo.
+//
+// The populated nested dictionary is serialized and passed to the frame using
+// `SetWebUIProperty("initialState", json_string)`. This allows the frontend to
+// access the initial state synchronously via
+// `chrome.getVariableValue('initialState')` during load.
+//
+// If provider is null, such as during background prewarming when the actual
+// browser window view is not yet created, it directly populates default
+// dictionary values.
+// TODO(crbug.com/530370659): Replaced with mojom struct for type safety.
+void PopulateInitialState(base::DictValue& dict,
+                          WebUIToolbarUI::DependencyProvider* provider) {
+  dict.Set(
+      kInitialWebUISurfaceSyncEnabled,
+      base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
+  toolbar_ui_api::mojom::NavigationControlsStatePtr state;
+  if (provider && provider->GetNavigationControlsStateFetcher()) {
+    state = provider->GetNavigationControlsStateFetcher()
+                ->GetNavigationControlsState();
+  }
+  if (!state) {
+    dict.Set(kIsNavigationLoading, false);
+    dict.Set(kReloadCanShowMenu, false);
+    dict.Set(kBackButtonEnabled, false);
+    dict.Set(kForwardButtonEnabled, false);
+    dict.Set(kHomeButtonShouldBeShown, false);
+    dict.Set(kBatterySaverButtonVisible, false);
+    dict.Set(kLayoutConstantsVersion, 0);
+    dict.Set(kTouchUi, false);
+    return;
+  }
+
+  if (state->reload_control_state) {
+    dict.Set(kIsNavigationLoading,
+             state->reload_control_state->is_navigation_loading);
+    dict.Set(kReloadCanShowMenu, state->reload_control_state->can_show_menu);
+  } else {
+    dict.Set(kIsNavigationLoading, false);
+    dict.Set(kReloadCanShowMenu, false);
+  }
+  if (state->back_forward_control_state) {
+    dict.Set(kBackButtonEnabled,
+             state->back_forward_control_state->back_button_state &&
+                 state->back_forward_control_state->back_button_state->enabled);
+    dict.Set(
+        kForwardButtonEnabled,
+        state->back_forward_control_state->forward_button_state &&
+            state->back_forward_control_state->forward_button_state->enabled);
+  } else {
+    dict.Set(kBackButtonEnabled, false);
+    dict.Set(kForwardButtonEnabled, false);
+  }
+  if (state->home_control_state) {
+    dict.Set(kHomeButtonShouldBeShown,
+             state->home_control_state->should_be_shown);
+  } else {
+    dict.Set(kHomeButtonShouldBeShown, false);
+  }
+  dict.Set(kBatterySaverButtonVisible, state->battery_saver_button_visible);
+  dict.Set(kLayoutConstantsVersion, state->layout_constants_version);
+  dict.Set(kTouchUi, state->touch_ui);
+}
+
+}  // namespace
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
     // Sets `enable_chrome_send` to true to allow chrome.send() to be called in
@@ -259,16 +366,40 @@ void WebUIToolbarUI::InitToolbarUIService(
       dependency_provider.GetToolbarUIServiceDelegate());
 }
 
-void WebUIToolbarUI::WebUIRenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  TopChromeWebUIController::WebUIRenderFrameCreated(render_frame_host);
+void WebUIToolbarUI::WebUIRenderFrameCreated(content::RenderFrameHost* rfh) {
+  TopChromeWebUIController::WebUIRenderFrameCreated(rfh);
 
   // Set the custom timeout for WebUI toolbar renderer to restart on
   // unresponsiveness.
   if (features::kWebUIReloadButtonRestartUnresponsive.Get()) {
-    render_frame_host->GetRenderWidgetHost()->SetHungRendererDelay(
+    rfh->GetRenderWidgetHost()->SetHungRendererDelay(
         features::kWebUIReloadButtonRestartUnresponsiveRenderersTimeout.Get());
   }
+
+  // Inject the initial toolbar state synchronously into the frame to allow
+  // the JS frontend to initialize synchronously during load.
+  //
+  // During Pre-Navigate prewarming, the window View does not exist yet when the
+  // page starts loading in the background, so the UserData is missing. In this
+  // case, we instantiate a local FallbackDependencyProvider to inject a safe,
+  // default-valued initial state.
+  //
+  // Otherwise (normal load or Renderer-Only prewarming), we retrieve the actual
+  // window View's provider from UserData.
+  auto* user_data = WebUIToolbarUIDependencyProviderUserData::FromWebContents(
+      web_ui()->GetWebContents());
+  base::DictValue values;
+  if (user_data) {
+    auto* provider_user_data = user_data->provider();
+    PopulateInitialState(values, provider_user_data);
+    values.Set(kIsFallbackPrewarming, false);
+  } else {
+    PopulateInitialState(values, nullptr);
+    values.Set(kIsFallbackPrewarming, true);
+  }
+  std::string json_string;
+  base::JSONWriter::Write(values, &json_string);
+  rfh->SetWebUIProperty("initialState", json_string);
 }
 
 content::WebUIController::DisplayDisposition
