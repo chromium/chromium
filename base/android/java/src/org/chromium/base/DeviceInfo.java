@@ -17,7 +17,11 @@ import android.os.Process;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import androidx.annotation.GuardedBy;
+import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
@@ -58,6 +62,15 @@ public final class DeviceInfo {
     private static @Nullable DeviceInfo sInstance;
 
     private static final Object CREATION_LOCK = new Object();
+
+    @IntDef({FormFactor.TV, FormFactor.AUTOMOTIVE, FormFactor.DESKTOP, FormFactor.XR})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface FormFactor {
+        int TV = 0;
+        int AUTOMOTIVE = 1;
+        int DESKTOP = 2;
+        int XR = 3;
+    }
 
     private static boolean sIsNativeLoaded;
 
@@ -113,6 +126,9 @@ public final class DeviceInfo {
     public static void setIsAutomotiveForTesting(boolean isAutomotive) {
         sIsAutomotiveForTesting = isAutomotive;
         ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
+        if (isAutomotive) {
+            setExclusiveFormFactorForTesting(FormFactor.AUTOMOTIVE);
+        }
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -121,6 +137,9 @@ public final class DeviceInfo {
     public static void setIsTVForTesting(boolean isTV) {
         sIsTVForTesting = isTV;
         ResettersForTesting.register(() -> sIsTVForTesting = null);
+        if (isTV) {
+            setExclusiveFormFactorForTesting(FormFactor.TV);
+        }
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -201,6 +220,9 @@ public final class DeviceInfo {
     public static void setIsXrForTesting(boolean value) {
         sIsXrForTesting = value;
         ResettersForTesting.register(() -> sIsXrForTesting = null);
+        if (value) {
+            setExclusiveFormFactorForTesting(FormFactor.XR);
+        }
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -220,6 +242,9 @@ public final class DeviceInfo {
     public static void setIsDesktopForTesting(boolean isDesktop) {
         sIsDesktopForTesting = isDesktop;
         ResettersForTesting.register(() -> sIsDesktopForTesting = null);
+        if (isDesktop) {
+            setExclusiveFormFactorForTesting(FormFactor.DESKTOP);
+        }
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }
@@ -377,6 +402,25 @@ public final class DeviceInfo {
         mIDeviceInfo.isXr = pm.hasSystemFeature("android.software.xr.api.openxr");
         if (sIsXrForTesting != null) {
             mIDeviceInfo.isXr = sIsXrForTesting;
+        }
+    }
+
+    private static void setExclusiveFormFactorForTesting(@FormFactor int activeFormFactor) {
+        if (activeFormFactor != FormFactor.TV) {
+            sIsTVForTesting = false;
+            ResettersForTesting.register(() -> sIsTVForTesting = null);
+        }
+        if (activeFormFactor != FormFactor.AUTOMOTIVE) {
+            sIsAutomotiveForTesting = false;
+            ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
+        }
+        if (activeFormFactor != FormFactor.DESKTOP) {
+            sIsDesktopForTesting = false;
+            ResettersForTesting.register(() -> sIsDesktopForTesting = null);
+        }
+        if (activeFormFactor != FormFactor.XR) {
+            sIsXrForTesting = false;
+            ResettersForTesting.register(() -> sIsXrForTesting = null);
         }
     }
 
