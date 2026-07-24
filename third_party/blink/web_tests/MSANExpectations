@@ -194,3 +194,7 @@ crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.
 
 # Reliably timing out on MSAN
 crbug.com/508089939 [ Linux ] external/wpt/navigation-api/navigate-event/intercept-cross-origin-focus-without-user-activation.html [ Timeout ]
+
+# Gardener 2026-07-24
+crbug.com/538420326 [ Linux ] regress/regress-1239910-adapter.html [ Crash ]
+crbug.com/538420326 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/tensor.https.any.html?cpu [ Crash ]
