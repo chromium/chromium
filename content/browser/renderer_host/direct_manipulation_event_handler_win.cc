@@ -80,7 +80,8 @@ void DirectManipulationEventHandler::TransitionToState(
       break;
     }
     case GestureState::kPinch: {
-      DCHECK_EQ(new_gesture_state, GestureState::kNone);
+      CHECK_EQ(new_gesture_state, GestureState::kNone,
+               base::NotFatalUntil::M154);
       // kPinch -> kNone, PinchEnd. kPinch should only transition to kNone.
       helper_->event_target()->ApplyPinchZoomEnd();
       break;
@@ -97,12 +98,13 @@ void DirectManipulationEventHandler::TransitionToState(
   switch (new_gesture_state) {
     case GestureState::kScroll: {
       // Handled above.
-      DCHECK(should_send_scroll_begin_);
+      CHECK(should_send_scroll_begin_, base::NotFatalUntil::M154);
       break;
     }
     case GestureState::kFling: {
       // Only kScroll can transition to kFling.
-      DCHECK_EQ(previous_gesture_state, GestureState::kScroll);
+      CHECK_EQ(previous_gesture_state, GestureState::kScroll,
+               base::NotFatalUntil::M154);
       helper_->event_target()->ApplyPanGestureFlingBegin();
       break;
     }
@@ -129,7 +131,7 @@ HRESULT DirectManipulationEventHandler::OnViewportStatusChanged(
 
   // MSDN never mention |viewport| are nullable and we never saw it is null when
   // testing.
-  DCHECK(viewport);
+  CHECK(viewport, base::NotFatalUntil::M154);
 
   // The state of our viewport has changed! We'l be in one of three states:
   // - ENABLED: initial state
@@ -205,8 +207,8 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
 
   // MSDN never mention these params are nullable and we never saw they are null
   // when testing.
-  DCHECK(viewport);
-  DCHECK(content);
+  CHECK(viewport, base::NotFatalUntil::M154);
+  CHECK(content, base::NotFatalUntil::M154);
 
   // Windows should not call this when event_target() is null since we do not
   // pass the DM_POINTERHITTEST to DirectManipulation.
@@ -241,7 +243,7 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
     return hr;
   }
 
-  DCHECK_NE(last_scale_, 0.0f);
+  CHECK_NE(last_scale_, 0.0f, base::NotFatalUntil::M154);
 
   // DirectManipulation will send xy transform move to down-right which is noise
   // when pinch zoom. We should consider the gesture either Scroll or Pinch at

@@ -248,7 +248,7 @@ void PageImpl::Activate(
 }
 
 void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
-  DCHECK(IsPrimary());
+  CHECK(IsPrimary(), base::NotFatalUntil::M154);
 
   // Dispatch LoadProgressChanged notification on activation with the
   // prerender last load progress value if the value is not equal to
@@ -339,8 +339,9 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   // TODO(crbug.com/40222405): send notification to outer frames if
   // needed.
-  DCHECK_EQ(virtual_keyboard_mode(),
-            ui::mojom::VirtualKeyboardMode::kOverlaysContent);
+  CHECK_EQ(virtual_keyboard_mode(),
+           ui::mojom::VirtualKeyboardMode::kOverlaysContent,
+           base::NotFatalUntil::M154);
   GetMainDocument().GetAssociatedLocalFrame()->NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
 }
@@ -362,7 +363,6 @@ void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
 base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
-
 
 void PageImpl::TakeLoadingMemoryTracker(NavigationRequest* request) {
   CHECK(IsPrimary());

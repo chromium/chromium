@@ -26,7 +26,7 @@ RenderMessageFilter::RenderMessageFilter(
 
 RenderMessageFilter::~RenderMessageFilter() {
   // This function should be called on the IO thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
 }
 
 mojom::FrameRoutingInfoPtr RenderMessageFilter::AllocateNewRoutingInfo() {

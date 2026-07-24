@@ -61,7 +61,7 @@ bool VerifyBlobToken(
     ChildProcessId process_id,
     const mojo::PendingRemote<blink::mojom::BlobURLToken>& received_token,
     const GURL& received_url) {
-  DCHECK(process_id);
+  CHECK(process_id, base::NotFatalUntil::M154);
 
   if (received_token.is_valid()) {
     if (!received_url.SchemeIsBlob()) {
@@ -186,7 +186,7 @@ bool VerifyInitiatorOrigin(
 
 bool VerifyDownloadUrlParams(RenderProcessHost* process,
                              const blink::mojom::DownloadURLParams& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
   CHECK(process);
   ChildProcessId process_id = process->GetID();
 
@@ -214,11 +214,11 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*
                              out_blob_url_loader_factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(current_rfh);
-  DCHECK(process);
-  DCHECK(out_validated_url);
-  DCHECK(out_blob_url_loader_factory);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
+  CHECK(current_rfh, base::NotFatalUntil::M154);
+  CHECK(process, base::NotFatalUntil::M154);
+  CHECK(out_validated_url, base::NotFatalUntil::M154);
+  CHECK(out_blob_url_loader_factory, base::NotFatalUntil::M154);
   ChildProcessId process_id = process->GetID();
 
   // Verify |params.url| and populate |out_validated_url|.
@@ -296,8 +296,8 @@ bool VerifyBeginNavigationCommonParams(
     const RenderFrameHostImpl& current_rfh,
     blink::mojom::CommonNavigationParams* common_params,
     std::optional<blink::LocalFrameToken>& initiator_frame_token) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(common_params);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
+  CHECK(common_params, base::NotFatalUntil::M154);
   RenderProcessHost* process = current_rfh.GetProcess();
   ChildProcessId process_id = process->GetID();
 
@@ -367,7 +367,7 @@ bool VerifyBeginNavigationCommonParams(
 
 bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
                                  const mojom::CreateNewWindowParams& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
   RenderProcessHost* process = current_rfh.GetProcess();
 
   // Certain dispositions should never be sent from the renderer, so terminate

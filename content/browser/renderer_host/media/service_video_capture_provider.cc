@@ -55,7 +55,7 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
       : io_task_runner_(GetIOThreadTaskRunner({})),
         start_callback_(std::move(start_callback)),
         stop_callback_(std::move(stop_callback)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
     ServiceProcessHost::AddObserver(this);
   }
 
@@ -63,7 +63,7 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
   ServiceProcessObserver& operator=(const ServiceProcessObserver&) = delete;
 
   ~ServiceProcessObserver() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M154);
     ServiceProcessHost::RemoveObserver(this);
   }
 
@@ -134,14 +134,14 @@ ServiceVideoCaptureProvider::ServiceVideoCaptureProvider(
 }
 
 ServiceVideoCaptureProvider::~ServiceVideoCaptureProvider() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M154);
   OnServiceConnectionClosed(ReasonForDisconnect::kShutdown);
   content::GpuDataManager::GetInstance()->RemoveObserver(this);
 }
 
 void ServiceVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M154);
   emit_log_message_cb_.Run("ServiceVideoCaptureProvider::GetDeviceInfosAsync");
   get_device_infos_pending_callbacks_.push_back(std::move(result_callback));
   GetDeviceInfosAsyncForRetry();

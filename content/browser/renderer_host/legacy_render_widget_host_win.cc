@@ -230,7 +230,7 @@ LegacyRenderWidgetHostHWND::LegacyRenderWidgetHostHWND(
 
 LegacyRenderWidgetHostHWND::~LegacyRenderWidgetHostHWND() {
   // WindowImpl will clean up the hwnd value on WM_NCDESTROY.
-  DCHECK(!hwnd());
+  CHECK(!hwnd(), base::NotFatalUntil::M154);
 }
 
 bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
@@ -412,7 +412,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
     case OBJID_CARET:
       // Return the IAccessible for the window's caret to an MSAA client.
       if (host_->HasFocus()) {
-        DCHECK(ax_system_caret_);
+        CHECK(ax_system_caret_, base::NotFatalUntil::M154);
         return ::LresultFromObject(IID_IAccessible, w_param,
                                    ax_system_caret_->GetCaret());
       }
@@ -868,7 +868,8 @@ gfx::NativeViewAccessible
 LegacyRenderWidgetHostHWND::GetOrCreateWindowRootAccessible(
     bool is_uia_request) {
   if (is_uia_request) {
-    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+    CHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
+          base::NotFatalUntil::M154);
     return ax_fragment_root_->GetNativeViewAccessible();
   }
   return GetOrCreateBrowserAccessibilityRoot();

@@ -16,7 +16,7 @@ TextInputHostImpl::~TextInputHostImpl() = default;
 
 void TextInputHostImpl::Create(
     mojo::PendingReceiver<blink::mojom::TextInputHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
   mojo::MakeSelfOwnedReceiver(std::make_unique<TextInputHostImpl>(),
                               std::move(receiver));
 }
@@ -24,7 +24,7 @@ void TextInputHostImpl::Create(
 void TextInputHostImpl::GotCharacterIndexAtPoint(
     const base::UnguessableToken& request_token,
     uint32_t index) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TextInputClientMac* service = TextInputClientMac::GetInstance();
   service->SetCharacterIndexAndSignal(
@@ -34,7 +34,7 @@ void TextInputHostImpl::GotCharacterIndexAtPoint(
 void TextInputHostImpl::GotFirstRectForRange(
     const base::UnguessableToken& request_token,
     const gfx::Rect& rect) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TextInputClientMac* service = TextInputClientMac::GetInstance();
   service->SetFirstRectAndSignal(

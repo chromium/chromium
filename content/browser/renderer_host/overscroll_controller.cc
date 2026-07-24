@@ -29,7 +29,8 @@ namespace {
 constexpr base::TimeDelta kPullToRefreshCoolOffDelay = base::Milliseconds(600);
 
 bool IsGestureEventFromTouchpad(const blink::WebInputEvent& event) {
-  DCHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()));
+  CHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()),
+        base::NotFatalUntil::M154);
   const blink::WebGestureEvent& gesture =
       static_cast<const blink::WebGestureEvent&>(event);
   return gesture.SourceDevice() == blink::WebGestureDevice::kTouchpad;
@@ -50,7 +51,7 @@ bool IsGestureScrollUpdateInertialEvent(const blink::WebInputEvent& event) {
 }
 
 float ClampAbsoluteValue(float value, float max_abs) {
-  DCHECK_LT(0.f, max_abs);
+  CHECK_LT(0.f, max_abs, base::NotFatalUntil::M154);
   return std::clamp(value, -max_abs, max_abs);
 }
 
@@ -248,7 +249,8 @@ bool OverscrollController::DispatchEventCompletesAction(
     const blink::WebInputEvent& event) const {
   if (overscroll_mode_ == OVERSCROLL_NONE)
     return false;
-  DCHECK_NE(OverscrollSource::NONE, overscroll_source_);
+  CHECK_NE(OverscrollSource::NONE, overscroll_source_,
+           base::NotFatalUntil::M154);
 
   // Complete the overscroll gesture if there was a mouse move or a scroll-end
   // after the threshold.
@@ -263,7 +265,7 @@ bool OverscrollController::DispatchEventCompletesAction(
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate) {
     if (overscroll_source_ != OverscrollSource::TOUCHPAD)
       return false;
-    DCHECK(IsGestureEventFromTouchpad(event));
+    CHECK(IsGestureEventFromTouchpad(event), base::NotFatalUntil::M154);
     const blink::WebGestureEvent gesture_event =
         static_cast<const blink::WebGestureEvent&>(event);
     if (gesture_event.data.scroll_update.inertial_phase !=
@@ -273,7 +275,7 @@ bool OverscrollController::DispatchEventCompletesAction(
 
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd &&
       overscroll_source_ == OverscrollSource::TOUCHPAD) {
-    DCHECK(IsGestureEventFromTouchpad(event));
+    CHECK(IsGestureEventFromTouchpad(event), base::NotFatalUntil::M154);
     // Complete the action for a GSE with touchpad source only when it is in
     // momentumPhase.
     const blink::WebGestureEvent gesture_event =
@@ -471,7 +473,7 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
   if (delegate_) {
     std::optional<float> cap = delegate_->GetMaxOverscrollDelta();
     if (cap) {
-      DCHECK_LE(0.f, cap.value());
+      CHECK_LE(0.f, cap.value(), base::NotFatalUntil::M154);
       switch (overscroll_mode_) {
         case OVERSCROLL_WEST:
         case OVERSCROLL_EAST:
@@ -599,7 +601,8 @@ void OverscrollController::SetOverscrollMode(OverscrollMode mode,
     return;
 
   // If the mode changes to NONE, source is also NONE.
-  DCHECK(mode != OVERSCROLL_NONE || source == OverscrollSource::NONE);
+  CHECK(mode != OVERSCROLL_NONE || source == OverscrollSource::NONE,
+        base::NotFatalUntil::M154);
 
   // When setting to a non-NONE mode and there is a locked mode, don't set the
   // mode if the new mode is not the same as the locked mode.

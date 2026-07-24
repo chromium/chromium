@@ -73,7 +73,7 @@ void SubframeHistoryNavigationThrottle::MaybeCreateAndAdd(
   if (!main_frame_token) {
     return;
   }
-  DCHECK(!request->IsInMainFrame());
+  CHECK(!request->IsInMainFrame(), base::NotFatalUntil::M154);
 
   RenderFrameHostImpl* root_frame_host =
       request->frame_tree_node()->frame_tree().root()->current_frame_host();

@@ -229,6 +229,8 @@ void HandleDebugURL(const GURL& url,
   if (url == blink::kChromeUIBrowserDcheckURL) {
     // Induce an intentional DCHECK in the browser process. This is used to
     // see if a DCHECK will bring down the current process (is FATAL).
+    // CHECK-exclusion: This is an experimental DCHECK on purpose, and no need
+    // to convert it to CHECK.
     DCHECK(false);
     return;
   }

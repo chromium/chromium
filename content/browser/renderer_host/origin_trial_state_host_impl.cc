@@ -71,7 +71,8 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
         if (feature_name.empty()) {
           feature_name = result.ParsedToken()->feature_name();
         } else {
-          DCHECK(feature_name == result.ParsedToken()->feature_name());
+          CHECK(feature_name == result.ParsedToken()->feature_name(),
+                base::NotFatalUntil::M154);
         }
       }
     }
