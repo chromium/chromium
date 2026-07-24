@@ -1473,7 +1473,7 @@ policies:
   1472: BackForwardCacheForWebSocketsAllowed
   1473: GeminiChromeFileUploadSettings
   1474: FindAndFillWithGeminiSettings
-
+  1475: OnNetworkRequestEnterpriseConnector
 
 atomic_groups:
   1: Homepage

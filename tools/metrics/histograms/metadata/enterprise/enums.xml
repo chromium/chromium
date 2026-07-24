@@ -2524,6 +2524,7 @@ chromium-metrics-reviews@google.com.
   <int value="1472" label="BackForwardCacheForWebSocketsAllowed"/>
   <int value="1473" label="GeminiChromeFileUploadSettings"/>
   <int value="1474" label="FindAndFillWithGeminiSettings"/>
+  <int value="1475" label="OnNetworkRequestEnterpriseConnector"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

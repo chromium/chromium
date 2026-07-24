@@ -235,6 +235,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      kOnFileDownloadedPref,
                                      kOnBulkDataEntryPref,
                                      kOnPrintPref,
+                                     kOnNetworkRequestPref,
 #if BUILDFLAG(IS_CHROMEOS)
                                      kOnFileTransferPref,
 #endif

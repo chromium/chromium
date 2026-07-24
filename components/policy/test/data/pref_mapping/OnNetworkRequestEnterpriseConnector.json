@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_connectors.on_network_request",
+      "default_value": [],
+      "values_to_test": [
+        [
+          {
+            "audit": {
+              "request_domain": ["foo.bar", "bar.baz"],
+              "tab_domain": ["abc.xyz"]
+            },
+            "tags": ["dlp"]
+          }
+        ],
+        [
+          {
+            "audit": {
+              "request_domain": ["foo.bar", "bar.baz"]
+            },
+            "tags": ["dlp"]
+          },
+          {
+            "audit": {
+              "tab_domain": ["abc.xyz"]
+            },
+            "tags": ["dlp"]
+          }
+        ]
+      ]
+    }
+  }
+]

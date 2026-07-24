@@ -81,6 +81,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterListPref(kOnBulkDataEntryPref);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
+  registry->RegisterListPref(kOnNetworkRequestPref);
+  registry->RegisterIntegerPref(kOnNetworkRequestScopePref, 0);
   registry->RegisterIntegerPref(kWatermarkStyleFillOpacityPref,
                                 kWatermarkStyleFillOpacityDefault);
   registry->RegisterIntegerPref(kWatermarkStyleOutlineOpacityPref,

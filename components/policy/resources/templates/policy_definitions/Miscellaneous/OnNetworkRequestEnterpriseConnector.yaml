@@ -1,0 +1,56 @@
+caption: Configuration policy for the <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR">OnNetworkRequest</ph> <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connector
+desc: |-
+  List of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connectors services settings to be applied to the <ph name="ON_NETWORK_REQUEST_ENTERPRISE_CONNECTOR">OnNetworkRequest</ph> Enterprise Connector, which triggers when a network request is made from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Only HTTP POST requests are evaluated by this policy.
+
+  The <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD">audit</ph> field is used to determine what requests should be audited. The request and its contents will create an analysis request, but it will not be blocked. Only one list entry in the policy needs to be matched by a network request for an audit analysis request to be created.
+
+  The <ph name="ENTERPRISE_CONNECTOR_REQUEST_DOMAIN_FIELD">request_domain</ph> and <ph name="ENTERPRISE_CONNECTOR_TAB_DOMAIN_FIELD">tab_domain</ph> list fields are matched against a request's URL and the main tab URL in which the request originated respectively. If one of the fields is missing, it will be implicitly considered as matching.
+
+  The <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD">tags</ph> field is used to determine what tag(s) to include in the analysis request if the <ph name="ENTERPRISE_CONNECTOR_AUDIT_FIELD">audit</ph> field is matching.
+
+  This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+
+example_value:
+- audit:
+    request_domain:
+    - domain.to.be.audited
+    tags:
+    - dlp
+- audit:
+    tab_domain:
+    - tab.to.be.audited
+    tags:
+    - dlp
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+owners:
+- file://chrome/browser/enterprise/connectors/OWNERS
+- domfc@chromium.org
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      audit:
+        type: object
+        properties:
+          request_domain:
+            items:
+              type: string
+            type: array
+          tab_domain:
+            items:
+              type: string
+            type: array
+          tags:
+            items:
+              type: string
+            type: array
+tags: []
+type: dict

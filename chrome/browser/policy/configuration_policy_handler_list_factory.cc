@@ -2711,6 +2711,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           enterprise_connectors::kOnFileDownloadedPref,
           enterprise_connectors::kOnFileDownloadedScopePref, chrome_schema));
 
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kOnNetworkRequestEnterpriseConnector,
+          enterprise_connectors::kOnNetworkRequestPref,
+          enterprise_connectors::kOnNetworkRequestScopePref, chrome_schema));
+
   handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
