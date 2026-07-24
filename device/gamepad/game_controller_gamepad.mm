@@ -131,6 +131,7 @@ void UpdateHapticPlayer(double intensity,
 void SetOptionalButton(Gamepad& pad,
                        int button_index,
                        GCControllerButtonInput* button) {
+  pad.buttons[button_index].used = button != nil;
   if (button) {
     pad.buttons[button_index].pressed = button.isPressed;
     pad.buttons[button_index].value = button.value;
@@ -229,6 +230,7 @@ void GameControllerGamepad::UpdateState(Gamepad& pad) {
       -extended_gamepad.rightThumbstick.yAxis.value;
 
 #define BUTTON(i, b)                      \
+  pad.buttons[i].used = true;             \
   pad.buttons[i].pressed = [b isPressed]; \
   pad.buttons[i].value = [b value];
 
@@ -267,6 +269,7 @@ void GameControllerGamepad::UpdateState(Gamepad& pad) {
                  base::apple::ObjCCast<GCDualSenseGamepad>(extended_gamepad)) {
     SetOptionalButton(pad, DUAL_SENSE_BUTTON_TOUCHPAD,
                       dualsense_gamepad.touchpadButton);
+    pad.buttons[DUAL_SENSE_BUTTON_TOUCHPAD].type = GamepadButtonType::kTrackpad;
     if (dualsense_gamepad.touchpadButton) {
       pad.buttons_length = DUAL_SENSE_BUTTON_COUNT;
     }
@@ -287,6 +290,7 @@ void GameControllerGamepad::UpdateState(Gamepad& pad) {
                  base::apple::ObjCCast<GCDualShockGamepad>(extended_gamepad)) {
     SetOptionalButton(pad, DUALSHOCK_BUTTON_TOUCHPAD,
                       dualshock_gamepad.touchpadButton);
+    pad.buttons[DUALSHOCK_BUTTON_TOUCHPAD].type = GamepadButtonType::kTrackpad;
     if (dualshock_gamepad.touchpadButton) {
       pad.buttons_length = DUALSHOCK_BUTTON_COUNT;
     }

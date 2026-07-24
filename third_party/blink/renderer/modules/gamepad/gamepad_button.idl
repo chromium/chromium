@@ -2,10 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Identifies the semantic role of a GamepadButton when known.
+enum GamepadButtonType {
+    // A button outside the Standard Gamepad layout with no known semantic role.
+    "non-standard",
+    // A button in the Standard Gamepad layout.
+    "standard",
+    // A clickable trackpad surface.
+    "trackpad",
+};
+
 [
     Exposed=Window
 ] interface GamepadButton {
     readonly attribute boolean pressed;
     [MeasureAs=GamepadButtonTouched] readonly attribute boolean touched;
     readonly attribute double value;
+
+    [RuntimeEnabled=GamepadButtonTypes] readonly attribute GamepadButtonType type;
 };

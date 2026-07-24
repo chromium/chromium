@@ -53,13 +53,45 @@ bool StructTraits<device::mojom::GamepadVectorDataView, device::GamepadVector>::
 }
 
 // static
+device::mojom::GamepadButtonType EnumTraits<
+    device::mojom::GamepadButtonType,
+    device::GamepadButtonType>::ToMojom(device::GamepadButtonType input) {
+  switch (input) {
+    case device::GamepadButtonType::kNonStandard:
+      return device::mojom::GamepadButtonType::GamepadButtonTypeNonStandard;
+    case device::GamepadButtonType::kStandard:
+      return device::mojom::GamepadButtonType::GamepadButtonTypeStandard;
+    case device::GamepadButtonType::kTrackpad:
+      return device::mojom::GamepadButtonType::GamepadButtonTypeTrackpad;
+  }
+
+  NOTREACHED();
+}
+
+// static
+device::GamepadButtonType
+EnumTraits<device::mojom::GamepadButtonType, device::GamepadButtonType>::
+    FromMojom(device::mojom::GamepadButtonType input) {
+  switch (input) {
+    case device::mojom::GamepadButtonType::GamepadButtonTypeNonStandard:
+      return device::GamepadButtonType::kNonStandard;
+    case device::mojom::GamepadButtonType::GamepadButtonTypeStandard:
+      return device::GamepadButtonType::kStandard;
+    case device::mojom::GamepadButtonType::GamepadButtonTypeTrackpad:
+      return device::GamepadButtonType::kTrackpad;
+  }
+
+  NOTREACHED();
+}
+
+// static
 bool StructTraits<device::mojom::GamepadButtonDataView, device::GamepadButton>::
     Read(device::mojom::GamepadButtonDataView data,
          device::GamepadButton* out) {
   out->pressed = data.pressed();
   out->touched = data.touched();
   out->value = data.value();
-  return true;
+  return data.ReadType(&out->type);
 }
 
 // static

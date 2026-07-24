@@ -19,10 +19,17 @@ struct GamepadVector {
   float z;
 };
 
+enum GamepadButtonType {
+  GamepadButtonTypeNonStandard = 0,
+  GamepadButtonTypeStandard = 1,
+  GamepadButtonTypeTrackpad = 2
+};
+
 struct GamepadButton {
   bool pressed;
   bool touched;
   double value;
+  GamepadButtonType type;
 };
 
 enum GamepadMapping {

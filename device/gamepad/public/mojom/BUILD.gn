@@ -23,6 +23,10 @@ mojom_component("mojom") {
         cpp = "::device::GamepadButton"
       },
       {
+        mojom = "device.mojom.GamepadButtonType"
+        cpp = "::device::GamepadButtonType"
+      },
+      {
         mojom = "device.mojom.GamepadHand"
         cpp = "::device::GamepadHand"
       },

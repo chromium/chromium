@@ -130,6 +130,8 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   else
     *pad = pad_state->data;
 
+  SetStandardGamepadButtonTypes(pad);
+
   pad->connected = true;
 
   if (!sanitize)

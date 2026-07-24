@@ -44,10 +44,22 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
+    EnumTraits<device::mojom::GamepadButtonType, device::GamepadButtonType> {
+  static device::mojom::GamepadButtonType ToMojom(
+      device::GamepadButtonType input);
+  static device::GamepadButtonType FromMojom(
+      device::mojom::GamepadButtonType input);
+};
+
+template <>
+struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
     StructTraits<device::mojom::GamepadButtonDataView, device::GamepadButton> {
   static bool pressed(const device::GamepadButton& r) { return r.pressed; }
   static bool touched(const device::GamepadButton& r) { return r.touched; }
   static double value(const device::GamepadButton& r) { return r.value; }
+  static device::GamepadButtonType type(const device::GamepadButton& r) {
+    return r.type;
+  }
   static bool Read(device::mojom::GamepadButtonDataView data,
                    device::GamepadButton* out);
 };

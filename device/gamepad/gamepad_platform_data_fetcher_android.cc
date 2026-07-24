@@ -285,6 +285,7 @@ static void JNI_GamepadList_SetGamepadData(JNIEnv* env,
 
   // Copy buttons state to the Gamepad buttons[].
   for (unsigned int j = 0; j < pad.buttons_length; j++) {
+    pad.buttons[j].used = true;
     pad.buttons[j].pressed =
         buttons[j] > GamepadButton::kDefaultButtonPressedThreshold;
     pad.buttons[j].touched = buttons[j] > 0.0f;

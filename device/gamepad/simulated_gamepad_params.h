@@ -46,6 +46,10 @@ struct DEVICE_GAMEPAD_EXPORT SimulatedGamepadParams {
   std::vector<std::optional<GamepadLogicalBounds>> axis_bounds;
   std::vector<std::optional<GamepadLogicalBounds>> button_bounds;
 
+  // The type for each button input. If no type is present for a button, its
+  // type defaults to GamepadButtonType::kNonStandard.
+  std::vector<GamepadButtonType> button_types;
+
   struct TouchSurfaceBounds {
     GamepadLogicalBounds x;
     GamepadLogicalBounds y;

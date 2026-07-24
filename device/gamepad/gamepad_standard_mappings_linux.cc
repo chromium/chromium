@@ -143,6 +143,7 @@ void MapperXboxOneS2016Firmware(const Gamepad& input, Gamepad* mapped) {
   // both fields and combine the results.
   auto& xbox_old = input.buttons[15];
   auto& xbox_new = input.buttons[12];
+  mapped->buttons[BUTTON_INDEX_META].used = xbox_old.used || xbox_new.used;
   mapped->buttons[BUTTON_INDEX_META].pressed =
       (xbox_old.pressed || xbox_new.pressed);
   mapped->buttons[BUTTON_INDEX_META].touched =
@@ -294,6 +295,8 @@ void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
       AxisPositiveAsButton(input.axes[6]);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons[DUALSHOCK_BUTTON_TOUCHPAD] = input.buttons[13];
+  mapped->buttons[DUALSHOCK_BUTTON_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
 
   mapped->buttons_length = DUALSHOCK_BUTTON_COUNT;
@@ -355,6 +358,8 @@ void MapperDualSense(const Gamepad& input, Gamepad* mapped) {
       AxisPositiveAsButton(input.axes[6]);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons[DUAL_SENSE_BUTTON_TOUCHPAD] = input.buttons[13];
+  mapped->buttons[DUAL_SENSE_BUTTON_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
   mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[2];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
 

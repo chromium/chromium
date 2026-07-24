@@ -4,6 +4,8 @@
 
 #include "device/gamepad/simulated_gamepad_data_fetcher.h"
 
+#include <stddef.h>
+
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/normalization.h"
 
@@ -19,6 +21,12 @@ void InitializeGamepadState(const SimulatedGamepadParams& params,
 
   // Initialize Gamepad.buttons and Gamepad.axes.
   pad.buttons_length = params.button_bounds.size();
+  for (size_t i = 0; i < pad.buttons_length; ++i) {
+    pad.buttons[i].used = true;
+    pad.buttons[i].type = i < params.button_types.size()
+                              ? params.button_types[i]
+                              : GamepadButtonType::kNonStandard;
+  }
   pad.axes_length = params.axis_bounds.size();
 
   // Initialize Gamepad.vibrationActuator.

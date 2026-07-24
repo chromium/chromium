@@ -393,6 +393,14 @@ void UnpackSwitchAnalogStickCalibration(
   }
 }
 
+void InitializeNintendoPad(Gamepad& pad) {
+  pad.buttons_length = SWITCH_BUTTON_INDEX_COUNT;
+  for (size_t i = 0; i < pad.buttons_length; ++i) {
+    pad.buttons[i].used = true;
+  }
+  pad.axes_length = AXIS_INDEX_COUNT;
+}
+
 // Unpack one frame of IMU data into |imu_data|.
 void UnpackSwitchImuData(base::span<const uint8_t, 12> data,
                          NintendoController::SwitchImuData* imu_data) {
@@ -856,6 +864,7 @@ NintendoController::NintendoController(int source_id,
       output_report_size_bytes_(0),
       device_info_(std::move(device_info)),
       hid_manager_(hid_manager) {
+  InitializeNintendoPad(pad_);
   if (device_info_) {
     output_report_size_bytes_ = device_info_->max_output_report_size;
     gamepad_id_ = GamepadIdList::Get().GetGamepadId(device_info_->product_name,
@@ -872,6 +881,7 @@ NintendoController::NintendoController(
     std::unique_ptr<NintendoController> composite2,
     mojom::HidManager* hid_manager)
     : source_id_(source_id), is_composite_(true), hid_manager_(hid_manager) {
+  InitializeNintendoPad(pad_);
   // Require exactly one left component and one right component, but allow them
   // to be provided in either order.
   DCHECK(composite1);

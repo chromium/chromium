@@ -354,10 +354,12 @@ void GameInputDataFetcher::OnGuideButtonChangedSequenced(
     }
 
     if (current_buttons & GameInputSystemButtons::GameInputSystemButtonGuide) {
+      state->data.buttons[BUTTON_INDEX_META].used = true;
       state->data.buttons[BUTTON_INDEX_META].pressed = true;
       state->data.buttons[BUTTON_INDEX_META].value = 1.f;
       RecordGameInputGuideButtonPress();
     } else {
+      state->data.buttons[BUTTON_INDEX_META].used = true;
       state->data.buttons[BUTTON_INDEX_META].pressed = false;
       state->data.buttons[BUTTON_INDEX_META].value = 0.f;
     }
@@ -422,6 +424,7 @@ void GameInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
 
     base::span<GamepadButton> pad_buttons(pad.buttons);
     for (const auto& button : kButtonMappings) {
+      pad_buttons[button.button_index].used = true;
       if (gamepad_state.buttons & button.button_mask) {
         pad_buttons[button.button_index].pressed = true;
         pad_buttons[button.button_index].value = 1.0f;
@@ -436,6 +439,7 @@ void GameInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
     // TODO(crbug.com/502624503): When moving to GameInput v3, access trigger
     // buttons using
     // GameInputGamepadButtons::GameInputGamepad(Left|Right)TriggerButton.
+    pad_buttons[BUTTON_INDEX_LEFT_TRIGGER].used = true;
     pad_buttons[BUTTON_INDEX_LEFT_TRIGGER].pressed =
         gamepad_state.leftTrigger >
         GamepadButton::kDefaultButtonPressedThreshold;
@@ -443,6 +447,7 @@ void GameInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
     pad_buttons[BUTTON_INDEX_LEFT_TRIGGER].touched =
         gamepad_state.leftTrigger > 0.0f;
 
+    pad_buttons[BUTTON_INDEX_RIGHT_TRIGGER].used = true;
     pad_buttons[BUTTON_INDEX_RIGHT_TRIGGER].pressed =
         gamepad_state.rightTrigger >
         GamepadButton::kDefaultButtonPressedThreshold;

@@ -763,6 +763,43 @@ TEST_F(GamepadServiceSimulationTest, SimulateButtonInput) {
   EXPECT_FALSE(disconnected_gamepad.buttons[0].touched);
 }
 
+TEST_F(GamepadServiceSimulationTest, SimulatedButtonTypes) {
+  // Mark `consumer` active.
+  auto* consumer = CreateConsumer();
+  EXPECT_TRUE(service()->ConsumerBecameActive(consumer));
+
+  // Add a simulated gamepad with three buttons and configured types for the
+  // first two buttons. The missing third entry should default to non-standard.
+  SimulatedGamepadParams params;
+  params.name = "3 buttons";
+  params.button_bounds = {std::nullopt, std::nullopt, std::nullopt};
+  params.button_types = {GamepadButtonType::kTrackpad,
+                         GamepadButtonType::kStandard};
+  auto token = service()->AddSimulatedGamepad(std::move(params));
+
+  TestFuture<uint32_t, const Gamepad&> connected_future;
+  EXPECT_CALL(*consumer, OnGamepadConnected)
+      .WillOnce(InvokeFuture(connected_future));
+  service()->SimulateButtonInput(token, /*index=*/0, /*logical_value=*/1.0,
+                                 /*pressed=*/std::nullopt,
+                                 /*touched=*/std::nullopt);
+  service()->SimulateInputFrame(token);
+
+  EXPECT_EQ(connected_future.Get<0>(), 0u);
+  const Gamepad& connected_gamepad = connected_future.Get<1>();
+  EXPECT_EQ(connected_gamepad.buttons_length, 3u);
+  EXPECT_EQ(connected_gamepad.buttons[0].type, GamepadButtonType::kTrackpad);
+  EXPECT_EQ(connected_gamepad.buttons[1].type, GamepadButtonType::kStandard);
+  EXPECT_EQ(connected_gamepad.buttons[2].type, GamepadButtonType::kNonStandard);
+
+  // Remove the simulated gamepad.
+  TestFuture<uint32_t, const Gamepad&> disconnected_future;
+  EXPECT_CALL(*consumer, OnGamepadDisconnected)
+      .WillOnce(InvokeFuture(disconnected_future));
+  service()->RemoveSimulatedGamepad(token);
+  EXPECT_EQ(disconnected_future.Get<0>(), 0u);
+}
+
 TEST_F(GamepadServiceSimulationTest, SimulateAxisInput) {
   // Mark `consumer` active.
   auto* consumer = CreateConsumer();

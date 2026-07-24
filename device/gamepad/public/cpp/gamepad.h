@@ -18,6 +18,12 @@
 #include "base/containers/span.h"
 namespace device {
 
+enum class GamepadButtonType {
+  kNonStandard = 0,
+  kStandard = 1,
+  kTrackpad = 2,
+};
+
 class GamepadButton {
  public:
   // Matches XInput's trigger deadzone.
@@ -28,13 +34,15 @@ class GamepadButton {
       : used(true), pressed(pressed), touched(touched), value(value) {}
   bool operator==(const GamepadButton& other) const {
     return this->used == other.used && this->pressed == other.pressed &&
-           this->touched == other.touched && this->value == other.value;
+           this->touched == other.touched && this->value == other.value &&
+           this->type == other.type;
   }
   // Whether the button is actually reported by the gamepad at all.
   bool used = false;
   bool pressed = false;
   bool touched = false;
   double value = 0.0;
+  GamepadButtonType type = GamepadButtonType::kNonStandard;
 };
 
 enum class GamepadHapticActuatorType {

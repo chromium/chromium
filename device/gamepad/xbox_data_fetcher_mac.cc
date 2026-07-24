@@ -317,6 +317,9 @@ void XboxDataFetcher::AddController(XboxControllerMac* controller) {
   state->data.connected = true;
   state->data.axes_length = 4;
   state->data.buttons_length = 17;
+  for (size_t i = 0; i < state->data.buttons_length; ++i) {
+    state->data.buttons[i].used = true;
+  }
   state->data.timestamp = CurrentTimeInMicroseconds();
   state->mapper = 0;
   state->axis_mask = 0;
@@ -362,26 +365,32 @@ void XboxDataFetcher::XboxControllerGotData(
   Gamepad& pad = state->data;
 
   for (size_t i = 0; i < 6; i++) {
+    pad.buttons[i].used = true;
     pad.buttons[i].pressed = UNSAFE_TODO(data.buttons[i]);
     pad.buttons[i].value = UNSAFE_TODO(data.buttons[i]) ? 1.0f : 0.0f;
   }
+  pad.buttons[6].used = true;
   pad.buttons[6].pressed =
       data.triggers[0] > GamepadButton::kDefaultButtonPressedThreshold;
   pad.buttons[6].value = data.triggers[0];
+  pad.buttons[7].used = true;
   pad.buttons[7].pressed =
       data.triggers[1] > GamepadButton::kDefaultButtonPressedThreshold;
   pad.buttons[7].value = data.triggers[1];
   for (size_t i = 8; i < 16; i++) {
+    pad.buttons[i].used = true;
     pad.buttons[i].pressed = UNSAFE_TODO(data.buttons[i - 2]);
     pad.buttons[i].value = UNSAFE_TODO(data.buttons[i - 2]) ? 1.0f : 0.0f;
   }
   if (controller->xinput_type() == kXInputTypeXbox360) {
     // Map the Xbox button on Xbox 360 to buttons[16].
+    pad.buttons[16].used = true;
     pad.buttons[16].pressed = data.buttons[14];
     pad.buttons[16].value = data.buttons[14] ? 1.0f : 0.0f;
   }
   if (controller->gamepad_id() == GamepadId::kMicrosoftProduct0b12) {
     // Map the Share button on Xbox Series X to buttons[17].
+    pad.buttons[17].used = true;
     pad.buttons[17].pressed = data.buttons[14];
     pad.buttons[17].value = data.buttons[14] ? 1.0f : 0.0f;
     pad.buttons_length = 18;
@@ -401,6 +410,7 @@ void XboxDataFetcher::XboxControllerGotGuideData(XboxControllerMac* controller,
 
   Gamepad& pad = state->data;
 
+  pad.buttons[16].used = true;
   pad.buttons[16].pressed = guide;
   pad.buttons[16].value = guide ? 1.0f : 0.0f;
 

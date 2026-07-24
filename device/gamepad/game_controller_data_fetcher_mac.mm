@@ -417,6 +417,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
         -extended_gamepad.rightThumbstick.yAxis.value;
 
 #define BUTTON(i, b)                      \
+  pad.buttons[i].used = true;             \
   pad.buttons[i].pressed = [b isPressed]; \
   pad.buttons[i].value = [b value];
 

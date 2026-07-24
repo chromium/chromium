@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_button_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -30,6 +31,8 @@ class GamepadButton final : public ScriptWrappable {
   bool touched() const { return touched_; }
   void SetTouched(bool val) { touched_ = val; }
 
+  V8GamepadButtonType type() const { return V8GamepadButtonType(type_); }
+
   bool IsEqual(const device::GamepadButton&) const;
   void UpdateValuesFrom(const device::GamepadButton&);
 
@@ -37,6 +40,8 @@ class GamepadButton final : public ScriptWrappable {
   double value_;
   bool pressed_;
   bool touched_;
+
+  V8GamepadButtonType::Enum type_ = V8GamepadButtonType::Enum::kNonStandard;
 };
 
 typedef HeapVector<Member<GamepadButton>> GamepadButtonVector;

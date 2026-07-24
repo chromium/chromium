@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "device/gamepad/gamepad_standard_mappings.h"
+
+#include <algorithm>
 
 namespace device {
 
@@ -60,18 +61,30 @@ void DpadFromAxis(Gamepad* mapped, float dir) {
     left = dir >= .4f && dir <= 1.f;
   }
 
-  mapped->buttons[BUTTON_INDEX_DPAD_UP].pressed = up;
-  mapped->buttons[BUTTON_INDEX_DPAD_UP].touched = up;
-  mapped->buttons[BUTTON_INDEX_DPAD_UP].value = up ? 1.f : 0.f;
-  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT].pressed = right;
-  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT].touched = right;
-  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT].value = right ? 1.f : 0.f;
-  mapped->buttons[BUTTON_INDEX_DPAD_DOWN].pressed = down;
-  mapped->buttons[BUTTON_INDEX_DPAD_DOWN].touched = down;
-  mapped->buttons[BUTTON_INDEX_DPAD_DOWN].value = down ? 1.f : 0.f;
-  mapped->buttons[BUTTON_INDEX_DPAD_LEFT].pressed = left;
-  mapped->buttons[BUTTON_INDEX_DPAD_LEFT].touched = left;
-  mapped->buttons[BUTTON_INDEX_DPAD_LEFT].value = left ? 1.f : 0.f;
+  mapped->buttons[BUTTON_INDEX_DPAD_UP] = GamepadButton(up, up, up ? 1.f : 0.f);
+  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
+      GamepadButton(right, right, right ? 1.f : 0.f);
+  mapped->buttons[BUTTON_INDEX_DPAD_DOWN] =
+      GamepadButton(down, down, down ? 1.f : 0.f);
+  mapped->buttons[BUTTON_INDEX_DPAD_LEFT] =
+      GamepadButton(left, left, left ? 1.f : 0.f);
+}
+
+void SetStandardGamepadButtonTypes(Gamepad* gamepad) {
+  if (gamepad->mapping != GamepadMapping::kStandard) {
+    return;
+  }
+
+  // Only the canonical button indices from the Standard Gamepad layout can have
+  // type "standard". Slots intentionally filled with NullButton() represent
+  // absent controls and must remain "non-standard".
+  const size_t length =
+      std::min<size_t>(gamepad->buttons_length, BUTTON_INDEX_COUNT);
+  for (size_t i = 0; i < length; ++i) {
+    gamepad->buttons[i].type = gamepad->buttons[i].used
+                                   ? GamepadButtonType::kStandard
+                                   : GamepadButtonType::kNonStandard;
+  }
 }
 
 float RenormalizeAndClampAxis(float value, float min, float max) {

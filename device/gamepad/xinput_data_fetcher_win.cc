@@ -186,6 +186,7 @@ void XInputDataFetcherWin::GetXInputPadData(int i) {
     pad.buttons_length = 0;
     WORD val = state.Gamepad.wButtons;
 #define ADD(b)                                                \
+  pad.buttons[pad.buttons_length].used = true;                \
   pad.buttons[pad.buttons_length].pressed = (val & (b)) != 0; \
   pad.buttons[pad.buttons_length++].value = ((val & (b)) ? 1.f : 0.f);
     ADD(XINPUT_GAMEPAD_A);
@@ -195,11 +196,13 @@ void XInputDataFetcherWin::GetXInputPadData(int i) {
     ADD(XINPUT_GAMEPAD_LEFT_SHOULDER);
     ADD(XINPUT_GAMEPAD_RIGHT_SHOULDER);
 
+    pad.buttons[pad.buttons_length].used = true;
     pad.buttons[pad.buttons_length].pressed =
         state.Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
     pad.buttons[pad.buttons_length++].value =
         state.Gamepad.bLeftTrigger / 255.f;
 
+    pad.buttons[pad.buttons_length].used = true;
     pad.buttons[pad.buttons_length].pressed =
         state.Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
     pad.buttons[pad.buttons_length++].value =

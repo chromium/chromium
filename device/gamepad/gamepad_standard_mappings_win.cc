@@ -61,6 +61,8 @@ void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[11];
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons[DUALSHOCK_BUTTON_TOUCHPAD] = input.buttons[13];
+  mapped->buttons[DUALSHOCK_BUTTON_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
   DpadFromAxis(mapped, input.axes[9]);
 
@@ -89,6 +91,8 @@ void MapperDualSense(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[11];
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
   mapped->buttons[DUAL_SENSE_BUTTON_TOUCHPAD] = input.buttons[13];
+  mapped->buttons[DUAL_SENSE_BUTTON_TOUCHPAD].type =
+      GamepadButtonType::kTrackpad;
   mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[2];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
   DpadFromAxis(mapped, input.axes[9]);

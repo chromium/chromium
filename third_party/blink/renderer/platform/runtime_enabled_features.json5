@@ -3388,6 +3388,10 @@
       status: "experimental",
     },
     {
+      name: "GamepadButtonTypes",
+      status: "experimental",
+    },
+    {
       name: "GamepadMultitouch",
       status: "experimental",
       public: true,

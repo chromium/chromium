@@ -380,6 +380,8 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
     };
 
     for (const auto& button : kButtonMappings) {
+      pad.buttons[button.button_index].used =
+          static_cast<size_t>(button.button_index) < pad.buttons_length;
       if (reading.Buttons & button.wgi_button_mask) {
         pad.buttons[button.button_index].pressed = true;
         pad.buttons[button.button_index].value = 1.0f;
@@ -389,10 +391,12 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
       }
     }
 
+    pad.buttons[BUTTON_INDEX_LEFT_TRIGGER].used = true;
     pad.buttons[BUTTON_INDEX_LEFT_TRIGGER].pressed =
         reading.LeftTrigger > GamepadButton::kDefaultButtonPressedThreshold;
     pad.buttons[BUTTON_INDEX_LEFT_TRIGGER].value = reading.LeftTrigger;
 
+    pad.buttons[BUTTON_INDEX_RIGHT_TRIGGER].used = true;
     pad.buttons[BUTTON_INDEX_RIGHT_TRIGGER].pressed =
         reading.RightTrigger > GamepadButton::kDefaultButtonPressedThreshold;
     pad.buttons[BUTTON_INDEX_RIGHT_TRIGGER].value = reading.RightTrigger;
@@ -414,6 +418,7 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   // getting the WGI reading.
   if (lowest_index_wgi_pad_state) {
     bool is_meta_pressed = xinput_data_fetcher_->IsAnyMetaButtonPressed();
+    lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].used = true;
     lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].pressed =
         is_meta_pressed;
     lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].value =

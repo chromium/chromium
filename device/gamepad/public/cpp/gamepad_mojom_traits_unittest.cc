@@ -26,6 +26,7 @@ enum GamepadTestDataType {
 
 Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   GamepadButton wgb(true, false, 1.0f);
+  wgb.type = GamepadButtonType::kTrackpad;
 
   GamepadVector wgv;
   UNSAFE_TODO(memset(&wgv, 0, sizeof(GamepadVector)));
@@ -115,7 +116,7 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
 bool isWebGamepadButtonEqual(const GamepadButton& lhs,
                              const GamepadButton& rhs) {
   return (lhs.pressed == rhs.pressed && lhs.touched == rhs.touched &&
-          lhs.value == rhs.value);
+          lhs.value == rhs.value && lhs.type == rhs.type);
 }
 
 bool isWebGamepadVectorEqual(const GamepadVector& lhs,
