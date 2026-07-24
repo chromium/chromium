@@ -62,6 +62,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/538659918
     public void testOpenNewIncognitoTab() {
         mCtaTestRule.startOnBlankPage().openTabSwitcherActionMenu().selectNewIncognitoTabOrWindow();
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
