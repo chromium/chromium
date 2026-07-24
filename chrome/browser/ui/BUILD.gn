@@ -101,6 +101,7 @@ if (!is_android) {
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/indigo",
       "//chrome/browser/indigo/resources:indigo_strings",
+      "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/multistep_filter/ui",
       "//chrome/browser/prefs",
       "//chrome/browser/resources/omnibox_popup:resources_grit",
