@@ -59,6 +59,13 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   void NotifySuspiciousSiteDetected(
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
+  void ShowSuspiciousSiteWarning(
+      int64_t navigation_id,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
+  bool AreSuspiciousSiteWarningsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
   void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
       const base::RepeatingCallback<content::WebContents*()>&

@@ -45,11 +45,18 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     return true;
   }
 
+  uintptr_t client_id = reinterpret_cast<uintptr_t>(client);
+  pending_clients_.insert(client_id);
   ui_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
-                     result_threat_type, client));
+      base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync,
+                     weak_factory_.GetWeakPtr(), url, result_threat_type,
+                     client_id));
   return false;
+}
+
+void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
+  pending_clients_.erase(reinterpret_cast<uintptr_t>(client));
 }
 
 bool FakeSafeBrowsingDatabaseManager::CheckDownloadUrl(
@@ -110,12 +117,16 @@ FakeSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
-// static
 void FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync(
     GURL url,
     SBThreatType result_threat_type,
-    Client* client) {
-  client->OnCheckBrowseUrlResult(url, result_threat_type);
+    uintptr_t client_id) {
+  if (!pending_clients_.contains(client_id)) {
+    return;
+  }
+  pending_clients_.erase(client_id);
+  reinterpret_cast<Client*>(client_id)->OnCheckBrowseUrlResult(
+      url, result_threat_type);
 }
 
 // static

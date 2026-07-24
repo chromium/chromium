@@ -188,7 +188,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         assumeNonNull(mDialogView);
         PropertyModel model = getDialogModel();
         if (model != null) {
-            String title = model.get(ModalDialogProperties.TITLE);
+            CharSequence title = model.get(ModalDialogProperties.TITLE);
             if (title == null) {
                 title = model.get(ModalDialogProperties.CONTENT_DESCRIPTION);
             }

@@ -310,11 +310,18 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   }
 
   if (threat_type == SB_THREAT_TYPE_SAFE ||
-      threat_type == SB_THREAT_TYPE_SUSPICIOUS_SITE) {
+      threat_type == SB_THREAT_TYPE_SUSPICIOUS_SITE ||
+      threat_type == SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE) {
     state_ = STATE_NONE;
 
     if (threat_type == SB_THREAT_TYPE_SUSPICIOUS_SITE) {
       url_checker_delegate_->NotifySuspiciousSiteDetected(web_contents_getter_);
+    }
+
+    if (threat_type == SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE &&
+        navigation_id_.has_value()) {
+      url_checker_delegate_->ShowSuspiciousSiteWarning(navigation_id_.value(),
+                                                       web_contents_getter_);
     }
 
     if (!RunNextCallbackAndMaybeDeleteSelf(
@@ -411,11 +418,17 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       break;
     }
 
+    // Set state_ to STATE_CHECKING_URL before KickOffLookupMechanism in case
+    // the lookup mechanism completes synchronously (can happen in tests)
+    // which invokes OnUrlResultInternalAndMaybeDeleteSelf and expects
+    // state_ == STATE_CHECKING_URL.
+    state_ = STATE_CHECKING_URL;
     TRACE_EVENT_BEGIN("safe_browsing", "CheckUrl", GetTracingTrack(this), "url",
                       url.spec());
     KickOffLookupMechanismResult result = KickOffLookupMechanism(url);
 
     if (result.start_check_result.is_safe_synchronously) {
+      state_ = STATE_NONE;
       lookup_mechanism_runner_.reset();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
@@ -432,8 +445,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
       continue;
     }
-
-    state_ = STATE_CHECKING_URL;
 
     break;
   }

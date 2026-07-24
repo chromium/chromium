@@ -45,6 +45,12 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE == propertyKey) {
             view.setTitleBackButtonVisible(
                     model.get(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE));
+        } else if (ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER == propertyKey) {
+            view.setTitleCloseButtonClickListener(
+                    model.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER));
+        } else if (ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE == propertyKey) {
+            view.setTitleCloseButtonVisible(
+                    model.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
         } else if (ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE == propertyKey) {
             view.setMoreMenuVisible(model.get(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE));
         } else if (ModalDialogProperties.TITLE_MORE_BUTTON_DELEGATE == propertyKey) {

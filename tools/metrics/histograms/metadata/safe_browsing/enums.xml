@@ -946,6 +946,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The trigger is in monitoring mode"/>
 </enum>
 
+<!-- LINT.IfChange(SuspiciousSiteWarningOutcome) -->
+
+<enum name="SuspiciousSiteWarningOutcome">
+  <int value="0" label="Bypassed"/>
+  <int value="1" label="Adhered"/>
+  <int value="2" label="DismissedBySystem"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:WarningOutcome) -->
+
 <!-- LINT.IfChange(SyncedEsbOutcome) -->
 
 <enum name="SyncedEsbOutcome">

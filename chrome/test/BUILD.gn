@@ -1447,6 +1447,7 @@ if (is_android) {
       "../browser/net/cert_verifier_policy_browsertest.cc",
       "../browser/password_manager/android/password_manager_android_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
+      "../browser/safe_browsing/android/suspicious_site_browsertest.cc",
       "../browser/ui/webui/policy/policy_test_ui_browsertest.cc",
       "../browser/ui/webui/policy/policy_ui_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",

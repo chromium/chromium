@@ -632,9 +632,14 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
          * @param resId The specified string resource id.
          * @return The {@link Builder} with the specified key and string resource set.
          */
+        @SuppressWarnings({"rawtypes", "unchecked"})
         public Builder with(
-                ReadableObjectPropertyKey<String> key, Resources resources, @StringRes int resId) {
-            if (resId != 0) with(key, resources.getString(resId));
+                ReadableObjectPropertyKey<? extends CharSequence> key,
+                Resources resources,
+                @StringRes int resId) {
+            if (resId != 0) {
+                with((ReadableObjectPropertyKey) key, resources.getString(resId));
+            }
             return this;
         }
 

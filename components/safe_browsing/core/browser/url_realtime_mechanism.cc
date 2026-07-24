@@ -250,6 +250,10 @@ void UrlRealTimeMechanism::OnLookupResponse(
             response->threat_info(0).threat_type(), rt_verdict_type);
   }
 
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived",
+      sb_threat_type == SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
   MaybePerformSuspiciousSiteDetection(rt_verdict_type);
 
   if (is_cached_response &&

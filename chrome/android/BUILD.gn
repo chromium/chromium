@@ -3126,6 +3126,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
       "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
       "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsNavigation.java",
+      "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSuspiciousSiteDialogBridge.java",
       "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
       "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
       "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",

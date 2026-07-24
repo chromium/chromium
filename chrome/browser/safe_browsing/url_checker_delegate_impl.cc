@@ -33,6 +33,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
 #endif
 
 namespace safe_browsing {
@@ -164,6 +165,31 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
                                 web_contents_getter));
 }
 
+void UrlCheckerDelegateImpl::ShowSuspiciousSiteWarning(
+    int64_t navigation_id,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+#if BUILDFLAG(IS_ANDROID)
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UrlCheckerDelegateImpl> delegate,
+             int64_t navigation_id,
+             const base::RepeatingCallback<content::WebContents*()>&
+                 web_contents_getter) {
+            if (!delegate->AreSuspiciousSiteWarningsAllowed(
+                    web_contents_getter)) {
+              return;
+            }
+            if (content::WebContents* contents = web_contents_getter.Run()) {
+              safe_browsing::SuspiciousSiteControllerAndroid::
+                  ShowForWebContents(contents, navigation_id);
+            }
+          },
+          base::WrapRefCounted(this), navigation_id, web_contents_getter));
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report,
     const base::RepeatingCallback<content::WebContents*()>&
@@ -177,6 +203,21 @@ bool UrlCheckerDelegateImpl::AreBackgroundHashRealTimeSampleLookupsAllowed(
         web_contents_getter) {
   Profile* profile = Profile::FromBrowserContext(
       web_contents_getter.Run()->GetBrowserContext());
+  return safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs());
+}
+
+bool UrlCheckerDelegateImpl::AreSuspiciousSiteWarningsAllowed(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  content::WebContents* web_contents = web_contents_getter.Run();
+  if (!web_contents) {
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(profile);
+
   return safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs());
 }
 

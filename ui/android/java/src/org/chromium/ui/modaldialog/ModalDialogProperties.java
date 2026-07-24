@@ -190,7 +190,8 @@ public class ModalDialogProperties {
             new ReadableObjectPropertyKey<>();
 
     /** The title of the dialog. */
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> TITLE =
+            new WritableObjectPropertyKey<>();
 
     /** The maximum number of lines that the title can take. */
     public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
@@ -312,6 +313,14 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey TITLE_BACK_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The click listener for the 'close' button in the title. */
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            TITLE_CLOSE_BUTTON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    /** Whether the 'close' button in the title is visible. */
+    public static final WritableBooleanPropertyKey TITLE_CLOSE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /**
      * Whether the custom view should be wrapped in a ScrollView. The custom view must not be a
      * ScrollView itself if this is set.
@@ -408,6 +417,8 @@ public class ModalDialogProperties {
                 TITLE_MORE_BUTTON_VISIBLE,
                 TITLE_BACK_BUTTON_CLICK_LISTENER,
                 TITLE_BACK_BUTTON_VISIBLE,
+                TITLE_CLOSE_BUTTON_CLICK_LISTENER,
+                TITLE_CLOSE_BUTTON_VISIBLE,
                 BUTTON_STYLES,
                 DIALOG_STYLES,
                 APP_MODAL_DIALOG_BACK_PRESS_HANDLER,

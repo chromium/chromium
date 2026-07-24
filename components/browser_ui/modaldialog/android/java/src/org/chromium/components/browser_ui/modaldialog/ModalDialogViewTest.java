@@ -334,6 +334,45 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testTitleCloseButton_Visibility() {
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(ModalDialogProperties.TITLE, "Test Title")
+                                .with(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, true));
+
+        onView(allOf(withId(R.id.title_close_button), isDisplayed())).check(matches(isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.set(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, false);
+                });
+
+        onView(allOf(withId(R.id.title_close_button), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testTitleCloseButton_ClickListener() throws Exception {
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, "Test Title")
+                        .with(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, true)
+                        .with(
+                                ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER,
+                                (v) -> callbackHelper.notifyCalled()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mModalDialogView.findViewById(R.id.title_close_button).performClick());
+        callbackHelper.waitForCallback(0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testMessageParagraph1_Convenience() {
         // Verify that the message set via MESSAGE_PARAGRAPH_1 is displayed in the paragraphs
         // container.

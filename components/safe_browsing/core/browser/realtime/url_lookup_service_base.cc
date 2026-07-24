@@ -232,6 +232,13 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
     }
   }
 
+  if (rt_threat_type == RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING &&
+      rt_verdict_type == RTLookupResponse::ThreatInfo::WARN) {
+    return base::FeatureList::IsEnabled(kSuspiciousSiteWarnings)
+               ? SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE
+               : SB_THREAT_TYPE_SAFE;
+  }
+
   if (rt_verdict_type != RTLookupResponse::ThreatInfo::DANGEROUS) {
     return SB_THREAT_TYPE_SAFE;
   }

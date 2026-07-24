@@ -64,4 +64,14 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         android:focusable="false"
         android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/title_close_button"
+        android:src="@drawable/btn_close"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginEnd="0dp"
+        android:background="@drawable/default_icon_background"
+        android:contentDescription="@string/close"
+        android:visibility="gone" />
 </LinearLayout>

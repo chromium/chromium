@@ -1,1 +1,4 @@
 file://chrome/browser/safe_browsing/OWNERS
+
+per-file SafeBrowsingSuspiciousSiteDialogBridge.java=awado@google.com
+per-file SafeBrowsingSuspiciousSiteDialogBridge.java=richche@google.com

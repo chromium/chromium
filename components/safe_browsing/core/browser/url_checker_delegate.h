@@ -91,10 +91,23 @@ class UrlCheckerDelegate
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) = 0;
 
+  // Displays the suspicious site warning and lets the user decide to continue
+  // or not.
+  virtual void ShowSuspiciousSiteWarning(
+      int64_t navigation_id,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) = 0;
+
   // Send a CSBRR through UI manager to report the discrepancy info from URL
   // real-time and hash real-time lookups.
   virtual void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) = 0;
+
+  // Returns if the user has enhanced protection enabled to help determine if
+  // suspicious site warnings should be shown.
+  virtual bool AreSuspiciousSiteWarningsAllowed(
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) = 0;
 

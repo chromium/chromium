@@ -40,6 +40,7 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
+  void CancelCheck(Client* client) override;
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
       CheckUrlForHighConfidenceAllowlistCallback callback) override;
@@ -51,15 +52,19 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  private:
   ~FakeSafeBrowsingDatabaseManager() override;
 
-  static void CheckBrowseURLAsync(GURL url,
-                                  SBThreatType result_threat_type,
-                                  Client* client);
+  void CheckBrowseURLAsync(GURL url,
+                           SBThreatType result_threat_type,
+                           uintptr_t client_id);
   static void CheckDownloadURLAsync(const std::vector<GURL>& url_chain,
                                     SBThreatType result_threat_type,
                                     Client* client);
 
   base::flat_map<GURL, SBThreatType> dangerous_urls_;
   base::flat_map<GURL, bool> high_confidence_allowlist_match_urls_;
+  // TODO(crbug.com/532598569): Investigate alternate approaches in a downstream
+  // CL instead of casting the Client pointer to uintptr_t.
+  base::flat_set<uintptr_t> pending_clients_;
+  base::WeakPtrFactory<FakeSafeBrowsingDatabaseManager> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

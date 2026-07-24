@@ -63,6 +63,9 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
                void(const security_interstitials::UnsafeResource&));
   MOCK_METHOD1(NotifySuspiciousSiteDetected,
                void(const base::RepeatingCallback<content::WebContents*()>&));
+  MOCK_METHOD2(ShowSuspiciousSiteWarning,
+               void(int64_t,
+                    const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
   MOCK_METHOD0(GetThreatTypes, const SBThreatTypeSet&());
   MOCK_METHOD1(IsUrlAllowlisted, bool(const GURL&));
@@ -72,6 +75,8 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
                void(std::unique_ptr<ClientSafeBrowsingReportRequest>,
                     const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD1(AreBackgroundHashRealTimeSampleLookupsAllowed,
+               bool(const base::RepeatingCallback<content::WebContents*()>&));
+  MOCK_METHOD1(AreSuspiciousSiteWarningsAllowed,
                bool(const base::RepeatingCallback<content::WebContents*()>&));
 
   SafeBrowsingDatabaseManager* GetDatabaseManager() override { return nullptr; }

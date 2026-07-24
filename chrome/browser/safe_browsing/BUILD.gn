@@ -604,6 +604,7 @@ static_library("safe_browsing") {
         "android/safe_browsing_referring_app_bridge_android.h",
         "android/safe_browsing_settings_navigation_android.h",
         "android/services_delegate_android.h",
+        "android/suspicious_site_controller_android.h",
         "download_protection/download_protection_delegate_android.h",
         "download_protection/rate_limiting_key_manager.h",
         "tailored_security/consented_message_android.h",
@@ -617,6 +618,7 @@ static_library("safe_browsing") {
         "android/safe_browsing_referring_app_bridge_android.cc",
         "android/safe_browsing_settings_navigation_android.cc",
         "android/services_delegate_android.cc",
+        "android/suspicious_site_controller_android.cc",
         "download_protection/download_protection_delegate_android.cc",
         "download_protection/rate_limiting_key_manager.cc",
         "tailored_security/consented_message_android.cc",
@@ -631,6 +633,7 @@ static_library("safe_browsing") {
         "//components/safe_browsing:buildflags",
         "//components/safe_browsing/android:remote_database_manager",
         "//components/safe_browsing/android:safe_browsing_mobile",
+        "//content/public/browser",
         "//google_apis/common:request_util",
         "//ui/android",
 
@@ -979,6 +982,7 @@ source_set("unit_tests") {
     sources += [
       "android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "android/password_reuse_controller_android_unittest.cc",
+      "android/suspicious_site_controller_android_unittest.cc",
       "download_protection/rate_limiting_key_manager_unittest.cc",
       "safe_browsing_pref_change_handler_android_unittest.cc",
       "tailored_security/chrome_tailored_security_service_android_unittest.cc",

@@ -230,6 +230,9 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
                     bool));
   MOCK_METHOD1(NotifySuspiciousSiteDetected,
                void(const base::RepeatingCallback<content::WebContents*()>&));
+  MOCK_METHOD2(ShowSuspiciousSiteWarning,
+               void(int64_t,
+                    const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
   MOCK_METHOD2(SendUrlRealTimeAndHashRealTimeDiscrepancyReport,
                void(std::unique_ptr<ClientSafeBrowsingReportRequest>,
@@ -248,6 +251,11 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   bool AreBackgroundHashRealTimeSampleLookupsAllowed(
       const base::RepeatingCallback<content::WebContents*()>&) override {
     return are_background_hprt_lookups_allowed_;
+  }
+
+  bool AreSuspiciousSiteWarningsAllowed(
+      const base::RepeatingCallback<content::WebContents*()>&) override {
+    return false;
   }
 
   void SetAllowHashRealTimeSampleLookups(
@@ -439,6 +447,7 @@ class MockHashRealTimeService : public HashRealTimeService {
 struct CreateSafeBrowsingUrlCheckerOptionalArgs {
   std::string url_lookup_service_metric_suffix = ".Enterprise";
   bool check_allowlist_before_hash_database = false;
+  std::optional<int64_t> navigation_id = std::nullopt;
 };
 
 // Has same API as
@@ -497,7 +506,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
         UnsafeResource::kNoRenderProcessId, std::nullopt,
-        UnsafeResource::kNoFrameTreeNodeId, /*navigation_id=*/std::nullopt,
+        UnsafeResource::kNoFrameTreeNodeId, optional_args.navigation_id,
         url_real_time_lookup_enabled, can_check_safe_browsing_db,
         /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/
@@ -1112,6 +1121,101 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/1,
                                    /*expected_hpd_log_count=*/0);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_UrlRealTimeEnabled_WarnableSuspiciousSiteDetection) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kSuspiciousSiteWarnings);
+
+  CreateSafeBrowsingUrlCheckerOptionalArgs optional_args;
+  optional_args.navigation_id = 123;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone, optional_args);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE,
+      /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      url, /*match=*/false,
+      /*logging_details=*/std::nullopt);
+
+  WaitableNativeCheckUrlCallback callback;
+  EXPECT_CALL(
+      callback,
+      Run(/*proceed=*/true, /*showed_interstitial=*/false,
+          /*has_post_commit_interstitial_skipped=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_, ShowSuspiciousSiteWarning(123, _))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  callback.Wait();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived", true, 1);
+}
+
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_UrlRealTimeEnabled_WarnableSuspiciousSiteDetection_FeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(kSuspiciousSiteWarnings);
+
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE,
+      /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      url, /*match=*/false,
+      /*logging_details=*/std::nullopt);
+
+  WaitableNativeCheckUrlCallback callback;
+  EXPECT_CALL(
+      callback,
+      Run(/*proceed=*/true, /*showed_interstitial=*/false,
+          /*has_post_commit_interstitial_skipped=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
+      .Times(1);
+  // ShowSuspiciousSiteWarning should NOT be called.
+  EXPECT_CALL(*url_checker_delegate_, ShowSuspiciousSiteWarning(_, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  callback.Wait();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived", false, 1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,

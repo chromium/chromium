@@ -916,6 +916,23 @@ TEST_F(RealTimeUrlLookupServiceTest, TestGetSBThreatTypeForRTThreatType) {
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
                 RTLookupResponse::ThreatInfo::MANAGED_POLICY,
                 RTLookupResponse::ThreatInfo::SAFE));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kSuspiciousSiteWarnings);
+    EXPECT_EQ(SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE,
+              RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
+                  RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                  RTLookupResponse::ThreatInfo::WARN));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kSuspiciousSiteWarnings);
+    EXPECT_EQ(SB_THREAT_TYPE_SAFE,
+              RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
+                  RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                  RTLookupResponse::ThreatInfo::WARN));
+  }
   EXPECT_EQ(SB_THREAT_TYPE_SAFE,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
                 RTLookupResponse::ThreatInfo::UNWANTED_SOFTWARE,

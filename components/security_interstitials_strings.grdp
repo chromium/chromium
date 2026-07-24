@@ -582,4 +582,18 @@
   <message name="IDS_WEBVIEW_CONTENT_RESTRICTION_GO_BACK" desc="The text for the button that takes the user back to previous page.">
     Back
   </message>
+  <!-- Suspicious Site warning -->
+  <message name="IDS_SUSPICIOUS_SITE_TITLE" desc="Title of the suspicious site warning dialog">
+    This site doesn't seem right
+  </message>
+  <message name="IDS_SUSPICIOUS_SITE_MESSAGE" desc="The body text of the suspicious site warning dialog">
+    This site seems similar to other sites associated with phishing, malware, and scams. <ph name="BEGIN_LEARN_MORE_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/link&gt;</ph>
+  </message>
+  <message name="IDS_SUSPICIOUS_SITE_BACK_TO_SAFETY" desc="The text for the primary button that takes the user back to safety">
+    Back to safety
+  </message>
+  <message name="IDS_SUSPICIOUS_SITE_PROCEED_BUTTON" desc="The text for the secondary button that proceeds to the site">
+    Mark as safe
+  </message>
+
 </grit-part>
