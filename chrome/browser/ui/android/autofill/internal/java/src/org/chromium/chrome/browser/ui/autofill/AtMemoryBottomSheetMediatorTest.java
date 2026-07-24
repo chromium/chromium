@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_FLYOUT_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_SUGGESTION_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TRAILING_ICON_ID;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
 import android.os.Bundle;
@@ -203,6 +204,22 @@ public class AtMemoryBottomSheetMediatorTest {
         List<AutofillSuggestion> suggestions = List.of(suggestion);
         mMediator.show(suggestions);
         assertFalse(mModelList.get(0).model.get(IS_FLYOUT_VISIBLE));
+        assertEquals(R.drawable.ic_north_west_24dp, mModelList.get(0).model.get(TRAILING_ICON_ID));
+    }
+
+    @Test
+    public void testTrailingIconForOpenGemini() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setIconId(R.drawable.ic_spark_24dp)
+                        .setLabel("Ask Gemini")
+                        .setSubLabel("Search with Gemini")
+                        .setSuggestionType(SuggestionType.OPEN_GEMINI)
+                        .build();
+        List<AutofillSuggestion> suggestions = List.of(suggestion);
+        mMediator.show(suggestions);
+        assertFalse(mModelList.get(0).model.get(IS_FLYOUT_VISIBLE));
+        assertEquals(R.drawable.open_in_new, mModelList.get(0).model.get(TRAILING_ICON_ID));
     }
 
     @Test

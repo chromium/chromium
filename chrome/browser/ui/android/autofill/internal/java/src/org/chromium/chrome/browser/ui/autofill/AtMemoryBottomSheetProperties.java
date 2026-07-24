@@ -140,12 +140,15 @@ class AtMemoryBottomSheetProperties {
         // Indicates whether the flyout arrow and divider should be visible.
         static final WritableBooleanPropertyKey IS_FLYOUT_VISIBLE =
                 new WritableBooleanPropertyKey();
+        // Resource ID for trailing icon in the suggestion item (0 if hidden).
+        static final ReadableIntPropertyKey TRAILING_ICON_ID = new ReadableIntPropertyKey();
         // Indicates whether the suggestion item should be deactivated.
         static final WritableBooleanPropertyKey APPLY_DEACTIVATED_STYLE =
                 new WritableBooleanPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {
             ICON,
+            TRAILING_ICON_ID,
             TITLE,
             DETAILS,
             ON_SUGGESTION_CLICKED,

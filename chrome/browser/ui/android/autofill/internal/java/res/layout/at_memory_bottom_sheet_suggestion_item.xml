@@ -49,6 +49,15 @@ found in the LICENSE file.
                     "@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/trailing_view"
+        android:layout_width="@dimen/at_memory_suggestion_icon_size"
+        android:layout_height="@dimen/at_memory_suggestion_icon_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/at_memory_suggestion_default_margin"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
+
     <View
         android:id="@+id/divider_view"
         android:layout_width="@dimen/at_memory_suggestion_divider_width"

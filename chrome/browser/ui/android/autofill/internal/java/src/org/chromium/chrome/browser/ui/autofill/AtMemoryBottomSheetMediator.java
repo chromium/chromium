@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Hom
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
+import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -237,6 +239,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                         SuggestionItemProperties.IS_FLYOUT_VISIBLE,
                         !suggestion.getChildren().isEmpty())
                 .with(
+                        SuggestionItemProperties.TRAILING_ICON_ID,
+                        getResIdForSuggestionType(suggestion.getSuggestionType()))
+                .with(
                         SuggestionItemProperties.APPLY_DEACTIVATED_STYLE,
                         suggestion.applyDeactivatedStyle())
                 .with(
@@ -271,5 +276,18 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(FlyoutProperties.ON_BACK_CLICKED, this::onFlyoutBackClicked)
                 .with(FlyoutProperties.ON_SUGGESTION_CLICKED, childPos -> {})
                 .build();
+    }
+
+    private @DrawableRes int getResIdForSuggestionType(int suggestionType) {
+        switch (suggestionType) {
+            case SuggestionType.OPEN_GEMINI:
+                return R.drawable.open_in_new;
+            case SuggestionType.AT_MEMORY_NO_CONNECTION:
+                return R.drawable.ic_north_west_24dp;
+            case SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE:
+                return R.drawable.ic_north_west_24dp;
+            default:
+                return 0;
+        }
     }
 }
