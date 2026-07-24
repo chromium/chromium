@@ -2011,12 +2011,15 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTrigger) {
   WaitForFormsSeen();
   Focus("f");
 
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
+          _));
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+                  _, _, _,
+                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2037,12 +2040,15 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerTextArea) {
   WaitForFormsSeen();
   Focus("f");
 
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
+          _));
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+                  _, _, _,
+                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2065,12 +2071,15 @@ TEST_F(AutofillAgentTest_AtMemory,
   WaitForFormsSeen();
   Focus("f");
 
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
+          _));
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+                  _, _, _,
+                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
@@ -2517,12 +2526,15 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, AtMemoryShortcutTrigger) {
   WaitForFormsSeen();
   Focus("f");
 
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryContextMenu),
+          _));
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
-                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _));
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+                  _, _, _,
+                  Ne(AutofillSuggestionTriggerSource::kAtMemoryContextMenu), _))
       .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(

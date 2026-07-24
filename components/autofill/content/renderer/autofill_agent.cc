@@ -1163,14 +1163,19 @@ bool AutofillAgent::DidReceiveKeyDown(const WebElement& element,
           control.FormControlTypeForAutofill() !=
               blink::mojom::FormControlType::kInputPassword) {
         if (!actual_accelerator.IsRepeat()) {
-          ShowSuggestions(control, AutofillSuggestionTriggerSource::kAtMemory,
+          // TODO(crbug.com/494158096): Introduce a new trigger source for the
+          // AtMemory keyboard shortcut.
+          ShowSuggestions(control,
+                          AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
                           SynchronousFormCache(), std::nullopt);
         }
         return true;  // Prevent default.
       } else if (element.IsContentEditable()) {
         if (!actual_accelerator.IsRepeat()) {
+          // TODO(crbug.com/494158096): Introduce a new trigger source for the
+          // AtMemory keyboard shortcut.
           ShowSuggestionsForContentEditable(
-              element, AutofillSuggestionTriggerSource::kAtMemory);
+              element, AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
         }
         return true;  // Prevent default.
       }
