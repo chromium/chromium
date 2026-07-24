@@ -61,10 +61,10 @@ class GeolocationDialog extends PolymerElement {
     };
   }
 
-  bodyTextParagraph1: string;
-  bodyTextParagraph2: string;
-  cancelButtonText: string;
-  confirmButtonText: string;
+  declare bodyTextParagraph1: string;
+  declare bodyTextParagraph2: string;
+  declare cancelButtonText: string;
+  declare confirmButtonText: string;
 
   /**
    * Callback on user accepting the geolocation dialog, with the intent to

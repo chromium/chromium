@@ -44,10 +44,10 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
     };
   }
 
-  ambientTheme: AmbientTheme;
+  declare ambientTheme: AmbientTheme;
   private ambientThemePreviews_: AmbientThemePreviewMap|null;
-  private itemDescription_: string;
-  private imgSrc_: string;
+  declare private itemDescription_: string;
+  declare private imgSrc_: string;
 
   override ready() {
     super.ready();

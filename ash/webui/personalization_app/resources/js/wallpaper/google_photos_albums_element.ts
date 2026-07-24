@@ -100,31 +100,31 @@ export class GooglePhotosAlbumsElement extends WithPersonalizationStore {
   }
 
   /** Whether or not this element is currently hidden. */
-  override hidden: boolean;
+  declare hidden: boolean;
 
   /** The list of owned albums. */
-  private albums_: GooglePhotosAlbum[]|null|undefined;
+  declare private albums_: GooglePhotosAlbum[]|null|undefined;
 
   /** Merged |albums_| and |albumsShared_| for display. */
-  private albumsForDisplay_: GooglePhotosAlbum[];
+  declare private albumsForDisplay_: GooglePhotosAlbum[];
 
   /** Whether the list of owned albums is currently loading. */
-  private albumsLoading_: boolean;
+  declare private albumsLoading_: boolean;
 
   /** The resume token needed to fetch the next page of owned albums. */
-  private albumsResumeToken_: string|null;
+  declare private albumsResumeToken_: string|null;
 
   /** The list of shared albums. */
-  private albumsShared_: GooglePhotosAlbum[]|null|undefined;
+  declare private albumsShared_: GooglePhotosAlbum[]|null|undefined;
 
   /** Whether the list of shared albums is currently loading. */
-  private albumsSharedLoading_: boolean;
+  declare private albumsSharedLoading_: boolean;
 
   /** The resume token needed to fetch the next page of shared albums. */
-  private albumsSharedResumeToken_: string|null;
+  declare private albumsSharedResumeToken_: string|null;
 
   /** The current personalization error state. */
-  private error_: PersonalizationStateError|null;
+  declare private error_: PersonalizationStateError|null;
 
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =

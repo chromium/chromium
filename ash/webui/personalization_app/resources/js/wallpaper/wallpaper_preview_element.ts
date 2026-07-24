@@ -55,11 +55,11 @@ export class WallpaperPreviewElement extends WithPersonalizationStore {
     };
   }
 
-  private attribution_: CurrentAttribution|null;
-  private image_: CurrentWallpaper|null;
-  private imageLoading_: boolean;
-  private loading_: boolean;
-  private policyControlled_: boolean;
+  declare private attribution_: CurrentAttribution|null;
+  declare private image_: CurrentWallpaper|null;
+  declare private imageLoading_: boolean;
+  declare private loading_: boolean;
+  declare private policyControlled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

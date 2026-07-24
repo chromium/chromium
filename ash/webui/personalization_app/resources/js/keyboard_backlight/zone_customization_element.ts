@@ -81,12 +81,12 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     };
   }
 
-  private zoneSelected_: number;
-  private ironSelectedZone_: HTMLElement;
-  private currentBacklightState_: CurrentBacklightState|null;
-  private zoneColors_: BacklightColor[]|null;
-  private zoneCount_: number;
-  private zoneIdxs_: number[];
+  declare private zoneSelected_: number;
+  declare private ironSelectedZone_: HTMLElement;
+  declare private currentBacklightState_: CurrentBacklightState|null;
+  declare private zoneColors_: BacklightColor[]|null;
+  declare private zoneCount_: number;
+  declare private zoneIdxs_: number[];
 
   override ready() {
     super.ready();

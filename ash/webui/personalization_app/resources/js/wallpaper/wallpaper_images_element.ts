@@ -184,19 +184,19 @@ export class WallpaperImagesElement extends WithPersonalizationStore {
     };
   }
 
-  collectionId: string;
-  isDarkModeActive: boolean;
-  private collections_: WallpaperCollection[]|null;
-  private collectionsLoading_: boolean;
-  private images_: Record<string, WallpaperImage[]|null>;
-  private imagesLoading_: Record<string, boolean>;
-  private selectedUnitId_: bigint|null;
-  private pendingSelectedUnitId_: bigint|null;
-  private hasError_: boolean;
-  private tiles_: ImageTile[];
-  private pendingTimeOfDayWallpaper_: WallpaperImage|null;
-  private colorModeAutoScheduleEnabled_: boolean|null;
-  private showTimeOfDayWallpaperDialog_: boolean;
+  declare collectionId: string;
+  declare isDarkModeActive: boolean;
+  declare private collections_: WallpaperCollection[]|null;
+  declare private collectionsLoading_: boolean;
+  declare private images_: Record<string, WallpaperImage[]|null>;
+  declare private imagesLoading_: Record<string, boolean>;
+  declare private selectedUnitId_: bigint|null;
+  declare private pendingSelectedUnitId_: bigint|null;
+  declare private hasError_: boolean;
+  declare private tiles_: ImageTile[];
+  declare private pendingTimeOfDayWallpaper_: WallpaperImage|null;
+  declare private colorModeAutoScheduleEnabled_: boolean|null;
+  declare private showTimeOfDayWallpaperDialog_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

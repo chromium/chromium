@@ -49,8 +49,8 @@ export class ColorIconElement extends WithPersonalizationStore {
     };
   }
 
-  colorId: string|null;
-  private wallpaperColor_: SkColor|null;
+  declare colorId: string|null;
+  declare private wallpaperColor_: SkColor|null;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -68,12 +68,12 @@ export class AmbientWeatherUnitElement extends WithPersonalizationStore {
     };
   }
 
-  private temperatureUnit_: TemperatureUnit;
-  private selectedTemperatureUnit: string;
-  private geolocationPermissionEnabled_: boolean|null;
-  private geolocationIsUserModifiable_: boolean|null;
+  declare private temperatureUnit_: TemperatureUnit;
+  declare private selectedTemperatureUnit: string;
+  declare private geolocationPermissionEnabled_: boolean|null;
+  declare private geolocationIsUserModifiable_: boolean|null;
   private shouldShowGeolocationDialog_: boolean;
-  private shouldShowGeolocationWarningText_: boolean;
+  declare private shouldShowGeolocationWarningText_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

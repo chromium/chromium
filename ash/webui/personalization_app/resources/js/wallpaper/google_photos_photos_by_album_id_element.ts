@@ -101,38 +101,39 @@ export class GooglePhotosPhotosByAlbumIdElement extends
   }
 
   /** The currently selected album id. */
-  albumId: string|undefined;
+  declare albumId: string|undefined;
 
   /** Whether or not this element is currently hidden. */
-  override hidden: boolean;
+  declare hidden: boolean;
 
   /** The list of photos for the currently selected album id. */
-  private album_: GooglePhotosPhoto[];
+  declare private album_: GooglePhotosPhoto[];
 
   /** The list of Google Photos albums. */
-  private albums_: GooglePhotosAlbum[]|null|undefined;
+  declare private albums_: GooglePhotosAlbum[]|null|undefined;
 
   /** The list of shared Google Photos albums. */
-  private albumsShared_: GooglePhotosAlbum[]|null|undefined;
+  declare private albumsShared_: GooglePhotosAlbum[]|null|undefined;
 
   /** The currently selected wallpaper. */
-  private currentSelected_: CurrentWallpaper|null;
+  declare private currentSelected_: CurrentWallpaper|null;
 
   /** The pending selected wallpaper. */
-  private pendingSelected_: DisplayableImage|null;
+  declare private pendingSelected_: DisplayableImage|null;
 
   /** The list of photos by album id. */
-  private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>|
-      undefined;
+  declare private photosByAlbumId_:
+      Record<string, GooglePhotosPhoto[]|null|undefined>|undefined;
 
   /** Whether the list of photos by album id is currently loading. */
-  private photosByAlbumIdLoading_: Record<string, boolean>|undefined;
+  declare private photosByAlbumIdLoading_: Record<string, boolean>|undefined;
 
   /** The resume tokens needed to fetch the next page of photos by album id. */
-  private photosByAlbumIdResumeTokens_: Record<string, string|null>|undefined;
+  declare private photosByAlbumIdResumeTokens_: Record<string, string|null>|
+      undefined;
 
   /** The current personalization error state. */
-  private error_: PersonalizationStateError|null;
+  declare private error_: PersonalizationStateError|null;
 
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =

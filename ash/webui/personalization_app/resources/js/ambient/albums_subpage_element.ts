@@ -61,12 +61,17 @@ export class AlbumsSubpageElement extends WithPersonalizationStore {
     };
   }
 
-  topicSource: TopicSource;
-  albums: AmbientModeAlbum[]|null = null;
+  constructor() {
+    super();
+    this.albums = null;
+  }
+
+  declare topicSource: TopicSource;
+  declare albums: AmbientModeAlbum[]|null;
   loadingAlbums: boolean;
 
-  private ambientModeEnabled_: boolean|null;
-  private showArtAlbumDialog_: boolean;
+  declare private ambientModeEnabled_: boolean|null;
+  declare private showArtAlbumDialog_: boolean;
 
   override ready() {
     super.ready();

@@ -118,16 +118,16 @@ export class ColorSelectorElement extends WithPersonalizationStore {
     };
   }
 
-  private isCustomizedDialog: string;
-  private ironSelectedColor_: HTMLElement;
-  private presetColors_: Record<string, ColorInfo>;
-  private presetColorIds_: string[];
-  private rainbowColorId_: string;
-  private wallpaperColorId_: string;
-  private currentBacklightState_: CurrentBacklightState|null;
-  private selectedColor: BacklightColor;
-  private wallpaperColor_: SkColor|null;
-  private shouldShowNudge_: boolean;
+  declare private isCustomizedDialog: boolean;
+  declare private ironSelectedColor_: HTMLElement;
+  declare private presetColors_: Record<string, ColorInfo>;
+  declare private presetColorIds_: string[];
+  declare private rainbowColorId_: string;
+  declare private wallpaperColorId_: string;
+  declare private currentBacklightState_: CurrentBacklightState|null;
+  declare private selectedColor: BacklightColor;
+  declare private wallpaperColor_: SkColor|null;
+  declare private shouldShowNudge_: boolean;
 
   override ready() {
     super.ready();

@@ -126,14 +126,14 @@ export class AvatarListElement extends WithPersonalizationStore {
     ];
   }
 
-  private defaultUserImages_: DefaultUserImage[]|null;
-  private profileImage_: Url|null;
-  private isCameraPresent_: boolean;
-  private isCustomizationSelectorsEnabled_: boolean;
-  private cameraMode_: AvatarCameraMode|null;
-  private image_: UserImage|null;
-  private lastExternalUserImageUrl_: Url|null;
-  private options_: Option[];
+  declare private defaultUserImages_: DefaultUserImage[]|null;
+  declare private profileImage_: Url|null;
+  declare private isCameraPresent_: boolean;
+  declare private isCustomizationSelectorsEnabled_: boolean;
+  declare private cameraMode_: AvatarCameraMode|null;
+  declare private image_: UserImage|null;
+  declare private lastExternalUserImageUrl_: Url|null;
+  declare private options_: Option[];
 
   override connectedCallback() {
     super.connectedCallback();

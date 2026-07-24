@@ -110,11 +110,11 @@ export class AvatarCameraElement extends WithPersonalizationStore {
     };
   }
 
-  mode: AvatarCameraMode;
-  private cameraStream_: MediaStream|null;
-  private pngBinary_: Uint8Array|null;
-  private previewBlobUrl_: string|null;
-  private captureInProgress_: boolean;
+  declare mode: AvatarCameraMode;
+  declare private cameraStream_: MediaStream|null;
+  declare private pngBinary_: Uint8Array|null;
+  declare private previewBlobUrl_: string|null;
+  declare private captureInProgress_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

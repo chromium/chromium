@@ -93,14 +93,14 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     };
   }
 
-  private darkModeEnabled_: boolean|null;
-  private colorModeAutoScheduleEnabled_: boolean|null;
-  private geolocationPermissionEnabled_: boolean|null;
-  private sunriseTime_: string|null;
-  private sunsetTime_: string|null;
-  private selectedButton_: CrButtonElement;
-  private geolocationIsUserModifiable_: boolean|null;
-  private shouldShowGeolocationDialog_: boolean;
+  declare private darkModeEnabled_: boolean|null;
+  declare private colorModeAutoScheduleEnabled_: boolean|null;
+  declare private geolocationPermissionEnabled_: boolean|null;
+  declare private sunriseTime_: string|null;
+  declare private sunsetTime_: string|null;
+  declare private selectedButton_: CrButtonElement;
+  declare private geolocationIsUserModifiable_: boolean|null;
+  declare private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
 
   override ready() {

@@ -31,7 +31,7 @@ export class ColorSchemeIconSvgElement extends WithPersonalizationStore {
       },
     };
   }
-  private scheme_: SampleColorScheme;
+  declare private scheme_: SampleColorScheme;
 
   private getHexColor_(color: SkColor): string {
     if (!color || !color.value) {

@@ -38,9 +38,9 @@ export class GooglePhotosZeroStateElement extends Base {
     };
   }
 
-  tab: GooglePhotosTab;
+  declare tab: GooglePhotosTab;
   /** Whether the page is being rendered in dark mode. */
-  private isDarkModeActive_: boolean;
+  declare private isDarkModeActive_: boolean;
 
   private getMessageLabel_(tab: GooglePhotosTab): string {
     switch (tab) {

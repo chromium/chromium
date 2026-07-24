@@ -116,10 +116,10 @@ export class PersonalizationRouterElement extends PolymerElement {
     return ['onPathOrQueryParamsChanged_(path_, queryParams_)'];
   }
 
-  private path_: string;
-  private query_: string;
-  private queryParams_: QueryParams;
-  private seaPenBasePath_: string;
+  declare private path_: string;
+  declare private query_: string;
+  declare private queryParams_: QueryParams;
+  declare private seaPenBasePath_: string;
 
   static instance(): PersonalizationRouterElement {
     return document.querySelector(PersonalizationRouterElement.is)!;

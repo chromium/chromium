@@ -65,11 +65,11 @@ export class TopicSourceItemElement extends WithPersonalizationStore {
     };
   }
 
-  checked: boolean;
-  disabled: boolean;
-  topicSource: TopicSource;
-  hasGooglePhotosAlbums: boolean|null;
-  override ariaLabel: string;
+  declare checked: boolean;
+  declare disabled: boolean;
+  declare topicSource: TopicSource;
+  declare hasGooglePhotosAlbums: boolean|null;
+  declare ariaLabel: string;
 
   override ready() {
     super.ready();

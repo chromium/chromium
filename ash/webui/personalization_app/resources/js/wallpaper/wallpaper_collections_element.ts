@@ -416,20 +416,20 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     };
   }
 
-  override hidden: boolean;
-  private collections_: WallpaperCollection[]|null;
-  private splitCollections_: SplitCollections|null;
-  private images_: Record<string, WallpaperImage[]|null>;
-  private imagesLoading_: Record<string, boolean>;
-  private imageCounts_: Record<string, number|null>;
-  private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
-  private isSeaPenEnabled_: boolean;
-  private localImages_: Array<FilePath|DefaultImageSymbol>|null;
-  private localImagesLoading_: boolean;
-  private localImageData_: Record<string|DefaultImageSymbol, Url>;
-  private tiles_: Tile[];
-  private promotedTiles_: Tile[];
-  private hasError_: boolean;
+  declare hidden: boolean;
+  declare private collections_: WallpaperCollection[]|null;
+  declare private splitCollections_: SplitCollections|null;
+  declare private images_: Record<string, WallpaperImage[]|null>;
+  declare private imagesLoading_: Record<string, boolean>;
+  declare private imageCounts_: Record<string, number|null>;
+  declare private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
+  declare private isSeaPenEnabled_: boolean;
+  declare private localImages_: Array<FilePath|DefaultImageSymbol>|null;
+  declare private localImagesLoading_: boolean;
+  declare private localImageData_: Record<string|DefaultImageSymbol, Url>;
+  declare private tiles_: Tile[];
+  declare private promotedTiles_: Tile[];
+  declare private hasError_: boolean;
 
   static get observers() {
     return [

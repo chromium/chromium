@@ -154,43 +154,43 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
   }
 
   /** Whether or not this element is currently hidden. */
-  override hidden: boolean;
+  declare hidden: boolean;
 
   /** The currently selected wallpaper. */
-  private currentSelected_: CurrentWallpaper|null;
+  declare private currentSelected_: CurrentWallpaper|null;
 
   /** The index of the currently focused photo. */
-  private focusedPhotoIndex_: number;
+  declare private focusedPhotoIndex_: number;
 
   /** The pending selected wallpaper. */
-  private pendingSelected_: DisplayableImage|null;
+  declare private pendingSelected_: DisplayableImage|null;
 
   /** The list of photos. */
-  private photos_: GooglePhotosPhoto[]|null|undefined;
+  declare private photos_: GooglePhotosPhoto[]|null|undefined;
 
   /**
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
    * so as to be rendered in a grid.
    */
-  private photosByRow_: GooglePhotosPhotosRow[];
+  declare private photosByRow_: GooglePhotosPhotosRow[];
 
   /**
    * The list of |photos_| split into the appropriate number of |photosPerRow_|
    * and grouped into sections so as to be rendered in a grid.
    */
-  private photosBySection_: GooglePhotosPhotosSection[]|null|undefined;
+  declare private photosBySection_: GooglePhotosPhotosSection[]|null|undefined;
 
   /** Whether the list of photos is currently loading. */
-  private photosLoading_: boolean;
+  declare private photosLoading_: boolean;
 
   /** The number of photos to render per row in a grid. */
-  private photosPerRow_: number;
+  declare private photosPerRow_: number;
 
   /** The resume token needed to fetch the next page of photos. */
-  private photosResumeToken_: string|null;
+  declare private photosResumeToken_: string|null;
 
   /** The current personalization error state. */
-  private error_: PersonalizationStateError|null;
+  declare private error_: PersonalizationStateError|null;
 
   /** The singleton wallpaper provider interface. */
   private wallpaperProvider_: WallpaperProviderInterface =

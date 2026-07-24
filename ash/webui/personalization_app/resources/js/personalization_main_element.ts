@@ -36,7 +36,7 @@ export class PersonalizationMainElement extends WithPersonalizationStore {
     };
   }
 
-  private shouldShowTimeOfDayBanner_: boolean;
+  declare private shouldShowTimeOfDayBanner_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

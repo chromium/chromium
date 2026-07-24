@@ -61,9 +61,9 @@ export class AlbumListElement extends WithPersonalizationStore {
     };
   }
 
-  topicSource: TopicSource;
-  albums: AmbientModeAlbum[]|null;
-  private albumsForDisplay_: AmbientModeAlbum[];
+  declare topicSource: TopicSource;
+  declare albums: AmbientModeAlbum[]|null;
+  declare private albumsForDisplay_: AmbientModeAlbum[];
 
   private onAlbumsChanged_(albums: AlbumListElement['albums']) {
     if (!albums) {

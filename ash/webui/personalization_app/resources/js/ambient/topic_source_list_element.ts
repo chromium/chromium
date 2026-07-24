@@ -51,10 +51,10 @@ export class TopicSourceListElement extends WithPersonalizationStore {
     };
   }
 
-  topicSources: TopicSource[];
-  selectedAmbientTheme: AmbientTheme;
-  selectedTopicSource: TopicSource;
-  hasGooglePhotosAlbums: boolean;
+  declare topicSources: TopicSource[];
+  declare selectedAmbientTheme: AmbientTheme;
+  declare selectedTopicSource: TopicSource;
+  declare hasGooglePhotosAlbums: boolean;
 
   override focus() {
     const elem = this.shadowRoot!.querySelector<HTMLElement>(

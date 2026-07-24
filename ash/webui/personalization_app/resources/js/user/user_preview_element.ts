@@ -67,11 +67,11 @@ export class UserPreviewElement extends WithPersonalizationStore {
     };
   }
 
-  private path: string;
-  private info_: UserInfo|null;
-  private image_: UserImage|null;
-  private imageUrl_: Url|null;
-  private imageIsEnterpriseManaged_: boolean|null;
+  declare private path: string;
+  declare private info_: UserInfo|null;
+  declare private image_: UserImage|null;
+  declare private imageUrl_: Url|null;
+  declare private imageIsEnterpriseManaged_: boolean|null;
 
   override ready() {
     super.ready();

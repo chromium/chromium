@@ -110,12 +110,12 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
     };
   }
 
-  private fullscreenState_: FullscreenPreviewState;
-  private showLayoutOptions_: boolean;
-  private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: DisplayableImage|null;
-  private selectedLayout_: WallpaperLayout|null;
-  private showContainer_: boolean;
+  declare private fullscreenState_: FullscreenPreviewState;
+  declare private showLayoutOptions_: boolean;
+  declare private currentSelected_: CurrentWallpaper|null;
+  declare private pendingSelected_: DisplayableImage|null;
+  declare private selectedLayout_: WallpaperLayout|null;
+  declare private showContainer_: boolean;
 
   private onVisibilityChange_ = () => {
     if (document.visibilityState === 'hidden' &&

@@ -32,7 +32,7 @@ export class AmbientZeroStateElement extends WithPersonalizationStore {
   }
 
   /** Whether the page is being rendered in dark mode. */
-  private isDarkModeActive_: boolean;
+  declare private isDarkModeActive_: boolean;
 
   /**
    * Returns the image source based on whether the page is being

@@ -87,17 +87,17 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
     };
   }
 
-  path: Paths;
-  queryParams: Record<string, string>;
-  private albums_: AmbientModeAlbum[]|null;
-  private ambientModeEnabled_: boolean|null;
-  private ambientTheme_: AmbientTheme|null;
-  private ambientThemePreviews_: AmbientThemePreviewMap|null;
-  private duration_: number|null;
-  private temperatureUnit_: TemperatureUnit|null;
-  private topicSource_: TopicSource|null;
-  private loading_: boolean;
-  private isOnline_: boolean;
+  declare path: Paths;
+  declare queryParams: Record<string, string>;
+  declare private albums_: AmbientModeAlbum[]|null;
+  declare private ambientModeEnabled_: boolean|null;
+  declare private ambientTheme_: AmbientTheme|null;
+  declare private ambientThemePreviews_: AmbientThemePreviewMap|null;
+  declare private duration_: number|null;
+  declare private temperatureUnit_: TemperatureUnit|null;
+  declare private topicSource_: TopicSource|null;
+  declare private loading_: boolean;
+  declare private isOnline_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.

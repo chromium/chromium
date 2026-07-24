@@ -50,9 +50,9 @@ export class AmbientDurationElement extends WithPersonalizationStore {
     };
   }
 
-  private duration: number|null;
-  private options_: string[];
-  private selectedDuration_: string;
+  declare private duration: number|null;
+  declare private options_: string[];
+  declare private selectedDuration_: string;
 
   private getDurationLabel_(name: string): string {
     switch (name) {

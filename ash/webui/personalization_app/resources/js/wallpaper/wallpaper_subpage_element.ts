@@ -55,12 +55,12 @@ export class WallpaperSubpageElement extends WithPersonalizationStore {
     };
   }
 
-  path: string;
-  queryParams: QueryParams;
-  private currentSelected_: CurrentWallpaper|null;
-  private isGooglePhotosIntegrationEnabled_: boolean;
-  private isGooglePhotosAlbumShared_: boolean;
-  private isSeaPenEnabled_: boolean;
+  declare path: string;
+  declare queryParams: QueryParams;
+  declare private currentSelected_: CurrentWallpaper|null;
+  declare private isGooglePhotosIntegrationEnabled_: boolean;
+  declare private isGooglePhotosAlbumShared_: boolean;
+  declare private isSeaPenEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

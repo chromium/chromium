@@ -51,8 +51,8 @@ export class AmbientThemeListElement extends WithPersonalizationStore {
     };
   }
 
-  ambientThemes: AmbientTheme[];
-  selectedAmbientTheme: AmbientTheme;
+  declare ambientThemes: AmbientTheme[];
+  declare selectedAmbientTheme: AmbientTheme;
 
   private getAriaChecked_(
       ambientTheme: AmbientTheme, selectedAmbientTheme: AmbientTheme): string {

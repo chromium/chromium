@@ -131,17 +131,17 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     };
   }
 
-  collectionId: string;
-  googlePhotosAlbumId: string;
-  topicSource: string;
-  seaPenTemplateId: string;
-  path: string;
-  private breadcrumbs_: string[];
-  private collections_: WallpaperCollection[]|null;
-  private albums_: GooglePhotosAlbum[]|null;
-  private albumsShared_: GooglePhotosAlbum[]|null;
-  private seaPenTemplates_: SeaPenTemplate[]|null;
-  private selectedBreadcrumb_: HTMLElement;
+  declare collectionId: string;
+  declare googlePhotosAlbumId: string;
+  declare topicSource: string;
+  declare seaPenTemplateId: string;
+  declare path: string;
+  declare private breadcrumbs_: string[];
+  declare private collections_: WallpaperCollection[]|null;
+  declare private albums_: GooglePhotosAlbum[]|null;
+  declare private albumsShared_: GooglePhotosAlbum[]|null;
+  declare private seaPenTemplates_: SeaPenTemplate[]|null;
+  declare private selectedBreadcrumb_: HTMLElement;
 
   override ready() {
     super.ready();

@@ -33,8 +33,8 @@ export class UserSubpageElement extends WithPersonalizationStore {
     };
   }
 
-  path: string;
-  private isUserImageEnterpriseManaged_: boolean|null;
+  declare path: string;
+  declare private isUserImageEnterpriseManaged_: boolean|null;
 
   override connectedCallback() {
     super.connectedCallback();
