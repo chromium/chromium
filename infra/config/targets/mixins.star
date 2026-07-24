@@ -2216,6 +2216,17 @@ targets.mixin(
     ),
 )
 
+# Shards the slower x64 bot to 8 shards (overriding the default of 4 shards).
+# Since these bots run sequentially to avoid resource starvation, they
+# take longer to complete the test suite, requiring more shards to keep
+# the total run time within the builder's limit.
+targets.mixin(
+    name = "x64_ai_wpt_shards",
+    swarming = targets.swarming(
+        shards = 8,
+    ),
+)
+
 targets.mixin(
     name = "x86-64",
     swarming = targets.swarming(
@@ -2308,15 +2319,4 @@ targets.mixin(
     args = [
         "--force-main-user",
     ],
-)
-
-# Shards the slower x64 bot to 8 shards (overriding the default of 4 shards).
-# Since these bots run sequentially to avoid resource starvation, they
-# take longer to complete the test suite, requiring more shards to keep
-# the total run time within the builder's limit.
-targets.mixin(
-    name = "mac_x64_ai_wpt_shards",
-    swarming = targets.swarming(
-        shards = 8,
-    ),
 )

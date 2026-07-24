@@ -1462,8 +1462,8 @@ _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
         "blink_tests_write_run_histories",
     ],
     # Hardcoded '--child-processes=1' to enforce sequential execution by default
-    # and prevent timeouts. The slower x64 builder is sharded to 8 shards
-    # using the 'mac_x64_ai_wpt_shards' mixin to compensate for sequential
+    # and prevent timeouts. The slower x64 builders are sharded to 8 shards
+    # using the 'x64_ai_wpt_shards' mixin to compensate for sequential
     # execution.
     args = [
         "--release",
@@ -1479,11 +1479,40 @@ _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
     ),
 )
 
+_CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG = targets.legacy_test_config(
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    # Hardcoded '--child-processes=1' to enforce sequential execution by default
+    # and prevent timeouts. The slower x64 builders are sharded to 8 shards
+    # using the 'x64_ai_wpt_shards' mixin to compensate for sequential
+    # execution.
+    args = [
+        "--release",
+        "--timeout-multiplier=5",
+        "--child-processes=1",
+    ],
+    # Lower minimum VRAM requirement to 5000 MB for Windows AI WPT runner bots
+    # equipped with NVIDIA GeForce GTX 1660 GPUs (which report 5981 MB VRAM,
+    # slightly below the default 6000 MB threshold).
+    win_args = [
+        "--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000",
+    ],
+    mac_args = [
+        "--driver-name",
+        "Google Chrome",
+    ],
+    swarming = targets.swarming(
+        shards = 4,
+    ),
+)
+
 targets.legacy_basic_suite(
     name = "chrome_ai_wpt_tests_manifest_suite",
     tests = {
         "chrome_ai_wpt_tests_manifest_cpu": _CHROME_AI_WPT_TEST_CONFIG,
-        "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_TEST_CONFIG,
+        "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG,
         "chrome_ai_wpt_tests_manifest_gpu_low_tier": _CHROME_AI_WPT_TEST_CONFIG,
     },
 )
@@ -1495,7 +1524,7 @@ targets.legacy_basic_suite(
         "chrome_ai_wpt_tests_cpu": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_litert_cpu": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_litert_gpu": _CHROME_AI_WPT_TEST_CONFIG,
-        "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_TEST_CONFIG,
+        "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG,
         "chrome_ai_wpt_tests_manifest_gpu_low_tier": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_manifest_cpu": _CHROME_AI_WPT_TEST_CONFIG,
     },

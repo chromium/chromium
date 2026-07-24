@@ -764,11 +764,6 @@
       ],
     },
   },
-  'mac_x64_ai_wpt_shards': {
-    'swarming': {
-      'shards': 8,
-    },
-  },
   'no_gpu': {
     'fail_if_unused': False,
     'swarming': {
@@ -1082,6 +1077,11 @@
         'os': 'Windows-11-26100',
         'pool': 'chromium.tests.gpu',
       },
+    },
+  },
+  'x64_ai_wpt_shards': {
+    'swarming': {
+      'shards': 8,
     },
   },
   'x86-64': {
