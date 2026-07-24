@@ -26,13 +26,13 @@ class WebGraphicsContext3DProviderWrapper;
 class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
  public:
   WebGpuSharedImageWrapperLease(
-      std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
       base::WeakPtr<WebGPURecyclableResourceCache> cache);
 
   ~WebGpuSharedImageWrapperLease();
 
-  WebGpuSharedImageWrapper* resource_provider() {
-    return resource_provider_.get();
+  WebGpuSharedImageWrapper* shared_image_wrapper() {
+    return shared_image_wrapper_.get();
   }
 
   void SetCompletionSyncToken(const gpu::SyncToken& completion_sync_token) {
@@ -40,7 +40,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
   }
 
  private:
-  std::unique_ptr<WebGpuSharedImageWrapper> resource_provider_;
+  std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
   base::WeakPtr<WebGPURecyclableResourceCache> cache_;
   gpu::SyncToken completion_sync_token_;
 };
@@ -52,17 +52,17 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebGPURecyclableResourceCache() = default;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease>
-  LeaseWebGpuRecyclableResourceProvider(viz::SharedImageFormat format,
-                                        gfx::Size size,
-                                        const gfx::ColorSpace& color_space,
-                                        const gfx::HDRMetadata& hdr_metadata,
-                                        SkAlphaType alpha_type);
+  std::unique_ptr<WebGpuSharedImageWrapperLease> LeaseWebGpuSharedImageWrapper(
+      viz::SharedImageFormat format,
+      gfx::Size size,
+      const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
+      SkAlphaType alpha_type);
 
-  // When the lease is destroyed, move the resource provider to
-  // |unused_providers_| if the cache is not full.
-  void ReturnWebGpuRecyclableResourceProvider(
-      std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+  // When the lease is destroyed, move the shared image wrapper to
+  // |unused_wrappers_| if the cache is not full.
+  void ReturnWebGpuSharedImageWrapper(
+      std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
       const gpu::SyncToken& completion_sync_token);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
@@ -72,8 +72,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   }
 
  private:
-  // The maximum number of unused WebGpuRecyclableResourceProviders size, 128
-  // MB.
+  // The maximum number of unused WebGpuSharedImageWrappers size, 128 MB.
   static constexpr int kMaxRecyclableResourceCachesInKB = 128 * 1024;
   static constexpr int kMaxRecyclableResourceCachesInBytes =
       kMaxRecyclableResourceCachesInKB * 1024;
@@ -94,22 +93,22 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       kCleanUpDelayInSeconds / kTimerDurationInSeconds;
 
   struct PLATFORM_EXPORT Resource {
-    Resource(std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+    Resource(std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
              unsigned int timer_id,
              size_t resource_size);
     Resource(Resource&& that) noexcept;
     ~Resource();
 
-    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider_;
+    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
     unsigned int timer_id_;
     size_t resource_size_;
   };
 
-  using DequeResourceProvider = Deque<Resource>;
+  using DequeSharedImageWrapper = Deque<Resource>;
 
-  // Search |unused_providers_| and acquire the WebGPU recyclable resource
-  // provider with the same cache key for reuse.
-  std::unique_ptr<WebGpuSharedImageWrapper> AcquireCachedProvider(
+  // Search |unused_wrappers_| and acquire the WebGPU shared image wrapper
+  // with the same cache key for reuse.
+  std::unique_ptr<WebGpuSharedImageWrapper> AcquireCachedWrapper(
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
@@ -121,9 +120,9 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // Start the clean-up function runs when there are unused resources.
   void StartResourceCleanUpTimer();
 
-  // This is the place to keep the unused WebGpuRecyclableResourceProviders.
+  // This is the place to keep the unused WebGpuSharedImageWrappers.
   // They are waiting to be used. MRU is in the front of the deque.
-  DequeResourceProvider unused_providers_;
+  DequeSharedImageWrapper unused_wrappers_;
 
   uint64_t total_unused_resources_in_bytes_ = 0;
 

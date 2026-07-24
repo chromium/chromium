@@ -16,14 +16,14 @@
 namespace blink {
 
 WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
-    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     base::WeakPtr<WebGPURecyclableResourceCache> cache)
-    : resource_provider_(std::move(resource_provider)), cache_(cache) {}
+    : shared_image_wrapper_(std::move(shared_image_wrapper)), cache_(cache) {}
 
 WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
-  if (cache_ && resource_provider_) {
-    cache_->ReturnWebGpuRecyclableResourceProvider(
-        std::move(resource_provider_), completion_sync_token_);
+  if (cache_ && shared_image_wrapper_) {
+    cache_->ReturnWebGpuSharedImageWrapper(std::move(shared_image_wrapper_),
+                                           completion_sync_token_);
   }
 }
 
@@ -40,7 +40,7 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
 }
 
 std::unique_ptr<WebGpuSharedImageWrapperLease>
-WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
+WebGPURecyclableResourceCache::LeaseWebGpuSharedImageWrapper(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
@@ -48,50 +48,51 @@ WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
     SkAlphaType alpha_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::unique_ptr<WebGpuSharedImageWrapper> provider =
-      AcquireCachedProvider(size, format, alpha_type, color_space);
-  if (!provider) {
-    provider = WebGpuSharedImageWrapper::Create(size, format, alpha_type,
-                                                color_space, hdr_metadata);
-    if (!provider)
+  std::unique_ptr<WebGpuSharedImageWrapper> wrapper =
+      AcquireCachedWrapper(size, format, alpha_type, color_space);
+  if (!wrapper) {
+    wrapper = WebGpuSharedImageWrapper::Create(size, format, alpha_type,
+                                               color_space, hdr_metadata);
+    if (!wrapper) {
       return nullptr;
+    }
   }
 
-  return std::make_unique<WebGpuSharedImageWrapperLease>(std::move(provider),
+  return std::make_unique<WebGpuSharedImageWrapperLease>(std::move(wrapper),
                                                          weak_ptr_);
 }
 
-void WebGPURecyclableResourceCache::ReturnWebGpuRecyclableResourceProvider(
-    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+void WebGPURecyclableResourceCache::ReturnWebGpuSharedImageWrapper(
+    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =
-      resource_provider->GetSharedImageFormat().EstimatedSizeInBytes(
-          resource_provider->Size());
+      shared_image_wrapper->GetSharedImageFormat().EstimatedSizeInBytes(
+          shared_image_wrapper->Size());
 
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
 
-    resource_provider->WaitSyncToken(completion_sync_token);
+    shared_image_wrapper->WaitSyncToken(completion_sync_token);
 
-    unused_providers_.push_front(Resource(std::move(resource_provider),
-                                          current_timer_id_, resource_size));
+    unused_wrappers_.push_front(Resource(std::move(shared_image_wrapper),
+                                         current_timer_id_, resource_size));
   }
 
   // If the cache is full, release LRU from the back.
   while (total_unused_resources_in_bytes_ >
          kMaxRecyclableResourceCachesInBytes) {
-    total_unused_resources_in_bytes_ -= unused_providers_.back().resource_size_;
-    unused_providers_.pop_back();
+    total_unused_resources_in_bytes_ -= unused_wrappers_.back().resource_size_;
+    unused_wrappers_.pop_back();
   }
 
   StartResourceCleanUpTimer();
 }
 
 WebGPURecyclableResourceCache::Resource::Resource(
-    std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
+    std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     unsigned int timer_id,
     size_t resource_size)
-    : resource_provider_(std::move(resource_provider)),
+    : shared_image_wrapper_(std::move(shared_image_wrapper)),
       timer_id_(timer_id),
       resource_size_(resource_size) {}
 
@@ -101,34 +102,33 @@ WebGPURecyclableResourceCache::Resource::Resource(Resource&& that) noexcept =
 WebGPURecyclableResourceCache::Resource::~Resource() = default;
 
 std::unique_ptr<WebGpuSharedImageWrapper>
-WebGPURecyclableResourceCache::AcquireCachedProvider(
+WebGPURecyclableResourceCache::AcquireCachedWrapper(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space) {
   // Loop from MRU to LRU
-  DequeResourceProvider::iterator it;
-  for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {
-    WebGpuSharedImageWrapper* resource_provider = it->resource_provider_.get();
-    if (resource_provider->Size() == size &&
-        resource_provider->GetSharedImageFormat() == format &&
-        resource_provider->GetAlphaType() == alpha_type &&
-        resource_provider->GetColorSpace() == color_space) {
+  DequeSharedImageWrapper::iterator it;
+  for (it = unused_wrappers_.begin(); it != unused_wrappers_.end(); ++it) {
+    WebGpuSharedImageWrapper* wrapper = it->shared_image_wrapper_.get();
+    if (wrapper->Size() == size && wrapper->GetSharedImageFormat() == format &&
+        wrapper->GetAlphaType() == alpha_type &&
+        wrapper->GetColorSpace() == color_space) {
       break;
     }
   }
 
   // Found one.
-  if (it != unused_providers_.end()) {
-    std::unique_ptr<WebGpuSharedImageWrapper> provider =
-        (std::move(it->resource_provider_));
+  if (it != unused_wrappers_.end()) {
+    std::unique_ptr<WebGpuSharedImageWrapper> wrapper =
+        (std::move(it->shared_image_wrapper_));
     total_unused_resources_in_bytes_ -= it->resource_size_;
     // TODO(magchen@): If the cache capacity increases a lot, will erase(it)
     // becomes inefficient?
-    // Remove the provider from the |unused_providers_|.
-    unused_providers_.erase(it);
+    // Remove the wrapper from the |unused_wrappers_|.
+    unused_wrappers_.erase(it);
 
-    return provider;
+    return wrapper;
   }
   return nullptr;
 }
@@ -138,8 +138,8 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 
   // Loop from LRU to MRU
   int stale_resource_count = 0;
-  for (const auto& unused_provider : base::Reversed(unused_providers_)) {
-    if ((current_timer_id_ - unused_provider.timer_id_) <
+  for (const auto& unused_wrapper : base::Reversed(unused_wrappers_)) {
+    if ((current_timer_id_ - unused_wrapper.timer_id_) <
         kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
@@ -150,15 +150,15 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 
   // Delete all stale resources.
   for (int i = 0; i < stale_resource_count; ++i) {
-    total_unused_resources_in_bytes_ -= unused_providers_.back().resource_size_;
-    unused_providers_.pop_back();
+    total_unused_resources_in_bytes_ -= unused_wrappers_.back().resource_size_;
+    unused_wrappers_.pop_back();
   }
 
   current_timer_id_++;
   StartResourceCleanUpTimer();
 }
 void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
-  if (unused_providers_.size() > 0 && !timer_is_running_) {
+  if (unused_wrappers_.size() > 0 && !timer_is_running_) {
     task_runner_->PostDelayedTask(FROM_HERE, timer_func_,
                                   base::Seconds(kTimerDurationInSeconds));
     timer_is_running_ = true;
@@ -168,7 +168,7 @@ void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
 wtf_size_t
 WebGPURecyclableResourceCache::CleanUpResourcesAndReturnSizeForTesting() {
   ReleaseStaleResources();
-  return unused_providers_.size();
+  return unused_wrappers_.size();
 }
 
 }  // namespace blink

@@ -48,7 +48,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       wgpu::TextureUsage usage,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
-      std::unique_ptr<WebGpuSharedImageWrapperLease> provider_lease);
+      std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease);
 
   static scoped_refptr<WebGPUMailboxTexture> FromExistingSharedImage(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,

@@ -112,13 +112,13 @@ bool DawnControlClientHolder::IsContextLost() const {
 }
 
 std::unique_ptr<WebGpuSharedImageWrapperLease>
-DawnControlClientHolder::LeaseWebGpuRecyclableResourceProvider(
+DawnControlClientHolder::LeaseWebGpuSharedImageWrapper(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
-  return recyclable_resource_cache_.LeaseWebGpuRecyclableResourceProvider(
+  return recyclable_resource_cache_.LeaseWebGpuSharedImageWrapper(
       format, size, color_space, hdr_metadata, alpha_type);
 }
 
