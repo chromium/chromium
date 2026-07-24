@@ -1162,6 +1162,13 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+  DCHECK(response_info_);
+  const SSLInfo& ssl_info = response_info_->ssl_info;
+  // Do not process DBSC headers on connections with certificate errors.
+  if (!ssl_info.is_valid() || IsCertStatusError(ssl_info.cert_status)) {
+    return;
+  }
+
   device_bound_sessions::SessionService* service =
       request_->context()->device_bound_session_service();
   if (!service) {
