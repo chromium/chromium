@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace glic {
 
@@ -108,6 +110,14 @@ class GlicShareImageHandlerTest : public testing::Test {
   void SetShareInProgress(bool in_progress) {
     handler_->is_share_in_progress_ = in_progress;
   }
+
+  void SetCurrentInvocationInstance(base::WeakPtr<GlicInstance> instance) {
+    handler_->current_invocation_instance_ = instance;
+  }
+
+  void CallReset() { handler_->Reset(); }
+
+  bool IsShareInProgress() const { return handler_->is_share_in_progress_; }
 
   void CallDidFinishNavigation(content::NavigationHandle* handle) {
     handler_->DidFinishNavigation(handle);
@@ -276,6 +286,27 @@ TEST_F(GlicShareImageHandlerTest, OnInvokeErrorAdditionalContextNoSourceFrame) {
       static_cast<int>(ShareImageResult::kFailedNoFrame), 1);
 }
 
+TEST_F(GlicShareImageHandlerTest, OnInvokeErrorCancelled) {
+  OnInvokeError(GlicInvokeError::kCancelled);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedCancelled), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest, OnInvokeErrorProfileNotEnabled) {
+  OnInvokeError(GlicInvokeError::kProfileNotEnabled);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedProfileNotEnabled), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest, OnInvokeErrorSuperseded) {
+  OnInvokeError(GlicInvokeError::kSuperseded);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedSuperseded), 1);
+}
+
 TEST_F(GlicShareImageHandlerTest,
        PageContextEligibilityChangedToIneligibleFails) {
   SetShareInProgress(true);
@@ -360,6 +391,96 @@ TEST_F(GlicShareImageHandlerTest, OnReceivedImageWithNoNewConversationFeature) {
   std::vector<uint8_t> thumbnail_data = {1, 2, 3};
   OnReceivedImage(thumbnail_data, gfx::Size(10, 10), gfx::Size(10, 10),
                   "image/png", {});
+}
+
+TEST_F(GlicShareImageHandlerTest, ResetCancelsActiveInvocation) {
+  MockGlicInstance mock_instance;
+  EXPECT_CALL(mock_instance, CancelInvoke()).Times(1);
+
+  SetShareInProgress(true);
+  SetCurrentInvocationInstance(mock_instance.GetWeakPtr());
+
+  CallReset();
+  EXPECT_FALSE(IsShareInProgress());
+}
+
+class FakePageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  explicit FakePageContextEligibilityHelper(tabs::TabInterface& tab)
+      : tabs::PageContextEligibilityHelper(tab) {}
+  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
+      const override {
+    return optimization_guide::PageContextEligibilityStatus::kEligible;
+  }
+};
+
+TEST_F(GlicShareImageHandlerTest, ResetWithoutActiveInvocationDoesNotCancel) {
+  MockGlicInstance mock_instance;
+  EXPECT_CALL(mock_instance, CancelInvoke()).Times(0);
+
+  SetShareInProgress(false);
+  SetCurrentInvocationInstance(mock_instance.GetWeakPtr());
+
+  CallReset();
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       ShareContextImageReplacesInProgressShareCancelsActiveInvocation) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com/page"));
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+  EXPECT_CALL(mock_tab, GetTabHandle()).WillRepeatedly(testing::Return(12345));
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(unowned_user_data_host));
+
+  FakePageContextEligibilityHelper fake_helper(mock_tab);
+
+  MockGlicInstance mock_instance;
+  EXPECT_CALL(mock_instance, CancelInvoke()).Times(1);
+
+  SetShareInProgress(true);
+  SetCurrentInvocationInstance(mock_instance.GetWeakPtr());
+
+  handler_->ShareContextImage(&mock_tab, web_contents->GetPrimaryMainFrame(),
+                              GURL("http://example.com/image.png"));
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedReplacedByNewShare), 1);
+  EXPECT_TRUE(IsShareInProgress());
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       ShareContextImageReplacesInProgressShareWithoutActiveInvocation) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("http://example.com/page"));
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost unowned_user_data_host;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents.get()));
+  EXPECT_CALL(mock_tab, GetTabHandle()).WillRepeatedly(testing::Return(12345));
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(unowned_user_data_host));
+
+  FakePageContextEligibilityHelper fake_helper(mock_tab);
+
+  SetShareInProgress(true);
+
+  handler_->ShareContextImage(&mock_tab, web_contents->GetPrimaryMainFrame(),
+                              GURL("http://example.com/image.png"));
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedReplacedByNewShare), 1);
+  EXPECT_TRUE(IsShareInProgress());
 }
 
 }  // namespace glic

@@ -1335,6 +1335,9 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="kFailedInvalidConfiguration"/>
   <int value="24" label="kFailedNoClientFrame"/>
   <int value="25" label="kFailedNoClipboardMetadata"/>
+  <int value="26" label="kFailedCancelled"/>
+  <int value="27" label="kFailedProfileNotEnabled"/>
+  <int value="28" label="kFailedSuperseded"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->

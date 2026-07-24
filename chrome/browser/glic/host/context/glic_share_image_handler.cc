@@ -207,9 +207,8 @@ void GlicShareImageHandler::OnReceivedImage(
   invoke_options.on_error = base::BindOnce(
       &GlicShareImageHandler::OnInvokeError, weak_ptr_factory_.GetWeakPtr());
   invoke_options.on_success = base::BindOnce(
-      &GlicShareImageHandler::ShareComplete, weak_ptr_factory_.GetWeakPtr(),
-      ShareImageResult::kSentImageToClient);
-  service_->Invoke(std::move(invoke_options));
+      &GlicShareImageHandler::OnInvokeSuccess, weak_ptr_factory_.GetWeakPtr());
+  current_invocation_instance_ = service_->Invoke(std::move(invoke_options));
   StopObservingNavigation();
 }
 
@@ -260,10 +259,20 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
     case GlicInvokeError::kInstanceNotFound:
       ShareComplete(ShareImageResult::kFailedLostInstance);
       break;
-    default:
-      ShareComplete(ShareImageResult::kFailedUnknown);
+    case GlicInvokeError::kCancelled:
+      ShareComplete(ShareImageResult::kFailedCancelled);
+      break;
+    case GlicInvokeError::kProfileNotEnabled:
+      ShareComplete(ShareImageResult::kFailedProfileNotEnabled);
+      break;
+    case GlicInvokeError::kSuperseded:
+      ShareComplete(ShareImageResult::kFailedSuperseded);
       break;
   }
+}
+
+void GlicShareImageHandler::OnInvokeSuccess() {
+  ShareComplete(ShareImageResult::kSentImageToClient);
 }
 
 void GlicShareImageHandler::ShareComplete(ShareImageResult result) {
@@ -400,6 +409,14 @@ void GlicShareImageHandler::Reset() {
   frame_url_ = GURL();
   frame_origin_ = url::Origin();
   StopObservingNavigation();
+
+  if (is_share_in_progress_ && current_invocation_instance_) {
+    // Since we invalidate the weak pointers below, the invoke callbacks will
+    // not work. I.e., we should not see GlicInvokeError::kCancelled due to
+    // the following.
+    current_invocation_instance_->CancelInvoke();
+    current_invocation_instance_.reset();
+  }
 
   // Ensure that async callbacks aren't invoked.
   weak_ptr_factory_.InvalidateWeakPtrs();

@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -370,14 +372,14 @@ class GlicInteractiveContextMenuTestBase
   }
 
   auto PollForAndCompleteOnboarding() {
-    return Steps(PollUntil(
+    return Steps(InAnyContext(PollUntil(
                      [this]() {
                        if (auto* instance = GetGlicInstanceImpl()) {
                          return instance->host().IsWebClientConnected();
                        }
                        return false;
                      },
-                     "polling until the client is ready"),
+                     "polling until the client is ready")),
                  Do([this]() {
                    ::glic::SetFRECompletion(browser()->GetProfile(),
                                             glic::prefs::FreStatus::kCompleted);
@@ -392,17 +394,17 @@ class GlicInteractiveContextMenuTestBase
                                              kGlicViewElementId),
                      InstrumentInnerWebContents(glic::kGlicContentsElementId,
                                                 glic::kGlicHostElementId, 0),
-                     WaitForWebContentsReady(glic::kGlicContentsElementId))),
-                 // TODO(b:448604727): State observation is currently
-                 // unsupported with multi- instance, so we will poll.
-                 PollUntil(
-                     [this]() {
-                       if (auto* instance = GetGlicInstanceImpl()) {
-                         return instance->host().IsWebClientConnected();
-                       }
-                       return false;
-                     },
-                     "polling until web client is ready"));
+                     WaitForWebContentsReady(glic::kGlicContentsElementId),
+                     // TODO(b:448604727): State observation is currently
+                     // unsupported with multi- instance, so we will poll.
+                     PollUntil(
+                         [this]() {
+                           if (auto* instance = GetGlicInstanceImpl()) {
+                             return instance->host().IsWebClientConnected();
+                           }
+                           return false;
+                         },
+                         "polling until web client is ready"))));
   }
 
   auto CheckHistograms() {
@@ -437,23 +439,31 @@ class GlicInteractiveContextMenuTestBase
   }
 
   auto PollForNewGlicInstance() {
-    return PollUntil(
+    auto steps = PollUntil(
         [this]() {
-          return cached_instance_id_.IsValid() &&
-                 cached_instance_id_ !=
-                     glic_service()->GetInstanceForActiveTab(browser())->id();
+          auto* instance = glic_service()->GetInstanceForActiveTab(browser());
+          return cached_instance_id_.IsValid() && instance &&
+                 cached_instance_id_ != instance->id();
         },
         "polling we have a new glic instance");
+    for (auto& step : steps) {
+      step.SetMustRemainVisible(false);
+    }
+    return steps;
   }
 
   auto WaitForAdditionalContext() {
-    return WaitForJsResult(
+    auto steps = WaitForJsResult(
         glic::kGlicContentsElementId,
         "() => { "
         "  let c = document.querySelector('#additionalContextResult');"
-        "  return !!c && c.children.length === 4 && "
-        "      c.children[1].innerText.startsWith('MIME Type: image/png');"
+        "  return !!c && c.children.length >= 4 && "
+        "      c.innerText.includes('MIME Type: image/png');"
         "}");
+    for (auto& step : steps) {
+      step.SetMustRemainVisible(false);
+    }
+    return steps;
   }
 
   auto CheckAdditionalContextNotPresent() {
@@ -477,13 +487,17 @@ class GlicInteractiveContextMenuTestBase
   }
 
   auto WaitForShareResult(glic::ShareImageResult result) {
-    return PollUntil(
+    auto steps = PollUntil(
         [this, result]() {
           return histogram_tester_.GetBucketCount(
                      "Glic.TabContext.ShareImageResult",
                      static_cast<int>(result)) == 1;
         },
         "polling until result");
+    for (auto& step : steps) {
+      step.SetMustRemainVisible(false);
+    }
+    return steps;
   }
 
  protected:
@@ -655,7 +669,10 @@ class ClipboardTestContentAnalysisDelegate
 
   using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
 
- protected:
+  void FakeUploadClipboardDataForDeepScanning(
+      enterprise_connectors::ClipboardRequestHandler::Type type,
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
+      override;
 };
 
 class GlicInteractiveContextMenuPolicyTest
@@ -668,8 +685,10 @@ class GlicInteractiveContextMenuPolicyTest
         SetObserverForTesting(this);
   }
 
-  static base::RepeatingClosure& GetPastePolicyCallbackHook() {
-    static base::NoDestructor<base::RepeatingClosure> hook;
+  static base::RepeatingCallback<void(base::OnceClosure)>&
+  GetPastePolicyCallbackHook() {
+    static base::NoDestructor<base::RepeatingCallback<void(base::OnceClosure)>>
+        hook;
     return *hook;
   }
 
@@ -695,9 +714,6 @@ class GlicInteractiveContextMenuPolicyTest
             &ClipboardTestContentAnalysisDelegate::Create, base::DoNothing(),
             base::BindRepeating([](const std::string& contents,
                                    const base::FilePath& path) {
-              if (GetPastePolicyCallbackHook()) {
-                GetPastePolicyCallbackHook().Run();
-              }
               bool success = false;
               if (contents.size() > kPatternSize) {
                 std::string pattern = base::Base64Encode(contents.substr(
@@ -772,6 +788,23 @@ class GlicInteractiveContextMenuPolicyTest
   bool content_analysis_dialog_shown_ = false;
 };
 
+void ClipboardTestContentAnalysisDelegate::
+    FakeUploadClipboardDataForDeepScanning(
+        enterprise_connectors::ClipboardRequestHandler::Type type,
+        std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) {
+  if (GlicInteractiveContextMenuPolicyTest::GetPastePolicyCallbackHook()) {
+    auto hook = std::move(
+        GlicInteractiveContextMenuPolicyTest::GetPastePolicyCallbackHook());
+    GlicInteractiveContextMenuPolicyTest::GetPastePolicyCallbackHook().Reset();
+    hook.Run(base::BindOnce(
+        &FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning,
+        weakptr_factory_.GetWeakPtr(), type, std::move(request)));
+    return;
+  }
+  FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
+      type, std::move(request));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsOnCopyDenied) {
   // Taken from DataProtectionClipboardBrowserTest in clipboard_browsertest.cc.
@@ -841,8 +874,12 @@ IN_PROC_BROWSER_TEST_F(
   static bool reached = false;
   reached = false;
 
-  GetPastePolicyCallbackHook() =
-      base::BindRepeating([](bool* flag) { *flag = true; }, &reached);
+  GetPastePolicyCallbackHook() = base::BindRepeating(
+      [](bool* flag, base::OnceClosure done) {
+        *flag = true;
+        std::move(done).Run();
+      },
+      &reached);
 
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
@@ -854,6 +891,52 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient));
 
   // Reset hook.
+  GetPastePolicyCallbackHook().Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
+                       ReplacedByNewShareCancelsPreviousInvoke) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  const GURL url = embedded_test_server()->GetURL(kPageWithAllowedImage);
+  const DeepQuery kPathToImg{"img:nth-of-type(3)"};
+
+  static bool share1_reached = false;
+  share1_reached = false;
+
+  GetPastePolicyCallbackHook() = base::BindRepeating(
+      [](bool* flag, base::OnceClosure done) { *flag = true; },
+      &share1_reached);
+
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab, std::nullopt, browser(), true),
+      NavigateWebContents(kActiveTab, url),
+      WaitForWebContentsPainted(kActiveTab),
+      MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
+      PollUntil([]() { return share1_reached; },
+                "waiting for share 1 paste policy check"),
+      WaitForHide(RenderViewContextMenu::kGlicShareImageMenuItem),
+      Do([]() { GetPastePolicyCallbackHook().Reset(); }),
+      MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
+      WaitForHide(RenderViewContextMenu::kGlicShareImageMenuItem),
+      PollForAndCompleteOnboarding(), PollForAndInstrumentGlic(),
+      WaitForShareResult(glic::ShareImageResult::kFailedReplacedByNewShare),
+      WaitForAdditionalContext(),
+      WaitForShareResult(glic::ShareImageResult::kSentImageToClient),
+      Do([this]() {
+        histogram_tester_.ExpectBucketCount(
+            "Glic.TabContext.ShareImageResult",
+            static_cast<int>(glic::ShareImageResult::kFailedReplacedByNewShare),
+            1);
+        histogram_tester_.ExpectBucketCount(
+            "Glic.TabContext.ShareImageResult",
+            static_cast<int>(glic::ShareImageResult::kSentImageToClient), 1);
+      }));
+
   GetPastePolicyCallbackHook().Reset();
 }
 

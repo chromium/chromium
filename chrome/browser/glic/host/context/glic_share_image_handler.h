@@ -37,6 +37,7 @@ class TabInterface;
 namespace glic {
 
 class GlicKeyedService;
+class GlicInstance;
 
 // Manages the capturing of context images (i.e., images for which the user has
 // opened the context menu), and sending to the web client as additional data.
@@ -80,6 +81,10 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // and causes metrics to be logged.
   void OnInvokeError(GlicInvokeError error);
 
+  // Called when the invoke API succeeds. Completes the share process unless
+  // held for testing.
+  void OnInvokeSuccess();
+
   // Called when the end result of sharing is known. Sends context on success.
   void ShareComplete(ShareImageResult result);
 
@@ -118,6 +123,9 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   base::CallbackListSubscription will_discard_web_contents_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
   base::CallbackListSubscription eligibility_subscription_;
+
+  // This is the instance associated with the current invocation, if any.
+  base::WeakPtr<GlicInstance> current_invocation_instance_;
 
   // This is used for communicating with the renderer to capture image context.
   std::unique_ptr<mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>>
