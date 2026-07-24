@@ -69,7 +69,7 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
 
   stale_content_layer_ = std::make_unique<ui::LayerSolidColor>();
   stale_content_layer_->SetVisible(false);
-  stale_content_layer_->SetColor(SK_ColorTRANSPARENT);
+  stale_content_layer_->SetColor(SkColors::kTransparent);
 }
 
 DelegatedFrameHost::~DelegatedFrameHost() {
@@ -368,8 +368,9 @@ void DelegatedFrameHost::EmbedSurface(
     }
     current_frame_size_in_dip_ = surface_dip_size_;
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
-        new_primary_surface_id, current_frame_size_in_dip_, GetGutterColor(),
-        deadline_policy, false /* stretch_content_to_fill_bounds */);
+        new_primary_surface_id, current_frame_size_in_dip_,
+        SkColor4f::FromColor(GetGutterColor()), deadline_policy,
+        false /* stretch_content_to_fill_bounds */);
     if (compositor_)
       compositor_->OnChildResizing();
   }
@@ -536,7 +537,8 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
   // Reset primary surface.
   if (HasPrimarySurface()) {
     client_->DelegatedFrameHostGetLayer()->SetShowSurface(
-        viz::SurfaceId(), current_frame_size_in_dip_, GetGutterColor(),
+        viz::SurfaceId(), current_frame_size_in_dip_,
+        SkColor4f::FromColor(GetGutterColor()),
         cc::DeadlinePolicy::UseDefaultDeadline(), false);
   }
 

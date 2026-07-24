@@ -437,7 +437,7 @@ void PowerButton::OnThemeChanged() {
   SkColor active_color =
       GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemPrimaryContainer);
   background_view_->layer()->AsSolidColor()->SetColor(
-      IsMenuShowing() ? active_color : inactive_color);
+      SkColor4f::FromColor(IsMenuShowing() ? active_color : inactive_color));
 }
 
 void PowerButton::UpdateView() {

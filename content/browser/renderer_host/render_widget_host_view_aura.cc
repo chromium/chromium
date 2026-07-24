@@ -860,7 +860,7 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 
   SkColor color = *GetBackgroundColor();
-  window_->layer()->AsSolidColor()->SetColor(color);
+  window_->layer()->AsSolidColor()->SetColor(SkColor4f::FromColor(color));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2948,8 +2948,8 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
 
   window_->SetType(type);
   window_->Init(ui::LAYER_SOLID_COLOR);
-  window_->layer()->AsSolidColor()->SetColor(
-      GetBackgroundColor() ? *GetBackgroundColor() : SK_ColorWHITE);
+  window_->layer()->AsSolidColor()->SetColor(SkColor4f::FromColor(
+      GetBackgroundColor() ? *GetBackgroundColor() : SK_ColorWHITE));
   UpdateFrameSinkIdRegistration();
 }
 

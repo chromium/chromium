@@ -324,10 +324,9 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetLayerOffset(layer_offset_);
 
   // cc::Layer state.
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   if (surface_layer_) {
     clone->SetShowSurface(surface_layer_->surface_id(), frame_size_in_dip_,
-                          surface_layer_->background_color().toSkColor(),
+                          surface_layer_->background_color(),
                           surface_layer_->deadline_in_frames()
                               ? cc::DeadlinePolicy::UseSpecifiedDeadline(
                                     *surface_layer_->deadline_in_frames())
@@ -1123,10 +1122,9 @@ bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
 }
 
-
 void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
                            const gfx::Size& frame_size_in_dip,
-                           SkColor default_background_color,
+                           SkColor4f default_background_color,
                            const cc::DeadlinePolicy& deadline_policy,
                            bool stretch_content_to_fill_bounds) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
@@ -1134,11 +1132,8 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
   CreateSurfaceLayerIfNecessary();
 
   surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
-  surface_layer_->SetBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
-  surface_layer_->SetSafeOpaqueBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
+  surface_layer_->SetBackgroundColor(default_background_color);
+  surface_layer_->SetSafeOpaqueBackgroundColor(default_background_color);
   surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
 
   frame_size_in_dip_ = frame_size_in_dip;
@@ -1152,7 +1147,7 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
 }
 
 void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
-                           SkColor default_background_color,
+                           SkColor4f default_background_color,
                            const cc::DeadlinePolicy& deadline_policy,
                            bool stretch_content_to_fill_bounds) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
@@ -1161,10 +1156,8 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
   // Assumes `frame_size_in_dip_` is already set.
   // TODO(crbug.com/40285157): with surface sync, it should use on `bounds_`.
   surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
-  surface_layer_->SetSafeOpaqueBackgroundColor(
-      SkColor4f::FromColor(default_background_color));
+  surface_layer_->SetBackgroundColor(default_background_color);
+  surface_layer_->SetSafeOpaqueBackgroundColor(default_background_color);
   surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
 
   for (const auto& mirror : mirrors_) {
@@ -2271,22 +2264,20 @@ void LayerSolidColor::SetShowSolidColorContent() {
   }
 }
 
-void LayerSolidColor::SetColor(SkColor color) {
-  GetAnimator()->SetColor(SkColor4f::FromColor(color));
+void LayerSolidColor::SetColor(SkColor4f color) {
+  GetAnimator()->SetColor(color);
 }
 
-SkColor LayerSolidColor::GetTargetColor() const {
+SkColor4f LayerSolidColor::GetTargetColor() const {
   if (animator_ &&
       animator_->IsAnimatingProperty(LayerAnimationElement::COLOR)) {
-    return animator_->GetTargetColor().toSkColor();
+    return animator_->GetTargetColor();
   }
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  return cc_layer_->background_color().toSkColor();
+  return cc_layer_->background_color();
 }
 
-SkColor LayerSolidColor::background_color() const {
-  // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
-  return cc_layer_->background_color().toSkColor();
+SkColor4f LayerSolidColor::background_color() const {
+  return cc_layer_->background_color();
 }
 
 void LayerSolidColor::Reset() {

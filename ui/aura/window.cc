@@ -2026,7 +2026,7 @@ void Window::SetLayer(std::unique_ptr<ui::Layer> alayer) {
 
 void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
   DCHECK_EQ(surface_info.id().frame_sink_id(), GetFrameSinkId());
-  layer()->SetShowSurface(surface_info.id(), bounds().size(), SK_ColorWHITE,
+  layer()->SetShowSurface(surface_info.id(), bounds().size(), SkColors::kWhite,
                           cc::DeadlinePolicy::UseDefaultDeadline(),
                           false /* stretch_content_to_fill_bounds */);
 }

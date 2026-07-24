@@ -719,8 +719,8 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
       gc_setup_button_pulse_layer_ = std::make_unique<ui::LayerSolidColor>();
       widget->GetLayer()->Add(gc_setup_button_pulse_layer_.get());
       gc_setup_button_pulse_layer_->SetColor(
-          widget->GetColorProvider()->GetColor(
-              cros_tokens::kCrosSysHighlightText));
+          SkColor4f::FromColor(widget->GetColorProvider()->GetColor(
+              cros_tokens::kCrosSysHighlightText)));
     }
 
     DCHECK(gc_setup_button_pulse_layer_);

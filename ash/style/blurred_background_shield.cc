@@ -106,7 +106,7 @@ void BlurredBackgroundShield::UpdateBackgroundColor() {
                                        ? color_.ResolveToSkColor(color_provider)
                                        : gfx::kPlaceholderColor;
   // Only enable the background blur if the color is translucent.
-  background_layer_.SetColor(background_color);
+  background_layer_.SetColor(SkColor4f::FromColor(background_color));
   if (SkColorGetA(background_color) != SK_AlphaOPAQUE && blur_sigma_) {
     background_layer_.SetBackgroundBlur(blur_sigma_);
     background_layer_.SetBackdropFilterQuality(

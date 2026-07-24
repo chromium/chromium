@@ -195,7 +195,7 @@ void UnboundedSurfaceWindowAura::EnsureSurfaceSynchronizedForWebTest() {
   if (window_ && window_->layer()) {
     window_->layer()->SetShowSurface(
         viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-        window_->GetBoundsInScreen().size(), SK_ColorTRANSPARENT,
+        window_->GetBoundsInScreen().size(), SkColors::kTransparent,
         cc::DeadlinePolicy::UseInfiniteDeadline(),
         /*stretch_content_to_fill_bounds=*/false);
   }
@@ -274,7 +274,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   // transparent background later, if security issues arise. For example, this
   // allows content to put up a fully transparent (invisible) overlay over site
   // content and steal clicks/events.
-  window_->layer()->AsSolidColor()->SetColor(SK_ColorTRANSPARENT);
+  window_->layer()->AsSolidColor()->SetColor(SkColors::kTransparent);
   window_->SetEmbedFrameSinkId(frame_sink_id_);
 
   GetHostFrameSinkManager()->RegisterFrameSinkId(
@@ -306,7 +306,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   // TODO(crbug.com/508672616): See the note above about transparent background.
   window_->layer()->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-      bounds_in_screen.size(), SK_ColorTRANSPARENT,
+      bounds_in_screen.size(), SkColors::kTransparent,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       /*stretch_content_to_fill_bounds=*/false);
 
@@ -340,7 +340,7 @@ void UnboundedSurfaceWindowAura::SetBounds(const gfx::Rect& bounds_in_screen) {
   local_surface_id_allocator_.GenerateId();
   window_->layer()->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-      bounds_in_screen.size(), SK_ColorTRANSPARENT,
+      bounds_in_screen.size(), SkColors::kTransparent,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       /*stretch_content_to_fill_bounds=*/false);
   if (debug_border_layer_) {

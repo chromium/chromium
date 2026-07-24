@@ -1952,7 +1952,8 @@ void SplitViewController::UpdateBlackScrim(
   if (!black_scrim_layer_) {
     // Create an invisible black scrim layer.
     black_scrim_layer_ = std::make_unique<ui::LayerSolidColor>();
-    black_scrim_layer_->SetColor(AshColorProvider::Get()->GetBackgroundColor());
+    black_scrim_layer_->SetColor(
+        SkColor4f::FromColor(AshColorProvider::Get()->GetBackgroundColor()));
     // Set the black scrim layer underneath split view divider.
     auto* divider_layer = split_view_divider_.GetDividerWindow()->layer();
     auto* divider_parent_layer = divider_layer->parent();
@@ -2011,9 +2012,9 @@ void SplitViewController::UpdateResizeBackdrop() {
                                 ui::LayerSolidColor* backdrop) {
     backdrop->SetBounds(GetSnappedWindowBoundsInParent(
         position, nullptr, chromeos::kDefaultSnapRatio));
-    backdrop->SetColor(window->GetProperty(
+    backdrop->SetColor(SkColor4f::FromColor(window->GetProperty(
         wm::IsActiveWindow(window) ? chromeos::kFrameActiveColorKey
-                                   : chromeos::kFrameInactiveColorKey));
+                                   : chromeos::kFrameInactiveColorKey)));
   };
 
   if (state_ == State::kPrimarySnapped || state_ == State::kBothSnapped) {

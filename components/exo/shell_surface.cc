@@ -478,7 +478,7 @@ void ShellSurface::MaybeActivateSurface() {
            !pending_configs_.empty());
     host_window()->layer()->SetShowSurface(
         host_window()->GetSurfaceId(), host_window()->bounds().size(),
-        SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+        SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
         false /* stretch_content_to_fill_bounds */);
     host_window()->layer()->SetOldestAcceptableFallback(viz::SurfaceId{});
   }
@@ -1063,7 +1063,7 @@ void ShellSurface::Configure(bool ends_drag) {
                      GetCurrentLocalSurfaceId().parent_sequence_number()) {
     host_window()->layer()->SetShowSurface(
         host_window()->GetSurfaceId(), GetClientBoundsInScreen(widget_).size(),
-        SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+        SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
         /*stretch_content_to_fill_bounds=*/true);
     host_window()->layer()->SetOldestAcceptableFallback(GetSurfaceId());
   }
@@ -1192,7 +1192,7 @@ void ShellSurface::UpdateLayerSurfaceRange(
           viz::SurfaceId(frame_sink_id_, {layer_lsi.parent_sequence_number(),
                                           current_lsi.child_sequence_number(),
                                           current_lsi.embed_token()}),
-          SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+          SkColors::kWhite, cc::DeadlinePolicy::UseDefaultDeadline(),
           true /* stretch_content_to_fill_bounds */);
     }
     layer->SetOldestAcceptableFallback(
@@ -1207,7 +1207,8 @@ void ShellSurface::UpdateLayerSurfaceRange(
       // `current_lsi` has caught up to `layer`. Allow the shell_surface to
       // modify the surface layer bounds, clear the oldest fallback and disable
       // stretch.
-      layer->SetShowSurface(surface_id, layer->bounds().size(), SK_ColorWHITE,
+      layer->SetShowSurface(surface_id, layer->bounds().size(),
+                            SkColors::kWhite,
                             cc::DeadlinePolicy::UseDefaultDeadline(),
                             false /* stretch_content_to_fill_bounds */);
       layer->SetOldestAcceptableFallback(viz::SurfaceId{});

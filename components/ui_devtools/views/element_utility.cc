@@ -37,8 +37,9 @@ void AppendLayerPropertiesMatchedStyle(
   ret->emplace_back("layer-fills-bounds-opaquely",
                     base::ToString(layer->fills_bounds_opaquely()));
   if (auto* solid_color = layer->AsSolidColor(); solid_color) {
-    ret->emplace_back("layer-color",
-                      base::StringPrintf("%X", solid_color->GetTargetColor()));
+    ret->emplace_back(
+        "layer-color",
+        base::StringPrintf("%X", solid_color->GetTargetColor().toSkColor()));
   }
 
   const auto offset = layer->GetSubpixelOffset();

@@ -42,7 +42,7 @@ LayerCopyAnimator::LayerCopyAnimator(aura::Window* window) : window_(window) {
   // Copy request will not copy NOT_DRAWN and the result may be smaller than
   // requested layer.  Create a transparent layer to cover the entire layer.
   if (window_->layer()->type() == ui::LAYER_NOT_DRAWN) {
-    full_layer_.SetColor(SK_ColorTRANSPARENT);
+    full_layer_.SetColor(SkColors::kTransparent);
     full_layer_.SetBounds(gfx::Rect(window_->bounds().size()));
     window_->layer()->Add(&full_layer_);
     window_->layer()->StackAtBottom(&full_layer_);

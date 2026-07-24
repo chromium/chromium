@@ -633,7 +633,8 @@ void HomeButton::OnThemeChanged() {
   }
   if (expandable_container_) {
     expandable_container_->layer()->AsSolidColor()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
+        SkColor4f::FromColor(
+            GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase)));
   }
 }
 

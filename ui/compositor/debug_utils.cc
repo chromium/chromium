@@ -116,7 +116,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
   if (auto* solid_layer = layer->AsSolidColor()) {
     *out << "\n" << property_indent_str;
     *out << "background-color="
-         << ui::SkColorName(solid_layer->background_color());
+         << ui::SkColorName(solid_layer->background_color().toSkColor());
   }
 
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();

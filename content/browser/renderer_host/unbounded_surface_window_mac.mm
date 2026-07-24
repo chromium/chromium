@@ -214,7 +214,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
       content::GetContextFactory());
 
   root_layer_ = std::make_unique<ui::LayerSolidColor>();
-  root_layer_->SetColor(SK_ColorTRANSPARENT);
+  root_layer_->SetColor(SkColors::kTransparent);
   root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
 
   DisplayInfo display_info = GetDisplayInfo();
@@ -236,7 +236,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 
   root_layer_->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-      bounds_in_screen.size(), SK_ColorTRANSPARENT,
+      bounds_in_screen.size(), SkColors::kTransparent,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       /*stretch_content_to_fill_bounds=*/false);
 
@@ -278,7 +278,7 @@ void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
     if (root_layer_) {
       root_layer_->SetShowSurface(
           viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-          bounds_in_screen.size(), SK_ColorTRANSPARENT,
+          bounds_in_screen.size(), SkColors::kTransparent,
           cc::DeadlinePolicy::UseDefaultDeadline(),
           /*stretch_content_to_fill_bounds=*/false);
     }
@@ -342,8 +342,8 @@ void UnboundedSurfaceWindowMac::EnsureSurfaceSynchronizedForWebTest() {
   if (root_layer_) {
     root_layer_->SetShowSurface(
         viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-        root_layer_->bounds().size(), SK_ColorTRANSPARENT,
-        cc::DeadlinePolicy::UseInfiniteDeadline(),
+        root_layer_->bounds().size(), SkColors::kTransparent,
+        cc::DeadlinePolicy::UseDefaultDeadline(),
         /*stretch_content_to_fill_bounds=*/false);
   }
   if (recyclable_compositor_ && recyclable_compositor_->compositor()) {

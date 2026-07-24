@@ -849,7 +849,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   constexpr float initial_hue_amount = 180.0f;
 
   layer->SetTransform(transform);
-  layer->SetColor(SK_ColorRED);
+  layer->SetColor(SkColors::kRed);
   layer->SetLayerInverted(true);
   layer->SetBackgroundInverted(true);
   layer->SetLayerSepia(initial_sepia_amount);
@@ -865,8 +865,8 @@ TEST_P(LayerWithDelegateTest, Cloning) {
 
   // Cloning preserves layer state.
   EXPECT_EQ(transform, clone->GetTargetTransform());
-  EXPECT_EQ(SK_ColorRED, clone->AsSolidColor()->background_color());
-  EXPECT_EQ(SK_ColorRED, clone->AsSolidColor()->GetTargetColor());
+  EXPECT_EQ(SkColors::kRed, clone->AsSolidColor()->background_color());
+  EXPECT_EQ(SkColors::kRed, clone->AsSolidColor()->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
   EXPECT_TRUE(clone->background_inverted());
   EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
@@ -886,7 +886,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   constexpr float new_layer_hue_rotation = 42.0f;
 
   layer->SetTransform(gfx::Transform());
-  layer->SetColor(SK_ColorGREEN);
+  layer->SetColor(SkColors::kGreen);
   layer->SetLayerInverted(false);
   layer->SetBackgroundInverted(false);
   layer->SetLayerSepia(new_layer_sepia);
@@ -902,8 +902,8 @@ TEST_P(LayerWithDelegateTest, Cloning) {
 
   // The clone is an independent copy, so state changes do not propagate.
   EXPECT_EQ(transform, clone->GetTargetTransform());
-  EXPECT_EQ(SK_ColorRED, clone->AsSolidColor()->background_color());
-  EXPECT_EQ(SK_ColorRED, clone->AsSolidColor()->GetTargetColor());
+  EXPECT_EQ(SkColors::kRed, clone->AsSolidColor()->background_color());
+  EXPECT_EQ(SkColors::kRed, clone->AsSolidColor()->GetTargetColor());
   EXPECT_TRUE(clone->layer_inverted());
   EXPECT_TRUE(clone->background_inverted());
   EXPECT_FLOAT_EQ(initial_sepia_amount, clone->layer_sepia());
@@ -916,8 +916,7 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   EXPECT_NE(layer->rounded_corner_radii(), clone->rounded_corner_radii());
   EXPECT_NE(layer->gradient_mask(), clone->gradient_mask());
 
-  constexpr SkColor kTransparent = SK_ColorTRANSPARENT;
-  layer->SetColor(kTransparent);
+  layer->SetColor(SkColors::kTransparent);
 
   // Color and opaqueness targets should be preserved during cloning, even after
   // switching away from solid color content.
@@ -927,8 +926,8 @@ TEST_P(LayerWithDelegateTest, Cloning) {
 
   // The clone is a copy of the latest state.
   EXPECT_TRUE(clone->GetTargetTransform().IsIdentity());
-  EXPECT_EQ(kTransparent, clone->AsSolidColor()->background_color());
-  EXPECT_EQ(kTransparent, clone->AsSolidColor()->GetTargetColor());
+  EXPECT_EQ(SkColors::kTransparent, clone->AsSolidColor()->background_color());
+  EXPECT_EQ(SkColors::kTransparent, clone->AsSolidColor()->GetTargetColor());
   EXPECT_FALSE(clone->layer_inverted());
   EXPECT_FLOAT_EQ(new_layer_sepia, clone->layer_sepia());
   EXPECT_FLOAT_EQ(new_layer_hue_rotation, clone->layer_hue_rotation());
@@ -938,23 +937,23 @@ TEST_P(LayerWithDelegateTest, Cloning) {
   layer = CreateLayer<LayerSolidColor>();
   layer->SetVisible(true);
   layer->SetOpacity(1.0f);
-  layer->SetColor(SK_ColorRED);
+  layer->SetColor(SkColors::kRed);
 
   ScopedLayerAnimationSettings settings(layer->GetAnimator());
   layer->SetVisible(false);
   layer->SetOpacity(0.0f);
-  layer->SetColor(SK_ColorGREEN);
+  layer->SetColor(SkColors::kGreen);
 
   EXPECT_TRUE(layer->visible());
   EXPECT_EQ(1.0f, layer->opacity());
-  EXPECT_EQ(SK_ColorRED, layer->background_color());
+  EXPECT_EQ(SkColors::kRed, layer->background_color());
 
   clone = layer->Clone();
 
   // Cloning copies animation targets.
   EXPECT_FALSE(clone->visible());
   EXPECT_EQ(0.0f, clone->opacity());
-  EXPECT_EQ(SK_ColorGREEN, clone->AsSolidColor()->background_color());
+  EXPECT_EQ(SkColors::kGreen, clone->AsSolidColor()->background_color());
 }
 
 TEST_P(LayerWithDelegateTest, CloneWithCacheRenderSurface) {
@@ -1092,7 +1091,7 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
   allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
   viz::SurfaceId surface_id_one(arbitrary_frame_sink, local_surface_id);
-  layer->SetShowSurface(surface_id_one, gfx::Size(10, 10), SK_ColorWHITE,
+  layer->SetShowSurface(surface_id_one, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
   EXPECT_FALSE(layer->StretchContentToFillBounds());
 
@@ -1104,7 +1103,7 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
   allocator.GenerateId();
   local_surface_id = allocator.GetCurrentLocalSurfaceId();
   viz::SurfaceId surface_id_two(arbitrary_frame_sink, local_surface_id);
-  layer->SetShowSurface(surface_id_two, gfx::Size(10, 10), SK_ColorWHITE,
+  layer->SetShowSurface(surface_id_two, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), true);
   EXPECT_TRUE(layer->StretchContentToFillBounds());
 
@@ -1200,7 +1199,7 @@ TEST_P(LayerWithNullDelegateTest, LayerContentOpaqueness) {
   EXPECT_FALSE(layer->cc_layer_for_testing()->contents_opaque());
 
   // Set an opaque color.
-  layer->AsSolidColor()->SetColor(SK_ColorRED);
+  layer->AsSolidColor()->SetColor(SkColors::kRed);
   EXPECT_EQ(layer->cc_layer_for_testing()->background_color(), SkColors::kRed);
   EXPECT_EQ(layer->cc_layer_for_testing()->SafeOpaqueBackgroundColor(),
             SkColors::kRed);
@@ -1210,7 +1209,7 @@ TEST_P(LayerWithNullDelegateTest, LayerContentOpaqueness) {
   // Set color with alpha.
   const SkColor4f color_with_alpha =
       SkColor4f::FromColor(SkColorSetARGB(100, 255, 0, 0));
-  layer->AsSolidColor()->SetColor(color_with_alpha.toSkColor());
+  layer->AsSolidColor()->SetColor(color_with_alpha);
   EXPECT_EQ(layer->cc_layer_for_testing()->background_color(),
             color_with_alpha);
   EXPECT_EQ(layer->cc_layer_for_testing()->SafeOpaqueBackgroundColor(),
@@ -1227,7 +1226,7 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   constexpr gfx::RoundedCornersF kCornerRadii(1, 2, 3, 4);
   l1->SetRoundedCornerRadius(kCornerRadii);
   l1->SetIsFastRoundedCorner(true);
-  l1->SetColor(SK_ColorBLACK);
+  l1->SetColor(SkColors::kBlack);
   constexpr viz::SubtreeCaptureId kSubtreeCaptureId(base::Token(0u, 22u));
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
   gfx::LinearGradient gradient_mask(45);
@@ -2747,7 +2746,7 @@ TEST_P(LayerWithDelegateTest, ExternalContent) {
   allocator.GenerateId();
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
-      gfx::Size(10, 10), SK_ColorWHITE,
+      gfx::Size(10, 10), SkColors::kWhite,
       cc::DeadlinePolicy::UseDefaultDeadline(), false);
   scoped_refptr<cc::Layer> after = child->cc_layer_for_testing();
   const auto* surface = static_cast<cc::SurfaceLayer*>(after.get());
@@ -2758,7 +2757,7 @@ TEST_P(LayerWithDelegateTest, ExternalContent) {
   allocator.GenerateId();
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
-      gfx::Size(10, 10), SK_ColorWHITE,
+      gfx::Size(10, 10), SkColors::kWhite,
       cc::DeadlinePolicy::UseSpecifiedDeadline(4u), false);
   EXPECT_EQ(4u, surface->deadline_in_frames());
 }
@@ -2769,7 +2768,7 @@ TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
   viz::SurfaceId surface_id(
       viz::FrameSinkId(0, 1),
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
-  layer->SetShowSurface(surface_id, gfx::Size(10, 10), SK_ColorWHITE,
+  layer->SetShowSurface(surface_id, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   const auto mirror = layer->Mirror();
@@ -2782,12 +2781,12 @@ TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
   surface_id =
       viz::SurfaceId(viz::FrameSinkId(1, 2),
                      viz::LocalSurfaceId(3, base::UnguessableToken::Create()));
-  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SK_ColorWHITE,
+  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   // The mirror should continue to use the same cc_layer.
   EXPECT_EQ(cc_layer, mirror->cc_layer_for_testing());
-  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SK_ColorWHITE,
+  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   // Surface updates propagate to the mirror.
@@ -2857,7 +2856,7 @@ TEST_P(LayerWithDelegateTest, LayerFiltersSurvival) {
 
   // Showing surface content changes the underlying cc layer.
   scoped_refptr<cc::Layer> before = layer->cc_layer_for_testing();
-  layer->SetShowSurface(viz::SurfaceId(), gfx::Size(10, 10), SK_ColorWHITE,
+  layer->SetShowSurface(viz::SurfaceId(), gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
   EXPECT_EQ(layer->layer_grayscale(), 0.5f);
   EXPECT_TRUE(layer->cc_layer_for_testing());
@@ -2938,16 +2937,15 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerAnimations) {
 // Tests that when a LAYER_SOLID_COLOR has its CC layer switched, that
 // opaqueness and color set while not animating, are maintained.
 TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorNotAnimating) {
-  SkColor transparent = SK_ColorTRANSPARENT;
   auto root = CreateLayer<LayerSolidColor>();
   GetCompositor()->SetRootLayer(root.get());
-  root->SetColor(transparent);
+  root->SetColor(SkColors::kTransparent);
 
   EXPECT_FALSE(root->fills_bounds_opaquely());
   EXPECT_FALSE(
       root->GetAnimator()->IsAnimatingProperty(LayerAnimationElement::COLOR));
-  EXPECT_EQ(transparent, root->background_color());
-  EXPECT_EQ(transparent, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kTransparent, root->background_color());
+  EXPECT_EQ(SkColors::kTransparent, root->GetTargetColor());
 
   // Changing the underlying layer should not affect targets.
   ASSERT_TRUE(root->SwitchCCLayerForTest());
@@ -2955,21 +2953,20 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorNotAnimating) {
   EXPECT_FALSE(root->fills_bounds_opaquely());
   EXPECT_FALSE(
       root->GetAnimator()->IsAnimatingProperty(LayerAnimationElement::COLOR));
-  EXPECT_EQ(transparent, root->background_color());
-  EXPECT_EQ(transparent, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kTransparent, root->background_color());
+  EXPECT_EQ(SkColors::kTransparent, root->GetTargetColor());
 }
 
 // Tests that when a LAYER_SOLID_COLOR has its CC layer switched during an
 // animation of its opaquness and color, that both the current values, and the
 // targets are maintained.
 TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
-  SkColor transparent = SK_ColorTRANSPARENT;
   auto root = CreateLayer<LayerSolidColor>();
   GetCompositor()->SetRootLayer(root.get());
-  root->SetColor(SK_ColorBLACK);
+  root->SetColor(SkColors::kBlack);
 
   EXPECT_TRUE(root->fills_bounds_opaquely());
-  EXPECT_EQ(SK_ColorBLACK, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kBlack, root->GetTargetColor());
 
   auto long_duration_animation =
       std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
@@ -2977,14 +2974,14 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
   {
     ui::ScopedLayerAnimationSettings animation(root->GetAnimator());
     animation.SetTransitionDuration(base::Milliseconds(1000));
-    root->SetColor(transparent);
+    root->SetColor(SkColors::kTransparent);
   }
 
   EXPECT_TRUE(root->fills_bounds_opaquely());
   EXPECT_TRUE(
       root->GetAnimator()->IsAnimatingProperty(LayerAnimationElement::COLOR));
-  EXPECT_EQ(SK_ColorBLACK, root->background_color());
-  EXPECT_EQ(transparent, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kBlack, root->background_color());
+  EXPECT_EQ(SkColors::kTransparent, root->GetTargetColor());
 
   // Changing the underlying layer should not affect targets.
   ASSERT_TRUE(root->SwitchCCLayerForTest());
@@ -2992,16 +2989,16 @@ TEST_P(LayerWithRealCompositorTest, SwitchCCLayerSolidColorWhileAnimating) {
   EXPECT_TRUE(root->fills_bounds_opaquely());
   EXPECT_TRUE(
       root->GetAnimator()->IsAnimatingProperty(LayerAnimationElement::COLOR));
-  EXPECT_EQ(SK_ColorBLACK, root->background_color());
-  EXPECT_EQ(transparent, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kBlack, root->background_color());
+  EXPECT_EQ(SkColors::kTransparent, root->GetTargetColor());
 
   // End all animations.
   root->GetAnimator()->StopAnimating();
   EXPECT_FALSE(root->fills_bounds_opaquely());
   EXPECT_FALSE(
       root->GetAnimator()->IsAnimatingProperty(LayerAnimationElement::COLOR));
-  EXPECT_EQ(transparent, root->background_color());
-  EXPECT_EQ(transparent, root->GetTargetColor());
+  EXPECT_EQ(SkColors::kTransparent, root->background_color());
+  EXPECT_EQ(SkColors::kTransparent, root->GetTargetColor());
 }
 
 // Tests that when a layer with cache_render_surface flag has its CC layer

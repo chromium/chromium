@@ -571,7 +571,7 @@ bool WindowOcclusionTracker::VisibleWindowCanOccludeOtherWindows(
   if (auto* layer = window->layer()->AsSolidColor()) {
     auto color = ShouldUseTargetValues() ? layer->GetTargetColor()
                                          : layer->background_color();
-    combined_opacity *= SkColorGetA(color) / 255.f;
+    combined_opacity *= color.fA;
   }
   return (!window->GetTransparent() && WindowHasContent(window) &&
           combined_opacity == 1.0f &&

@@ -72,8 +72,10 @@ void SharedDisplayEdgeIndicator::AnimationProgressed(
     const gfx::Animation* animation) {
   int value = animation->CurrentValueBetween(0, 255);
   SkColor color = SkColorSetARGB(0xFF, value, value, value);
-  src_widget_->GetLayer()->AsSolidColor()->SetColor(color);
-  dst_widget_->GetLayer()->AsSolidColor()->SetColor(color);
+  src_widget_->GetLayer()->AsSolidColor()->SetColor(
+      SkColor4f::FromColor(color));
+  dst_widget_->GetLayer()->AsSolidColor()->SetColor(
+      SkColor4f::FromColor(color));
 }
 
 }  // namespace ash

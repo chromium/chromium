@@ -718,16 +718,16 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
       Shell::Get()->tablet_mode_controller();
 
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color().toSkColor(),
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color().toSkColor(),
             widget->GetColorProvider()->GetColor(
                 cros_tokens::kCrosSysSystemBaseElevated));
 
   tablet_mode_controller->SetEnabledForTest(false);
-  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color(),
+  EXPECT_EQ(tray->layer()->AsSolidColor()->background_color().toSkColor(),
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 }
 

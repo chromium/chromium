@@ -137,8 +137,8 @@ class LayerBasedSolidBackground : public Background {
       layer->SetName(*internal_name_);
     }
 
-    const SkColor resolved_color =
-        color().ResolveToSkColor(view->GetColorProvider());
+    const SkColor4f resolved_color = SkColor4f::FromColor(
+        color().ResolveToSkColor(view->GetColorProvider()));
     if (resolved_color != layer->background_color()) {
       layer->SetColor(resolved_color);
     }

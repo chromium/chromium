@@ -74,7 +74,7 @@ InkDropHighlight::InkDropHighlight(const gfx::Size& size,
 
 InkDropHighlight::InkDropHighlight(const gfx::SizeF& size, SkColor base_color)
     : size_(size), layer_(std::make_unique<ui::LayerSolidColor>()) {
-  layer_->AsSolidColor()->SetColor(base_color);
+  layer_->AsSolidColor()->SetColor(SkColor4f::FromColor(base_color));
   layer_->SetBounds(gfx::Rect(gfx::ToRoundedSize(size)));
   layer_->SetVisible(false);
   layer_->SetMasksToBounds(false);

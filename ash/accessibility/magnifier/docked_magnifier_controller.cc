@@ -26,6 +26,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
@@ -682,7 +683,7 @@ void DockedMagnifierController::CreateMagnifierViewport() {
   // 2- Create the separator layer right below the viwport widget, parented to
   //    the layer of the root window.
   separator_layer_ = std::make_unique<ui::LayerSolidColor>();
-  separator_layer_->SetColor(SK_ColorBLACK);
+  separator_layer_->SetColor(SkColors::kBlack);
   separator_layer_->SetBounds(
       SeparatorBoundsFromViewportBounds(viewport_bounds));
   aura::Window* const separator_parent =
@@ -692,7 +693,7 @@ void DockedMagnifierController::CreateMagnifierViewport() {
   // 3- Create a background layer that will show a dark gray color behind the
   //    magnifier layer. It has the same bounds as the viewport.
   viewport_background_layer_ = std::make_unique<ui::LayerSolidColor>();
-  viewport_background_layer_->SetColor(SK_ColorDKGRAY);
+  viewport_background_layer_->SetColor(SkColors::kDkGray);
   viewport_background_layer_->SetBounds(viewport_bounds);
   aura::Window* viewport_window = viewport_widget_->GetNativeView();
   ui::Layer* viewport_layer = viewport_window->layer();

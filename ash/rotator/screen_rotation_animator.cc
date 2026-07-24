@@ -147,7 +147,7 @@ std::unique_ptr<ui::LayerTreeOwner> CreateMaskLayerTreeOwner(
     const gfx::Rect& rect) {
   auto mask_layer = std::make_unique<ui::LayerSolidColor>();
   mask_layer->SetBounds(rect);
-  mask_layer->SetColor(SK_ColorBLACK);
+  mask_layer->SetColor(SkColors::kBlack);
   return std::make_unique<ui::LayerTreeOwner>(std::move(mask_layer));
 }
 

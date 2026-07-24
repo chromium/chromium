@@ -420,10 +420,10 @@ void ShelfWidgetDelegateView::OnThemeChanged() {
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->ComputeShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
-  animating_background_.SetColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase));
-  animating_drag_handle_.SetColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+  animating_background_.SetColor(SkColor4f::FromColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase)));
+  animating_drag_handle_.SetColor(SkColor4f::FromColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
 }
 
 bool ShelfWidgetDelegateView::CanActivate() const {

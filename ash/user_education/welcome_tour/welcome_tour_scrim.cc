@@ -259,10 +259,10 @@ class WelcomeTourScrim::Scrim : public aura::WindowObserver,
   // Invoked to update color of the scrim layer.
   void UpdateColor() {
     layer_owner_.layer()->AsSolidColor()->SetColor(
-        GetRootWindowController()
-            ->color_provider_source()
-            ->GetColorProvider()
-            ->GetColor(cros_tokens::kCrosSysScrim));
+        SkColor4f::FromColor(GetRootWindowController()
+                                 ->color_provider_source()
+                                 ->GetColorProvider()
+                                 ->GetColor(cros_tokens::kCrosSysScrim)));
   }
 
   // Pointer to the root window associated with `this` scrim.

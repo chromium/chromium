@@ -136,9 +136,9 @@ void WallpaperWidgetController::OnDisplayMetricsChanged(
 
 void WallpaperWidgetController::OnColorProviderChanged() {
   if (wallpaper_underlay_layer_) {
-    wallpaper_underlay_layer_->SetColor(
+    wallpaper_underlay_layer_->SetColor(SkColor4f::FromColor(
         GetColorProviderSource()->GetColorProvider()->GetColor(
-            cros_tokens::kCrosSysSystemBase));
+            cros_tokens::kCrosSysSystemBase)));
   }
 }
 

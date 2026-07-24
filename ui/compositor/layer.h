@@ -462,13 +462,13 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // surface_size uses `bounds_` instead.
   void SetShowSurface(const viz::SurfaceId& surface_id,
                       const gfx::Size& frame_size_in_dip,
-                      SkColor default_background_color,
+                      SkColor4f default_background_color,
                       const cc::DeadlinePolicy& deadline_policy,
                       bool stretch_content_to_fill_bounds);
 
   // Updates the surface to a particular ID without changing size.
   void SetShowSurface(const viz::SurfaceId& surface_id,
-                      SkColor default_background_color,
+                      SkColor4f default_background_color,
                       const cc::DeadlinePolicy& deadline_policy,
                       bool stretch_content_to_fill_bounds);
 
@@ -1051,9 +1051,9 @@ class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
   void SetShowSolidColorContent();
 
   // Sets the layer's fill color.
-  void SetColor(SkColor color);
-  SkColor GetTargetColor() const;
-  SkColor background_color() const;
+  void SetColor(SkColor4f color);
+  SkColor4f GetTargetColor() const;
+  SkColor4f background_color() const;
 
   // Layer:
   std::unique_ptr<Layer> Clone() const override;

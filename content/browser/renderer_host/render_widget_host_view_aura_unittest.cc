@@ -3164,7 +3164,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   auto* parent_layer = view_->GetNativeView()->layer()->AsSolidColor();
 
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), parent_layer->bounds());
-  EXPECT_EQ(SK_ColorRED, parent_layer->background_color());
+  EXPECT_EQ(SkColors::kRed, parent_layer->background_color());
 }
 
 // Tests background setting priority.

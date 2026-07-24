@@ -200,7 +200,8 @@ void ContentsWebView::UpdateBackgroundColor() {
   }
 
   auto* background_layer = layer()->AsSolidColor();
-  background_layer->SetColor(background_visible_ ? color : SK_ColorTRANSPARENT);
+  background_layer->SetColor(
+      SkColor4f::FromColor(background_visible_ ? color : SK_ColorTRANSPARENT));
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =

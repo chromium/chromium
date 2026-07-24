@@ -85,7 +85,7 @@ void WindowDimmer::SetDimOpacity(float target_opacity) {
 
   DCHECK(window_);
   window_->layer()->AsSolidColor()->SetColor(
-      SkColorSetA(SK_ColorBLACK, 255 * target_opacity));
+      SkColor4f::FromColor(SkColorSetA(SK_ColorBLACK, 255 * target_opacity)));
 }
 
 void WindowDimmer::SetDimColor(ui::ColorId color_id) {
@@ -169,7 +169,8 @@ void WindowDimmer::UpdateDimColor() {
   auto dimming_color = color_provider_source->GetColorProvider()->GetColor(
       dim_color_type_.value());
   DCHECK_NE(SkColorGetA(dimming_color), SK_AlphaOPAQUE);
-  window_->layer()->AsSolidColor()->SetColor(dimming_color);
+  window_->layer()->AsSolidColor()->SetColor(
+      SkColor4f::FromColor(dimming_color));
 }
 
 }  // namespace ash

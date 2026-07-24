@@ -25,7 +25,7 @@ std::vector<std::unique_ptr<ui::Layer>> InitWidgetLayers(
   // To prevent the widget from being transparent in this case, we add a
   // solid color layer.
   auto solid_color_layer = std::make_unique<ui::LayerSolidColor>();
-  solid_color_layer->SetColor(SK_ColorLTGRAY);
+  solid_color_layer->SetColor(SkColors::kLtGray);
   root_layer.Add(solid_color_layer.get());
 
   auto textured_layer = std::make_unique<ui::LayerTextured>();

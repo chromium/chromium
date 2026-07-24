@@ -384,8 +384,9 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.
     pulse_layer_ = std::make_unique<ui::LayerSolidColor>();
-    pulse_layer_->SetColor(nudge_widget_->GetColorProvider()->GetColor(
-        ui::kColorMultitaskMenuNudgePulse));
+    pulse_layer_->SetColor(
+        SkColor4f::FromColor(nudge_widget_->GetColorProvider()->GetColor(
+            ui::kColorMultitaskMenuNudgePulse)));
     window_->parent()->layer()->Add(pulse_layer_.get());
   }
 

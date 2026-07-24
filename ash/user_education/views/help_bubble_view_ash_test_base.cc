@@ -123,7 +123,8 @@ void HelpBubbleViewAshTestBase::SetUp() {
   widget_->Init(std::move(params));
 
   // Give the `widget_` color so that it stands out in benchmark images.
-  widget_->GetLayer()->AsSolidColor()->SetColor(gfx::kPlaceholderColor);
+  widget_->GetLayer()->AsSolidColor()->SetColor(
+      SkColor4f::FromColor(gfx::kPlaceholderColor));
 
   // Center the `widget_` so that we can confirm various anchoring strategies
   // are working as intended.

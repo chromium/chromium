@@ -332,7 +332,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 
     if (cursor_window_ && use_inverted_cursor_) {
       invert_layer_ = std::make_unique<ui::LayerSolidColor>();
-      invert_layer_->SetColor(SK_ColorTRANSPARENT);
+      invert_layer_->SetColor(SkColors::kTransparent);
       invert_layer_->SetBackgroundInverted(true);
       invert_layer_->SetBounds(gfx::Rect(size_));
 

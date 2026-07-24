@@ -458,8 +458,8 @@ void BackdropController::EnsureBackdropWidget() {
   // The backdrop window in always on top container can be reparented without
   // this when the window is set to fullscreen.
   AlwaysOnTopController::SetDisallowReparent(backdrop_window_);
-  backdrop_window_->layer()->AsSolidColor()->SetColor(
-      WindowBackdrop::Get(window_having_backdrop_)->GetBackdropColor());
+  backdrop_window_->layer()->AsSolidColor()->SetColor(SkColor4f::FromColor(
+      WindowBackdrop::Get(window_having_backdrop_)->GetBackdropColor()));
 
   WindowState::Get(backdrop_window_)->set_allow_set_bounds_direct(true);
   UpdateAccessibilityMode();
@@ -541,8 +541,8 @@ void BackdropController::Show() {
   const SkColor backdrop_color =
       WindowBackdrop::Get(window_having_backdrop_)->GetBackdropColor();
   auto* backdrop_layer = backdrop_window_->layer()->AsSolidColor();
-  if (backdrop_layer->GetTargetColor() != backdrop_color) {
-    backdrop_layer->SetColor(backdrop_color);
+  if (backdrop_layer->GetTargetColor().toSkColor() != backdrop_color) {
+    backdrop_layer->SetColor(SkColor4f::FromColor(backdrop_color));
   }
 
   // Update the stcking, only after we determine we can show the backdrop. The

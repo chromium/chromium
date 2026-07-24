@@ -114,8 +114,9 @@ void EditLabel::PerformPulseAnimation(int pulse_count) {
   if (pulse_count == 0) {
     pulse_layer_ = std::make_unique<ui::LayerSolidColor>();
     widget->GetLayer()->Add(pulse_layer_.get());
-    pulse_layer_->SetColor(widget->GetColorProvider()->GetColor(
-        cros_tokens::kCrosSysHighlightText));
+    pulse_layer_->SetColor(
+        SkColor4f::FromColor(widget->GetColorProvider()->GetColor(
+            cros_tokens::kCrosSysHighlightText)));
   }
 
   DCHECK(pulse_layer_);

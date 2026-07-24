@@ -580,7 +580,7 @@ void SurfaceTreeHost::MaybeActivateSurface() {
   host_window_->UpdateLocalSurfaceIdFromEmbeddedClient(
       GetCurrentLocalSurfaceId());
   commit_target_layer->SetShowSurface(
-      GetSurfaceId(), commit_target_layer->bounds().size(), SK_ColorWHITE,
+      GetSurfaceId(), commit_target_layer->bounds().size(), SkColors::kWhite,
       cc::DeadlinePolicy::UseDefaultDeadline(),
       false /* stretch_content_to_fill_bounds */);
 }

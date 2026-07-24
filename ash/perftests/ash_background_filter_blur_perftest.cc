@@ -71,7 +71,7 @@ std::unique_ptr<ui::LayerSolidColor>
 AshBackgroundFilterBlurPerfTest::CreateSolidColorLayer(SkColor color) {
   auto layer = std::make_unique<ui::LayerSolidColor>();
   layer->SetBounds(root_layer_->bounds());
-  layer->SetColor(color);
+  layer->SetColor(SkColor4f::FromColor(color));
   root_layer_->Add(layer.get());
   root_layer_->StackAtTop(layer.get());
   return layer;
