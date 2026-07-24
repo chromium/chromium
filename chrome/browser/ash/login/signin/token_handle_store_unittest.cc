@@ -667,13 +667,15 @@ class TokenHandleStoreHistogramTest
   void CreateAndInitializeAccountManager() {
     account_manager_ = std::make_unique<account_manager::AccountManager>();
     EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir());
+    base::test::TestFuture<void> initialization_future;
     account_manager_->Initialize(
         tmp_dir_.GetPath(), GetSharedURLLoaderFactory(),
         base::BindRepeating([](base::OnceClosure closure) -> void {
           std::move(closure).Run();
-        }));
+        }),
+        initialization_future.GetCallback());
     account_manager_->SetPrefService(&user_prefs_);
-    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(initialization_future.Wait());
     EXPECT_TRUE(account_manager_->IsInitialized());
   }
 
