@@ -358,7 +358,7 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
         GetTargetTab(),
         GetOtpFrame(GetTargetTab(), trigger_field_ids_)
             ->GetLastCommittedOrigin(),
-        trigger_field_ids_,
+        trigger_field_ids_, is_actor_login,
         base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
