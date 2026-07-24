@@ -268,6 +268,7 @@ export class HelpBubbleController {
 
     this.bubble_ = document.createElement('help-bubble');
     this.bubble_.nativeId = this.nativeId_;
+    this.bubble_.secondaryId = params.id.secondaryIdentifier;
     this.bubble_.position = isRtlLang(this.anchor_) ?
         reflectArrowPosition(params.position) :
         params.position;

@@ -13,6 +13,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {TrackedElementIdentifier} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT} from './help_bubble.js';
 import type {HelpBubbleDismissedEvent, HelpBubbleElement} from './help_bubble.js';
@@ -188,10 +189,10 @@ export class HelpBubbleMixinCommon {
 
   showHelpBubble(params: HelpBubbleParams): void {
     assert(
-        this.canShowHelpBubble(params.nativeIdentifier),
+        this.canShowHelpBubble(params.id.nativeIdentifier),
         'Can\'t show help bubble');
     const controller =
-        this.helpBubbleControllerById_.get(params.nativeIdentifier)!;
+        this.helpBubbleControllerById_.get(params.id.nativeIdentifier)!;
     const bubble = controller.createBubble(params);
     this.helpBubbleDismissedEventTracker_.add(
         bubble, HELP_BUBBLE_DISMISSED_EVENT,
@@ -248,14 +249,15 @@ export class HelpBubbleMixinCommon {
    */
   private onAnchorVisibilityChanged_(
       target: HTMLElement, isVisible: boolean, bounds: RectF) {
-    const nativeId = target.dataset['nativeId']!;
-    assert(nativeId);
-    const ctrl = this.helpBubbleControllerById_.get(nativeId);
+    const nativeIdentifier = target.dataset['nativeId']!;
+    const secondaryIdentifier = target.dataset['secondaryId']!;
+    const ctrl = this.helpBubbleControllerById_.get(nativeIdentifier);
     if (!isVisible) {
-      const hidden = this.hideHelpBubble(nativeId);
+      const hidden = this.hideHelpBubble(nativeIdentifier);
       if (hidden) {
         this.helpBubbleProxy_.handler.helpBubbleClosed(
-            nativeId, HelpBubbleClosedReason.kPageChanged);
+            {nativeIdentifier, secondaryIdentifier},
+            HelpBubbleClosedReason.kPageChanged);
       }
     }
     if (ctrl) {
@@ -267,7 +269,7 @@ export class HelpBubbleMixinCommon {
    * This event is emitted by the mojo router
    */
   private onShowHelpBubble_(params: HelpBubbleParams): void {
-    if (!this.helpBubbleControllerById_.has(params.nativeIdentifier)) {
+    if (!this.helpBubbleControllerById_.has(params.id.nativeIdentifier)) {
       // Identifier not handled by this mixin.
       return;
     }
@@ -277,13 +279,14 @@ export class HelpBubbleMixinCommon {
   /**
    * This event is emitted by the mojo router
    */
-  private onToggleHelpBubbleFocusForAccessibility_(nativeId: string) {
-    if (!this.helpBubbleControllerById_.has(nativeId)) {
+  private onToggleHelpBubbleFocusForAccessibility_(
+      id: TrackedElementIdentifier) {
+    if (!this.helpBubbleControllerById_.has(id.nativeIdentifier)) {
       // Identifier not handled by this mixin.
       return;
     }
 
-    const ctrl = this.helpBubbleControllerById_.get(nativeId)!;
+    const ctrl = this.helpBubbleControllerById_.get(id.nativeIdentifier)!;
     if (ctrl) {
       const anchor = ctrl.getAnchor();
       if (anchor) {
@@ -295,23 +298,24 @@ export class HelpBubbleMixinCommon {
   /**
    * This event is emitted by the mojo router
    */
-  private onHideHelpBubble_(nativeId: string): void {
+  private onHideHelpBubble_(id: TrackedElementIdentifier): void {
     // This may be called with nativeId not handled by this mixin
     // Ignore return value to silently fail
-    this.hideHelpBubble(nativeId);
+    this.hideHelpBubble(id.nativeIdentifier);
   }
 
   /**
    * This event is emitted by the mojo router.
    */
-  private onExternalHelpBubbleUpdated_(nativeId: string, shown: boolean) {
-    if (!this.helpBubbleControllerById_.has(nativeId)) {
+  private onExternalHelpBubbleUpdated_(
+      id: TrackedElementIdentifier, shown: boolean) {
+    if (!this.helpBubbleControllerById_.has(id.nativeIdentifier)) {
       // Identifier not handled by this mixin.
       return;
     }
 
     // Get the associated bubble and update status
-    const ctrl = this.helpBubbleControllerById_.get(nativeId)!;
+    const ctrl = this.helpBubbleControllerById_.get(id.nativeIdentifier)!;
     ctrl.updateExternalShowingStatus(shown);
   }
 
@@ -319,18 +323,19 @@ export class HelpBubbleMixinCommon {
    * This event is emitted by the help-bubble component
    */
   private onHelpBubbleDismissed_(e: HelpBubbleDismissedEvent) {
-    const nativeId = e.detail.nativeId;
-    assert(nativeId);
-    const hidden = this.hideHelpBubble(nativeId);
+    const nativeIdentifier = e.detail.nativeId;
+    const secondaryIdentifier = e.detail.secondaryId;
+    assert(nativeIdentifier);
+    assert(secondaryIdentifier);
+    const hidden = this.hideHelpBubble(nativeIdentifier);
     assert(hidden);
-    if (nativeId) {
-      if (e.detail.fromActionButton) {
-        this.helpBubbleProxy_.handler.helpBubbleButtonPressed(
-            nativeId, e.detail.buttonIndex!);
-      } else {
-        this.helpBubbleProxy_.handler.helpBubbleClosed(
-            nativeId, HelpBubbleClosedReason.kDismissedByUser);
-      }
+    if (e.detail.fromActionButton) {
+      this.helpBubbleProxy_.handler.helpBubbleButtonPressed(
+          {nativeIdentifier, secondaryIdentifier}, e.detail.buttonIndex!);
+    } else {
+      this.helpBubbleProxy_.handler.helpBubbleClosed(
+          {nativeIdentifier, secondaryIdentifier},
+          HelpBubbleClosedReason.kDismissedByUser);
     }
   }
 
@@ -338,13 +343,14 @@ export class HelpBubbleMixinCommon {
    * This event is emitted by the help-bubble component
    */
   private onHelpBubbleTimedOut_(e: HelpBubbleDismissedEvent) {
-    const nativeId = e.detail.nativeId;
-    assert(nativeId);
-    const hidden = this.hideHelpBubble(nativeId);
+    const nativeIdentifier = e.detail.nativeId;
+    const secondaryIdentifier = e.detail.secondaryId;
+    assert(nativeIdentifier);
+    assert(secondaryIdentifier);
+    const hidden = this.hideHelpBubble(nativeIdentifier);
     assert(hidden);
-    if (nativeId) {
-      this.helpBubbleProxy_.handler.helpBubbleClosed(
-          nativeId, HelpBubbleClosedReason.kTimedOut);
-    }
+    this.helpBubbleProxy_.handler.helpBubbleClosed(
+        {nativeIdentifier, secondaryIdentifier},
+        HelpBubbleClosedReason.kTimedOut);
   }
 }

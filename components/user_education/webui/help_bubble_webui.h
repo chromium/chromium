@@ -43,13 +43,15 @@ class HelpBubbleWebUI : public HelpBubble {
   friend class HelpBubbleHandlerBase;
 
   HelpBubbleWebUI(HelpBubbleHandlerBase* handler,
-                  ui::ElementIdentifier anchor_id);
+                  ui::ElementIdentifier anchor_id,
+                  const std::string& secondary_id);
 
   // HelpBubble:
   bool Close(CloseReason reason) override;
 
   const raw_ptr<HelpBubbleHandlerBase> handler_;
   const ui::ElementIdentifier anchor_id_;
+  const std::string secondary_id_;
 };
 
 // This factory uses HelpBubbleHandler to show a help bubble and create a

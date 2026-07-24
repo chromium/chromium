@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/js/tracked_element/tracked_element.mojom-forward.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 
 namespace content {
@@ -109,28 +110,41 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   std::unique_ptr<HelpBubbleWebUI> CreateHelpBubble(
       ui::TrackedElementWebUI* element,
       HelpBubbleParams params);
-  void OnHelpBubbleClosing(ui::ElementIdentifier anchor_id);
-  bool ToggleHelpBubbleFocusForAccessibility(ui::ElementIdentifier anchor_id);
-  gfx::Rect GetHelpBubbleBoundsInScreen(ui::ElementIdentifier anchor_id) const;
+  void OnHelpBubbleClosing(ui::ElementIdentifier anchor_id,
+                           const std::string& secondary_id);
+  bool ToggleHelpBubbleFocusForAccessibility(ui::ElementIdentifier anchor_id,
+                                             const std::string& secondary_id);
+  gfx::Rect GetHelpBubbleBoundsInScreen(ui::ElementIdentifier anchor_id,
+                                        const std::string& secondary_id) const;
   void OnFloatingHelpBubbleCreated(ui::TrackedElementWebUI* anchor_id,
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
+                                  const std::string& secondary_id,
                                   const HelpBubble* help_bubble,
                                   HelpBubble::CloseReason);
 
   // mojom::HelpBubbleHandler:
-  void HelpBubbleButtonPressed(const std::string& identifier_name,
-                               uint8_t button) final;
+  void HelpBubbleButtonPressed(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      uint8_t button) final;
   void HelpBubbleClosed(
-      const std::string& identifier_name,
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
       help_bubble::mojom::HelpBubbleClosedReason reason) final;
 
-  ElementData* GetDataByName(const std::string& identifier_name,
-                             ui::ElementIdentifier* found_identifier = nullptr);
+  ElementData* GetDataByName(
+      const tracked_element::mojom::TrackedElementIdentifierPtr& id,
+      std::string_view error_prefix,
+      ui::ElementIdentifier* found_identifier = nullptr);
+
+  ElementData* GetDataById(ui::ElementIdentifier id,
+                           const std::string& secondary_id);
+  const ElementData* GetDataById(ui::ElementIdentifier id,
+                                 const std::string& secondary_id) const;
 
   const std::unique_ptr<ClientProvider> client_provider_;
   base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler_;
-  std::map<ui::ElementIdentifier, ElementData> element_data_;
+  std::map<ui::ElementIdentifier, std::map<std::string, ElementData>>
+      element_data_;
 
   base::WeakPtrFactory<HelpBubbleHandlerBase> weak_ptr_factory_{this};
 };

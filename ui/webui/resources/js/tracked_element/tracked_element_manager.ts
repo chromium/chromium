@@ -315,6 +315,17 @@ export class TrackedElementManager {
     return this.trackedElements_.get(nativeId)?.get(secondaryId);
   }
 
+  getAllElementsWithId(nativeIdentifier: string): HTMLElement[] {
+    const result = [];
+    const map = this.trackedElements_.get(nativeIdentifier);
+    if (map) {
+      for (const element of map.values()) {
+        result.push(element.element);
+      }
+    }
+    return result;
+  }
+
   private static idToString_(id: TrackedElementIdentifier) {
     return id.nativeIdentifier + ' - ' + id.secondaryIdentifier;
   }

@@ -13,8 +13,9 @@
 namespace user_education {
 
 HelpBubbleWebUI::HelpBubbleWebUI(HelpBubbleHandlerBase* handler,
-                                 ui::ElementIdentifier anchor_id)
-    : handler_(handler), anchor_id_(anchor_id) {
+                                 ui::ElementIdentifier anchor_id,
+                                 const std::string& secondary_id)
+    : handler_(handler), anchor_id_(anchor_id), secondary_id_(secondary_id) {
   CHECK(handler_);
 }
 
@@ -27,11 +28,12 @@ content::WebContents* HelpBubbleWebUI::GetWebContents() {
 }
 
 bool HelpBubbleWebUI::ToggleFocusForAccessibility() {
-  return handler_->ToggleHelpBubbleFocusForAccessibility(anchor_id_);
+  return handler_->ToggleHelpBubbleFocusForAccessibility(anchor_id_,
+                                                         secondary_id_);
 }
 
 gfx::Rect HelpBubbleWebUI::GetBoundsInScreen() const {
-  return handler_->GetHelpBubbleBoundsInScreen(anchor_id_);
+  return handler_->GetHelpBubbleBoundsInScreen(anchor_id_, secondary_id_);
 }
 
 ui::ElementContext HelpBubbleWebUI::GetContext() const {
@@ -41,7 +43,7 @@ ui::ElementContext HelpBubbleWebUI::GetContext() const {
 bool HelpBubbleWebUI::Close(CloseReason reason) {
   auto on_close = BeginClose(reason);
   if (on_close.is_valid()) {
-    handler_->OnHelpBubbleClosing(anchor_id_);
+    handler_->OnHelpBubbleClosing(anchor_id_, secondary_id_);
   }
   return on_close.is_valid();
 }

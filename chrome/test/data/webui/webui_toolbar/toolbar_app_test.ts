@@ -7,6 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {browserProxyFactory} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import type {HelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -95,12 +96,12 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
     this.methodCalled('bindTrackedElementHandler');
   }
 
-  helpBubbleButtonPressed(nativeIdentifier: string, button: number) {
-    this.methodCalled('helpBubbleButtonPressed', nativeIdentifier, button);
+  helpBubbleButtonPressed(id: TrackedElementIdentifier, button: number) {
+    this.methodCalled('helpBubbleButtonPressed', id, button);
   }
 
-  helpBubbleClosed(nativeIdentifier: string, reason: any) {
-    this.methodCalled('helpBubbleClosed', nativeIdentifier, reason);
+  helpBubbleClosed(id: TrackedElementIdentifier, reason: any) {
+    this.methodCalled('helpBubbleClosed', id, reason);
   }
 }
 

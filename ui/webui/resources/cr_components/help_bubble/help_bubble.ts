@@ -39,12 +39,14 @@ export const HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS: ScrollIntoViewOptions = {
 
 export type HelpBubbleDismissedEvent = CustomEvent<{
   nativeId: string,
+  secondaryId: string,
   fromActionButton: boolean,
   buttonIndex?: number,
 }>;
 
 export type HelpBubbleTimedOutEvent = CustomEvent<{
   nativeId: string,
+  secondaryId: string,
 }>;
 
 export interface HelpBubbleElement {
@@ -81,6 +83,10 @@ export class HelpBubbleElement extends CrLitElement {
         type: String,
         reflect: true,
       },
+      secondaryId: {
+        type: String,
+        reflect: true,
+      },
       position: {
         type: Number,
         reflect: true,
@@ -103,6 +109,7 @@ export class HelpBubbleElement extends CrLitElement {
   }
 
   accessor nativeId: string = '';
+  accessor secondaryId: string = '';
   accessor bodyText: string = '';
   accessor titleText: string = '';
   accessor closeButtonAltText: string = '';
@@ -182,6 +189,7 @@ export class HelpBubbleElement extends CrLitElement {
       const timedOutCallback = () => {
         this.fire(HELP_BUBBLE_TIMED_OUT_EVENT, {
           nativeId: this.nativeId,
+          secondaryId: this.secondaryId,
         });
       };
       this.timeoutTimerId = setTimeout(timedOutCallback, this.timeoutMs);
@@ -264,6 +272,7 @@ export class HelpBubbleElement extends CrLitElement {
     assert(this.nativeId, 'Dismiss: expected help bubble to have a native id.');
     this.fire(HELP_BUBBLE_DISMISSED_EVENT, {
       nativeId: this.nativeId,
+      secondaryId: this.secondaryId,
       fromActionButton: false,
     });
   }
@@ -312,12 +321,16 @@ export class HelpBubbleElement extends CrLitElement {
     assert(
         this.nativeId,
         'Action button clicked: expected help bubble to have a native ID.');
+    assert(
+        this.secondaryId,
+        'Action button clicked: expected help bubble to have a secondary ID.');
     // There is no access to the model index here due to limitations of
     // dom-repeat. However, the index is stored in the node's identifier.
     const index: number = parseInt(
         (e.target as Element).id.substring(ACTION_BUTTON_ID_PREFIX.length));
     this.fire(HELP_BUBBLE_DISMISSED_EVENT, {
       nativeId: this.nativeId,
+      secondaryId: this.secondaryId,
       fromActionButton: true,
       buttonIndex: index,
     });

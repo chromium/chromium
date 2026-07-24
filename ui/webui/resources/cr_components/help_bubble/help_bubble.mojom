@@ -63,7 +63,7 @@ struct HelpBubbleParams {
   // Holds the name of the ElementIdentifier used to identify the help bubble's
   // anchor in C++ code. The HelpBubbleMixin then maps this to a specific HTML
   // element ID.
-  string native_identifier;
+  tracked_element.mojom.TrackedElementIdentifier id;
 
   HelpBubbleArrowPosition position = HelpBubbleArrowPosition.TOP_CENTER;
   string? title_text;
@@ -122,23 +122,19 @@ interface PdfHelpBubbleHandlerFactory {
 // Help bubbles are anchored to specific elements in the UI, identified by
 // ui::ElementIdentifiers. The HelpBubbleMixin maps this to an HTML id within
 // its component.
-//
-// We always use the name of the ElementIdentifier (`native_identifier`) when
-// showing a help bubble or when communicating events back to the handler on the
-// browser side, because HTML ids can be ambiguous within a document with shadow
-// DOMs.
 interface HelpBubbleHandler {
-  // Notifies that a button on the help bubble anchored to `native_identifier`
-  // has been pressed and the help bubble is closing as a result. The
-  // `buttonIndex` parameter will be set to the (0-indexed) index of the button
-  // as it was specified in the `HelpBubbleParams.buttons` used to show the help
-  // bubble.
-  HelpBubbleButtonPressed(string native_identifier, uint8 button_index);
+  // Notifies that a button on the help bubble anchored to `id` has been pressed
+  // and the help bubble is closing as a result. The `buttonIndex` parameter
+  // will be set to the (0-indexed) index of the button as it was specified in
+  // the `HelpBubbleParams.buttons` used to show the help bubble.
+  HelpBubbleButtonPressed(tracked_element.mojom.TrackedElementIdentifier id,
+                          uint8 button_index);
 
-  // Called when the help bubble anchored to `native_identifier` is closed,
+  // Called when the help bubble anchored to `id` is closed,
   // either because the element it is associated with goes away, the user
   // canceled it (e.g. pressed the [x] button), or the timeout was reached.
-  HelpBubbleClosed(string native_identifier, HelpBubbleClosedReason reason);
+  HelpBubbleClosed(tracked_element.mojom.TrackedElementIdentifier id,
+                   HelpBubbleClosedReason reason);
 };
 
 // Represents WebUI component that can display help bubbles. The implementing UI
@@ -148,16 +144,18 @@ interface HelpBubbleClient {
   // `target`.
   ShowHelpBubble(HelpBubbleParams params);
 
-  // Toggles focus to the help bubble anchored to `native_identifier` or to its
+  // Toggles focus to the help bubble anchored to `id` or to its
   // anchor element.
-  ToggleFocusForAccessibility(string native_identifier);
+  ToggleFocusForAccessibility(
+      tracked_element.mojom.TrackedElementIdentifier id);
 
-  // Invoked to hide the help bubble anchored to `native_identifier` if it
+  // Invoked to hide the help bubble anchored to `id` if it
   // should no longer be shown.
-  HideHelpBubble(string native_identifier);
+  HideHelpBubble(tracked_element.mojom.TrackedElementIdentifier id);
 
   // Notifies the client that an external help bubble (i.e. one owned/displayed
-  // by the handler) anchored to `native_identifier` has been shown or hidden.
+  // by the handler) anchored to `id` has been shown or hidden.
   // The client may change the visual appearance of the anchor as a result.
-  ExternalHelpBubbleUpdated(string native_identifier, bool shown);
+  ExternalHelpBubbleUpdated(tracked_element.mojom.TrackedElementIdentifier id,
+                            bool shown);
 };
