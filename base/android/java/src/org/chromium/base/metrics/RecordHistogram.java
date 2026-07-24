@@ -16,7 +16,7 @@ public class RecordHistogram {
     /**
      * Records a sample in a boolean UMA histogram of the given name. Boolean histogram has two
      * buckets, corresponding to success (true) and failure (false). This is the Java equivalent of
-     * the UMA_HISTOGRAM_BOOLEAN C++ macro.
+     * base::UmaHistogramBoolean() in C++.
      *
      * @param name name of the histogram
      * @param sample sample to be recorded, either true or false
@@ -26,19 +26,18 @@ public class RecordHistogram {
     }
 
     /**
-     * Records a sample in an enumerated histogram of the given name and boundary. Note that
-     * {@code max} identifies the histogram - it should be the same at every invocation. This is the
-     * Java equivalent of the UMA_HISTOGRAM_ENUMERATION C++ macro.
+     * Records a sample in an enumerated histogram of the given name and boundary. This is the
+     * Java equivalent of base::UmaHistogramEnumeration() with three params in C++.
+     * Note: This API and the three-param C++ API expect the last param to be the enum size, rather
+     * than the max possible value. It must be 1000 or less and all call sites of a metric must pass
+     * the same value.
      *
      * @param name name of the histogram
-     * @param sample sample to be recorded, at least 0 and at most {@code max-1}
-     * @param max upper bound for legal sample values - all sample values have to be
-     *            lower than or equal to {@code max}. This value should be 1000 or less.
+     * @param sample sample to be recorded, at least 0 and at most {@code enumSize-1}
+     * @param enumSize number of possible values - all {@code sample} values must be strictly lower
      */
-    public static void recordEnumeratedHistogram(String name, int sample, int max) {
-        // While recordExactLinearHistogram’s documentation states that the third argument
-        // should be 100 or less, a value up to 1000 is actually accepted.
-        recordExactLinearHistogram(name, sample, max);
+    public static void recordEnumeratedHistogram(String name, int sample, int enumSize) {
+        recordExactLinearHistogram(name, sample, enumSize);
     }
 
     /**
