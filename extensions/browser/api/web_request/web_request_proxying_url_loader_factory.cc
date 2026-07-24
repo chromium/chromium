@@ -141,9 +141,9 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::FollowRedirectParams::
 
 WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     WebRequestProxyingURLLoaderFactory* factory,
-    uint64_t request_id,
-    int32_t network_service_request_id,
-    int32_t client_request_id,
+    uint64_t profile_request_id,
+    int32_t request_id_for_network_service,
+    int32_t request_id_from_client,
     int32_t view_routing_id,
     int32_t frame_routing_id,
     uint32_t options,
@@ -156,9 +156,9 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     : factory_(factory),
       request_(request),
       original_initiator_(request.request_initiator),
-      request_id_(request_id),
-      network_service_request_id_(network_service_request_id),
-      client_request_id_(client_request_id),
+      profile_request_id_(profile_request_id),
+      request_id_for_network_service_(request_id_for_network_service),
+      request_id_from_client_(request_id_from_client),
       view_routing_id_(view_routing_id),
       frame_routing_id_(frame_routing_id),
       options_(options),
@@ -170,19 +170,20 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       target_client_(std::move(client)),
       current_response_(network::mojom::URLResponseHead::New()),
       has_any_extra_headers_listeners_(
-          network_service_request_id_ != 0 &&
+          request_id_for_network_service_ != 0 &&
           WebRequestEventRouter::Get(factory_->browser_context_)
               ->HasAnyExtraHeadersListener(factory_->browser_context_)),
       has_any_security_info_listeners_(
           WebRequestEventRouter::Get(factory_->browser_context_)
               ->HasAnySecurityInfoListener(factory_->browser_context_)),
       navigation_response_task_runner_(navigation_response_task_runner) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "InProgressRequest",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "url", request.url.spec());
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "InProgressRequest",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "url", request.url.spec());
 
   // If there is a client error, clean up the request.
   target_client_.set_disconnect_handler(
@@ -197,13 +198,13 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 
 WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     WebRequestProxyingURLLoaderFactory* factory,
-    uint64_t request_id,
+    uint64_t profile_request_id,
     int32_t frame_routing_id,
     const network::ResourceRequest& request)
     : factory_(factory),
       request_(request),
       original_initiator_(request.request_initiator),
-      request_id_(request_id),
+      profile_request_id_(profile_request_id),
       frame_routing_id_(frame_routing_id),
       ukm_source_id_(ukm::kInvalidSourceIdObj),
       proxied_loader_receiver_(this),
@@ -214,23 +215,25 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       has_any_security_info_listeners_(
           WebRequestEventRouter::Get(factory_->browser_context_)
               ->HasAnySecurityInfoListener(factory_->browser_context_)) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "InProgressRequest",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "url", request.url.spec());
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "InProgressRequest",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "url", request.url.spec());
 }
 
 WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
   DCHECK_NE(state_, State::kInvalid);
 
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "~InProgressRequest",
-              perfetto::TerminatingFlow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "state", state_);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "~InProgressRequest",
+      perfetto::TerminatingFlow::ProcessScoped(
+          profile_request_id_, kWebRequestProxyingURLLoaderFactoryScope),
+      "state", state_);
 
   if (request_.keepalive && !for_cors_preflight_) {
     ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
@@ -271,7 +274,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   request_for_info.request_initiator = original_initiator_;
   // TODO(crbug.com/379869738): Port render_process_id_ to ChildProcessId.
   info_.emplace(WebRequestInfoInitParams(
-      request_id_,
+      profile_request_id_,
       content::GlobalRenderFrameHostId(factory_->render_process_id_,
                                        frame_routing_id_),
       factory_->navigation_ui_data_ ? factory_->navigation_ui_data_->DeepCopy()
@@ -296,7 +299,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       factory_->url_loader_header_client_receiver_.is_bound() &&
       (request_.url.SchemeIsHTTPOrHTTPS() ||
        request_.url.SchemeIs(url::kUuidInPackageScheme)) &&
-      (for_cors_preflight_ || network_service_request_id_ != 0) &&
+      (for_cors_preflight_ || request_id_for_network_service_ != 0) &&
       WebRequestEventRouter::Get(factory_->browser_context_)
           ->HasExtraHeadersListenerForRequest(factory_->browser_context_,
                                               &info_.value());
@@ -414,11 +417,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnReceiveResponse",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnReceiveResponse",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   current_body_ = std::move(body);
   current_cached_metadata_ = std::move(cached_metadata);
@@ -450,11 +454,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnReceiveRedirect",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnReceiveRedirect",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   // An extension can intercept the headers of a response and issue a redirect
   // to a different URL. In that case `redirect_url_` was set by the proxying
@@ -513,13 +518,14 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnComplete",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", status.error_code, "extended_error_code",
-              status.extended_error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnComplete",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", status.error_code, "extended_error_code",
+      status.extended_error_code);
 
   if (status.error_code != net::OK) {
     OnNetworkError(status);
@@ -533,7 +539,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnComplete(
                     status.error_code);
 
   // Deletes |this|.
-  factory_->RemoveRequest(network_service_request_id_, request_id_);
+  factory_->RemoveRequest(request_id_for_network_service_, profile_request_id_);
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::HandleAuthRequest(
@@ -542,11 +548,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::HandleAuthRequest(
     WebRequestAPI::AuthRequestCallback callback) {
   DCHECK(!auth_credentials_);
 
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "HandleAuthRequest",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "HandleAuthRequest",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   // If |current_request_uses_header_client_| is true, |current_response_|
   // should already hold the correct set of response headers (including
@@ -580,12 +587,13 @@ bool WebRequestProxyingURLLoaderFactory::IsForPrefetch() const {
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnLoaderCreated(
     mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnLoaderCreated",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "for_cors_preflight", for_cors_preflight_);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnLoaderCreated",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "for_cors_preflight", for_cors_preflight_);
 
   // When CORS is involved there may be multiple network::URLLoader associated
   // with this InProgressRequest, because CorsURLLoader may create a new
@@ -614,11 +622,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnBeforeSendHeaders(
     const GURL& request_url,
     const net::HttpRequestHeaders& headers,
     OnBeforeSendHeadersCallback callback) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnBeforeSendHeaders",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnBeforeSendHeaders",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   if (!current_request_uses_header_client_) {
     std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
@@ -635,12 +644,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
     const net::IPEndPoint& remote_endpoint,
     const std::optional<net::SSLInfo>& ssl_info,
     OnHeadersReceivedCallback callback) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnHeadersReceived",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "for_cors_preflight", for_cors_preflight_);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnHeadersReceived",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "for_cors_preflight", for_cors_preflight_);
 
   auto parsed_headers = base::MakeRefCounted<net::HttpResponseHeaders>(headers);
 
@@ -661,7 +671,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
         status_code != net::HTTP_PROXY_AUTHENTICATION_REQUIRED) {
       // CORS preflight is supported only when "extraHeaders" is specified.
       // Deletes |this|.
-      factory_->RemoveRequest(network_service_request_id_, request_id_);
+      factory_->RemoveRequest(request_id_for_network_service_,
+                              profile_request_id_);
     }
     return;
   }
@@ -677,11 +688,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     HandleBeforeRequestRedirect() {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "HandleBeforeRequestRedirect",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "HandleBeforeRequestRedirect",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   // The extension requested a redirect. Close the connection with the current
   // URLLoader and inform the URLLoaderClient the WebRequest API generated a
@@ -735,12 +747,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToBeforeSendHeaders(State state_on_error, int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToBeforeSendHeaders",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "state_on_error", state_on_error, "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToBeforeSendHeaders",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "state_on_error", state_on_error, "error_code", error_code);
 
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code), state_on_error);
@@ -771,12 +784,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
             ->OnBeforeSendHeaders(factory_->browser_context_, &info_.value(),
                                   continuation, &request_.headers);
 
-    TRACE_EVENT("extensions",
-                "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-                "OnBeforeSendHeaders",
-                perfetto::Flow::ProcessScoped(
-                    request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-                "result", result);
+    TRACE_EVENT(
+        "extensions",
+        "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+        "OnBeforeSendHeaders",
+        perfetto::Flow::ProcessScoped(profile_request_id_,
+                                      kWebRequestProxyingURLLoaderFactoryScope),
+        "result", result);
 
     if (result == net::ERR_BLOCKED_BY_CLIENT) {
       // The request was cancelled synchronously. Dispatch an error notification
@@ -809,12 +823,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToStartRequest(State state_on_error, int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToStartRequest",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "state_on_error", state_on_error, "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToStartRequest",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "state_on_error", state_on_error, "error_code", error_code);
 
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code), state_on_error);
@@ -860,7 +875,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     factory_->target_factory_->CreateLoaderAndStart(
         target_loader_.BindNewPipeAndPassReceiver(
             navigation_response_task_runner_),
-        network_service_request_id_, options, request_,
+        request_id_for_network_service_, options, request_,
         proxied_client_receiver_.BindNewPipeAndPassRemote(
             navigation_response_task_runner_),
         traffic_annotation_);
@@ -881,12 +896,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
                           const std::set<std::string>& removed_headers,
                           const std::set<std::string>& set_headers,
                           int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToSendHeaders",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "state_on_error", state_on_error, "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToSendHeaders",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "state_on_error", state_on_error, "error_code", error_code);
 
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code), state_on_error);
@@ -952,12 +968,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
     const net::AuthChallengeInfo& auth_info,
     WebRequestAPI::AuthRequestCallback callback,
     int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueAuthRequest",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueAuthRequest",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", error_code);
 
   if (error_code != net::OK) {
     // Here we come from an onHeaderReceived failure.
@@ -997,12 +1014,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     OnAuthRequestHandled(WebRequestAPI::AuthRequestCallback callback,
                          WebRequestEventRouter::AuthRequiredResponse response) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnAuthRequestHandled",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "response", response);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnAuthRequestHandled",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "response", response);
 
   if (proxied_client_receiver_.is_bound()) {
     proxied_client_receiver_.Resume();
@@ -1040,12 +1058,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToHandleOverrideHeaders(int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToHandleOverrideHeaders",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToHandleOverrideHeaders",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", error_code);
 
   if (error_code != net::OK) {
     const int status_code = current_response_->headers
@@ -1100,7 +1119,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     WebRequestEventRouter::Get(factory_->browser_context_)
         ->OnCompleted(factory_->browser_context_, &info_.value(), net::OK);
 
-    factory_->RemoveRequest(network_service_request_id_, request_id_);
+    factory_->RemoveRequest(request_id_for_network_service_,
+                            profile_request_id_);
     return;
   }
 
@@ -1113,13 +1133,14 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     OverwriteHeadersAndContinueToResponseStarted(int error_code) {
   DCHECK(!for_cors_preflight_);
 
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OverwriteHeadersAndContinueToResponseStarted",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", error_code, "loader_factory_type",
-              factory_->loader_factory_type());
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OverwriteHeadersAndContinueToResponseStarted",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", error_code, "loader_factory_type",
+      factory_->loader_factory_type());
 
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code),
@@ -1175,11 +1196,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     AssignParsedHeadersAndContinueToResponseStarted(
         network::mojom::ParsedHeadersPtr parsed_headers) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "AssignParsedHeadersAndContinueToResponseStarted",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "AssignParsedHeadersAndContinueToResponseStarted",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   current_response_->parsed_headers = std::move(parsed_headers);
   ContinueToResponseStarted();
@@ -1187,11 +1209,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToResponseStarted() {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToResponseStarted",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToResponseStarted",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   if (state_ == State::kInProgress) {
     state_ = State::kInProgressWithFinalResponseReceived;
@@ -1246,12 +1269,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToBeforeRedirect(const net::RedirectInfo& redirect_info,
                              int error_code) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "ContinueToBeforeRedirect",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", error_code);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "ContinueToBeforeRedirect",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", error_code);
 
   if (error_code != net::OK) {
     OnRequestError(CreateURLLoaderCompletionStatus(error_code),
@@ -1280,11 +1304,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     HandleResponseOrRedirectHeaders(net::CompletionOnceCallback continuation) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "HandleResponseOrRedirectHeaders",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope));
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "HandleResponseOrRedirectHeaders",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope));
 
   override_headers_ = nullptr;
   redirect_url_ = GURL();
@@ -1341,12 +1366,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnRequestError(
     const network::URLLoaderCompletionStatus& status,
     State state) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnRequestError",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", status.error_code, "state", state);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnRequestError",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", status.error_code, "state", state);
 
   if (target_client_) {
     target_client_->OnComplete(status);
@@ -1357,17 +1383,18 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnRequestError(
   state_ = state;
 
   // Deletes |this|.
-  factory_->RemoveRequest(network_service_request_id_, request_id_);
+  factory_->RemoveRequest(request_id_for_network_service_, profile_request_id_);
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnNetworkError(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT("extensions",
-              "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-              "OnNetworkError",
-              perfetto::Flow::ProcessScoped(
-                  request_id_, kWebRequestProxyingURLLoaderFactoryScope),
-              "error_code", status.error_code, "state", state_);
+  TRACE_EVENT(
+      "extensions",
+      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
+      "OnNetworkError",
+      perfetto::Flow::ProcessScoped(profile_request_id_,
+                                    kWebRequestProxyingURLLoaderFactoryScope),
+      "error_code", status.error_code, "state", state_);
 
   State state = state_;
   if (state_ == State::kInProgress) {
@@ -1397,13 +1424,14 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     // Save the mapping so the restarted `URLLoader` retrieves the same
     // extension-visible WebRequest ID when calling
     // `RequestIDGenerator::Generate()` with the same (`view_routing_id_`,
-    // `client_request_id_`) pair.
-    factory_->request_id_generator_->SaveID(view_routing_id_,
-                                            client_request_id_, request_id_);
+    // `request_id_from_client_`) pair.
+    factory_->request_id_generator_->SaveID(
+        view_routing_id_, request_id_from_client_, profile_request_id_);
 
     state_ = State::kRedirectFollowedByAnotherInProgressRequest;
     // Deletes `this`.
-    factory_->RemoveRequest(network_service_request_id_, request_id_);
+    factory_->RemoveRequest(request_id_for_network_service_,
+                            profile_request_id_);
   } else {
     OnNetworkError(CreateURLLoaderCompletionStatus(net::ERR_ABORTED));
   }
@@ -1555,7 +1583,7 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
 
   // The `web_request_id` doesn't really matter. It just needs to be
   // unique per-BrowserContext so extensions can make sense of it.
-  // Note that `network_service_request_id` by contrast is not
+  // Note that `request_id_for_network_service` by contrast is not
   // necessarily unique, so we don't use it for identity here. This
   // request ID may be the same as a previous request if the previous
   // request was redirected to a URL that required a different loader.
@@ -1572,12 +1600,12 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   //   navigations), forward the trusted browser-assigned ID unmodified so that
   //   components like `LoginTabHelper` can correlate auth cancellation against
   //   the global navigation ID.
-  const int32_t network_service_request_id =
+  const int32_t request_id_for_network_service =
       (render_process_id_ != -1)
           ? request_id_generator_->GenerateNetworkRequestId()
           : request_id;
 
-  if (network_service_request_id) {
+  if (request_id_for_network_service) {
     // Only requests with a non-zero request ID can have their proxy
     // associated with said ID. This is necessary to support
     // correlation against any auth events received by the browser.
@@ -1586,15 +1614,15 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     proxies_->AssociateProxyWithRequestId(
         this, content::GlobalRequestID(
                   content::ToOriginatingProcessIdUnsafe(render_process_id_),
-                  network_service_request_id));
-    network_request_id_to_web_request_id_.emplace(network_service_request_id,
-                                                  web_request_id);
+                  request_id_for_network_service));
+    network_request_id_to_web_request_id_.emplace(
+        request_id_for_network_service, web_request_id);
   }
 
   auto result = requests_.emplace(
       web_request_id,
       std::make_unique<InProgressRequest>(
-          this, web_request_id, network_service_request_id, request_id,
+          this, web_request_id, request_id_for_network_service, request_id,
           view_routing_id_, frame_routing_id_, options, ukm_source_id_, request,
           traffic_annotation, std::move(loader_receiver), std::move(client),
           navigation_response_task_runner_));
@@ -1685,15 +1713,15 @@ void WebRequestProxyingURLLoaderFactory::OnProxyBindingError() {
 }
 
 void WebRequestProxyingURLLoaderFactory::RemoveRequest(
-    int32_t network_service_request_id,
-    uint64_t request_id) {
-  network_request_id_to_web_request_id_.erase(network_service_request_id);
-  requests_.erase(request_id);
-  if (network_service_request_id) {
+    int32_t request_id_for_network_service,
+    uint64_t profile_request_id) {
+  network_request_id_to_web_request_id_.erase(request_id_for_network_service);
+  requests_.erase(profile_request_id);
+  if (request_id_for_network_service) {
     proxies_->DisassociateProxyWithRequestId(
         this, content::GlobalRequestID(
                   content::ToOriginatingProcessIdUnsafe(render_process_id_),
-                  network_service_request_id));
+                  request_id_for_network_service));
   }
 
   MaybeRemoveProxy();

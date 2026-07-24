@@ -389,10 +389,11 @@ void WebRequestAPI::ProxySet::OnDNRExtensionUnloaded(
 WebRequestAPI::RequestIDGenerator::RequestIDGenerator() = default;
 WebRequestAPI::RequestIDGenerator::~RequestIDGenerator() = default;
 
-int64_t WebRequestAPI::RequestIDGenerator::Generate(int32_t routing_id,
-                                                    int32_t client_request_id) {
+int64_t WebRequestAPI::RequestIDGenerator::Generate(
+    int32_t routing_id,
+    int32_t request_id_from_client) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto it = saved_id_map_.find({routing_id, client_request_id});
+  auto it = saved_id_map_.find({routing_id, request_id_from_client});
   if (it != saved_id_map_.end()) {
     int64_t id = it->second;
     saved_id_map_.erase(it);
@@ -402,12 +403,12 @@ int64_t WebRequestAPI::RequestIDGenerator::Generate(int32_t routing_id,
 }
 
 void WebRequestAPI::RequestIDGenerator::SaveID(int32_t routing_id,
-                                               int32_t client_request_id,
+                                               int32_t request_id_from_client,
                                                uint64_t request_id) {
-  // If `client_request_id` is 0, we cannot reliably match the generated ID to a
-  // restarted request, so ignore it.
-  if (client_request_id != 0) {
-    saved_id_map_.insert({{routing_id, client_request_id}, request_id});
+  // If `request_id_from_client` is 0, we cannot reliably match the generated
+  // ID to a restarted request, so ignore it.
+  if (request_id_from_client != 0) {
+    saved_id_map_.insert({{routing_id, request_id_from_client}, request_id});
   }
 }
 

@@ -79,9 +79,9 @@ class WebRequestProxyingURLLoaderFactory
     // For usual requests
     InProgressRequest(
         WebRequestProxyingURLLoaderFactory* factory,
-        uint64_t request_id,
-        int32_t network_service_request_id,
-        int32_t client_request_id,
+        uint64_t profile_request_id,
+        int32_t request_id_for_network_service,
+        int32_t request_id_from_client,
         int32_t view_routing_id,
         int32_t frame_routing_id,
         uint32_t options,
@@ -94,7 +94,7 @@ class WebRequestProxyingURLLoaderFactory
             navigation_response_task_runner);
     // For CORS preflights
     InProgressRequest(WebRequestProxyingURLLoaderFactory* factory,
-                      uint64_t request_id,
+                      uint64_t profile_request_id,
                       int32_t frame_routing_id,
                       const network::ResourceRequest& request);
 
@@ -217,15 +217,17 @@ class WebRequestProxyingURLLoaderFactory
     const raw_ptr<WebRequestProxyingURLLoaderFactory> factory_;
     network::ResourceRequest request_;
     const std::optional<url::Origin> original_initiator_;
-    const uint64_t request_id_ = 0;
+    // The request ID unique per BrowserContext. Used by the WebRequest API and
+    // extensions to identify this request across event callbacks.
+    const uint64_t profile_request_id_ = 0;
     // The request ID forwarded to `target_factory_`. Used to correlate
     // network-stack callbacks (such as `TrustedHeaderClient` and auth events)
     // with this request.
-    const int32_t network_service_request_id_ = 0;
+    const int32_t request_id_for_network_service_ = 0;
     // The request ID supplied by the caller of `CreateLoaderAndStart()`. Used
     // solely to preserve the extension-visible WebRequest ID across a request
     // restart (e.g., via `ThrottlingURLLoader`).
-    const int32_t client_request_id_ = 0;
+    const int32_t request_id_from_client_ = 0;
     const int32_t view_routing_id_ = IPC::mojom::kRoutingIdNone;
     const int32_t frame_routing_id_ = IPC::mojom::kRoutingIdNone;
     const uint32_t options_ = 0;
@@ -388,7 +390,8 @@ class WebRequestProxyingURLLoaderFactory
  private:
   void OnTargetFactoryError();
   void OnProxyBindingError();
-  void RemoveRequest(int32_t network_service_request_id, uint64_t request_id);
+  void RemoveRequest(int32_t request_id_for_network_service,
+                     uint64_t profile_request_id);
   void MaybeRemoveProxy();
 
   const raw_ptr<content::BrowserContext> browser_context_;

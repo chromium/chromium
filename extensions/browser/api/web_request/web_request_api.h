@@ -166,15 +166,16 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     ~RequestIDGenerator();
 
     // Generates a WebRequest ID. If `SaveID()` was previously called with the
-    // same (`routing_id`, `client_request_id`) pair, returns the saved ID and
-    // removes the mapping. Otherwise, generates and returns a new unique ID.
-    int64_t Generate(int32_t routing_id, int32_t client_request_id);
+    // same (`routing_id`, `request_id_from_client`) pair, returns the saved ID
+    // and removes the mapping. Otherwise, generates and returns a new unique
+    // ID.
+    int64_t Generate(int32_t routing_id, int32_t request_id_from_client);
 
-    // Maps a WebRequest ID to a (`routing_id`, `client_request_id`) pair when a
-    // request is restarted. Callers must subsequently call `Generate()` with
-    // the same pair to reclaim the ID and prevent memory leaks.
+    // Maps a WebRequest ID to a (`routing_id`, `request_id_from_client`) pair
+    // when a request is restarted. Callers must subsequently call `Generate()`
+    // with the same pair to reclaim the ID and prevent memory leaks.
     void SaveID(int32_t routing_id,
-                int32_t client_request_id,
+                int32_t request_id_from_client,
                 uint64_t request_id);
 
     // Generates a non-zero request ID to forward to the network service for
