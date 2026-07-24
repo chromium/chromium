@@ -129,6 +129,10 @@ content::WebContents* ContextualTasksPanelHostDesktop::GetWebContents() {
   return web_view_->web_contents();
 }
 
+content::WebContents* ContextualTasksPanelHostDesktop::GetToolbarWebContents() {
+  return GetWebContents();
+}
+
 void ContextualTasksPanelHostDesktop::SetWebContents(
     content::WebContents* web_contents) {
   if (IsPanelInitialized()) {

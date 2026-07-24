@@ -56,6 +56,7 @@ class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
   bool IsPanelSuppressed() const override;
   void SetPanelSuppressedForTesting(bool suppressed) override;
   content::WebContents* GetWebContents() override;
+  content::WebContents* GetToolbarWebContents() override;
   void SetWebContents(content::WebContents* web_contents) override;
 
   // SidePanelEntryObserver:

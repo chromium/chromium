@@ -30,6 +30,9 @@ class MockContextualTasksPanelHost : public ContextualTasksPanelHost {
   content::WebContents* GetWebContents() override {
     return web_contents_.get();
   }
+  content::WebContents* GetToolbarWebContents() override {
+    return web_contents_.get();
+  }
   void SetWebContents(content::WebContents* web_contents) override {
     web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
   }

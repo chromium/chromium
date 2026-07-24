@@ -527,6 +527,11 @@ ContextualTasksSidePanelCoordinator::GetActiveWebContents() const {
   return contextual_tasks_panel_host_->GetWebContents();
 }
 
+content::WebContents*
+ContextualTasksSidePanelCoordinator::GetToolbarWebContents() const {
+  return contextual_tasks_panel_host_->GetToolbarWebContents();
+}
+
 std::unique_ptr<content::WebContents>
 ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     const base::Uuid& task_id) {

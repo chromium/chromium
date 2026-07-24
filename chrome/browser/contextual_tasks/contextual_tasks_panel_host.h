@@ -87,6 +87,10 @@ class ContextualTasksPanelHost {
   // Get current WebContents attached to panel, or nullptr if none attached.
   virtual content::WebContents* GetWebContents() = 0;
 
+  // Returns the WebContents hosting the WebUI (e.g. top toolbar), or nullptr
+  // if none attached.
+  virtual content::WebContents* GetToolbarWebContents() = 0;
+
   // Configures the panel to display the provided WebContents.
   virtual void SetWebContents(content::WebContents* web_contents) = 0;
 };

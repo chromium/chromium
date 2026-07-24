@@ -129,6 +129,11 @@ content::WebContents* ContextualTasksPanelHostDesktopAndroid::GetWebContents() {
   return web_contents_;
 }
 
+content::WebContents*
+ContextualTasksPanelHostDesktopAndroid::GetToolbarWebContents() {
+  return GetWebContents();
+}
+
 bool ContextualTasksPanelHostDesktopAndroid::MaybeCreateBridge() {
   // Reuse the bridge if it exists and the tab we created it with is still
   // alive.

@@ -120,6 +120,7 @@ class ContextualTasksSidePanelCoordinator
   void SetPendingTaskForTab(tabs::TabInterface* tab,
                             const base::Uuid& task_id) override;
   content::WebContents* GetActiveWebContents() const override;
+  content::WebContents* GetToolbarWebContents() const override;
   std::vector<content::WebContents*> GetPanelWebContentsList() const override;
   std::unique_ptr<content::WebContents> DetachWebContentsForTask(
       const base::Uuid& task_id) override;

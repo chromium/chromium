@@ -89,6 +89,10 @@ content::WebContents* ContextualTasksPanelHostAndroid::GetWebContents() {
   return web_contents_.get();
 }
 
+content::WebContents* ContextualTasksPanelHostAndroid::GetToolbarWebContents() {
+  return GetWebContents();
+}
+
 void ContextualTasksPanelHostAndroid::SetWebContents(
     content::WebContents* web_contents) {
   if (web_contents_ == web_contents) {

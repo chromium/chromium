@@ -56,6 +56,10 @@ class MockContextualTasksPanelController
               GetActiveWebContents,
               (),
               (const override));
+  MOCK_METHOD(content::WebContents*,
+              GetToolbarWebContents,
+              (),
+              (const override));
   MOCK_METHOD(std::vector<content::WebContents*>,
               GetPanelWebContentsList,
               (),
