@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
@@ -88,6 +89,20 @@ std::string PixCodeValidationResultToString(PixCodeValidationResult result) {
       return "InvalidCode";
     case PixCodeValidationResult::kValidatorFailed:
       return "ValidatorFailed";
+  }
+}
+
+std::string AccountLinkingPromptUserActionToString(
+    AccountLinkingPromptUserAction user_action) {
+  switch (user_action) {
+    case AccountLinkingPromptUserAction::kAccepted:
+      return "Accepted";
+    case AccountLinkingPromptUserAction::kDeclined:
+      return "Declined";
+    case AccountLinkingPromptUserAction::kDismissed:
+      return "Dismissed";
+    case AccountLinkingPromptUserAction::kShown:
+      NOTREACHED();
   }
 }
 
@@ -568,6 +583,27 @@ void LogAccountLinkingPromptUserAction(
       user_action);
 }
 
+void LogAccountLinkingPromptFailedToShow(FacilitatedPaymentsType payment_type) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".AccountLinking.PromptFailedToShow"}),
+      /*sample=*/true);
+}
+
+void LogAccountLinkingPromptInteractionDuration(
+    FacilitatedPaymentsType payment_type,
+    AccountLinkingPromptUserAction user_action,
+    base::TimeDelta duration) {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".AccountLinking.PromptInteractionDuration"}),
+      duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".AccountLinking.PromptInteractionDuration.",
+                    AccountLinkingPromptUserActionToString(user_action)}),
+      duration);
+}
 
 void LogPixAccountLinkingPromptAccepted() {
   base::UmaHistogramBoolean(

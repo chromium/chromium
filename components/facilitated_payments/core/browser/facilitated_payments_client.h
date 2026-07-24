@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
+#include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
@@ -139,6 +140,14 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Shows the Pix account linking success screen.
   virtual void ShowPixAccountLinkingSuccessScreen() = 0;
+
+  // TODO(b/529180132): Refactor ShowPixAccountLinkingPrompt to use
+  // ShowAccountLinkingPrompt.
+  virtual void ShowAccountLinkingPrompt(
+      const AccountLinkingParams& params,
+      base::OnceCallback<void()> on_accepted,
+      base::OnceCallback<void()> on_declined,
+      base::OnceCallback<void()> on_dismissed) = 0;
 
   // Check whether the device has the screenlock or biometric set up which is
   // required for Pix account linking in Wallet.

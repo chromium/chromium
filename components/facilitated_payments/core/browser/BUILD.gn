@@ -4,6 +4,7 @@
 
 static_library("browser") {
   sources = [
+    "account_linking_params.h",
     "account_linking_result.h",
     "device_delegate.h",
     "ewallet_account_linking_manager.cc",

@@ -877,6 +877,55 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.PromptFailedToShow"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs when the account linking prompt failed to show
+    to the user. [Frequency] Logged once per payflow. [Trigger] The account
+    linking prompt failed to show.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.PromptInteractionDuration"
+    units="ms" expires_after="2027-04-30">
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs the duration that the account linking prompt was
+    shown to the user before they interacted with it. [Frequency] Logged once
+    per payflow. [Trigger] The user takes an action on the prompt (accepts or
+    dismisses it).
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.PromptInteractionDuration.{UserAction}"
+    units="ms" expires_after="2027-04-30">
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for {FacilitatedPaymentsType} transactions on
+    Chrome, this histogram logs the duration that the account linking prompt was
+    shown to the user before they interacted with it, specifically when the user
+    {UserAction}. [Frequency] Logged once per payflow. [Trigger] The user
+    interacts with the account linking prompt.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="UserAction">
+    <variant name="Accepted" summary="accepts the prompt"/>
+    <variant name="Declined" summary="declines the prompt"/>
+    <variant name="Dismissed" summary="dismisses the prompt"/>
+  </token>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.PromptUserAction"
     enum="FacilitatedPayments.AccountLinking.PromptUserAction"
     expires_after="2027-04-30">

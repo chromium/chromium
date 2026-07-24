@@ -12,9 +12,11 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
@@ -94,6 +96,21 @@ class FacilitatedPaymentsController {
   // for overriding in tests.
   virtual void ShowPixAccountLinkingSuccessScreen();
 
+  // Shows the account linking prompt via the Java UI, customized by `params`.
+  // Callbacks:
+  // - `on_accepted`: User accepts the prompt.
+  // - `on_declined`: User declines/cancels the prompt.
+  // - `on_dismissed`: Invoked upon dismissal/teardown only if no other action
+  // (accept/decline) was taken. Note: Only one prompt can be shown at a time.
+  // If another prompt is already showing, the call is gracefully dropped and
+  // incoming callbacks are ignored (not run) to avoid tearing down the active
+  // UI and causing race conditions.
+  virtual void ShowAccountLinkingPrompt(
+      const payments::facilitated::AccountLinkingParams& params,
+      base::OnceCallback<void()> on_accepted,
+      base::OnceCallback<void()> on_declined,
+      base::OnceCallback<void()> on_dismissed);
+
   // Called by the Java view to communicate acceptance of Pix account linking
   // prompt.
   void OnPixAccountLinkingPromptAccepted(JNIEnv* env);
@@ -103,11 +120,11 @@ class FacilitatedPaymentsController {
   void OnPixAccountLinkingPromptDeclined(JNIEnv* env);
 
   // Called by the Java view when an account linking prompt is shown.
-  void OnAccountLinkingPromptShown(JNIEnv* env, jint type);
+  void OnAccountLinkingPromptShown(JNIEnv* env, int32_t type);
 
   // Called by the Java view when the user takes an action on the account
   // linking prompt.
-  void OnAccountLinkingPromptAction(JNIEnv* env, jint type, jint action);
+  void OnAccountLinkingPromptAction(JNIEnv* env, int32_t type, int32_t action);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -121,6 +138,10 @@ class FacilitatedPaymentsController {
   // Clears any native references from the Java view components, and then clears
   // the pointers to the Java objects.
   void ClearJavaViewComponents();
+
+  // Resets the account linking prompt state and safely invokes the dismissed
+  // callback (if set).
+  void DismissPrompt();
 
   // View that displays the surface.
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
@@ -143,6 +164,12 @@ class FacilitatedPaymentsController {
 
   base::OnceCallback<void()> on_pix_account_linking_prompt_accepted_;
   base::OnceCallback<void()> on_pix_account_linking_prompt_declined_;
+
+  bool is_prompt_showing_ = false;
+  base::TimeTicks account_linking_prompt_shown_time_;
+  base::OnceCallback<void()> on_accepted_callback_;
+  base::OnceCallback<void()> on_declined_callback_;
+  base::OnceCallback<void()> on_dismissed_callback_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_

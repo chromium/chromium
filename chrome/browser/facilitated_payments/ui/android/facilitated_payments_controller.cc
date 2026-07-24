@@ -149,6 +149,30 @@ void FacilitatedPaymentsController::ShowPixAccountLinkingSuccessScreen() {
   view_->ShowPixAccountLinkingSuccessScreen();
 }
 
+void FacilitatedPaymentsController::ShowAccountLinkingPrompt(
+    const payments::facilitated::AccountLinkingParams& params,
+    base::OnceCallback<void()> on_accepted,
+    base::OnceCallback<void()> on_declined,
+    base::OnceCallback<void()> on_dismissed) {
+  if (is_prompt_showing_) {
+    payments::facilitated::LogAccountLinkingPromptFailedToShow(
+        params.fop_type);
+    return;
+  }
+  is_prompt_showing_ = true;
+  account_linking_prompt_shown_time_ = base::TimeTicks::Now();
+  on_accepted_callback_ = std::move(on_accepted);
+  on_declined_callback_ = std::move(on_declined);
+  on_dismissed_callback_ = std::move(on_dismissed);
+  CHECK(view_);
+  if (!view_->ShowAccountLinkingPrompt(params)) {
+    payments::facilitated::LogAccountLinkingPromptFailedToShow(
+        params.fop_type);
+    DismissPrompt();
+    return;
+  }
+}
+
 void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
     JNIEnv* env) {
   if (on_pix_account_linking_prompt_accepted_) {
@@ -163,29 +187,68 @@ void FacilitatedPaymentsController::OnPixAccountLinkingPromptDeclined(
   }
 }
 
-void FacilitatedPaymentsController::OnAccountLinkingPromptShown(JNIEnv* env,
-                                                                jint type) {
+void FacilitatedPaymentsController::OnAccountLinkingPromptShown(JNIEnv * env,
+                                                                int32_t type) {
   payments::facilitated::LogAccountLinkingPromptUserAction(
       static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
       payments::facilitated::AccountLinkingPromptUserAction::kShown);
 }
 
-void FacilitatedPaymentsController::OnAccountLinkingPromptAction(JNIEnv* env,
-                                                                 jint type,
-                                                                 jint action) {
-  CHECK(action >=
-            static_cast<jint>(
-                payments::facilitated::AccountLinkingPromptUserAction::kShown) &&
-        action <= static_cast<jint>(
-                      payments::facilitated::AccountLinkingPromptUserAction::
-                          kMaxValue))
+void FacilitatedPaymentsController::OnAccountLinkingPromptAction(
+    JNIEnv * env, int32_t type, int32_t action) {
+  // kShown is handled exclusively by OnAccountLinkingPromptShown, so we use >
+  // rather than >= here.
+  CHECK(
+      action >
+          static_cast<int32_t>(
+              payments::facilitated::AccountLinkingPromptUserAction::kShown) &&
+      action <=
+          static_cast<int32_t>(
+              payments::facilitated::AccountLinkingPromptUserAction::kMaxValue))
       << "Invalid payments::facilitated::AccountLinkingPromptUserAction value: "
       << action;
 
+  if (!is_prompt_showing_) {
+    return;
+  }
+  base::OnceClosure on_accepted = std::move(on_accepted_callback_);
+  base::OnceClosure on_declined = std::move(on_declined_callback_);
+  base::OnceClosure on_dismissed = std::move(on_dismissed_callback_);
+  auto user_action =
+      static_cast<payments::facilitated::AccountLinkingPromptUserAction>(
+          action);
+
   payments::facilitated::LogAccountLinkingPromptUserAction(
       static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
-      static_cast<payments::facilitated::AccountLinkingPromptUserAction>(
-          action));
+      user_action);
+  payments::facilitated::LogAccountLinkingPromptInteractionDuration(
+      static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
+      user_action, base::TimeTicks::Now() - account_linking_prompt_shown_time_);
+  is_prompt_showing_ = false;
+
+  switch (user_action) {
+    case payments::facilitated::AccountLinkingPromptUserAction::kAccepted:
+      if (on_accepted) {
+        std::move(on_accepted).Run();
+      }
+      break;
+    case payments::facilitated::AccountLinkingPromptUserAction::kDeclined:
+      if (on_declined) {
+        std::move(on_declined).Run();
+      }
+      break;
+    case payments::facilitated::AccountLinkingPromptUserAction::kDismissed:
+      if (on_dismissed) {
+        std::move(on_dismissed).Run();
+      }
+      break;
+    default:
+      // Gracefully handle unexpected JNI inputs by acting as if dismissed.
+      if (on_dismissed) {
+        std::move(on_dismissed).Run();
+      }
+      break;
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -213,6 +276,24 @@ void FacilitatedPaymentsController::ClearJavaViewComponents() {
             base::android::AttachCurrentThread(), java_object_);
   }
   java_object_.Reset();
+
+  DismissPrompt();
+}
+
+void FacilitatedPaymentsController::DismissPrompt() {
+  if (!is_prompt_showing_) {
+    return;
+  }
+  is_prompt_showing_ = false;
+
+  base::OnceClosure dismissed_callback = std::move(on_dismissed_callback_);
+  on_accepted_callback_.Reset();
+  on_declined_callback_.Reset();
+  // We use a local variable to ensure the object's internal state remains valid
+  // even if the callback invocation destroys the object.
+  if (dismissed_callback) {
+    std::move(dismissed_callback).Run();
+  }
 }
 
 DEFINE_JNI(FacilitatedPaymentsPaymentMethodsControllerBridge)

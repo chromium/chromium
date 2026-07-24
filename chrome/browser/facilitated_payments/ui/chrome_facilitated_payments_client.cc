@@ -214,6 +214,16 @@ void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingSuccessScreen() {
   facilitated_payments_controller_->ShowPixAccountLinkingSuccessScreen();
 }
 
+void ChromeFacilitatedPaymentsClient::ShowAccountLinkingPrompt(
+    const payments::facilitated::AccountLinkingParams& params,
+    base::OnceCallback<void()> on_accepted,
+    base::OnceCallback<void()> on_declined,
+    base::OnceCallback<void()> on_dismissed) {
+  facilitated_payments_controller_->ShowAccountLinkingPrompt(
+      params, std::move(on_accepted), std::move(on_declined),
+      std::move(on_dismissed));
+}
+
 bool ChromeFacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);

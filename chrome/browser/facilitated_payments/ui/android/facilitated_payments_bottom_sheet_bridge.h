@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "ui/android/window_android.h"
 
@@ -65,6 +66,11 @@ class FacilitatedPaymentsBottomSheetBridge {
   // Triggers showing the Pix account linking success screen. Virtual for
   // overriding in tests.
   virtual void ShowPixAccountLinkingSuccessScreen();
+
+  // Triggers showing the account linking prompt for the given params.
+  // Returns true if the prompt is successfully shown. Virtual for overriding in
+  // tests.
+  virtual bool ShowAccountLinkingPrompt(const AccountLinkingParams& params);
 
   // Closes the bottom sheet. Virtual for overriding in tests.
   virtual void Dismiss();
