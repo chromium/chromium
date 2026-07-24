@@ -460,6 +460,16 @@ class InteractiveBrowserWindowTestApi
                         ui_controls::kNoAccelerator, execute_mode);
   }
 
+  // Dumps the entire HTML tree of `web_contents`.
+  // Used for debugging Kombucha tests which act on web contents.
+  [[nodiscard]] StepBuilder DumpWebContents(ui::ElementIdentifier web_contents);
+
+  // Dumps the entire HTML tree of `web_contents` rooted at `where`.
+  // Used for debugging Kombucha tests which act on web contents.
+  [[nodiscard]] StepBuilder DumpWebContentsAt(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where);
+
  protected:
   // Specifies how the `reference_element` should be used (or not) to generate a
   // target point for a mouse move.
