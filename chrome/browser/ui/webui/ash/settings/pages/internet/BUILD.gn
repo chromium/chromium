@@ -34,6 +34,7 @@ static_library("internet") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:extension_control_handler",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",

@@ -37,6 +37,7 @@ static_library("main") {
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/webui:metrics_handler",
     "//chrome/browser/ui/webui:plural_string_handler",
+    "//chrome/browser/ui/webui:policy_indicator_localized_strings_provider",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/common",

@@ -619,6 +619,32 @@ if (!is_android) {
     ]
   }
 
+  source_set("extension_control_handler") {
+    sources = [ "extension_control_handler.cc" ]
+    public = [ "extension_control_handler.h" ]
+    public_deps = [ "//chrome/browser/ui/webui/settings" ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//content/public/browser",
+      "//extensions/browser",
+    ]
+  }
+
+  source_set("policy_indicator_localized_strings_provider") {
+    sources = [ "policy_indicator_localized_strings_provider.cc" ]
+    public = [ "policy_indicator_localized_strings_provider.h" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//components/sync/base:features",
+      "//ui/base",
+      "//ui/webui",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/ash/components/demo_mode" ]
+    }
+  }
+
   source_set("webui_load_timer") {
     sources = [
       "webui_load_timer.cc",
