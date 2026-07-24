@@ -111,6 +111,27 @@ source_set("pdf_extension_test_utils") {
   ]
 }
 
+source_set("test_mime_handler_stream_manager") {
+  testonly = true
+
+  sources = [
+    "test_mime_handler_stream_manager.cc",
+    "test_mime_handler_stream_manager.h",
+  ]
+
+  public_deps = [
+    "//content/public/browser",
+    "//extensions/browser/mime_handler",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    ":pdf_extension_test_utils",
+    "//base",
+    "//content/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

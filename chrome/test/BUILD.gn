@@ -568,8 +568,6 @@ static_library("test_support") {
     sources += [
       "../browser/pdf/pdf_extension_test_base.cc",
       "../browser/pdf/pdf_extension_test_base.h",
-      "../browser/pdf/test_mime_handler_stream_manager.cc",
-      "../browser/pdf/test_mime_handler_stream_manager.h",
     ]
 
     deps += [
@@ -577,9 +575,9 @@ static_library("test_support") {
       "../browser/pdf:pdf_extension_test_utils",
       "//components/pdf/browser",
       "//extensions/browser/api:extensions_api_client",
-      "//extensions/browser/mime_handler",
       "//pdf:features",
     ]
+    public_deps += [ "../browser/pdf:test_mime_handler_stream_manager" ]
   }
 
   if (enable_printing) {
