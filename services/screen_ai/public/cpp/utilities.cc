@@ -14,6 +14,11 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "ui/accessibility/accessibility_features.h"
 
+#if BUILDFLAG(IS_LINUX) && defined(__GLIBC__)
+#include <dlfcn.h>
+#include <gnu/libc-version.h>
+#endif
+
 namespace screen_ai {
 
 namespace {
@@ -78,6 +83,40 @@ base::FilePath GetTestComponentDir() {
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 
+#if BUILDFLAG(IS_LINUX)
+// Note: `BUILDFLAG(IS_LINUX)` is used instead of `defined(__GLIBC__)` here so
+// that unit tests can test this logic with simulated glibc versions and mock
+// TLS block pointers across Linux build configurations.
+bool IsVulnerableToTlsDtvCrash_Internal(const char* version_str,
+                                        void* tls_block) {
+  // Check if system glibc version is >= 2.35 (where DTV allocation race was
+  // fixed upstream).
+  if (version_str) {
+    base::Version version(version_str);
+    if (version.IsValid() && version.components().size() >= 2) {
+      uint32_t major = version.components()[0];
+      uint32_t minor = version.components()[1];
+      if (major > 2 || (major == 2 && minor >= 35)) {
+        return false;  // Safe: glibc 2.35+ handles concurrent DTV allocations
+                       // safely.
+      }
+    }
+  }
+
+  // `tls_block == nullptr` indicates that glibc's Static TLS surplus pool was
+  // exhausted prior to loading Screen AI (e.g. by third-party drivers or
+  // tools), forcing glibc to fall back to dynamic DTV TLS allocation. On glibc
+  // < 2.35, dynamic DTV TLS allocation has an unlocked race condition in
+  // `__tls_get_addr()` that corrupts PartitionAlloc's ThreadCache freelist
+  // during multithreaded OCR. Conversely, a non-null `tls_block` means Static
+  // TLS was successfully allocated, bypassing `__tls_get_addr()` calls safely.
+  if (tls_block == nullptr) {
+    return true;  // Vulnerable machine.
+  }
+
+  return false;  // Safe: Static TLS was successfully allocated.
+}
+#endif  // BUILDFLAG(IS_LINUX)
 }  // namespace
 
 base::FilePath GetRelativeInstallDir() {
@@ -141,5 +180,26 @@ const char* GetBinaryPathSwitch() {
 uint32_t GetMaxDimensionForOCR() {
   return kMaxImageDimensionForOcr;
 }
+
+#if BUILDFLAG(IS_LINUX)
+bool IsVulnerableToTlsDtvCrash_ForTesting(const char* version_str,
+                                          void* tls_block) {
+  return IsVulnerableToTlsDtvCrash_Internal(version_str, tls_block);
+}
+
+bool IsVulnerableToTlsDtvCrash(void* dlopen_handle) {
+#if defined(__GLIBC__)
+  if (dlopen_handle != nullptr) {
+    void* tls_block = nullptr;
+    if (dlinfo(dlopen_handle, RTLD_DI_TLS_DATA, &tls_block) == 0) {
+      return IsVulnerableToTlsDtvCrash_Internal(gnu_get_libc_version(),
+                                                tls_block);
+    }
+  }
+#endif  // defined(__GLIBC__)
+
+  return false;  // Safe: Static TLS was successfully allocated or not glibc.
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace screen_ai

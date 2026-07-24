@@ -38,5 +38,31 @@ const char* GetBinaryPathSwitch();
 // have dynamic maximum resolution setting, it is safe to use this value.
 uint32_t GetMaxDimensionForOCR();
 
+#if BUILDFLAG(IS_LINUX)
+// Checks whether the current system environment is vulnerable to glibc DTV TLS
+// allocation races (crbug.com/537728191).
+//
+// `dlopen_handle` is the native handle of the loaded Screen AI library (e.g.
+// from `base::ScopedNativeLibrary::get()`). `IsVulnerableToTlsDtvCrash` queries
+// `dlinfo` with `dlopen_handle` to inspect the Static TLS block allocation.
+//
+// A machine is vulnerable if both of the following are true:
+// 1. System glibc version is < 2.35 (glibc 2.35+ fixed concurrent DTV
+//    allocations).
+// 2. Static TLS allocation failed for Screen AI (retrieved `tls_block` is
+//    nullptr).
+//    - A non-null `tls_block` indicates glibc assigned thread_local variables
+//      to the Static TLS surplus pool, bypassing `__tls_get_addr()` safely.
+//    - A null `tls_block` indicates Static TLS was exhausted, forcing glibc to
+//      fall back to dynamic DTV TLS allocation, which triggers a thread-safety
+//      race condition in `__tls_get_addr()` on glibc < 2.35.
+bool IsVulnerableToTlsDtvCrash(void* dlopen_handle);
+
+// Helper for testing IsVulnerableToTlsDtvCrash with custom glibc version and
+// TLS block pointer.
+bool IsVulnerableToTlsDtvCrash_ForTesting(const char* version_str,
+                                          void* tls_block);
+#endif
+
 }  // namespace screen_ai
 #endif  // SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_

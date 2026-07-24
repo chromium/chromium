@@ -47,6 +47,7 @@ source_set("screen_ai") {
     deps += [
       "//base/allocator/partition_allocator:buildflags",
       "//base/allocator/partition_allocator/src/partition_alloc:allocator_shim",
+      "//components/crash/core/common:crash_key",
     ]
   }
 
@@ -127,6 +128,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/accessibility:test_support",
   ]
+
+  if (is_linux) {
+    deps += [ "//services/screen_ai/public/cpp:utilities" ]
+  }
 
   data_deps = [ ":test_support_data" ]
 }

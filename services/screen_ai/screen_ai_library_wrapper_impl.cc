@@ -8,7 +8,14 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
+
+#if BUILDFLAG(IS_LINUX) && defined(__GLIBC__)
+#include <gnu/libc-version.h>  // nogncheck
+
+#include "components/crash/core/common/crash_key.h"  // nogncheck
+#endif
 
 namespace screen_ai {
 
@@ -145,6 +152,20 @@ bool ScreenAILibraryWrapperImpl::InitOCR() {
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Accessibility.ScreenAI.OCR.InitializationLatency");
   CHECK(init_ocr_);
+#if BUILDFLAG(IS_LINUX) && defined(__GLIBC__)
+  static crash_reporter::CrashKeyString<32> glibc_version_crash_key(
+      "glibc_version");
+  glibc_version_crash_key.Set(gnu_get_libc_version());
+
+  bool is_vulnerable = IsVulnerableToTlsDtvCrash(library_.get());
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.VulnerableToTlsDtvCrash",
+                            is_vulnerable);
+  if (is_vulnerable) {
+    LOG(ERROR) << "Disabling Screen AI OCR on this device due to glibc TLS DTV "
+                  "vulnerability.";
+    return false;
+  }
+#endif  // BUILDFLAG(IS_LINUX) && defined(__GLIBC__)
   return init_ocr_();
 }
 
