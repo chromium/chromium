@@ -555,7 +555,7 @@ void RecordDeepScanMetrics(bool is_cloud,
         prefix + access_point_string + ".BytesPerSeconds",
         (1000 * total_bytes) / duration.InMilliseconds(),
         /*min=*/kMinBytesPerSecond,
-        /*max=*/kMaxBytesPerSecond,
+        /*exclusive_max=*/kMaxBytesPerSecond,
         /*buckets=*/50);
   }
 

@@ -112,7 +112,8 @@ TEST_F(RealTimeUploaderTest, UploadReport) {
   histogram_tester_.ExpectBucketCount(kRequestEnqueueMetricsName,
                                       reporting::error::UNKNOWN,
                                       /*expected_count=*/1);
-  histogram_tester_.ExpectTotalCount(kRequestEnqueueMetricsName, /*count=*/2);
+  histogram_tester_.ExpectTotalCount(kRequestEnqueueMetricsName,
+                                     /*expected_count=*/2);
 }
 
 }  // namespace enterprise_reporting

@@ -65,8 +65,7 @@ void PrivateKeyFactoryImpl::CreatePrivateKey(
     PrivateKeyFactory::PrivateKeyCallback callback) {
   // Go through the supported key sources in order of most secure to least, and
   // delegate the key creation to that sub factory.
-  for (size_t i = 0U; i < kKeySourcesOrderedBySecurity.size(); i++) {
-    PrivateKeySource source = kKeySourcesOrderedBySecurity[i];
+  for (PrivateKeySource source : kKeySourcesOrderedBySecurity) {
     auto it = sub_factories_.find(source);
     if (it != sub_factories_.end()) {
       it->second->CreatePrivateKey(base::BindOnce(

@@ -21,7 +21,7 @@ class DMServerClient;
 // cloud management.
 class BrowserCloudManagementDelegate : public CloudManagementDelegate {
  public:
-  BrowserCloudManagementDelegate(
+  explicit BrowserCloudManagementDelegate(
       std::unique_ptr<DMServerClient> dmserver_client);
 
   ~BrowserCloudManagementDelegate() override;

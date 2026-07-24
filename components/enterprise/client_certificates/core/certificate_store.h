@@ -16,10 +16,6 @@
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace client_certificates_pb {
-class ClientIdentity;
-}
-
 namespace net {
 class X509Certificate;
 }  // namespace net

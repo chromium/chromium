@@ -20,26 +20,26 @@ GURL google_url() {
   return GURL("https://google.com");
 }
 
-void ExpectBlockVerdict(Verdict verdict, bool expect_machine_source = true) {
+void ExpectBlockVerdict(Verdict verdict, bool expect_machine_scope = true) {
   ASSERT_EQ(verdict.level(), Rule::Level::kBlock);
   EXPECT_EQ(verdict.triggered_rules().size(), 1u);
 
   auto index = Verdict::TriggeredRuleKey{
       .index = kFirstRuleIndex,
-      .machine_scope = expect_machine_source,
+      .machine_scope = expect_machine_scope,
   };
   EXPECT_TRUE(verdict.triggered_rules().count(index));
   EXPECT_EQ(verdict.triggered_rules().at(index).rule_name, "block");
   EXPECT_EQ(verdict.triggered_rules().at(index).rule_id, kFirstRuleID);
 }
 
-void ExpectWarnVerdict(Verdict verdict, bool expect_machine_source = true) {
+void ExpectWarnVerdict(Verdict verdict, bool expect_machine_scope = true) {
   ASSERT_EQ(verdict.level(), Rule::Level::kWarn);
   EXPECT_EQ(verdict.triggered_rules().size(), 1u);
 
   auto index = Verdict::TriggeredRuleKey{
       .index = kFirstRuleIndex,
-      .machine_scope = expect_machine_source,
+      .machine_scope = expect_machine_scope,
   };
   EXPECT_TRUE(verdict.triggered_rules().count(index));
   EXPECT_EQ(verdict.triggered_rules().at(index).rule_name, "warn");
