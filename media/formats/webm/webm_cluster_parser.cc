@@ -77,12 +77,12 @@ void WebMClusterParser::Reset() {
   ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 }
 
-int WebMClusterParser::Parse(const uint8_t* buf, int size) {
+int WebMClusterParser::Parse(base::span<const uint8_t> buf) {
   audio_.ClearReadyBuffers();
   video_.ClearReadyBuffers();
   ready_buffer_upper_bound_ = kNoDecodeTimestamp;
 
-  int result = parser_.Parse(buf, size);
+  int result = parser_.Parse(buf);
 
   if (result < 0) {
     cluster_ended_ = false;

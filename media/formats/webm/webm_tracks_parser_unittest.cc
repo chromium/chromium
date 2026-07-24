@@ -53,7 +53,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   EXPECT_MEDIA_LOG(HasSubstr("Ignoring text track 1"));
   EXPECT_MEDIA_LOG(HasSubstr("Ignoring text track 2"));
 
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(buf);
   EXPECT_GT(result, 0);
   EXPECT_EQ(result, static_cast<int>(buf.size()));
 
@@ -75,7 +75,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
 
   auto parser = std::make_unique<WebMTracksParser>(&media_log_);
   ;
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(buf);
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
@@ -103,7 +103,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
 
   auto parser = std::make_unique<WebMTracksParser>(&media_log_);
   ;
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(buf);
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
@@ -129,7 +129,7 @@ TEST_F(WebMTracksParserTest, InvalidZeroDefaultDurationSet) {
 
   EXPECT_MEDIA_LOG(HasSubstr("Illegal 0ns audio TrackEntry DefaultDuration"));
 
-  EXPECT_EQ(-1, parser->Parse(&buf[0], buf.size()));
+  EXPECT_EQ(-1, parser->Parse(buf));
 }
 
 TEST_F(WebMTracksParserTest, InvalidTracksCodecIdFormat) {
@@ -145,7 +145,7 @@ TEST_F(WebMTracksParserTest, InvalidTracksCodecIdFormat) {
   EXPECT_MEDIA_LOG(
       HasSubstr("Tracks CodecID element value must be an ASCII string"));
 
-  EXPECT_EQ(-1, parser->Parse(&buf[0], buf.size()));
+  EXPECT_EQ(-1, parser->Parse(buf));
 }
 
 TEST_F(WebMTracksParserTest, InvalidTracksNameFormat) {
@@ -161,7 +161,7 @@ TEST_F(WebMTracksParserTest, InvalidTracksNameFormat) {
   EXPECT_MEDIA_LOG(
       HasSubstr("Tracks Name element value must be an ASCII string"));
 
-  EXPECT_EQ(-1, parser->Parse(&buf[0], buf.size()));
+  EXPECT_EQ(-1, parser->Parse(buf));
 }
 
 TEST_F(WebMTracksParserTest, HighTrackUID) {
@@ -173,7 +173,7 @@ TEST_F(WebMTracksParserTest, HighTrackUID) {
 
   auto parser = std::make_unique<WebMTracksParser>(&media_log_);
   ;
-  EXPECT_GT(parser->Parse(&buf[0], buf.size()),0);
+  EXPECT_GT(parser->Parse(buf), 0);
 }
 
 TEST_F(WebMTracksParserTest, PrecisionCapping) {

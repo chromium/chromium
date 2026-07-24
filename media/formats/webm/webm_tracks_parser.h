@@ -38,12 +38,12 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
 
   ~WebMTracksParser() override;
 
-  // Parses a WebM Tracks element in |buf|.
+  // Parses a WebM Tracks element in `buf`.
   //
   // Returns -1 if the parse fails.
   // Returns 0 if more data is needed.
   // Returns the number of bytes parsed on success.
-  int Parse(const uint8_t* buf, int size);
+  int Parse(base::span<const uint8_t> buf);
 
   int64_t audio_track_num() const { return audio_track_num_; }
   int64_t video_track_num() const { return video_track_num_; }

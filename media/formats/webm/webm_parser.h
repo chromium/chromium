@@ -72,12 +72,12 @@ class MEDIA_EXPORT WebMListParser {
   // Resets the state of the parser so it can start parsing a new list.
   void Reset();
 
-  // Parses list data contained in |buf|.
+  // Parses list data contained in `buf`.
   //
   // Returns < 0 if the parse fails.
   // Returns 0 if more data is needed.
   // Returning > 0 indicates success & the number of bytes parsed.
-  int Parse(const uint8_t* buf, int size);
+  int Parse(base::span<const uint8_t> buf);
 
   // Returns true if the entire list has been parsed.
   bool IsParsingComplete() const;
@@ -105,8 +105,7 @@ class MEDIA_EXPORT WebMListParser {
   // |header_size| - The size of the element header
   // |id| - The ID of the element being parsed.
   // |element_size| - The size of the element body.
-  // |data| - Pointer to the element contents.
-  // |size| - Number of bytes in |data|
+  // |data| - The element contents.
   // |client| - Client to pass the parsed data to.
   //
   // Returns < 0 if the parse fails.
@@ -115,8 +114,7 @@ class MEDIA_EXPORT WebMListParser {
   int ParseListElement(int header_size,
                        int id,
                        int64_t element_size,
-                       const uint8_t* data,
-                       int size);
+                       base::span<const uint8_t> data);
 
   // Called when starting to parse a new list.
   //
@@ -167,8 +165,7 @@ class MEDIA_EXPORT WebMListParser {
 // |*id| contains the element ID on success and is undefined otherwise.
 // |*element_size| contains the element size on success and is undefined
 //                 otherwise.
-int MEDIA_EXPORT WebMParseElementHeader(const uint8_t* buf,
-                                        int size,
+int MEDIA_EXPORT WebMParseElementHeader(base::span<const uint8_t> buf,
                                         int* id,
                                         int64_t* element_size);
 

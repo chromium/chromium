@@ -72,14 +72,14 @@ void WebMTracksParser::ResetTrackEntry() {
   video_client_.Reset();
 }
 
-int WebMTracksParser::Parse(const uint8_t* buf, int size) {
+int WebMTracksParser::Parse(base::span<const uint8_t> buf) {
   if (reset_on_next_parse_)
     Reset();
 
   reset_on_next_parse_ = true;
 
   WebMListParser parser(kWebMIdTracks, this);
-  int result = parser.Parse(buf, size);
+  int result = parser.Parse(buf);
 
   if (result <= 0)
     return result;

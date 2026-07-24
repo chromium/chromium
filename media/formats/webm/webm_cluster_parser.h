@@ -173,12 +173,12 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // Resets the parser state so it can accept a new cluster.
   void Reset();
 
-  // Parses a WebM cluster element in |buf|.
+  // Parses a WebM cluster element in `buf`.
   //
   // Returns -1 if the parse fails.
   // Returns 0 if more data is needed.
   // Returns the number of bytes parsed on success.
-  int Parse(const uint8_t* buf, int size);
+  int Parse(base::span<const uint8_t> buf);
 
   base::TimeDelta cluster_start_time() const { return cluster_start_time_; }
 

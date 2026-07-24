@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -28,6 +30,11 @@ class Cluster {
   // TODO(frs): This should be changed to return a span.
   const uint8_t* data() const { return data_.data(); }
   int bytes_used() const { return bytes_used_; }
+
+  // Returns a span over the `bytes_used()` valid bytes of the cluster.
+  base::span<const uint8_t> AsSpan() const {
+    return data_.first(base::checked_cast<size_t>(bytes_used_));
+  }
 
  private:
   base::HeapArray<uint8_t> data_;

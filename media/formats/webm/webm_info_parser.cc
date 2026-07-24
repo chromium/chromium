@@ -17,12 +17,12 @@ WebMInfoParser::WebMInfoParser() : timecode_scale_ns_(-1), duration_(-1) {}
 
 WebMInfoParser::~WebMInfoParser() = default;
 
-int WebMInfoParser::Parse(const uint8_t* buf, int size) {
+int WebMInfoParser::Parse(base::span<const uint8_t> buf) {
   timecode_scale_ns_ = -1;
   duration_ = -1;
 
   WebMListParser parser(kWebMIdInfo, this);
-  int result = parser.Parse(buf, size);
+  int result = parser.Parse(buf);
 
   if (result <= 0)
     return result;

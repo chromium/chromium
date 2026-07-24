@@ -62,7 +62,7 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
   // Returns < 0 if the parse fails.
   // Returns 0 if more data is needed.
   // Returning > 0 indicates success & the number of bytes parsed.
-  int ParseInfoAndTracks(const uint8_t* data, int size);
+  int ParseInfoAndTracks(base::span<const uint8_t> data);
 
   // Incrementally parses WebM cluster elements. This method also skips
   // CUES elements if they are encountered since we currently don't use the
@@ -71,7 +71,7 @@ class MEDIA_EXPORT WebMStreamParser : public StreamParser {
   // Returns < 0 if the parse fails.
   // Returns 0 if more data is needed.
   // Returning > 0 indicates success & the number of bytes parsed.
-  int ParseCluster(const uint8_t* data, int size);
+  int ParseCluster(base::span<const uint8_t> data);
 
   // Fire the encrypted event through the |encrypted_media_init_data_cb_|.
   void OnEncryptedMediaInitData(const std::string& key_id);

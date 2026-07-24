@@ -10,8 +10,8 @@
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/formats/webm/cluster_builder.h"
 #include "media/formats/webm/webm_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +86,7 @@ TEST_F(WebMParserTest, EmptyCluster) {
   EXPECT_CALL(client_, OnListEnd(kWebMIdCluster)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(size, parser.Parse(kEmptyCluster, size));
+  EXPECT_EQ(size, parser.Parse(kEmptyCluster));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -104,7 +104,7 @@ TEST_F(WebMParserTest, EmptyClusterInSegment) {
   EXPECT_CALL(client_, OnListEnd(kWebMIdSegment)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(size, parser.Parse(kBuffer, size));
+  EXPECT_EQ(size, parser.Parse(kBuffer));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -120,7 +120,7 @@ TEST_F(WebMParserTest, ChildNonListLargerThanParent) {
   EXPECT_CALL(client_, OnListStart(kWebMIdCluster)).WillOnce(Return(&client_));
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -137,7 +137,7 @@ TEST_F(WebMParserTest, ChildListLargerThanParent) {
   EXPECT_CALL(client_, OnListStart(kWebMIdSegment)).WillOnce(Return(&client_));
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -148,7 +148,7 @@ TEST_F(WebMParserTest, ListIdDoesNotMatch) {
   };
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -162,7 +162,7 @@ TEST_F(WebMParserTest, InvalidElementInList) {
   EXPECT_CALL(client_, OnListStart(kWebMIdSegment)).WillOnce(Return(&client_));
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -178,7 +178,7 @@ TEST_F(WebMParserTest, InvalidEBMLHeaderInCluster) {
   EXPECT_CALL(client_, OnListStart(kWebMIdCluster)).WillOnce(Return(&client_));
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -198,7 +198,7 @@ TEST_F(WebMParserTest, UnknownSizeClusterFollowedByEBMLHeader) {
   WebMListParser parser(kWebMIdCluster, &client_);
 
   // List parse should consume the CLUSTER but not the EBMLHEADER.
-  EXPECT_EQ(5, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(5, parser.Parse(kBuffer));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -220,7 +220,7 @@ TEST_F(WebMParserTest, VoidAndCRC32InList) {
   EXPECT_CALL(client_, OnListEnd(kWebMIdSegment)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(size, parser.Parse(kBuffer, size));
+  EXPECT_EQ(size, parser.Parse(kBuffer));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -230,8 +230,7 @@ TEST_F(WebMParserTest, ParseListElementWithSingleCall) {
   CreateClusterExpectations(kBlockCount, true, &client_);
 
   WebMListParser parser(kWebMIdCluster, &client_);
-  EXPECT_EQ(cluster->bytes_used(),
-            parser.Parse(cluster->data(), cluster->bytes_used()));
+  EXPECT_EQ(cluster->bytes_used(), parser.Parse(cluster->AsSpan()));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -239,31 +238,30 @@ TEST_F(WebMParserTest, ParseListElementWithMultipleCalls) {
   std::unique_ptr<Cluster> cluster(CreateCluster(kBlockCount));
   CreateClusterExpectations(kBlockCount, true, &client_);
 
-  const uint8_t* data = cluster->data();
-  int size = cluster->bytes_used();
+  base::span<const uint8_t> data = cluster->AsSpan();
   int default_parse_size = 3;
   WebMListParser parser(kWebMIdCluster, &client_);
-  int parse_size = std::min(default_parse_size, size);
+  int parse_size = default_parse_size;
 
-  while (size > 0) {
-    int result = parser.Parse(data, parse_size);
+  while (!data.empty()) {
+    size_t chunk =
+        std::min(base::checked_cast<size_t>(parse_size), data.size());
+    int result = parser.Parse(data.first(chunk));
     ASSERT_GE(result, 0);
-    ASSERT_LE(result, parse_size);
+    ASSERT_LE(result, base::checked_cast<int>(chunk));
 
     if (result == 0) {
       // The parser needs more data so increase the parse_size a little.
       EXPECT_FALSE(parser.IsParsingComplete());
       parse_size += default_parse_size;
-      parse_size = std::min(parse_size, size);
       continue;
     }
 
     parse_size = default_parse_size;
 
-    UNSAFE_TODO(data += result);
-    size -= result;
+    data = data.subspan(base::checked_cast<size_t>(result));
 
-    EXPECT_EQ((size == 0), parser.IsParsingComplete());
+    EXPECT_EQ(data.empty(), parser.IsParsingComplete());
   }
   EXPECT_TRUE(parser.IsParsingComplete());
 }
@@ -282,7 +280,8 @@ TEST_F(WebMParserTest, Reset) {
 
   // Send slightly less than the full cluster so all but the last block is
   // parsed.
-  int result = parser.Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser.Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
   EXPECT_FALSE(parser.IsParsingComplete());
@@ -290,8 +289,7 @@ TEST_F(WebMParserTest, Reset) {
   parser.Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  EXPECT_EQ(cluster->bytes_used(),
-            parser.Parse(cluster->data(), cluster->bytes_used()));
+  EXPECT_EQ(cluster->bytes_used(), parser.Parse(cluster->AsSpan()));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -323,7 +321,7 @@ TEST_F(WebMParserTest, MultipleClients) {
   EXPECT_CALL(client_, OnListEnd(kWebMIdSegment)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(size, parser.Parse(kBuffer, size));
+  EXPECT_EQ(size, parser.Parse(kBuffer));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 
@@ -338,7 +336,7 @@ TEST_F(WebMParserTest, InvalidClient) {
   EXPECT_CALL(client_, OnListStart(kWebMIdSegment)).WillOnce(ReturnNull());
 
   WebMListParser parser(kWebMIdSegment, &client_);
-  EXPECT_EQ(-1, parser.Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser.Parse(kBuffer));
   EXPECT_FALSE(parser.IsParsingComplete());
 }
 
@@ -347,7 +345,7 @@ TEST_F(WebMParserTest, ReservedIds) {
   const uint8_t k2ByteReservedId[] = {0x7F, 0xFF, 0x81};
   const uint8_t k3ByteReservedId[] = {0x3F, 0xFF, 0xFF, 0x81};
   const uint8_t k4ByteReservedId[] = {0x1F, 0xFF, 0xFF, 0xFF, 0x81};
-  auto kBuffers = std::to_array<const uint8_t*>({
+  auto kBuffers = std::to_array<base::span<const uint8_t>>({
       k1ByteReservedId,
       k2ByteReservedId,
       k3ByteReservedId,
@@ -358,8 +356,10 @@ TEST_F(WebMParserTest, ReservedIds) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + i;
-    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
-                                                  &id, &element_size));
+    EXPECT_EQ(buffer_size,
+              WebMParseElementHeader(
+                  kBuffers[i].first(base::checked_cast<size_t>(buffer_size)),
+                  &id, &element_size));
     EXPECT_EQ(id, kWebMReservedId);
     EXPECT_EQ(element_size, 1);
   }
@@ -377,7 +377,7 @@ TEST_F(WebMParserTest, ReservedSizes) {
                                         0xFF, 0xFF, 0xFF, 0xFF};
   const uint8_t k8ByteReservedSize[] = {0xA3, 0x01, 0xFF, 0xFF, 0xFF,
                                         0xFF, 0xFF, 0xFF, 0xFF};
-  auto kBuffers = std::to_array<const uint8_t*>({
+  auto kBuffers = std::to_array<base::span<const uint8_t>>({
       k1ByteReservedSize,
       k2ByteReservedSize,
       k3ByteReservedSize,
@@ -392,8 +392,10 @@ TEST_F(WebMParserTest, ReservedSizes) {
     int id;
     int64_t element_size;
     int buffer_size = 2 + i;
-    EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
-                                                  &id, &element_size));
+    EXPECT_EQ(buffer_size,
+              WebMParseElementHeader(
+                  kBuffers[i].first(base::checked_cast<size_t>(buffer_size)),
+                  &id, &element_size));
     EXPECT_EQ(id, 0xA3);
     EXPECT_EQ(element_size, kWebMUnknownSize);
   }
@@ -420,7 +422,7 @@ TEST_F(WebMParserTest, ZeroPaddedStrings) {
   EXPECT_CALL(client_, OnListEnd(kWebMIdEBMLHeader)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdEBMLHeader, &client_);
-  EXPECT_EQ(size, parser.Parse(kBuffer, size));
+  EXPECT_EQ(size, parser.Parse(kBuffer));
   EXPECT_TRUE(parser.IsParsingComplete());
 }
 

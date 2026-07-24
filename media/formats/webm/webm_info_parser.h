@@ -24,12 +24,12 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
 
   ~WebMInfoParser() override;
 
-  // Parses a WebM Info element in |buf|.
+  // Parses a WebM Info element in `buf`.
   //
   // Returns -1 if the parse fails.
   // Returns 0 if more data is needed.
   // Returns the number of bytes parsed on success.
-  int Parse(const uint8_t* buf, int size);
+  int Parse(base::span<const uint8_t> buf);
 
   int64_t timecode_scale_ns() const { return timecode_scale_ns_; }
   double duration() const { return duration_; }

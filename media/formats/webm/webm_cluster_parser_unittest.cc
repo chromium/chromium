@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decrypt_config.h"
@@ -389,9 +389,10 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
           WebMSimpleBlockDurationEstimated(kExpectedVideoEstimationInMs));
     }
 
-    int result = parser_->Parse(
-        cluster->data(),
-        parse_full_cluster ? cluster->bytes_used() : cluster->bytes_used() - 1);
+    int result =
+        parser_->Parse(cluster->AsSpan().first(base::checked_cast<size_t>(
+            parse_full_cluster ? cluster->bytes_used()
+                               : cluster->bytes_used() - 1)));
     if (parse_full_cluster) {
       DVLOG(1) << "Verifying parse result of full cluster of "
                << blocks_in_cluster << " blocks";
@@ -418,7 +419,8 @@ TEST_F(WebMClusterParserTest, Reset) {
 
   // Send slightly less than the full cluster so all but the last block is
   // parsed.
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser_->Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
 
@@ -428,7 +430,7 @@ TEST_F(WebMClusterParserTest, Reset) {
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kDefaultBlockInfo));
 }
@@ -436,7 +438,7 @@ TEST_F(WebMClusterParserTest, Reset) {
 TEST_F(WebMClusterParserTest, ParseClusterWithSingleCall) {
   std::unique_ptr<Cluster> cluster(CreateCluster(0, kDefaultBlockInfo));
 
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kDefaultBlockInfo));
 }
@@ -444,21 +446,21 @@ TEST_F(WebMClusterParserTest, ParseClusterWithSingleCall) {
 TEST_F(WebMClusterParserTest, ParseClusterWithMultipleCalls) {
   std::unique_ptr<Cluster> cluster(CreateCluster(0, kDefaultBlockInfo));
 
-  const uint8_t* data = cluster->data();
-  int size = cluster->bytes_used();
+  base::span<const uint8_t> data = cluster->AsSpan();
   int default_parse_size = 3;
-  int parse_size = std::min(default_parse_size, size);
+  int parse_size = default_parse_size;
 
   StreamParser::BufferQueueMap buffers;
-  while (size > 0) {
-    int result = parser_->Parse(data, parse_size);
+  while (!data.empty()) {
+    size_t chunk =
+        std::min(base::checked_cast<size_t>(parse_size), data.size());
+    int result = parser_->Parse(data.first(chunk));
     ASSERT_GE(result, 0);
-    ASSERT_LE(result, parse_size);
+    ASSERT_LE(result, base::checked_cast<int>(chunk));
 
     if (result == 0) {
       // The parser needs more data so increase the parse_size a little.
       parse_size += default_parse_size;
-      parse_size = std::min(parse_size, size);
       continue;
     }
 
@@ -470,8 +472,7 @@ TEST_F(WebMClusterParserTest, ParseClusterWithMultipleCalls) {
 
     parse_size = default_parse_size;
 
-    UNSAFE_TODO(data += result);
-    size -= result;
+    data = data.subspan(base::checked_cast<size_t>(result));
   }
   ASSERT_TRUE(VerifyBuffers(buffers, kDefaultBlockInfo));
 }
@@ -501,7 +502,7 @@ TEST_F(WebMClusterParserTest, ParseBlockGroup) {
   };
   const int kClusterSize = sizeof(kClusterData);
 
-  int result = parser_->Parse(kClusterData, kClusterSize);
+  int result = parser_->Parse(kClusterData);
   EXPECT_EQ(kClusterSize, result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -517,7 +518,7 @@ TEST_F(WebMClusterParserTest, ParseSimpleBlockAndBlockGroupMixture) {
 
   std::unique_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo));
 
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -549,7 +550,7 @@ TEST_F(WebMClusterParserTest, IgnoredTracks) {
 
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(23));
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(34));
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kOutputBlockInfo));
 }
@@ -565,7 +566,7 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(
       WebMClusterParser::kDefaultVideoBufferDurationInMs));
 
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   StreamParser::BufferQueueMap buffers;
   parser_->GetBuffers(&buffers);
@@ -582,7 +583,7 @@ TEST_F(WebMClusterParserTest, ParseBadEncryptedBlock) {
       std::string(), "video_key_id", AudioCodec::kUnknown));
 
   EXPECT_MEDIA_LOG(HasSubstr("Failed to extract decrypt config"));
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(-1, result);
 }
 
@@ -591,7 +592,7 @@ TEST_F(WebMClusterParserTest, ParseInvalidZeroSizedCluster) {
     0x1F, 0x43, 0xB6, 0x75, 0x80,  // CLUSTER (size = 0)
   };
 
-  EXPECT_EQ(-1, parser_->Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser_->Parse(kBuffer));
 }
 
 TEST_F(WebMClusterParserTest, ParseInvalidUnknownButActuallyZeroSizedCluster) {
@@ -600,7 +601,7 @@ TEST_F(WebMClusterParserTest, ParseInvalidUnknownButActuallyZeroSizedCluster) {
     0x1F, 0x43, 0xB6, 0x75, 0x85,  // CLUSTER (size = 5)
   };
 
-  EXPECT_EQ(-1, parser_->Parse(kBuffer, sizeof(kBuffer)));
+  EXPECT_EQ(-1, parser_->Parse(kBuffer));
 }
 
 TEST_F(WebMClusterParserTest, ParseClusterTimecodeOverflow) {
@@ -616,7 +617,7 @@ TEST_F(WebMClusterParserTest, ParseClusterTimecodeOverflow) {
   };
 
   EXPECT_MEDIA_LOG(HasSubstr("Invalid cluster timecode."));
-  EXPECT_EQ(-1, parser_->Parse(kClusterData, sizeof(kClusterData)));
+  EXPECT_EQ(-1, parser_->Parse(kClusterData));
 }
 
 TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
@@ -650,7 +651,8 @@ TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
   // parsed. Though all the blocks are simple blocks, none should be held aside
   // for duration estimation prior to end of cluster detection because all the
   // tracks have DefaultDurations.
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser_->Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
   ASSERT_TRUE(
@@ -659,7 +661,7 @@ TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -694,7 +696,8 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   // both missing from the result (parser should hold them aside for duration
   // estimation prior to end of cluster detection in the absence of
   // DefaultDurations.)
-  int result = parser_->Parse(cluster1->data(), cluster1->bytes_used() - 1);
+  int result = parser_->Parse(cluster1->AsSpan().first(
+      base::checked_cast<size_t>(cluster1->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster1->bytes_used());
   ASSERT_TRUE(
@@ -711,7 +714,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
       WebMSimpleBlockDurationEstimated(kExpectedAudioEstimationInMs));
   EXPECT_MEDIA_LOG(
       WebMSimpleBlockDurationEstimated(kExpectedVideoEstimationInMs));
-  result = parser_->Parse(cluster1->data(), cluster1->bytes_used());
+  result = parser_->Parse(cluster1->AsSpan());
   EXPECT_EQ(cluster1->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1));
 
@@ -731,7 +734,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
       WebMSimpleBlockDurationEstimated(kExpectedAudioEstimationInMs));
   EXPECT_MEDIA_LOG(
       WebMSimpleBlockDurationEstimated(kExpectedVideoEstimationInMs));
-  result = parser_->Parse(cluster2->data(), cluster2->bytes_used());
+  result = parser_->Parse(cluster2->AsSpan());
   EXPECT_EQ(cluster2->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo2));
 }
@@ -766,7 +769,8 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   // both missing from the result (parser should hold them aside for duration
   // estimation prior to end of cluster detection in the absence of
   // DefaultDurations.)
-  int result = parser_->Parse(cluster1->data(), cluster1->bytes_used() - 1);
+  int result = parser_->Parse(cluster1->AsSpan().first(
+      base::checked_cast<size_t>(cluster1->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster1->bytes_used());
   ASSERT_TRUE(VerifyBuffers(
@@ -784,7 +788,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
       WebMSimpleBlockDurationEstimated(kExpectedAudioEstimationInMs));
   EXPECT_MEDIA_LOG(
       WebMSimpleBlockDurationEstimated(kExpectedVideoEstimationInMs));
-  result = parser_->Parse(cluster1->data(), cluster1->bytes_used());
+  result = parser_->Parse(cluster1->AsSpan());
   EXPECT_EQ(cluster1->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1));
 
@@ -802,7 +806,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
       WebMSimpleBlockDurationEstimated(kExpectedAudioEstimationInMs));
   EXPECT_MEDIA_LOG(
       WebMSimpleBlockDurationEstimated(kExpectedVideoEstimationInMs));
-  result = parser_->Parse(cluster2->data(), cluster2->bytes_used());
+  result = parser_->Parse(cluster2->AsSpan());
   EXPECT_EQ(cluster2->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo2));
 }
@@ -839,7 +843,8 @@ TEST_F(WebMClusterParserTest,
   // Send slightly less than the full cluster so all but the last block is
   // parsed. None should be held aside for duration estimation prior to end of
   // cluster detection because all the tracks have DefaultDurations.
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser_->Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
   ASSERT_TRUE(VerifyBuffers(
@@ -849,7 +854,7 @@ TEST_F(WebMClusterParserTest,
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -879,7 +884,8 @@ TEST_F(WebMClusterParserTest,
   // Send slightly less than the full cluster so all but the last block is
   // parsed. None should be held aside for duration estimation prior to end of
   // cluster detection because all blocks have BlockDurations.
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser_->Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
   ASSERT_TRUE(VerifyBuffers(
@@ -889,7 +895,7 @@ TEST_F(WebMClusterParserTest,
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
-  result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -926,7 +932,8 @@ TEST_F(WebMClusterParserTest,
   // the second video is held back still (not yet at end of cluster) and the
   // first audio is held back still (no second block parsed fully yet and not
   // yet at end of cluster).
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used() - 1);
+  int result = parser_->Parse(cluster->AsSpan().first(
+      base::checked_cast<size_t>(cluster->bytes_used() - 1)));
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->bytes_used());
   ASSERT_TRUE(VerifyBuffers(
@@ -941,7 +948,7 @@ TEST_F(WebMClusterParserTest,
   // the cluster, hence the expected order of MEDIA_LOGs here.
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(23));
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(33));
-  result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -967,7 +974,7 @@ TEST_F(WebMClusterParserTest,
       WebMClusterParser::kDefaultAudioBufferDurationInMs));
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(
       WebMClusterParser::kDefaultVideoBufferDurationInMs));
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -982,7 +989,7 @@ TEST_F(WebMClusterParserTest,
   };
 
   std::unique_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo));
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
   ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 }
@@ -1009,7 +1016,7 @@ TEST_F(WebMClusterParserTest, ReadOpusDurationsSimpleBlockAtEndOfCluster) {
       EXPECT_MEDIA_LOG(OpusPacketDurationTooHigh(duration_ms));
     }
 
-    int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+    int result = parser_->Parse(cluster->AsSpan());
     EXPECT_EQ(cluster->bytes_used(), result);
     ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo));
 
@@ -1049,7 +1056,7 @@ TEST_F(WebMClusterParserTest, PreferOpusDurationsOverBlockDurations) {
                                 packet_ptr->size()}};
 
     std::unique_ptr<Cluster> cluster(CreateCluster(0, block_infos));
-    int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+    int result = parser_->Parse(cluster->AsSpan());
     EXPECT_EQ(cluster->bytes_used(), result);
 
     // BlockInfo duration will be used to verify buffer duration, so changing
@@ -1087,7 +1094,7 @@ TEST_F(WebMClusterParserTest, DontReadEncodedDurationWhenEncrypted) {
                                    std::size(kEncryptedFrame)}};
 
   std::unique_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo));
-  int result = parser_->Parse(cluster->data(), cluster->bytes_used());
+  int result = parser_->Parse(cluster->AsSpan());
   EXPECT_EQ(cluster->bytes_used(), result);
 
   // Will verify that duration of buffer matches that of BlockDuration.

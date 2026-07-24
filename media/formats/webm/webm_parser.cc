@@ -15,18 +15,18 @@
 
 #include <algorithm>
 #include <array>
-#include <cstring>
 #include <iomanip>
 #include <limits>
 
+#include "base/bit_cast.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -460,19 +460,13 @@ static const auto kListElementInfo = std::to_array<ListElementInfo>({
 //                     element size fields and is false for ID field values.
 //
 // Returns: The number of bytes parsed on success. -1 on error.
-static int ParseWebMElementHeaderField(const uint8_t* buf,
-                                       int size,
+static int ParseWebMElementHeaderField(base::span<const uint8_t> buf,
                                        int max_bytes,
                                        bool mask_first_byte,
                                        int64_t* num) {
-  DCHECK(buf);
   DCHECK(num);
 
-  if (size < 0) {
-    return -1;
-  }
-
-  if (size == 0) {
+  if (buf.empty()) {
     return 0;
   }
 
@@ -496,14 +490,14 @@ static int ParseWebMElementHeaderField(const uint8_t* buf,
   }
 
   // Return 0 if we need more data.
-  if ((1 + extra_bytes) > size) {
+  if (base::checked_cast<size_t>(1 + extra_bytes) > buf.size()) {
     return 0;
   }
 
   int bytes_used = 1;
 
   for (int i = 0; i < extra_bytes; ++i) {
-    ch = UNSAFE_TODO(buf[bytes_used++]);
+    ch = buf[bytes_used++];
     all_ones &= (ch == 0xff);
     *num = (*num << 8) | ch;
   }
@@ -515,21 +509,18 @@ static int ParseWebMElementHeaderField(const uint8_t* buf,
   return bytes_used;
 }
 
-int WebMParseElementHeader(const uint8_t* buf,
-                           int size,
+int WebMParseElementHeader(base::span<const uint8_t> buf,
                            int* id,
                            int64_t* element_size) {
-  DCHECK(buf);
-  DCHECK_GE(size, 0);
   DCHECK(id);
   DCHECK(element_size);
 
-  if (size == 0) {
+  if (buf.empty()) {
     return 0;
   }
 
   int64_t tmp = 0;
-  int num_id_bytes = ParseWebMElementHeaderField(buf, size, 4, false, &tmp);
+  int num_id_bytes = ParseWebMElementHeaderField(buf, 4, false, &tmp);
 
   if (num_id_bytes <= 0) {
     return num_id_bytes;
@@ -542,7 +533,7 @@ int WebMParseElementHeader(const uint8_t* buf,
   *id = static_cast<int>(tmp);
 
   int num_size_bytes = ParseWebMElementHeaderField(
-      UNSAFE_TODO(buf + num_id_bytes), size - num_id_bytes, 8, true, &tmp);
+      buf.subspan(base::checked_cast<size_t>(num_id_bytes)), 8, true, &tmp);
 
   if (num_size_bytes <= 0) {
     return num_size_bytes;
@@ -596,18 +587,17 @@ static int FindListLevel(int id) {
   return -1;
 }
 
-static int ParseUInt(const uint8_t* buf,
-                     int size,
+static int ParseUInt(base::span<const uint8_t> buf,
                      int id,
                      WebMParserClient* client) {
-  if ((size <= 0) || (size > 8)) {
+  if (buf.empty() || buf.size() > 8) {
     return -1;
   }
 
   // Read in the big-endian integer.
   uint64_t value = 0;
-  for (int i = 0; i < size; ++i) {
-    value = (value << 8) | UNSAFE_TODO(buf[i]);
+  for (uint8_t byte : buf) {
+    value = (value << 8) | byte;
   }
 
   // We use int64_t in place of uint64_t everywhere for convenience.  See this
@@ -621,13 +611,13 @@ static int ParseUInt(const uint8_t* buf,
     return -1;
   }
 
-  return size;
+  return base::checked_cast<int>(buf.size());
 }
 
-static int ParseFloat(const uint8_t* buf,
-                      int size,
+static int ParseFloat(base::span<const uint8_t> buf,
                       int id,
                       WebMParserClient* client) {
+  const size_t size = buf.size();
   if ((size != 4) && (size != 8)) {
     return -1;
   }
@@ -636,26 +626,15 @@ static int ParseFloat(const uint8_t* buf,
 
   // Read the bytes from big-endian form into a native endian integer.
   int64_t tmp = 0;
-  for (int i = 0; i < size; ++i) {
-    tmp = (tmp << 8) | UNSAFE_TODO(buf[i]);
+  for (uint8_t byte : buf) {
+    tmp = (tmp << 8) | byte;
   }
 
-  // Use a union to convert the integer bit pattern into a floating point
-  // number.
+  // Reinterpret the integer bit pattern as a floating point number.
   if (size == 4) {
-    union {
-      int32_t src;
-      float dst;
-    } tmp2;
-    tmp2.src = static_cast<int32_t>(tmp);
-    value = tmp2.dst;
+    value = base::bit_cast<float>(static_cast<int32_t>(tmp));
   } else if (size == 8) {
-    union {
-      int64_t src;
-      double dst;
-    } tmp2;
-    tmp2.src = tmp;
-    value = tmp2.dst;
+    value = base::bit_cast<double>(tmp);
   } else {
     return -1;
   }
@@ -664,36 +643,33 @@ static int ParseFloat(const uint8_t* buf,
     return -1;
   }
 
-  return size;
+  return base::checked_cast<int>(size);
 }
 
-static int ParseBinary(const uint8_t* buf,
-                       int size,
+static int ParseBinary(base::span<const uint8_t> buf,
                        int id,
                        WebMParserClient* client) {
-  auto data = UNSAFE_TODO(
-      base::span<const uint8_t>(buf, base::checked_cast<size_t>(size)));
-  return client->OnBinary(id, data) ? size : -1;
+  return client->OnBinary(id, buf) ? base::checked_cast<int>(buf.size()) : -1;
 }
 
-static int ParseString(const uint8_t* buf,
-                       int size,
+static int ParseString(base::span<const uint8_t> buf,
                        int id,
                        WebMParserClient* client) {
-  const uint8_t* end =
-      static_cast<const uint8_t*>(UNSAFE_TODO(memchr(buf, '\0', size)));
-  int length = (end != nullptr) ? static_cast<int>(end - buf) : size;
-  std::string str(reinterpret_cast<const char*>(buf), length);
-  return client->OnString(id, str) ? size : -1;
+  const size_t length =
+      static_cast<size_t>(std::ranges::find(buf, uint8_t{0}) - buf.begin());
+  std::string str(base::as_string_view(buf.first(length)));
+  return client->OnString(id, str) ? base::checked_cast<int>(buf.size()) : -1;
 }
 
 static int ParseNonListElement(ElementType type,
                                int id,
                                int64_t element_size,
-                               const uint8_t* buf,
-                               int size,
+                               base::span<const uint8_t> buf,
                                WebMParserClient* client) {
-  DCHECK_GE(size, element_size);
+  DCHECK_GE(buf.size(), base::checked_cast<size_t>(element_size));
+
+  base::span<const uint8_t> element =
+      buf.first(base::checked_cast<size_t>(element_size));
 
   int result = -1;
   switch (type) {
@@ -702,26 +678,26 @@ static int ParseNonListElement(ElementType type,
       result = -1;
       break;
     case UINT:
-      result = ParseUInt(buf, element_size, id, client);
+      result = ParseUInt(element, id, client);
       break;
     case FLOAT:
-      result = ParseFloat(buf, element_size, id, client);
+      result = ParseFloat(element, id, client);
       break;
     case BINARY:
-      result = ParseBinary(buf, element_size, id, client);
+      result = ParseBinary(element, id, client);
       break;
     case STRING:
-      result = ParseString(buf, element_size, id, client);
+      result = ParseString(element, id, client);
       break;
     case SKIP:
-      result = element_size;
+      result = base::checked_cast<int>(element_size);
       break;
     default:
       DVLOG(1) << "Unhandled ID type " << type;
       return -1;
   };
 
-  DCHECK_LE(result, size);
+  DCHECK_LE(result, base::checked_cast<int>(buf.size()));
   return result;
 }
 
@@ -774,26 +750,21 @@ void WebMListParser::Reset() {
   list_state_stack_.clear();
 }
 
-int WebMListParser::Parse(const uint8_t* buf, int size) {
-  DCHECK(buf);
-
-  if (size < 0 || state_ == PARSE_ERROR || state_ == DONE_PARSING_LIST) {
+int WebMListParser::Parse(base::span<const uint8_t> buf) {
+  if (state_ == PARSE_ERROR || state_ == DONE_PARSING_LIST) {
     return -1;
   }
 
-  if (size == 0) {
+  if (buf.empty()) {
     return 0;
   }
 
-  const uint8_t* cur = buf;
-  int cur_size = size;
   int bytes_parsed = 0;
 
-  while (cur_size > 0 && state_ != PARSE_ERROR && state_ != DONE_PARSING_LIST) {
+  while (!buf.empty() && state_ != PARSE_ERROR && state_ != DONE_PARSING_LIST) {
     int element_id = 0;
     int64_t element_size = 0;
-    int result =
-        WebMParseElementHeader(cur, cur_size, &element_id, &element_size);
+    int result = WebMParseElementHeader(buf, &element_id, &element_size);
 
     if (result < 0) {
       return result;
@@ -827,15 +798,17 @@ int WebMListParser::Parse(const uint8_t* buf, int size) {
 
       case INSIDE_LIST: {
         int header_size = result;
-        const uint8_t* element_data = UNSAFE_TODO(cur + header_size);
-        int element_data_size = cur_size - header_size;
+        base::span<const uint8_t> element_data =
+            buf.subspan(base::checked_cast<size_t>(header_size));
+        int element_data_size = base::checked_cast<int>(element_data.size());
 
         if (element_size < element_data_size) {
-          element_data_size = element_size;
+          element_data_size = base::checked_cast<int>(element_size);
         }
 
-        result = ParseListElement(header_size, element_id, element_size,
-                                  element_data, element_data_size);
+        result = ParseListElement(
+            header_size, element_id, element_size,
+            element_data.first(base::checked_cast<size_t>(element_data_size)));
 
         DCHECK_LE(result, header_size + element_data_size);
         if (result < 0) {
@@ -856,8 +829,7 @@ int WebMListParser::Parse(const uint8_t* buf, int size) {
         break;
     }
 
-    UNSAFE_TODO(cur += result);
-    cur_size -= result;
+    buf = buf.subspan(base::checked_cast<size_t>(result));
     bytes_parsed += result;
   }
 
@@ -875,8 +847,7 @@ void WebMListParser::ChangeState(State new_state) {
 int WebMListParser::ParseListElement(int header_size,
                                      int id,
                                      int64_t element_size,
-                                     const uint8_t* data,
-                                     int size) {
+                                     base::span<const uint8_t> data) {
   DCHECK_GT(list_state_stack_.size(), 0u);
 
   ListState& list_state = list_state_stack_.back();
@@ -928,13 +899,13 @@ int WebMListParser::ParseListElement(int header_size,
 
   // Make sure we have the entire element before trying to parse a non-list
   // element.
-  if (size < element_size) {
+  if (base::checked_cast<int64_t>(data.size()) < element_size) {
     return 0;
   }
 
-  int bytes_parsed = ParseNonListElement(id_type, id, element_size, data, size,
-                                         list_state.client_);
-  DCHECK_LE(bytes_parsed, size);
+  int bytes_parsed =
+      ParseNonListElement(id_type, id, element_size, data, list_state.client_);
+  DCHECK_LE(bytes_parsed, base::checked_cast<int>(data.size()));
 
   // Return if an error occurred or we need more data.
   // Note: bytes_parsed is 0 for a successful parse of a size 0 element. We
