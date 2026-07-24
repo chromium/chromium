@@ -708,7 +708,13 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
+// TODO(crbug.com/538549149): Flaky on Linux TSan.
+#if defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_FileIsLarge_PolicyAllows DISABLED_FileIsLarge_PolicyAllows
+#else
+#define MAYBE_FileIsLarge_PolicyAllows FileIsLarge_PolicyAllows
+#endif
+TEST_F(FilesRequestHandlerTest, MAYBE_FileIsLarge_PolicyAllows) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       enterprise_connectors::kEnableNewUploadSizeLimit,
