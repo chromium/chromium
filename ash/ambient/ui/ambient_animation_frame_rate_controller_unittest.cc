@@ -80,6 +80,7 @@ class TestSkottieWrapper : public cc::SkottieWrapper {
             const cc::SkottieColorMap& color_map,
             const cc::SkottieTextPropertyValueMap& text_map) override {}
   float duration() const override { return duration_.InSecondsF(); }
+  float GetNormalizedTimeForFrame(float frame) const override { return 0.f; }
   SkSize size() const override {
     return gfx::SizeFToSkSize(gfx::SizeF(kTestAnimationSize));
   }

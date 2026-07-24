@@ -128,6 +128,8 @@ class CC_PAINT_EXPORT SkottieWrapper
                     const SkottieTextPropertyValueMap& text_map) = 0;
 
   virtual float duration() const = 0;
+  // Returns the normalized [0.0, 1.0] time for a given Lottie frame.
+  virtual float GetNormalizedTimeForFrame(float frame) const = 0;
   virtual SkSize size() const = 0;
 
   virtual base::span<const uint8_t> raw_data() const = 0;

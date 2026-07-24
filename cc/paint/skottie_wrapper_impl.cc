@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string_view>
@@ -324,6 +325,15 @@ class SkottieWrapperImpl : public SkottieWrapper {
   }
 
   float duration() const override { return animation_->duration(); }
+
+  float GetNormalizedTimeForFrame(float frame) const override {
+    float in_point = animation_->inPoint();
+    float out_point = animation_->outPoint();
+    if (out_point <= in_point) {
+      return 0.f;
+    }
+    return std::clamp((frame - in_point) / (out_point - in_point), 0.f, 1.f);
+  }
 
   SkSize size() const override { return animation_->size(); }
 

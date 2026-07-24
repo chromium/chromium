@@ -562,10 +562,12 @@ executable("lottie_viewer") {
     ":views_examples_proc",
     "//base",
     "//base/test:test_support",
+    "//cc/paint",
     "//skia",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/lottie",
     "//ui/views",
   ]
 }
