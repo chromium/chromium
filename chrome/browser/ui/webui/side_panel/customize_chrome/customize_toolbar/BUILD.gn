@@ -42,12 +42,33 @@ source_set("unit_tests") {
     ":customize_toolbar",
     "//base/test:test_support",
     "//chrome/browser/search_engines",
-    "//chrome/browser/ui:browser_actions",
-    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/actions",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "customize_toolbar_handler_browsertest.cc" ]
+  deps = [
+    ":customize_toolbar",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/actions",
   ]
 }
