@@ -16,6 +16,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
@@ -35,6 +36,7 @@ class MlInstallOperationTracker;
 }  // namespace webapps
 namespace web_app {
 class AppLock;
+struct IconMetadataFromDisk;
 struct WebAppInstallInfo;
 class WebAppDataRetriever;
 class WebAppProvider;
@@ -94,7 +96,8 @@ using InstallFromManifestCallbackWithMetrics =
 // Background document installs will prompt for approval/denial of the Web app
 // installation permission for the calling origin.
 class WebInstallServiceImpl
-    : public content::DocumentService<blink::mojom::WebInstallService> {
+    : public content::DocumentService<blink::mojom::WebInstallService>,
+      public content::WebContentsObserver {
  public:
   WebInstallServiceImpl(const WebInstallServiceImpl&) = delete;
   WebInstallServiceImpl& operator=(const WebInstallServiceImpl&) = delete;
@@ -109,7 +112,7 @@ class WebInstallServiceImpl
   static base::AutoReset<base::TimeDelta>
   SetMinCrossOriginQueryIntervalForTesting(base::TimeDelta interval);
 
-  // blink::mojom::WebInstallService implementation:
+  // blink::mojom::WebInstallService:
   void IsInstalled(blink::mojom::InstallOptionsPtr options,
                    IsInstalledCallback callback) override;
   // TODO(crbug.com/520025525): Remove install_url code.
@@ -122,6 +125,9 @@ class WebInstallServiceImpl
   void ElementInstallFromManifest(
       blink::mojom::ManifestInstallOptionsPtr options,
       InstallFromManifestCallback callback) override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   // Shared implementation for Install() and InstallFromElement().
@@ -147,6 +153,7 @@ class WebInstallServiceImpl
 
   // Manages `install_in_progress_`.
   bool IsInstallInProgress() const;
+  bool IsInitiatingPageGoneOrChanged() const;
   base::ScopedClosureRunner ReserveInstallInProgress();
   void ReleaseInstallInProgress();
 
@@ -262,6 +269,30 @@ class WebInstallServiceImpl
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
 
+  // Manifest URL launch flow (already-installed app). The installed app's
+  // trusted icon has been read from disk.
+  void OnManifestLaunchIconRead(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      std::u16string app_title,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      IconMetadataFromDisk icon_metadata);
+
+  // Triggers the launch dialog after any masking has been applied to the icon.
+  void OnManifestLaunchIconFinalized(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      std::u16string app_title,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      const SkBitmap icon_to_use);
+
+  // Used by the launch dialog to report whether the user accepted the launch.
+  void OnManifestLaunchDialogClosed(
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
+      webapps::AppId app_id,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      bool accepted);
+
   // Only one install can be in progress at a time.
   bool install_in_progress_ = false;
 
@@ -270,6 +301,10 @@ class WebInstallServiceImpl
   // Captured when an install is received and passed to the install command to
   // ensure the initiating page has not navigated away.
   base::WeakPtr<content::Page> initiating_page_;
+  // Latches any primary page change during a manifest install so that
+  // restoring the initiating page from the back-forward cache cannot resume
+  // the flow.
+  bool initiating_page_changed_during_install_ = false;
   // Active data retrievers. They are destroyed when this service is destroyed
   // or when their callback completes.
   absl::flat_hash_set<std::unique_ptr<WebAppDataRetriever>> data_retrievers_;

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -176,10 +177,18 @@ WebInstallServiceImpl::WebInstallServiceImpl(
     : content::DocumentService<blink::mojom::WebInstallService>(
           render_frame_host,
           std::move(receiver)),
+      content::WebContentsObserver(
+          content::WebContents::FromRenderFrameHost(&render_frame_host)),
       frame_routing_id_(render_frame_host.GetGlobalId()),
       last_committed_url_(render_frame_host.GetLastCommittedURL()) {}
 
 WebInstallServiceImpl::~WebInstallServiceImpl() = default;
+
+void WebInstallServiceImpl::PrimaryPageChanged(content::Page& page) {
+  if (initiating_page_ && initiating_page_.get() != &page) {
+    initiating_page_changed_during_install_ = true;
+  }
+}
 
 // static
 void WebInstallServiceImpl::CreateIfAllowed(
@@ -364,6 +373,7 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   // Snapshot the Page for the install command, which can outlive the document
   // service, and needs to detect if the page navigated away at any point.
   initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
+  initiating_page_changed_during_install_ = false;
 
   // Wrap the blink callback in another that records result UMA and releases
   // the install guard before running the blink callback.
@@ -520,6 +530,15 @@ void WebInstallServiceImpl::OnManifestParsed(
     }
   }
 
+  // The initiating page changed during parsing - this intentionally comes
+  // after the id checks above to preserve DataError behavior.
+  if (IsInitiatingPageGoneOrChanged()) {
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
   // Manifest was successfully parsed and meets all web install requirements.
   // Check if web app installs are supported in this profile (fails for
   // Incognito/Guest). This check intentionally comes after fetch+parse so that
@@ -604,6 +623,13 @@ void WebInstallServiceImpl::ContinueManifestInstall(
     blink::mojom::ManifestPtr manifest) {
   CHECK(options);
 
+  if (IsInitiatingPageGoneOrChanged()) {
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
   // At this point, `AreWebAppsUserInstallable` is guaranteed true (false case
   // falls out in `OnManifestParsed`), but `install_tracker` may still be null
   // if `AttachTabHelpers` was never called on this WebContents (e.g.
@@ -622,15 +648,36 @@ void WebInstallServiceImpl::ContinueManifestInstall(
   auto* provider = WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
 
-  // TODO(liahiscock): Check if the app is already installed. Show the launch
-  // dialog and return.
+  // If the app described by this manifest is already installed, show a launch
+  // dialog, instead of install.
+  std::optional<webapps::ManifestId> valid_manifest_id =
+      webapps::ManifestId::Create(manifest->id);
+  // A successfully parsed manifest always has a valid computed ID.
+  CHECK(valid_manifest_id);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(*valid_manifest_id);
+  // These reads can be unsafe as the launch command itself rechecks the app
+  // state under a lock, and gracefully aborts if it was uninstalled.
+  if (provider->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::LaunchableFromInstallApi())) {
+    std::u16string app_title =
+        base::UTF8ToUTF16(provider->registrar_unsafe().GetAppShortName(app_id));
 
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host());
+    // Read the installed app's trusted icon from disk. The blocking read picks
+    // the maskable icon over `any` on Mac/CrOS and reports the chosen purpose.
+    auto icon_read_callback = base::BindOnce(
+        &WebInstallServiceImpl::OnManifestLaunchIconRead,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics),
+        app_id, std::move(app_title), std::move(install_tracker));
+    provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id, {kIconSizeForLaunchDialog}, IconPurpose::ANY,
+        std::move(icon_read_callback));
+    return;
+  }
 
   provider->ui_manager().TriggerInstallDialogForManifestInstall(
-      web_contents, initiating_page_, std::move(install_tracker),
-      std::move(manifest), options->manifest_url, last_committed_url_,
+      content::WebContents::FromRenderFrameHost(&render_frame_host()),
+      initiating_page_, std::move(install_tracker), std::move(manifest),
+      options->manifest_url, last_committed_url_,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalledFromManifest,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_with_metrics)));
@@ -650,6 +697,103 @@ void WebInstallServiceImpl::OnAppInstalledFromManifest(
         .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
              blink::mojom::WebInstallServiceResult::kAbortError);
   }
+}
+
+void WebInstallServiceImpl::OnManifestLaunchIconRead(
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
+    webapps::AppId app_id,
+    std::u16string app_title,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    IconMetadataFromDisk icon_metadata) {
+  auto icon_it = icon_metadata.icons_map.find(kIconSizeForLaunchDialog);
+  if (icon_it == icon_metadata.icons_map.end() ||
+      icon_it->second.drawsNothing()) {
+    // Could not read a usable icon for the already-installed app.
+    // TODO(crbug.com/534399199): Recover from missing icon for launch dialog.
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+  SkBitmap icon_bitmap_to_use = icon_it->second;
+
+  base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
+
+  // `ReadTrustedIconsWithFallbackToManifestIcons` only reports a MASKABLE
+  // purpose on platforms that prefer maskable icons (Mac/CrOS), so the mask is
+  // applied only where appropriate.
+  if (icon_metadata.purpose != IconPurpose::MASKABLE) {
+    OnManifestLaunchIconFinalized(
+        std::move(callback_with_metrics), app_id, std::move(app_title),
+        std::move(install_tracker), std::move(icon_bitmap_to_use));
+    return;
+  }
+
+  web_app::MaskIconOnOs(
+      std::move(icon_bitmap_to_use),
+      base::BindOnce(&WebInstallServiceImpl::OnManifestLaunchIconFinalized,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_with_metrics), app_id,
+                     std::move(app_title), std::move(install_tracker)));
+}
+
+void WebInstallServiceImpl::OnManifestLaunchIconFinalized(
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
+    webapps::AppId app_id,
+    std::u16string app_title,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    const SkBitmap icon_to_use) {
+  // Do not attach the launch dialog if the page is gone.
+  if (IsInitiatingPageGoneOrChanged()) {
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  provider->ui_manager().TriggerLaunchDialogForBackgroundInstall(
+      web_contents, app_id, profile, base::UTF16ToUTF8(app_title), icon_to_use,
+      base::BindOnce(&WebInstallServiceImpl::OnManifestLaunchDialogClosed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_with_metrics), app_id,
+                     std::move(install_tracker)));
+}
+
+void WebInstallServiceImpl::OnManifestLaunchDialogClosed(
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
+    webapps::AppId app_id,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    bool accepted) {
+  if (IsInitiatingPageGoneOrChanged()) {
+    accepted = false;
+  }
+
+  // Update the installed_by field if the user accepted the launch.
+  if (accepted) {
+    auto* profile =
+        Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+    auto* provider = WebAppProvider::GetForWebApps(profile);
+    CHECK(provider);
+
+    provider->scheduler().ScheduleCallback<AppLock>(
+        "CheckInstalledByAndMaybeUpdate", AppLockDescription(app_id),
+        base::BindOnce(&CheckInstalledByAndMaybeUpdate, provider->clock().Now(),
+                       last_committed_url_, app_id),
+        /*on_complete=*/base::DoNothing());
+  }
+
+  // For privacy reasons, only resolve with kSuccess if the user accepted.
+  std::move(callback_with_metrics)
+      .Run(web_app::WebInstallServiceResult::kSuccessAlreadyInstalled,
+           accepted ? blink::mojom::WebInstallServiceResult::kSuccess
+                    : blink::mojom::WebInstallServiceResult::kAbortError);
 }
 
 void WebInstallServiceImpl::InstallInternal(
@@ -811,6 +955,13 @@ base::ScopedClosureRunner WebInstallServiceImpl::ReserveInstallInProgress() {
 
 void WebInstallServiceImpl::ReleaseInstallInProgress() {
   install_in_progress_ = false;
+  initiating_page_.reset();
+  initiating_page_changed_during_install_ = false;
+}
+
+bool WebInstallServiceImpl::IsInitiatingPageGoneOrChanged() const {
+  return initiating_page_changed_during_install_ || !initiating_page_ ||
+         !initiating_page_->IsPrimary();
 }
 
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
