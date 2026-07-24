@@ -14,18 +14,12 @@
 # TODO(crbug.com/379525871): These tests are failing on the ios-blink-rel-fyi
 # bot.
 -ShaderTranslatorTest.GetAttributes
--ShaderTranslatorTest.GetAttributes
--ShaderTranslatorTest.GetUniforms
 -ShaderTranslatorTest.GetUniforms
 -ShaderTranslatorTest.InvalidFragmentShader
--ShaderTranslatorTest.InvalidFragmentShader
--ShaderTranslatorTest.InvalidVertexShader
 -ShaderTranslatorTest.InvalidVertexShader
 -ShaderTranslatorTest.OptionsString
--ShaderTranslatorTest.OptionsString
+-ShaderTranslatorTest.OutputVariablesInitializedForAllSpecs
 -ShaderTranslatorTest.ValidFragmentShader
--ShaderTranslatorTest.ValidFragmentShader
--ShaderTranslatorTest.ValidVertexShader
 -ShaderTranslatorTest.ValidVertexShader
 
 # TODO(crbug.com/379525870): These tests are failing on the ios-blink-rel-fyi
