@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class OfflinePageUtilsTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
