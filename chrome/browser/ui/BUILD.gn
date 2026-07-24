@@ -414,10 +414,6 @@ static_library("ui") {
     "views/frame/glass_frame_service.h",
     "webui/chrome_web_ui_controller_factory.cc",
     "webui/chrome_web_ui_controller_factory.h",
-    "webui/fileicon_source.cc",
-    "webui/fileicon_source.h",
-    "webui/metrics_handler.cc",
-    "webui/metrics_handler.h",
   ]
 
   defines = []
@@ -2069,13 +2065,8 @@ static_library("ui") {
       # inspect_ui.cc includes browser.h, singleton_tabs.h.
       "//chrome/browser/ui/webui/inspect",
 
-      # cast_feedback_ui.cc includes metrics_handler.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/webui/media_router",
-
-      # password_manager_ui.cc includes managed_ui_handler.h,
-      # extension_control_handler.h and settings handler headers from
-      # //chrome/browser/ui:ui.
+      # password_manager_ui.cc includes extension_control_handler.h and
+      # settings handler headers from //chrome/browser/ui:ui.
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
 
       # These side panel UIs include loose headers that remain in
@@ -5052,14 +5043,11 @@ static_library("ui") {
   }
 
   if (enable_extensions_core) {
-    sources += [
-      "webui/managed_ui_handler.cc",
-      "webui/managed_ui_handler.h",
-    ]
     public_deps += [ "//chrome/browser/ui/webui/extensions" ]
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/web_navigation",
+      "//chrome/browser/ui/webui:managed_ui_handler",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
       "//extensions/common",
       "//extensions/strings",
@@ -5070,6 +5058,10 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/extensions",
       "//chrome/browser/ui/webui/extensions",
+
+      # managed_ui_handler includes managed_ui.h from //chrome/browser/ui that
+      # can't be split out yet.
+      "//chrome/browser/ui/webui:managed_ui_handler",
     ]
   }
 
@@ -5194,8 +5186,7 @@ static_library("ui") {
     ]
 
     # print_preview includes headers from //chrome/browser/ui (e.g.
-    # browser_tabstrip.h, managed_ui_handler.h,
-    # metrics_handler.h) that can't be split out yet.
+    # browser_tabstrip.h) that can't be split out yet.
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/print_preview:impl" ]
 

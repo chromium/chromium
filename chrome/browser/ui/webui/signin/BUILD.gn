@@ -332,6 +332,7 @@ if (is_win || is_chromeos) {
       "//chrome/browser/resources/gaia_auth_host:resources_grit",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/webui:metrics_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//components/signin/core/browser",
       "//ui/webui",

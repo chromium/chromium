@@ -105,6 +105,7 @@ source_set("password_manager_ui") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:managed_ui_handler",
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/page_not_available_for_guest",

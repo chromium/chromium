@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 if (!is_android) {
   source_set("bookmarks") {
     sources = [
@@ -29,6 +31,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui:favicon_source",
+      "//chrome/browser/ui/webui:metrics_handler",
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
@@ -49,6 +52,10 @@ if (!is_android) {
       "//ui/base",
       "//ui/webui",
     ]
+
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/ui/webui:managed_ui_handler" ]
+    }
   }
 }
 

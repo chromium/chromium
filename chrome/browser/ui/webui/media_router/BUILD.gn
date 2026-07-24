@@ -37,6 +37,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/resources/media_router/cast_feedback:resources",
         "//chrome/browser/signin",
+        "//chrome/browser/ui/webui:metrics_handler",
         "//chrome/browser/ui/webui/feedback",
         "//components/signin/public/identity_manager",
         "//components/version_info",

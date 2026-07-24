@@ -540,6 +540,53 @@ source_set("log_web_ui_url") {
   }
 }
 
+source_set("fileicon_source") {
+  sources = [ "fileicon_source.cc" ]
+  public = [ "fileicon_source.h" ]
+  public_deps = [
+    "//chrome/browser:icon_manager",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+  ]
+}
+
+source_set("metrics_handler") {
+  sources = [ "metrics_handler.cc" ]
+  public = [ "metrics_handler.h" ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/tab_contents",
+  ]
+}
+
+if (enable_extensions_core) {
+  source_set("managed_ui_handler") {
+    sources = [ "managed_ui_handler.cc" ]
+    public = [ "managed_ui_handler.h" ]
+    public_deps = [
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/supervised_user/core/common",
+    ]
+  }
+}
+
 source_set("prefs_internals_source") {
   sources = [
     "prefs_internals_source.cc",

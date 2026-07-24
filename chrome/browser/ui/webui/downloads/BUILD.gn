@@ -37,6 +37,9 @@ source_set("downloads") {
     "//chrome/browser/download:impl",
     "//chrome/browser/enterprise",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/webui:fileicon_source",
+    "//chrome/browser/ui/webui:managed_ui_handler",
+    "//chrome/browser/ui/webui:metrics_handler",
     "//chrome/browser/ui/webui:theme_source",
   ]
 

@@ -91,6 +91,8 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:managed_ui_handler",
+    "//chrome/browser/ui/webui:metrics_handler",
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",

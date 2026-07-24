@@ -78,6 +78,7 @@ static_library("settings") {
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
     "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/webui:managed_ui_handler",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/app_management",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
