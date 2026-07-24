@@ -41,10 +41,15 @@ Regardless of where you add a third party dependency, you should use the
 
 # Before you start
 
+NOTE: You can skip this step when you are only moving existing directories in
+Chromium to //third_party/.
+
 To make sure the inclusion of a new //third_party project makes sense for the
 Chromium project, you should first obtain approval from Chrome's Technical
-Steering Council. Please include the following topics in an email to
-chromium-third-party-libraries at chromium.org:
+Steering Council and Chrome Security. Please include the following topics in an
+email to chromium-third-party-libraries at chromium.org (this will trigger a
+review by both parties - you're good to go once you have both signoffs on the
+email thread):
 
 1.  Link to the upstream repository.
 
@@ -64,7 +69,6 @@ chromium-third-party-libraries at chromium.org:
     library be built from source, or distributed as a pre-built binary? In the
     latter case, please explain why it can't be built from source, as you'll need
     explicit approval.
-
 
 4.  Maintenance:
 
@@ -279,6 +283,11 @@ you're re-using code. See
 [//third_party/README.chromium.template](../third_party/README.chromium.template)
 for a list of fields to include. A presubmit check will check this has the right
 format.
+
+Make sure to document all security considerations, concerns, and risks in the
+`Description:` field of the README.chromium. Third party code is a hot spot
+for security vulnerabilities. Help people make informed decisions about
+relying on this package by highlighting security considerations.
 
 ## Security Critical {#security-critical}
 README.chromium files contain a field indicating whether the package is
@@ -526,15 +535,8 @@ following sign-offs. Some of these are accessible to Googlers only.
 Non-Googlers can email one of the people in
 [//third_party/OWNERS](../third_party/OWNERS) for help.
 
-* Make sure you have the approval from Chrome ATLs as mentioned
-  [above](#before-you-start).
-* Get security@chromium.org (or chrome-security@google.com, Google-only)
-  approval. Document all security considerations, concerns, and risks in the
-  `Description:` field of the README.chromium. Third party code is a hot spot
-  for security vulnerabilities. Help people make informed decisions about
-  relying on this package by highlighting security considerations.
-    * Rust dependencies do not need separate security review - the Rust review
-      process will cover security aspects.
+* Make sure you have the approval from Chrome TSC and Chrome Security as
+mentioned [above](#before-you-start).
 * Add chromium-third-party@google.com as a reviewer on your change. This
   will trigger automatic assignment to a reviewer who will check license use,
   metadata compliance and verify long term dependency maintenance plans.
@@ -546,10 +548,6 @@ Non-Googlers can email one of the people in
   process, ask one of the [//third_party/OWNERS](../third_party/OWNERS) instead.
 * Lastly, if all other steps are complete, get a positive code review from a
   member of [//third_party/OWNERS](../third_party/OWNERS) to land the change.
-
-Please send separate emails to the ATLs and security@chromium.org.
-You can skip the ATL review and security@chromium.org when you are only moving
-existing directories in Chromium to //third_party/.
 
 Subsequent changes don't normally require third-party-owners or security
 approval; you can modify the code as much as you want. When you update code, be
