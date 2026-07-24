@@ -148,6 +148,9 @@ class IndigoService : public KeyedService,
     return prompts_;
   }
 
+  // Ensures the Indigo component extension is registered with ComponentLoader.
+  void EnsureComponentExtensionRegistered();
+
   // KeyedService:
   void Shutdown() override;
 

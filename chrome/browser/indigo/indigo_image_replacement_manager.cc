@@ -202,6 +202,12 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  IndigoService* service = IndigoServiceFactory::GetForProfile(profile);
+  CHECK(service);
+  service->EnsureComponentExtensionRegistered();
+
   content::NavigationController::LoadURLParams params{
       extensions::Extension::GetResourceURL(
           extensions::Extension::GetBaseURLFromExtensionId(

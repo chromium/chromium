@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -239,11 +240,6 @@ IndigoService::IndigoService(Profile* profile,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  // Register component extension for Indigo.
-  extensions::ComponentLoader::Get(profile_)->Add(
-      indigo_extension_utils::GetManifest(),
-      base::FilePath(FILE_PATH_LITERAL("indigo")));
-
   // If component was already installed, load from it immediately.
   if (component_updater::GetIndigoComponentInstallDir().has_value()) {
     OnIndigoComponentReady();
@@ -255,6 +251,14 @@ IndigoService::IndigoService(Profile* profile,
 }
 
 IndigoService::~IndigoService() = default;
+
+void IndigoService::EnsureComponentExtensionRegistered() {
+  auto* component_loader = extensions::ComponentLoader::Get(profile_);
+  if (!component_loader->Exists(extension_misc::kIndigoExtensionId)) {
+    component_loader->Add(indigo_extension_utils::GetManifest(),
+                          base::FilePath(FILE_PATH_LITERAL("indigo")));
+  }
+}
 
 void IndigoService::Shutdown() {
   identity_manager_observation_.Reset();
