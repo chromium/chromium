@@ -52,7 +52,7 @@ client_certificates_pb::PrivateKey UnexportablePrivateKey::ToProto() const {
 
 base::DictValue UnexportablePrivateKey::ToDict() const {
   std::vector<uint8_t> wrapped = key_->GetWrappedKey();
-  if (wrapped.size() == 0) {
+  if (wrapped.empty()) {
     return base::DictValue();
   }
 

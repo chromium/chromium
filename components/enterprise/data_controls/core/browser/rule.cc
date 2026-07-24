@@ -549,7 +549,7 @@ void Rule::AddMutuallyExclusiveErrors(
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  if (!errors || oneof_conditions.size() == 0) {
+  if (!errors || oneof_conditions.empty()) {
     return;
   }
 
@@ -559,7 +559,7 @@ void Rule::AddMutuallyExclusiveErrors(
                      base::JoinString(oneof_conditions, ", "), error_path);
   }
 
-  if (anyof_conditions.size() > 0) {
+  if (!anyof_conditions.empty()) {
     errors->AddError(policy_name,
                      IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEY_SETS,
                      base::JoinString(anyof_conditions, ", "),

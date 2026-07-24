@@ -261,7 +261,7 @@ void ReportUploader::NextRequest() {
   // and we don't start from 1 minute again.
   backoff_entry_.InformOfRequest(true);
   requests_.pop();
-  if (requests_.size() == 0)
+  if (requests_.empty())
     SendResponse(ReportStatus::kSuccess);
   else
     Upload();
