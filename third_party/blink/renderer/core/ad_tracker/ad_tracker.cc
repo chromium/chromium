@@ -354,21 +354,13 @@ void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
   async_script_stack_.pop_back();
 }
-void AdTracker::WillPrepareRequest(
-    Document* document,
-    const ResourceRequestHead& request,
-    std::optional<KURL> alias_url,
+std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
+    ExecutionContext* execution_context,
+    const KURL& request_url,
     ResourceType resource_type,
     const FetchInitiatorInfo& initiator_info,
     std::optional<AdProvenance> known_ad_provenance,
-    bool scan_javascript_stack,
-    LazyStackTrace& stack_trace) {
-  const KURL& request_url =
-      alias_url.has_value() ? alias_url.value() : request.Url();
-
-  ExecutionContext* execution_context =
-      document ? document->GetExecutionContext() : nullptr;
-
+    bool scan_javascript_stack) {
   // Check if the document loading the resource is an ad.
   const bool is_ad_execution_context =
       IsKnownAdExecutionContext(execution_context);
@@ -377,73 +369,42 @@ void AdTracker::WillPrepareRequest(
     known_ad_provenance = NoProvenance{};
   }
 
-  // If the request was already marked as an ad (e.g. from redirects or service
-  // worker), propagate the existing provenance.
-  if (!known_ad_provenance && request.IsAdResource()) {
-    known_ad_provenance = request.GetAdProvenance();
-  }
-
   // We skip script checking for stylesheet-initiated resource requests as the
   // stack may represent the cause of a style recalculation rather than the
   // actual resources themselves. Instead, the ad bit is set according to the
   // CSSParserContext when the request is made. See crbug.com/1051605.
   if (initiator_info.name == fetch_initiator_type_names::kCSS ||
       initiator_info.name == fetch_initiator_type_names::kUacss) {
-    cached_provenance_url_ = request_url.GetString();
-    cached_provenance_ = known_ad_provenance;
-    has_cached_provenance_ = true;
-    return;
+    return known_ad_provenance;
   }
 
   // Check if any executing script is an ad.
   if (!known_ad_provenance && scan_javascript_stack) {
-    std::optional<AdScriptIdentifier> ancestor_ad_script;
-    if (IsAdScriptInStackHelper(
-            StackType::kTopOnly,
-            /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild,
-            stack_trace, &ancestor_ad_script)) {
-      known_ad_provenance = ancestor_ad_script
-                                ? AdProvenance(ancestor_ad_script->id)
-                                : AdProvenance(NoProvenance{});
+    v8::Isolate* isolate =
+        execution_context ? execution_context->GetIsolate() : nullptr;
+    if (isolate) {
+      LazyStackTrace stack_trace(isolate);
+      std::optional<AdScriptIdentifier> ancestor_ad_script;
+      if (IsAdScriptInStackHelper(
+              StackType::kTopOnly,
+              /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild,
+              stack_trace, &ancestor_ad_script)) {
+        known_ad_provenance = ancestor_ad_script
+                                  ? AdProvenance(ancestor_ad_script->id)
+                                  : AdProvenance(NoProvenance{});
+      }
     }
   }
 
   // If it is a script marked as an ad and it's not in an ad context, append it
-  // to the known ad script set. We don't need to keep track of ad scripts in ad
-  // contexts, because any script executed inside an ad context is considered an
-  // ad script by IsKnownAdScript.
+  // to the known ad script set.
   if (resource_type == ResourceType::kScript && known_ad_provenance &&
       execution_context && !is_ad_execution_context) {
     AppendToKnownAdScripts(*execution_context, request_url.GetString(),
                            *known_ad_provenance);
   }
 
-  cached_provenance_url_ = request_url.GetString();
-  cached_provenance_ = known_ad_provenance;
-  has_cached_provenance_ = true;
-}
-
-std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
-    ExecutionContext* execution_context,
-    const KURL& request_url,
-    ResourceType resource_type,
-    const FetchInitiatorInfo& initiator_info,
-    std::optional<AdProvenance> known_ad_provenance,
-    bool scan_javascript_stack) {
-  if (!has_cached_provenance_) {
-    // If monitor was null (detached frame/tests), fall back to passed
-    // provenance.
-    return known_ad_provenance;
-  }
-  if (cached_provenance_url_ != request_url.GetString()) {
-    DCHECK(false) << "Stale ad tracker provenance cache. Expected: "
-                  << cached_provenance_url_
-                  << ", Got: " << request_url.GetString();
-    return known_ad_provenance;
-  }
-  std::optional<AdProvenance> result = cached_provenance_;
-  has_cached_provenance_ = false;
-  return result;
+  return known_ad_provenance;
 }
 
 void AdTracker::DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,

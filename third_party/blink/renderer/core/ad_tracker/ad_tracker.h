@@ -103,19 +103,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
                           LazyStackTrace& stack_trace) override;
   void DidStartAsyncTask(probe::AsyncTaskContext* task_context) override;
   void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) override;
-  void WillPrepareRequest(Document* document,
-                          const ResourceRequestHead& request,
-                          std::optional<KURL> alias_url,
-                          ResourceType resource_type,
-                          const FetchInitiatorInfo& initiator_info,
-                          std::optional<AdProvenance> known_ad_provenance,
-                          bool scan_javascript_stack,
-                          LazyStackTrace& stack_trace) override;
 
   // Returns whether the given subresource request is on behalf of advertising.
-  // Should be called directly after calling
-  // `ScriptInitiationMonitor::PrepareRequest` as the former call stores a
-  // cached value.
   virtual std::optional<AdProvenance> CalculateIfAdSubresource(
       ExecutionContext* execution_context,
       const KURL& request_url,
@@ -281,12 +270,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker>,
 
   // The number of sync tasks currently running in the stack.
   int running_sync_tasks_ = 0;
-
-  // Temporarily caches the provenance computed in WillPrepareRequest to be
-  // reused in CalculateIfAdSubresource.
-  String cached_provenance_url_;
-  std::optional<AdProvenance> cached_provenance_;
-  bool has_cached_provenance_ = false;
 };
 
 }  // namespace blink

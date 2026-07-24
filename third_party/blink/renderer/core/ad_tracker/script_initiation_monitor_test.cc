@@ -64,17 +64,6 @@ class MockObserver final : public GarbageCollected<MockObserver>,
     did_register_dynamic_script_called_ = true;
     script_id_ = script_id;
   }
-  void WillPrepareRequest(Document* document,
-                          const ResourceRequestHead& request,
-                          std::optional<KURL> alias_url,
-                          ResourceType resource_type,
-                          const FetchInitiatorInfo& initiator_info,
-                          std::optional<AdProvenance> known_ad_provenance,
-                          bool scan_javascript_stack,
-                          LazyStackTrace& stack_trace) override {
-    will_prepare_request_called_ = true;
-  }
-
   void Trace(Visitor* visitor) const override {
     ScriptInitiationMonitor::Observer::Trace(visitor);
   }
@@ -87,7 +76,6 @@ class MockObserver final : public GarbageCollected<MockObserver>,
   bool did_create_async_task_called_ = false;
   bool did_start_async_task_called_ = false;
   bool did_finish_async_task_called_ = false;
-  bool will_prepare_request_called_ = false;
 
   V8ScriptId script_id_;
   String url_;

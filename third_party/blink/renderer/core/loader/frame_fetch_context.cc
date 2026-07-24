@@ -1426,21 +1426,10 @@ ResourceAnnotations FrameFetchContext::CalculateResourceAnnotations(
     return annotations;
   }
 
-  // Let any script trackers know that this resource is being requested.
-  if (ScriptInitiationMonitor* monitor =
-          GetFrame()->GetScriptInitiationMonitor()) {
-    monitor->PrepareRequest(
-        document_loader_, resource_request,
-        alias_url.has_value() ? std::optional<KURL>(*alias_url) : std::nullopt,
-        type, initiator_info, annotations.ad_provenance, scan_javascript_stack);
-  }
-
   if (!GetFrame()->GetAdTracker()) {
     return annotations;
   }
 
-  // The AdTracker expects CalculateIfAdSubresource to be called immediately
-  // after GetScriptInitiationMonitor as it returns a cached value.
   const KURL& url =
       alias_url.has_value() ? alias_url.value() : resource_request.Url();
   annotations.ad_provenance =

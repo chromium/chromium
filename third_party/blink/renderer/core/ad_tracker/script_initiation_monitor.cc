@@ -144,28 +144,6 @@ void ScriptInitiationMonitor::DidFinishAsyncTask(
   }
 }
 
-void ScriptInitiationMonitor::PrepareRequest(
-    DocumentLoader* loader,
-    const ResourceRequestHead& request,
-    std::optional<KURL> alias_url,
-    ResourceType resource_type,
-    const FetchInitiatorInfo& initiator_info,
-    std::optional<AdProvenance> known_ad_provenance,
-    bool scan_javascript_stack) {
-  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  LazyStackTrace stack_trace(isolate);
-  Document* document = loader && loader->GetFrame()
-                           ? loader->GetFrame()->GetDocument()
-                           : nullptr;
-  for (auto& observer : observers_) {
-    if (observer) {
-      observer->WillPrepareRequest(document, request, alias_url, resource_type,
-                                   initiator_info, known_ad_provenance,
-                                   scan_javascript_stack, stack_trace);
-    }
-  }
-}
-
 void ScriptInitiationMonitor::DidRegisterDynamicScript(
     v8::Local<v8::Context> v8_context,
     V8ScriptId script_id) {

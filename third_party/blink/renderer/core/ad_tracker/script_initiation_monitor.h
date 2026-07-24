@@ -20,21 +20,13 @@ class Local;
 
 namespace blink {
 
-class Document;
-class DocumentLoader;
 class LocalFrame;
 class ExecutionContext;
-class KURL;
-enum class ResourceType : uint8_t;
-
-class ResourceRequestHead;
-struct FetchInitiatorInfo;
 
 namespace probe {
 class ExecuteScript;
 class CallFunction;
 class AsyncTaskContext;
-class PrepareRequest;
 }  // namespace probe
 
 // Centralized manager for monitoring script execution, async task boundaries,
@@ -82,19 +74,6 @@ class CORE_EXPORT ScriptInitiationMonitor
                                     LazyStackTrace& stack_trace) = 0;
     virtual void DidStartAsyncTask(probe::AsyncTaskContext* task_context) = 0;
     virtual void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) = 0;
-
-    // Called when a subresource request is prepared. This is the point that
-    // observers can detect new scripts being fetched, and check the stack
-    // (sync or async) to see if it needs to be tracked.
-    virtual void WillPrepareRequest(
-        Document* document,
-        const ResourceRequestHead& request,
-        std::optional<KURL> alias_url,
-        ResourceType resource_type,
-        const FetchInitiatorInfo& initiator_info,
-        std::optional<AdProvenance> known_ad_provenance,
-        bool scan_javascript_stack,
-        LazyStackTrace& stack_trace) = 0;
   };
 
   // Helper to retrieve the monitor from the current ExecutionContext.
@@ -119,16 +98,6 @@ class CORE_EXPORT ScriptInitiationMonitor
   void DidCreateAsyncTask(probe::AsyncTaskContext*);
   void DidStartAsyncTask(probe::AsyncTaskContext*);
   void DidFinishAsyncTask(probe::AsyncTaskContext*);
-
-  // Manually invoked by the loader pipeline during subresource request
-  // preparation to notify observers.
-  void PrepareRequest(DocumentLoader*,
-                      const ResourceRequestHead&,
-                      std::optional<KURL> alias_url,
-                      ResourceType,
-                      const FetchInitiatorInfo&,
-                      std::optional<AdProvenance>,
-                      bool scan_javascript_stack);
 
   void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
                                 V8ScriptId script_id);
