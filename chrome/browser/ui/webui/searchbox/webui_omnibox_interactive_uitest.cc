@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -51,7 +50,6 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -698,33 +696,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InSameContext(ClickElement(kAimPopupWebView, kComposeboxMatch1)),
       // Ensure Google search occurs.
       WaitForGoogleSearch(kNewTab, {{"q", "suggestion-1"}}));
-}
-
-// TODO(crbug.com/535715456): Flaky/failing on ASan and ChromeOS.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RecordsEarlyExitMetrics DISABLED_RecordsEarlyExitMetrics
-#else
-#define MAYBE_RecordsEarlyExitMetrics RecordsEarlyExitMetrics
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       MAYBE_RecordsEarlyExitMetrics) {
-  base::HistogramTester histogram_tester;
-  RunTestSequence(
-      OpenAimPopupInNewTab(), Do([&]() {
-        EXPECT_TRUE(base::test::RunUntil([&]() {
-          return histogram_tester.GetBucketCount(
-                     "Omnibox.Popup.Aim.ResultToContentReadyEarlyExitReason",
-                     static_cast<int>(
-                         omnibox::ResultToContentReadyEarlyExitReason::
-                             kNoResultReadyTime)) > 0;
-        }));
-
-        // Assert the bucket count recorded.
-        histogram_tester.ExpectBucketCount(
-            "Omnibox.Popup.Aim.ResultToContentReadyEarlyExitReason",
-            omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
-            1);
-      }));
 }
 
 struct AimSearchParam {

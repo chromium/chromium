@@ -43,6 +43,7 @@ class OmniboxPopupAimPresenter
 
  protected:
   // OmniboxPopupPresenterBase overrides:
+  void LogResultToContentReadyMetric(bool success) override;
   void WidgetDestroyed() override;
 
  private:

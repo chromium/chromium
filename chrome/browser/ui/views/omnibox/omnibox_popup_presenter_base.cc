@@ -70,8 +70,6 @@ void OmniboxPopupPresenterBase::Show() {
     focus_requested_ = false;
   }
   has_logged_content_ready_since_open_ = false;
-  // Drop stale metrics callbacks.
-  metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks.
   visual_state_weak_factory_.InvalidateWeakPtrs();
 
@@ -93,16 +91,12 @@ void OmniboxPopupPresenterBase::Show() {
     auto timeout = ShouldDeferUntilVisualStateReady();
     if (timeout.has_value()) {
       is_deferred_ = true;
-
-      base::TimeTicks result_ready_time =
-          controller()->autocomplete_controller()->result().result_ready_time();
-
       content->GetWebContents()
           ->GetPrimaryMainFrame()
           ->InsertVisualStateCallback(
               base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                              visual_state_weak_factory_.GetWeakPtr(),
-                             show_request_time, result_ready_time,
+                             show_request_time,
                              /*from_fallback=*/false));
 
       // Add a backup timer in case the visual state callback is never called.
@@ -113,12 +107,18 @@ void OmniboxPopupPresenterBase::Show() {
           FROM_HERE,
           base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                          visual_state_weak_factory_.GetWeakPtr(),
-                         show_request_time, result_ready_time,
+                         show_request_time,
                          /*from_fallback=*/true,
                          /*success=*/false),
           timeout.value());
     } else {
-      LogResultToContentReadyMetric(content->GetWebContents());
+      content->GetWebContents()
+          ->GetPrimaryMainFrame()
+          ->InsertVisualStateCallback(
+              base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
+                             visual_state_weak_factory_.GetWeakPtr(),
+                             show_request_time,
+                             /*from_fallback=*/false));
       ShowWidget(show_request_time);
     }
   }
@@ -126,11 +126,10 @@ void OmniboxPopupPresenterBase::Show() {
 
 void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
-    base::TimeTicks result_ready_time,
     bool from_fallback,
     bool success) {
   if (!from_fallback) {
-    OnVisualStateReadyForMetrics(result_ready_time, success);
+    LogResultToContentReadyMetric(success);
   }
 
   if (!is_deferred_) {
@@ -204,17 +203,10 @@ void OmniboxPopupPresenterBase::RequestFocus() {
   }
 }
 
-void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
-    content::WebContents* web_contents) {
-  web_contents->GetPrimaryMainFrame()->InsertVisualStateCallback(base::BindOnce(
-      &OmniboxPopupPresenterBase::OnVisualStateReadyForMetrics,
-      metrics_weak_factory_.GetWeakPtr(),
-      controller()->autocomplete_controller()->result().result_ready_time()));
-}
+void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(bool success) {
+  base::TimeTicks result_ready_time =
+      controller()->autocomplete_controller()->result().result_ready_time();
 
-void OmniboxPopupPresenterBase::OnVisualStateReadyForMetrics(
-    base::TimeTicks result_ready_time,
-    bool success) {
   if (result_ready_time.is_null()) {
     omnibox::LogResultToContentReadyEarlyExitReason(
         omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
@@ -255,8 +247,6 @@ void OmniboxPopupPresenterBase::Hide() {
     focus_requested_ = false;
   }
   is_deferred_ = false;
-  // Drop stale metrics callbacks.
-  metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks.
   visual_state_weak_factory_.InvalidateWeakPtrs();
 
@@ -419,8 +409,6 @@ bool OmniboxPopupPresenterBase::ShouldPreserveRequestedFocus() const {
 void OmniboxPopupPresenterBase::OnWidgetClosed(
     views::Widget::ClosedReason closed_reason) {
   is_deferred_ = false;
-  // Drop metrics callbacks when the widget is closed.
-  metrics_weak_factory_.InvalidateWeakPtrs();
   // Drop stale visual state callbacks when the widget is closed.
   visual_state_weak_factory_.InvalidateWeakPtrs();
   if (auto* frame = GetResultsFrame()) {

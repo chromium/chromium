@@ -196,6 +196,8 @@ class OmniboxPopupPresenterBase
   // show/hide rather than unconditionally re-requesting focus after show.
   virtual bool ShouldPreserveRequestedFocus() const;
 
+  virtual void LogResultToContentReadyMetric(bool success);
+
   LocationBar* location_bar() const { return location_bar_.get(); }
 
   views::Widget* GetWidget() const { return widget_.get(); }
@@ -243,17 +245,8 @@ class OmniboxPopupPresenterBase
 
   // Callback for when the visual state is ready.
   void OnVisualStateReady(base::TimeTicks show_widget_time,
-                          base::TimeTicks result_ready_time,
                           bool from_fallback,
                           bool success);
-
-  // Callback for when the visual state is ready.
-  // This is specifically for metrics logging and is distinct from the
-  // OnVisualStateReady deferral callback.
-  void OnVisualStateReadyForMetrics(base::TimeTicks result_ready_time,
-                                    bool success);
-
-  void LogResultToContentReadyMetric(content::WebContents* web_contents);
 
   // Remove observation and reset widget, optionally requesting it to close.
   void ReleaseWidget();
@@ -300,8 +293,6 @@ class OmniboxPopupPresenterBase
   // greater than zero, out-of-focus widget deactivations will be ignored.
   int deactivation_blockers_count_ = 0;
 
-  // Weak pointer factory for callbacks related to metrics logging.
-  base::WeakPtrFactory<OmniboxPopupPresenterBase> metrics_weak_factory_{this};
   // Weak pointer factory for callbacks related to visual state.
   base::WeakPtrFactory<OmniboxPopupPresenterBase> visual_state_weak_factory_{
       this};
