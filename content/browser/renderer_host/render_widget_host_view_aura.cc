@@ -2374,6 +2374,8 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
+  event_handler_->set_window(nullptr);
+
   // Make sure that the input method no longer references to this object before
   // this object is removed from the root window (i.e. this object loses access
   // to the input method).

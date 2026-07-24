@@ -192,12 +192,17 @@ RenderWidgetHostViewEventHandler::ChangePointerLock(
 void RenderWidgetHostViewEventHandler::UnlockPointer() {
   delegate_->SetTooltipsEnabled(true);
 
-  aura::Window* root_window = window_->GetRootWindow();
-  if (!mouse_locked_ || !root_window)
+  if (!mouse_locked_) {
     return;
+  }
 
   mouse_locked_ = false;
   mouse_locked_unadjusted_movement_.reset();
+
+  aura::Window* root_window = window_ ? window_->GetRootWindow() : nullptr;
+  if (!root_window) {
+    return;
+  }
 
   window_->GetHost()->UnlockMouse(window_);
 
@@ -206,7 +211,9 @@ void RenderWidgetHostViewEventHandler::UnlockPointer() {
   // after the cursor is moved ends up getting a large movement delta which is
   // not what sites expect. The delta is computed in the
   // ModifyEventMovementAndCoords function.
-  window_->MoveCursorTo(gfx::ToFlooredPoint(unlocked_mouse_position_));
+  if (window_) {
+    window_->MoveCursorTo(gfx::ToFlooredPoint(unlocked_mouse_position_));
+  }
   synthetic_move_position_ =
       gfx::ToFlooredPoint(unlocked_global_mouse_position_);
 
@@ -316,6 +323,11 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
 
 void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnMouseEvent");
+
+  // A synthesized event may be generated during window destruction.
+  if (!window_) {
+    return;
+  }
 
   // CrOS will send a mouse exit event to update hover state when mouse is
   // hidden which we want to filter out in renderer. crbug.com/723535.
