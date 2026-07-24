@@ -257,26 +257,19 @@ void Canvas2DBitmapProvider::ClearAtCreation() {
 }
 
 void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
-  RasterRecord([this, &last_recording](cc::PaintCanvas& canvas) {
-    cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
-    if (this->delegate_) {
-      // base::Unretained(this) is safe here because the callback will only be
-      // invoked during the scope of skia_canvas_->drawPicture().
-      custom_callback = base::BindRepeating(
-          &Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId,
-          base::Unretained(this));
-    }
-    skia_canvas_->drawPicture(std::move(last_recording), custom_callback);
-  });
-}
-
-void Canvas2DBitmapProvider::RasterRecord(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
         GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
   }
-  draw_callback(*skia_canvas_);
+  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
+  if (delegate_) {
+    // base::Unretained(this) is safe here because the callback will only be
+    // invoked during the scope of skia_canvas_->drawPicture().
+    custom_callback = base::BindRepeating(
+        &Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId,
+        base::Unretained(this));
+  }
+  skia_canvas_->drawPicture(std::move(last_recording), custom_callback);
 }
 
 bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,

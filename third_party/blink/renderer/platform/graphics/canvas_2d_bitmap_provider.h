@@ -134,8 +134,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   // callsites.
   void ClearAtCreation();
 
-  void RasterRecord(base::FunctionRef<void(cc::PaintCanvas&)>);
-
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
