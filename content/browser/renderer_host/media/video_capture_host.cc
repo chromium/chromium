@@ -595,9 +595,11 @@ void VideoCaptureHost::ConnectClient(
     VideoCaptureManager::DoneCB done_cb) {
   std::optional<url::Origin> origin =
       media_stream_manager_->GetOriginByVideoSessionId(session_id);
+  bool is_allowed_on_lock_screen =
+      media_stream_manager_->IsSessionAllowedOnLockScreen(session_id);
   media_stream_manager_->video_capture_manager()->ConnectClient(
       session_id, params, controller_id, render_frame_host_id, this,
-      std::move(origin), std::move(done_cb));
+      std::move(origin), is_allowed_on_lock_screen, std::move(done_cb));
 }
 
 }  // namespace content

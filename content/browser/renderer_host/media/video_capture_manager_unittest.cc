@@ -331,8 +331,11 @@ class VideoCaptureManagerTest : public testing::Test {
     }
   }
 
-  VideoCaptureControllerID StartClient(const base::UnguessableToken& session_id,
-                                       bool expect_success) {
+  VideoCaptureControllerID StartClient(
+      const base::UnguessableToken& session_id,
+      bool expect_success,
+      std::optional<url::Origin> origin = std::nullopt,
+      bool is_allowed_on_lock_screen = false) {
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
         gfx::Size(320, 240), 30, media::PIXEL_FORMAT_I420);
@@ -340,7 +343,7 @@ class VideoCaptureManagerTest : public testing::Test {
     VideoCaptureControllerID client_id = base::UnguessableToken::Create();
     vcm_->ConnectClient(
         session_id, params, client_id, render_frame_host_id_,
-        frame_observer_.get(), std::nullopt,
+        frame_observer_.get(), origin, is_allowed_on_lock_screen,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
                        base::Unretained(this), client_id, expect_success));
     base::RunLoop().RunUntilIdle();
@@ -967,18 +970,16 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
   screenlock_monitor_source_->GenerateScreenLockedEvent();
   ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
 
-  // Starting another client while the screen is locked should defer the actual
-  // start of the device, but appear open. Since the device is already started,
-  // the OnStarted() will appear before Opened().
-  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  // Starting another client while the screen is locked should reject the
+  // client for a disallowed origin.
   EXPECT_CALL(*listener_,
               Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
   auto video_session_id2 = vcm_->Open(devices_.front());
-  auto client_id2 = StartClient(video_session_id2, true);
+  StartClient(video_session_id2, false);
   ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
 
   // Unlock the screen now.
-  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(2);
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(1);
   screenlock_monitor_source_->GenerateScreenUnlockedEvent();
   ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
 
@@ -992,7 +993,6 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
   StopClient(client_id);
   vcm_->Close(video_session_id);
 
-  StopClient(client_id2);
   vcm_->Close(video_session_id2);
 
   // Wait to check callbacks before removing the listener.
@@ -1029,6 +1029,160 @@ TEST_F(VideoCaptureManagerTest, ScreenLockDoesNothingBeforeTimeout) {
 
   // Wait to check callbacks before removing the listener.
   base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+
+// Lock the screen before any session exists, then open and connect a client.
+// The device must not be started until the screen is unlocked.
+TEST_F(VideoCaptureManagerTest,
+       ScreenLockDefersDeviceStartWithoutPriorSessions) {
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  EXPECT_FALSE(vcm_->is_idle_close_timer_running_for_testing());
+
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(0);
+  auto video_session_id = vcm_->Open(devices_.front());
+  StartClient(video_session_id, false);
+  EXPECT_FALSE(video_capture_device_factory_->has_active_devices());
+  Mock::VerifyAndClearExpectations(frame_observer_.get());
+
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  vcm_->Close(video_session_id);
+  run_loop.Run();
+
+  vcm_->UnregisterListener(listener_.get());
+}
+
+// Open and connect a client, lock the screen, close the session, then open and
+// connect a new client while still locked. The device must not be started
+// until the screen is unlocked.
+TEST_F(VideoCaptureManagerTest,
+       ScreenLockDefersDeviceStartAfterLockedSessionClosed) {
+  vcm_->set_idle_close_timeout_for_testing(base::TimeDelta::Max());
+
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  auto video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  EXPECT_TRUE(vcm_->is_idle_close_timer_running_for_testing());
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*listener_,
+                Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                       video_session_id))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    StopClient(client_id);
+    vcm_->Close(video_session_id);
+    run_loop.Run();
+  }
+
+  ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
+  EXPECT_FALSE(vcm_->is_idle_close_timer_running_for_testing());
+  Mock::VerifyAndClearExpectations(listener_.get());
+  Mock::VerifyAndClearExpectations(frame_observer_.get());
+
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(0);
+  auto video_session_id2 = vcm_->Open(devices_.front());
+  StartClient(video_session_id2, false);
+  EXPECT_FALSE(video_capture_device_factory_->has_active_devices());
+  Mock::VerifyAndClearExpectations(frame_observer_.get());
+
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*listener_,
+                Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                       video_session_id2))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    vcm_->Close(video_session_id2);
+    run_loop.Run();
+  }
+
+  vcm_->UnregisterListener(listener_.get());
+}
+
+class TestContentBrowserClientForLockScreen : public ContentBrowserClient {
+ public:
+  explicit TestContentBrowserClientForLockScreen(
+      const url::Origin& allowed_origin)
+      : allowed_origin_(allowed_origin) {}
+
+  bool IsVideoCaptureAllowedWhileScreenLocked(
+      const url::Origin& origin) override {
+    return origin == allowed_origin_;
+  }
+
+ private:
+  url::Origin allowed_origin_;
+};
+
+// Lock the screen, then open and connect a client for an authorized origin.
+// The device MUST be started for the authorized origin, but rejected for
+// others.
+TEST_F(VideoCaptureManagerTest, ScreenLockAllowsAuthorizedOriginDeviceStart) {
+  const url::Origin allowed_origin =
+      url::Origin::Create(GURL("https://allowed-origin.com"));
+  const url::Origin disallowed_origin =
+      url::Origin::Create(GURL("https://disallowed-origin.com"));
+
+  TestContentBrowserClientForLockScreen test_browser_client(allowed_origin);
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+
+  // 1. Starting video capture for a disallowed origin while locked rejects
+  // starting the device.
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(0);
+  auto video_session_id1 = vcm_->Open(devices_.front());
+  StartClient(video_session_id1, false, disallowed_origin);
+  EXPECT_FALSE(video_capture_device_factory_->has_active_devices());
+  Mock::VerifyAndClearExpectations(frame_observer_.get());
+
+  // 2. Starting video capture for an authorized origin while locked starts the
+  // device immediately.
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(1);
+  auto video_session_id2 = vcm_->Open(devices_.front());
+  auto client_id2 = StartClient(video_session_id2, true, allowed_origin,
+                                /*is_allowed_on_lock_screen=*/true);
+  EXPECT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*listener_,
+                Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _))
+        .Times(2)
+        .WillOnce(testing::Return())
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    vcm_->Close(video_session_id1);
+    StopClient(client_id2);
+    vcm_->Close(video_session_id2);
+    run_loop.Run();
+  }
+
+  SetBrowserClientForTesting(old_browser_client);
   vcm_->UnregisterListener(listener_.get());
 }
 #endif

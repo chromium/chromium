@@ -33,7 +33,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
  public:
   using ResponseCallback = base::OnceCallback<void(
       const blink::mojom::StreamDevicesSet& stream_devices_set,
-      blink::mojom::MediaStreamRequestResult result)>;
+      blink::mojom::MediaStreamRequestResult result,
+      bool is_allowed_while_screen_locked)>;
 
   using WindowIdCallback =
       base::OnceCallback<void(gfx::NativeViewId window_id)>;
@@ -125,7 +126,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
 
   void ProcessAccessRequestResponse(
       blink::mojom::StreamDevicesSetPtr stream_devices_set,
-      blink::mojom::MediaStreamRequestResult result);
+      blink::mojom::MediaStreamRequestResult result,
+      bool is_allowed_while_screen_locked);
   void ProcessStopRequestFromUI();
   void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id,
                                         bool captured_surface_control_active);

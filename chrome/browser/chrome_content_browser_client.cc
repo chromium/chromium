@@ -501,6 +501,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/media/chromeos_login_and_lock_media_access_handler.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/speech/tts_chromeos.h"
@@ -2809,6 +2810,16 @@ bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+bool ChromeContentBrowserClient::IsVideoCaptureAllowedWhileScreenLocked(
+    const url::Origin& origin) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return ChromeOSLoginAndLockMediaAccessHandler::IsVideoCaptureAllowedForOrigin(
+      origin);
+#else
+  return false;
+#endif
 }
 
 content::WebContents*

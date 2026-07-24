@@ -219,6 +219,7 @@ class VideoCaptureBrowserTest
     video_capture_manager_->ConnectClient(
         session_id_, capture_params, stub_client_id_, render_frame_host_id_,
         &mock_controller_event_handler_, std::nullopt,
+        /*is_allowed_on_lock_screen=*/false,
         base::BindOnce(
             &VideoCaptureBrowserTest::OnConnectClientToControllerAnswer,
             base::Unretained(this), std::move(continuation)));

@@ -127,6 +127,7 @@ class CONTENT_EXPORT VideoCaptureManager
                      const GlobalRenderFrameHostId& render_frame_host_id,
                      VideoCaptureControllerEventHandler* client_handler,
                      std::optional<url::Origin> origin,
+                     bool is_allowed_on_lock_screen,
                      DoneCB done_cb);
 
   // Called by VideoCaptureHost to remove |client_handler|. If this is the last
@@ -359,9 +360,13 @@ class CONTENT_EXPORT VideoCaptureManager
   // only on the IO thread.
   SessionMap sessions_;
 
+  // True between OnScreenLocked() and OnScreenUnlocked() on platforms where
+  // the screen lock state is observed. Used to defer starting capture devices
+  // while the screen is locked.
+  bool is_screen_locked_ = false;
+
   // A set of sessions that have encountered screen lock.
   base::flat_set<media::VideoCaptureSessionId> locked_sessions_;
-  base::TimeTicks lock_time_;
 
   // Currently opened VideoCaptureController instances. The device may or may
   // not be started. This member is only accessed on IO thread.

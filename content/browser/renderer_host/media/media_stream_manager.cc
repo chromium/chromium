@@ -925,6 +925,8 @@ class MediaStreamManager::DeviceRequest {
 
   PermissionController::SubscriptionId video_subscription_id;
 
+  bool is_allowed_while_screen_locked = false;
+
   virtual base::WeakPtr<DeviceRequest> GetWeakPtr() = 0;
 
  private:
@@ -2731,9 +2733,15 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
     // owned by BrowserMainLoop.
     screen_enumerator->EnumerateScreens(
         request->video_type(),
-        base::BindOnce(&MediaStreamManager::HandleAccessRequestResponse,
-                       base::Unretained(this), label,
-                       media::AudioParameters()));
+        base::BindOnce(
+            [](MediaStreamManager* manager, const std::string& label,
+               const blink::mojom::StreamDevicesSet& stream_devices_set,
+               blink::mojom::MediaStreamRequestResult result) {
+              manager->HandleAccessRequestResponse(
+                  label, media::AudioParameters(), stream_devices_set, result,
+                  /*is_allowed_while_screen_locked=*/false);
+            },
+            base::Unretained(this), label));
     return;
   }
 
@@ -3609,7 +3617,8 @@ void MediaStreamManager::HandleAccessRequestResponse(
     const std::string& label,
     const media::AudioParameters& output_parameters,
     const blink::mojom::StreamDevicesSet& stream_devices_set,
-    MediaStreamRequestResult result) {
+    MediaStreamRequestResult result,
+    bool is_allowed_while_screen_locked) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK((result == MediaStreamRequestResult::OK &&
           !stream_devices_set.stream_devices.empty()) ||
@@ -3622,6 +3631,7 @@ void MediaStreamManager::HandleAccessRequestResponse(
     return;
   }
   DeviceRequest* const request = request_it->second.get();
+  request->is_allowed_while_screen_locked = is_allowed_while_screen_locked;
 
   SendLogMessage(base::StringPrintf(
       "HandleAccessRequestResponse({label=%s}, {request=%s}, {result=%s})",
@@ -4509,6 +4519,16 @@ std::optional<url::Origin> MediaStreamManager::GetOriginByVideoSessionId(
     return std::nullopt;
   }
   return request->salt_and_origin.origin();
+}
+
+bool MediaStreamManager::IsSessionAllowedOnLockScreen(
+    const base::UnguessableToken& session_id) {
+  SessionType actual_type;
+  DeviceRequest* request = FindRequestBySessionId(session_id, &actual_type);
+  if (request == nullptr || actual_type != SessionType::kVideo) {
+    return false;
+  }
+  return request->is_allowed_while_screen_locked;
 }
 
 // static

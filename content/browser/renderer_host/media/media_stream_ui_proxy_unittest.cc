@@ -63,9 +63,10 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
 
 class MockResponseCallback {
  public:
-  MOCK_METHOD2(OnAccessRequestResponse,
+  MOCK_METHOD3(OnAccessRequestResponse,
                void(const blink::mojom::StreamDevicesSet& stream_devices_set,
-                    blink::mojom::MediaStreamRequestResult result));
+                    blink::mojom::MediaStreamRequestResult result,
+                    bool is_allowed_while_screen_locked));
   MOCK_METHOD1(OnCheckResponse, void(bool have_access));
 };
 
@@ -172,11 +173,10 @@ TEST_F(MediaStreamUIProxyTest, Deny) {
                           std::unique_ptr<MediaStreamUI>());
 
   blink::mojom::StreamDevicesSetPtr response;
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _))
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
       .WillOnce([&response](const blink::mojom::StreamDevicesSet& arg0,
-                            blink::mojom::MediaStreamRequestResult arg1) {
-        response = arg0.Clone();
-      });
+                            blink::mojom::MediaStreamRequestResult arg1,
+                            bool arg2) { response = arg0.Clone(); });
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(blink::ToMediaStreamDevicesList(*response).empty());
@@ -219,11 +219,10 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
                           std::move(ui));
 
   blink::mojom::StreamDevicesSetPtr response;
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _))
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
       .WillOnce([&response](const blink::mojom::StreamDevicesSet& arg0,
-                            blink::mojom::MediaStreamRequestResult arg1) {
-        response = arg0.Clone();
-      });
+                            blink::mojom::MediaStreamRequestResult arg1,
+                            bool arg2) { response = arg0.Clone(); });
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(blink::ToMediaStreamDevicesList(*response).empty());
@@ -233,6 +232,81 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
                     /*label=*/std::string(), /*screen_share_ids=*/{},
                     MediaStreamUI::StateChangeCallback());
   base::RunLoop().RunUntilIdle();
+}
+
+namespace {
+class TestContentBrowserClientForLockScreen : public ContentBrowserClient {
+ public:
+  explicit TestContentBrowserClientForLockScreen(
+      const url::Origin& allowed_origin)
+      : allowed_origin_(allowed_origin) {}
+
+  bool IsVideoCaptureAllowedWhileScreenLocked(
+      const url::Origin& origin) override {
+    return origin == allowed_origin_;
+  }
+
+ private:
+  url::Origin allowed_origin_;
+};
+}  // namespace
+
+TEST_F(MediaStreamUIProxyTest, AcceptVideoCaptureAllowedWhileScreenLocked) {
+  const url::Origin allowed_origin =
+      url::Origin::Create(GURL("http://origin/"));
+  TestContentBrowserClientForLockScreen test_browser_client(allowed_origin);
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  auto request = std::make_unique<MediaStreamRequest>(
+      0, 0, 0, allowed_origin, false, blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/std::vector<std::string>{},
+      /*requested_video_device_ids=*/std::vector<std::string>{},
+      blink::mojom::MediaStreamType::NO_SERVICE,
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
+  request->url_origin = allowed_origin;
+  MediaStreamRequest* request_ptr = request.get();
+  proxy_->RequestAccess(
+      std::move(request),
+      base::BindOnce(&MockResponseCallback::OnAccessRequestResponse,
+                     base::Unretained(&response_callback_)));
+  MediaResponseCallback callback;
+  base::RunLoop run_loop1;
+  EXPECT_CALL(delegate_,
+              RequestMediaAccessPermission(SameRequest(request_ptr), _))
+      .WillOnce(
+          [&callback, &run_loop1](testing::Unused, MediaResponseCallback* cb) {
+            callback = std::move(*cb);
+            run_loop1.Quit();
+          });
+  run_loop1.Run();
+  ASSERT_FALSE(callback.is_null());
+
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices[0];
+  devices.video_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "Camera", "Camera");
+  std::move(callback).Run(stream_devices_set,
+                          blink::mojom::MediaStreamRequestResult::OK,
+                          /*ui=*/nullptr);
+
+  bool is_allowed_while_screen_locked = false;
+  base::RunLoop run_loop2;
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
+      .WillOnce([&is_allowed_while_screen_locked, &run_loop2](
+                    const blink::mojom::StreamDevicesSet& arg0,
+                    blink::mojom::MediaStreamRequestResult arg1, bool arg2) {
+        is_allowed_while_screen_locked = arg2;
+        run_loop2.Quit();
+      });
+  run_loop2.Run();
+
+  EXPECT_TRUE(is_allowed_while_screen_locked);
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 // Verify that the proxy can be deleted before the request is processed.
@@ -315,11 +389,10 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
                           std::move(ui));
 
   blink::mojom::StreamDevicesSetPtr response;
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _))
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
       .WillOnce([&response](const blink::mojom::StreamDevicesSet& arg0,
-                            blink::mojom::MediaStreamRequestResult arg1) {
-        response = arg0.Clone();
-      });
+                            blink::mojom::MediaStreamRequestResult arg1,
+                            bool arg2) { response = arg0.Clone(); });
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(blink::ToMediaStreamDevicesList(*response).empty());
@@ -373,7 +446,7 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
   std::move(callback).Run(stream_devices_set,
                           blink::mojom::MediaStreamRequestResult::OK,
                           std::move(ui));
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _));
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _));
 
   MockStopStreamHandler handler;
   EXPECT_CALL(handler, OnWindowId(kWindowId));
@@ -431,11 +504,10 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
                           std::move(ui));
 
   blink::mojom::StreamDevicesSetPtr response;
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _))
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
       .WillOnce([&response](const blink::mojom::StreamDevicesSet& arg0,
-                            blink::mojom::MediaStreamRequestResult arg1) {
-        response = arg0.Clone();
-      });
+                            blink::mojom::MediaStreamRequestResult arg1,
+                            bool arg2) { response = arg0.Clone(); });
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(blink::ToMediaStreamDevicesList(*response).empty());
@@ -506,12 +578,11 @@ TEST_F(MediaStreamUIProxyTest, ChangeTabSourceFromUI) {
                           std::move(ui));
 
   blink::mojom::StreamDevicesSetPtr response;
-  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _))
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
       .Times(2)
       .WillRepeatedly([&](const blink::mojom::StreamDevicesSet& arg0,
-                          blink::mojom::MediaStreamRequestResult arg1) {
-        response = arg0.Clone();
-      });
+                          blink::mojom::MediaStreamRequestResult arg1,
+                          bool arg2) { response = arg0.Clone(); });
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(blink::ToMediaStreamDevicesList(*response).empty());
@@ -684,7 +755,8 @@ class MediaStreamUIProxyPermissionsPolicyTest
 
   void FinishedGetResultOnIOThread(
       const blink::mojom::StreamDevicesSet& stream_devices_set,
-      blink::mojom::MediaStreamRequestResult result) {
+      blink::mojom::MediaStreamRequestResult result,
+      bool is_allowed_while_screen_locked) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     proxy_.reset();
     GetUIThreadTaskRunner({})->PostTask(

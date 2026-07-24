@@ -318,6 +318,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsTopChromeWebUIURL(const GURL& url) override;
   bool IsMultiCaptureAllowed(
       content::RenderFrameHost* render_frame_host) override;
+  bool IsVideoCaptureAllowedWhileScreenLocked(
+      const url::Origin& origin) override;
   content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
       gfx::NativeWindow window) override;
   bool IsFileAccessAllowed(const base::FilePath& path,

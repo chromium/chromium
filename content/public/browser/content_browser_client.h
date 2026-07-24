@@ -861,6 +861,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsMultiCaptureAllowed(
       content::RenderFrameHost* render_frame_host);
 
+  // Returns whether video capture is allowed for the given `origin` while the
+  // screen is locked (e.g. for SAML authentication on ChromeOS lock screen).
+  // This is called on the UI thread.
+  virtual bool IsVideoCaptureAllowedWhileScreenLocked(
+      const url::Origin& origin);
+
   // Returns the WebContents associated with the given window if it is allowed
   // to expose a capture handle. Returns nullptr otherwise.
   virtual content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(

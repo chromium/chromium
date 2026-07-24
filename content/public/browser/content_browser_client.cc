@@ -442,6 +442,11 @@ bool ContentBrowserClient::IsMultiCaptureAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsVideoCaptureAllowedWhileScreenLocked(
+    const url::Origin& origin) {
+  return false;
+}
+
 content::WebContents*
 ContentBrowserClient::GetWebContentsFromWindowIfCaptureHandleAllowed(
     gfx::NativeWindow window) {

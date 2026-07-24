@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
@@ -237,8 +238,7 @@ void VideoCaptureManager::Close(
     const bool was_locked = locked_it != locked_sessions_.end();
     if (was_locked)
       locked_sessions_.erase(locked_it);
-    if (locked_sessions_.empty() && !lock_time_.is_null()) {
-      lock_time_ = base::TimeTicks();
+    if (locked_sessions_.empty()) {
       idle_close_timer_.Stop();
     }
   } else {
@@ -272,7 +272,6 @@ void VideoCaptureManager::QueueStartDevice(
     scoped_refptr<VideoCaptureController> controller,
     const media::VideoCaptureParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(lock_time_.is_null());
   device_start_request_queue_.push_back(
       CaptureDeviceStartRequest(std::move(controller), session_id, params));
   if (device_start_request_queue_.size() == 1)
@@ -484,6 +483,7 @@ void VideoCaptureManager::ConnectClient(
     const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* client_handler,
     std::optional<url::Origin> origin,
+    bool is_allowed_on_lock_screen,
     DoneCB done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -504,6 +504,14 @@ void VideoCaptureManager::ConnectClient(
     return;
   }
 
+  // New sessions can't be started from the lock screen unless authorized. It'd
+  // be nice to defer these, but the interplay authorized and non-authorized
+  // devices is complicated.
+  if (is_screen_locked_ && !is_allowed_on_lock_screen) {
+    std::move(done_cb).Run(nullptr);
+    return;
+  }
+
   bool client_exist =
       controller->HasActiveClient() || controller->HasPausedClient();
   base::UmaHistogramBoolean("Media.VideoCapture.StreamShared", client_exist);
@@ -516,9 +524,8 @@ void VideoCaptureManager::ConnectClient(
                               same_origin);
   }
 
-  // First client starts the device. Device can't be started while the screen is
-  // locked.
-  if (!client_exist && lock_time_.is_null()) {
+  // First client starts the device.
+  if (!client_exist) {
     std::ostringstream string_stream;
     string_stream
         << "VideoCaptureManager queueing device start for device_id = "
@@ -1075,6 +1082,8 @@ void VideoCaptureManager::OnScreenLocked() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage("VideoCaptureManager::OnScreenLocked", 1);
 
+  is_screen_locked_ = true;
+
   std::vector<media::VideoCaptureSessionId> desktopcapture_session_ids;
   for (auto it : sessions_) {
     if (blink::IsDesktopCaptureMediaType(it.second.type))
@@ -1085,9 +1094,6 @@ void VideoCaptureManager::OnScreenLocked() {
   }
 
   if (!locked_sessions_.empty()) {
-    DCHECK(lock_time_.is_null());
-    lock_time_ = base::TimeTicks::Now();
-
     idle_close_timer_.Start(FROM_HERE, idle_close_timeout_, this,
                             &VideoCaptureManager::ReleaseDevices);
   }
@@ -1100,13 +1106,15 @@ void VideoCaptureManager::OnScreenLocked() {
 
 void VideoCaptureManager::OnScreenUnlocked() {
   EmitLogMessage("VideoCaptureManager::OnScreenUnlocked", 1);
-  if (lock_time_.is_null())
+  if (!is_screen_locked_) {
     return;
+  }
+  is_screen_locked_ = false;
 
-  DCHECK(!locked_sessions_.empty());
-  lock_time_ = base::TimeTicks();
-
-  idle_close_timer_.Stop();
+  if (!locked_sessions_.empty()) {
+    idle_close_timer_.Stop();
+    locked_sessions_.clear();
+  }
   ResumeDevices();
 }
 

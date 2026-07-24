@@ -483,6 +483,8 @@ class CONTENT_EXPORT MediaStreamManager
   std::optional<url::Origin> GetOriginByVideoSessionId(
       const base::UnguessableToken& session_id);
 
+  bool IsSessionAllowedOnLockScreen(const base::UnguessableToken& session_id);
+
   // Validates that the renderer-supplied `session_id` is authorized for use by
   // the calling `render_frame_host_id`.
   //
@@ -555,7 +557,8 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label,
       const media::AudioParameters& output_parameters,
       const blink::mojom::StreamDevicesSet& stream_devices_set,
-      blink::mojom::MediaStreamRequestResult result);
+      blink::mojom::MediaStreamRequestResult result,
+      bool is_allowed_while_screen_locked = false);
   void HandleChangeSourceRequestResponse(
       const std::string& label,
       DeviceRequest* request,

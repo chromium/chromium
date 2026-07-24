@@ -81,6 +81,7 @@ class MediaStreamUIProxy::Core {
   void ProcessAccessRequestResponseForPostTask(
       int render_process_id,
       int render_frame_id,
+      const url::Origin& request_origin,
       blink::mojom::StreamDevicesSetPtr stream_devices_set_ptr,
       blink::mojom::MediaStreamRequestResult result,
       std::unique_ptr<MediaStreamUI> stream_ui);
@@ -88,6 +89,7 @@ class MediaStreamUIProxy::Core {
   void ProcessAccessRequestResponse(
       int render_process_id,
       int render_frame_id,
+      const url::Origin& request_origin,
       const blink::mojom::StreamDevicesSet& stream_devices_set,
       blink::mojom::MediaStreamRequestResult result,
       std::unique_ptr<MediaStreamUI> stream_ui);
@@ -153,7 +155,7 @@ void MediaStreamUIProxy::Core::RequestAccess(
   // Tab may have gone away, or has no delegate from which to request access.
   if (!render_delegate) {
     ProcessAccessRequestResponse(request->render_process_id,
-                                 request->render_frame_id,
+                                 request->render_frame_id, request->url_origin,
                                  blink::mojom::StreamDevicesSet(),
                                  blink::mojom::MediaStreamRequestResult::
                                      FAILED_DUE_TO_SHUTDOWN_NO_DELEGATE,
@@ -167,7 +169,8 @@ void MediaStreamUIProxy::Core::RequestAccess(
   render_delegate->RequestMediaAccessPermission(
       host, *request,
       base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
-                     request->render_process_id, request->render_frame_id));
+                     request->render_process_id, request->render_frame_id,
+                     request->url_origin));
 }
 
 void MediaStreamUIProxy::Core::RequestSelectAudioOutput(
@@ -256,19 +259,21 @@ void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
 void MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask(
     int render_process_id,
     int render_frame_id,
+    const url::Origin& request_origin,
     blink::mojom::StreamDevicesSetPtr stream_devices_set_ptr,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<MediaStreamUI> stream_ui) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(stream_devices_set_ptr);
   ProcessAccessRequestResponse(render_process_id, render_frame_id,
-                               *stream_devices_set_ptr, result,
+                               request_origin, *stream_devices_set_ptr, result,
                                std::move(stream_ui));
 }
 
 void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     int render_process_id,
     int render_frame_id,
+    const url::Origin& request_origin,
     const blink::mojom::StreamDevicesSet& stream_devices_set,
     blink::mojom::MediaStreamRequestResult result,
     std::unique_ptr<MediaStreamUI> stream_ui) {
@@ -288,6 +293,16 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   }
 
   auto* host = RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  bool is_allowed_while_screen_locked = false;
+  if (result == blink::mojom::MediaStreamRequestResult::OK &&
+      devices.video_device.has_value() &&
+      devices.video_device->type ==
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+    is_allowed_while_screen_locked =
+        GetContentClient()->browser()->IsVideoCaptureAllowedWhileScreenLocked(
+            request_origin);
+  }
+
   if (devices.audio_device.has_value()) {
     const blink::MediaStreamDevice& audio_device = devices.audio_device.value();
     if (audio_device.type !=
@@ -330,7 +345,8 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamUIProxy::ProcessAccessRequestResponse, proxy_,
-                     std::move(filtered_devices_set), result));
+                     std::move(filtered_devices_set), result,
+                     is_allowed_while_screen_locked));
 }
 
 void MediaStreamUIProxy::Core::ProcessStopRequestFromUI() {
@@ -485,11 +501,13 @@ void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
 
 void MediaStreamUIProxy::ProcessAccessRequestResponse(
     blink::mojom::StreamDevicesSetPtr stream_devices_set,
-    blink::mojom::MediaStreamRequestResult result) {
+    blink::mojom::MediaStreamRequestResult result,
+    bool is_allowed_while_screen_locked) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (response_callback_) {
-    std::move(response_callback_).Run(*stream_devices_set, result);
+    std::move(response_callback_)
+        .Run(*stream_devices_set, result, is_allowed_while_screen_locked);
   }
 }
 
@@ -568,7 +586,8 @@ void FakeMediaStreamUIProxy::RequestAccess(
         base::BindOnce(
             &MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask,
             core_->GetWeakPtr(), request->render_process_id,
-            request->render_frame_id, blink::mojom::StreamDevicesSet::New(),
+            request->render_frame_id, request->url_origin,
+            blink::mojom::StreamDevicesSet::New(),
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
             std::unique_ptr<MediaStreamUI>()));
     return;
@@ -621,7 +640,8 @@ void FakeMediaStreamUIProxy::RequestAccess(
       base::BindOnce(
           &MediaStreamUIProxy::Core::ProcessAccessRequestResponseForPostTask,
           core_->GetWeakPtr(), request->render_process_id,
-          request->render_frame_id, std::move(devices_set_to_use),
+          request->render_frame_id, request->url_origin,
+          std::move(devices_set_to_use),
           is_devices_empty ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
                            : blink::mojom::MediaStreamRequestResult::OK,
           std::unique_ptr<MediaStreamUI>()));

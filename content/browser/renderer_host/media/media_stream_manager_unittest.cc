@@ -293,6 +293,14 @@ class TestBrowserClient : public ContentBrowserClient {
     return std::make_unique<ScreenEnumeratorMock>(screen_count_);
   }
 
+  bool IsVideoCaptureAllowedWhileScreenLocked(
+      const url::Origin& origin) override {
+    return is_video_capture_allowed_while_screen_locked_;
+  }
+  void set_is_video_capture_allowed_while_screen_locked(bool allowed) {
+    is_video_capture_allowed_while_screen_locked_ = allowed;
+  }
+
   MOCK_METHOD(void,
               NotifyMultiCaptureStateChanged,
               (GlobalRenderFrameHostId render_frame_host_id,
@@ -303,6 +311,7 @@ class TestBrowserClient : public ContentBrowserClient {
  private:
   raw_ptr<MediaObserver> media_observer_;
   raw_ptr<const size_t> screen_count_;
+  bool is_video_capture_allowed_while_screen_locked_ = false;
 };
 
 class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
@@ -738,9 +747,11 @@ class MediaStreamManagerTest : public ::testing::Test {
       const std::string& label,
       const media::AudioParameters& output_parameters,
       const blink::mojom::StreamDevicesSet& stream_devices_set,
-      blink::mojom::MediaStreamRequestResult result) {
+      blink::mojom::MediaStreamRequestResult result,
+      bool is_allowed_while_screen_locked = false) {
     media_stream_manager_->HandleAccessRequestResponse(
-        label, output_parameters, stream_devices_set, result);
+        label, output_parameters, stream_devices_set, result,
+        is_allowed_while_screen_locked);
   }
 
   std::string GetLatestLabel() const {
@@ -750,7 +761,8 @@ class MediaStreamManagerTest : public ::testing::Test {
 
   std::string GenerateStreamsAndWaitForApproval(
       const blink::StreamControls& controls,
-      MediaStreamManager::DeviceStoppedCallback stopped_cb =
+      MediaStreamManager::DeviceStoppedCallback stopped_cb = base::DoNothing(),
+      MediaStreamManager::GenerateStreamsCallback generate_stream_cb =
           base::DoNothing()) {
     base::RunLoop run_loop;
     EXPECT_CALL(*media_observer_,
@@ -763,7 +775,7 @@ class MediaStreamManagerTest : public ::testing::Test {
         kRenderFrameHostId, /*requester_id=*/1, /*page_request_id=*/1, controls,
         MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/true,
         blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
-        base::DoNothing(), std::move(stopped_cb), base::DoNothing(),
+        std::move(generate_stream_cb), std::move(stopped_cb), base::DoNothing(),
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
         base::DoNothing());
 
@@ -955,6 +967,59 @@ TEST_F(MediaStreamManagerTest, MakeMultipleRequests) {
   EXPECT_CALL(*this, Response(0));
   EXPECT_CALL(*this, Response(1));
   run_loop_.Run();
+}
+
+TEST_F(MediaStreamManagerTest, IsSessionAllowedOnLockScreen) {
+  media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
+    auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+        /*tests_use_fake_render_frame_hosts=*/true);
+    fake_ui->AddAvailableDevices({blink::MediaStreamDevice(
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "Camera",
+        "Camera")});
+    return fake_ui;
+  }));
+
+  browser_content_client_->set_is_video_capture_allowed_while_screen_locked(
+      true);
+
+  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+      .Times(testing::AnyNumber());
+
+  blink::StreamControls controls(/*request_audio=*/false,
+                                 /*request_video=*/true);
+  base::UnguessableToken video_session_id;
+  base::RunLoop run_loop;
+  MediaStreamManager::GenerateStreamsCallback generate_stream_cb =
+      base::BindOnce(
+          [](base::UnguessableToken* out_session_id, base::RunLoop* run_loop,
+             blink::mojom::MediaStreamRequestResult result,
+             const std::string& label,
+             blink::mojom::StreamDevicesSetPtr stream_devices_set,
+             bool pan_tilt_zoom_allowed) {
+            if (stream_devices_set &&
+                !stream_devices_set->stream_devices.empty() &&
+                stream_devices_set->stream_devices[0]
+                    ->video_device.has_value()) {
+              *out_session_id = stream_devices_set->stream_devices[0]
+                                    ->video_device->session_id();
+            }
+            run_loop->Quit();
+          },
+          &video_session_id, &run_loop);
+
+  media_stream_manager_->GenerateStreams(
+      kRenderFrameHostId, /*requester_id=*/1, /*page_request_id=*/1, controls,
+      MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/true,
+      blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+      std::move(generate_stream_cb), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
+
+  run_loop.Run();
+
+  EXPECT_FALSE(video_session_id.is_empty());
+  EXPECT_TRUE(
+      media_stream_manager_->IsSessionAllowedOnLockScreen(video_session_id));
 }
 
 TEST_F(MediaStreamManagerTest, MakeAndCancelMultipleRequests) {

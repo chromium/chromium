@@ -46,14 +46,9 @@ bool ChromeOSLoginAndLockMediaAccessHandler::SupportsStreamType(
          web_contents == lock_screen_online_reauth_dialog->GetWebContents();
 }
 
-bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& security_origin,
-    blink::mojom::MediaStreamType type,
-    const extensions::Extension* extension) {
-  if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
-    return false;
-
+// static
+bool ChromeOSLoginAndLockMediaAccessHandler::IsVideoCaptureAllowedForOrigin(
+    const url::Origin& security_origin) {
   const ash::CrosSettings* const settings = ash::CrosSettings::Get();
   if (!settings)
     return false;
@@ -81,6 +76,18 @@ bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
     }
   }
   return false;
+}
+
+bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type,
+    const extensions::Extension* extension) {
+  if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+    return false;
+  }
+
+  return IsVideoCaptureAllowedForOrigin(security_origin);
 }
 
 void ChromeOSLoginAndLockMediaAccessHandler::HandleRequest(
