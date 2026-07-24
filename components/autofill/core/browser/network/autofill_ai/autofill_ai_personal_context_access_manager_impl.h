@@ -50,6 +50,15 @@ class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer {
  public:
+  // Represents the type of personal context network request sent to the server.
+  enum class RequestType {
+    // Request for non-sensitive data and presence signals for sensitive data.
+    kNonSpiiAndPresence,
+    // Request for masked sensitive data.
+    kSpiiMasked,
+    // Request for unmasking sensitive data.
+    kSpiiUnmasking,
+  };
 
   AutofillAiPersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
@@ -83,16 +92,6 @@ class AutofillAiPersonalContextAccessManagerImpl
  private:
   friend class AutofillAiPersonalContextAccessManagerImplTestApi;
   using SpiiEntityPresenceSignal = EntityType;
-
-  // Represents the type of personal context network request sent to the server.
-  enum class RequestType {
-    // Request for non-sensitive data and presence signals for sensitive data.
-    kNonSpiiAndPresence,
-    // Request for masked sensitive data.
-    kSpiiMasked,
-    // Request for unmasking sensitive data.
-    kSpiiUnmasking,
-  };
 
   // Results of parsing the server response during prefetch requests. It bundles
   // the internal `EntityInstance` representation with its original
@@ -183,9 +182,6 @@ class AutofillAiPersonalContextAccessManagerImpl
   // request.
   void HandleFailedResponse(base::span<const EntityType> requested_types,
                             RequestType request_type);
-
-  // Logs the request latency of a personal context network request.
-  void LogRequestLatency(RequestType request_type, base::TimeTicks start_time);
 
   // Logs the total latency for a prefetch request of a specific `type`.
   // Latency is only logged if the previous status was `kPending` and the

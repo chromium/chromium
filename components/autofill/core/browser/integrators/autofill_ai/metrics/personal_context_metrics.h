@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_PERSONAL_CONTEXT_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_PERSONAL_CONTEXT_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/personal_context/core/personal_context_types.h"
 
 namespace autofill {
 
@@ -59,6 +61,14 @@ void LogPersonalContextCacheReadinessOnFirstInteraction(
 void LogPersonalContextPrefetchTriggerResults(
     const DenseSet<PersonalContextPrefetchTriggerResult>&
         unique_trigger_results);
+
+// Logs the total latency for a prefetch request of a specific `type`.
+void LogPersonalContextPrefetchTotalLatency(EntityType type,
+                                            base::TimeDelta latency);
+
+// Logs the non-eligibility reason for personal context.
+void LogPersonalContextNonEligibilityReason(
+    personal_context::PersonalContextNonEligibilityReason reason);
 
 }  // namespace autofill
 

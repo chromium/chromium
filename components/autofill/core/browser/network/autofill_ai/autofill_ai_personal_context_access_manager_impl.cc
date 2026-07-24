@@ -95,6 +95,29 @@ bool IsPersonalContextSpiiType(EntityType type) {
          EntityInstance::PersonalContextSpiiType::kSpii;
 }
 
+// Logs the request latency of a personal context network request.
+void LogRequestLatency(
+    AutofillAiPersonalContextAccessManagerImpl::RequestType request_type,
+    base::TimeDelta latency) {
+  switch (request_type) {
+    using enum AutofillAiPersonalContextAccessManagerImpl::RequestType;
+    case kNonSpiiAndPresence:
+      base::UmaHistogramMediumTimes(
+          "Autofill.Ai.PersonalContext.RequestLatency."
+          "PrefetchNonSpiiAndPresence",
+          latency);
+      break;
+    case kSpiiMasked:
+      base::UmaHistogramMediumTimes(
+          "Autofill.Ai.PersonalContext.RequestLatency.PrefetchSpiiMasked",
+          latency);
+      break;
+    case kSpiiUnmasking:
+      base::UmaHistogramMediumTimes(
+          "Autofill.Ai.PersonalContext.RequestLatency.SpiiUnmasking", latency);
+      break;
+  }
+}
 
 }  // namespace
 
@@ -220,7 +243,7 @@ void AutofillAiPersonalContextAccessManagerImpl::
         RequestType request_type,
         base::TimeTicks request_start_time,
         personal_context::FetchContextResult result) {
-  LogRequestLatency(request_type, request_start_time);
+  LogRequestLatency(request_type, base::TimeTicks::Now() - request_start_time);
 
   if (!result.response.has_value()) {
     HandleFailedResponse(requested_types, request_type);
@@ -318,7 +341,8 @@ void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(
     GetUnmaskedSpiiEntityCallback callback,
     base::TimeTicks request_start_time,
     personal_context::FetchPiiEntitiesResult result) {
-  LogRequestLatency(RequestType::kSpiiUnmasking, request_start_time);
+  LogRequestLatency(RequestType::kSpiiUnmasking,
+                    base::TimeTicks::Now() - request_start_time);
   using enum AutofillAiUnmaskResult;
   if (!result.response.has_value()) {
     using ExecutionError = personal_context::ContextMemoryError::ExecutionError;
@@ -551,9 +575,7 @@ void AutofillAiPersonalContextAccessManagerImpl::
   }
   last_non_eligibility_reason_ = non_eligibility_reason;
   if (last_non_eligibility_reason_) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Ai.PersonalContext.NonEligibilityReason",
-        *last_non_eligibility_reason_);
+    LogPersonalContextNonEligibilityReason(*last_non_eligibility_reason_);
   }
 }
 
@@ -628,38 +650,13 @@ void AutofillAiPersonalContextAccessManagerImpl::HandleFailedResponse(
   NotifyPrefetchStatusObservers({});
 }
 
-void AutofillAiPersonalContextAccessManagerImpl::LogRequestLatency(
-    RequestType request_type,
-    base::TimeTicks start_time) {
-  const base::TimeDelta latency = base::TimeTicks::Now() - start_time;
-  switch (request_type) {
-    case RequestType::kNonSpiiAndPresence:
-      base::UmaHistogramMediumTimes(
-          "Autofill.Ai.PersonalContext.RequestLatency."
-          "PrefetchNonSpiiAndPresence",
-          latency);
-      break;
-    case RequestType::kSpiiMasked:
-      base::UmaHistogramMediumTimes(
-          "Autofill.Ai.PersonalContext.RequestLatency.PrefetchSpiiMasked",
-          latency);
-      break;
-    case RequestType::kSpiiUnmasking:
-      base::UmaHistogramMediumTimes(
-          "Autofill.Ai.PersonalContext.RequestLatency.SpiiUnmasking", latency);
-      break;
-  }
-}
-
 void AutofillAiPersonalContextAccessManagerImpl::LogPrefetchTotalLatency(
     EntityType type) {
   if (const RequestState* state = base::FindOrNull(prefetch_state_, type)) {
     if (state->status == RequestStatus::kPending &&
         !state->last_update_time.is_null()) {
-      base::UmaHistogramMediumTimes(
-          base::StrCat({"Autofill.Ai.PersonalContext.Prefetch.TotalLatency.",
-                        EntityTypeToMetricsString(type)}),
-          base::TimeTicks::Now() - state->last_update_time);
+      LogPersonalContextPrefetchTotalLatency(
+          type, base::TimeTicks::Now() - state->last_update_time);
     }
   }
 }

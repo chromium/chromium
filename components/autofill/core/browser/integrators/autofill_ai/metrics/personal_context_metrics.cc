@@ -8,8 +8,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 
 namespace autofill {
@@ -68,6 +70,20 @@ void LogPersonalContextPrefetchTriggerResults(
     base::UmaHistogramEnumeration(
         "Autofill.Ai.PersonalContext.Prefetch.TriggerResult", trigger_result);
   }
+}
+
+void LogPersonalContextPrefetchTotalLatency(EntityType type,
+                                            base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Autofill.Ai.PersonalContext.Prefetch.TotalLatency.",
+                    EntityTypeToMetricsString(type)}),
+      latency);
+}
+
+void LogPersonalContextNonEligibilityReason(
+    personal_context::PersonalContextNonEligibilityReason reason) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.PersonalContext.NonEligibilityReason", reason);
 }
 
 }  // namespace autofill
