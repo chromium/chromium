@@ -1,0 +1,84 @@
+<!doctype html>
+<title>CSS url() filter passed to beginLayer may taint the canvas</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+
+<svg style="display: block; width: 0; height: 0">
+  <defs>
+    <!-- Not tainted. -->
+    <filter id="floodLime">
+      <feFlood flood-color="lime"/>
+    </filter>
+    <filter id="sameOriginImage">
+      <feImage href="/images/green.svg"/>
+    </filter>
+
+    <!-- Tainted. -->
+    <filter id="floodCurrentColor">
+      <feFlood flood-color="currentColor"/>
+    </filter>
+    <filter id="elementImage">
+      <feImage href="#circle"/>
+    </filter>
+    <filter id="crossOriginImage">
+      <feImage>
+        <script>
+          document.currentScript.parentElement.setAttribute(
+              'href', `${get_host_info().REMOTE_ORIGIN}/images/green.svg`);
+        </script>
+      </feImage>
+    </filter>
+    <circle id="circle" r="100" fill="lime"/>
+  </defs>
+</svg>
+
+<script type="module">
+await new Promise(resolve => window.addEventListener('load', resolve));
+
+// SVG reference filters taint the canvas according to
+// https://drafts.csswg.org/filter-effects/#tainted-filter-primitives
+
+// Not tainted.
+for (let filter of [
+  `url(${location.href}#floodLime)`,
+  `url(${location.href}#sameOriginImage)`,
+]) {
+  test(() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.filter = filter;
+    ctx.fillRect(0, 0, 300, 150);
+    assert_array_equals(ctx.getImageData(1, 1, 1, 1).data, [0, 255, 0, 255]);
+  }, `Setting filter to '${filter}' should not taint the canvas.`);
+
+  test(() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.beginLayer({filter});
+    ctx.fillRect(0, 0, 300, 150);
+    ctx.endLayer();
+    assert_array_equals(ctx.getImageData(1, 1, 1, 1).data, [0, 255, 0, 255]);
+  }, `Using a layer with filter '${filter}' should not taint the canvas.`);
+}
+
+// Tainted.
+for (let filter of [
+  `url(${location.href}#floodCurrentColor)`,
+  `url(${location.href}#elementImage)`,
+  `url(${location.href}#crossOriginImage)`,
+]) {
+  test(() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.filter = filter;
+    ctx.fillRect(0, 0, 300, 150);
+    assert_throws_dom("SecurityError", () => ctx.getImageData(1, 1, 1, 1));
+  }, `Setting filter to '${filter}' should taint the canvas.`);
+
+  test(() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.beginLayer({filter});
+    ctx.fillRect(0, 0, 300, 150);
+    ctx.endLayer();
+    assert_throws_dom("SecurityError", () => ctx.getImageData(1, 1, 1, 1));
+  }, `Using a layer with filter '${filter}' should taint the canvas.`);
+}
+</script>
