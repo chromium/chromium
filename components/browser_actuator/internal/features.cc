@@ -25,4 +25,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kBrowserActuatorProtoStreamTransport,
                    base::Minutes(2));
 
+BASE_FEATURE_PARAM(int,
+                   kMaxTransportSessions,
+                   &kBrowserActuatorProtoStreamTransport,
+                   3);
+
 }  // namespace browser_actuator

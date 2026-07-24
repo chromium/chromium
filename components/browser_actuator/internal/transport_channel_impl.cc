@@ -67,9 +67,11 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
     return;
   }
 
-  // TODO(crbug.com/537331795): Limit the number of concurrent sessions.
   TransportSessionImpl* session =
       session_registry_->GetOrCreateSession(downstream.session_id());
+  if (!session) {
+    return;
+  }
   // The session owns the advance-only / ignore-non-positive rule: the
   // sequence number lives on the session, so the invariant does too.
   session->RecordServerSequenceNumber(downstream.sequence_number());

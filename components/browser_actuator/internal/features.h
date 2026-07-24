@@ -30,6 +30,9 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kProtoStreamMaxReconnectionTime);
 // `noop` keep-alives. Zero disables the watchdog entirely.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kProtoStreamStallTimeout);
 
+// Maximum number of concurrent active transport sessions.
+BASE_DECLARE_FEATURE_PARAM(int, kMaxTransportSessions);
+
 }  // namespace browser_actuator
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_FEATURES_H_

@@ -113,5 +113,31 @@ TEST(TransportSessionRegistryImplTest, GetWeakPtr) {
   EXPECT_EQ(weak_registry.get(), nullptr);
 }
 
+TEST(TransportSessionRegistryImplTest, EnforcesMaxConcurrentSessions) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr(),
+                                        /*max_concurrent_sessions=*/2);
+  EXPECT_EQ(registry.max_concurrent_sessions(), 2u);
+
+  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  ASSERT_NE(session1, nullptr);
+  TransportSessionImpl* session2 = registry.GetOrCreateSession("session_2");
+  ASSERT_NE(session2, nullptr);
+
+  // 3rd session exceeds the limit of 2 and should be rejected.
+  TransportSessionImpl* session3 = registry.GetOrCreateSession("session_3");
+  EXPECT_EQ(session3, nullptr);
+
+  // Existing sessions can still be retrieved without error.
+  EXPECT_EQ(registry.GetOrCreateSession("session_1"), session1);
+
+  // Destroying a session frees up capacity.
+  registry.DestroySession("session_1");
+  TransportSessionImpl* session3_retry =
+      registry.GetOrCreateSession("session_3");
+  ASSERT_NE(session3_retry, nullptr);
+  EXPECT_EQ(session3_retry->GetSessionId(), "session_3");
+}
+
 }  // namespace
 }  // namespace browser_actuator

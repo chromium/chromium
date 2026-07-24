@@ -27,6 +27,8 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
  public:
   explicit TransportSessionRegistryImpl(
       base::WeakPtr<TransportChannel> channel);
+  TransportSessionRegistryImpl(base::WeakPtr<TransportChannel> channel,
+                               size_t max_concurrent_sessions);
   ~TransportSessionRegistryImpl() override;
 
   TransportSessionRegistryImpl(const TransportSessionRegistryImpl&) = delete;
@@ -45,6 +47,8 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   // Clears all active sessions from the sessions_ map.
   void Clear();
 
+  size_t max_concurrent_sessions() const { return max_concurrent_sessions_; }
+
   base::WeakPtr<TransportSessionRegistryImpl> GetWeakPtr();
 
  private:
@@ -52,6 +56,7 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   TransportSessionImpl* CreateSession(std::string_view session_id);
 
   base::WeakPtr<TransportChannel> channel_;
+  const size_t max_concurrent_sessions_;
 
   // Map of session_id to the corresponding TransportSession.
   std::map<std::string, std::unique_ptr<TransportSessionImpl>, std::less<>>

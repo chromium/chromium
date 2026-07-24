@@ -7,13 +7,33 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/logging.h"
+#include "components/browser_actuator/internal/features.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 
 namespace browser_actuator {
+namespace {
+
+size_t GetMaxConcurrentSessionsLimit() {
+  static const size_t limit = []() {
+    const int l = kMaxTransportSessions.Get();
+    return l > 0 ? static_cast<size_t>(l) : 0;
+  }();
+  return limit;
+}
+
+}  // namespace
 
 TransportSessionRegistryImpl::TransportSessionRegistryImpl(
     base::WeakPtr<TransportChannel> channel)
-    : channel_(std::move(channel)) {
+    : TransportSessionRegistryImpl(std::move(channel),
+                                   GetMaxConcurrentSessionsLimit()) {}
+
+TransportSessionRegistryImpl::TransportSessionRegistryImpl(
+    base::WeakPtr<TransportChannel> channel,
+    size_t max_concurrent_sessions)
+    : channel_(std::move(channel)),
+      max_concurrent_sessions_(max_concurrent_sessions) {
   DCHECK(channel_);
 }
 
@@ -69,6 +89,12 @@ TransportSessionImpl* TransportSessionRegistryImpl::GetOrCreateSession(
 TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sessions_.size() >= max_concurrent_sessions_) {
+    DLOG(WARNING) << "Max concurrent sessions limit ("
+                  << max_concurrent_sessions_
+                  << ") reached. Rejecting new session.";
+    return nullptr;
+  }
   std::unique_ptr<TransportSessionImpl> session =
       std::make_unique<TransportSessionImpl>(session_id, channel_);
   TransportSessionImpl* session_ptr = session.get();
