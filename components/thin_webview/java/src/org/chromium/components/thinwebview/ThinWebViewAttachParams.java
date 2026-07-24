@@ -17,16 +17,19 @@ public class ThinWebViewAttachParams {
     public final @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory;
     public final @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate;
     public final boolean supportTheming;
+    public final boolean enableAutofill;
 
     private ThinWebViewAttachParams(
             @Nullable WebContentsDelegateAndroid webContentsDelegate,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            boolean supportTheming) {
+            boolean supportTheming,
+            boolean enableAutofill) {
         this.webContentsDelegate = webContentsDelegate;
         this.contextMenuPopulatorFactory = contextMenuPopulatorFactory;
         this.selectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         this.supportTheming = supportTheming;
+        this.enableAutofill = enableAutofill;
     }
 
     /** Builder for {@link ThinWebViewAttachParams}. */
@@ -35,6 +38,7 @@ public class ThinWebViewAttachParams {
         @Nullable private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
         @Nullable private SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
         private boolean mSupportTheming;
+        private boolean mEnableAutofill = true;
 
         public Builder() {}
 
@@ -86,6 +90,17 @@ public class ThinWebViewAttachParams {
         }
 
         /**
+         * Sets whether to enable Autofill tab helper attachment.
+         *
+         * @param enableAutofill Whether Autofill should be enabled.
+         * @return This builder.
+         */
+        public Builder setEnableAutofill(boolean enableAutofill) {
+            mEnableAutofill = enableAutofill;
+            return this;
+        }
+
+        /**
          * Builds the {@link ThinWebViewAttachParams}.
          *
          * @return The built parameters.
@@ -95,7 +110,8 @@ public class ThinWebViewAttachParams {
                     mWebContentsDelegate,
                     mContextMenuPopulatorFactory,
                     mSelectionDropdownMenuDelegate,
-                    mSupportTheming);
+                    mSupportTheming,
+                    mEnableAutofill);
         }
     }
 }

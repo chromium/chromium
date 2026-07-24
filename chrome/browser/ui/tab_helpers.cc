@@ -313,7 +313,8 @@ std::optional<int64_t> GetPageContentAnnotationsTabId(
 // WARNING: Do not use this class for desktop chrome. Use TabFeatures instead.
 // See
 // https://chromium.googlesource.com/chromium/src/+/main/docs/chrome_browser_design_principles.md
-void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
+void TabHelpers::AttachTabHelpers(WebContents* web_contents,
+                                  bool enable_autofill) {
   // If already adopted, nothing to be done.
   base::SupportsUserData::Data* adoption_tag =
       web_contents->GetUserData(&kTabContentsAttachedTabHelpersUserDataKey);
@@ -352,9 +353,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                                                    optimization_guide_decider);
     }
   }
-  autofill::AutofillClientProvider& autofill_client_provider =
-      autofill::AutofillClientProviderFactory::GetForProfile(profile);
-  autofill_client_provider.CreateClientForWebContents(web_contents);
+  if (enable_autofill) {
+    autofill::AutofillClientProvider& autofill_client_provider =
+        autofill::AutofillClientProviderFactory::GetForProfile(profile);
+    autofill_client_provider.CreateClientForWebContents(web_contents);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
@@ -368,7 +371,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // The sensitive content client has to be instantiated after the autofill
   // client, because the sensitive content client starts a flow which uses
   // `ScopedAutofillManagersObservation`.
-  if (base::android::android_info::sdk_int() >=
+  if (enable_autofill &&
+      base::android::android_info::sdk_int() >=
           base::android::android_info::SdkVersion::SDK_VERSION_V &&
       base::FeatureList::IsEnabled(
           sensitive_content::features::kSensitiveContent)) {
@@ -387,12 +391,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents);
   ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
-  if (!autofill_client_provider.uses_platform_autofill()) {
-    ChromePasswordManagerClient::CreateForWebContents(web_contents);
-  }
+  if (enable_autofill) {
+    autofill::AutofillClientProvider& autofill_client_provider =
+        autofill::AutofillClientProviderFactory::GetForProfile(profile);
+    if (!autofill_client_provider.uses_platform_autofill()) {
+      ChromePasswordManagerClient::CreateForWebContents(web_contents);
+    }
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+    ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
+        web_contents);
 #endif
+  }
   CreateSubresourceFilterWebContentsHelper(web_contents);
 #if BUILDFLAG(ENABLE_RLZ)
   ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(

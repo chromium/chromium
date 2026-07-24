@@ -157,7 +157,8 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                         webContents,
                         attachParams.webContentsDelegate,
                         mEnablePermissionRequests,
-                        attachParams.supportTheming);
+                        attachParams.supportTheming,
+                        attachParams.enableAutofill);
 
         // Allow highlighting text.
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
@@ -245,7 +246,8 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
                 WebContents webContents,
                 @Nullable WebContentsDelegateAndroid delegate,
                 boolean enablePermissionRequests,
-                boolean supportTheming);
+                boolean supportTheming,
+                boolean enableAutofill);
 
         void setContextMenuPopulatorFactory(
                 long nativeThinWebView, ContextMenuPopulatorFactory factory);
