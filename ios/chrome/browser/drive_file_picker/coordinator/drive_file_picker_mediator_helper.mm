@@ -279,7 +279,13 @@ DriveListQuery CreateDriveListQuery(
 
 bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
                                         NSArray<UTType*>* accepted_types,
-                                        BOOL ignore_accepted_types) {
+                                        BOOL ignore_accepted_types,
+                                        BOOL for_composebox) {
+  // All files should be enabled when Drive file picker is used in the
+  // composebox.
+  if (for_composebox) {
+    return true;
+  }
   // Folders and shared drives can be opened so their contents can be inspected.
   if (item.is_folder || item.is_shared_drive) {
     return true;

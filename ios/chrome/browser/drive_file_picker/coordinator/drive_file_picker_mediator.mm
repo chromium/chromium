@@ -587,7 +587,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
     if (DriveFilePickerItemShouldBeEnabled(item, _acceptedTypes,
-                                           _options.ignore_accepted_types)) {
+                                           _options.ignore_accepted_types,
+                                           _forComposebox)) {
       [enabledItemsIdentifiers addObject:item.identifier];
     }
   }
@@ -597,7 +598,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   std::unordered_set<DriveItem> enabledSelectedFiles;
   for (const DriveItem& selectedFile : _selectedFiles) {
     if (DriveFilePickerItemShouldBeEnabled(selectedFile, _acceptedTypes,
-                                           _options.ignore_accepted_types)) {
+                                           _options.ignore_accepted_types,
+                                           _forComposebox)) {
       enabledSelectedFiles.insert(selectedFile);
     }
   }
@@ -1134,7 +1136,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
         item, _collection->GetType(), _options.sorting_criterion,
         _shouldShowSearchItems, _searchText);
     filePickerItem.enabled = DriveFilePickerItemShouldBeEnabled(
-        item, _acceptedTypes, _options.ignore_accepted_types);
+        item, _acceptedTypes, _options.ignore_accepted_types, _forComposebox);
     // If the search text is not empty, emphasize the first match of the search
     // text inside the name of the item.
     if (_searchText.length != 0) {

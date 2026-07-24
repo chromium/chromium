@@ -50,7 +50,8 @@ DriveListQuery CreateDriveListQuery(
 // Returns whether an item can be selected in the picker.
 bool DriveFilePickerItemShouldBeEnabled(const DriveItem& item,
                                         NSArray<UTType*>* accepted_types,
-                                        BOOL ignore_accepted_types);
+                                        BOOL ignore_accepted_types,
+                                        BOOL for_composebox);
 
 // Returns the subtitle which contains the last modified date for `item`.
 NSString* DriveFilePickerItemSubtitleModified(const DriveItem& item);
