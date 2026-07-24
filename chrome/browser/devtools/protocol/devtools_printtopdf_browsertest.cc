@@ -9,12 +9,15 @@
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/headless/test/pdf_utils.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -22,6 +25,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "pdf/pdf.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
@@ -32,6 +37,25 @@
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 
 namespace {
+
+std::unique_ptr<net::test_server::HttpResponse> HandleSlowImageRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != "/print_to_pdf/slow-image.jpeg") {
+    return nullptr;
+  }
+  auto response =
+      std::make_unique<net::test_server::DelayedHttpResponse>(base::Seconds(1));
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("image/jpeg");
+  std::string image_data;
+  CHECK(base::ReadFileToString(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(
+              "print_to_pdf/red-cmyk-turned-green-via-icc_profile.jpeg"),
+      &image_data));
+  response->set_content(image_data);
+  return response;
+}
 
 class PrintToPdfProtocolTest : public DevToolsProtocolTest,
                                public testing::WithParamInterface<bool> {
@@ -51,6 +75,8 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
 
   void PreRunTestOnMainThread() override {
     DevToolsProtocolTest::PreRunTestOnMainThread();
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&HandleSlowImageRequest));
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
   }
@@ -129,6 +155,19 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
     ASSERT_TRUE(page_bitmap_.Render(pdf_span, page_index));
   }
 
+  void PrintOnePageWithDefaultSettings() {
+    base::DictValue params;
+    params.Set("printBackground", true);
+    params.Set("paperWidth", kPaperWidth);
+    params.Set("paperHeight", kPaperHeight);
+    params.Set("marginTop", 0);
+    params.Set("marginLeft", 0);
+    params.Set("marginBottom", 0);
+    params.Set("marginRight", 0);
+
+    PrintToPdfAndRenderPage(std::move(params), 0);
+  }
+
   void PrintToPdfAsStreamAndRenderPage(base::DictValue params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     base::span<const uint8_t> pdf_span = CreatePdfSpanFromResultStream();
@@ -157,22 +196,41 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfBackground) {
 
   Attach();
 
-  base::DictValue params;
-  params.Set("printBackground", true);
-  params.Set("paperWidth", kPaperWidth);
-  params.Set("paperHeight", kPaperHeight);
-  params.Set("marginTop", 0);
-  params.Set("marginLeft", 0);
-  params.Set("marginBottom", 0);
-  params.Set("marginRight", 0);
-
-  PrintToPdfAndRenderPage(std::move(params), 0);
+  PrintOnePageWithDefaultSettings();
 
   // Expect top left pixel of background color
   EXPECT_EQ(GetPixelRGB(0, 0), 0x123456u);
 
   // Expect midpoint pixel of red color
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
+}
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfPrintMediaImage) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      "/print_to_pdf/media_print_image.html");
+
+  Attach();
+
+  PrintOnePageWithDefaultSettings();
+
+  // Expect top left pixel of the printed image to not be white.
+  // This verifies that the image actually loaded and rendered.
+  EXPECT_NE(GetPixelRGB(0, 0), 0xffffffu);
+  EXPECT_NE(GetPixelRGB(50, 50), 0xffffffu);
+}
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfPrintMediaSlowImage) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      "/print_to_pdf/media_print_slow_image.html");
+
+  Attach();
+
+  PrintOnePageWithDefaultSettings();
+
+  // Expect top left pixel of the printed image, should not be white.
+  // We check that the slow image actually loaded and rendered.
+  EXPECT_NE(GetPixelRGB(0, 0), 0xffffffu);
+  EXPECT_NE(GetPixelRGB(50, 50), 0xffffffu);
 }
 
 IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfMargins) {

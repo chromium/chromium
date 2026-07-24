@@ -364,6 +364,7 @@ class PrintRenderFrameHelper
   // Page Printing / Rendering ------------------------------------------------
 
   void OnFramePreparedForPrintPages();
+  void OnPrintWithParamsFinished();
   void PrintPages();
   bool PrintPagesNative(blink::WebLocalFrame* frame,
                         uint32_t page_count,

@@ -1407,9 +1407,30 @@ void PrintRenderFrameHelper::PrintWithParams(
                        ? DebugEvent::kSetPrintSettings1
                        : DebugEvent::kSetPrintSettings2);
   SetPrintPagesParamsForPrinting(*settings);
+
+  is_loading_ = frame->WillPrintSoon();
+  if (is_loading_) {
+    on_stop_loading_closure_ =
+        base::BindOnce(&PrintRenderFrameHelper::OnPrintWithParamsFinished,
+                       weak_ptr_factory_.GetWeakPtr());
+    SetupOnStopLoadingTimeout();
+    return;
+  }
+
+  OnPrintWithParamsFinished();
+}
+
+void PrintRenderFrameHelper::OnPrintWithParamsFinished() {
+  if (render_frame_gone_) {
+    return;
+  }
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  const blink::WebNode plugin_node = delegate_->GetPdfElement(frame);
+
   prep_frame_view_ =
       std::make_unique<PrepareFrameAndViewForPrint>(frame, plugin_node);
-  prep_frame_view_->EnterPrintMode(*settings->params,
+  prep_frame_view_->EnterPrintMode(*print_pages_params_->params,
                                    /*ignore_css_margins=*/false);
 
   PrintPages();
