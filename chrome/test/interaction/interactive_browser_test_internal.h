@@ -7,6 +7,7 @@
 
 #include <compare>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,6 +34,10 @@ class InteractiveBrowserTestPrivate
     : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
   DECLARE_SAFE_CAST_TARGET()
+
+  // Injects functions into the current scope that allow retrieval of a summary
+  // of the entire HTML DOM or a subset of it.
+  static const std::string_view kDumpElementsScript;
 
   explicit InteractiveBrowserTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl);
