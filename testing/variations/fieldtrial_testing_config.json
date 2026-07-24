@@ -1404,8 +1404,7 @@
     "AndroidThreadPriority": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -27276,6 +27275,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CacheCertVerification"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewAndroidThreadPriority": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "WebViewAndroidThreadPriority",
+                    "params": {
+                        "interactive": "-8",
+                        "presentation": "-8"
+                    },
+                    "enable_features": [
+                        "AndroidThreadPriority"
                     ]
                 }
             ]
