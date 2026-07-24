@@ -13,18 +13,23 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -34,6 +39,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -68,6 +74,29 @@ class StubRemoteActorSelectionDialogController
   void Show() override {}
 };
 
+class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
+ public:
+  static MockChromePasswordManagerClient* CreateForWebContentsAndGet(
+      content::WebContents* contents) {
+    auto* client =
+        new testing::NiceMock<MockChromePasswordManagerClient>(contents);
+    contents->SetUserData(UserDataKey(), base::WrapUnique(client));
+    return client;
+  }
+
+  explicit MockChromePasswordManagerClient(content::WebContents* web_contents)
+      : ChromePasswordManagerClient(web_contents) {}
+
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+};
+
 class RemoteActorCredentialSharingImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -99,6 +128,12 @@ class RemoteActorCredentialSharingImplTest
 
     // Default sync config: active.
     SetSyncActive(true);
+    autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
+    mock_client_ =
+        MockChromePasswordManagerClient::CreateForWebContentsAndGet(
+            web_contents());
+    ON_CALL(*mock_client_, IsReauthBeforeFillingRequired)
+        .WillByDefault(testing::Return(false));
   }
 
   void TearDown() override {
@@ -109,6 +144,7 @@ class RemoteActorCredentialSharingImplTest
     if (account_store_) {
       account_store_->ShutdownOnUIThread();
     }
+    mock_client_ = nullptr;
     mock_sync_service_ = nullptr;
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -178,7 +214,6 @@ class RemoteActorCredentialSharingImplTest
                  &RemoteActorCredentialSharingImplTest::CreateTestDialog,
                  base::Unretained(this)));
   }
-
   std::unique_ptr<RemoteActorSelectionDialogController> CreateTestDialog(
       content::WebContents* web_contents,
       std::vector<std::unique_ptr<PasswordForm>> credentials,
@@ -219,6 +254,83 @@ class RemoteActorCredentialSharingImplTest
     }
   }
 
+  void SetupMockAuthenticator(bool reauth_required,
+                              bool auth_success = false,
+                              const std::string& domain = "google.com") {
+    auto prepared_authenticator = std::make_unique<
+        testing::NiceMock<device_reauth::MockDeviceAuthenticator>>();
+    auto* raw_authenticator = prepared_authenticator.get();
+
+    if (reauth_required) {
+      EXPECT_CALL(*raw_authenticator, CanAuthenticateWithBiometrics)
+          .WillRepeatedly(testing::Return(true));
+      std::u16string expected_message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+      expected_message = l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_FILLING_REAUTH, base::UTF8ToUTF16(domain));
+#endif
+      EXPECT_CALL(*raw_authenticator,
+                  AuthenticateWithMessage(expected_message, testing::_))
+          .WillOnce(testing::WithArg<1>(
+              [auth_success](device_reauth::DeviceAuthenticator::AuthenticateCallback callback) {
+                std::move(callback).Run(auth_success);
+              }));
+    } else {
+      EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage).Times(0);
+    }
+
+    EXPECT_CALL(*mock_client_, GetDeviceAuthenticator)
+        .WillOnce([authenticator = std::move(prepared_authenticator)]() mutable {
+          return std::move(authenticator);
+        });
+    EXPECT_CALL(*mock_client_, IsReauthBeforeFillingRequired)
+        .WillOnce(testing::Return(reauth_required));
+  }
+
+  bool RunSharingFlowAndSelect(
+      mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>& remote) {
+    PasswordForm form;
+    form.signon_realm = "https://google.com/";
+    form.url = GURL("https://google.com");
+    form.username_value = u"user";
+    form.password_value = u"pass";
+    form.in_store = PasswordForm::Store::kProfileStore;
+    profile_store_->AddLogin(FromPasswordForm(form));
+
+    content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+    base::test::TestFuture<bool> result;
+    remote->RequestAgentAuthentication(account_info_.gaia.ToString(),
+                                       "google.com", "actor_id",
+                                       result.GetCallback());
+    base::RunLoop().RunUntilIdle();
+
+    if (last_dialog_credentials_.size() != 1u) {
+      return false;
+    }
+
+    SimulateDialogSelection(*last_dialog_credentials_[0]);
+    return result.Get();
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing>
+  SetUpAndBindFlow() {
+    SignIn("user@gmail.com");
+    NavigateAndCommit(GURL("https://gemini.google.com"));
+    content::RenderFrameHostTester::For(main_rfh())
+        ->InitializeRenderFrameIfNeeded();
+    CreateImpl();
+
+    RemoteActorCredentialSharingImpl* impl =
+        RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+    EXPECT_NE(impl, nullptr);
+
+    mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+    if (impl) {
+      impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+    }
+    return remote;
+  }
+
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   raw_ptr<syncer::MockSyncService> mock_sync_service_ = nullptr;
@@ -234,9 +346,11 @@ class RemoteActorCredentialSharingImplTest
   base::OnceClosure dialog_shown_quit_closure_;
   raw_ptr<StubRemoteActorSelectionDialogController> last_dialog_controller_ = nullptr;
 
+  raw_ptr<MockChromePasswordManagerClient> mock_client_ = nullptr;
+
  private:
   base::test::ScopedFeatureList feature_list_{
-      features::kRemoteActorCredentialSharing};
+      ::features::kRemoteActorCredentialSharing};
 };
 
 // Verify that when the feature flag kRemoteActorCredentialSharing is enabled,
@@ -629,5 +743,25 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   SimulateDialogSelection(std::nullopt);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(RemoteActorCredentialSharingImplTest, ReauthEnabled_Success) {
+  auto remote = SetUpAndBindFlow();
+  SetupMockAuthenticator(/*reauth_required=*/true, /*auth_success=*/true);
+  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest, ReauthEnabled_Failure) {
+  auto remote = SetUpAndBindFlow();
+  SetupMockAuthenticator(/*reauth_required=*/true, /*auth_success=*/false);
+  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest, ReauthDisabled_NoPrompt) {
+  auto remote = SetUpAndBindFlow();
+  SetupMockAuthenticator(/*reauth_required=*/false);
+  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
+}
+#endif
 
 }  // namespace password_manager

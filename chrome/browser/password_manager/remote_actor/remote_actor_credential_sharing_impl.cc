@@ -7,7 +7,9 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,11 +17,14 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -47,7 +53,6 @@ std::unique_ptr<RemoteActorSelectionDialogController> CreateDefaultDialog(
 constexpr size_t kMaxArgumentLength = 256;
 
 }  // namespace
-
 DOCUMENT_USER_DATA_KEY_IMPL(RemoteActorCredentialSharingImpl);
 
 // static
@@ -187,6 +192,27 @@ void RemoteActorCredentialSharingImpl::OnAllLoginsRetrieved() {
   dialog_controller_->Show();
 }
 
+void RemoteActorCredentialSharingImpl::ProceedWithCredential(
+    PasswordForm selected_form,
+    bool auth_success) {
+  device_authenticator_.reset();
+
+  if (!pending_request_) {
+    return;
+  }
+
+  if (!auth_success) {
+    RespondWithError(std::move(pending_request_->callback));
+    pending_request_.reset();
+    return;
+  }
+
+  // TODO(crbug.com/532483845): Upload selected credential to Passbox and grant
+  // permission in APS.
+  RespondWithError(std::move(pending_request_->callback));
+  pending_request_.reset();
+}
+
 bool RemoteActorCredentialSharingImpl::ValidateRequestPreconditions(
     const std::string& gaia_id,
     const std::string& domain,
@@ -313,13 +339,50 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
     return;
   }
 
-  if (selected_form) {
-    // TODO(crbug.com/532483845): Upload selected credential to Passbox and
-    // grant permission in APS.
+  if (!selected_form) {
+    RespondWithError(std::move(pending_request_->callback));
+    pending_request_.reset();
+    return;
   }
 
-  std::move(pending_request_->callback).Run(false);
-  pending_request_.reset();
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
+    RespondWithError(std::move(pending_request_->callback));
+    pending_request_.reset();
+    return;
+  }
+
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
+  if (!client) {
+    RespondWithError(std::move(pending_request_->callback));
+    pending_request_.reset();
+    return;
+  }
+
+  if (!device_authenticator_) {
+    device_authenticator_ = client->GetDeviceAuthenticator();
+  }
+
+  if (device_authenticator_ &&
+      client->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+    std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+    url::Origin domain_origin = url::Origin::Create(
+        GURL(base::StrCat({"https://", pending_request_->domain})));
+    const std::u16string origin_str =
+        base::UTF8ToUTF16(GetShownOrigin(domain_origin));
+    message = l10n_util::GetStringFUTF16(
+        IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin_str);
+#endif
+    device_authenticator_->AuthenticateWithMessage(
+        message,
+        base::BindOnce(&RemoteActorCredentialSharingImpl::ProceedWithCredential,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(*selected_form)));
+    return;
+  }
+
+  ProceedWithCredential(std::move(*selected_form), /*auth_success=*/true);
 }
 
 void RemoteActorCredentialSharingImpl::RespondWithError(

@@ -26,6 +26,10 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}
+
 namespace password_manager {
 
 class RemoteActorSelectionDialogController;
@@ -43,7 +47,6 @@ class RemoteActorCredentialSharingImpl
       const std::string& credential_domain,
       base::OnceCallback<void(std::optional<PasswordForm>)>
           callback)>;
-
   ~RemoteActorCredentialSharingImpl() override;
   RemoteActorCredentialSharingImpl(const RemoteActorCredentialSharingImpl&) =
       delete;
@@ -99,6 +102,7 @@ class RemoteActorCredentialSharingImpl
 
   // Called when all password store queries have completed.
   void OnAllLoginsRetrieved();
+  void ProceedWithCredential(PasswordForm selected_form, bool auth_success);
 
   // Validates Mojo request preconditions (e.g., primary main frame, user gesture).
   bool ValidateRequestPreconditions(const std::string& gaia_id,
@@ -129,6 +133,7 @@ class RemoteActorCredentialSharingImpl
 
   std::optional<PendingRequest> pending_request_;
   std::unique_ptr<RemoteActorSelectionDialogController> dialog_controller_;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<RemoteActorCredentialSharingImpl> weak_ptr_factory_{
       this};
