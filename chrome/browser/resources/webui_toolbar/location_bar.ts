@@ -6,8 +6,8 @@ import './readonly_omnibox.js';
 import './location_icon.js';
 import './content_settings_icons.js';
 import './page_action_icons.js';
-import './permission_dashboard.js';
 import './selected_keyword.js';
+import '/shared/permission_dashboard.js';
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

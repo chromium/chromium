@@ -5,22 +5,23 @@
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import type {PermissionChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './permission_chip.css.js';
 import {getHtml} from './permission_chip.html.js';
-import {BUTTON_LEFT} from './toolbar_button.js';
+import type {PermissionChipDelegate} from './permission_chip_delegate.js';
+import {LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
+
+const BUTTON_LEFT = 0;
+
+const PermissionChipElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface PermissionChipElement {
   $: {
     message: HTMLSpanElement,
   };
 }
-
-const PermissionChipElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export class PermissionChipElement extends PermissionChipElementBase {
   static get is() {
@@ -37,12 +38,14 @@ export class PermissionChipElement extends PermissionChipElementBase {
 
   static override get properties() {
     return {
+      delegate: {type: Object},
       chipState: {type: Object},
       hasDivider: {type: Boolean, attribute: 'has-divider', reflect: true},
       isFullyCollapsed_: {type: Boolean},
     };
   }
 
+  accessor delegate: PermissionChipDelegate|null = null;
   accessor chipState: PermissionChipState|null = null;
   accessor hasDivider: boolean = false;
   protected accessor isFullyCollapsed_: boolean = true;
@@ -88,13 +91,9 @@ export class PermissionChipElement extends PermissionChipElementBase {
     // kill the animation prematurely.
     const fireIpc = () => {
       if (isCollapsed) {
-        BrowserProxyImpl.getInstance()
-            .toolbarUIHandler.onLhsChipCollapseAnimationEnded(
-                this.getIdentifier_());
+        this.delegate?.onChipCollapseAnimationEnded(this.getIdentifier_());
       } else {
-        BrowserProxyImpl.getInstance()
-            .toolbarUIHandler.onLhsChipExpandAnimationEnded(
-                this.getIdentifier_());
+        this.delegate?.onChipExpandAnimationEnded(this.getIdentifier_());
       }
     };
 
@@ -142,13 +141,11 @@ export class PermissionChipElement extends PermissionChipElementBase {
   }
 
   protected onPointerenter_() {
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipPointerEntered(
-        this.getIdentifier_());
+    this.delegate?.onChipPointerEntered(this.getIdentifier_());
   }
 
   protected onPointerleave_() {
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipPointerExited(
-        this.getIdentifier_());
+    this.delegate?.onChipPointerExited(this.getIdentifier_());
   }
 
   protected onPointercancel_() {
@@ -159,8 +156,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
     if (e.button !== BUTTON_LEFT) {
       return;
     }
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipMousePressed(
-        this.getIdentifier_());
+    this.delegate?.onChipMousePressed(this.getIdentifier_());
   }
 
   protected onClick_(e: PointerEvent) {
@@ -168,8 +164,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
     // (Enter/Space) also dispatch PointerEvents, but they have an empty
     // pointerType (""). We only want to suppress true pointer interactions
     // (mouse, touch, pen).
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
-        this.getIdentifier_(), e.pointerType !== '');
+    this.delegate?.onChipClicked(this.getIdentifier_(), e.pointerType !== '');
   }
 
   // Computes the foreground and background colors for the chip based on its
@@ -296,7 +291,9 @@ export class PermissionChipElement extends PermissionChipElementBase {
       default:
         break;
     }
-    return iconName ? `url('rhs_icons/${iconName}.svg')` : '';
+    return iconName ?
+        `url('chrome://webui-toolbar.top-chrome/rhs_icons/${iconName}.svg')` :
+        '';
   }
 }
 

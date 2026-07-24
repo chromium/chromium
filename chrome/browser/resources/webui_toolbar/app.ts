@@ -54,6 +54,8 @@ import {
 } from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from '/shared/icon_handle.mojom-webui.js';
 import type {OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {PermissionChipElement} from '/shared/permission_chip.js';
+import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
 
 import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
@@ -67,8 +69,6 @@ import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
 import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
-import {PermissionChipElement} from './permission_chip.js';
-import type {PermissionDashboardElement} from './permission_dashboard.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';

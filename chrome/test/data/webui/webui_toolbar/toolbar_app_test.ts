@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {LhsChipIdentifier, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, NavigationControlsStateListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import {AvatarToolbarButtonState} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -74,6 +74,13 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   removeFocusRequestListener(handle: number) {
     this.methodCalled('removeFocusRequestListener', handle);
   }
+
+  onChipClicked(_chip: LhsChipIdentifier, _isPointerClick: boolean) {}
+  onChipPointerEntered(_chip: LhsChipIdentifier) {}
+  onChipPointerExited(_chip: LhsChipIdentifier) {}
+  onChipMousePressed(_chip: LhsChipIdentifier) {}
+  onChipExpandAnimationEnded(_chip: LhsChipIdentifier) {}
+  onChipCollapseAnimationEnded(_chip: LhsChipIdentifier) {}
 
   fireNavigationStateListener(iconUpdates: any[], state: any) {
     if (this.listener_) {

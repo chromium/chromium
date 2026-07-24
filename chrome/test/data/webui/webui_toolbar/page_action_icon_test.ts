@@ -8,7 +8,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, PageActionId, PageActionTrigger} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {PageActionIconElement, PageActionState} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {LhsChipIdentifier, PageActionIconElement, PageActionState} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import type {ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api.mojom-webui.js';
 
@@ -101,6 +101,13 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   }
   removeNavigationStateListener() {}
   removeFocusRequestListener() {}
+
+  onChipClicked(_chip: LhsChipIdentifier, _isPointerClick: boolean) {}
+  onChipPointerEntered(_chip: LhsChipIdentifier) {}
+  onChipPointerExited(_chip: LhsChipIdentifier) {}
+  onChipMousePressed(_chip: LhsChipIdentifier) {}
+  onChipExpandAnimationEnded(_chip: LhsChipIdentifier) {}
+  onChipCollapseAnimationEnded(_chip: LhsChipIdentifier) {}
 }
 
 suite('PageActionIconTest', function() {

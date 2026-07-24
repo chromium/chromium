@@ -37,6 +37,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/webui_toolbar:build_ts",
+    "//chrome/browser/resources/webui_toolbar_shared:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

@@ -5,10 +5,11 @@
 import './permission_chip.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
+import type {PermissionChipDelegate} from './permission_chip_delegate.js';
 import {getCss} from './permission_dashboard.css.js';
 import {getHtml} from './permission_dashboard.html.js';
+import type {PermissionDashboardState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class PermissionDashboardElement extends CrLitElement {
   static get is() {
@@ -25,10 +26,12 @@ export class PermissionDashboardElement extends CrLitElement {
 
   static override get properties() {
     return {
+      delegate: {type: Object},
       dashboardState: {type: Object},
     };
   }
 
+  accessor delegate: PermissionChipDelegate|null = null;
   accessor dashboardState: PermissionDashboardState|null = null;
 }
 

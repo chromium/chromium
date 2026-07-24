@@ -11,6 +11,9 @@ import type {ContextualTasksAppElement} from './app.js';
 // clang-format off
 export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
+<if expr="not is_android">
+  <link rel="stylesheet" href="layout_constants.css">
+</if>
   ${this.isShownInTab_ ? '' : html`
     <div id="toolbarOverlay">
       <top-toolbar id="toolbar"

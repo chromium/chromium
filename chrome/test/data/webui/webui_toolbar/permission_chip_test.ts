@@ -169,6 +169,25 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
   }
   removeNavigationStateListener() {}
   removeFocusRequestListener() {}
+
+  onChipClicked(chip: LhsChipIdentifier, isPointerClick: boolean) {
+    this.toolbarUIHandler.onLhsChipClicked(chip, isPointerClick);
+  }
+  onChipPointerEntered(chip: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipPointerEntered(chip);
+  }
+  onChipPointerExited(chip: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipPointerExited(chip);
+  }
+  onChipMousePressed(chip: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipMousePressed(chip);
+  }
+  onChipExpandAnimationEnded(chip: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipExpandAnimationEnded(chip);
+  }
+  onChipCollapseAnimationEnded(chip: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipCollapseAnimationEnded(chip);
+  }
 }
 
 suite('PermissionChipTest', function() {
@@ -199,6 +218,7 @@ suite('PermissionChipTest', function() {
 
     chip = document.createElement('permission-chip');
     chip.id = 'request-chip';
+    chip.delegate = browserProxy;
     document.body.appendChild(chip);
   });
 

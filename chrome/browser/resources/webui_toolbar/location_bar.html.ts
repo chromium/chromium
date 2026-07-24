@@ -4,6 +4,7 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {BrowserProxyImpl} from './browser_proxy.js';
 import type {LocationBarElement} from './location_bar.js';
 
 export function getHtml(this: LocationBarElement) {
@@ -18,6 +19,7 @@ ${this.locationBarState.lhsChipsState.securityChip.isVisible &&
 </location-icon>
 ` : nothing}
 <permission-dashboard
+    .delegate="${BrowserProxyImpl.getInstance()}"
     .dashboardState="${this.locationBarState.lhsChipsState.permissionDashboard}"
     ?visible="${!!this.locationBarState.lhsChipsState.permissionDashboard}"
     @pointerenter="${this.onChipPointerenter_}"

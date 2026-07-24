@@ -103,10 +103,6 @@ build_webui("build") {
     "location_icon.ts",
     "location_icon.html.ts",
     "metrics_recorder.ts",
-    "permission_chip.html.ts",
-    "permission_chip.ts",
-    "permission_dashboard.html.ts",
-    "permission_dashboard.ts",
     "pinned_toolbar_action.html.ts",
     "pinned_toolbar_action.ts",
     "pinned_toolbar_actions.html.ts",
@@ -146,8 +142,6 @@ build_webui("build") {
     "home_button.css",
     "location_bar.css",
     "location_icon.css",
-    "permission_chip.css",
-    "permission_dashboard.css",
     "pinned_toolbar_actions.css",
     "readonly_omnibox.css",
     "reload_button.css",
@@ -155,7 +149,6 @@ build_webui("build") {
     "toolbar_button.css",
     "toolbar_chip_button.css",
     "toolbar_divider.css",
-    "webui_toolbar_shared_vars.css",
   ]
 
   # ts_composite is needed for JS tests to depend on this.

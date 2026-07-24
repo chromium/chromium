@@ -111,6 +111,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
+#include "chrome/grit/webui_toolbar_shared_resources.h"
+#include "chrome/grit/webui_toolbar_shared_resources_map.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
 #include "ui/base/resource/resource_bundle.h"
@@ -469,6 +472,11 @@ content::WebUIDataSource* ContextualTasksUI::RegisterWebUIDataSource(
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   source->AddResourcePaths(kGuestViewSharedResources);
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if !BUILDFLAG(IS_ANDROID)
+  source->AddResourcePaths(kWebuiToolbarSharedResources);
+  WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
+#endif
 
   // Add strings.js
   source->UseStringsJs();

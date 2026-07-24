@@ -12,12 +12,14 @@ export function getHtml(this: PermissionDashboardElement) {
 <div id="container">
   <permission-chip
       id="indicator-chip"
+      .delegate="${this.delegate}"
       .chipState="${this.dashboardState?.indicatorChip || null}"
       ?visible="${!!this.dashboardState?.indicatorChip?.isVisible}">
   </permission-chip>
 
   <permission-chip
       id="request-chip"
+      .delegate="${this.delegate}"
       .chipState="${this.dashboardState?.requestChip || null}"
       ?visible="${!!this.dashboardState?.requestChip?.isVisible}"
       ?has-divider="${!!this.dashboardState?.isDividerVisible}">

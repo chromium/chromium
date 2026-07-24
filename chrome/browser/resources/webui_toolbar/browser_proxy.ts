@@ -53,7 +53,10 @@ export type FocusRequestListener = (target: FocusRequestTarget) => void;
 export type FocusRequestHandle = number;
 export const INVALID_FOCUS_REQUEST_HANDLE: FocusRequestHandle = -1;
 
-export interface BrowserProxy {
+import type {PermissionChipDelegate} from '/shared/permission_chip_delegate.js';
+import type {LhsChipIdentifier} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+
+export interface BrowserProxy extends PermissionChipDelegate {
   browserControlsHandler: BrowserControlsServiceInterface;
   toolbarUIHandler: ToolbarUIServiceInterface;
 
@@ -85,6 +88,30 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.callbackRouter = new ToolbarUIObserverCallbackRouter();
     this.browserControlsHandler = BrowserControlsService.getRemote();
     this.toolbarUIHandler = ToolbarUIService.getRemote();
+  }
+
+  onChipClicked(id: LhsChipIdentifier, isPointer: boolean) {
+    this.toolbarUIHandler.onLhsChipClicked(id, isPointer);
+  }
+
+  onChipPointerEntered(id: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipPointerEntered(id);
+  }
+
+  onChipPointerExited(id: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipPointerExited(id);
+  }
+
+  onChipMousePressed(id: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipMousePressed(id);
+  }
+
+  onChipExpandAnimationEnded(id: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipExpandAnimationEnded(id);
+  }
+
+  onChipCollapseAnimationEnded(id: LhsChipIdentifier) {
+    this.toolbarUIHandler.onLhsChipCollapseAnimationEnded(id);
   }
 
   /**

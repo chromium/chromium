@@ -15,15 +15,32 @@ build_webui("build") {
     "icon_from_table.ts",
     "icon_from_table.html.ts",
     "icon_table.ts",
+    "permission_chip.html.ts",
+    "permission_chip.ts",
+    "permission_chip_delegate.ts",
+    "permission_dashboard.html.ts",
+    "permission_dashboard.ts",
   ]
 
-  css_files = [ "icon_from_table.css" ]
+  css_files = [
+    "icon_from_table.css",
+    "permission_chip.css",
+    "permission_dashboard.css",
+    "webui_toolbar_shared_vars.css",
+  ]
 
   ts_composite = true
   webui_context_type = "trusted"
 
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
