@@ -455,12 +455,18 @@
 -DeviceEventLogTest.TestTimeFormat
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study
 -FieldLogUkmMetricTest/LogFocusedComplexFormAtFormRemoveTest.TestEmittedUKM/ablation_study_in_dry_run_mode
--PasskeyTabHelperTest.HandleCreateRequestedEventDefersOnInvalidOrigin
--PasskeyTabHelperTest.HandleGetRequestedEventDefersOnInvalidOrigin
--PasskeyTabHelperTest.StartPasskeyCreationFromCrossOriginIframe
 -PolicyLoggerTest.DeleteOldLogsMultithreaded
 -UmaPageLoadMetricsObserverTest.TestTracingDomContentLoadedEventStart
 -UmaPageLoadMetricsObserverTest.TestTracingLoadEventStart
+
+# TODO(crbug.com/538332325): PasskeyTabHelperTest have been failing on iOS blink
+# port. Some of the tests were added by https://crrev.com/c/7868131.
+-PasskeyTabHelperTest.HandleAssertionEmptyRemoteFrameIdGraceful
+-PasskeyTabHelperTest.HandleAssertionMalformedRemoteFrameIdGraceful
+-PasskeyTabHelperTest.StartPasskeyCreationWithExcludedCredential
+-PasskeyTabHelperTest.HandleCreateRequestedEventDefersOnInvalidOrigin
+-PasskeyTabHelperTest.HandleGetRequestedEventDefersOnInvalidOrigin
+-PasskeyTabHelperTest.StartPasskeyCreationFromCrossOriginIframe
 
 # TODO(crbug.com/517208683): The test is flaky on the ios-blink and tvos bots.
 # The test was updated by https://crrev.com/c/7676358.
