@@ -6307,6 +6307,16 @@
       status: "stable",
     },
     {
+      // When enabled (the legacy behavior), interior cell borders from the
+      // `border`/`rules` attributes inherit the table's border-color. Disable
+      // to launch the spec-compliant behavior, where they resolve to
+      // `currentColor` instead (border-color is not inherited). The
+      // `bordercolor` attribute always propagates. Matches Gecko when disabled.
+      // See crbug.com/40745409.
+      name: "TableCellBorderColorInherit",
+      status: "stable",
+    },
+    {
       // Remove <table>'s explicit `border-color: gray` UA stylesheet rule,
       // since it is non-standard. See crbug.com/494554835.
       // This shipped in M149, was updated in M151, and can be removed in M153.

@@ -588,6 +588,20 @@
       "abotella@igalia.com"
     ]
   },
+  {
+    "prefix": "disable-table-cell-border-color-inherit",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/rendering/non-replaced-elements/tables/table-border-color-not-inherited.html"
+    ],
+    "args": [
+      "--disable-blink-features=TableCellBorderColorInherit"
+    ],
+    "expires": "Jun 30, 2027",
+    "owners": [
+      "navoda.munasinha@codimite.com"
+    ]
+  },
   "This never expires because it tests rendering of form controls when the",
   "preferred color-scheme is dark. It should now be possible to render",
   "controls dark even if the preferred is light, but that requires a bit of",
