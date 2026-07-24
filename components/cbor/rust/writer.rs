@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 use alloc::vec::Vec;
-use core::ops::Deref;
 
 use crate::constants::*;
 use crate::values::{MapKey, Value};
@@ -49,7 +48,7 @@ pub(crate) fn append_value(val: &Value, out: &mut Vec<u8>) {
         Value::Int(v) => write_header(out, MAJOR_TYPE_NEGATIVE_INT, !v as u64),
         Value::Bytestring(s) => {
             write_header(out, MAJOR_TYPE_BYTE_STRING, s.len() as u64);
-            out.extend_from_slice(s.deref());
+            out.extend_from_slice(s);
         }
         Value::String(s) => {
             write_header(out, MAJOR_TYPE_TEXT_STRING, s.len() as u64);

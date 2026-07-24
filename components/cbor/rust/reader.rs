@@ -157,38 +157,66 @@ fn parse_header(input: &mut &[u8]) -> Result<(u8, u8, u64), Error> {
     let major_type = b >> 5;
     let info = b & 0x1f;
     let arg = match (major_type, info) {
-        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_16) => get_float_argument(input, 2),
-        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_32) => get_float_argument(input, 4),
-        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_64) => get_float_argument(input, 8),
+        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_16) => u64_from_be_bytes::<2, u16>(input),
+        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_32) => u64_from_be_bytes::<4, u32>(input),
+        (MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_FLOAT_64) => u64_from_be_bytes::<8, u64>(input),
         (_, 0..=23) => Ok(info as u64),
-        (_, ADDL_INFO_1_BYTE) => get_argument(input, 1),
-        (_, ADDL_INFO_2_BYTES) => get_argument(input, 2),
-        (_, ADDL_INFO_4_BYTES) => get_argument(input, 4),
-        (_, ADDL_INFO_8_BYTES) => get_argument(input, 8),
+        (_, ADDL_INFO_1_BYTE) => get_argument::<1, u8>(input),
+        (_, ADDL_INFO_2_BYTES) => get_argument::<2, u16>(input),
+        (_, ADDL_INFO_4_BYTES) => get_argument::<4, u32>(input),
+        (_, ADDL_INFO_8_BYTES) => get_argument::<8, u64>(input),
         _ => Err(Error::UnsupportedAdditionalInformation(input.len(), info)),
     }?;
     Ok((major_type, info, arg))
 }
 
-fn get_float_argument(input: &mut &[u8], num_bytes: u8) -> Result<u64, Error> {
-    let mut v: u64 = 0;
-    for _ in 0..num_bytes {
-        v <<= 8;
-        let b = get_u8(input)?;
-        v |= b as u64;
-    }
-    Ok(v)
+// N should really be an associated const, or even replaced with `const {
+// core::mem::size_of::<Self>() }`, but those can't be used in generic
+// expressions: https://github.com/rust-lang/rust/issues/76560.
+trait FromBytes<const N: usize>: Into<u64> {
+    fn from_be_bytes(bytes: [u8; N]) -> Self;
 }
 
-fn get_argument(input: &mut &[u8], num_bytes: u8) -> Result<u64, Error> {
-    let mut v: u64 = 0;
-    for _ in 0..num_bytes {
-        v <<= 8;
-        let b = get_u8(input)?;
-        v |= b as u64;
+impl FromBytes<1> for u8 {
+    fn from_be_bytes(bytes: [u8; 1]) -> Self {
+        Self::from_be_bytes(bytes)
     }
+}
+
+impl FromBytes<2> for u16 {
+    fn from_be_bytes(bytes: [u8; 2]) -> Self {
+        Self::from_be_bytes(bytes)
+    }
+}
+
+impl FromBytes<4> for u32 {
+    fn from_be_bytes(bytes: [u8; 4]) -> Self {
+        Self::from_be_bytes(bytes)
+    }
+}
+
+impl FromBytes<8> for u64 {
+    fn from_be_bytes(bytes: [u8; 8]) -> Self {
+        Self::from_be_bytes(bytes)
+    }
+}
+
+fn u64_from_be_bytes<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
+    const {
+        assert!(N == core::mem::size_of::<T>());
+    }
+
+    let Some((bytes, rest)) = input.split_first_chunk::<N>() else {
+        return Err(Error::InputTruncated);
+    };
+    *input = rest;
+    Ok(T::from_be_bytes(*bytes).into())
+}
+
+fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
+    let v = u64_from_be_bytes::<N, T>(input)?;
     let (_, expected_num_bytes) = crate::writer::low_bits_and_length(v);
-    if num_bytes as usize != expected_num_bytes {
+    if N != expected_num_bytes {
         Err(Error::NonMinimalAdditionalData(input.len()))
     } else {
         Ok(v)
@@ -210,7 +238,7 @@ fn to_int(arg: u64, is_negative: bool) -> Result<Value, Error> {
 }
 
 fn to_bytestring(input: &mut &[u8], len64: u64) -> Result<Value, Error> {
-    let Some(len): Option<usize> = len64.try_into().ok() else {
+    let Ok(len) = usize::try_from(len64) else {
         return Err(Error::InputTruncated);
     };
     let bytes = get(input, len)?;
@@ -218,7 +246,7 @@ fn to_bytestring(input: &mut &[u8], len64: u64) -> Result<Value, Error> {
 }
 
 fn to_string(input: &mut &[u8], len64: u64, config: &Config) -> Result<Value, Error> {
-    let Some(len): Option<usize> = len64.try_into().ok() else {
+    let Ok(len) = usize::try_from(len64) else {
         return Err(Error::InputTruncated);
     };
     let orig_len = input.len();
