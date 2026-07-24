@@ -293,8 +293,12 @@ source_set("input_state_manager") {
   ]
   deps = [
     "//base",
+    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
+    "//components/contextual_search/footprints/internal",
+    "//components/contextual_search/footprints/public",
     "//components/omnibox/browser",
+    "//components/omnibox/common",
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
@@ -318,6 +322,7 @@ source_set("input_state_manager") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common:string_conversions",
     "//ios/web/public",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -341,6 +346,7 @@ source_set("unit_tests") {
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_search:test_support",
+    "//components/contextual_search/footprints/public",
     "//components/contextual_search/internal:test_support",
     "//components/contextual_search/internal/ios",
     "//components/contextual_tasks/public:query_contextualizer",

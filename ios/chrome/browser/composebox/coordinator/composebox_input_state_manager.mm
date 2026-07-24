@@ -13,7 +13,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
+#import "components/contextual_search/footprints/public/fpop_service.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
@@ -37,6 +41,7 @@
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -162,6 +167,23 @@ ComposeboxStrings* ServerStringsFromInputState(
                                      toolsSectionHeader:toolsSectionHeader];
 }
 
+// Returns the DriveConsentState corresponding to the given DisclaimerStatus.
+contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
+    drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+  using DisclaimerStatus =
+      drive_picker::DriveDisclaimerController::DisclaimerStatus;
+  using DriveConsentState = contextual_search::DriveConsentState;
+
+  switch (status) {
+    case DisclaimerStatus::kAccepted:
+      return DriveConsentState::kConsent;
+    case DisclaimerStatus::kNotAccepted:
+      return DriveConsentState::kNotConsent;
+    case DisclaimerStatus::kRestricted:
+      return DriveConsentState::kRestricted;
+  }
+}
+
 }  // namespace
 
 @interface ComposeboxInputStateManager () <ComposeboxModeObserver,
@@ -194,6 +216,12 @@ ComposeboxStrings* ServerStringsFromInputState(
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       _sessionHandle;
 
+  // Shared URL loader factory for network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> _urlLoaderFactory;
+  // Controller for Drive privacy disclaimer verification.
+  std::unique_ptr<drive_picker::DriveDisclaimerController>
+      _driveDisclaimerController;
+
   // The underlying C++ model that manages the state.
   std::unique_ptr<contextual_search::InputStateModel> _inputStateModel;
   // The cached current input state.
@@ -223,6 +251,31 @@ ComposeboxStrings* ServerStringsFromInputState(
                 (contextual_search::ContextualSearchSessionHandle*)sessionHandle
                entrypoint:(ComposeboxEntrypoint)entrypoint
               isIncognito:(BOOL)isIncognito {
+  return [self initWithWebStateList:webStateList
+                         modeHolder:modeHolder
+                        prefService:prefService
+              aimEligibilityService:aimEligibilityService
+                    identityManager:identityManager
+                 templateURLService:templateURLService
+                      sessionHandle:sessionHandle
+                         entrypoint:entrypoint
+                        isIncognito:isIncognito
+                   urlLoaderFactory:nullptr];
+}
+
+- (instancetype)
+     initWithWebStateList:(WebStateList*)webStateList
+               modeHolder:(ComposeboxModeHolder*)modeHolder
+              prefService:(PrefService*)prefService
+    aimEligibilityService:(AimEligibilityService*)aimEligibilityService
+          identityManager:(signin::IdentityManager*)identityManager
+       templateURLService:(TemplateURLService*)templateURLService
+            sessionHandle:
+                (contextual_search::ContextualSearchSessionHandle*)sessionHandle
+               entrypoint:(ComposeboxEntrypoint)entrypoint
+              isIncognito:(BOOL)isIncognito
+         urlLoaderFactory:
+             (scoped_refptr<network::SharedURLLoaderFactory>)urlLoaderFactory {
   self = [super init];
   if (self) {
     // Initialize with local fallback strings. These will be overwritten
@@ -235,6 +288,7 @@ ComposeboxStrings* ServerStringsFromInputState(
     _aimEligibilityService = aimEligibilityService;
     _identityManager = identityManager;
     _templateURLService = templateURLService;
+    _urlLoaderFactory = urlLoaderFactory;
     // sessionHandle can be nil only in tests.
     if (sessionHandle) {
       _sessionHandle = sessionHandle->AsWeakPtr();
@@ -278,6 +332,25 @@ ComposeboxStrings* ServerStringsFromInputState(
   _searchEngineObserver.reset();
   _aimEligibilitySubscription = {};
   _metricsRecorder = nil;
+  _driveDisclaimerController.reset();
+  _urlLoaderFactory = nullptr;
+}
+
+- (drive_picker::DriveDisclaimerController*)driveDisclaimerController {
+  if (_driveDisclaimerController) {
+    return _driveDisclaimerController.get();
+  }
+  if (!_identityManager || !_urlLoaderFactory) {
+    return nullptr;
+  }
+  // Create FpopService (Footprints One Platform Service) to communicate
+  // with the Footprints backend for querying user privacy consent settings.
+  auto fpopService = contextual_search::FpopService::Create(_identityManager,
+                                                            _urlLoaderFactory);
+  _driveDisclaimerController =
+      std::make_unique<drive_picker::DriveDisclaimerController>(
+          std::move(fpopService));
+  return _driveDisclaimerController.get();
 }
 
 - (ComposeboxModelOption)activeModel {
@@ -715,11 +788,31 @@ ComposeboxStrings* ServerStringsFromInputState(
   _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
       *_sessionHandle, *searchboxConfig, GURL(), _isIncognito,
       has_primary_account);
+  if (_prefService) {
+    _inputStateModel->SetPrefService(_prefService);
+  }
 
   [self startInputStateObservation];
   // `Initialize` is synchronous and immediately notifies observers, updating
   // the state.
   _inputStateModel->Initialize();
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOption)) {
+    if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+      [self onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kAccepted];
+    } else if (auto* controller = [self driveDisclaimerController]) {
+      __weak __typeof(self) weakSelf = self;
+      controller->CheckDisclaimerStatusAsync(base::BindOnce(
+          ^(drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+            [weakSelf onDriveDisclaimerChecked:status];
+          }));
+    } else {
+      [self onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kRestricted];
+    }
+  }
 
   // iOS doesn't rely on the active hint text from `_inputState`, strings only
   // changes when `searchboxConfig` is updated.
@@ -727,6 +820,16 @@ ComposeboxStrings* ServerStringsFromInputState(
       ServerStringsFromInputState(_inputStateModel->GetInputState());
 
   [self.delegate inputStateManagerDidUpdateUIState:self];
+}
+
+- (void)onDriveDisclaimerChecked:
+    (drive_picker::DriveDisclaimerController::DisclaimerStatus)status {
+  if (!_prefService) {
+    return;
+  }
+  _prefService->SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(ConsentStateFromDisclaimerStatus(status)));
 }
 
 #pragma mark Observation

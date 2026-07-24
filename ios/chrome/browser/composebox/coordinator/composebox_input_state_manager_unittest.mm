@@ -9,9 +9,12 @@
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
+#import "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
+#import "components/contextual_search/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -26,6 +29,8 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -34,6 +39,8 @@
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState;
 - (ComposeboxMode)defaultTool;
 - (ComposeboxModelOption)defaultModel;
+- (void)onDriveDisclaimerChecked:
+    (drive_picker::DriveDisclaimerController::DisclaimerStatus)status;
 @end
 
 @interface FakeComposeboxInputStateManagerDelegate
@@ -86,6 +93,12 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
           return base::CallbackListSubscription();
         });
 
+    test_url_loader_factory_ =
+        std::make_unique<network::TestURLLoaderFactory>();
+    shared_url_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            test_url_loader_factory_.get());
+
     manager_ = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:&web_state_list_
                    modeHolder:mode_holder_
@@ -95,7 +108,8 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
            templateURLService:nullptr
                 sessionHandle:session_handle_.get()
                    entrypoint:ComposeboxEntrypoint::kOther
-                  isIncognito:NO];
+                  isIncognito:NO
+             urlLoaderFactory:shared_url_loader_factory_];
   }
 
   void TearDown() override {
@@ -111,6 +125,9 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
   std::unique_ptr<contextual_search::MockContextualSearchSessionHandle>
       session_handle_;
   signin::IdentityTestEnvironment identity_test_env_;
+
+  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<MockAimEligibilityService> mock_aim_service_;
   ComposeboxModeHolder* mode_holder_;
@@ -1249,4 +1266,49 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   // UI update should still be triggered because strings might have changed.
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
+}
+
+TEST_F(ComposeboxInputStateManagerTest, DriveDisclaimerController) {
+  drive_picker::DriveDisclaimerController* controller =
+      [manager_ driveDisclaimerController];
+  EXPECT_NE(controller, nullptr);
+  // Subsequent calls return the cached controller instance.
+  EXPECT_EQ([manager_ driveDisclaimerController], controller);
+}
+
+TEST_F(ComposeboxInputStateManagerTest,
+       DriveDisclaimerController_NullURLLoaderFactory) {
+  ComposeboxInputStateManager* nullManager =
+      [[ComposeboxInputStateManager alloc]
+           initWithWebStateList:&web_state_list_
+                     modeHolder:mode_holder_
+                    prefService:&pref_service_
+          aimEligibilityService:mock_aim_service_.get()
+                identityManager:identity_test_env_.identity_manager()
+             templateURLService:nullptr
+                  sessionHandle:session_handle_.get()
+                     entrypoint:ComposeboxEntrypoint::kOther
+                    isIncognito:NO
+               urlLoaderFactory:nullptr];
+  EXPECT_EQ([nullManager driveDisclaimerController], nullptr);
+  [nullManager disconnect];
+}
+
+TEST_F(ComposeboxInputStateManagerTest, OnDriveDisclaimerChecked) {
+  [manager_ onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kAccepted];
+  EXPECT_EQ(pref_service_.GetInteger(contextual_search::kDriveConsentState),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  [manager_ onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kNotAccepted];
+  EXPECT_EQ(
+      pref_service_.GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kNotConsent));
+
+  [manager_ onDriveDisclaimerChecked:drive_picker::DriveDisclaimerController::
+                                         DisclaimerStatus::kRestricted];
+  EXPECT_EQ(
+      pref_service_.GetInteger(contextual_search::kDriveConsentState),
+      static_cast<int>(contextual_search::DriveConsentState::kRestricted));
 }
