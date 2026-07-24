@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Paste handler detaches EditContext
+  assert_true: Should fire paste event. expected true got false
+[FAIL] Paste handler redirects focus to another EditContext editor
+  assert_true: New EditContext should receive text. expected true got false
+[FAIL] Paste handler sets contenteditable on parent of EditContext editor
+  assert_equals: Pasted text should be inserted into DOM. expected "Copied text" but got ""
+Harness: the test ran to completion.
+

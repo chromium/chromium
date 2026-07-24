@@ -10694,6 +10694,15 @@
        {}
       ]
      ]
+    },
+    "edit-context": {
+     "edit-context-detach-from-contenteditable-crash.html": [
+      "6062bac4ee0cf8559592a6cd5a115c0943fee6ee",
+      [
+       null,
+       {}
+      ]
+     ]
     }
    },
    "encoding": {
@@ -98178,7 +98187,7 @@
        ]
       ],
       "corner-shape-scoop.html": [
-       "8305aaa0c382f453c4c257e46ffa53968d15315c",
+       "96672b868296386cc5f18fd26393750aa8a7f21a",
        [
         null,
         [
@@ -98198,7 +98207,7 @@
             ],
             [
              0,
-             374
+             376
             ]
            ]
           ]
@@ -98349,7 +98358,7 @@
        ]
       ],
       "corner-shape-superellipse-scoop.html": [
-       "23b4daa1b1b5cb91fe647a7fe62f3acdb45e4f54",
+       "e77922acf831c52b3d9b02c236bece1833e4992b",
        [
         null,
         [
@@ -98369,7 +98378,7 @@
             ],
             [
              0,
-             374
+             376
             ]
            ]
           ]
@@ -301386,6 +301395,19 @@
         }
        ]
       ],
+      "scope-containment-pseudo-border.html": [
+       "388b94cfe0f1f240978a6b68b8a0b863f19e9fae",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/scope-containment-pseudo-border-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "scope-during-transition-2.html": [
        "897fa8e64bff11d78be544825cb234b1f6795208",
        [
@@ -441327,6 +441349,10 @@
        "c825b7b51d21a5ed97d472a2e4bb6fe8df62808d",
        []
       ],
+      "scope-containment-pseudo-border-ref.html": [
+       "eba94e6be1f33bd3802d3a876a784f858ffc98c3",
+       []
+      ],
       "scope-during-transition-2-ref.html": [
        "d25b386db3c2ab86b78bf12a150787231d0a3cf5",
        []
@@ -450098,6 +450124,10 @@
      ],
      "edit-context-inheritability.tentative-expected.txt": [
       "2b90bff1d55c8d84e1fee01e76bfe612e88b538c",
+      []
+     ],
+     "edit-context-paste-handler-changes-active.tentative-expected.txt": [
+      "d75a4738ff4783d655f8a39f79f30ec9e76f648a",
       []
      ],
      "edit-context-paste-html.tentative-expected.txt": [
@@ -506150,7 +506180,7 @@
      },
      "bookmarks": {
       "background.js": [
-       "16d147cc275a2d2f73a35b3b2f8c607cd43cec94",
+       "248838f58e2312f45b9dc4e9b81351be7ea00709",
        []
       ],
       "manifest.json": [
@@ -619672,6 +619702,20 @@
         {}
        ]
       ],
+      "scope-containment-during-capture.html": [
+       "a8156fbd205273fc4ff04b18458da7b60bb4acb9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scope-containment-sibling-offset.html": [
+       "363a61c5ae4f8166d12142c014a3652b894af12d",
+       [
+        null,
+        {}
+       ]
+      ],
       "scope-during-transition-1.html": [
        "1cd785b00f6f380982b8bb53aa158806c1587bb9",
        [
@@ -636315,6 +636359,15 @@
      ],
      "edit-context-input.tentative.html": [
       "b06ad7da0539113667c245c0842ab1650d41cad2",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "edit-context-paste-handler-changes-active.tentative.html": [
+      "43051e172f70b1448098fc217000d5fe4140d33d",
       [
        null,
        {
@@ -722512,8 +722565,15 @@
          {}
         ]
        ],
-       "link-load-event-alt.html": [
+       "link-load-event-alt-001.html": [
         "46fdc5801a4ce2593f31e2cfa6ffd9389312624b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "link-load-event-alt-002.html": [
+        "155cc3c918aebbb00b52d5c020adc69d1ea859b2",
         [
          null,
          {}
@@ -835437,13 +835497,6 @@
         {}
        ]
       ],
-      "audiocontext-playoutstats.html": [
-       "9096d185ad0f7cfd3b95a75bc6dbaf7029c31e21",
-       [
-        null,
-        {}
-       ]
-      ],
       "audiocontext-rendersizehint.html": [
        "711066d106bafe50bdab464e74c701589e53e886",
        [
@@ -917015,7 +917068,7 @@
        },
        "set_network_conditions": {
         "contexts.py": [
-         "43e022bf03e59938773085c6b8b8d23814302050",
+         "aa2d2ffff71541b0c15ae99c795e164bfbaf959f",
          [
           null,
           {}
@@ -920636,7 +920689,7 @@
         ]
        ],
        "pointer_touch.py": [
-        "0ebd3f1ff56cf3743b08392678e5f13da8464359",
+        "e7487ee7ad14d21baa88f81c0c71e54802402847",
         [
          null,
          {}
