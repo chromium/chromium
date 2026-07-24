@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
@@ -30,12 +31,14 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_constants_aura.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -270,11 +273,13 @@ TEST_F(DesktopNativeWidgetAuraTest, DontAccessContentWindowDuringDestruction) {
 
 namespace {
 
-std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
+std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent,
+                                                   const std::string& name) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_CONTROL);
   params.parent = parent;
+  params.name = name;
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
@@ -284,21 +289,13 @@ std::unique_ptr<Widget> CreateAndShowControlWidget(aura::Window* parent) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40607034): investigate fixing and enabling on Chrome OS.
-#define MAYBE_ReorderDoesntRecomputeOcclusion \
-  DISABLED_ReorderDoesntRecomputeOcclusion
-#else
-#define MAYBE_ReorderDoesntRecomputeOcclusion ReorderDoesntRecomputeOcclusion
-#endif
-
-TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
+TEST_F(DesktopNativeWidgetAuraTest, ReorderDoesntRecomputeOcclusion) {
   // Create the parent widget.
   Widget parent;
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  init_params.bounds = gfx::Rect(0, 0, 400, 400);
   parent.Init(std::move(init_params));
-  parent.Show();
 
   aura::Window* parent_window = parent.GetNativeWindow();
   parent_window->TrackOcclusionState();
@@ -306,22 +303,28 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_ReorderDoesntRecomputeOcclusion) {
   View* contents_view = parent.GetContentsView();
 
   // Create child widgets.
-  std::unique_ptr<Widget> w1(CreateAndShowControlWidget(parent_window));
-  std::unique_ptr<Widget> w2(CreateAndShowControlWidget(parent_window));
-  std::unique_ptr<Widget> w3(CreateAndShowControlWidget(parent_window));
+  std::unique_ptr<Widget> w1(CreateAndShowControlWidget(parent_window, "w1"));
+  std::unique_ptr<Widget> w2(CreateAndShowControlWidget(parent_window, "w2"));
+  std::unique_ptr<Widget> w3(CreateAndShowControlWidget(parent_window, "w3"));
 
   // Create child views.
-  View* host_view1 = new View();
-  w1->GetNativeView()->SetProperty(kHostViewKey, host_view1);
-  contents_view->AddChildViewRaw(host_view1);
+  auto* host_view1 =
+      contents_view->AddChildView(std::make_unique<NativeViewHost>());
+  host_view1->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  host_view1->Attach(w1->GetNativeView());
 
-  View* host_view2 = new View();
-  w2->GetNativeView()->SetProperty(kHostViewKey, host_view2);
-  contents_view->AddChildViewRaw(host_view2);
+  auto* host_view2 =
+      contents_view->AddChildView(std::make_unique<NativeViewHost>());
+  host_view2->SetBoundsRect(gfx::Rect(100, 0, 100, 100));
+  host_view2->Attach(w2->GetNativeView());
 
-  View* host_view3 = new View();
-  w3->GetNativeView()->SetProperty(kHostViewKey, host_view3);
-  contents_view->AddChildViewRaw(host_view3);
+  auto* host_view3 =
+      contents_view->AddChildView(std::make_unique<NativeViewHost>());
+  host_view3->SetBoundsRect(gfx::Rect(200, 0, 100, 100));
+  host_view3->Attach(w3->GetNativeView());
+
+  parent.Show();
+  RunPendingMessages();
 
   // Reorder child views. Expect occlusion to only be recomputed once.
   aura::test::WindowOcclusionTrackerTestApi window_occlusion_tracker_test_api(

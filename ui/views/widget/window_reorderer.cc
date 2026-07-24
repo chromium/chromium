@@ -128,8 +128,6 @@ void WindowReorderer::ReorderChildWindows() {
   aura::Window* unassociated_top =
       (it_last + 1 != children.end()) ? *std::next(it_last) : nullptr;
 
-  aura::WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
-
   // Step 1: Move bottom element to bottom and top element to top.
   if (expected.size() >= 1) {
     aura::Window* bot_expected = expected.front();
