@@ -23,7 +23,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /**
  * Fragment to manage the Contextual Search Settings in Chrome Settings, and to explain to the user
@@ -110,11 +109,6 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
                     if (ContextualSearchPolicy.isContextualSearchDisabled(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_WAS_FULLY_ENABLED_SWITCH));
                     }
-                }
-
-                @Override
-                public boolean isSearchable() {
-                    return !OmniboxCapabilities.isDesktopPlatform();
                 }
             };
 
