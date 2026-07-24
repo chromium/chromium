@@ -295,23 +295,30 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       int max_pic_order_cnt_lsb =
           1 << (sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
       DCHECK_NE(max_pic_order_cnt_lsb, 0);
+      base::CheckedNumeric<int> pic_order_cnt_msb = prev_pic_order_cnt_msb;
       if ((pic->pic_order_cnt_lsb < prev_pic_order_cnt_lsb) &&
           (prev_pic_order_cnt_lsb - pic->pic_order_cnt_lsb >=
            max_pic_order_cnt_lsb / 2)) {
-        pic->pic_order_cnt_msb = prev_pic_order_cnt_msb + max_pic_order_cnt_lsb;
+        pic_order_cnt_msb += max_pic_order_cnt_lsb;
       } else if ((pic->pic_order_cnt_lsb > prev_pic_order_cnt_lsb) &&
                  (pic->pic_order_cnt_lsb - prev_pic_order_cnt_lsb >
                   max_pic_order_cnt_lsb / 2)) {
-        pic->pic_order_cnt_msb = prev_pic_order_cnt_msb - max_pic_order_cnt_lsb;
-      } else {
-        pic->pic_order_cnt_msb = prev_pic_order_cnt_msb;
+        pic_order_cnt_msb -= max_pic_order_cnt_lsb;
       }
 
-      pic->top_field_order_cnt =
-          pic->pic_order_cnt_msb + pic->pic_order_cnt_lsb;
+      base::CheckedNumeric<int> top_field_order_cnt =
+          pic_order_cnt_msb + pic->pic_order_cnt_lsb;
+      base::CheckedNumeric<int> bottom_field_order_cnt =
+          top_field_order_cnt + pic->delta_pic_order_cnt_bottom;
 
-      pic->bottom_field_order_cnt =
-          pic->top_field_order_cnt + pic->delta_pic_order_cnt_bottom;
+      if (!top_field_order_cnt.IsValid() || !bottom_field_order_cnt.IsValid()) {
+        DVLOG(1) << "Invalid pic_order_cnt (type 0).";
+        return false;
+      }
+
+      pic->pic_order_cnt_msb = pic_order_cnt_msb.ValueOrDie();
+      pic->top_field_order_cnt = top_field_order_cnt.ValueOrDie();
+      pic->bottom_field_order_cnt = bottom_field_order_cnt.ValueOrDie();
 
       break;
     }
