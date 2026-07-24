@@ -43,7 +43,7 @@ suite('nearby-page-template', function() {
   });
 
   test('Everything on', async function() {
-    element.title = 'title';
+    element.pageTitle = 'title';
     element.subTitle = 'subTitle';
     element.utilityButtonLabel = 'utility';
     element.cancelButtonLabel = 'cancel';
@@ -88,7 +88,7 @@ suite('nearby-page-template', function() {
   });
 
   test('Close only', async function() {
-    element.title = 'title';
+    element.pageTitle = 'title';
     element.subTitle = 'subTitle';
     element.utilityButtonLabel = 'utility';
     element.cancelButtonLabel = 'cancel';
@@ -116,7 +116,7 @@ suite('nearby-page-template', function() {
   });
 
   test('Open-in-new icon', async function() {
-    element.title = 'title';
+    element.pageTitle = 'title';
     element.subTitle = 'subTitle';
     element.utilityButtonLabel = 'utility';
 

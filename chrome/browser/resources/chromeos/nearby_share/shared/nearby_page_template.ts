@@ -27,7 +27,7 @@ export class NearbyPageTemplateElement extends PolymerElement {
 
   static get properties() {
     return {
-      title: {
+      pageTitle: {
         type: String,
       },
 
@@ -112,7 +112,7 @@ export class NearbyPageTemplateElement extends PolymerElement {
   cancelButtonEventName: string;
   cancelButtonLabel: string|null;
   closeOnly: boolean;
-  override title: string;
+  pageTitle: string;
   subTitle: string|null;
   utilityButtonLabel: string|null;
   utilityButtonEventName: string;
