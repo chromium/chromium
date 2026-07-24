@@ -459,6 +459,7 @@ class FragmentPaintPropertyTreeBuilder {
 
   CompositorElementId GetCompositorElementId(
       CompositorElementIdNamespace namespace_id) const {
+    fragment_data_.EnsureId();
     return CompositorElementIdFromUniqueObjectId(fragment_data_.UniqueId(),
                                                  namespace_id);
   }
@@ -1969,6 +1970,14 @@ static void PopulateCanvasChildState(const LayoutObject& object,
   state.canvas_child_state->content_clip = canvas_fragment.ContentsClip();
 }
 
+static bool NeedsUnboundedWrapperNodes(const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::UnboundedElementEnabled()) {
+    return false;
+  }
+  const auto* html_element = DynamicTo<HTMLElement>(object.GetNode());
+  return html_element && html_element->IsUnboundedElementActive();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
     bool is_active) {
   if (!RuntimeEnabledFeatures::UnboundedElementEnabled()) {
@@ -1978,9 +1987,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
     return;
   }
   if (!is_active) {
-    properties_->ClearUnboundedWrapperTransform();
-    properties_->ClearUnboundedInnerTransform();
-    properties_->ClearUnboundedWrapperEffect();
+    OnClearTransform(properties_->ClearUnboundedWrapperTransform());
+    OnClearTransform(properties_->ClearUnboundedInnerTransform());
+    OnClearEffect(properties_->ClearUnboundedWrapperEffect());
     return;
   }
 
@@ -2003,17 +2012,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
   TransformPaintPropertyNode::State wrapper_transform_state;
   wrapper_transform_state.transform_and_origin.matrix.Translate(
       absolute_bounds.x(), absolute_bounds.y());
-  properties_->UpdateUnboundedWrapperTransform(
-      TransformPaintPropertyNode::Root(), std::move(wrapper_transform_state));
+  OnUpdateTransform(properties_->UpdateUnboundedWrapperTransform(
+      TransformPaintPropertyNode::Root(), std::move(wrapper_transform_state)));
 
   TransformPaintPropertyNode::State inner_transform_state;
   gfx::Transform inner_matrix;
   inner_matrix.Translate(-absolute_bounds.x(), -absolute_bounds.y());
   inner_matrix.PreConcat(parent_to_root);
   inner_transform_state.transform_and_origin.matrix = inner_matrix;
-  properties_->UpdateUnboundedInnerTransform(
+  OnUpdateTransform(properties_->UpdateUnboundedInnerTransform(
       *properties_->UnboundedWrapperTransform(),
-      std::move(inner_transform_state));
+      std::move(inner_transform_state)));
 
   context_.current.transform = properties_->UnboundedInnerTransform();
 
@@ -2023,10 +2032,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
   wrapper_effect_state.output_clip = &ClipPaintPropertyNode::Root();
   wrapper_effect_state.direct_compositing_reasons =
       CompositingReason::kUnboundedElement;
-  wrapper_effect_state.compositor_element_id =
-      GetCompositorElementId(CompositorElementIdNamespace::kPrimaryEffect);
-  properties_->UpdateUnboundedWrapperEffect(EffectPaintPropertyNode::Root(),
-                                            std::move(wrapper_effect_state));
+  wrapper_effect_state.compositor_element_id = GetCompositorElementId(
+      CompositorElementIdNamespace::kUnboundedWrapperEffect);
+  OnUpdateEffect(properties_->UpdateUnboundedWrapperEffect(
+      EffectPaintPropertyNode::Root(), std::move(wrapper_effect_state)));
   context_.current_effect = properties_->UnboundedWrapperEffect();
 
   // Clear the kUnboundedElement bit from the direct compositing reasons for the
@@ -2034,9 +2043,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateUnboundedWrapperNodes(
   full_context_.direct_compositing_reasons &=
       ~CompositingReason::kUnboundedElement;
 
-  context_.current.paint_offset = PhysicalOffset();
+  ResetPaintOffset();
   context_.current.directly_composited_container_paint_offset_subpixel_delta =
       PhysicalOffset();
+  fragment_data_.SetPaintOffset(context_.current.paint_offset);
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
@@ -4306,6 +4316,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
        NeedsScale(object_, context_.direct_compositing_reasons) ||
        NeedsOffset(object_, context_.direct_compositing_reasons) ||
        NeedsTransform(object_, context_.direct_compositing_reasons) ||
+       NeedsUnboundedWrapperNodes(object_) ||
        NeedsEffectIgnoringClipPathAnd2DScale(
            object_, context_.direct_compositing_reasons) ||
        NeedsClipPathClipOrMask(object_) ||

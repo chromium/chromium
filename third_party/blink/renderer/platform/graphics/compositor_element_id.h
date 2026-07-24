@@ -41,6 +41,7 @@ enum class CompositorElementIdNamespace {
   kViewTransitionScopeRoot,
   kViewTransitionElement,
   kElementCapture,
+  kUnboundedWrapperEffect,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,

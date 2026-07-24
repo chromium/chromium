@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  #target-subpixel {
+    position: absolute;
+    top: 500px;
+    left: 0.25px;
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #plus-btn {
+    anchor-name: --plus-btn;
+  }
+  #unbounded-wrapper {
+    position-anchor: --plus-btn;
+    top: anchor(bottom);
+    left: anchor(center);
+  }
+  #btn-1 {
+    anchor-name: --item-1;
+  }
+  #sub-1 {
+    position-anchor: --item-1;
+    top: anchor(top);
+    left: anchor(right);
+  }
+  #target-opacity {
+    width: 100px;
+    height: 100px;
+    will-change: opacity;
+  }
+</style>
+
+<div id="target-subpixel" unbounded></div>
+
+<button id="plus-btn">+</button>
+<div id="unbounded-wrapper" unbounded popover="auto">
+  <button id="btn-1" popovertarget="sub-1">Item 1</button>
+  <div id="sub-1" popover="auto">Submenu</div>
+</div>
+
+<button id="btn-opacity">+</button>
+<div id="target-opacity" unbounded></div>
+
+<script>
+promise_test(async () => {
+  const target = document.getElementById('target-subpixel');
+  await test_driver.bless("show unbounded");
+  await target.showUnboundedElement();
+  // Pass if we get here.
+}, 'Unbounded element with subpixel paint offset does not crash.');
+
+promise_test(async () => {
+  const plusBtn = document.getElementById('plus-btn');
+  const unboundedWrapper = document.getElementById('unbounded-wrapper');
+
+  plusBtn.addEventListener('click', () => {
+    unboundedWrapper.showPopover();
+    unboundedWrapper.showUnboundedElement();
+  });
+
+  await test_driver.click(plusBtn);
+
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+
+  const btn1 = document.getElementById('btn-1');
+  await test_driver.click(btn1);
+
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  // Pass if we get here.
+}, 'Nested popover menu inside active unbounded element does not crash.');
+
+promise_test(async () => {
+  const btn = document.getElementById('btn-opacity');
+  const target = document.getElementById('target-opacity');
+
+  btn.addEventListener('click', () => {
+    target.showUnboundedElement();
+  });
+
+  await test_driver.click(btn);
+
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  // Pass if we get here.
+}, 'Active unbounded element with opacity effect does not crash.');
+</script>
