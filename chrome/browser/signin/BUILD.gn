@@ -509,6 +509,33 @@ if (enable_bound_session_credentials) {
   }
 }
 
+source_set("identity_test_support") {
+  testonly = true
+
+  sources = [
+    "identity_test_environment_profile_adaptor.cc",
+    "identity_test_environment_profile_adaptor.h",
+    "test_signin_client_builder.cc",
+    "test_signin_client_builder.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/test/base:testing_profile",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+  ]
+
+  deps = [
+    ":signin",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser/metrics",
+    "//chrome/browser/profiles:profile",
+    "//components/signin/public/base:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

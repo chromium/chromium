@@ -1675,6 +1675,7 @@ static_library("test_support") {
     "//chrome/browser/notifications:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading:test_support",
+    "//chrome/browser/signin:identity_test_support",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
