@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_attribute_instance_map.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_error.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_server.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -32,7 +33,8 @@ const char kInvalidStateErrorMessage[] =
 
 BluetoothDevice::BluetoothDevice(ExecutionContext* context,
                                  mojom::blink::WebBluetoothDevicePtr device,
-                                 Bluetooth* bluetooth)
+                                 Bluetooth* bluetooth,
+                                 const DOMWrapperWorld* world)
     : ExecutionContextClient(context),
       ActiveScriptWrappable<BluetoothDevice>({}),
       attribute_instance_map_(
@@ -40,6 +42,7 @@ BluetoothDevice::BluetoothDevice(ExecutionContext* context,
       device_(std::move(device)),
       gatt_(MakeGarbageCollected<BluetoothRemoteGATTServer>(context, this)),
       bluetooth_(bluetooth),
+      world_(world),
       client_receiver_(this, context) {}
 
 BluetoothRemoteGATTService* BluetoothDevice::GetOrCreateRemoteGATTService(
@@ -99,6 +102,7 @@ void BluetoothDevice::Trace(Visitor* visitor) const {
   visitor->Trace(attribute_instance_map_);
   visitor->Trace(gatt_);
   visitor->Trace(bluetooth_);
+  visitor->Trace(world_);
   visitor->Trace(watch_advertisements_resolver_);
   visitor->Trace(client_receiver_);
   visitor->Trace(abort_handle_map_);
@@ -227,7 +231,7 @@ void BluetoothDevice::AdvertisingEvent(
     mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event) {
   auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
       event_type_names::kAdvertisementreceived, this,
-      std::move(advertising_event));
+      std::move(advertising_event), world_.Get());
   DispatchEvent(*event);
 }
 

@@ -14,9 +14,11 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
@@ -41,9 +43,11 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_service_data_map.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -343,11 +347,16 @@ ScriptPromise<IDLBoolean> Bluetooth::getAvailability(
 void Bluetooth::GetDevicesCallback(
     ScriptPromiseResolver<IDLSequence<BluetoothDevice>>* resolver,
     Vector<mojom::blink::WebBluetoothDevicePtr> devices) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
 
   HeapVector<Member<BluetoothDevice>> bluetooth_devices;
   for (auto& device : devices) {
-    BluetoothDevice* bluetooth_device = GetBluetoothDeviceRepresentingDevice(
-        std::move(device), resolver->GetExecutionContext());
+    BluetoothDevice* bluetooth_device = GetOrCreateBluetoothDevice(
+        script_state, device, resolver->GetExecutionContext());
     bluetooth_devices.push_back(*bluetooth_device);
   }
   resolver->Resolve(bluetooth_devices);
@@ -357,14 +366,15 @@ void Bluetooth::RequestDeviceCallback(
     ScriptPromiseResolver<BluetoothDevice>* resolver,
     mojom::blink::WebBluetoothResult result,
     mojom::blink::WebBluetoothDevicePtr device) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed()) {
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
     return;
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    BluetoothDevice* bluetooth_device = GetBluetoothDeviceRepresentingDevice(
-        std::move(device), resolver->GetExecutionContext());
+    BluetoothDevice* bluetooth_device = GetOrCreateBluetoothDevice(
+        script_state, device, resolver->GetExecutionContext());
     resolver->Resolve(bluetooth_device);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -563,6 +573,9 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
   mojo::ReceiverId id =
       client_receivers_.Add(client.InitWithNewEndpointAndPassReceiver(),
                             window->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  if (RuntimeEnabledFeatures::WebBluetoothWorldIsolatedCacheEnabled()) {
+    client_receiver_world_map_.insert(id, &script_state->World());
+  }
 
   auto scan_options_copy = scan_options->Clone();
   service_->RequestScanningStart(
@@ -575,20 +588,57 @@ ScriptPromise<BluetoothLEScan> Bluetooth::requestLEScan(
 
 void Bluetooth::AdvertisingEvent(
     mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event) {
-  auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
-      event_type_names::kAdvertisementreceived,
-      GetBluetoothDeviceRepresentingDevice(std::move(advertising_event->device),
-                                           GetExecutionContext()),
-      std::move(advertising_event));
-  DispatchEvent(*event);
+  if (RuntimeEnabledFeatures::WebBluetoothWorldIsolatedCacheEnabled()) {
+    ExecutionContext* context = GetExecutionContext();
+    if (!context) {
+      return;
+    }
+
+    // The ternary operator is necessary here instead of .value_or(...) to
+    // avoid eager evaluation of client_receivers_.current_receiver().
+    // Calling current_receiver() outside of a valid Mojo message dispatch
+    // context (as happens in unit tests) triggers a DCHECK crash.
+    mojo::ReceiverId current_id =
+        fake_current_receiver_for_testing_.has_value()
+            ? fake_current_receiver_for_testing_.value()
+            : client_receivers_.current_receiver();
+    auto it = client_receiver_world_map_.find(current_id);
+    if (it == client_receiver_world_map_.end()) {
+      return;
+    }
+    DOMWrapperWorld* target_world = it->value.Get();
+    if (!target_world) {
+      return;
+    }
+
+    BluetoothDevice* device = GetOrCreateBluetoothDevice(
+        *target_world, advertising_event->device, context);
+    auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
+        event_type_names::kAdvertisementreceived, device,
+        std::move(advertising_event), target_world);
+    DispatchEvent(*event);
+  } else {
+    BluetoothDevice* device = GetOrCreateBluetoothDevice(
+        advertising_event->device, GetExecutionContext());
+    auto* event = MakeGarbageCollected<BluetoothAdvertisingEvent>(
+        event_type_names::kAdvertisementreceived, device,
+        std::move(advertising_event), /*world=*/nullptr);
+    DispatchEvent(*event);
+  }
 }
 
 void Bluetooth::PageVisibilityChanged() {
   client_receivers_.Clear();
+  if (RuntimeEnabledFeatures::WebBluetoothWorldIsolatedCacheEnabled()) {
+    client_receiver_world_map_.clear();
+  }
 }
 
 void Bluetooth::CancelScan(mojo::ReceiverId id) {
   client_receivers_.Remove(id);
+  if (RuntimeEnabledFeatures::WebBluetoothWorldIsolatedCacheEnabled()) {
+    client_receiver_world_map_.erase(id);
+  }
 }
 
 bool Bluetooth::IsScanActive(mojo::ReceiverId id) const {
@@ -604,8 +654,10 @@ ExecutionContext* Bluetooth::GetExecutionContext() const {
 }
 
 void Bluetooth::Trace(Visitor* visitor) const {
+  visitor->Trace(device_caches_);
   visitor->Trace(device_instance_map_);
   visitor->Trace(client_receivers_);
+  visitor->Trace(client_receiver_world_map_);
   visitor->Trace(service_);
   EventTarget::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
@@ -635,8 +687,51 @@ Bluetooth::Bluetooth(Navigator& navigator)
 
 Bluetooth::~Bluetooth() = default;
 
-BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
-    mojom::blink::WebBluetoothDevicePtr device_ptr,
+void Bluetooth::BluetoothDeviceCache::Trace(Visitor* visitor) const {
+  visitor->Trace(device_cache_);
+}
+
+HeapHashMap<String, WeakMember<BluetoothDevice>>&
+Bluetooth::GetOrCreateWorldDeviceCache(DOMWrapperWorld& world) {
+  auto it = device_caches_.find(&world);
+  if (it != device_caches_.end()) {
+    return it->value->DeviceCache();
+  }
+  auto* cache = MakeGarbageCollected<BluetoothDeviceCache>();
+  device_caches_.insert(&world, cache);
+  return cache->DeviceCache();
+}
+
+BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
+    DOMWrapperWorld& world,
+    const mojom::blink::WebBluetoothDevicePtr& device_ptr,
+    ExecutionContext* context) {
+  auto& device_cache = GetOrCreateWorldDeviceCache(world);
+  auto it = device_cache.find(device_ptr->id.DeviceIdInBase64().c_str());
+  if (it != device_cache.end()) {
+    return it->value.Get();
+  }
+
+  BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(
+      context, device_ptr.Clone(), this, &world);
+  device_cache.insert(device->GetDevice()->id.DeviceIdInBase64().c_str(),
+                      device);
+  return device;
+}
+
+BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
+    ScriptState* script_state,
+    const mojom::blink::WebBluetoothDevicePtr& device_ptr,
+    ExecutionContext* context) {
+  if (RuntimeEnabledFeatures::WebBluetoothWorldIsolatedCacheEnabled()) {
+    return GetOrCreateBluetoothDevice(script_state->World(), device_ptr,
+                                      context);
+  }
+  return GetOrCreateBluetoothDevice(device_ptr, context);
+}
+
+BluetoothDevice* Bluetooth::GetOrCreateBluetoothDevice(
+    const mojom::blink::WebBluetoothDevicePtr& device_ptr,
     ExecutionContext* context) {
   // TODO(crbug.com/1275634): convert device_instance_map_ to use
   // WebBluetoothDeviceId as key
@@ -646,11 +741,10 @@ BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
     return it->value.Get();
   }
 
-  BluetoothDevice* device = MakeGarbageCollected<BluetoothDevice>(
-      context, std::move(device_ptr), this);
-  auto result = device_instance_map_.insert(
+  BluetoothDevice* device =
+      MakeGarbageCollected<BluetoothDevice>(context, device_ptr.Clone(), this);
+  device_instance_map_.insert(
       device->GetDevice()->id.DeviceIdInBase64().c_str(), device);
-  DCHECK(result.is_new_entry);
   return device;
 }
 

@@ -7106,6 +7106,13 @@
       base_feature: "none",
     },
     {
+      // Restricts the sharing of BluetoothDevice instances across different V8
+      // worlds (e.g., main world and isolated worlds) to prevent cross-world
+      // leaks.
+      name: "WebBluetoothWorldIsolatedCache",
+      status: "stable",
+    },
+    {
       name: "WebCodecsVideoEncoderBuffers",
       status: "experimental",
     },

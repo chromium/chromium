@@ -9,24 +9,28 @@
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
 class BluetoothDevice;
 class BluetoothManufacturerDataMap;
 class BluetoothServiceDataMap;
+class DOMWrapperWorld;
 
-class BluetoothAdvertisingEvent final : public Event {
+class MODULES_EXPORT BluetoothAdvertisingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   BluetoothAdvertisingEvent(
       const AtomicString& event_type,
       BluetoothDevice* device,
-      mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event);
+      mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event,
+      const DOMWrapperWorld* world);
 
   ~BluetoothAdvertisingEvent() override;
 
+  bool CanBeDispatchedInWorld(const DOMWrapperWorld&) const override;
   void Trace(Visitor*) const override;
 
   const AtomicString& InterfaceName() const override;
@@ -49,6 +53,7 @@ class BluetoothAdvertisingEvent final : public Event {
   std::optional<int8_t> rssi_;
   const Member<BluetoothManufacturerDataMap> manufacturer_data_map_;
   const Member<BluetoothServiceDataMap> service_data_map_;
+  Member<const DOMWrapperWorld> world_;
 };
 
 }  // namespace blink

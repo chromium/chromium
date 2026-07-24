@@ -71,6 +71,13 @@ class HeapMojoAssociatedReceiverSet {
 
   bool empty() const { return wrapper_->associated_receiver_set().empty(); }
 
+  // This should only be called when it has a valid dispatch context (i.e.
+  // within the execution stack of an incoming Mojo message handler), otherwise
+  // it will DCHECK in debug builds.
+  mojo::ReceiverId current_receiver() const {
+    return wrapper_->associated_receiver_set().current_receiver();
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(wrapper_); }
 
  private:

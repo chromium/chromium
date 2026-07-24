@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_server.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,10 +28,11 @@ class BluetoothRemoteGATTCharacteristic;
 class BluetoothRemoteGATTDescriptor;
 class BluetoothRemoteGATTServer;
 class BluetoothRemoteGATTService;
+class DOMWrapperWorld;
 class WatchAdvertisementsOptions;
 
 // BluetoothDevice represents a physical bluetooth device in the DOM. See IDL.
-class BluetoothDevice final
+class MODULES_EXPORT BluetoothDevice final
     : public EventTarget,
       public ExecutionContextClient,
       public ActiveScriptWrappable<BluetoothDevice>,
@@ -40,7 +42,8 @@ class BluetoothDevice final
  public:
   BluetoothDevice(ExecutionContext*,
                   mojom::blink::WebBluetoothDevicePtr,
-                  Bluetooth*);
+                  Bluetooth*,
+                  const DOMWrapperWorld* world = nullptr);
 
   BluetoothRemoteGATTService* GetOrCreateRemoteGATTService(
       mojom::blink::WebBluetoothRemoteGATTServicePtr,
@@ -122,6 +125,13 @@ class BluetoothDevice final
   mojom::blink::WebBluetoothDevicePtr device_;
   Member<BluetoothRemoteGATTServer> gatt_;
   Member<Bluetooth> bluetooth_;
+  // The V8 world in which this BluetoothDevice instance was created.
+  // Used to tag and safely route events (like `advertisementreceived`) to the
+  // correct world, especially during Mojo callbacks which lack V8 context.
+  // When `WebBluetoothWorldIsolatedCache` is disabled, this is `nullptr`,
+  // in which case `CanBeDispatchedInWorld` will always return true (legacy
+  // behavior).
+  Member<const DOMWrapperWorld> world_;
 
   Member<ScriptPromiseResolver<IDLUndefined>> watch_advertisements_resolver_;
 

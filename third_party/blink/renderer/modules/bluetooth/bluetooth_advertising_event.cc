@@ -8,13 +8,15 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_manufacturer_data_map.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_service_data_map.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 
 namespace blink {
 
 BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
     const AtomicString& event_type,
     BluetoothDevice* device,
-    mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event)
+    mojom::blink::WebBluetoothAdvertisingEventPtr advertising_event,
+    const DOMWrapperWorld* world)
     : Event(event_type, Bubbles::kYes, Cancelable::kYes),
       device_(std::move(device)),
       name_(advertising_event->name),
@@ -24,18 +26,25 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
       manufacturer_data_map_(MakeGarbageCollected<BluetoothManufacturerDataMap>(
           advertising_event->manufacturer_data)),
       service_data_map_(MakeGarbageCollected<BluetoothServiceDataMap>(
-          advertising_event->service_data)) {
+          advertising_event->service_data)),
+      world_(world) {
   for (const String& uuid : advertising_event->uuids) {
     uuids_.push_back(uuid);
   }
-}  // namespace blink
+}
 
 BluetoothAdvertisingEvent::~BluetoothAdvertisingEvent() {}
+
+bool BluetoothAdvertisingEvent::CanBeDispatchedInWorld(
+    const DOMWrapperWorld& world) const {
+  return !world_ || &world == world_.Get();
+}
 
 void BluetoothAdvertisingEvent::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(manufacturer_data_map_);
   visitor->Trace(service_data_map_);
+  visitor->Trace(world_);
   Event::Trace(visitor);
 }
 
