@@ -9431,7 +9431,7 @@
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{فهرست خواندن}=1{فهرست خواندن ({SELECTED_ITEMS})}one{فهرست خواندن ({SELECTED_ITEMS})}other{فهرست خواندن ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «⌘ + گزینه + پیکان روبه‌بالا» را فشار دهید</translation>
 <translation id="8030169304546394654">اتصال قطع شد</translation>
-<translation id="8030852056903932865">تأیید</translation>
+<translation id="8030852056903932865">تأیید کردن</translation>
 <translation id="8033827949643255796">انتخاب شد</translation>
 <translation id="8033958968890501070">پایان درنگ</translation>
 <translation id="8034697324150621782">جابه‌جا کردن با نمای بالا</translation>
