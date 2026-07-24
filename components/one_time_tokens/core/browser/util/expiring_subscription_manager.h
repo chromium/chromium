@@ -22,10 +22,11 @@ namespace internal {
 // This is an internal storage type for the subscription manager
 // (non-template-ized parts).
 struct ExpiringSubscriptionDataBase {
-  ExpiringSubscriptionDataBase() = default;
-  virtual ~ExpiringSubscriptionDataBase() = default;
+  ExpiringSubscriptionDataBase();
+  virtual ~ExpiringSubscriptionDataBase();
 
   base::Time expiration;
+  base::OnceClosure expiration_callback;
 };
 
 // This is an internal storage type for the subscription manager.
@@ -124,16 +125,20 @@ class ExpiringSubscriptionManager : public ExpiringSubscriptionManagerBase {
   // a WeakPtr binding). It is called every time `Notify()` is called while the
   // subscription did not not expire.
   //
+  // If provided, the optional `expiration_callback` will be executed exactly
+  // once if the subscription reaches its `expiration_time`.
   // When the returned `ExpiringSubscription` is deallocated, the subscription
   // is canceled without further callbacks or notifications.
   [[nodiscard]] ExpiringSubscription Subscribe(
       base::Time expiration_time,
-      base::RepeatingCallback<Signature> callback) {
+      base::RepeatingCallback<Signature> callback,
+      base::OnceClosure expiration_callback) {
     ExpiringSubscriptionHandle handle(base::Uuid::GenerateRandomV4());
     auto subscription_data =
         std::make_unique<internal::ExpiringSubscriptionData<Signature>>();
     subscription_data->expiration = expiration_time;
     subscription_data->notification_callback = std::move(callback);
+    subscription_data->expiration_callback = std::move(expiration_callback);
     subscriptions_[handle] = std::move(subscription_data);
     UpdateNextExpirationTimer();
     return ExpiringSubscription(std::move(handle),

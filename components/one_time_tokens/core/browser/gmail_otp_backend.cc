@@ -40,8 +40,9 @@ GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
                                                     Callback callback) {
-  ExpiringSubscription subscription =
-      subscription_manager_.Subscribe(expiration, std::move(callback));
+  ExpiringSubscription subscription = subscription_manager_.Subscribe(
+      expiration, std::move(callback),
+      /*expiration_callback=*/base::DoNothing());
   if (!url_loader_factory_) {
     base::UmaHistogramBoolean("Autofill.OneTimeTokens.Backend.Gmail.Success",
                               false);

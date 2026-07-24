@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,7 +57,8 @@ class OneTimeTokenService : public KeyedService {
   [[nodiscard]] virtual ExpiringSubscription Subscribe(
       OneTimeTokenSource source,
       base::Time expiration,
-      Callback callback) = 0;
+      Callback callback,
+      base::OnceClosure expiration_callback) = 0;
 
   // Requests one time tokens from the underlying backend. `callback` is called
   // exactly once when the request is complete, with the fetched token if

@@ -86,7 +86,8 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
       OneTimeTokenSource::kOnDeviceSms,
       base::Time::Now() + kSubscriptionDuration,
       base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*expiration_callback=*/base::DoNothing());
 }
 
 void OtpManagerImpl::OnFieldTypesDetermined(

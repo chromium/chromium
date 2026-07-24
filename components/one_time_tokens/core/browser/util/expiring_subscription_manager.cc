@@ -6,6 +6,11 @@
 
 namespace one_time_tokens {
 
+namespace internal {
+ExpiringSubscriptionDataBase::ExpiringSubscriptionDataBase() = default;
+ExpiringSubscriptionDataBase::~ExpiringSubscriptionDataBase() = default;
+}  // namespace internal
+
 ExpiringSubscriptionManagerBase::ExpiringSubscriptionManagerBase() = default;
 ExpiringSubscriptionManagerBase::~ExpiringSubscriptionManagerBase() = default;
 
@@ -48,10 +53,15 @@ void ExpiringSubscriptionManagerBase::ProcessExpirations() {
 
   // Identify all handles of expired subscriptions.
   std::vector<ExpiringSubscriptionHandle> expired_handles;
+  std::vector<base::OnceClosure> expiration_callbacks;
   expired_handles.reserve(subscriptions_.size());
   for (auto& [handle, subscription] : subscriptions_) {
     if (subscription->expiration <= now) {
       expired_handles.push_back(handle);
+      if (subscription->expiration_callback) {
+        expiration_callbacks.push_back(
+            std::move(subscription->expiration_callback));
+      }
     }
   }
 
@@ -60,7 +70,14 @@ void ExpiringSubscriptionManagerBase::ProcessExpirations() {
     subscriptions_.erase(handle);
   }
 
+  // Update internal state before invoking external callbacks. An invoked
+  // callback could potentially destroy the `ExpiringSubscriptionManager`
+  // instance, leading to a Use-After-Free if we accessed `this` afterwards.
   UpdateNextExpirationTimer();
+
+  for (auto& callback : expiration_callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 void ExpiringSubscriptionManagerBase::UpdateNextExpirationTimer() {

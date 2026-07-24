@@ -74,11 +74,12 @@ class GlicActorAttemptOtpFillingBrowserTest
 
     // Allow default calls to Subscribe (e.g. from Autofill OtpManager on
     // Android).
-    EXPECT_CALL(GetMockOtpService(), Subscribe(_, _, _))
+    EXPECT_CALL(GetMockOtpService(), Subscribe(_, _, _, _))
         .WillRepeatedly(
             [](one_time_tokens::OneTimeTokenSource source,
                base::Time expiration,
-               one_time_tokens::OneTimeTokenService::Callback callback) {
+               one_time_tokens::OneTimeTokenService::Callback callback,
+               base::OnceClosure expiration_callback) {
               return one_time_tokens::ExpiringSubscription();
             });
     // Allow default calls to GetRecentOneTimeTokens.
@@ -266,10 +267,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
 
   // Mock OTP Service to succeed.
   EXPECT_CALL(GetMockOtpService(),
-              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
+              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
       .WillOnce([](one_time_tokens::OneTimeTokenSource source,
                    base::Time expiration,
-                   one_time_tokens::OneTimeTokenService::Callback callback) {
+                   one_time_tokens::OneTimeTokenService::Callback callback,
+                   base::OnceClosure expiration_callback) {
         std::move(callback).Run(
             one_time_tokens::OneTimeTokenSource::kGmail,
             base::expected<one_time_tokens::OneTimeToken,
@@ -306,10 +308,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
                        testOptInAcceptedButRetrievalFails) {
   // Mock OTP Service to fail.
   EXPECT_CALL(GetMockOtpService(),
-              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
+              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
       .WillOnce([](one_time_tokens::OneTimeTokenSource source,
                    base::Time expiration,
-                   one_time_tokens::OneTimeTokenService::Callback callback) {
+                   one_time_tokens::OneTimeTokenService::Callback callback,
+                   base::OnceClosure expiration_callback) {
         std::move(callback).Run(
             one_time_tokens::OneTimeTokenSource::kGmail,
             base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::

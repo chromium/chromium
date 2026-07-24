@@ -29,7 +29,8 @@ TEST_F(ExpiringSubscriptionTest, Notification) {
   base::Time now = base::Time::Now();
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback.GetRepeatingCallback());
+      now + base::Minutes(5), callback.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
   subscription_manager.Notify(123);
@@ -43,7 +44,8 @@ TEST_F(ExpiringSubscriptionTest, Expiration) {
   base::Time now = base::Time::Now();
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback.GetRepeatingCallback());
+      now + base::Minutes(5), callback.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -55,6 +57,31 @@ TEST_F(ExpiringSubscriptionTest, Expiration) {
   EXPECT_FALSE(callback.IsReady());
 }
 
+// Verifies that a subscription triggers its expiration callback when it
+// expires.
+TEST_F(ExpiringSubscriptionTest, ExpirationCallback) {
+  base::test::TestFuture<int> notification_callback;
+  base::test::TestFuture<void> expiration_callback;
+
+  base::Time now = base::Time::Now();
+  ExpiringSubscriptionManagerType subscription_manager;
+  ExpiringSubscription subscription = subscription_manager.Subscribe(
+      now + base::Minutes(5), notification_callback.GetRepeatingCallback(),
+      expiration_callback.GetCallback());
+  EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  EXPECT_FALSE(subscription_manager.Exists(subscription.handle()));
+
+  // Ensure expiration callback was invoked.
+  EXPECT_TRUE(expiration_callback.IsReady());
+
+  // No more notifications after expiration.
+  subscription_manager.Notify(456);
+  EXPECT_FALSE(notification_callback.IsReady());
+}
+
 // Verifies that a subscription can be canceled.
 TEST_F(ExpiringSubscriptionTest, Cancel) {
   base::test::TestFuture<int> callback;
@@ -62,7 +89,8 @@ TEST_F(ExpiringSubscriptionTest, Cancel) {
   base::Time now = base::Time::Now();
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback.GetRepeatingCallback());
+      now + base::Minutes(5), callback.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
   subscription_manager.Cancel(subscription.handle());
@@ -80,7 +108,8 @@ TEST_F(ExpiringSubscriptionTest, SubscriptionCancel) {
   base::Time now = base::Time::Now();
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback.GetRepeatingCallback());
+      now + base::Minutes(5), callback.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription.IsAlive());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
@@ -103,9 +132,11 @@ TEST_F(ExpiringSubscriptionTest, MultipleSubscribers) {
 
   // Note: the two subscriptions have 5 and 10 minutes expirations.
   ExpiringSubscription subscription1 = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback1.GetRepeatingCallback());
+      now + base::Minutes(5), callback1.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   ExpiringSubscription subscription2 = subscription_manager.Subscribe(
-      now + base::Minutes(10), callback2.GetRepeatingCallback());
+      now + base::Minutes(10), callback2.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
 
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 2u);
 
@@ -135,7 +166,8 @@ TEST_F(ExpiringSubscriptionTest, NotifyCallbackCancelsSelf) {
   });
 
   subscription = subscription_manager.Subscribe(
-      base::Time::Now() + base::Minutes(5), std::move(callback));
+      base::Time::Now() + base::Minutes(5), std::move(callback),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
 
   subscription_manager.Notify(123);
@@ -169,9 +201,11 @@ TEST_F(ExpiringSubscriptionTest, NotifyCallbackCancelsOther) {
   });
 
   subscription1 = subscription_manager.Subscribe(
-      base::Time::Now() + base::Minutes(5), std::move(callback1));
+      base::Time::Now() + base::Minutes(5), std::move(callback1),
+      /*expiration_callback=*/base::DoNothing());
   subscription2 = subscription_manager.Subscribe(
-      base::Time::Now() + base::Minutes(5), std::move(callback2));
+      base::Time::Now() + base::Minutes(5), std::move(callback2),
+      /*expiration_callback=*/base::DoNothing());
 
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 2u);
 
@@ -207,11 +241,13 @@ TEST_F(ExpiringSubscriptionTest, NotifyCallbackAddsSubscription) {
   auto callback1 = base::BindLambdaForTesting([&](int) {
     callback1_count++;
     new_subscriptions.emplace_back(subscription_manager.Subscribe(
-        base::Time::Now() + base::Minutes(5), new_callback));
+        base::Time::Now() + base::Minutes(5), new_callback,
+        /*expiration_callback=*/base::DoNothing()));
   });
 
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      base::Time::Now() + base::Minutes(5), std::move(callback1));
+      base::Time::Now() + base::Minutes(5), std::move(callback1),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
 
   subscription_manager.Notify(123);
@@ -236,7 +272,8 @@ TEST_F(ExpiringSubscriptionTest, ExtendExpirationTime) {
   base::Time now = base::Time::Now();
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(5), callback.GetRepeatingCallback());
+      now + base::Minutes(5), callback.GetRepeatingCallback(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
   subscription_manager.SetExpirationTime(subscription.handle(),
@@ -259,8 +296,9 @@ TEST_F(ExpiringSubscriptionTest, ShortenExpirationTime) {
   ExpiringSubscriptionManagerType subscription_manager;
 
   base::Time now = base::Time::Now();
-  ExpiringSubscription subscription1 = subscription_manager.Subscribe(
-      now + base::Minutes(10), base::DoNothing());
+  ExpiringSubscription subscription1 =
+      subscription_manager.Subscribe(now + base::Minutes(10), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
 
   // Shorten expiration.
   subscription_manager.SetExpirationTime(subscription1.handle(),
@@ -277,8 +315,9 @@ TEST_F(ExpiringSubscriptionTest, SubscriptionSetExpirationTime) {
   ExpiringSubscriptionManagerType subscription_manager;
 
   base::Time now = base::Time::Now();
-  ExpiringSubscription subscription = subscription_manager.Subscribe(
-      now + base::Minutes(10), base::DoNothing());
+  ExpiringSubscription subscription =
+      subscription_manager.Subscribe(now + base::Minutes(10), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription.IsAlive());
 
   // Shorten expiration.
@@ -305,18 +344,21 @@ TEST_F(ExpiringSubscriptionTest, Exists) {
 
   // Test with an active subscription.
   ExpiringSubscription subscription1 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription1.handle()));
 
   // Test with a canceled subscription.
   ExpiringSubscription subscription2 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   subscription_manager.Cancel(subscription2.handle());
   EXPECT_FALSE(subscription_manager.Exists(subscription2.handle()));
 
   // Test with an expired subscription.
   ExpiringSubscription subscription3 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_FALSE(subscription_manager.Exists(subscription3.handle()));
 
@@ -338,7 +380,8 @@ TEST_F(ExpiringSubscriptionTest, NotifyNoSubscribers) {
 TEST_F(ExpiringSubscriptionTest, ImmediateExpiration) {
   ExpiringSubscriptionManagerType subscription_manager;
   ExpiringSubscription subscription = subscription_manager.Subscribe(
-      base::Time::Now() - base::Minutes(1), base::DoNothing());
+      base::Time::Now() - base::Minutes(1), base::DoNothing(),
+      /*expiration_callback=*/base::DoNothing());
   EXPECT_TRUE(subscription_manager.Exists(subscription.handle()));
 
   task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -352,7 +395,8 @@ TEST_F(ExpiringSubscriptionTest, ManagerDestruction) {
   auto manager = std::make_unique<ExpiringSubscriptionManagerType>();
 
   ExpiringSubscription subscription = manager->Subscribe(
-      base::Time::Now() + base::Minutes(5), base::DoNothing());
+      base::Time::Now() + base::Minutes(5), base::DoNothing(),
+      /*expiration_callback=*/base::DoNothing());
 
   // Destroy the manager before the subscription expires.
   manager.reset();
@@ -373,10 +417,12 @@ TEST_F(ExpiringSubscriptionTest, NotifyCallbackModifiesExpiration) {
                                            now + base::Minutes(10));
   });
 
-  subscription1 = subscription_manager.Subscribe(now + base::Minutes(5),
-                                                 std::move(callback1));
+  subscription1 = subscription_manager.Subscribe(
+      now + base::Minutes(5), std::move(callback1),
+      /*expiration_callback=*/base::DoNothing());
   subscription2 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
 
   subscription_manager.Notify(123);
 
@@ -391,9 +437,11 @@ TEST_F(ExpiringSubscriptionTest, MultipleSubscriptionsExpireAtSameTime) {
   base::Time now = base::Time::Now();
 
   ExpiringSubscription subscription1 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   ExpiringSubscription subscription2 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
 
   task_environment_.FastForwardBy(base::Minutes(5));
 
@@ -417,7 +465,8 @@ TEST_F(ExpiringSubscriptionTest, ExpiringSubscriptionMove) {
   ExpiringSubscriptionManagerType subscription_manager;
 
   ExpiringSubscription subscription1 = subscription_manager.Subscribe(
-      base::Time::Now() + base::Minutes(5), base::DoNothing());
+      base::Time::Now() + base::Minutes(5), base::DoNothing(),
+      /*expiration_callback=*/base::DoNothing());
   ExpiringSubscriptionHandle handle = subscription1.handle();
   EXPECT_TRUE(subscription1.IsAlive());
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 1u);
@@ -455,11 +504,13 @@ TEST_F(ExpiringSubscriptionTest, ExpiringSubscriptionMoveAssignmentToActive) {
 
   base::Time now = base::Time::Now();
   ExpiringSubscription subscription1 =
-      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing());
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   ExpiringSubscriptionHandle handle1 = subscription1.handle();
 
-  ExpiringSubscription subscription2 = subscription_manager.Subscribe(
-      now + base::Minutes(10), base::DoNothing());
+  ExpiringSubscription subscription2 =
+      subscription_manager.Subscribe(now + base::Minutes(10), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
   ExpiringSubscriptionHandle handle2 = subscription2.handle();
 
   EXPECT_EQ(subscription_manager.GetNumberSubscribers(), 2u);

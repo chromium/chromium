@@ -49,17 +49,18 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
 ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     OneTimeTokenSource source,
     base::Time expiration,
-    Callback callback) {
+    Callback callback,
+    base::OnceClosure expiration_callback) {
   switch (source) {
     case OneTimeTokenSource::kOnDeviceSms: {
-      ExpiringSubscription subscription =
-          sms_subscription_manager_.Subscribe(expiration, std::move(callback));
+      ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
+          expiration, std::move(callback), std::move(expiration_callback));
       RetrieveSmsOtpIfNeeded();
       return subscription;
     }
     case OneTimeTokenSource::kGmail: {
       ExpiringSubscription subscription = gmail_subscription_manager_.Subscribe(
-          expiration, std::move(callback));
+          expiration, std::move(callback), std::move(expiration_callback));
       RetrieveGmailOtpIfNeeded();
       return subscription;
     }

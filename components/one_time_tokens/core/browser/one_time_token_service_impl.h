@@ -42,9 +42,11 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
 
   // OneTimeTokenService:
   void GetRecentOneTimeTokens(Callback callback) override;
-  [[nodiscard]] ExpiringSubscription Subscribe(OneTimeTokenSource source,
-                                               base::Time expiration,
-                                               Callback callback) override;
+  [[nodiscard]] ExpiringSubscription Subscribe(
+      OneTimeTokenSource source,
+      base::Time expiration,
+      Callback callback,
+      base::OnceClosure expiration_callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
   void RequestOneTimeToken(
       base::TimeDelta timeout,

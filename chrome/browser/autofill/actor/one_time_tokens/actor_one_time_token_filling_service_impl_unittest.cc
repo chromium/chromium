@@ -86,9 +86,11 @@ class FakeOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
   one_time_tokens::ExpiringSubscription Subscribe(
       one_time_tokens::OneTimeTokenSource source,
       base::Time expiration,
-      one_time_tokens::OneTimeTokenService::Callback callback) override {
+      one_time_tokens::OneTimeTokenService::Callback callback,
+      base::OnceClosure expiration_callback) override {
     subscribe_call_count_++;
-    return subscription_manager_.Subscribe(expiration, std::move(callback));
+    return subscription_manager_.Subscribe(expiration, std::move(callback),
+                                           std::move(expiration_callback));
   }
 
   void RequestOneTimeToken(

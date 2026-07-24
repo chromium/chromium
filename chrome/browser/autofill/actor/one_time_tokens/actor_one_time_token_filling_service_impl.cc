@@ -280,7 +280,8 @@ void ActorOneTimeTokenFillingServiceImpl::SubscribeForOneTimeToken() {
       base::Time::Now() + base::Minutes(1),
       base::BindRepeating(
           &ActorOneTimeTokenFillingServiceImpl::OnOneTimeTokenReceived,
-          retrieve_otp_weak_ptr_factory_.GetWeakPtr()));
+          retrieve_otp_weak_ptr_factory_.GetWeakPtr()),
+      /*expiration_callback=*/base::DoNothing());
 }
 
 void ActorOneTimeTokenFillingServiceImpl::CheckSenderDomainMatchesFrameToFill(

@@ -47,6 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::TestFuture;
+using ::testing::_;
 
 namespace actor {
 
@@ -94,7 +95,8 @@ class MockKeyedOneTimeTokenService
               Subscribe,
               (one_time_tokens::OneTimeTokenSource,
                base::Time,
-               one_time_tokens::OneTimeTokenService::Callback),
+               one_time_tokens::OneTimeTokenService::Callback,
+               base::OnceClosure),
               (override));
 };
 
@@ -189,12 +191,12 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
 
   void SetExpectedOtp(std::optional<std::string> otp) {
     EXPECT_CALL(GetMockOtpService(),
-                Subscribe(one_time_tokens::OneTimeTokenSource::kGmail,
-                          testing::_, testing::_))
+                Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
         .WillOnce(
             [otp](one_time_tokens::OneTimeTokenSource source,
                   base::Time expiration,
-                  one_time_tokens::OneTimeTokenService::Callback callback) {
+                  one_time_tokens::OneTimeTokenService::Callback callback,
+                  base::OnceClosure expiration_callback) {
               if (otp) {
                 callback.Run(
                     one_time_tokens::OneTimeTokenSource::kGmail,
@@ -428,11 +430,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                                 /*should_use_strong_matching=*/true, {});
 
   EXPECT_CALL(GetMockOtpService(),
-              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, testing::_,
-                        testing::_))
+              Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
       .WillOnce([](one_time_tokens::OneTimeTokenSource source,
                    base::Time expiration,
-                   one_time_tokens::OneTimeTokenService::Callback callback) {
+                   one_time_tokens::OneTimeTokenService::Callback callback,
+                   base::OnceClosure expiration_callback) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
