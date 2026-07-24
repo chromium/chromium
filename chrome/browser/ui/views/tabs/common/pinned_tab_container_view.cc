@@ -135,18 +135,85 @@ PinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
     return std::nullopt;
   }
 
-  auto collapse_state = GetTabStripCollapseState();
-  if (collapse_state != tabs::VerticalTabStripCollapseState::kExpanded) {
-    if (auto index = GetLinkDropIndexForCollapsed(loc_in_container)) {
+  if (collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    if (auto index = GetLinkDropIndexForHorizontal(loc_in_container)) {
       return index;
     }
-  } else if (auto index = GetLinkDropIndexForExpanded(loc_in_container)) {
-    return index;
+  } else {
+    auto collapse_state = GetTabStripCollapseState();
+    if (collapse_state != tabs::VerticalTabStripCollapseState::kExpanded) {
+      if (auto index = GetLinkDropIndexForCollapsed(loc_in_container)) {
+        return index;
+      }
+    } else if (auto index = GetLinkDropIndexForExpanded(loc_in_container)) {
+      return index;
+    }
   }
 
   // Fallback to the end of the pinned container.
   return GetDragHandler().GetLinkDropIndexForNode(
       *collection_node_->children().back(), DragPositionHint::kAfter);
+}
+
+std::optional<BrowserRootView::DropIndex>
+PinnedTabContainerView::GetLinkDropIndexForHorizontal(
+    const gfx::Point& loc_in_container) {
+  const bool is_vertical =
+      collection_node_->orientation() == TabStripOrientation::kVertical;
+  const int padding = is_vertical ? kTabPadding : 0;
+  const int logical_x = GetMirroredXInView(loc_in_container.x());
+
+  for (auto& child_node : collection_node_->children()) {
+    auto* view = child_node->view();
+    CHECK(view);
+
+    // In vertical orientation, check if the current point is within the
+    // vertical bounds of the row this child belongs to.
+    if (is_vertical &&
+        loc_in_container.y() >= view->bounds().bottom() + padding / 2) {
+      continue;
+    }
+
+    // If the point is to the right of the child, then let the next child
+    // be the candidate.
+    // For vertical multi-row grids, the full padding amount is used here,
+    // rather than half as done above for row bottom bounds, so that this
+    // correctly accounts for the last tab in the row.
+    // The x-based calculation uses a margin to determine if the link should
+    // be inserted before/after, so the cutoff point between tabs in a row
+    // doesn't have to be exact.
+    if (logical_x >= view->bounds().right() + padding) {
+      continue;
+    }
+
+    gfx::Point loc_in_child =
+        views::View::ConvertPointToTarget(this, view, loc_in_container);
+
+    constexpr double kDragOverMargins = 0.2;
+    std::optional<DragPositionHint> hint;
+
+    const int logical_x_in_child = view->GetMirroredXInView(loc_in_child.x());
+
+    // Determine whether the drag is to the right, left, or over the tab/tab
+    // split.
+    if (logical_x_in_child < view->width() * kDragOverMargins) {
+      hint = DragPositionHint::kBefore;
+    } else if (logical_x_in_child > view->width() * (1 - kDragOverMargins)) {
+      hint = DragPositionHint::kAfter;
+    } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
+      // If landing in the middle of the split, let the split view decide
+      // which tab to replace.
+      auto* split_view = views::AsViewClass<SplitTabView>(view);
+      gfx::Point loc_in_split =
+          views::View::ConvertPointToTarget(this, split_view, loc_in_container);
+      return split_view->GetLinkDropIndex(loc_in_split);
+    } else {
+      hint = std::nullopt;
+    }
+    return GetDragHandler().GetLinkDropIndexForNode(*child_node, hint);
+  }
+
+  return std::nullopt;
 }
 
 std::optional<BrowserRootView::DropIndex>
@@ -190,55 +257,7 @@ PinnedTabContainerView::GetLinkDropIndexForCollapsed(
 std::optional<BrowserRootView::DropIndex>
 PinnedTabContainerView::GetLinkDropIndexForExpanded(
     const gfx::Point& loc_in_container) {
-  const int logical_x = GetMirroredXInView(loc_in_container.x());
-  for (auto& child_node : collection_node_->children()) {
-    auto* view = child_node->view();
-    CHECK(view);
-    // Check if the current point is within the vertical bounds of the row
-    // this child belongs to, including half the padding between rows.
-    if (loc_in_container.y() >= view->bounds().bottom() + kTabPadding / 2) {
-      continue;
-    }
-
-    // If the point is to the right of the child, then let the next child
-    // be the candidate.
-    // The full padding amount is used here, rather than half as done above,
-    // so that this correctly accounts for the last tab in the row.
-    // The x-based calculation uses a margin to determine if the link should
-    // be inserted before/after, so the cutoff point between tabs in a row
-    // doesn't have to be exact.
-    if (logical_x >= view->bounds().right() + kTabPadding) {
-      continue;
-    }
-
-    gfx::Point loc_in_child =
-        views::View::ConvertPointToTarget(this, view, loc_in_container);
-
-    constexpr double kDragOverMargins = 0.2;
-    std::optional<DragPositionHint> hint;
-
-    const int logical_x_in_child = view->GetMirroredXInView(loc_in_child.x());
-
-    // Determine whether the drag is to the right, left, or above the tab/tab
-    // split.
-    if (logical_x_in_child < view->width() * kDragOverMargins) {
-      hint = DragPositionHint::kBefore;
-    } else if (logical_x_in_child > view->width() * (1 - kDragOverMargins)) {
-      hint = DragPositionHint::kAfter;
-    } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
-      // If landing in the middle of the split, let the split view decide
-      // which tab to replace.
-      auto* split_view = views::AsViewClass<SplitTabView>(view);
-      gfx::Point loc_in_split =
-          views::View::ConvertPointToTarget(this, split_view, loc_in_container);
-      return split_view->GetLinkDropIndex(loc_in_split);
-    } else {
-      hint = std::nullopt;
-    }
-    return GetDragHandler().GetLinkDropIndexForNode(*child_node, hint);
-  }
-
-  return std::nullopt;
+  return GetLinkDropIndexForHorizontal(loc_in_container);
 }
 
 void PinnedTabContainerView::ResetCollectionNode() {
@@ -307,8 +326,11 @@ views::ProposedLayout PinnedTabContainerView::CalculateHorizontalLayout(
 
     bounds.set_x(drag_data ? drag_data->offset.x() : x);
 
+    if (!drag_data || !drag_data->should_float) {
+      x += bounds.width();
+    }
+
     layouts.child_layouts.emplace_back(child, true, bounds);
-    x += bounds.width();
   }
   layouts.host_size = gfx::Size(x, container_height);
   return layouts;

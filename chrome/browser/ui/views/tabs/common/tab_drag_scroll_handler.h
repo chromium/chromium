@@ -33,14 +33,14 @@ class TabDragScrollHandler {
 
  private:
   void StartOrContinueScrolling(views::ScrollView& scroll_view,
-                                float vertical_increments);
+                                float scroll_increment);
   void UpdateScrollOffset(views::ScrollView& scroll_view);
 
   // Timer used to update scroll offsets at a constant rate.
   base::RepeatingTimer scroll_timer_;
 
-  // The offset to apply on each scroll event. Negative values scroll upwards.
-  float vertical_scroll_increment_;
+  // The offset to apply on each scroll event.
+  float scroll_increment_ = 0.0f;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_DRAG_SCROLL_HANDLER_H_

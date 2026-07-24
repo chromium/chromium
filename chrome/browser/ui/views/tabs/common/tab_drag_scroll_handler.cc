@@ -8,6 +8,18 @@
 #include "base/time/time.h"
 #include "ui/views/controls/scroll_view.h"
 
+namespace {
+bool IsHorizontalScrollEnabled(const views::ScrollView& scroll_view) {
+  return scroll_view.GetHorizontalScrollBarMode() !=
+         views::ScrollView::ScrollBarMode::kDisabled;
+}
+
+bool IsVerticalScrollEnabled(const views::ScrollView& scroll_view) {
+  return scroll_view.GetVerticalScrollBarMode() !=
+         views::ScrollView::ScrollBarMode::kDisabled;
+}
+}  // namespace
+
 void TabDragScrollHandler::OnDraggedTabPositionUpdated(
     views::ScrollView& scroll_view,
     const gfx::Rect& dragged_view_bounds_in_scroll_view) {
@@ -19,17 +31,36 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
 
   const auto& visible_bounds = host_view->GetVisibleBounds();
 
-  const bool is_dragging_to_bottom =
-      visible_bounds.bottom() < host_view->height() &&
-      dragged_view_bounds_in_scroll_view.bottom() >= scroll_view.height();
+  if (IsHorizontalScrollEnabled(scroll_view)) {
+    const bool is_dragging_to_right =
+        visible_bounds.right() < host_view->width() &&
+        dragged_view_bounds_in_scroll_view.right() >= scroll_view.width();
 
-  const bool is_dragging_to_top =
-      visible_bounds.y() > 0 && dragged_view_bounds_in_scroll_view.y() <= 0;
+    const bool is_dragging_to_left =
+        visible_bounds.x() > 0 && dragged_view_bounds_in_scroll_view.x() <= 0;
 
-  if (is_dragging_to_bottom) {
-    StartOrContinueScrolling(scroll_view, kScrollIncrement);
-  } else if (is_dragging_to_top) {
-    StartOrContinueScrolling(scroll_view, -1.0 * kScrollIncrement);
+    if (is_dragging_to_right) {
+      StartOrContinueScrolling(scroll_view, kScrollIncrement);
+    } else if (is_dragging_to_left) {
+      StartOrContinueScrolling(scroll_view, -1.0f * kScrollIncrement);
+    } else {
+      StopScrolling(scroll_view);
+    }
+  } else if (IsVerticalScrollEnabled(scroll_view)) {
+    const bool is_dragging_to_bottom =
+        visible_bounds.bottom() < host_view->height() &&
+        dragged_view_bounds_in_scroll_view.bottom() >= scroll_view.height();
+
+    const bool is_dragging_to_top =
+        visible_bounds.y() > 0 && dragged_view_bounds_in_scroll_view.y() <= 0;
+
+    if (is_dragging_to_bottom) {
+      StartOrContinueScrolling(scroll_view, kScrollIncrement);
+    } else if (is_dragging_to_top) {
+      StartOrContinueScrolling(scroll_view, -1.0f * kScrollIncrement);
+    } else {
+      StopScrolling(scroll_view);
+    }
   } else {
     StopScrolling(scroll_view);
   }
@@ -37,14 +68,24 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
 
 void TabDragScrollHandler::StartOrContinueScrolling(
     views::ScrollView& scroll_view,
-    float vertical_increments) {
-  vertical_scroll_increment_ = vertical_increments;
-  if (vertical_scroll_increment_ > 0) {
-    scroll_view.SetOverflowGradientMask(
-        views::ScrollView::GradientDirection::kVerticalLeading);
-  } else if (vertical_scroll_increment_ < 0) {
-    scroll_view.SetOverflowGradientMask(
-        views::ScrollView::GradientDirection::kVerticalTrailing);
+    float scroll_increment) {
+  scroll_increment_ = scroll_increment;
+  if (IsHorizontalScrollEnabled(scroll_view)) {
+    if (scroll_increment_ > 0) {
+      scroll_view.SetOverflowGradientMask(
+          views::ScrollView::GradientDirection::kHorizontalTrailing);
+    } else if (scroll_increment_ < 0) {
+      scroll_view.SetOverflowGradientMask(
+          views::ScrollView::GradientDirection::kHorizontalLeading);
+    }
+  } else if (IsVerticalScrollEnabled(scroll_view)) {
+    if (scroll_increment_ > 0) {
+      scroll_view.SetOverflowGradientMask(
+          views::ScrollView::GradientDirection::kVerticalTrailing);
+    } else if (scroll_increment_ < 0) {
+      scroll_view.SetOverflowGradientMask(
+          views::ScrollView::GradientDirection::kVerticalLeading);
+    }
   }
 
   if (scroll_timer_.IsRunning()) {
@@ -60,10 +101,19 @@ void TabDragScrollHandler::StartOrContinueScrolling(
 
 void TabDragScrollHandler::StopScrolling(views::ScrollView& scroll_view) {
   scroll_timer_.Stop();
-  scroll_view.SetOverflowGradientMask(
-      views::ScrollView::GradientDirection::kVertical);
+  if (IsHorizontalScrollEnabled(scroll_view)) {
+    scroll_view.SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kHorizontal);
+  } else if (IsVerticalScrollEnabled(scroll_view)) {
+    scroll_view.SetOverflowGradientMask(
+        views::ScrollView::GradientDirection::kVertical);
+  }
 }
 
 void TabDragScrollHandler::UpdateScrollOffset(views::ScrollView& scroll_view) {
-  scroll_view.ScrollByOffset({0, vertical_scroll_increment_});
+  if (IsHorizontalScrollEnabled(scroll_view)) {
+    scroll_view.ScrollByOffset({scroll_increment_, 0});
+  } else if (IsVerticalScrollEnabled(scroll_view)) {
+    scroll_view.ScrollByOffset({0, scroll_increment_});
+  }
 }
