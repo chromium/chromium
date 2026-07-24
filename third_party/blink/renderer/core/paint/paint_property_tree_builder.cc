@@ -2102,8 +2102,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // invalid, so this also hides the element while its only mask image is
       // still loading.
       if (style.HasMask() && !style.BackdropFilter().IsEmpty() &&
-          RuntimeEnabledFeatures::
-              HandleInvalidMaskImageWithBackdropFilterEnabled() &&
           style.MaskLayers().AllImagesAreInvalid()) {
         state.opacity = 0.f;
       }
