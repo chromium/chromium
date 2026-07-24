@@ -1719,6 +1719,7 @@ TEST_P(WindowPerformanceTest, UserInteractionTraceEvents) {
   }
 
   auto analyzer = trace_analyzer::Stop();
+  ASSERT_TRUE(analyzer);
   analyzer->AssociateAsyncBeginEndEvents();
 
   trace_analyzer::TraceEventVector events;
