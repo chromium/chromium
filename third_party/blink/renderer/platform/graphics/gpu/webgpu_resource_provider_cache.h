@@ -23,13 +23,13 @@ class WebGpuSharedImageWrapper;
 class WebGPURecyclableResourceCache;
 class WebGraphicsContext3DProviderWrapper;
 
-class PLATFORM_EXPORT WebGpuRecyclableResourceProviderLease {
+class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
  public:
-  WebGpuRecyclableResourceProviderLease(
+  WebGpuSharedImageWrapperLease(
       std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
       base::WeakPtr<WebGPURecyclableResourceCache> cache);
 
-  ~WebGpuRecyclableResourceProviderLease();
+  ~WebGpuSharedImageWrapperLease();
 
   WebGpuSharedImageWrapper* resource_provider() {
     return resource_provider_.get();
@@ -52,7 +52,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebGPURecyclableResourceCache() = default;
 
-  std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+  std::unique_ptr<WebGpuSharedImageWrapperLease>
   LeaseWebGpuRecyclableResourceProvider(viz::SharedImageFormat format,
                                         gfx::Size size,
                                         const gfx::ColorSpace& color_space,

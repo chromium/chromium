@@ -60,7 +60,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   wgpu::Instance GetWGPUInstance() const;
   void MarkContextLost();
   bool IsContextLost() const;
-  std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+  std::unique_ptr<WebGpuSharedImageWrapperLease>
   LeaseWebGpuRecyclableResourceProvider(viz::SharedImageFormat format,
                                         gfx::Size size,
                                         const gfx::ColorSpace& color_space,

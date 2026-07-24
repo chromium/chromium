@@ -400,7 +400,7 @@ ExternalTexture CreateExternalTexture(
     format = viz::SinglePlaneFormat::kRGBA_F16;
   }
 
-  std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_lease =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_lease =
       device->GetDawnControlClient()->LeaseWebGpuRecyclableResourceProvider(
           format, natural_size, resource_color_space,
           media_video_frame->hdr_metadata(), kPremul_SkAlphaType);

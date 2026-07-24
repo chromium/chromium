@@ -74,7 +74,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
           : image_sub_rect.height();
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
-  std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_lease =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_lease =
       dawn_control_client->LeaseWebGpuRecyclableResourceProvider(
           image->GetSharedImageFormat(),
           gfx::Size(mailbox_texture_width, mailbox_texture_height),
@@ -144,7 +144,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     wgpu::TextureUsage usage,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
-    std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_lease) {
+    std::unique_ptr<WebGpuSharedImageWrapperLease> provider_lease) {
   CHECK(shared_image);
 
   gfx::Size size = shared_image->size();
@@ -157,7 +157,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   };
 
   auto finished_access_callback = base::BindOnce(
-      [](std::unique_ptr<WebGpuRecyclableResourceProviderLease> provider_lease,
+      [](std::unique_ptr<WebGpuSharedImageWrapperLease> provider_lease,
          std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access) {
         gpu::SyncToken sync_token;
         if (scoped_access) {

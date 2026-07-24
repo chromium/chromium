@@ -15,13 +15,12 @@
 
 namespace blink {
 
-WebGpuRecyclableResourceProviderLease::WebGpuRecyclableResourceProviderLease(
+WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     std::unique_ptr<WebGpuSharedImageWrapper> resource_provider,
     base::WeakPtr<WebGPURecyclableResourceCache> cache)
     : resource_provider_(std::move(resource_provider)), cache_(cache) {}
 
-WebGpuRecyclableResourceProviderLease::
-    ~WebGpuRecyclableResourceProviderLease() {
+WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
   if (cache_ && resource_provider_) {
     cache_->ReturnWebGpuRecyclableResourceProvider(
         std::move(resource_provider_), completion_sync_token_);
@@ -40,7 +39,7 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);
 }
 
-std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+std::unique_ptr<WebGpuSharedImageWrapperLease>
 WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
     viz::SharedImageFormat format,
     gfx::Size size,
@@ -58,8 +57,8 @@ WebGPURecyclableResourceCache::LeaseWebGpuRecyclableResourceProvider(
       return nullptr;
   }
 
-  return std::make_unique<WebGpuRecyclableResourceProviderLease>(
-      std::move(provider), weak_ptr_);
+  return std::make_unique<WebGpuSharedImageWrapperLease>(std::move(provider),
+                                                         weak_ptr_);
 }
 
 void WebGPURecyclableResourceCache::ReturnWebGpuRecyclableResourceProvider(

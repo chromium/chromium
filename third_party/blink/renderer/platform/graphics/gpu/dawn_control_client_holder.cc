@@ -111,7 +111,7 @@ bool DawnControlClientHolder::IsContextLost() const {
   return context_lost_;
 }
 
-std::unique_ptr<WebGpuRecyclableResourceProviderLease>
+std::unique_ptr<WebGpuSharedImageWrapperLease>
 DawnControlClientHolder::LeaseWebGpuRecyclableResourceProvider(
     viz::SharedImageFormat format,
     gfx::Size size,
