@@ -46,7 +46,7 @@ public class UiAndroidFeatureList {
     public static final CachedFlag sAndroidWindowOcclusion =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
 
     // Whether to apply optimizations to the window when it is occluded. When false, occlusion
@@ -56,14 +56,14 @@ public class UiAndroidFeatureList {
                     UiAndroidFeatureMap.getInstance(),
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
                     "occlusion_optimizations",
-                    false);
+                    true);
 
     public static final IntCachedFeatureParam sAndroidWindowOcclusionCalculateOcclusionRateLimitMs =
             new IntCachedFeatureParam(
                     UiAndroidFeatureMap.getInstance(),
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
                     "calculate_occlusion_rate_limit_ms",
-                    0);
+                    100);
 
     public static final IntCachedFeatureParam
             sAndroidWindowOcclusionMinimumVisibilitySizeThreshold =
@@ -71,7 +71,7 @@ public class UiAndroidFeatureList {
                             UiAndroidFeatureMap.getInstance(),
                             UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
                             "minimum_visibility_size_threshold",
-                            0);
+                            10);
 
     public static final StringCachedFeatureParam sAndroidWindowOcclusionTrackingMode =
             new StringCachedFeatureParam(
