@@ -216,6 +216,7 @@ suite('OmniboxComposeboxTest', () => {
       mimeType: 'image/png',
       isDeletable: true,
       selectionTime: new Date(),
+      thumbnailUrl: null,
     };
 
     // Simulate Mojo Callback: Page interface callback router.
@@ -288,6 +289,7 @@ suite('OmniboxComposeboxTest', () => {
           name: 'test.pdf',
           mimeType: 'application/pdf',
           imageDataUrl: null,  // Non-image
+          thumbnailUrl: null,
           errorType: null,
           iconUrl: 'https://example.com/icon.png',
         },
@@ -491,6 +493,7 @@ suite('OmniboxComposeboxTest', () => {
           name: 'huge.zip',
           mimeType: 'application/zip',
           imageDataUrl: null,
+          thumbnailUrl: null,
           errorType:
               ContextUploadErrorType
                   .kBrowserProcessingFileTooLargeError,  // Validation error.
@@ -521,6 +524,7 @@ suite('OmniboxComposeboxTest', () => {
               name: 'test.txt',
               mimeType: 'text/plain',
               imageDataUrl: null,
+              thumbnailUrl: null,
               errorType: ContextUploadErrorType
                              .kBrowserProcessingUnsupportedFileTypeError,
               iconUrl: null,
@@ -770,6 +774,7 @@ suite('OmniboxComposeboxTest', () => {
       imageDataUrl: null,
       isDeletable: true,
       selectionTime: new Date(),
+      thumbnailUrl: null,
     };
 
     testProxy.page.addFileContext(testToken, testFileInfo);
@@ -794,6 +799,7 @@ suite('OmniboxComposeboxTest', () => {
       imageDataUrl: null,
       isDeletable: true,
       selectionTime: new Date(),
+      thumbnailUrl: null,
     };
 
     testProxy.page.addFileContext(testToken, testFileInfo);
@@ -1459,6 +1465,7 @@ suite('OmniboxComposeboxTest', () => {
         mimeType: 'application/pdf',
         isDeletable: true,
         selectionTime: new Date(),
+        thumbnailUrl: null,
       };
       testProxy.page.addFileContext(sharedToken, testFileInfo);
       await testProxy.page.$.flushForTesting();
@@ -1533,6 +1540,7 @@ suite('OmniboxComposeboxTest', () => {
         mimeType: 'application/pdf',
         isDeletable: true,
         selectionTime: new Date(),
+        thumbnailUrl: null,
       };
       testProxy.page.addFileContext(sharedToken, testFileInfo);
       await testProxy.page.$.flushForTesting();
@@ -2155,6 +2163,7 @@ suite('OmniboxComposeboxTest', () => {
         imageDataUrl: thumbnailUrl,
         isDeletable: true,
         selectionTime: new Date(),
+        thumbnailUrl: null,
       } as SelectedFileInfo);
       await testProxy.page.$.flushForTesting();
       await microtasksFinished();
@@ -2222,6 +2231,7 @@ suite('OmniboxComposeboxTest', () => {
         imageDataUrl: thumbnailUrl,
         isDeletable: true,
         selectionTime: new Date(),
+        thumbnailUrl: null,
       } as SelectedFileInfo);
       await testProxy.page.$.flushForTesting();
       await microtasksFinished();
@@ -2276,6 +2286,7 @@ suite('OmniboxComposeboxTest', () => {
         imageDataUrl: thumbnailUrl,
         isDeletable: true,
         selectionTime: new Date(),
+        thumbnailUrl: null,
       } as SelectedFileInfo);
       await testProxy.page.$.flushForTesting();
       await microtasksFinished();
@@ -2331,6 +2342,7 @@ suite('OmniboxComposeboxTest', () => {
             imageDataUrl: thumbnailUrl,
             isDeletable: true,
             selectionTime: new Date(),
+            thumbnailUrl: null,
           } as SelectedFileInfo);
           await testProxy.page.$.flushForTesting();
           await microtasksFinished();
