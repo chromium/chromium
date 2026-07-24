@@ -522,11 +522,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
   return cached_snapshot_;
 }
 
-void Canvas2DResourceProvider::Flush(cc::PaintRecord recording) {
-  clear_frame_ = false;
-  RasterRecord(recording);
-}
-
 void Canvas2DResourceProvider::ReleaseImageProviderImages() {
   if (canvas_image_provider_) {
     canvas_image_provider_->ReleaseLockedImages();

@@ -222,6 +222,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
   size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
   bool clear_frame() const { return clear_frame_; }
+  void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
@@ -232,7 +233,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  void Flush(cc::PaintRecord recording);
   void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
   void SetLastRecording(cc::PaintRecord recording) {

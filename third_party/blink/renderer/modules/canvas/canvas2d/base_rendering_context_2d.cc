@@ -759,7 +759,8 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     } else {
       shared_image_provider->ClearLastRecording();
     }
-    shared_image_provider->Flush(recording);
+    shared_image_provider->set_clear_frame(false);
+    shared_image_provider->RasterRecord(recording);
     shared_image_provider->ReleaseImageProviderImages();
   } else if (bitmap_provider) {
     ScopedRasterTimer timer(nullptr, *bitmap_provider);
@@ -768,7 +769,8 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     } else {
       bitmap_provider->ClearLastRecording();
     }
-    bitmap_provider->Flush(recording);
+    bitmap_provider->set_clear_frame(false);
+    bitmap_provider->RasterRecord(recording);
     bitmap_provider->ReleaseImageProviderImages();
   }
   if (Host()) {

@@ -200,11 +200,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
                                                 orientation);
 }
 
-void Canvas2DBitmapProvider::Flush(cc::PaintRecord recording) {
-  clear_frame_ = false;
-  RasterRecord(recording);
-}
-
 void Canvas2DBitmapProvider::ReleaseImageProviderImages() {
   if (canvas_image_provider_) {
     canvas_image_provider_->ReleaseLockedImages();
