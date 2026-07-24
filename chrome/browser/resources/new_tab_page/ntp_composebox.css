@@ -82,6 +82,11 @@ cr-composebox-submit::part(submit) {
   --cr-icon-button-size: 36px;
 }
 
+:host-context([energy-effect-enabled_]) #contextEntrypoint::part(context-menu-entrypoint-icon) {
+  inset-inline-start: calc(var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px) + 1px);
+  top: 11px;
+}
+
 #voiceSearchButton {
   --cr-icon-button-fill-color: var(--color-composebox-font-light);
   --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);

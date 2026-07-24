@@ -1651,6 +1651,8 @@ suite('NewTabPageAppTest', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
           ntpRealboxNextEnabled: true,
+          contextManagementInComposeboxEnabled: true,
+          contextualMenuUsePecApi: false,
         });
       });
 
@@ -1682,6 +1684,97 @@ suite('NewTabPageAppTest', () => {
             searchboxHeight,
             window.getComputedStyle(composeboxContainer).height,
             'Initial composebox height should match searchbox height to prevent layout jump');
+      });
+
+      function getCenter(element: Element): {x: number, y: number} {
+        const rect = element.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
+      }
+
+      [false, true].forEach(energyEffectEnabled => {
+        [false, true].forEach(energyEffectAnimationEnabled => {
+          test(
+              `+ button alignment matches when energyEffectEnabled is ${
+                  energyEffectEnabled} and energyEffectAnimationEnabled is ${
+                  energyEffectAnimationEnabled}`,
+              async () => {
+                // Set the border color variable, which is normally dynamically
+                // injected into the document root style by the C++
+                // ColorProvider pipeline in a running browser. This ensures the
+                // 1px solid border resolves and participates in test computed
+                // style checks.
+                document.body.style.setProperty(
+                    '--color-searchbox-border', 'black');
+                loadTimeData.overrideValues({
+                  energyEffectEnabled,
+                  energyEffectAnimationEnabled,
+                });
+                await recreateApp();
+                await microtasksFinished();
+
+                const searchbox = $$(app, '#searchbox');
+                assertTrue(!!searchbox, 'Searchbox should exist');
+
+                // Get searchbox + button.
+                const searchboxEntrypointMenu =
+                    searchbox.shadowRoot!.querySelector('#context');
+                assertTrue(
+                    !!searchboxEntrypointMenu,
+                    `Searchbox entrypoint menu should exist when energyEffectEnabled=${
+                        energyEffectEnabled} and energyEffectAnimationEnabled=${
+                        energyEffectAnimationEnabled}`);
+                const searchboxEntrypointButton =
+                    searchboxEntrypointMenu.shadowRoot!.querySelector(
+                        '#entrypointButton')!;
+                const searchboxIcon =
+                    searchboxEntrypointButton.shadowRoot!.querySelector(
+                        '#entrypoint')!;
+
+                // Open composebox.
+                searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                  detail: {text: '', files: []},
+                }));
+                await microtasksFinished();
+
+                const composebox =
+                    app.shadowRoot.querySelector<NtpComposeboxElement>(
+                        '#composebox');
+                assertTrue(!!composebox, 'Composebox should exist');
+
+                // Get composebox + button.
+                const composeboxEntrypointMenu =
+                    composebox.shadowRoot.querySelector('#contextEntrypoint');
+                assertTrue(
+                    !!composeboxEntrypointMenu,
+                    `Composebox entrypoint menu should exist when energyEffectEnabled=${
+                        energyEffectEnabled} and energyEffectAnimationEnabled=${
+                        energyEffectAnimationEnabled}`);
+                const composeboxEntrypointButton =
+                    composeboxEntrypointMenu.shadowRoot!.querySelector(
+                        '#entrypointButton')!;
+                const composeboxIcon =
+                    composeboxEntrypointButton.shadowRoot!.querySelector(
+                        '#entrypoint')!;
+
+                // Measure centers.
+                const searchboxCenter = getCenter(searchboxIcon);
+                const composeboxCenter = getCenter(composeboxIcon);
+
+                // Assert centers match exactly.
+                assertDeepEquals(
+                    searchboxCenter, composeboxCenter,
+                    `Center position mismatch when energyEffectEnabled=${
+                        energyEffectEnabled} and energyEffectAnimationEnabled=${
+                        energyEffectAnimationEnabled}. ` +
+                        `Searchbox: (${searchboxCenter.x}, ${
+                            searchboxCenter.y}), ` +
+                        `Composebox: (${composeboxCenter.x}, ${
+                            composeboxCenter.y})`);
+              });
+        });
       });
     });
   });
