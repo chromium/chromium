@@ -4,8 +4,7 @@
 
 #include "remoting/host/win/default_audio_device_change_detector.h"
 
-#include <unknwn.h>
-
+#include "base/check.h"
 #include "base/logging.h"
 
 namespace remoting {
@@ -21,10 +20,18 @@ DefaultAudioDeviceChangeDetector::DefaultAudioDeviceChangeDetector(
     LOG(WARNING) << "Failed to register IMMNotificationClient, we may not be "
                     "able to detect the new default audio device. Error "
                  << hr;
+    return;
   }
+  registered_ = true;
 }
 
-DefaultAudioDeviceChangeDetector::~DefaultAudioDeviceChangeDetector() {
+DefaultAudioDeviceChangeDetector::~DefaultAudioDeviceChangeDetector() = default;
+
+void DefaultAudioDeviceChangeDetector::Unregister() {
+  if (!registered_) {
+    return;
+  }
+  registered_ = false;
   enumerator_->UnregisterEndpointNotificationCallback(this);
 }
 
@@ -49,16 +56,6 @@ HRESULT DefaultAudioDeviceChangeDetector::OnDefaultDeviceChanged(
   return S_OK;
 }
 
-HRESULT DefaultAudioDeviceChangeDetector::QueryInterface(REFIID iid,
-                                                         void** object) {
-  if (iid == IID_IUnknown || iid == __uuidof(IMMNotificationClient)) {
-    *object = static_cast<IMMNotificationClient*>(this);
-    return S_OK;
-  }
-  *object = nullptr;
-  return E_NOINTERFACE;
-}
-
 HRESULT DefaultAudioDeviceChangeDetector::OnDeviceAdded(LPCWSTR pwstrDeviceId) {
   return S_OK;
 }
@@ -78,14 +75,6 @@ HRESULT DefaultAudioDeviceChangeDetector::OnPropertyValueChanged(
     LPCWSTR pwstrDeviceId,
     const PROPERTYKEY key) {
   return S_OK;
-}
-
-ULONG DefaultAudioDeviceChangeDetector::AddRef() {
-  return 1;
-}
-
-ULONG DefaultAudioDeviceChangeDetector::Release() {
-  return 1;
 }
 
 }  // namespace remoting

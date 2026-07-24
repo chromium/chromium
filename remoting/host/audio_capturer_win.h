@@ -77,7 +77,8 @@ class AudioCapturerWin : public AudioCapturer {
   Microsoft::WRL::ComPtr<IAudioClient> audio_client_;
   Microsoft::WRL::ComPtr<IMMDevice> mm_device_;
 
-  std::unique_ptr<DefaultAudioDeviceChangeDetector> default_device_detector_;
+  Microsoft::WRL::ComPtr<DefaultAudioDeviceChangeDetector>
+      default_device_detector_;
 
   HRESULT last_capture_error_;
 

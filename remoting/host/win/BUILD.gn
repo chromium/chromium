@@ -235,6 +235,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "default_audio_device_change_detector_unittest.cc",
     "desktop_event_handler_unittest.cc",
     "event_trace_data.cc",
     "event_trace_data.h",

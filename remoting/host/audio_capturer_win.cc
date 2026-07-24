@@ -87,7 +87,10 @@ bool AudioCapturerWin::ResetAndInitialize() {
 void AudioCapturerWin::Deinitialize() {
   DCHECK(thread_checker_.CalledOnValidThread());
   wave_format_ex_.Reset(nullptr);
-  default_device_detector_.reset();
+  if (default_device_detector_) {
+    default_device_detector_->Unregister();
+  }
+  default_device_detector_.Reset();
   audio_capture_client_.Reset();
   if (audio_client_) {
     audio_client_->Stop();
@@ -113,7 +116,8 @@ bool AudioCapturerWin::Initialize() {
   }
 
   default_device_detector_ =
-      std::make_unique<DefaultAudioDeviceChangeDetector>(mm_device_enumerator);
+      Microsoft::WRL::Make<DefaultAudioDeviceChangeDetector>(
+          mm_device_enumerator);
 
   // Get the audio endpoint.
   hr = mm_device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole,
