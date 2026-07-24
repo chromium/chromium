@@ -64,7 +64,6 @@ struct TransferableResource {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
   SynchronizationType synchronization_type;
-  bool is_low_latency_rendering;
 
   [EnableIf=is_android]
   bool is_backed_by_surface_view;

@@ -90,11 +90,6 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.synchronization_type;
   }
 
-  static bool is_low_latency_rendering(
-      const viz::TransferableResource& resource) {
-    return resource.is_low_latency_rendering;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   static bool is_backed_by_surface_view(
       const viz::TransferableResource& resource) {

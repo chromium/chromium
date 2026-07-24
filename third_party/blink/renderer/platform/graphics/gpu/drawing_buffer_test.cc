@@ -716,7 +716,8 @@ TEST_F(DrawingBufferTest, VerifyLowLatencyRenderingIsNotSetByDefault) {
 
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
-  EXPECT_FALSE(resource.is_low_latency_rendering);
+  EXPECT_FALSE(resource.shared_image()->usage().Has(
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
 
   drawing_buffer_->BeginDestruction();
 }
@@ -747,10 +748,10 @@ TEST_F(
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
-  EXPECT_FALSE(resource.is_low_latency_rendering);
   EXPECT_TRUE(drawing_buffer->PrepareTransferableResource(&resource,
                                                           &release_callback));
-  EXPECT_TRUE(resource.is_low_latency_rendering);
+  EXPECT_TRUE(resource.shared_image()->usage().Has(
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
 
   drawing_buffer->BeginDestruction();
   drawing_buffer_->BeginDestruction();

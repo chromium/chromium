@@ -26,16 +26,15 @@ static ResourceId CreateResourceInLayerTree(
   if (resource_context.is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
+  if (resource_context.is_low_latency_rendering) {
+    usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+  }
   auto resource = TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(
           {format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
            kPremul_SkAlphaType, usage},
           GL_TEXTURE_2D),
       TransferableResource::ResourceSource::kTest, gpu::SyncToken());
-
-  if (resource_context.is_low_latency_rendering) {
-    resource.is_low_latency_rendering = true;
-  }
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());

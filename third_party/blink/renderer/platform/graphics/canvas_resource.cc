@@ -158,8 +158,6 @@ bool CanvasResource::PrepareTransferableResource(
       client_shared_image, GetTransferableResourceSource(), sync_token());
 
   out_resource->hdr_metadata = GetHdrMetadata();
-  out_resource->is_low_latency_rendering = client_shared_image->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
   // When the compositor returns an accelerated resource, it provides a sync
   // token to allow subsequent accelerated raster operations to properly

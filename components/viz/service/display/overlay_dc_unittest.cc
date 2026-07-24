@@ -81,6 +81,9 @@ static ResourceId CreateResourceInLayerTree(
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
+  if (is_low_latency) {
+    usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+  }
   auto resource = TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(
           {format, size, color_space, kTopLeft_GrSurfaceOrigin,
@@ -88,7 +91,6 @@ static ResourceId CreateResourceInLayerTree(
           GL_TEXTURE_2D),
       TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   resource.hdr_metadata = hdr_metadata;
-  resource.is_low_latency_rendering = is_low_latency;
 
   ResourceId resource_id =
       child_resource_provider->ImportResource(resource, base::DoNothing());

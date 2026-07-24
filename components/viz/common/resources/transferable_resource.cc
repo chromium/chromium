@@ -90,7 +90,6 @@ void TransferableResource::AsValueInto(
   value->SetString("color_space", GetColorSpace().ToString());
   value->SetString("hdr_metadata", hdr_metadata.ToString());
   value->SetBoolean("is_overlay_candidate", GetIsOverlayCandidate());
-  value->SetBoolean("is_low_latency_rendering", is_low_latency_rendering);
   value->SetInteger("synchronization_type",
                     static_cast<int>(synchronization_type));
 #if BUILDFLAG(IS_ANDROID)

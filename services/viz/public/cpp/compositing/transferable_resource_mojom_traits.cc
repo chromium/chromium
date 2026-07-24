@@ -179,7 +179,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
       gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)));
   out->set_sync_token(sync_token);
   out->set_metadata_override(metadata_override);
-  out->is_low_latency_rendering = data.is_low_latency_rendering();
   out->needs_detiling = data.needs_detiling();
 
 #if BUILDFLAG(IS_ANDROID)

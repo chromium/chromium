@@ -156,7 +156,9 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
 
 bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
   const ChildResource* resource = TryGetResource(id);
-  return resource && resource->transferable.is_low_latency_rendering;
+  return resource && !resource->transferable.is_empty() &&
+         resource->transferable.shared_image()->usage().Has(
+             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 }
 
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
