@@ -169,9 +169,6 @@
 
   _mediator.SetDownloadTask(_downloadTask.get());
   _mediator.SetConsumer(_viewController);
-  if (base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground)) {
-    _mediator.StartObservingNotifications();
-  }
 
   self.presenter.baseViewController = self.baseViewController;
   self.presenter.presentedViewController = _viewController;
@@ -201,9 +198,6 @@
   _mediator.SetIdentityManager(nullptr);
   if (IsDownloadListEnabled()) {
     _mediator.SetDownloadRecordService(nullptr);
-  }
-  if (base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground)) {
-    _mediator.StopObservingNotifications();
   }
 
   if (_viewController) {

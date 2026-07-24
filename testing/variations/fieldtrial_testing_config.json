@@ -14196,21 +14196,6 @@
             ]
         }
     ],
-    "IOSDownloadNoUIUpdateInBackground": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSDownloadNoUIUpdateInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEnterpriseFileDownloadConnector": [
         {
             "platforms": [

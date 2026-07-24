@@ -33,7 +33,6 @@
 DownloadManagerMediator::DownloadManagerMediator() : weak_ptr_factory_(this) {}
 
 DownloadManagerMediator::~DownloadManagerMediator() {
-  DCHECK(!application_foregrounding_observer_);
   SetDownloadTask(nullptr);
   identity_manager_observation_.Reset();
   identity_manager_ = nullptr;
@@ -185,36 +184,7 @@ bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
                                        auth_service_);
 }
 
-void DownloadManagerMediator::StartObservingNotifications() {
-  DCHECK(!application_foregrounding_observer_);
-  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationWillEnterForegroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:
-                  base::CallbackToBlock(
-                      base::IgnoreArgs<NSNotification*>(base::BindRepeating(
-                          &DownloadManagerMediator::AppWillEnterForeground,
-                          weak_ptr_factory_.GetWeakPtr())))];
-}
-
-void DownloadManagerMediator::StopObservingNotifications() {
-  if (application_foregrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_foregrounding_observer_];
-    application_foregrounding_observer_ = nil;
-  }
-}
-
-#pragma mark - Private
-
 void DownloadManagerMediator::UpdateConsumer() {
-  if (base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground) &&
-      UIApplication.sharedApplication.applicationState ==
-          UIApplicationStateBackground) {
-    // If the app is in the background, do nothing.
-    return;
-  }
   if (!download_task_) {
     // If there is no download task, keep the latest state (not started or
     // finished) as it is not possible to determine what is the new state).
@@ -342,10 +312,6 @@ void DownloadManagerMediator::SetUploadTask(UploadTask* task) {
   }
 }
 
-void DownloadManagerMediator::AppWillEnterForeground() {
-  CHECK(base::FeatureList::IsEnabled(kIOSDownloadNoUIUpdateInBackground));
-  SetGoogleDriveAppInstalled(IsGoogleDriveAppInstalled());
-}
 
 #pragma mark - web::WebStateObserver overrides
 
