@@ -14,3 +14,34 @@
 -PrerenderBrowserTest.SameOriginMainFrameNavigation
 -PrerenderBrowserTest.SameSiteCrossOriginMainFrameNavigation
 -PrerenderPrewarmDefaultSearchEngineTest.PrewarmPrerenderReuseThenActivate
+
+# https://crbug.com/538259294
+-All/AppBannerManagerBrowserTest.ImplicitNameDocumentTitle/*
+-All/AppBannerManagerBrowserTest.ManifestChangeTriggersPipeline/*
+-All/AppBannerManagerBrowserTest.MissingManifest/*
+-All/AppBannerManagerBrowserTest.NoPageManifestProvidesDefaultManifest/*
+-All/AppBannerManagerBrowserTest.NoServiceWorker/*
+-All/AppBannerManagerBrowserTest.PendingServiceWorker/0
+-All/AppBannerManagerBrowserTest.RemoveAndReAddManifestRestoresPromotability/*
+-All/AppBannerManagerBrowserTest.RemovingManifestFromCompleteStateUpdatesResult/*
+-All/AppBannerManagerBrowserTest.RemovingManifestStopsPipeline/*
+-All/AppBannerManagerBrowserTest.WebAppBannerCancelled/*
+-All/AppBannerManagerBrowserTest.WebAppBannerInIFrame/*
+-All/AppBannerManagerBrowserTest.WebAppBannerNotCreated/*
+-All/AppBannerManagerBrowserTest.WebAppBannerReprompt/1
+-All/AppBannerManagerBrowserTest.WebAppBannerTerminated/1
+
+# https://crbug.com/538259295
+-AppBannerManagerBrowserTestWithChromeBFCache.VerifyBFCacheBehavior
+
+# https://crbug.com/538266164
+-AppBannerManagerFencedFrameBrowserTest.FencedFrameShouldNotUpdateState
+
+# https://crbug.com/538266717
+-org.chromium.chrome.browser.popups.PopupMultiwindowPTTest*
+
+# https://crbug.com/538252516
+-org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskClankIntegrationTest*
+
+# https://crbug.com/538252517
+-org.chromium.chrome.browser.ui.extensions.windowing.ExtensionWindowControllerBridgeClankIntegrationTest*
