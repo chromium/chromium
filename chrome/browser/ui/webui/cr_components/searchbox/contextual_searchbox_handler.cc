@@ -2110,8 +2110,8 @@ void ContextualSearchboxHandler::OpenUrl(
           contextual_session_handle->invocation_source());
   new_contextual_session_handle->set_submitted_context_tokens(
       contextual_session_handle->GetSubmittedContextTokens());
-  new_contextual_session_handle->set_submitted_tabs(
-      contextual_session_handle->submitted_tabs());
+  new_contextual_session_handle->set_persisted_tabs(
+      contextual_session_handle->persisted_tabs());
   new_contextual_session_handle->set_deselected_tabs_urls(
       contextual_session_handle->deselected_tabs_urls());
   new_contextual_session_handle->set_smart_tab_sharing_active(
