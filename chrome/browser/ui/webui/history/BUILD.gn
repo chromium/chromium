@@ -78,6 +78,7 @@ source_set("history") {
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
+      "//components/critical_actions/core/browser",
       "//components/favicon_base",
       "//components/history/core/browser",
       "//components/history_clusters/core",

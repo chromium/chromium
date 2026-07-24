@@ -16,6 +16,7 @@
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
 #include "components/browsing_data/core/features.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/common/pref_names.h"
@@ -73,11 +74,17 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"searchResultExactMatches", IDS_HISTORY_SEARCH_EXACT_MATCH_RESULTS},
       {"sourceFilterChipsAriaLabel",
        IDS_HISTORY_SOURCE_FILTER_CHIPS_ARIA_LABEL},
-      {"sourceFilterChipActor", IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR},
       {"sourceFilterChipUser", IDS_HISTORY_SOURCE_FILTER_CHIP_USER},
       {"title", IDS_HISTORY_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
+
+  source->AddLocalizedString(
+      "sourceFilterChipActor",
+      base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory)
+          ? IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR_GEMINI
+          : IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR);
 
   PrefService* prefs = profile->GetPrefs();
   bool allow_deleting_history =

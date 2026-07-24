@@ -20,6 +20,7 @@ source_set("history") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/history_clusters",
     "//components/browsing_data/core",
+    "//components/critical_actions/core/browser",
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/history/core/common",

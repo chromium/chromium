@@ -307,4 +307,11 @@
   <message name="IDS_COMPARE_HISTORY_ROW" desc="Text for a single row in tab compare history">
     Compare <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
   </message>
+
+  <!-- Critical actions -->
+  <!-- TODO(b/538113758): Make translatable when strings are finalized. -->
+  <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR_GEMINI" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'You' (the user's browsing activity). It is at the top of the Chrome history page, where users can see their browsing history when Gemini performs tasks." translateable="false">
+    Gemini
+  </message>
+
 </grit-part>
