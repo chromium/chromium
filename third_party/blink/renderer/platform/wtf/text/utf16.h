@@ -64,6 +64,13 @@ UChar32 CodePointAtAndPrevious(base::span<const UChar> text,
 WTF_EXPORT
 bool ContainsOnlyLatin1(base::span<const UChar> text);
 
+// True if `text` is well-formed UTF-16, i.e. it contains no unpaired
+// surrogates: every leading surrogate is immediately followed by a trailing
+// surrogate, and there are no lone trailing surrogates. This mirrors the
+// JavaScript String.prototype.isWellFormed() notion of well-formedness.
+WTF_EXPORT
+bool IsWellFormed(base::span<const UChar> text);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_UTF16_H_

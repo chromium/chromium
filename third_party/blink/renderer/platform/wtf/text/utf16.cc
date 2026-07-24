@@ -45,4 +45,21 @@ bool ContainsOnlyLatin1(base::span<const UChar> text) {
   return true;
 }
 
+bool IsWellFormed(base::span<const UChar> text) {
+  for (size_t i = 0; i < text.size(); ++i) {
+    const UChar c = text[i];
+    if (U16_IS_LEAD(c)) {
+      // A leading surrogate must be immediately followed by a trailing one.
+      if (i + 1 >= text.size() || !U16_IS_TRAIL(text[i + 1])) {
+        return false;
+      }
+      ++i;  // Skip the trailing surrogate of this valid pair.
+    } else if (U16_IS_TRAIL(c)) {
+      // A trailing surrogate not preceded by a leading surrogate.
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace blink

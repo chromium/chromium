@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
 namespace blink {
 
@@ -44,6 +45,11 @@ std::optional<TextCheckEntryPoint> GetTextCheckEntryPoint(
   return TextCheckEntryPoint{frame, client};
 }
 
+// True if `word` is well-formed UTF-16.
+bool IsWellFormed(const String& word) {
+  return word.Is8Bit() || blink::IsWellFormed(word.Span16());
+}
+
 }  // namespace
 
 void SpellCheckCustomDictionary::addWords(ScriptState* script_state,
@@ -55,7 +61,18 @@ void SpellCheckCustomDictionary::addWords(ScriptState* script_state,
   std::vector<std::string> custom_words;
   custom_words.reserve(words.size());
   for (const auto& word : words) {
-    custom_words.push_back(word.Utf8());
+    // Reject ill-formed entries before they reach the spellchecker, matching
+    // the browser custom dictionary's IsValidWord(): skip empty words and words
+    // padded with leading or trailing whitespace.
+    // It also rejects ill-formed UTF-16 (unpaired surrogates) rather than
+    // converting it to a U+FFFD-mangled entry.
+    if (word.empty() || word.length() != word.LengthWithStrippedWhiteSpace() ||
+        !IsWellFormed(word)) {
+      continue;
+    }
+    // Only well-formed UTF-16 reaches here.
+    custom_words.push_back(
+        word.Utf8(Utf8ConversionMode::kStrictReplacingErrors));
   }
   entry->client->SpellCheckCustomDictionaryChanged(/*words_added=*/custom_words,
                                                    /*words_removed=*/{});
@@ -70,7 +87,20 @@ void SpellCheckCustomDictionary::removeWords(ScriptState* script_state,
   std::vector<std::string> custom_words;
   custom_words.reserve(words.size());
   for (const auto& word : words) {
-    custom_words.push_back(word.Utf8());
+    // Unlike addWords(), there's no need to skip empty or whitespace-padded
+    // words here: addWords() never stores them, so a removal request for one
+    // matches nothing and is a harmless no-op. Their UTF-8 conversion is
+    // identity, so they can't collide with a stored entry either.
+    //
+    // Ill-formed UTF-16 is different and must be rejected:
+    // kStrictReplacingErrors rewrites an unpaired surrogate to U+FFFD, a valid
+    // character a user could have legitimately added. Forwarding such a word
+    // could match and remove that unrelated entry.
+    if (!IsWellFormed(word)) {
+      continue;
+    }
+    custom_words.push_back(
+        word.Utf8(Utf8ConversionMode::kStrictReplacingErrors));
   }
   entry->client->SpellCheckCustomDictionaryChanged(
       /*words_added=*/{}, /*words_removed=*/custom_words);
