@@ -566,7 +566,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
 android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
   resources_package = "org.chromium.chrome"
 
-  sources = [ "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java" ]
+  sources = [
+    "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java",
+    "src/org/chromium/chrome/browser/appearance/settings/BookmarkBarSettingsFragmentTest.java",
+  ]
 
   deps = [
     ":chrome_test_java_helper",

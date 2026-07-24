@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,10 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR;
-import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR_SWITCH;
-import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TOOLBAR_SHORTCUT;
-import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_UI_THEME;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
-import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NEW_TAB;
-import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NONE;
+import static org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment.PREF_BOOKMARK_BAR;
 
 import androidx.preference.Preference;
 import androidx.test.annotation.UiThreadTest;
@@ -43,17 +36,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
-import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.night_mode.ThemeType;
-import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
-import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -69,11 +56,11 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Tests for {@link AppearanceSettingsFragment}. */
+/** Tests for {@link BookmarkBarSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-public class AppearanceSettingsFragmentTest {
+@EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
+public class BookmarkBarSettingsFragmentTest {
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
@@ -88,7 +75,7 @@ public class AppearanceSettingsFragmentTest {
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
     private SettableNonNullObservableSupplier<Boolean> mBookmarkBarSettingSupplier;
-    private AppearanceSettingsFragment mSettings;
+    private BookmarkBarSettingsFragment mSettings;
 
     @Before
     @UiThreadTest
@@ -100,6 +87,7 @@ public class AppearanceSettingsFragmentTest {
         // Set up natives.
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
 
         // Cache bookmark bar setting observers.
         mBookmarkBarSettingObserverCache = new HashSet<>();
@@ -110,8 +98,6 @@ public class AppearanceSettingsFragmentTest {
         mBookmarkBarSettingSupplier.addSyncObserverAndPostIfNonNull(
                 enabled -> {
                     BookmarkBarUtils.setSettingEnabledForTesting(enabled);
-                    // Safely call onPreferenceChange only on non-null observers (since tablets
-                    // don't call #initBookmarkBarPrefForUserPrefs).
                     mBookmarkBarSettingObserverCache.stream()
                             .filter(observer -> observer != null)
                             .forEach(PrefObserver::onPreferenceChange);
@@ -127,36 +113,14 @@ public class AppearanceSettingsFragmentTest {
     public static void tearDown() {
         PrefChangeRegistrarJni.setInstanceForTesting(null);
         UserPrefsJni.setInstanceForTesting(null);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(null);
     }
 
     @Test
     @SmallTest
-    public void testBookmarkBarPreferenceIsAbsentWhenDisabled() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
+    public void testBookmarkBarPreferenceIsPresent() {
         launchSettings();
-        Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR));
-        Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR_SWITCH));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testBookmarkBarPreferenceIsPresentWhenEnabled_FlagDisabled() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        launchSettings();
-        assertSwitchExists(PREF_BOOKMARK_BAR_SWITCH);
-        Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testBookmarkBarPreferenceIsPresentWhenEnabled_FlagEnabled()
-            throws ClassNotFoundException {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        launchSettings();
-        assertSettingsExists(PREF_BOOKMARK_BAR, BookmarkBarSettingsFragment.class);
-        Assert.assertNull(mSettings.findPreference(PREF_BOOKMARK_BAR_SWITCH));
+        assertSwitchExists(PREF_BOOKMARK_BAR);
     }
 
     @Test
@@ -164,10 +128,9 @@ public class AppearanceSettingsFragmentTest {
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Desktop() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR_SWITCH);
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
         Assert.assertTrue(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
@@ -184,10 +147,9 @@ public class AppearanceSettingsFragmentTest {
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Desktop() {
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR_SWITCH);
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
         Assert.assertTrue(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(false));
@@ -206,10 +168,9 @@ public class AppearanceSettingsFragmentTest {
                     BookmarkBarUtils.setDevicePrefShowBookmarksBar(
                             mProfile, true, /* fromKeyboardShortcut= */ false);
                 });
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR_SWITCH);
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
         Assert.assertTrue(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
@@ -232,11 +193,9 @@ public class AppearanceSettingsFragmentTest {
                     BookmarkBarUtils.setDevicePrefShowBookmarksBar(
                             mProfile, true, /* fromKeyboardShortcut= */ false);
                 });
-
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
-        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR_SWITCH);
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
         Assert.assertTrue(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -254,45 +213,18 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testToolbarShortcutPreferenceIsAbsentWhenDisabled() {
-        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NONE);
-        launchSettings();
-        Assert.assertNull(mSettings.findPreference(PREF_TOOLBAR_SHORTCUT));
-    }
+    public void testSearchIndex_BookmarkBarCompatible() {
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        SettingsIndexData indexData = mock(SettingsIndexData.class);
+        var context = mSettingsTestRule.getActivity();
+        String prefFragment = BookmarkBarSettingsFragment.class.getName();
 
-    @Test
-    @SmallTest
-    public void testToolbarShortcutPreferenceIsPresentWhenEnabled() throws ClassNotFoundException {
-        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(NEW_TAB);
-        launchSettings();
-        assertSettingsExists(PREF_TOOLBAR_SHORTCUT, AdaptiveToolbarSettingsFragment.class);
-    }
+        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, indexData);
 
-    @Test
-    @SmallTest
-    public void testUiThemePreference() throws ClassNotFoundException {
-        launchSettings();
-
-        final var uiThemePref = assertSettingsExists(PREF_UI_THEME, ThemeSettingsFragment.class);
-        Assert.assertEquals(
-                ThemeSettingsEntry.SETTINGS,
-                uiThemePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
-
-        final var context = mSettings.getContext();
-        Assert.assertEquals(
-                NightModeUtils.getThemeSettingTitle(context, NightModeUtils.getThemeSetting()),
-                uiThemePref.getSummary());
-
-        final var prefs = ChromeSharedPreferences.getInstance();
-        for (int theme = 0; theme < ThemeType.NUM_ENTRIES; theme++) {
-            ThreadUtils.runOnUiThreadBlocking(mSettings::onPause);
-            ThreadUtils.runOnUiThreadBlocking(mSettings::onStop);
-            prefs.writeInt(UI_THEME_SETTING, theme);
-            ThreadUtils.runOnUiThreadBlocking(mSettings::onStart);
-            ThreadUtils.runOnUiThreadBlocking(mSettings::onResume);
-            Assert.assertEquals(
-                    NightModeUtils.getThemeSettingTitle(context, theme), uiThemePref.getSummary());
-        }
+        verify(indexData)
+                .updateEntrySummaryForKey(
+                        prefFragment, PREF_BOOKMARK_BAR, R.string.bookmark_bar_setting_subtitle);
     }
 
     @Test
@@ -301,54 +233,27 @@ public class AppearanceSettingsFragmentTest {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
         SettingsIndexData indexData = mock(SettingsIndexData.class);
         var context = mSettingsTestRule.getActivity();
-        String prefFragment = AppearanceSettingsFragment.class.getName();
+        String prefFragment = BookmarkBarSettingsFragment.class.getName();
 
-        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
+        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, indexData);
 
         verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testSearchIndex_BookmarkBarCompatible_SubpageEnabled() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
-        String prefFragment = AppearanceSettingsFragment.class.getName();
-
-        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
-
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
-        verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
     }
 
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testSearchIndex_BookmarkBarCompatible_SubpageDisabled() {
+    public void testSearchIndex_FlagDisabled() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         SettingsIndexData indexData = mock(SettingsIndexData.class);
         var context = mSettingsTestRule.getActivity();
-        String prefFragment = AppearanceSettingsFragment.class.getName();
+        String prefFragment = BookmarkBarSettingsFragment.class.getName();
 
-        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData, mProfile);
+        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, indexData);
 
         verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-        verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
-    }
-
-    private Preference assertSettingsExists(String prefKey, Class settingsFragmentClass)
-            throws ClassNotFoundException {
-        final Preference pref = mSettings.findPreference(prefKey);
-        Assert.assertNotNull(pref);
-        Assert.assertNotNull(pref.getFragment());
-        Assert.assertEquals(settingsFragmentClass, Class.forName(pref.getFragment()));
-        return pref;
     }
 
     private ChromeSwitchPreference assertSwitchExists(String prefKey) {
@@ -360,10 +265,10 @@ public class AppearanceSettingsFragmentTest {
 
     private void launchSettings() {
         mSettingsTestRule.launchPreference(
-                AppearanceSettingsFragment.class,
+                BookmarkBarSettingsFragment.class,
                 /* fragmentArgs= */ null,
-                (fragment) -> ((AppearanceSettingsFragment) fragment).setProfile(mProfile));
-        mSettings = (AppearanceSettingsFragment) mSettingsTestRule.getPreferenceFragment();
+                (fragment) -> ((BookmarkBarSettingsFragment) fragment).setProfile(mProfile));
+        mSettings = (BookmarkBarSettingsFragment) mSettingsTestRule.getPreferenceFragment();
         mBookmarkBarSettingObserverCache.add(mSettings.getPrefObserverForTesting());
     }
 

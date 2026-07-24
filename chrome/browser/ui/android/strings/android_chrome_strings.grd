@@ -958,6 +958,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_APPEARANCE_SETTINGS" desc="Title for Appearance settings.">
         Appearance
       </message>
+      <message name="IDS_BOOKMARK_BAR_SETTINGS_TITLE" desc="Title for the bookmarks bar settings page." translateable="false">
+        Bookmarks Bar
+      </message>
       <message name="IDS_BOOKMARK_BAR_SETTING" desc="Title for the bookmark bar setting.">
         Show bookmarks bar
       </message>

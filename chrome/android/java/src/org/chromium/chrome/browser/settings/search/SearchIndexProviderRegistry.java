@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
+import org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillBuyNowPayLaterFragment;
@@ -132,6 +133,7 @@ public final class SearchIndexProviderRegistry {
                     AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AndroidPaymentAppsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillAndPasswordsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillBuyNowPayLaterFragment.SEARCH_INDEX_DATA_PROVIDER,
                     AutofillCardBenefitsFragment.SEARCH_INDEX_DATA_PROVIDER,
