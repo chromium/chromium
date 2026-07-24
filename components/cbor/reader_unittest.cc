@@ -1325,6 +1325,29 @@ TEST_P(CBORReaderTest, TestDuplicateKeyError) {
   }
 }
 
+TEST_P(CBORReaderTest, TestDuplicateKeyErrorWithOutOfOrderKey) {
+  static const std::vector<uint8_t> kMapWithDuplicateKey = {
+      // clang-format off
+      0xa3,  // map of 3 pairs:
+        0x61, 0x61,  // "a"
+        0x01,
+
+        0x61, 0x62,  // "b"
+        0x02,
+
+        0x61, 0x61,  // "a" (Duplicate key, also out of order)
+        0x03,
+      // clang-format on
+  };
+
+  {
+    Reader::DecoderError error_code;
+    std::optional<Value> cbor = DoRead(kMapWithDuplicateKey, &error_code);
+    EXPECT_FALSE(cbor.has_value());
+    EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
+  }
+}
+
 // Leveraging Markus Kuhn’s UTF-8 decoder stress test. See
 // http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt for details.
 TEST_P(CBORReaderTest, TestIncorrectStringEncodingError) {

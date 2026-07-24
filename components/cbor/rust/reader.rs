@@ -299,13 +299,15 @@ fn to_map(
 
         if let Some((previous, _)) = ret.last_key_value() {
             match previous.cmp(&key) {
-                Ordering::Equal => {
-                    return Err(Error::DuplicateMapKey(after_key_len, Value::from(key)))
-                }
-                Ordering::Greater => {
-                    return Err(Error::MapKeysOutOfOrder(after_key_len, Value::from(key)))
-                }
                 Ordering::Less => {}
+                Ordering::Greater if !ret.contains_key(&key) => {
+                    return Err(Error::MapKeysOutOfOrder(after_key_len, Value::from(key)));
+                }
+                // Covers `Ordering::Equal` and `Ordering::Greater` when the key is already
+                // in the map (e.g. an out-of-order duplicate).
+                _ => {
+                    return Err(Error::DuplicateMapKey(after_key_len, Value::from(key)));
+                }
             }
         }
 
