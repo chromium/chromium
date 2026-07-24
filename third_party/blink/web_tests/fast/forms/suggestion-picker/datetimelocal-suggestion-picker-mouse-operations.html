@@ -46,7 +46,7 @@ window.onload = () => {
     return openPicker(element)
     .then(() => {
       hoverOverElement(internals.pagePopupWindow.document.querySelector(".suggestion-list-entry:nth-child(2)"));
-      assert_equals(highlightedEntry(), '2012-01-02');
+      assert_equals(highlightedEntry(), '2012-11-22T01:02');
       hoverOverElement(document.getElementById('otherelement'));
       assert_true(!highlightedEntry());
       clickElement(internals.pagePopupWindow.document.querySelector(".suggestion-list-entry:nth-child(3)"));
@@ -54,7 +54,7 @@ window.onload = () => {
     })
     .then(() => {
       assert_true(!internals.pagePopupWindow);
-      assert_equals(document.getElementById("datetime-local").value, '2012-11-22T01:03');
+      assert_equals(element.value, '2012-11-22T01:03');
     });
   },'Check basic hover operation');
 

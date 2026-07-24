@@ -46,7 +46,7 @@ window.onload = () => {
     return openPicker(element)
     .then(() => {
       hoverOverElement(internals.pagePopupWindow.document.querySelector(".suggestion-list-entry:nth-child(2)"));
-      assert_equals(highlightedEntry(), '2012-01-02');
+      assert_equals(highlightedEntry(), '01:02');
       hoverOverElement(document.getElementById('otherelement'));
       assert_true(!highlightedEntry());
       clickElement(internals.pagePopupWindow.document.querySelector(".suggestion-list-entry:nth-child(3)"));
