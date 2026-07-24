@@ -192,11 +192,7 @@ void ContextHubService::HandleModelExecutionResult(
     return;
   }
 
-  // TODO:(crbug.com/537060449) Consolidate `store_groups` and `ui_groups` so we don't have two
-  // vectors storing similar data
-  std::vector<TabGroupEntry> store_groups;
-  std::vector<TabGroupData> ui_groups;
-  std::vector<TabData> ungrouped_tabs;
+  std::vector<TabGroupEntry> groups;
 
   base::flat_map<int32_t, size_t> tab_index_map;
   for (size_t i = 0; i < tabs.size(); ++i) {
@@ -218,18 +214,15 @@ void ContextHubService::HandleModelExecutionResult(
     if (valid_tab_ids.size() >= 2) {
       TabGroupEntry entry;
       entry.label = group_proto.label();
-
-      TabGroupData data;
-      data.label = group_proto.label();
-
       for (int32_t tab_id : valid_tab_ids) {
         entry.tab_ids.push_back(tab_id);
-        size_t index = tab_index_map.at(tab_id);
-        data.tabs.push_back(std::move(tabs[index]));
-        tab_index_map.erase(tab_id);
+        if (tab_index_map.contains(tab_id)) {
+          size_t index = tab_index_map.at(tab_id);
+          entry.tabs.push_back(std::move(tabs[index]));
+          tab_index_map.erase(tab_id);
+        }
       }
-      store_groups.push_back(std::move(entry));
-      ui_groups.push_back(std::move(data));
+      groups.push_back(std::move(entry));
     }
   }
 
@@ -242,16 +235,17 @@ void ContextHubService::HandleModelExecutionResult(
                                                  base::DoNothing());
           }
         },
-        weak_factory_.GetWeakPtr(), std::move(store_groups)));
+        weak_factory_.GetWeakPtr(), groups));
   }
 
+  std::vector<TabData> ungrouped_tabs;
   for (context_hub::TabData& tab : tabs) {
     if (tab_index_map.contains(tab.id)) {
       ungrouped_tabs.push_back(std::move(tab));
     }
   }
 
-  std::move(callback).Run(std::move(ui_groups), std::move(ungrouped_tabs));
+  std::move(callback).Run(std::move(groups), std::move(ungrouped_tabs));
 }
 
 void ContextHubService::GroupTabs(std::vector<TabData> tabs,

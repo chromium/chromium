@@ -10,6 +10,7 @@ source_set("tab_group_store") {
 
   public_deps = [
     "//base",
+    "//url",
   ]
 }
 

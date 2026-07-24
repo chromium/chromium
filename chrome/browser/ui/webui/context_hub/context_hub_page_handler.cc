@@ -269,7 +269,7 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
       GetOpenTabs(tab_provider_.get(), web_contents_), user_command,
       base::BindOnce(
           [](RetrieveAndGroupTabsCallback callback,
-             std::vector<context_hub::TabGroupData> groups,
+             std::vector<context_hub::TabGroupEntry> groups,
              std::vector<context_hub::TabData> ungrouped_tabs) {
             std::vector<browser::context_hub::mojom::TabGroupPtr> mojo_groups;
             for (const auto& group : groups) {

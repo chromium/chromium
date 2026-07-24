@@ -39,17 +39,6 @@ namespace context_hub {
 class TabGroupStore;
 class ContextHubBackend;
 
-struct TabData {
-  int32_t id;
-  std::string title;
-  GURL url;
-};
-
-struct TabGroupData {
-  std::string label;
-  std::vector<TabData> tabs;
-};
-
 class ContextHubService : public KeyedService {
  public:
   ContextHubService(
@@ -72,7 +61,7 @@ class ContextHubService : public KeyedService {
   void GenerateAutoTodos(AutoTodosCallback callback);
 
   using GroupTabsCallback =
-      base::OnceCallback<void(std::vector<TabGroupData> groups,
+      base::OnceCallback<void(std::vector<TabGroupEntry> groups,
                               std::vector<TabData> ungrouped_tabs)>;
   // Groups tabs based on the provided `tabs` list.
   void GroupTabs(std::vector<TabData> tabs,
