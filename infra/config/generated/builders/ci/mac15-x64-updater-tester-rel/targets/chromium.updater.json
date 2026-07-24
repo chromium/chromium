@@ -1,10 +1,5 @@
 {
-  "mac-updater-builder-asan-dbg": {
-    "additional_compile_targets": [
-      "chrome/updater:all"
-    ]
-  },
-  "mac15-x64-updater-tester-dbg": {
+  "mac15-x64-updater-tester-rel": {
     "gtest_tests": [
       {
         "merge": {
