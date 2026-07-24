@@ -172,21 +172,6 @@ export class SettingsPrivacyPageIndexElement extends
         value: () =>
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
-
-      isAdPrivacyAvailable_: {
-        type: Boolean,
-        readOnly: true,
-        value: () => loadTimeData.getBoolean('isAdPrivacyAvailable'),
-      },
-
-      isPrivacySandboxTopicsAndFledgeAvailable_: {
-        type: Boolean,
-        readOnly: true,
-        value: () => {
-          return loadTimeData.getBoolean('isAdPrivacyAvailable') &&
-              !loadTimeData.getBoolean('isPrivacySandboxRestricted');
-        },
-      },
     };
   }
 
@@ -217,8 +202,6 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableSecurityKeysSubpage_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableWebBluetoothNewPermissionsBackend_: boolean;
-  declare private isAdPrivacyAvailable_: boolean;
-  declare private isPrivacySandboxTopicsAndFledgeAvailable_: boolean;
 
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private privacyGuidePromoWasShown_: boolean;

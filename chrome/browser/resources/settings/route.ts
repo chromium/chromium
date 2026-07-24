@@ -32,21 +32,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   r.COOKIES = r.PRIVACY.createChild('/cookies');
 
-  if (loadTimeData.getBoolean('isAdPrivacyAvailable')) {
-    r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
-    if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
-      r.PRIVACY_SANDBOX_TOPICS =
-          r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
-      r.PRIVACY_SANDBOX_MANAGE_TOPICS =
-          r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
-      r.PRIVACY_SANDBOX_FLEDGE =
-          r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
-    }
-    // Ad Measurement is available whenever Ad Privacy is available.
-    r.PRIVACY_SANDBOX_AD_MEASUREMENT =
-        r.PRIVACY_SANDBOX.createChild('/adPrivacy/measurement');
-  }
-
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
   }

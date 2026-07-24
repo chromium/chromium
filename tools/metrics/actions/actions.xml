@@ -43119,6 +43119,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.Disabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43128,6 +43131,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.Enabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43137,6 +43143,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.Opened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -43144,6 +43153,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43195,6 +43207,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43356,6 +43371,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43365,6 +43383,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.BlockedSitesOpened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43374,6 +43395,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Disabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43382,6 +43406,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Enabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43390,6 +43417,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.LearnMoreClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -43400,6 +43430,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.Opened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43408,6 +43441,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.SiteAdded">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43416,6 +43452,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.SiteRemoved">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43799,6 +43838,9 @@ should be able to be added at any place in this file.
 
 <action
     name="Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43815,6 +43857,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.BlockedTopicsOpened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43824,6 +43869,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Disabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43832,6 +43880,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Enabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43840,6 +43891,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.LearnMoreClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -43850,24 +43904,36 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Learn more is clicked in the Manage Topics Page.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.PageOpened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Manage Topics page is opened.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.TopicBlocked">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Topic blocked from the Manage Topics page.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43876,6 +43942,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43884,12 +43953,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Manage.TopicEnabled">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>Topic enabled from the Manage Topics page.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.Opened">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43898,6 +43973,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.TopicAdded">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>
@@ -43906,6 +43984,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.TopicRemoved">
+  <obsolete>
+    Deprecated as of 07/2026 as part of Ad Privacy UX deprecation.
+  </obsolete>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core@google.com</owner>
   <description>

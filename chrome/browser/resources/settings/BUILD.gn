@@ -146,12 +146,6 @@ build_webui("build") {
     "privacy_page/security/security_page.ts",
     "privacy_page/security/security_page_feature_row.ts",
     "privacy_page/security/security_page_v2.ts",
-    "privacy_sandbox/privacy_sandbox_ad_measurement_subpage.ts",
-    "privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
-    "privacy_sandbox/privacy_sandbox_interest_item.ts",
-    "privacy_sandbox/privacy_sandbox_manage_topics_subpage.ts",
-    "privacy_sandbox/privacy_sandbox_page.ts",
-    "privacy_sandbox/privacy_sandbox_topics_subpage.ts",
     "safety_hub/extensions_module.ts",
     "safety_hub/notification_permissions_module.ts",
     "safety_hub/safety_hub_card.ts",
@@ -352,7 +346,6 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
     "privacy_page/security/safe_browsing_types.ts",
     "privacy_page/security/security_keys_browser_proxy.ts",
-    "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "relaunch_mixin.ts",
     "relaunch_mixin_lit.ts",
     "reset_page/reset_browser_proxy.ts",
@@ -440,7 +433,6 @@ build_webui("build") {
   icons_html_files = [
     "privacy_icons.html",
     "privacy_page/security/fingerprint_icons.html",
-    "privacy_sandbox/privacy_sandbox_icons.html",
     "site_settings/all_sites_icons.html",
   ]
 

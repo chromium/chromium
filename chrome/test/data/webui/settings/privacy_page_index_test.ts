@@ -46,8 +46,6 @@ suite('PrivacyPageIndex', function() {
           enableWebBluetoothNewPermissionsBackend: false,
           isGuest: false,
           isAdPrivacyAvailable: true,
-          isPrivacySandboxRestricted: false,
-          isPrivacySandboxRestrictedNoticeEnabled: false,
         },
         overrides || {}));
     resetPageVisibilityForTesting();
@@ -130,79 +128,6 @@ suite('PrivacyPageIndex', function() {
       await waitBeforeNextRender(index);
       assertFalse(!!index.$.viewManager.querySelector('#privacy'));
       await testViewsForRoute(routes.PRIVACY, ['privacy']);
-    });
-
-    test('RoutingPrivacySandboxRestrictedFalse', async function() {
-      await createPrivacyPageIndex({
-        isPrivacySandboxRestricted: false,
-        isPrivacySandboxRestrictedNoticeEnabled: false,
-      });
-
-      // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
-      // automatically redirect to its parent.
-      index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
-
-      const routesToVisit: RouteInfo[] = [
-        {
-          route: routes.PRIVACY_SANDBOX,
-          viewId: 'privacySandbox',
-          parentViewId: 'privacy',
-        },
-        {
-          route: routes.PRIVACY_SANDBOX_TOPICS,
-          viewId: 'privacySandboxTopics',
-          parentViewId: 'privacy',
-        },
-        {
-          route: routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
-          viewId: 'privacySandboxManageTopics',
-          parentViewId: 'privacy',
-        },
-        {
-          route: routes.PRIVACY_SANDBOX_FLEDGE,
-          viewId: 'privacySandboxFledge',
-          parentViewId: 'privacy',
-        },
-        {
-          route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-          viewId: 'privacySandboxAdMeasurement',
-          parentViewId: 'privacy',
-        },
-      ];
-
-      for (const routeInfo of routesToVisit) {
-        await testViewsForRoute(
-            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
-      }
-    });
-
-    test('RoutingPrivacySandboxRestrictedNoticeEnableTrue', async function() {
-      await createPrivacyPageIndex({
-        isPrivacySandboxRestricted: true,
-        isPrivacySandboxRestrictedNoticeEnabled: true,
-      });
-
-      // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
-      // automatically redirect to its parent.
-      index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
-
-      const routesToVisit: RouteInfo[] = [
-        {
-          route: routes.PRIVACY_SANDBOX,
-          viewId: 'privacySandbox',
-          parentViewId: 'privacy',
-        },
-        {
-          route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-          viewId: 'privacySandboxAdMeasurement',
-          parentViewId: 'privacy',
-        },
-      ];
-
-      for (const routeInfo of routesToVisit) {
-        await testViewsForRoute(
-            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
-      }
     });
 
     // TODO(crbug.com/417690232): Delete once kBundledSecuritySettings is

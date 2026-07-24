@@ -7,7 +7,6 @@ per-file people_handler*=treib@chromium.org
 per-file people_handler*=amelies@google.com
 
 per-file hats_handler*=msramek@google.com
-per-file privacy_sandbox_handler*=file://components/privacy_sandbox/OWNERS
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=fsenra@google.com
 per-file safety_hub_handler*=sideyilmaz@chromium.org,rainhard@chromium.org

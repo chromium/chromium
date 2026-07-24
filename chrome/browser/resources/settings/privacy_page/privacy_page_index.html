@@ -47,59 +47,6 @@
     </settings-privacy-page>
   </template>
 
-  <template is="dom-if" if="[[isAdPrivacyAvailable_]]" restamp>
-    <template is="dom-if" if="[[renderView_(
-        routes_.PRIVACY_SANDBOX, currentRoute, inSearchMode)]]"
-        update-when-false>
-      <settings-privacy-sandbox-page slot="view" id="privacySandbox"
-          data-parent-view-id="privacy" prefs="{{prefs}}"
-          route-path$="[[routes_.PRIVACY_SANDBOX.path]]">
-      </settings-privacy-sandbox-page>
-    </template>
-
-    <template is="dom-if" if="[[renderView_(
-        routes_.PRIVACY_SANDBOX_AD_MEASUREMENT, currentRoute, inSearchMode)]]"
-        update-when-false>
-      <settings-privacy-sandbox-ad-measurement-subpage slot="view"
-          id="privacySandboxAdMeasurement" data-parent-view-id="privacy"
-          prefs="{{prefs}}"
-          route-path$="[[routes_.PRIVACY_SANDBOX_AD_MEASUREMENT.path]]">
-      </settings-privacy-sandbox-ad-measurement-subpage>
-    </template>
-  </template>
-
-  <template is="dom-if" if="[[isPrivacySandboxTopicsAndFledgeAvailable_]]" restamp>
-    <template is="dom-if" if="[[renderView_(
-        routes_.PRIVACY_SANDBOX_FLEDGE, currentRoute, inSearchMode)]]"
-        update-when-false>
-      <settings-privacy-sandbox-fledge-subpage slot="view"
-          id="privacySandboxFledge" data-parent-view-id="privacy"
-          prefs="{{prefs}}"
-          route-path$="[[routes_.PRIVACY_SANDBOX_FLEDGE.path]]">
-      </settings-privacy-sandbox-fledge-subpage>
-    </template>
-
-    <template is="dom-if" if="[[renderView_(
-          routes_.PRIVACY_SANDBOX_TOPICS, currentRoute, inSearchMode)]]"
-          update-when-false>
-      <settings-privacy-sandbox-topics-subpage slot="view"
-          id="privacySandboxTopics" data-parent-view-id="privacy"
-          prefs="{{prefs}}"
-          route-path$="[[routes_.PRIVACY_SANDBOX_TOPICS.path]]">
-      </settings-privacy-sandbox-topics-subpage>
-    </template>
-
-    <template is="dom-if" if="[[renderView_(
-          routes_.PRIVACY_SANDBOX_MANAGE_TOPICS, currentRoute, inSearchMode)]]"
-          update-when-false>
-      <settings-privacy-sandbox-manage-topics-subpage slot="view"
-          id="privacySandboxManageTopics" data-parent-view-id="privacy"
-          prefs="{{prefs}}"
-          route-path$="[[routes_.PRIVACY_SANDBOX_MANAGE_TOPICS.path]]">
-      </settings-privacy-sandbox-manage-topics-subpage>
-    </template>
-  </template>
-
   <!-- Keep entries below sorted based on the route name. -->
 
   <template is="dom-if" if="[[renderView_(

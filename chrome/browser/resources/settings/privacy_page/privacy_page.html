@@ -33,18 +33,6 @@
         on-click="onCookiesClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[isAdPrivacyAvailable_]]">
-      <cr-link-row id="privacySandboxLinkRow"
-          start-icon="[[getAdsClickIcon_()]]"
-          class="hr"
-          label="$i18n{adPrivacyLinkRowLabel}"
-          sub-label="[[computeAdPrivacySublabel_(
-              isPrivacySandboxRestricted_,
-              isPrivacySandboxRestrictedNoticeEnabled_)]]"
-          on-click="onPrivacySandboxClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
     <cr-link-row id="securityLinkRow" start-icon="[[getLockIcon_()]]"
         class="hr" label="$i18n{securityPageTitle}"
         sub-label="$i18n{securityPageDescription}"

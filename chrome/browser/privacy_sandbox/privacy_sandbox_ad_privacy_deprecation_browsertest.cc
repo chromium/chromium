@@ -97,21 +97,4 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
       prefs::kPrivacySandboxM1AdMeasurementEnabled));
 }
 
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_SettingsRoutesDoNotRedirect DISABLED_SettingsRoutesDoNotRedirect
-#else
-#define MAYBE_SettingsRoutesDoNotRedirect SettingsRoutesDoNotRedirect
-#endif
-// TODO(https://crbug.com/529969968): Flaky on Linux debug.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
-                       MAYBE_SettingsRoutesDoNotRedirect) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  for (const char* url_string : kAdPrivacyUrls) {
-    GURL url(url_string);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_EQ(web_contents->GetLastCommittedURL(), url);
-  }
-}
-
 }  // namespace privacy_sandbox

@@ -9,7 +9,7 @@ import type {CrToastElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -28,10 +28,6 @@ suite('PrivacyPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isAdPrivacyAvailable: false,
-      isPrivacySandboxRestricted: true,
-    });
     resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -105,90 +101,14 @@ suite('PrivacyPage', function() {
     flush();
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
-
-  test('privacySandboxRestricted', function() {
-    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
 });
 
-
-
-suite(`PrivacySandbox`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isAdPrivacyAvailable: true,
-      isPrivacySandboxRestricted: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('privacySandboxRestricted', function() {
-    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
-
-  test('privacySandboxRowLabel', function() {
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxLinkRow');
-    assertTrue(!!privacySandboxLinkRow);
-    assertEquals(
-        loadTimeData.getString('adPrivacyLinkRowLabel'),
-        privacySandboxLinkRow.label);
-  });
-
-  test('privacySandboxNotExternalLink', function() {
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxLinkRow');
-    assertTrue(!!privacySandboxLinkRow);
-    assertFalse(privacySandboxLinkRow.external);
-  });
-
-  test('clickPrivacySandboxRow', async function() {
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacySandboxLinkRow');
-    assertTrue(!!privacySandboxLinkRow);
-    privacySandboxLinkRow.click();
-    // Ensure UMA is logged.
-    assertEquals(
-        'Settings.PrivacySandbox.OpenedFromSettingsParent',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-
-    // Ensure the correct route has been navigated to when enabling
-    // kPrivacySandboxSettings4.
-    await flushTasks();
-    assertEquals(
-        routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
-  });
-});
 
 suite(`CookiesSubpage`, function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-    });
     resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -264,156 +184,6 @@ suite('CookiesSubpageRedesignDisabled', function() {
         assertEquals(
             page.i18n('thirdPartyCookiesLinkRowSublabelDisabled'),
             thirdPartyCookiesLinkRow.subLabel);
-      });
-});
-
-suite(`PrivacySandbox4EnabledButRestricted`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    // Note that the browsertest setup ensures these values are set correctly at
-    // startup, such that routes are created (or not). They are included here to
-    // make clear the intent of the test.
-    loadTimeData.overrideValues({
-      isAdPrivacyAvailable: false,
-      isPrivacySandboxRestricted: true,
-      isPrivacySandboxRestrictedNoticeEnabled: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('noPrivacySandboxRowShown', function() {
-    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
-
-  test('noRouteForAdPrivacyPaths', function() {
-    const adPrivacyPaths = [
-      routes.PRIVACY_SANDBOX,
-      routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-      routes.PRIVACY_SANDBOX_TOPICS,
-      routes.PRIVACY_SANDBOX_FLEDGE,
-    ];
-    for (const path of adPrivacyPaths) {
-      assertThrows(() => Router.getInstance().navigateTo(path));
-    }
-  });
-});
-
-suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    // Note that the browsertest setup ensures these values are set correctly at
-    // startup, such that routes are created (or not). They are included here to
-    // make clear the intent of the test.
-    loadTimeData.overrideValues({
-      isAdPrivacyAvailable: true,
-      isPrivacySandboxRestricted: true,
-      isPrivacySandboxRestrictedNoticeEnabled: true,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('privacySandboxRowShown', function() {
-    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
-
-  test('noRouteForDisabledAdPrivacyPaths', function() {
-    const removedAdPrivacyPaths = [
-      routes.PRIVACY_SANDBOX_TOPICS,
-      routes.PRIVACY_SANDBOX_FLEDGE,
-    ];
-    const presentAdPrivacyPaths = [
-      routes.PRIVACY_SANDBOX,
-      routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-    ];
-    for (const path of removedAdPrivacyPaths) {
-      assertThrows(() => Router.getInstance().navigateTo(path));
-    }
-    for (const path of presentAdPrivacyPaths) {
-      Router.getInstance().navigateTo(path);
-      assertEquals(path, Router.getInstance().getCurrentRoute());
-    }
-  });
-
-  test('privacySandboxRowSublabel', function() {
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxLinkRow');
-    assertTrue(!!privacySandboxLinkRow);
-    // Ensure that a measurement-specific message is shown in this
-    // configuration. The default is tested in the regular
-    // PrivacySandbox4Enabled suite.
-    assertEquals(
-        loadTimeData.getString('adPrivacyRestrictedLinkRowSubLabel'),
-        privacySandboxLinkRow.subLabel);
-  });
-});
-
-suite('PrivacySandboxAdPrivacyUxDeprecationEnabled', function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isAdPrivacyAvailable: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('noPrivacySandboxRowShown', function() {
-    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
-  });
-
-  test('noRouteForAdPrivacyPaths', function() {
-    const adPrivacyPaths = [
-      routes.PRIVACY_SANDBOX,
-      routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-      routes.PRIVACY_SANDBOX_TOPICS,
-      routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
-      routes.PRIVACY_SANDBOX_FLEDGE,
-    ];
-    for (const path of adPrivacyPaths) {
-      assertThrows(() => Router.getInstance().navigateTo(path));
-    }
   });
 });
 
