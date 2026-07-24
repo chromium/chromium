@@ -407,10 +407,6 @@ class ExecutionEngine : public ToolDelegate,
                            const url::Origin& destination,
                            bool applied_gate) const;
 
-  // Returns the highest-priority navigation gating decision. Prioritizes
-  // blocking navigations over allowing (except on same origin navigations).
-  GatingDecision DetermineGatingDecision(const GURL& source_url,
-                                         const GURL& destination_url) const;
   void OnComputedGatingDecision(
       NavigationDecisionCallback callback,
       const url::Origin& source_origin,

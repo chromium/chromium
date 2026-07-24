@@ -440,13 +440,16 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
           return decision.is_allowed
                      ? ExecutionEngine::GatingDecision::kAllowByContainerConfig
                      : ExecutionEngine::GatingDecision::kBlockByContainerConfig;
+        case origin_gating::DecisionSource::kEnterprisePolicy:
+          return decision.is_allowed
+                     ? ExecutionEngine::GatingDecision::kAllowByStaticList
+                     : ExecutionEngine::GatingDecision::kBlockByStaticList;
         case origin_gating::DecisionSource::kCacheWithUserConfirmation:
         case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
         case origin_gating::DecisionSource::kNoVerdict:
           return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
         case origin_gating::DecisionSource::kAllowHttpLocalhost:
         case origin_gating::DecisionSource::kAllowAboutBlank:
-        case origin_gating::DecisionSource::kEnterprisePolicy:
         case origin_gating::DecisionSource::kForbidIpAddress:
         case origin_gating::DecisionSource::kRequireHttps:
         case origin_gating::DecisionSource::kRequireHttpsOrHttp:
@@ -685,8 +688,7 @@ ExecutionEngine::ExecutionEngine(
                    {origin_gating::GateableEvent::kNavigationRequest,
                     origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::DecisionSource::kEnterprisePolicy,
-                   {origin_gating::GateableEvent::kNavigationRequest,
-                    origin_gating::GateableEvent::kPageAction}},
+                   origin_gating::GateableEventSet::All()},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateLookalikeUrl,
                                            task_->GetProfile()),
@@ -813,50 +815,20 @@ ExecutionEngine::ShouldDeferNavigation(
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating2");
 
-  // Note: `DetermineGatingDecision` and `CheckNavigationSensitiveUrlList`
-  // operate on GURLs, but metrics and `origin_gating_cache()` operate on
-  // Origins.
-  const GatingDecision decision = DetermineGatingDecision(
-      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedURL(),
-      /*destination_url=*/navigation_handle.GetURL());
-  if (decision != GatingDecision::kNeedsAsyncCheck) {
-    RecordNavigationGatingDecision(decision);
-  }
-
   const url::Origin source_origin = OriginOrPrecursorIfOpaque(
       GetPrimaryMainFrame(navigation_handle)->GetLastCommittedOrigin());
-  switch (decision) {
-    case GatingDecision::kAllowSameOrigin:
-    case GatingDecision::kAllowByContainerConfig:
-    case GatingDecision::kAllowByStaticList:
-      LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
-                          url::Origin::Create(navigation_handle.GetURL()),
-                          /*applied_gate=*/false);
-      return content::NavigationThrottle::PROCEED;
-    case GatingDecision::kBlockByStaticList:
-    case GatingDecision::kBlockByContainerConfig:
-      LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
-                          url::Origin::Create(navigation_handle.GetURL()),
-                          /*applied_gate=*/true);
-      return content::NavigationThrottle::CANCEL_AND_IGNORE;
-    case GatingDecision::kNeedsAsyncCheck: {
-      auto context = std::make_unique<ActorGatingContext>(
-          GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
-          navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
-      auto event = origin_gating::GateableEvent::kNavigationResponse;
-      origin_gating_checker_.ComputeGatingDecision(
-          std::move(context), event, source_origin.GetURL(),
-          navigation_handle.GetURL(),
-          base::BindOnce(&ExecutionEngine::OnComputedGatingDecision,
-                         GetWeakPtr(), std::move(callback), source_origin,
-                         url::Origin::Create(navigation_handle.GetURL()),
-                         state_, navigation_handle.GetInitiatorOrigin(),
-                         event));
-      return content::NavigationThrottle::DEFER;
-    }
-  }
-
-  NOTREACHED();
+  auto context = std::make_unique<ActorGatingContext>(
+      GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
+      navigation_handle.IsInPrerenderedMainFrame(), std::move(timer));
+  auto event = origin_gating::GateableEvent::kNavigationResponse;
+  origin_gating_checker_.ComputeGatingDecision(
+      std::move(context), event, source_origin.GetURL(),
+      navigation_handle.GetURL(),
+      base::BindOnce(&ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
+                     std::move(callback), source_origin,
+                     url::Origin::Create(navigation_handle.GetURL()), state_,
+                     navigation_handle.GetInitiatorOrigin(), event));
+  return content::NavigationThrottle::DEFER;
 }
 
 void ExecutionEngine::OnComputedGatingDecision(
@@ -923,21 +895,6 @@ void ExecutionEngine::LogNavigationGating(
         "Actor.NavigationGating.SameSiteInitiator",
         net::SchemefulSite::IsSameSite(*initiator, destination));
   }
-}
-
-ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
-    const GURL& source_url,
-    const GURL& destination_url) const {
-  switch (task_->policy_checker().Evaluate(destination_url)) {
-    case EnterprisePolicyChecker::UrlBlockReason::kNotBlocked:
-      break;
-    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed:
-      return GatingDecision::kAllowByStaticList;
-    case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked:
-      return GatingDecision::kBlockByStaticList;
-  }
-
-  return GatingDecision::kNeedsAsyncCheck;
 }
 
 void ExecutionEngine::DoesOriginRequireUserConfirmation(
