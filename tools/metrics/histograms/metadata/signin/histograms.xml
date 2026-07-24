@@ -1941,6 +1941,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ExplicitSigninDatatypeMigration"
+    enum="ExplicitSigninDatatypeMigrationState" expires_after="2027-01-01">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded on every startup (towards the end of primary account manager
+    initialization) for users who are signed in but not syncing.
+
+    It records 3 buckets: signed in users, signed in users with explicit
+    bookmarks enabled, and signed in users with explicit extensions enabled.
+    This helps track the migration of users to the explicit bookmarks and
+    extensions prefs.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.AccountExtensionsSignoutChoice"
     enum="AccountExtensionsSignoutChoice" expires_after="2026-10-25">
   <owner>kelvinjiang@chromium.org</owner>

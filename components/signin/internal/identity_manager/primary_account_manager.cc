@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -40,6 +41,11 @@
 using signin::PrimaryAccountChangeEvent;
 
 namespace {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr std::string_view kExplicitSigninDatatypeMigrationHistogram =
+    "Signin.ExplicitSigninDatatypeMigration";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 enum class InitializePrefState {
   kWithPrimaryAccountId_NotConsentedForSync = 0,
@@ -337,6 +343,23 @@ PrimaryAccountManager::PrimaryAccountManager(
     if (ShouldEnableBookmarksExplicitBrowserSigninPrefForSignedInUser()) {
       signin_prefs.SetBookmarksExplicitBrowserSignin(
           GetPrimaryAccount().account_info.gaia, true);
+    }
+
+    base::UmaHistogramEnumeration(
+        kExplicitSigninDatatypeMigrationHistogram,
+        ExplicitSigninDatatypeMigrationState::kSignedIn);
+
+    if (signin_prefs.GetBookmarksExplicitBrowserSignin(
+            GetPrimaryAccount().account_info.gaia)) {
+      base::UmaHistogramEnumeration(
+          kExplicitSigninDatatypeMigrationHistogram,
+          ExplicitSigninDatatypeMigrationState::kSignedInWithExplicitBookmarks);
+    }
+    if (signin_prefs.GetExtensionsExplicitBrowserSignin(
+            GetPrimaryAccount().account_info.gaia)) {
+      base::UmaHistogramEnumeration(kExplicitSigninDatatypeMigrationHistogram,
+                                    ExplicitSigninDatatypeMigrationState::
+                                        kSignedInWithExplicitExtensions);
     }
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

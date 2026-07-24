@@ -1376,6 +1376,21 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
 
   EXPECT_NE(GetParam(),
             SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  histogram_tester_.ExpectBucketCount(
+      "Signin.ExplicitSigninDatatypeMigration",
+      PrimaryAccountManager::ExplicitSigninDatatypeMigrationState::kSignedIn,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.ExplicitSigninDatatypeMigration",
+      PrimaryAccountManager::ExplicitSigninDatatypeMigrationState::
+          kSignedInWithExplicitBookmarks,
+      GetParam() ? 0 : 1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.ExplicitSigninDatatypeMigration",
+      PrimaryAccountManager::ExplicitSigninDatatypeMigrationState::
+          kSignedInWithExplicitExtensions,
+      GetParam() ? 0 : 1);
 }
 
 TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
