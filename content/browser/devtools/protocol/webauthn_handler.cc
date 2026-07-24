@@ -135,11 +135,15 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
     const VirtualAuthenticator& authenticator,
     base::span<const uint8_t> credential_id,
     const device::VirtualFidoDevice::RegistrationData& registration) {
+  int sign_count = 0;
+  if (registration.counter.has_value()) {
+    sign_count = base::saturated_cast<int>(*registration.counter);
+  }
   auto credential = WebAuthn::Credential::Create()
                         .SetCredentialId(Binary::fromSpan(credential_id))
                         .SetPrivateKey(Binary::fromVector(
                             registration.private_key->GetPKCS8PrivateKey()))
-                        .SetSignCount(registration.counter)
+                        .SetSignCount(sign_count)
                         .SetIsResidentCredential(registration.is_resident)
                         .SetBackupEligibility(registration.backup_eligible)
                         .SetBackupState(registration.backup_state)

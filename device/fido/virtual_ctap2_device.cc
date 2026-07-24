@@ -1685,7 +1685,9 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   // requires.
   bool done_first = false;
   for (const auto& registration : found_registrations) {
-    registration.second->counter++;
+    if (registration.second->counter.has_value()) {
+      (*registration.second->counter)++;
+    }
 
     std::optional<AttestedCredentialData> opt_attested_cred_data;
     if (config_.return_attested_cred_data_in_get_assertion_response) {
@@ -1764,8 +1766,8 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         request.user_presence_required && !mutable_state()->unset_up_bit,
         user_verified && !mutable_state()->unset_uv_bit,
         registration.second->backup_eligible, registration.second->backup_state,
-        registration.second->counter, std::move(opt_attested_cred_data),
-        std::move(extensions));
+        registration.second->counter.value_or(0),
+        std::move(opt_attested_cred_data), std::move(extensions));
 
     std::vector<uint8_t> signature_buffer;
     if (config_.always_uv && !user_verified) {

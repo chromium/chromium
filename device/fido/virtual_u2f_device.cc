@@ -227,15 +227,18 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
   if (!registration)
     return ErrorStatus(apdu::ApduResponse::Status::SW_WRONG_DATA);
 
-  ++registration->counter;
+  if (registration->counter.has_value()) {
+    (*registration->counter)++;
+  }
 
   // First create the part of the response that gets signed over.
   std::vector<uint8_t> response;
   response.push_back(0x01);  // Always pretend we got a touch.
-  response.push_back(registration->counter >> 24);
-  response.push_back(registration->counter >> 16);
-  response.push_back(registration->counter >> 8);
-  response.push_back(registration->counter);
+  uint32_t counter_value = registration->counter.value_or(0);
+  response.push_back(counter_value >> 24);
+  response.push_back(counter_value >> 16);
+  response.push_back(counter_value >> 8);
+  response.push_back(counter_value);
 
   std::vector<uint8_t> sign_buffer;
   sign_buffer.reserve(application_parameter.size() + response.size() +

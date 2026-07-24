@@ -254,7 +254,7 @@ VirtualFidoDevice::RegistrationData::RegistrationData(const std::string& rp_id)
 VirtualFidoDevice::RegistrationData::RegistrationData(
     std::unique_ptr<PrivateKey> private_key,
     base::span<const uint8_t, kRpIdHashLength> application_parameter,
-    uint32_t counter)
+    std::optional<uint32_t> counter)
     : private_key(std::move(private_key)),
       application_parameter(
           fido_parsing_utils::Materialize(application_parameter)),
@@ -334,7 +334,7 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     base::span<const uint8_t> credential_id,
     device::PublicKeyCredentialRpEntity rp,
     device::PublicKeyCredentialUserEntity user,
-    int32_t signature_counter,
+    std::optional<uint32_t> signature_counter,
     std::unique_ptr<PrivateKey> private_key) {
   auto application_parameter = crypto::hash::Sha256(rp.id);
 

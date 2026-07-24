@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBAUTH_VIRTUAL_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -97,14 +98,14 @@ class CONTENT_EXPORT VirtualAuthenticator
   bool AddRegistration(std::vector<uint8_t> key_handle,
                        const std::string& rp_id,
                        base::span<const uint8_t> private_key,
-                       int32_t counter);
+                       std::optional<uint32_t> counter);
 
   // Register a new resident credential. Returns true if the registration was
   // successful, false otherwise.
   bool AddResidentRegistration(std::vector<uint8_t> key_handle,
                                std::string rp_id,
                                base::span<const uint8_t> private_key,
-                               int32_t counter,
+                               std::optional<uint32_t> counter,
                                std::vector<uint8_t> user_handle,
                                std::optional<std::string> user_name,
                                std::optional<std::string> user_display_name);
@@ -126,6 +127,10 @@ class CONTENT_EXPORT VirtualAuthenticator
   // Sets whether tests of user presence succeed or not for new requests sent to
   // this authenticator. The default is true.
   void SetUserPresence(bool is_user_present);
+
+  // Sets the signature counter for a given credential.
+  void SetSignatureCounter(base::span<const uint8_t> key_handle,
+                           std::optional<uint32_t> counter);
 
   // Sets whether user verification should succeed or not for new requests sent
   // to this authenticator. Defaults to true.

@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     RegistrationData(
         std::unique_ptr<PrivateKey> private_key,
         base::span<const uint8_t, kRpIdHashLength> application_parameter,
-        uint32_t counter);
+        std::optional<uint32_t> counter);
 
     RegistrationData(RegistrationData&& data);
     RegistrationData& operator=(RegistrationData&& other);
@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     std::unique_ptr<PrivateKey> private_key = PrivateKey::FreshP256Key();
     std::array<uint8_t, kRpIdHashLength> application_parameter;
-    uint32_t counter = 0;
+    std::optional<uint32_t> counter = 0;
     bool is_resident = false;
     bool backup_eligible = false;
     bool backup_state = false;
@@ -355,7 +355,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     bool InjectResidentKey(base::span<const uint8_t> credential_id,
                            device::PublicKeyCredentialRpEntity rp,
                            device::PublicKeyCredentialUserEntity user,
-                           int32_t signature_counter,
+                           std::optional<uint32_t> signature_counter,
                            std::unique_ptr<PrivateKey> private_key);
 
     // Adds a resident credential with the specified values, creating a new

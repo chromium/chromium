@@ -59,7 +59,7 @@ bool VirtualAuthenticator::AddRegistration(
     std::vector<uint8_t> key_handle,
     const std::string& rp_id,
     base::span<const uint8_t> private_key,
-    int32_t counter) {
+    std::optional<uint32_t> counter) {
   std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
@@ -79,7 +79,7 @@ bool VirtualAuthenticator::AddResidentRegistration(
     std::vector<uint8_t> key_handle,
     std::string rp_id,
     base::span<const uint8_t> private_key,
-    int32_t counter,
+    std::optional<uint32_t> counter,
     std::vector<uint8_t> user_handle,
     std::optional<std::string> user_name,
     std::optional<std::string> user_display_name) {
@@ -139,6 +139,15 @@ void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
         return is_user_present;
       },
       is_user_present);
+}
+
+void VirtualAuthenticator::SetSignatureCounter(
+    base::span<const uint8_t> key_handle,
+    std::optional<uint32_t> counter) {
+  auto it = state_->registrations.find(key_handle);
+  if (it != state_->registrations.end()) {
+    it->second.counter = counter;
+  }
 }
 
 std::unique_ptr<device::VirtualFidoDevice>
