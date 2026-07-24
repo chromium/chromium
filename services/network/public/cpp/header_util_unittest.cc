@@ -329,49 +329,4 @@ TEST(HeaderUtilTest,
   EXPECT_EQ(*headers.GetHeader("Sec-Speculation-Tags"), std::string(2048, 'a'));
 }
 
-TEST(HeaderUtilTest, ContainsForbiddenSecurityHeader_SecAdAuction_Truncation) {
-  net::HttpRequestHeaders headers;
-
-  // Normal case (< 2048)
-  std::string normal_value = "auction-signal-data";
-  headers.SetHeader("Sec-Ad-Auction-Signals", normal_value);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-  auto value_opt = headers.GetHeader("Sec-Ad-Auction-Signals");
-  ASSERT_TRUE(value_opt.has_value());
-  EXPECT_EQ(*value_opt, normal_value);
-
-  // Truncation case
-  std::string long_value(2500, 'a');
-  headers.SetHeader("Sec-Ad-Auction-Signals", long_value);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-  value_opt = headers.GetHeader("Sec-Ad-Auction-Signals");
-  ASSERT_TRUE(value_opt.has_value());
-  std::string value = *value_opt;
-  EXPECT_EQ(value.length(), 2048u);
-  EXPECT_EQ(value, long_value.substr(0, 2048));
-
-  // Boundary cases for Sec-Ad-Auction-Signals
-  std::string value_2047(2047, 'a');
-  headers.SetHeader("Sec-Ad-Auction-Signals", value_2047);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-  EXPECT_EQ(*headers.GetHeader("Sec-Ad-Auction-Signals"), value_2047);
-
-  std::string value_2048(2048, 'a');
-  headers.SetHeader("Sec-Ad-Auction-Signals", value_2048);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-  EXPECT_EQ(*headers.GetHeader("Sec-Ad-Auction-Signals"), value_2048);
-
-  std::string value_2049(2049, 'a');
-  headers.SetHeader("Sec-Ad-Auction-Signals", value_2049);
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-  EXPECT_EQ(headers.GetHeader("Sec-Ad-Auction-Signals")->length(), 2048u);
-
-  // Sec-Ad-Auction-Fetch should still be strictly checked
-  headers.SetHeader("Sec-Ad-Auction-Fetch", "?1");
-  EXPECT_FALSE(ContainsForbiddenSecurityHeader(headers));
-
-  headers.SetHeader("Sec-Ad-Auction-Fetch", "?0");
-  EXPECT_TRUE(ContainsForbiddenSecurityHeader(headers));
-}
-
 }  // namespace network

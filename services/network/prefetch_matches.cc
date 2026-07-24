@@ -82,7 +82,6 @@ namespace {
   DO_FIELD(request_body) __VA_ARGS__                               \
   DO_FIELD(keepalive) __VA_ARGS__                                  \
   DO_FIELD(browsing_topics) __VA_ARGS__                            \
-  DO_FIELD(ad_auction_headers) __VA_ARGS__                         \
   DO_FIELD(shared_storage_writable_eligible) __VA_ARGS__           \
   DO_FIELD(has_user_gesture) __VA_ARGS__                           \
   DO_FIELD(enable_load_timing) __VA_ARGS__                         \
@@ -179,7 +178,7 @@ enum class FieldsForUma {
   kRequestBody = 26,
   kKeepalive = 27,
   kBrowsingTopics = 28,
-  kAdAuctionHeaders = 29,
+  // DEPRECATED: kAdAuctionHeaders = 29,
   kSharedStorageWritableEligible = 30,
   kHasUserGesture = 31,
   kEnableLoadTiming = 32,
@@ -255,7 +254,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::krequest_body, FieldsForUma::kRequestBody},
     {Fields::kkeepalive, FieldsForUma::kKeepalive},
     {Fields::kbrowsing_topics, FieldsForUma::kBrowsingTopics},
-    {Fields::kad_auction_headers, FieldsForUma::kAdAuctionHeaders},
     {Fields::kshared_storage_writable_eligible,
      FieldsForUma::kSharedStorageWritableEligible},
     {Fields::khas_user_gesture, FieldsForUma::kHasUserGesture},

@@ -156,9 +156,8 @@ bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers,
     if (base::EqualsCaseInsensitiveASCII(name, "Sec-Browsing-Topics")) {
       return value.size() < 1024;
     }
-    // Shared Storage and FLEDGE fetch headers use structured boolean "?1".
-    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Shared-Storage-Writable") ||
-        base::EqualsCaseInsensitiveASCII(name, "Sec-Ad-Auction-Fetch")) {
+    // Shared Storage fetch headers use structured boolean "?1".
+    if (base::EqualsCaseInsensitiveASCII(name, "Sec-Shared-Storage-Writable")) {
       return value == "?1";
     }
     // Shared Storage data origin headers contain origin URLs.
@@ -181,19 +180,7 @@ bool ContainsForbiddenSecurityHeader(net::HttpRequestHeaders& headers,
       }
       return true;
     }
-    // FLEDGE/Protected Audience auction headers contain encoded auction
-    // signals.
-    if (base::StartsWith(name, "Sec-Ad-Auction-",
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      size_t size = value.size();
-      base::UmaHistogramCounts10000("NetworkService.SecAdAuctionHeaderSize",
-                                    size);
-      if (size > 2048) {
-        headers_to_truncate[std::string(name)] =
-            std::string(value.substr(0, 2048));
-      }
-      return true;
-    }
+
     return false;
   };
 

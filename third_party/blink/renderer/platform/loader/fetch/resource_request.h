@@ -301,13 +301,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     fetch_retry_options_ = fetch_retry_options;
   }
 
-  // True if this is an ad auction request eligible for attaching the
-  // `Sec-Ad-Auction-Fetch` request header and processing the
-  // `X-Ad-Auction-Result` response header.
-  bool GetAdAuctionHeaders() const { return ad_auction_headers_; }
-  void SetAdAuctionHeaders(bool ad_auction_headers) {
-    ad_auction_headers_ = ad_auction_headers;
-  }
 
   // True if the original request included the required attribute for the
   // response to be eligible to write to shared storage, pending a
@@ -697,7 +690,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_blob_ : 1;
   bool use_stream_on_response_ : 1;
   bool keepalive_ : 1;
-  bool ad_auction_headers_ : 1;
   bool shared_storage_writable_opted_in_ : 1;
   bool shared_storage_writable_eligible_ : 1;
   bool allow_stale_response_ : 1;

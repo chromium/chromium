@@ -171,7 +171,6 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetFetchPriorityHint(original->FetchPriorityHint());
   request->SetPriority(original->Priority());
   request->SetKeepalive(original->Keepalive());
-  request->SetAdAuctionHeaders(original->AdAuctionHeaders());
   request->SetSharedStorageWritable(original->SharedStorageWritable());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   request->SetIsReloadNavigation(original->IsReloadNavigation());
@@ -701,8 +700,6 @@ Request* Request::CreateRequestWithRequestOrString(
           "secure contexts.");
       return nullptr;
     }
-
-    request->SetAdAuctionHeaders(init->adAuctionHeaders());
   }
 
   if (init->hasSharedStorageWritable()) {

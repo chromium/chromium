@@ -22,8 +22,6 @@ SubresourceProxyingURLLoader::SubresourceProxyingURLLoader(
       forwarding_client_(std::move(client)) {
   DCHECK(network_loader_factory);
 
-  CHECK(resource_request_.ad_auction_headers);
-
   // Make a copy of `resource_request`, because we may need to modify the
   // request.
   network::ResourceRequest new_resource_request = resource_request;

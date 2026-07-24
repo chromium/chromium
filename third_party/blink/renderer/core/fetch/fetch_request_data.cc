@@ -233,7 +233,6 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->fetch_priority_hint_ = fetch_priority_hint_;
   request->original_destination_ = original_destination_;
   request->keepalive_ = keepalive_;
-  request->ad_auction_headers_ = ad_auction_headers_;
   request->shared_storage_writable_ = shared_storage_writable_;
   request->is_history_navigation_ = is_history_navigation_;
   request->is_reload_navigation_ = is_reload_navigation_;

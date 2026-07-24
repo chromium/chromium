@@ -357,7 +357,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   }
 
   dest->keepalive = src.GetKeepalive();
-  dest->ad_auction_headers = src.GetAdAuctionHeaders();
   dest->shared_storage_writable_eligible =
       src.GetSharedStorageWritableEligible();
   dest->has_user_gesture = src.HasUserGesture();

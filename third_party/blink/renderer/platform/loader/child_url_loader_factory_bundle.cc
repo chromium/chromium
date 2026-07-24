@@ -218,24 +218,16 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
-  // Prefetch is disjoint with ad_auction_headers, and keepalive.
-  // TODO(https://crbug.com/1441113): keepalive is disjoint with
-  // ad_auction_headers in our implementation, but the fetch API does not
-  // enforce this, so `subresource_proxying_loader_factory_` (that handles
-  // ad_auction_headers) wins and keepalive is ignored. Either allow them
-  // simultaneously or make them mutually exclusive in the fetch API.
+  // Prefetch is disjoint with keepalive.
   const bool request_is_prefetch = request.load_flags & net::LOAD_PREFETCH;
-  CHECK(!(request_is_prefetch && request.ad_auction_headers));
   CHECK(!(request_is_prefetch && request.keepalive));
 
-  // Use |subresource_proxying_loader_factory_| for prefetch and
-  // ad_auction_headers requests to send the requests to
-  // `SubresourceProxyingURLLoaderService` in the browser process and trigger
-  // the special handling.
+  // Use |subresource_proxying_loader_factory_| for prefetch requests to send
+  // the requests to `SubresourceProxyingURLLoaderService` in the browser
+  // process and trigger the special handling.
   // TODO(horo): Move this routing logic to network service, when we will have
   // the special prefetch handling in network service.
-  if ((request_is_prefetch || request.ad_auction_headers) &&
-      subresource_proxying_loader_factory_) {
+  if (request_is_prefetch && subresource_proxying_loader_factory_) {
     // For prefetch, this is no-state prefetch (see
     // WebURLRequest::GetLoadFlagsForWebUrlRequest).
     subresource_proxying_loader_factory_->CreateLoaderAndStart(

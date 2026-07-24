@@ -194,7 +194,6 @@ bool StructTraits<
   out->destination = data.destination();
   out->keepalive = data.keepalive();
   out->browsing_topics = data.browsing_topics();
-  out->ad_auction_headers = data.ad_auction_headers();
   out->shared_storage_writable_eligible =
       data.shared_storage_writable_eligible();
   out->has_user_gesture = data.has_user_gesture();

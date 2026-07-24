@@ -144,8 +144,6 @@ class CORE_EXPORT FetchRequestData final
   bool Keepalive() const { return keepalive_; }
   void SetKeepalive(bool b) { keepalive_ = b; }
 
-  bool AdAuctionHeaders() const { return ad_auction_headers_; }
-  void SetAdAuctionHeaders(bool b) { ad_auction_headers_ = b; }
 
   bool SharedStorageWritable() const { return shared_storage_writable_; }
   void SetSharedStorageWritable(bool shared_storage_writable) {
@@ -244,7 +242,6 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::RequestDestination original_destination_ =
       network::mojom::RequestDestination::kEmpty;
   bool keepalive_ = false;
-  bool ad_auction_headers_ = false;
   bool shared_storage_writable_ = false;
   bool is_history_navigation_ = false;
   bool is_reload_navigation_ = false;

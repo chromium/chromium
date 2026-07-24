@@ -712,10 +712,6 @@ void HTMLIFrameElement::DidChangeAttributes() {
       ParseConnectionAllowlistAttribute(required_connection_allowlist_);
   attributes->credentialless = credentialless_;
 
-  if (GetExecutionContext()->IsSecureContext()) {
-    attributes->ad_auction_headers =
-        FastHasAttribute(html_names::kAdauctionheadersAttr);
-  }
 
   if (RuntimeEnabledFeatures::SharedStorageAPIEnabled(GetExecutionContext()) &&
       GetExecutionContext()->IsSecureContext()) {

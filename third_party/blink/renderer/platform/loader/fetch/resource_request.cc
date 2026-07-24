@@ -100,7 +100,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      ad_auction_headers_(false),
       shared_storage_writable_opted_in_(false),
       shared_storage_writable_eligible_(false),
       allow_stale_response_(false),
@@ -222,7 +221,6 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetTargetAddressSpace(GetTargetAddressSpace());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
-  request->SetAdAuctionHeaders(GetAdAuctionHeaders());
   request->SetSharedStorageWritableOptedIn(GetSharedStorageWritableOptedIn());
   request->SetPriority(Priority());
   request->SetPriorityIncremental(PriorityIncremental());
