@@ -181,16 +181,14 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
                 }
             }
 
-            if (preference instanceof PreferenceCategory) {
-                // Style a category header (e.g. "Basics").
-                view.setBackground(null);
+            if (mKey != null && preference instanceof PreferenceCategory) {
                 TextView headerTitleView = findTextView(view);
                 if (headerTitleView != null) {
                     headerTitleView.setTextAppearance(
                             R.style.TextAppearance_PreferenceCategoryStandard);
                 }
-            } else if (selected) {
-                // Style a selected category (e.g. "Google services").
+            }
+            if (selected) {
                 highlightFound = true;
                 if (mSelectedBackground != null && mSelectedBackground.getConstantState() != null) {
                     view.setBackground(
@@ -203,7 +201,6 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
                             R.style.TextAppearance_SettingsSelectedMainMenuItemTitle);
                 }
             } else {
-                // Style an unselected category.
                 if (mUnselectedBackground != null
                         && mUnselectedBackground.getConstantState() != null) {
                     view.setBackground(

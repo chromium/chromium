@@ -9,12 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -154,12 +152,11 @@ public class SettingsPageFragmentDelegateImpl
         fragmentManager.registerFragmentLifecycleCallbacks(
                 mSettingsMetricsReporter, /* recursive= */ true);
 
-        // Inflate the settings layout into the container view. Ensure it has the right theme.
+        // Inflate the settings layout into the container view.
         // TODO(crbug.com/521895796): Rename settings_activity.xml since with settings-in-a-tab it
         // doesn't map directly to its own activity.
-        Context themedContext = new ContextThemeWrapper(mActivity, R.style.Theme_Chromium_Settings);
         View settingsView =
-                LayoutInflater.from(themedContext).inflate(R.layout.settings_activity, null);
+                LayoutInflater.from(mActivity).inflate(R.layout.settings_activity, null);
 
         // SettingsInTab uses the root BottomSheetController and ModalDialogManager from
         // ChromeTabbedActivity, so remove the unused local containers to prevent duplicate

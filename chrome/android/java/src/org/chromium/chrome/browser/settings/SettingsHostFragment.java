@@ -220,13 +220,6 @@ public class SettingsHostFragment extends Fragment
     }
 
     @Override
-    public LayoutInflater onGetLayoutInflater(@Nullable Bundle savedInstanceState) {
-        LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
-        // Ensure we use the themed context if available.
-        return inflater.cloneInContext(getContext());
-    }
-
-    @Override
     public View onCreateView(
             LayoutInflater inflater,
             @Nullable ViewGroup container,

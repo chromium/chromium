@@ -23,9 +23,7 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItemCont
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /** Helper class to manage containment styling for settings fragments. */
 @NullMarked
@@ -55,12 +53,6 @@ class SettingsContainmentHelper {
     private final Map<PreferenceFragmentCompat, ViewTreeObserver.OnGlobalLayoutListener>
             mGlobalLayoutListeners = new HashMap<>();
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mCallbacks;
-
-    /**
-     * Fragments that have had the settings theme applied to them. Used as a performance
-     * optimization to avoid re-inflating view that have already been themed.
-     */
-    private final Set<PreferenceFragmentCompat> mThemedFragments = new HashSet<>();
 
     SettingsContainmentHelper(Context context, Delegate delegate) {
         mContext = context;
@@ -190,9 +182,7 @@ class SettingsContainmentHelper {
         Context context = fragment.getContext();
         if (context == null) return;
 
-        if (mThemedFragments.add(fragment)) {
-            context.getTheme().applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
-        }
+        context.getTheme().applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
 
         final var recyclerView = fragment.getListView();
         if (recyclerView == null) return;
@@ -218,11 +208,6 @@ class SettingsContainmentHelper {
         // Use getContext() instead of requireContext() for mocking in tests.
         Context context = mainSettings.getContext();
         if (context == null) return;
-
-        if (mThemedFragments.add(mainSettings)) {
-            context.getTheme().applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
-            reInflateViews(mainSettings);
-        }
 
         int verticalMargin =
                 mContext.getResources()
@@ -253,7 +238,6 @@ class SettingsContainmentHelper {
     }
 
     void onFragmentViewDestroyed(PreferenceFragmentCompat fragment) {
-        mThemedFragments.remove(fragment);
         mItemDecorations.remove(fragment);
         ViewTreeObserver.OnGlobalLayoutListener listener = mGlobalLayoutListeners.remove(fragment);
         View view = fragment.getView();
