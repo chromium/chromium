@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -858,6 +859,18 @@ void PaintSingleFocusRing(
   context.DrawFocusRingPath(path, color, width, 0, auto_dark_mode);
 }
 
+Color FocusRingInnerColor(const ComputedStyle& style) {
+  Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
+#if !BUILDFLAG(IS_MAC)
+  if (style.DarkColorScheme() &&
+      !RuntimeEnabledFeatures::
+          FocusRingRespectExplicitOutlineColorInDarkModeEnabled()) {
+    inner_color = Color::kWhite;
+  }
+#endif
+  return inner_color;
+}
+
 void PaintFocusRing(GraphicsContext& context,
                     const Vector<gfx::Rect>& rects,
                     const ComputedStyle& style,
@@ -865,12 +878,7 @@ void PaintFocusRing(GraphicsContext& context,
                     const LayoutObject::OutlineInfo& info,
                     const LayoutObject* layout_object,
                     const PhysicalRect& border_rect) {
-  Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
-#if !BUILDFLAG(IS_MAC)
-  if (style.DarkColorScheme()) {
-    inner_color = Color::kWhite;
-  }
-#endif
+  Color inner_color = FocusRingInnerColor(style);
 
   const float outer_ring_width = FocusRingOuterStrokeWidth(style);
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);
@@ -1058,6 +1066,11 @@ int OutlinePainter::OutlineOutsetExtent(const ComputedStyle& style,
            std::ceil(FocusRingStrokeWidth(style) / 3.f) * 2;
   }
   return base::ClampAdd(info.width, info.offset).Max(0);
+}
+
+Color OutlinePainter::FocusRingInnerColorForTesting(
+    const ComputedStyle& style) {
+  return FocusRingInnerColor(style);
 }
 
 void OutlinePainter::IterateRightAnglePathForTesting(

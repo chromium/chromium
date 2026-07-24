@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -77,6 +81,86 @@ TEST_F(OutlinePainterTest, IterateCollapsedPath) {
   OutlinePainter::IterateRightAnglePathForTesting(
       path,
       BindRepeating([](const Vector<OutlinePainter::Line>&) { NOTREACHED(); }));
+}
+
+TEST_F(OutlinePainterTest, FocusRingRespectsExplicitOutlineColorInDarkMode) {
+#if !BUILDFLAG(IS_MAC)
+  // Browser renderers set a dark custom focus ring color via prefs.
+  LayoutTheme::GetTheme().SetCustomFocusRingColor(Color(0x10, 0x10, 0x10));
+#endif
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="explicit"
+         style="color-scheme: dark; outline: red auto 5px; width: 100px;
+                height: 50px;">
+    </div>
+    <div id="explicit_match_default"
+         style="color-scheme: dark; outline: #101010 auto 5px; width: 100px;
+                height: 50px;">
+    </div>
+    <div id="default"
+         style="color-scheme: dark; outline: auto 5px; width: 100px;
+                height: 50px;">
+    </div>
+  )HTML");
+
+  // An explicit outline-color (e.g. red) must not be overridden.
+  const auto& explicit_style =
+      GetLayoutObjectByElementId("explicit")->StyleRef();
+  EXPECT_TRUE(explicit_style.DarkColorScheme());
+  Color explicit_color =
+      explicit_style.VisitedDependentColor(GetCSSPropertyOutlineColor());
+  EXPECT_EQ(Color(0xFF, 0, 0), explicit_color);
+
+  // Even if an explicit author color equals the dark default focus-ring color,
+  // it should stay explicit and not be treated as -webkit-focus-ring-color.
+  const auto& explicit_match_default_style =
+      GetLayoutObjectByElementId("explicit_match_default")->StyleRef();
+  EXPECT_TRUE(explicit_match_default_style.DarkColorScheme());
+  Color explicit_match_default_color =
+      explicit_match_default_style.VisitedDependentColor(
+          GetCSSPropertyOutlineColor());
+  EXPECT_EQ(Color(0x10, 0x10, 0x10), explicit_match_default_color);
+
+  // Default outline-color (currentColor) resolves to the text color,
+  // which is white in dark mode.
+  const auto& default_style = GetLayoutObjectByElementId("default")->StyleRef();
+  EXPECT_TRUE(default_style.DarkColorScheme());
+  EXPECT_TRUE(default_style.HasOutlineWithCurrentColor());
+
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(Color(0x10, 0x10, 0x10),
+            OutlinePainter::FocusRingInnerColorForTesting(
+                explicit_match_default_style));
+#endif
+}
+
+TEST_F(OutlinePainterTest, FocusRingDarkModeColorFlagCanDisableFix) {
+#if !BUILDFLAG(IS_MAC)
+  ScopedFocusRingRespectExplicitOutlineColorInDarkModeForTest scoped_feature(
+      false);
+  LayoutTheme::GetTheme().SetCustomFocusRingColor(Color(0x10, 0x10, 0x10));
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="explicit"
+         style="color-scheme: dark; outline: red auto 5px; width: 100px;
+                height: 50px;">
+    </div>
+  )HTML");
+
+  // With the feature disabled, the legacy behavior applies: the inner focus
+  // ring color is forced to white in dark mode, even for an explicit author
+  // outline-color.
+  const auto& explicit_style =
+      GetLayoutObjectByElementId("explicit")->StyleRef();
+  EXPECT_TRUE(explicit_style.DarkColorScheme());
+  EXPECT_EQ(Color(0xFF, 0, 0),
+            explicit_style.VisitedDependentColor(GetCSSPropertyOutlineColor()));
+  EXPECT_EQ(Color(0x10, 0x10, 0x10), LayoutTheme::GetTheme().FocusRingColor(
+                                         mojom::blink::ColorScheme::kDark));
+  EXPECT_EQ(Color::kWhite,
+            OutlinePainter::FocusRingInnerColorForTesting(explicit_style));
+#endif
 }
 
 }  // namespace blink

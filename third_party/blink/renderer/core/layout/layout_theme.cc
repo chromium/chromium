@@ -912,6 +912,11 @@ void LayoutTheme::SetCustomFocusRingColor(const Color& c) {
 
 Color LayoutTheme::FocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
+  if (color_scheme == mojom::blink::ColorScheme::kDark &&
+      RuntimeEnabledFeatures::
+          FocusRingRespectExplicitOutlineColorInDarkModeEnabled()) {
+    return Color::FromRGB(0xEE, 0xEE, 0xEE);
+  }
   constexpr Color default_focus_ring_color = Color::FromRGBA32(0xFFE59700);
   return custom_focus_ring_color_.value_or(default_focus_ring_color);
 }

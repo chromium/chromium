@@ -79,6 +79,21 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
 // The expectations in the tests below are relying on LayoutThemeDefault.
 // LayoutThemeMac doesn't inherit from that class.
 #if !BUILDFLAG(IS_MAC)
+TEST_F(LayoutThemeTest, FocusRingColorWithColorScheme) {
+  const Color custom_color(0x10, 0x10, 0x10);
+  LayoutTheme::GetTheme().SetCustomFocusRingColor(custom_color);
+
+  EXPECT_EQ(custom_color, LayoutTheme::GetTheme().FocusRingColor(
+                              mojom::blink::ColorScheme::kLight));
+  EXPECT_EQ(Color(0xEE, 0xEE, 0xEE), LayoutTheme::GetTheme().FocusRingColor(
+                                         mojom::blink::ColorScheme::kDark));
+
+  ScopedFocusRingRespectExplicitOutlineColorInDarkModeForTest scoped_feature(
+      false);
+  EXPECT_EQ(custom_color, LayoutTheme::GetTheme().FocusRingColor(
+                              mojom::blink::ColorScheme::kDark));
+}
+
 TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
   SetHtmlInnerHTML(R"HTML(
     <style>
