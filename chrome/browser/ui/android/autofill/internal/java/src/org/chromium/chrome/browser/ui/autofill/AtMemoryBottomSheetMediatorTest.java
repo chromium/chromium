@@ -533,7 +533,7 @@ public class AtMemoryBottomSheetMediatorTest {
     @Test
     public void testOnSearchFocus() {
         mHomeModel.get(HomeProperties.SEARCH_BAR_DELEGATE).onSearchFocus(true);
-        verify(mDelegate).requestExpandSheet();
+        verify(mDelegate).requestExpandSheet(/* expandInFullHeight= */ true);
     }
 
     @Test

@@ -191,12 +191,12 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
         mModel.set(CURRENT_SCREEN, ScreenId.FLYOUT_SCREEN);
         mDelegate.onChildSuggestionsShown(position);
-        mDelegate.requestExpandSheet();
+        mDelegate.requestExpandSheet(/* expandInFullHeight= */ false);
     }
 
     private void onFlyoutBackClicked() {
         mModel.set(CURRENT_SCREEN, ScreenId.HOME_SCREEN);
-        mDelegate.requestExpandSheet();
+        mDelegate.requestExpandSheet(/* expandInFullHeight= */ false);
     }
 
     private void onFlyoutSuggestionClicked(int parentPosition, int childPosition) {
@@ -207,6 +207,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     public void onQuerySubmitted(String query) {
         mHomeModel.set(HomeProperties.IS_LOADING, true);
         mDelegate.onQuerySubmitted(query);
+        mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
     }
 
     @Override
@@ -217,7 +218,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     @Override
     public void onSearchFocus(boolean hasFocus) {
         if (hasFocus) {
-            mDelegate.requestExpandSheet();
+            mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
         }
     }
 

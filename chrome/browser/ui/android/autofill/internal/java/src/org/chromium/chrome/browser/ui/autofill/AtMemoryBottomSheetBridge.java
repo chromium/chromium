@@ -121,8 +121,8 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @Override
-    public void requestExpandSheet() {
-        mCoordinator.expand(/* expandInHalfHeight= */ false);
+    public void requestExpandSheet(boolean expandInFullHeight) {
+        mCoordinator.expand(expandInFullHeight);
     }
 
     @Override

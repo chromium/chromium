@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
@@ -112,31 +113,34 @@ public class AtMemoryBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testExpand_WhenSheetStateFull_AndNotExpandInHalfHeight() {
+    public void testExpand_WhenSheetStateFull_AndNotExpandInFullHeight() {
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.FULL);
 
-        mCoordinator.expand(/* expandInHalfHeight= */ false);
+        mCoordinator.expand(/* expandInFullHeight= */ false);
+        ShadowLooper.idleMainLooper();
 
         verify(mBottomSheetController, never()).expandSheet(eq(true));
     }
 
     @Test
-    public void testExpand_WhenSheetStateHalf_AndNotExpandInHalfHeight() {
+    public void testExpand_WhenSheetStateHalf_AndNotExpandInFullHeight() {
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.HALF);
 
-        mCoordinator.expand(/* expandInHalfHeight= */ false);
+        mCoordinator.expand(/* expandInFullHeight= */ false);
+        ShadowLooper.idleMainLooper();
 
         verify(mBottomSheetController).expandSheet(eq(true));
     }
 
     @Test
-    public void testExpand_WhenSheetStateFull_AndExpandInHalfHeight() {
+    public void testExpand_WhenSheetStateFull_AndExpandInFullHeight() {
         when(mBottomSheetController.getSheetState())
                 .thenReturn(BottomSheetController.SheetState.FULL);
 
-        mCoordinator.expand(/* expandInHalfHeight= */ true);
+        mCoordinator.expand(/* expandInFullHeight= */ true);
+        ShadowLooper.idleMainLooper();
 
         verify(mBottomSheetController).expandSheet(eq(true));
     }
