@@ -74,6 +74,7 @@
 
 - (void)disconnect {
   [self detachFromWebState];
+  [super disconnect];
 }
 
 #pragma mark - Accessors

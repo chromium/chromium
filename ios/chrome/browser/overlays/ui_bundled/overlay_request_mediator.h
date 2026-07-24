@@ -37,6 +37,9 @@ class OverlayRequestSupport;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects the mediator.
+- (void)disconnect NS_REQUIRES_SUPER;
+
 @end
 
 // Delegate for the mediator used to stop the overlay when user interaction

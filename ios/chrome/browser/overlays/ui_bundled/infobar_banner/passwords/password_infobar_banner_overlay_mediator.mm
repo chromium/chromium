@@ -93,19 +93,21 @@
   if (self.passwordDelegate) {
     // If the infobar owning the delegate isn't yet deleted, report the infobar
     // as gone right now. The infobar outlives the banner UI when the state of
-    // the page hasn't changed after dimissing the banner.
+    // the page hasn't changed after dismissing the banner.
     //
     // Not having a delegate at this moment happens when navigating away from
     // the page on which the banner is displayed, where the infobar delegate is
     // deleted before the dismiss callback is called.
     self.passwordDelegate->InfobarGone();
+
+    // Trigger the sign-in promo in the banner mediator upon dismissal
+    // completion rather than in the infobar delegate, since the promo
+    // presentation is tied to the banner UI dismissal animation lifecycle.
+    [self.nonModalSignInPromoHandler
+        showNonModalSignInPromoWithType:NonModalSignInPromoType::kPassword];
   }
 
   [super finishDismissal];
-
-  // Shows the promo.
-  [self.nonModalSignInPromoHandler
-      showNonModalSignInPromoWithType:NonModalSignInPromoType::kPassword];
 }
 
 #pragma mark - Private

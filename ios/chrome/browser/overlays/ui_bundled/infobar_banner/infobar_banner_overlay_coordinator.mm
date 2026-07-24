@@ -181,6 +181,9 @@
   // Mark started as NO before calling dismissal callback to prevent dup
   // stopAnimated: executions.
   self.started = NO;
+  // Disconnect the mediator synchronously so it stops referencing command
+  // handlers before asynchronous view controller dismissal finishes.
+  [self.mediator disconnect];
   __weak InfobarBannerOverlayCoordinator* weakSelf = self;
   [self.baseViewController dismissViewControllerAnimated:animated
                                               completion:^{

@@ -35,6 +35,9 @@
   NOTREACHED() << "Subclasses implement.";
 }
 
+- (void)disconnect {
+}
+
 #pragma mark - Private
 
 // Returns an OverlayCompletionCallback to reset the request pointer upon

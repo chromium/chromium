@@ -311,6 +311,7 @@ source_set("eg2_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/common",
     "//components/enterprise/connectors/core:test_support",
+    "//components/feature_engagement/public:feature_constants",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/policy/core/common:common_constants",

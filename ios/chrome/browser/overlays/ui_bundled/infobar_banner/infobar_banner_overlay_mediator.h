@@ -35,6 +35,9 @@ class Tracker;
 // dismissal.
 - (void)finishDismissal;
 
+// Disconnects the mediator.
+- (void)disconnect NS_REQUIRES_SUPER;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_BANNER_INFOBAR_BANNER_OVERLAY_MEDIATOR_H_

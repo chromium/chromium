@@ -12,6 +12,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/metrics/profile_metrics_service.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/passwords/infobars/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -166,4 +168,17 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
   base::HistogramTester histogram_tester;
   [mediator_ finishDismissal];
   histogram_tester.ExpectTotalCount("PasswordManager.SaveUIDismissalReason", 0);
+}
+
+// Tests that -finishDismissal triggers -showNonModalSignInPromoWithType: on
+// nonModalSignInPromoHandler when the infobar delegate is set.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
+       FinishDismissalShowsNonModalPromo) {
+  InitInfobar();
+  id mock_handler = OCMProtocolMock(@protocol(NonModalSignInPromoCommands));
+  mediator_.nonModalSignInPromoHandler = mock_handler;
+  OCMExpect([mock_handler
+      showNonModalSignInPromoWithType:NonModalSignInPromoType::kPassword]);
+  [mediator_ finishDismissal];
+  EXPECT_OCMOCK_VERIFY(mock_handler);
 }

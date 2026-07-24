@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/signin/non_modal_promo/coordinator:promo_types",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/ui_bundled/banners/test",
     "//ios/chrome/browser/overlays/model",

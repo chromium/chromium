@@ -31,7 +31,13 @@
 }
 
 - (void)finishDismissal {
-  // No-op as default.
+  self.nonModalSignInPromoHandler = nil;
+}
+
+- (void)disconnect {
+  self.consumer = nil;
+  self.engagementTracker = nullptr;
+  [super disconnect];
 }
 
 #pragma mark - Accessors
