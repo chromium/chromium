@@ -2476,22 +2476,46 @@ void BrowserAutofillManager::OnDidDetectJavaScriptAutofillImpl(
     const std::vector<JavaScriptFieldModification>& field_modifications) {
   auto [form_structure, trigger_field] =
       FindMutableFormAndField(form.global_id(), trigger_field_id);
-  if (!form_structure || !trigger_field ||
-      !trigger_field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+  if (!form_structure || !trigger_field) {
     return;
   }
 
-  size_t address_fields_count = std::ranges::count_if(
-      field_modifications, [&](const JavaScriptFieldModification& mod) {
-        const AutofillField* field = form_structure->GetFieldById(mod.field_id);
-        return field &&
-               field->Type().GetGroups().contains(FieldTypeGroup::kAddress);
-      });
+  auto detect_address_picker = [&] {
+    size_t address_fields_count = std::ranges::count_if(
+        field_modifications, [&](const JavaScriptFieldModification& mod) {
+          const AutofillField* field =
+              form_structure->GetFieldById(mod.field_id);
+          return field &&
+                 field->Type().GetGroups().contains(FieldTypeGroup::kAddress);
+        });
 
-  // The threshold for minimum fields changed.
-  // TODO(crbug.com/41495779): Use a constant or feature parameter.
-  constexpr size_t kMinFieldsChanged = 3;
-  if (address_fields_count >= kMinFieldsChanged) {
+    // If multiple address fields where changed at once, declare the operation
+    // as triggered by an address picker.
+    constexpr size_t kMinFieldsChangedAddressPicker = 3;
+    if (address_fields_count >= kMinFieldsChangedAddressPicker) {
+      return true;
+    }
+
+    // Otherwise ensure all modified fields were address fields and that the
+    // trigger field was prefix completed.
+    return address_fields_count == field_modifications.size() &&
+           std::ranges::contains(
+               field_modifications,
+               JavaScriptFieldModification(
+                   trigger_field_id,
+                   mojom::JavaScriptModificationType::kPrefixCompletion));
+  };
+
+  auto detect_email_picker = [&] {
+    return field_modifications.size() == 1u &&
+           trigger_field->Type().GetAddressType() == EMAIL_ADDRESS &&
+           field_modifications.front() ==
+               JavaScriptFieldModification(
+                   trigger_field_id,
+                   mojom::JavaScriptModificationType::kPrefixCompletion);
+  };
+
+  if (detect_address_picker() || detect_email_picker()) {
     trigger_field->set_did_trigger_javascript_autofill(true);
     if (base::FeatureList::IsEnabled(
             features::debug::kAutofillShowTypePredictions)) {

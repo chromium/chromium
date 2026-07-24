@@ -7218,8 +7218,10 @@ TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
       "Autofill.SuggestionGeneration.GeneratedFillingProduct", 2);
 }
 
+// Tests that custom JS autofill is detected when at least 3 address fields are
+// modified.
 TEST_F(BrowserAutofillManagerTest,
-       OnDidDetectJavaScriptAutofill_ValidAddressAutofill) {
+       OnDidDetectJavaScriptAutofill_AddressPicker_ValidAddressAutofill) {
   FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                                 {.role = ADDRESS_HOME_CITY},
                                                 {.role = ADDRESS_HOME_ZIP}}});
@@ -7253,8 +7255,10 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(form_structure->field(2)->did_trigger_javascript_autofill());
 }
 
+// Tests that custom JS autofill is ignored when fewer than 3 address fields are
+// modified and no field underwent prefix completion.
 TEST_F(BrowserAutofillManagerTest,
-       OnDidDetectJavaScriptAutofill_InvalidTooFewFields) {
+       OnDidDetectJavaScriptAutofill_AddressPicker_InvalidTooFewFields) {
   FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                                 {.role = ADDRESS_HOME_CITY},
                                                 {.role = ADDRESS_HOME_ZIP}}});
@@ -7278,8 +7282,10 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
 
+// Tests that custom JS autofill is ignored when modified fields belong to
+// non-address groups (e.g., credit card fields).
 TEST_F(BrowserAutofillManagerTest,
-       OnDidDetectJavaScriptAutofill_InvalidNonAddressFields) {
+       OnDidDetectJavaScriptAutofill_AddressPicker_InvalidNonAddressFields) {
   // Use credit card fields (FieldTypeGroup::kCreditCard) instead of address.
   FormData form =
       test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER},
@@ -7300,6 +7306,84 @@ TEST_F(BrowserAutofillManagerTest,
        .modification_type = mojom::JavaScriptModificationType::kReassignment},
       {.field_id = form.fields()[2].global_id(),
        .modification_type = mojom::JavaScriptModificationType::kReassignment}};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_modifications,
+      AutofillManagerTestApi::pass_key());
+
+  EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+// Tests that an address picker is detected when fewer than 3 address fields
+// are modified if the trigger field underwent prefix completion.
+TEST_F(
+    BrowserAutofillManagerTest,
+    OnDidDetectJavaScriptAutofill_AddressPicker_WithPrefixCompletionFewerThanMinFields) {
+  FormData form = test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
+                                                {.role = ADDRESS_HOME_CITY},
+                                                {.role = ADDRESS_HOME_ZIP}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
+  // 2 address fields modified, and the trigger field has kPrefixCompletion.
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type =
+           mojom::JavaScriptModificationType::kPrefixCompletion},
+      {.field_id = form.fields()[1].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_modifications,
+      AutofillManagerTestApi::pass_key());
+
+  EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+// Tests that a single-field email picker is detected when an email address
+// field underwent prefix completion.
+TEST_F(BrowserAutofillManagerTest,
+       OnDidDetectJavaScriptAutofill_EmailPicker_SingleFieldPrefixCompletion) {
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
+  // Single email field modified with kPrefixCompletion.
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type =
+           mojom::JavaScriptModificationType::kPrefixCompletion}};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), field_modifications,
+      AutofillManagerTestApi::pass_key());
+
+  EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
+// Tests that a single-field email picker is ignored if the modification was not
+// a prefix completion.
+TEST_F(
+    BrowserAutofillManagerTest,
+    OnDidDetectJavaScriptAutofill_EmailPicker_InvalidWithoutPrefixCompletion) {
+  FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
+  // Single email field modified with kEmptyToNonEmpty (not kPrefixCompletion).
+  std::vector<JavaScriptFieldModification> field_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type =
+           mojom::JavaScriptModificationType::kEmptyToNonEmpty}};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
       form, form.fields()[0].global_id(), field_modifications,
