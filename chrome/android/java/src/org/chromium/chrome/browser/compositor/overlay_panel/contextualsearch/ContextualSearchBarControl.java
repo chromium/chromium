@@ -485,34 +485,52 @@ public class ContextualSearchBarControl {
      * @param xPx The x-coordinate of a touch location, in pixels.
      */
     private void classifyTouchLocation(float xPx) {
-        // There are 3 cases:
+        // There are 4 cases:
         // 1) The whole Bar (without any icons)
-        // 2) The Bar minus icon (when the icon is present)
-        // 3) The icon
+        // 2) The outer icon
+        // 3) The inner icon
+        // 4) The Bar minus icons
         int panelWidth = mContextualSearchPanel.getContentViewWidthPx();
         if (mContextualSearchPanel.isPeeking()) {
             // Case 1 - whole Bar.
             mTouchHighlightXOffsetPx = 0;
             mTouchHighlightWidthPx = panelWidth;
         } else {
-            // The open-tab-icon is on the right (on the left in RTL).
             boolean isRtl = LocalizationUtils.isLayoutRtl();
-            float paddedIconWithMarginWidth =
-                    (mContextualSearchPanel.getBarMarginSide()
-                                    + mContextualSearchPanel.getOpenTabIconDimension()
-                                    + mContextualSearchPanel.getButtonPaddingDps())
-                            * mDpToPx;
-            float contentWidth = panelWidth - paddedIconWithMarginWidth;
-            // Adjust the touch point to panel coordinates.
-            xPx -= mContextualSearchPanel.getOffsetX() * mDpToPx;
-            if ((isRtl && xPx > paddedIconWithMarginWidth) || (!isRtl && xPx < contentWidth)) {
-                // Case 2 - Bar minus icon.
-                mTouchHighlightXOffsetPx = isRtl ? paddedIconWithMarginWidth : 0;
-                mTouchHighlightWidthPx = contentWidth;
+            float xDps = xPx / mDpToPx;
+
+            if (mContextualSearchPanel.isCoordinateInsideCloseButton(xDps)) {
+                // Case 2 - outer icon.
+                float outerIconWidth =
+                        (mContextualSearchPanel.getCloseIconDimension()
+                                        + mContextualSearchPanel.getButtonPaddingDps()
+                                        + mContextualSearchPanel.getBarMarginSide())
+                                * mDpToPx;
+                mTouchHighlightXOffsetPx = isRtl ? 0 : panelWidth - outerIconWidth;
+                mTouchHighlightWidthPx = outerIconWidth;
+            } else if (mCanPromoteToNewTab
+                    && mContextualSearchPanel.isCoordinateInsideOpenTabButton(xDps)) {
+                // Case 3 - inner icon.
+                mTouchHighlightXOffsetPx =
+                        (mContextualSearchPanel.getOpenTabIconX()
+                                        - mContextualSearchPanel.getOffsetX()
+                                        - mContextualSearchPanel.getButtonPaddingDps())
+                                * mDpToPx;
+                mTouchHighlightWidthPx =
+                        (mContextualSearchPanel.getOpenTabIconDimension()
+                                        + 2 * mContextualSearchPanel.getButtonPaddingDps())
+                                * mDpToPx;
             } else {
-                // Case 3 - the icon.
-                mTouchHighlightXOffsetPx = isRtl ? 0 : contentWidth;
-                mTouchHighlightWidthPx = paddedIconWithMarginWidth;
+                // Case 4 - Bar minus icons.
+                float endButtonsWidth =
+                        (panelWidth / mDpToPx
+                                        - (mContextualSearchPanel.getOpenTabIconX()
+                                                - mContextualSearchPanel.getOffsetX()
+                                                - mContextualSearchPanel.getButtonPaddingDps()))
+                                * mDpToPx;
+                float contentWidth = panelWidth - endButtonsWidth;
+                mTouchHighlightXOffsetPx = isRtl ? endButtonsWidth : 0;
+                mTouchHighlightWidthPx = contentWidth;
             }
         }
     }

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -413,7 +414,9 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
                 super.handleBarClick(x, y);
             }
         } else if (isExpanded() || isMaximized()) {
-            if (canPromoteToNewTab() && isCoordinateInsideOpenTabButton(x)) {
+            if (isCoordinateInsideCloseButton(x)) {
+                closePanel(StateChangeReason.CLOSE_BUTTON, /* animate= */ true);
+            } else if (canPromoteToNewTab() && isCoordinateInsideOpenTabButton(x)) {
                 mManagementDelegate.promoteToTab();
             } else {
                 peekPanel(StateChangeReason.UNKNOWN);
@@ -495,28 +498,33 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     }
 
     @Override
-    public void notifyBarTouched(float x) {
-        getOverlayPanelContent().showContent();
-    }
-
-    @Override
     public float getOpenTabIconX() {
-        if (LocalizationUtils.isLayoutRtl()) {
-            return getOffsetX() + getBarMarginSide();
-        } else {
-            return getOffsetX() + getWidth() - getBarMarginSide() - getCloseIconDimension();
+        if (ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()) {
+            return super.getOpenTabIconX();
         }
+        return LocalizationUtils.isLayoutRtl()
+                ? getOffsetX() + getBarMarginSide()
+                : getOffsetX() + getWidth() - getBarMarginSide() - getCloseIconDimension();
     }
 
     @Override
     protected boolean isCoordinateInsideCloseButton(float x) {
-        return false;
+        return ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()
+                && super.isCoordinateInsideCloseButton(x);
     }
 
     @Override
     protected boolean isCoordinateInsideOpenTabButton(float x) {
-        return getOpenTabIconX() - getButtonPaddingDps() <= x
-                && x <= getOpenTabIconX() + getOpenTabIconDimension() + getButtonPaddingDps();
+        return super.isCoordinateInsideOpenTabButton(x);
+    }
+
+    /**
+     * @return The resource ID of the close icon, or {@code INVALID_RESOURCE_ID} if disabled.
+     */
+    public int getCloseIconResourceId() {
+        return ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()
+                ? R.drawable.btn_close
+                : SceneLayer.INVALID_RESOURCE_ID;
     }
 
     @Override

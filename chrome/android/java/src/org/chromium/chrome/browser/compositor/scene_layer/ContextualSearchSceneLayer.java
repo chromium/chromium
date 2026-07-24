@@ -158,14 +158,11 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         int roundedBarTopResourceId = R.drawable.top_round_foreground;
         int separatorLineColor = panel.getSeparatorLineColor();
         int panelShadowResourceId = R.drawable.top_round_shadow;
-        int closeIconResourceId = INVALID_RESOURCE_ID;
+        int closeIconResourceId = panel.getCloseIconResourceId();
 
         int calloutResourceId = calloutControl.getViewId();
         float calloutOpacity = calloutControl.getOpacity();
 
-        // TODO(donnd): crbug.com/40155104 - Remove parameters for the now
-        // defunct close button from the interface and the associated code on
-        // the native side.
         ContextualSearchSceneLayerJni.get()
                 .updateContextualSearchLayer(
                         mNativePtr,
