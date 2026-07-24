@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "crypto/crypto_export.h"
@@ -38,6 +39,7 @@ std::string GetHashedAuthToken(std::string_view authentication_token);
 }  // namespace ash::quick_start
 
 namespace content {
+COMPONENT_EXPORT(CONTENT)
 std::string GetHashedUrlPath(std::string_view url_path_value);
 }  // namespace content
 
