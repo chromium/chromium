@@ -231,6 +231,8 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   void StartNormalBoundsAnimation(double target_opacity,
                                   const gfx::Rect& target_bounds);
 
+  HotseatWidgetDelegateView* GetHotseatWidgetDelegateView() const;
+
   // The set of inputs that impact this widget's layout. The assumption is that
   // this widget needs a relayout if, and only if, one or more of these has
   // changed.
@@ -251,12 +253,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
 
   // View containing the shelf items within an active user session. Owned by
   // the views hierarchy.
-  raw_ptr<ScrollableShelfView, DanglingUntriaged> scrollable_shelf_view_ =
-      nullptr;
-
-  // The contents view of this widget. Contains |shelf_view_| and the background
-  // of the hotseat.
-  raw_ptr<HotseatWidgetDelegateView> delegate_view_ = nullptr;
+  raw_ptr<ScrollableShelfView> scrollable_shelf_view_ = nullptr;
 
   // Whether the widget is currently extended because the user has manually
   // dragged it. This will be reset with any visible shelf configuration change.
