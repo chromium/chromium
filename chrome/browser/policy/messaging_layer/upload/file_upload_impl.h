@@ -129,6 +129,8 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
 
   static bool IsPathAllowed(const base::FilePath& path);
 
+  bool IsResumableUploadUrlAllowed(const GURL& url) const;
+
   // Weak pointer factory used by this delegate.
   // Note that weak pointers here are all dereferenced on UI task runner, and so
   // the factory needs to be reset there as well - because of that we make it

@@ -49,6 +49,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace reporting {
 
@@ -396,6 +397,14 @@ class FileUploadDelegate::InitContext
           base::unexpected(Status(error::DATA_LOSS, "No upload URL returned")));
       return;
     }
+    if (!delegate() ||
+        !delegate()->IsResumableUploadUrlAllowed(GURL(*upload_url))) {
+      Complete(base::unexpected(
+          Status(error::INVALID_ARGUMENT,
+                 base::StrCat(
+                     {"Resumable upload URL is not allowed=", *upload_url}))));
+      return;
+    }
 
     Complete(std::make_pair(total_,
                             base::StrCat({origin_path_, "\n", *upload_url})));
@@ -484,6 +493,12 @@ class FileUploadDelegate::NextStepContext
       Complete(base::unexpected(
           Status(error::DATA_LOSS,
                  base::StrCat({"Corrupt resumable upload URL=", tokens[1]}))));
+      return;
+    }
+    if (!delegate()->IsResumableUploadUrlAllowed(resumable_upload_url_)) {
+      Complete(base::unexpected(Status(
+          error::INVALID_ARGUMENT,
+          base::StrCat({"Resumable upload URL is not allowed=", tokens[1]}))));
       return;
     }
 
@@ -810,6 +825,12 @@ class FileUploadDelegate::FinalContext
                  base::StrCat({"Corrupt resumable upload URL=", tokens[1]}))));
       return;
     }
+    if (!delegate()->IsResumableUploadUrlAllowed(resumable_upload_url_)) {
+      Complete(base::unexpected(Status(
+          error::INVALID_ARGUMENT,
+          base::StrCat({"Resumable upload URL is not allowed=", tokens[1]}))));
+      return;
+    }
 
     // Query upload.
     DVLOG(1) << "Starting Query URL fetcher.";
@@ -986,6 +1007,11 @@ bool FileUploadDelegate::IsPathAllowed(const base::FilePath& path) {
   }
 
   return path.DirName() == allowed_dir;
+}
+
+bool FileUploadDelegate::IsResumableUploadUrlAllowed(const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url.is_valid() && url::IsSameOriginWith(url, upload_url_);
 }
 
 FileUploadDelegate::FileUploadDelegate() {
