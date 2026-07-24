@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_resource_table.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
@@ -111,6 +112,14 @@ void GPUComputePassEncoder::setImmediates(
   }
 
   GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPUComputePassEncoder::setResourceTable(const GPUResourceTable* table) {
+  if (table != nullptr) {
+    GetHandle().SetResourceTable(table->GetHandle());
+  } else {
+    GetHandle().SetResourceTable(nullptr);
+  }
 }
 
 void GPUComputePassEncoder::writeTimestamp(

@@ -30,6 +30,7 @@ enum GPUFeatureName {
     "subgroup-size-control",
 
     // Non-standard (not currently in the spec).
+    "chromium-experimental-sampling-resource-table",
     "chromium-experimental-timestamp-query-inside-passes",
     "chromium-experimental-multi-draw-indirect",
     "chromium-experimental-subgroup-matrix",

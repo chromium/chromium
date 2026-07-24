@@ -81,6 +81,8 @@ blink_modules_sources("webgpu") {
     "gpu_render_pass_encoder.h",
     "gpu_render_pipeline.cc",
     "gpu_render_pipeline.h",
+    "gpu_resource_table.cc",
+    "gpu_resource_table.h",
     "gpu_sampler.cc",
     "gpu_sampler.h",
     "gpu_shader_module.cc",

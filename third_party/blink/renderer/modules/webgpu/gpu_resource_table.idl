@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUResourceTableDescriptor : GPUObjectDescriptorBase {
+    required GPUSize32 size;
+};
+
+[
+    Exposed=(Window, Worker),
+    SecureContext,
+    RuntimeEnabled=WebGPUExperimentalResourceTable
+] interface GPUResourceTable {
+    void destroy();
+
+    [RaisesException] void update(GPUIndex32 slot, GPUBindingResource resource);
+    [RaisesException] GPUIndex32 insert(GPUBindingResource resource);
+    [RaisesException] void remove(GPUIndex32 slot);
+
+    readonly attribute GPUSize32 size;
+};
+GPUResourceTable includes GPUObjectBase;

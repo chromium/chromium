@@ -13,6 +13,7 @@
 namespace blink {
 
 class GPUBindGroup;
+class GPUResourceTable;
 
 class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
                               public GPUProgrammablePassEncoder {
@@ -73,6 +74,7 @@ class GPUComputePassEncoder : public DawnObject<wgpu::ComputePassEncoder>,
   void setPipeline(const DawnObject<wgpu::ComputePipeline>* pipeline) {
     GetHandle().SetPipeline(pipeline->GetHandle());
   }
+  void setResourceTable(const GPUResourceTable* table);
   void dispatchWorkgroups(uint32_t workgroup_count_x,
                           uint32_t workgroup_count_y,
                           uint32_t workgroup_count_z) {

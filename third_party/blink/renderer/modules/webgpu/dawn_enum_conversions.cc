@@ -764,6 +764,8 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::SubgroupSizeControl;
     case V8GPUFeatureName::Enum::kTextureCompressionUnaligned:
       return wgpu::FeatureName::TextureCompressionUnaligned;
+    case V8GPUFeatureName::Enum::kChromiumExperimentalSamplingResourceTable:
+      return wgpu::FeatureName::ChromiumExperimentalSamplingResourceTable;
   }
 }
 

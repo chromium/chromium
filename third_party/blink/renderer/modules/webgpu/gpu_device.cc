@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_resource_table_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle_encoder.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_resource_table.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_sampler.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
@@ -576,6 +578,19 @@ GPUBindGroupLayout* GPUDevice::createBindGroupLayout(
 GPUPipelineLayout* GPUDevice::createPipelineLayout(
     const GPUPipelineLayoutDescriptor* descriptor) {
   return GPUPipelineLayout::Create(this, descriptor);
+}
+
+GPUResourceTable* GPUDevice::createResourceTable(
+    const GPUResourceTableDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  static constexpr uint32_t kMaxResourceTableSizeInSpec = 65536;
+  if (descriptor->size() > kMaxResourceTableSizeInSpec) {
+    exception_state.ThrowRangeError(
+        "GPUResourceTableDescriptor.size is too large.");
+    return nullptr;
+  }
+
+  return GPUResourceTable::Create(this, descriptor);
 }
 
 GPUShaderModule* GPUDevice::createShaderModule(

@@ -9,6 +9,7 @@
     SecureContext
 ] interface GPUComputePassEncoder {
     [NoAllocDirectCall] void setPipeline(GPUComputePipeline pipeline);
+    [RuntimeEnabled=WebGPUExperimentalResourceTable] void setResourceTable(GPUResourceTable? table);
     [NoAllocDirectCall] void dispatchWorkgroups(GPUSize32 workgroupCountX,
                                                 optional GPUSize32 workgroupCountY = 1,
                                                 optional GPUSize32 workgroupCountZ = 1);

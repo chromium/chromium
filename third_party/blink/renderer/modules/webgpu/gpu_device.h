@@ -49,6 +49,8 @@ class GPURenderBundleEncoder;
 class GPURenderBundleEncoderDescriptor;
 class GPURenderPipeline;
 class GPURenderPipelineDescriptor;
+class GPUResourceTable;
+class GPUResourceTableDescriptor;
 class GPUSampler;
 class GPUSamplerDescriptor;
 class GPUShaderModule;
@@ -129,6 +131,9 @@ class GPUDevice final : public EventTarget,
       ExceptionState& exception_state);
   GPUPipelineLayout* createPipelineLayout(
       const GPUPipelineLayoutDescriptor* descriptor);
+  GPUResourceTable* createResourceTable(
+      const GPUResourceTableDescriptor* descriptor,
+      ExceptionState& exception_state);
 
   GPUShaderModule* createShaderModule(
       const GPUShaderModuleDescriptor* descriptor);

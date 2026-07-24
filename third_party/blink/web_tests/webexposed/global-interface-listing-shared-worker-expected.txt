@@ -720,6 +720,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setBindGroup
 [Worker]     method setImmediates
 [Worker]     method setPipeline
+[Worker]     method setResourceTable
 [Worker]     method writeTimestamp
 [Worker]     setter label
 [Worker] interface GPUComputePipeline
@@ -749,6 +750,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createRenderBundleEncoder
 [Worker]     method createRenderPipeline
 [Worker]     method createRenderPipelineAsync
+[Worker]     method createResourceTable
 [Worker]     method createSampler
 [Worker]     method createShaderModule
 [Worker]     method createTexture
@@ -862,6 +864,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter label
 [Worker]     method constructor
 [Worker]     method getBindGroupLayout
+[Worker]     setter label
+[Worker] interface GPUResourceTable
+[Worker]     attribute @@toStringTag
+[Worker]     getter label
+[Worker]     getter size
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method insert
+[Worker]     method remove
+[Worker]     method update
 [Worker]     setter label
 [Worker] interface GPUSampler
 [Worker]     attribute @@toStringTag

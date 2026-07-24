@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_resource_table.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
@@ -303,6 +304,15 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
       device_, GetHandle().BeginRenderPass(&dawn_desc), descriptor->label());
+
+  // TODO(https://crbug.com/435317394): Use the extension struct exposed by
+  // webgpu.h if/when it is added instead of
+  // wgpu::RenderPassEncoder::SetResourceTable.
+  if (descriptor->hasResourceTable()) {
+    encoder->GetHandle().SetResourceTable(
+        descriptor->resourceTable()->GetHandle());
+  }
+
   return encoder;
 }
 

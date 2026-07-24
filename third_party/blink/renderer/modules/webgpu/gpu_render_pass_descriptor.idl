@@ -10,6 +10,7 @@ dictionary GPURenderPassDescriptor : GPUObjectDescriptorBase {
     GPUQuerySet occlusionQuerySet;
     GPURenderPassTimestampWrites timestampWrites;
     GPUSize64 maxDrawCount;
+    [RuntimeEnabled=WebGPUExperimentalResourceTable] GPUResourceTable resourceTable;
 };
 
 enum GPULoadOp {

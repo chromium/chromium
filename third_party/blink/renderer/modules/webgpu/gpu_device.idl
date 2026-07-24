@@ -26,6 +26,7 @@
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
     GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
+    [RuntimeEnabled=WebGPUExperimentalResourceTable, RaisesException] GPUResourceTable createResourceTable(GPUResourceTableDescriptor descriptor);
 
     GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);

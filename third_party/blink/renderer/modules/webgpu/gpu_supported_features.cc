@@ -64,6 +64,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kSubgroupSizeControl;
     case wgpu::FeatureName::TextureCompressionUnaligned:
       return V8GPUFeatureName::Enum::kTextureCompressionUnaligned;
+    case wgpu::FeatureName::ChromiumExperimentalSamplingResourceTable:
+      return V8GPUFeatureName::Enum::kChromiumExperimentalSamplingResourceTable;
     default:
       return std::nullopt;
   }
