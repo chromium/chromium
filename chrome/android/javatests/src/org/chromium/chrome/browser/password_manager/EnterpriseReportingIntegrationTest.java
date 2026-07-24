@@ -12,6 +12,9 @@ import static org.junit.Assume.assumeTrue;
 
 import androidx.test.filters.LargeTest;
 
+import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.WireFormat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -25,7 +28,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.CloudManagementSharedPreferences;
@@ -40,6 +42,10 @@ import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Test that password-related events are reported to an enterprise connector. */
@@ -49,8 +55,6 @@ import java.util.concurrent.TimeoutException;
     "enable-chrome-browser-cloud-management",
     "policy=" + EnterpriseReportingIntegrationTest.REPORTING_POLICY_STRING,
 })
-// TODO(crbug.com/441339044): Re-enable the integration test for proto-based reporting.
-@DisableFeatures("UploadRealtimeReportingEventsUsingProto")
 @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/463649037
 @Batch(Batch.PER_CLASS)
 public class EnterpriseReportingIntegrationTest {
@@ -119,19 +123,18 @@ public class EnterpriseReportingIntegrationTest {
                 .build();
     }
 
-    /** Parse the last security event report received, if any. */
-    private JSONObject parseLastReport() throws JSONException {
+    /** Get the last security event report received, if any. */
+    private SimpleProto getLastReport() {
         WebServer.HTTPRequest request = mReportingServer.getLastRequest(REPORTING_ENDPOINT);
         if (request == null) {
             return null;
         }
-        var body = new String(request.getBody());
-        return new JSONObject(body);
+        return new SimpleProto(request.getBody());
     }
 
     @Test
     @LargeTest
-    public void testLoginEventReported() throws JSONException, TimeoutException {
+    public void testLoginEventReported() throws TimeoutException, IOException {
         assumeTrue("Can set policy from command line", AndroidInfo.isDebugAndroid());
 
         HistogramWatcher watcher =
@@ -144,16 +147,91 @@ public class EnterpriseReportingIntegrationTest {
         DOMUtils.clickNodeWithJavaScript(webContents, SUBMIT_BUTTON_ID);
         watcher.pollInstrumentationThreadUntilSatisfied();
 
-        JSONObject report = parseLastReport();
+        SimpleProto report = getLastReport();
         assertNotNull(report);
-        assertEquals("Android", report.getJSONObject("device").getString("osPlatform"));
-        var events = report.getJSONArray("events");
-        assertEquals(1, events.length());
-        var eventDetails = events.getJSONObject(0).getJSONObject("loginEvent");
+
+        // Android build targets do not include full proto libraries.
+        // See proto definitions at:
+        // UploadEventsRequest: components/enterprise/common/proto/upload_request_response.proto
+        // Device, Event:
+        // components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.proto
+        // LoginEvent: components/enterprise/common/proto/synced/browser_events.proto
+        assertEquals(
+                "Android",
+                report.getFieldByTag(/*UploadEventsRequest.device*/ 4)
+                        .getFieldByTag(/*Device.os_platform*/ 4)
+                        .asString());
+
+        List<SimpleProto> events = report.getRepeatedFieldByTag(/*UploadEventsRequest.events*/ 3);
+        assertEquals(1, events.size());
+
+        SimpleProto eventDetails = events.get(0).getFieldByTag(/*Event.login_event*/ 111);
+
         assertEquals(
                 mActivityTestRule.getTestServer().getURL(PASSWORD_FORM_URL),
-                eventDetails.getString("url"));
-        // The username portion of the login will be masked, but the domain part shouldn't be.
-        assertThat(eventDetails.getString("loginUserName"), endsWith("@domain.com"));
+                eventDetails.getFieldByTag(/*LoginEvent.url*/ 1).asString());
+
+        assertThat(
+                eventDetails.getFieldByTag(/*LoginEvent.login_user_name*/ 5).asString(),
+                endsWith("@domain.com"));
+    }
+
+    /** A helper class to parse protos by tag number. */
+    static class SimpleProto {
+        private final byte[] mRawBytes;
+
+        SimpleProto(byte[] rawBytes) {
+            this.mRawBytes = rawBytes;
+        }
+
+        SimpleProto getFieldByTag(int tagNumber) throws IOException {
+            CodedInputStream input = CodedInputStream.newInstance(mRawBytes);
+            int tag;
+
+            while ((tag = input.readTag()) != 0) {
+                int currentTagNumber = WireFormat.getTagFieldNumber(tag);
+
+                if (currentTagNumber == tagNumber) {
+                    if (WireFormat.getTagWireType(tag) == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
+                        return new SimpleProto(input.readByteArray());
+                    } else {
+                        throw new IllegalStateException(
+                                "Tag "
+                                        + tagNumber
+                                        + " is not a length-delimited field (nested"
+                                        + " proto/string).");
+                    }
+                } else {
+                    input.skipField(tag);
+                }
+            }
+            return null;
+        }
+
+        List<SimpleProto> getRepeatedFieldByTag(int tagNumber) throws IOException {
+            List<SimpleProto> results = new ArrayList<>();
+            CodedInputStream input = CodedInputStream.newInstance(mRawBytes);
+            int tag;
+
+            while ((tag = input.readTag()) != 0) {
+                int currentTagNumber = WireFormat.getTagFieldNumber(tag);
+
+                if (currentTagNumber == tagNumber) {
+                    if (WireFormat.getTagWireType(tag) == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
+                        results.add(new SimpleProto(input.readByteArray()));
+                    } else {
+                        throw new IllegalStateException(
+                                "Tag " + tagNumber + " is not a length-delimited field.");
+                    }
+                } else {
+                    input.skipField(tag);
+                }
+            }
+            return results;
+        }
+
+        String asString() {
+            return new String(mRawBytes, StandardCharsets.UTF_8);
+        }
     }
 }
