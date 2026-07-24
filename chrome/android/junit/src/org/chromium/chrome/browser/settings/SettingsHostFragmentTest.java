@@ -34,7 +34,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsHostFragment}. */
@@ -62,6 +69,9 @@ public class SettingsHostFragmentTest {
         mActivityScenarios
                 .getScenario()
                 .onActivity(activity -> mActivity = (TestActivity) activity);
+        IdentityServicesProvider.setSigninManagerForTesting(mock(SigninManager.class));
+        TemplateUrlServiceFactory.setInstanceForTesting(mock(TemplateUrlService.class));
+        SyncServiceFactory.setInstanceForTesting(mock(SyncService.class));
     }
 
     private void attachHostFragment() {
@@ -185,6 +195,79 @@ public class SettingsHostFragmentTest {
     }
 
     @Test
+    public void testShowFragment_NullFragment_ResetsDetailFragment() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        // First show a detail fragment with addToBackStack=true.
+        multiColumnSettings.showDetailFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ true, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertEquals(1, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+
+        // Now show null fragment, which should reset the detail fragment and clear back stack.
+        boolean shown =
+                mSettingsHostFragment.showFragment(
+                        null, /* addToBackStack= */ false, /* tag= */ null);
+        assertTrue("showFragment should succeed for null fragment", shown);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        assertEquals(0, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+    }
+
+    @Test
+    public void testShowFragment_MainSettingsFragment_ResetsDetailFragment() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        // First show a detail fragment with addToBackStack=true.
+        multiColumnSettings.showDetailFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ true, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertEquals(1, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+
+        // Now show MainSettings fragment, which should reset the detail fragment and clear back
+        // stack.
+        boolean shown =
+                mSettingsHostFragment.showFragment(
+                        new TestMainSettings(), /* addToBackStack= */ false, /* tag= */ null);
+        assertTrue("showFragment should succeed for MainSettings fragment", shown);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        assertEquals(0, multiColumnSettings.getChildFragmentManager().getBackStackEntryCount());
+    }
+
+    /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
+    public static class TestMultiColumnSettingsHostFragment extends SettingsHostFragment {
+        @Override
+        protected Fragment createInitialFragment(@Nullable Intent intent) {
+            return new TestMultiColumnSettings();
+        }
+    }
+
+    @Test
     public void testFinishCurrentSettings() {
         attachHostFragment();
         mSettingsHostFragment.showFragment(
@@ -262,5 +345,50 @@ public class SettingsHostFragmentTest {
     /** Another fake settings fragment for testing transitions. */
     public static class SecondFakeSettingsFragment extends Fragment {
         public SecondFakeSettingsFragment() {}
+    }
+
+    public static class TestHeaderFragment extends PreferenceFragmentCompat {
+        public TestHeaderFragment() {}
+
+        @Override
+        public void onCreatePreferences(
+                @Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+            setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
+        }
+    }
+
+    /** Subclass of MainSettings to inject dependencies and avoid native calls. */
+    public static class TestMainSettings extends MainSettings {
+        private final Profile mMockProfile = mock(Profile.class);
+
+        public TestMainSettings() {
+            setProfile(mMockProfile);
+        }
+
+        @Override
+        public Profile getProfile() {
+            return mMockProfile;
+        }
+
+        @Override
+        public void onCreatePreferences(
+                @Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+            setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
+        }
+    }
+
+    /** Subclass of MultiColumnSettings to inject dependencies and avoid native calls. */
+    public static class TestMultiColumnSettings extends MultiColumnSettings {
+        public TestMultiColumnSettings() {}
+
+        @Override
+        public PreferenceFragmentCompat onCreatePreferenceHeader() {
+            return new TestHeaderFragment();
+        }
+
+        @Override
+        public Fragment onCreateInitialDetailFragment() {
+            return new FirstFakeSettingsFragment();
+        }
     }
 }

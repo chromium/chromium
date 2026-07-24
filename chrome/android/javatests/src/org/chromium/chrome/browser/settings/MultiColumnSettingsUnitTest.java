@@ -9,10 +9,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -27,6 +31,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -35,11 +40,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,10 +71,17 @@ public class MultiColumnSettingsUnitTest {
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
 
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mBlankUiActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @After
     public void tearDown() {
         if (mSettingsActivityTestRule.getActivity() != null) {
             mSettingsActivityTestRule.getActivity().finish();
+        }
+        if (mBlankUiActivityTestRule.getActivity() != null) {
+            mBlankUiActivityTestRule.getActivity().finish();
         }
     }
 
@@ -95,11 +109,15 @@ public class MultiColumnSettingsUnitTest {
     }
 
     // Stub fragment instance of EmbeddableSettingsPage providing a fake page title instance.
-    private static class TestFragment extends Fragment implements EmbeddableSettingsPage {
+    @UsedByReflection("MultiColumnSettingsUnitTest.java")
+    public static class TestFragment extends Fragment implements EmbeddableSettingsPage {
         // Tests use reference equality to test for different fragments, so cannot use
         // ObservableSuppliers.alwaysNull().
         private final MonotonicObservableSupplier<String> mTitleSupplier =
                 ObservableSuppliers.createMonotonic();
+
+        @UsedByReflection("MultiColumnSettingsUnitTest.java")
+        public TestFragment() {}
 
         @Override
         public MonotonicObservableSupplier<String> getPageTitle() {
@@ -273,6 +291,75 @@ public class MultiColumnSettingsUnitTest {
                     assertFalse(
                             "Layout should NOT be slideable (panes side-by-side) on tablets",
                             settings.getSlidingPaneLayout().isSlideable());
+                });
+    }
+
+    @UsedByReflection("MultiColumnSettingsUnitTest.java")
+    public static class TestHeaderFragment extends PreferenceFragmentCompat {
+        @UsedByReflection("MultiColumnSettingsUnitTest.java")
+        public TestHeaderFragment() {}
+
+        @Override
+        public void onCreatePreferences(
+                @Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+            setPreferenceScreen(getPreferenceManager().createPreferenceScreen(requireContext()));
+        }
+    }
+
+    public static class TestMultiColumnSettings extends MultiColumnSettings {
+        private Fragment mInitialDetailFragment;
+
+        @Override
+        public PreferenceFragmentCompat onCreatePreferenceHeader() {
+            return new TestHeaderFragment();
+        }
+
+        @Override
+        public Fragment onCreateInitialDetailFragment() {
+            if (mInitialDetailFragment == null) {
+                mInitialDetailFragment = super.onCreateInitialDetailFragment();
+            }
+            return mInitialDetailFragment;
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testProcessPendingFragmentIntent_ConsumesAndRemovesIntentExtras() {
+        Intent intent = new Intent();
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, TestFragment.class.getName());
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS, new Bundle());
+        intent.putExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK, true);
+        intent.putExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG, "test_tag");
+
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setPendingFragmentIntent(intent);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    settings.onCreateInitialDetailFragment();
+
+                    assertFalse(
+                            "EXTRA_SHOW_FRAGMENT should be consumed and removed from intent",
+                            intent.hasExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
+                    assertFalse(
+                            "EXTRA_SHOW_FRAGMENT_ARGUMENTS should be consumed and removed from"
+                                    + " intent",
+                            intent.hasExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS));
+                    assertFalse(
+                            "EXTRA_ADD_TO_BACK_STACK should be consumed and removed from intent",
+                            intent.hasExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK));
+                    assertFalse(
+                            "EXTRA_FRAGMENT_TAG should be consumed and removed from intent",
+                            intent.hasExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG));
                 });
     }
 

@@ -353,13 +353,22 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         // The logic here should be conceptually consistent with
         // SettingsActivity.instantiateMainFragment.
         String fragmentName = intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT);
-        if (fragmentName == null) {
-            return null;
-        }
         Bundle arguments = intent.getBundleExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
         boolean addToBackStack =
                 intent.getBooleanExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK, false);
         String tag = intent.getStringExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG);
+
+        // Consume the "show fragment" extras so future launches of settings go to the main pane.
+        // This is simpler than trying to keep track of whether an intent was processed.
+        intent.removeExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT);
+        intent.removeExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+        intent.removeExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK);
+        intent.removeExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG);
+
+        // If there's no fragment to show, bail out.
+        if (fragmentName == null) {
+            return null;
+        }
         return new FragmentData(
                 Fragment.instantiate(requireActivity(), fragmentName, arguments),
                 addToBackStack,

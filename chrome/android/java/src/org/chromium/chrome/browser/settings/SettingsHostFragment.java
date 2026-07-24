@@ -318,12 +318,12 @@ public class SettingsHostFragment extends Fragment
             if (fragment == null || fragment instanceof MainSettings) {
                 if (multiColumnSettings.getSlidingPaneLayout().isSlideable()) {
                     multiColumnSettings.getSlidingPaneLayout().closePane();
-                } else {
-                    Fragment initialFragment = multiColumnSettings.onCreateInitialDetailFragment();
-                    if (initialFragment != null) {
-                        multiColumnSettings.showDetailFragment(
-                                initialFragment, /* addToBackStack= */ false, /* tag= */ null);
-                    }
+                }
+                // Show the default detail fragment.
+                Fragment initialFragment = multiColumnSettings.onCreateInitialDetailFragment();
+                if (initialFragment != null) {
+                    multiColumnSettings.showDetailFragment(
+                            initialFragment, /* addToBackStack= */ false, /* tag= */ null);
                 }
                 return true;
             }
