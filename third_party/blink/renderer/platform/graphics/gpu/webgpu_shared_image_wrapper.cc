@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_recyclable_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper.h"
 
 #include <memory>
 #include <utility>
@@ -41,12 +41,12 @@
 
 namespace blink {
 
-std::unique_ptr<WebGpuRecyclableResourceProvider>
-WebGpuRecyclableResourceProvider::Create(gfx::Size size,
-                                         viz::SharedImageFormat format,
-                                         SkAlphaType alpha_type,
-                                         const gfx::ColorSpace& color_space,
-                                         const gfx::HDRMetadata& hdr_metadata) {
+std::unique_ptr<WebGpuSharedImageWrapper> WebGpuSharedImageWrapper::Create(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
@@ -78,9 +78,9 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
   }
 #endif
 
-  auto provider = base::WrapUnique(new WebGpuRecyclableResourceProvider(
-      size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper));
+  auto provider = base::WrapUnique(
+      new WebGpuSharedImageWrapper(size, format, alpha_type, color_space,
+                                   hdr_metadata, context_provider_wrapper));
 
   if (provider->IsGpuContextLost()) {
     return nullptr;
@@ -88,7 +88,7 @@ WebGpuRecyclableResourceProvider::Create(gfx::Size size,
   return provider;
 }
 
-WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
+WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -150,38 +150,35 @@ WebGpuRecyclableResourceProvider::WebGpuRecyclableResourceProvider(
       }
     }
   }
-
 }
 
-WebGpuRecyclableResourceProvider::~WebGpuRecyclableResourceProvider() {
+WebGpuSharedImageWrapper::~WebGpuSharedImageWrapper() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
 }
 
-void WebGpuRecyclableResourceProvider::WaitSyncToken(
-    const gpu::SyncToken& sync_token) {
+void WebGpuSharedImageWrapper::WaitSyncToken(const gpu::SyncToken& sync_token) {
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
     shared_image_->UpdateDestructionSyncToken(acquire_sync_token_);
   }
 }
 
-gpu::raster::RasterInterface*
-WebGpuRecyclableResourceProvider::RasterInterface() const {
+gpu::raster::RasterInterface* WebGpuSharedImageWrapper::RasterInterface()
+    const {
   if (!context_provider_wrapper_) {
     return nullptr;
   }
   return context_provider_wrapper_->ContextProvider().RasterInterface();
 }
 
-bool WebGpuRecyclableResourceProvider::IsGpuContextLost() const {
+bool WebGpuSharedImageWrapper::IsGpuContextLost() const {
   auto* raster_interface = RasterInterface();
   return !raster_interface ||
          raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
-
 scoped_refptr<gpu::ClientSharedImage>
-WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
+WebGpuSharedImageWrapper::BeginExternalOverwrite(
     gpu::SyncToken& internal_access_sync_token) {
   if (IsGpuContextLost()) {
     return nullptr;
@@ -199,7 +196,7 @@ WebGpuRecyclableResourceProvider::BeginExternalOverwrite(
   return shared_image_;
 }
 
-void WebGpuRecyclableResourceProvider::EndExternalWrite(
+void WebGpuSharedImageWrapper::EndExternalWrite(
     const gpu::SyncToken& external_write_sync_token) {
   if (IsGpuContextLost()) {
     return;
@@ -220,7 +217,7 @@ void WebGpuRecyclableResourceProvider::EndExternalWrite(
   shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
-void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
+void WebGpuSharedImageWrapper::DoExternalOverdraw(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (IsGpuContextLost()) {
     return;
@@ -294,7 +291,7 @@ void WebGpuRecyclableResourceProvider::DoExternalOverdraw(
   }
 }
 
-bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
+bool WebGpuSharedImageWrapper::UploadToBackingSharedImage(
     const SkPixmap& pixmap,
     uint32_t src_x,
     uint32_t src_y) {
@@ -310,7 +307,7 @@ bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
   }
 
   TRACE_EVENT0("blink",
-               "WebGpuRecyclableResourceProvider::"
+               "WebGpuSharedImageWrapper::"
                "UploadToBackingSharedImage");
   if (IsGpuContextLost()) {
     return false;
@@ -332,7 +329,7 @@ bool WebGpuRecyclableResourceProvider::UploadToBackingSharedImage(
   return true;
 }
 
-bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
+bool WebGpuSharedImageWrapper::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,
     uint32_t src_y,
@@ -369,22 +366,22 @@ bool WebGpuRecyclableResourceProvider::CopyToBackingSharedImage(
   return true;
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-WebGpuRecyclableResourceProvider::GetSharedImage() const {
+scoped_refptr<gpu::ClientSharedImage> WebGpuSharedImageWrapper::GetSharedImage()
+    const {
   if (IsGpuContextLost()) {
     return nullptr;
   }
   return shared_image_;
 }
 
-gpu::SyncToken WebGpuRecyclableResourceProvider::GetSyncToken() const {
+gpu::SyncToken WebGpuSharedImageWrapper::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();
   }
   return shared_image_ ? release_sync_token_ : gpu::SyncToken();
 }
 
-base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
+base::ByteSize WebGpuSharedImageWrapper::EstimatedSizeInBytes() const {
   base::ByteSize result;
   if (shared_image_) {
     result += shared_image_->EstimatedSizeInBytes();
@@ -392,7 +389,7 @@ base::ByteSize WebGpuRecyclableResourceProvider::EstimatedSizeInBytes() const {
   return result;
 }
 
-void WebGpuRecyclableResourceProvider::OnMemoryDump(
+void WebGpuSharedImageWrapper::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (!shared_image_) {
     return;
@@ -416,7 +413,7 @@ void WebGpuRecyclableResourceProvider::OnMemoryDump(
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
-size_t WebGpuRecyclableResourceProvider::GetSize() const {
+size_t WebGpuSharedImageWrapper::GetSize() const {
   return base::checked_cast<size_t>(EstimatedSizeInBytes().InBytes());
 }
 

@@ -19,7 +19,8 @@
 
 namespace blink {
 
-class WebGpuRecyclableResourceProvider;
+class WebGpuSharedImageWrapper;
+using WebGpuRecyclableResourceProvider = WebGpuSharedImageWrapper;
 class WebGPURecyclableResourceCache;
 class WebGraphicsContext3DProviderWrapper;
 

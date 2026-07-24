@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RECYCLABLE_RESOURCE_PROVIDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RECYCLABLE_RESOURCE_PROVIDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_H_
 
 #include <memory>
 
@@ -48,16 +48,16 @@ class RasterInterface;
 
 namespace blink {
 
-class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
+class PLATFORM_EXPORT WebGpuSharedImageWrapper final
     : public CanvasMemoryDumpClient {
  public:
-  static std::unique_ptr<WebGpuRecyclableResourceProvider> Create(
+  static std::unique_ptr<WebGpuSharedImageWrapper> Create(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata);
-  ~WebGpuRecyclableResourceProvider();
+  ~WebGpuSharedImageWrapper();
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
@@ -81,12 +81,11 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
     release_sync_token_ = token;
   }
 
-  // Returns the ClientSharedImage backing this
-  // WebGpuRecyclableResourceProvider, if one exists, after flushing the
-  // resource and signaling that an external write will occur on it. The caller
-  // should wait on `internal_access_sync_token` before writing the contents.
-  // When the external write is complete, the caller should call
-  // `EndExternalWrite()`.
+  // Returns the ClientSharedImage backing this WebGpuSharedImageWrapper, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents. When the external write is complete, the
+  // caller should call `EndExternalWrite()`.
   scoped_refptr<gpu::ClientSharedImage> BeginExternalOverwrite(
       gpu::SyncToken& internal_access_sync_token);
 
@@ -110,13 +109,12 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
   void WaitSyncToken(const gpu::SyncToken& sync_token);
 
  private:
-  WebGpuRecyclableResourceProvider(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      const gfx::HDRMetadata&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
+  WebGpuSharedImageWrapper(gfx::Size,
+                           viz::SharedImageFormat,
+                           SkAlphaType,
+                           const gfx::ColorSpace&,
+                           const gfx::HDRMetadata&,
+                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
   bool IsGpuContextLost() const;
 
@@ -144,6 +142,8 @@ class PLATFORM_EXPORT WebGpuRecyclableResourceProvider final
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 };
 
+using WebGpuRecyclableResourceProvider = WebGpuSharedImageWrapper;
+
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RECYCLABLE_RESOURCE_PROVIDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_H_
