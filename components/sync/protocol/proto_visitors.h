@@ -1606,6 +1606,12 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
   VISIT(client_tag_hash);
   VISIT(collaboration);
   VISIT(deletion_origin);
+  VISIT(attachment);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::Attachment& proto) {
+  VISIT(temporary_blob_id);
+  VISIT(modification_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {
