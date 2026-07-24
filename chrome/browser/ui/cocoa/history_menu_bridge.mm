@@ -314,8 +314,6 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
     [item->menu_item setImage:default_favicon_];
   }
 
-  chrome::UpdateGroupIndicatorForMenuItem(item->menu_item,
-                                          item->tab_group_color_id);
 
   // Add a tooltip if the history item is for a single tab.
   if (item->tabs.empty()) {
@@ -627,10 +625,6 @@ HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry,
   // Tab navigations don't come with icons, so we always have to request them.
   GetFaviconForHistoryItem(item.get());
 
-  if (features::IsShowTabGroupsMacSystemMenuEnabled() &&
-      entry.group_visual_data.has_value() && attach_group_icon) {
-    item->tab_group_color_id = entry.group_visual_data.value().color();
-  }
 
   return item;
 }

@@ -60,20 +60,6 @@ void UpdateItemForWebContents(NSMenuItem* item,
         gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()));
   }
 
-  if (features::IsShowTabGroupsMacSystemMenuEnabled()) {
-    std::optional<tab_groups::TabGroupColorId> tab_group_color_id;
-    std::optional<tab_groups::TabGroupId> group =
-        tab_strip_model->GetTabForWebContents(web_contents)->GetGroup();
-    if (group.has_value()) {
-      TabGroup* tab_group =
-          tab_strip_model->group_model()->GetTabGroup(group.value());
-      if (tab_group) {
-        tab_group_color_id = tab_group->visual_data()->color();
-      }
-    }
-
-    chrome::UpdateGroupIndicatorForMenuItem(item, tab_group_color_id);
-  }
 
   item.image = NSImageFromImageSkia(
       tab_ui_helper->GetFavicon().Rasterize(&web_contents->GetColorProvider()));

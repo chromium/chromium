@@ -211,8 +211,6 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 
  private:
   CocoaTestHelper cocoa_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kShowTabGroupsMacSystemMenu};
 
  protected:
   std::unique_ptr<MockBridge> bridge_;
@@ -788,39 +786,5 @@ TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
   bridge.reset();
 }
 
-TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsInGroup) {
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
-
-  tab_groups::TabGroupVisualData visual_data(
-      std::u16string(), tab_groups::TabGroupColorId::kGrey);
-  auto entries{CreateSessionEntries({
-      CreateSessionTab(24, "http://google.com", "Google"),
-      CreateSessionTab(42, "http://apple.com", "Apple", visual_data),
-  })};
-
-  using ::testing::ReturnRef;
-  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
-
-  bridge_->TabRestoreServiceChanged(trs.get());
-
-  NSMenu* menu = bridge_->HistoryMenu();
-  ASSERT_EQ(2U, [[menu itemArray] count]);
-
-  // Verify tab1 doesn't have a group indicator.
-  NSMenuItem* item1 = [menu itemAtIndex:0];
-  MockBridge::HistoryItem* hist1 = bridge_->HistoryItemForMenuItem(item1);
-  EXPECT_TRUE(hist1);
-  EXPECT_EQ(24, hist1->session_id.id());
-  EXPECT_EQ(std::nullopt, hist1->tab_group_color_id);
-  EXPECT_EQ(nil, item1.attributedTitle);
-
-  // Verify tab2 has a grey group indicator.
-  NSMenuItem* item2 = [menu itemAtIndex:1];
-  MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
-  EXPECT_TRUE(hist2);
-  EXPECT_EQ(42, hist2->session_id.id());
-  EXPECT_EQ(tab_groups::TabGroupColorId::kGrey, hist2->tab_group_color_id);
-  EXPECT_NE(nil, item2.attributedTitle);
-}
 
 }  // namespace

@@ -219,9 +219,6 @@ class TabMenuBridgeTest : public ::testing::Test {
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
-
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kShowTabGroupsMacSystemMenu};
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {
@@ -348,27 +345,6 @@ TEST_F(TabMenuBridgeTest, ActiveItemTracksChanges) {
   ExpectActiveMenuItemNameIs("Tab 3");
 }
 
-TEST_F(TabMenuBridgeTest, TabGroupIndicator) {
-  TabStripModel* const tab_strip_model = model();
-  TabMenuBridge bridge(menu_root());
-  bridge.SetForceRebuildMenuForTesting(true);
-  bridge.SetTabStripModel(tab_strip_model);
-
-  AddModelTabNamed("Tab 1", model());
-  ActivateModelTabNamed("Tab 1");
-
-  // Group indicator is not shown.
-  EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
-
-  // Add to new group. Group indicator is shown.
-  AddModelTabToGroup({0});
-  EXPECT_NE(nil, GetActiveMenuItem().attributedTitle);
-
-  // Remove from group. Group indicator is not shown.
-  RemoveModelTabFromGroup({0});
-  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
-}
 
 // Regression test: clicking a stale menu item after a tab has been closed
 // should not crash.

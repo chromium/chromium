@@ -82,8 +82,6 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     // Favicon for the URL.
     NSImage* __strong icon;
 
-    std::optional<tab_groups::TabGroupColorId> tab_group_color_id;
-
     // If the icon is being requested from the FaviconService, |icon_requested|
     // will be true and |icon_task_id| will be valid. If this is false, then
     // |icon_task_id| will be

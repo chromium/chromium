@@ -88,9 +88,6 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
 }  // namespace
 
 class AcceleratorsCocoaBrowserTest : public InProcessBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kShowTabGroupsMacSystemMenu};
 };
 
 class AcceleratorsCocoaBrowserTestRTL : public AcceleratorsCocoaBrowserTest {

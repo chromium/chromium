@@ -447,31 +447,6 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
   return item;
 }
 
-NSMenuItem* BuildGroupsMenu(NSApplication* nsapp,
-                            id app_delegate,
-                            const std::u16string& product_name,
-                            bool is_pwa,
-                            bool is_rtl) {
-  if (!features::IsShowTabGroupsMacSystemMenuEnabled()) {
-    return nil;
-  }
-
-  if (is_pwa) {
-    return nil;
-  }
-
-  // clang-format off
-  NSMenuItem* item =
-      Item(IDS_SAVED_TAB_GROUPS_MENU)
-          .tag(AppMenuModel::kSavedTabGroupsMenuPlaceholder)
-          .submenu({
-              Item(IDS_CREATE_NEW_TAB_GROUP)
-                  .command_id(IDC_CREATE_NEW_TAB_GROUP),
-          })
-          .Build();
-  // clang-format on
-  return item;
-}
 
 NSMenuItem* BuildPeopleMenu(NSApplication* nsapp,
                             id app_delegate,
@@ -649,7 +624,6 @@ NSMenu* BuildMainMenu(NSApplication* nsapp,
            &BuildViewMenu,
            &BuildHistoryMenu,
            &BuildBookmarksMenu,
-           &BuildGroupsMenu,
            &BuildPeopleMenu,
            &BuildTabMenu,
            &BuildWindowMenu,
