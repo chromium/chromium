@@ -51,7 +51,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openLensSearch',
       'openPopupSelection',
       'queryAutocomplete',
-      'queryAutocompleteWithSuggestInventory',
       'recordModelSelectionAction',
       'recordToolSelectionAction',
       'setActiveModelMode',
@@ -145,21 +144,15 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   queryAutocomplete(
       queryId: number, input: String16, preventInlineAutocomplete: boolean,
-      cursorPosition: number) {
-    this.methodCalled(
-        'queryAutocomplete',
-        {queryId, input, preventInlineAutocomplete, cursorPosition});
-  }
-
-  queryAutocompleteWithSuggestInventory(
-      queryId: number, input: String16, preventInlineAutocomplete: boolean,
-      cursorPosition: number, suggestInventory: SuggestInventory) {
-    this.methodCalled('queryAutocompleteWithSuggestInventory', {
+      cursorPosition: number, suggestInventory: SuggestInventory,
+      isOnFocus: boolean) {
+    this.methodCalled('queryAutocomplete', {
       queryId,
       input,
       preventInlineAutocomplete,
       cursorPosition,
       suggestInventory,
+      isOnFocus,
     });
   }
 

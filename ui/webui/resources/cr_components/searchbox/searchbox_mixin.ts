@@ -10,7 +10,7 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SelectionLineState, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
@@ -203,7 +203,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           input.length;
       this.pageHandler().queryAutocomplete(
           this.activeQueryId, input, preventInlineAutocomplete, cursorPosition,
-          isOnFocus);
+          SuggestInventory.kDefault, isOnFocus);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,

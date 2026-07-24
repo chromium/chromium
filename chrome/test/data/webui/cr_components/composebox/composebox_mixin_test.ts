@@ -473,11 +473,10 @@ suite('ComposeboxMixinTest', () => {
     inputElement.inputElement.selectionStart = 3;
     inputElement.inputElement.selectionEnd = 3;
 
-    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+    searchboxHandler.resetResolver('queryAutocomplete');
     element.queryAutocomplete(/*clearMatches=*/ false);
 
-    const args = await searchboxHandler.whenCalled(
-        'queryAutocompleteWithSuggestInventory');
+    const args = await searchboxHandler.whenCalled('queryAutocomplete');
     assertDeepEquals(
         args, [0, 'hello', false, 3, SuggestInventory.kDefault, false]);
   });
@@ -499,43 +498,39 @@ suite('ComposeboxMixinTest', () => {
         // reflected in the DOM.
         element.input = 'hello world';
 
-        // Clear the `queryAutocompleteWithSuggestInventory` called for ZPS.
-        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+        // Clear the `queryAutocomplete` called for ZPS.
+        searchboxHandler.resetResolver('queryAutocomplete');
         element.queryAutocomplete(/*clearMatches=*/ false);
 
-        const args = await searchboxHandler.whenCalled(
-            'queryAutocompleteWithSuggestInventory');
+        const args = await searchboxHandler.whenCalled('queryAutocomplete');
         assertDeepEquals(
             args,
             [0, 'hello world', false, 11, SuggestInventory.kDefault, false]);
       });
 
   test('queries autocomplete on load by default', async () => {
-    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+    searchboxHandler.resetResolver('queryAutocomplete');
     const freshComposebox = document.createElement('test-composebox-mixin');
     document.body.appendChild(freshComposebox);
     await microtasksFinished();
 
-    assertEquals(
-        1,
-        searchboxHandler.getCallCount('queryAutocompleteWithSuggestInventory'));
+    assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
   });
 
-  test('does not query autocomplete on load when queryZpsOnLoad is false',
-       async () => {
-    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
-    const freshComposebox = document.createElement('test-composebox-mixin');
-    // queryZpsOnLoad is read in connectedCallback, so it must be set before
-    // the element connects. Contextual Tasks sets it false and drives
-    // autocomplete from its own zero-state logic instead.
-    freshComposebox.queryZpsOnLoad = false;
-    document.body.appendChild(freshComposebox);
-    await microtasksFinished();
+  test(
+      'does not query autocomplete on load when queryZpsOnLoad is false',
+      async () => {
+        searchboxHandler.resetResolver('queryAutocomplete');
+        const freshComposebox = document.createElement('test-composebox-mixin');
+        // queryZpsOnLoad is read in connectedCallback, so it must be set before
+        // the element connects. Contextual Tasks sets it false and drives
+        // autocomplete from its own zero-state logic instead.
+        freshComposebox.queryZpsOnLoad = false;
+        document.body.appendChild(freshComposebox);
+        await microtasksFinished();
 
-    assertEquals(
-        0,
-        searchboxHandler.getCallCount('queryAutocompleteWithSuggestInventory'));
-  });
+        assertEquals(0, searchboxHandler.getCallCount('queryAutocomplete'));
+      });
 
   test(
       'Shift+Enter allows inserting a newline when input is focused and not empty',

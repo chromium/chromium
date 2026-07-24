@@ -887,7 +887,7 @@ function disableAnimationsRecursively(element: Element) {
         const MANUAL_TOKEN = '0000000000000000BBBBBBBBBBBBBB02';
         const REPLACEMENT_TOKEN = '0000000000000000CCCCCCCCCCCCCC03';
         const ADD_TAB_CONTEXT_FN = 'addTabContext';
-        const QUERY_AUTOCOMPLETE_FN = 'queryAutocompleteWithSuggestInventory';
+        const QUERY_AUTOCOMPLETE_FN = 'queryAutocomplete';
         const STOP_AUTOCOMPLETE_FN = 'stopAutocomplete';
 
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&

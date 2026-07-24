@@ -1049,7 +1049,7 @@ suite('ComposeboxVoiceSearch', () => {
   test('Submits the voice transcript accurately after stop click', async () => {
     const voiceTranscript = 'voice query';
     searchboxHandler.setResultMapperFor(
-        'queryAutocompleteWithSuggestInventory', () => {
+        'queryAutocomplete', () => {
           return Promise.resolve({
             result: {
               input: voiceTranscript,
@@ -1087,14 +1087,14 @@ suite('ComposeboxVoiceSearch', () => {
     mockSpeechRecognition.onresult!(result);
     await microtasksFinished();
 
-    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+    searchboxHandler.resetResolver('queryAutocomplete');
 
     const stopButton =
         voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#stopButton');
     assertTrue(!!stopButton);
     stopButton.click();
 
-    await searchboxHandler.whenCalled('queryAutocompleteWithSuggestInventory');
+    await searchboxHandler.whenCalled('queryAutocomplete');
     await microtasksFinished();
 
     searchboxHandler.resetResolver('submitQuery');
@@ -1128,7 +1128,7 @@ suite('ComposeboxVoiceSearch', () => {
         await createComposeboxElement();
 
         // Reset so the zps query fired on mount does not count.
-        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
+        searchboxHandler.resetResolver('queryAutocomplete');
 
         // Open voice search.
         const voiceSearchButton = getVoiceSearchButton(composeboxElement);
@@ -1154,15 +1154,12 @@ suite('ComposeboxVoiceSearch', () => {
         stopButton.click();
         await microtasksFinished();
 
-        // Verify queryAutocompleteWithSuggestInventory was explicitly called to
+        // Verify queryAutocomplete was explicitly called to
         // update suggestions.
-        assertEquals(
-            1,
-            searchboxHandler.getCallCount(
-                'queryAutocompleteWithSuggestInventory'));
+        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
 
-        const queryArgs = await searchboxHandler.whenCalled(
-            'queryAutocompleteWithSuggestInventory');
+        const queryArgs =
+            await searchboxHandler.whenCalled('queryAutocomplete');
         assertEquals(composeboxElement.activeQueryId, queryArgs[0]);
         assertEquals('refresh suggestions', queryArgs[1]);
         assertFalse(queryArgs[2]);  // verify preventInlineAutocomplete is false

@@ -1089,17 +1089,7 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
   }
 }
 
-void SearchboxHandler::QueryAutocomplete(int32_t query_id,
-                                         const std::u16string& input,
-                                         bool prevent_inline_autocomplete,
-                                         uint32_t cursor_position,
-                                         bool is_on_focus) {
-  QueryAutocompleteWithSuggestInventory(
-      query_id, input, prevent_inline_autocomplete, cursor_position,
-      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT, is_on_focus);
-}
-
-void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
+void SearchboxHandler::QueryAutocomplete(
     int32_t query_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,

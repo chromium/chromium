@@ -122,14 +122,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                          const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position,
+                         omnibox::SuggestInventory suggest_inventory,
                          bool is_on_focus) override;
-  void QueryAutocompleteWithSuggestInventory(
-      int32_t query_id,
-      const std::u16string& input,
-      bool prevent_inline_autocomplete,
-      uint32_t cursor_position,
-      omnibox::SuggestInventory suggest_inventory,
-      bool is_on_focus) override;
   void StopAutocomplete(bool clear_result) override;
   void OpenAutocompleteMatch(uint8_t line,
                              const GURL& url,

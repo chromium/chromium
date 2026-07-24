@@ -38,9 +38,7 @@ import * as testSupport from './test_support.js';
 
           // Autocomplete queried once when composebox is opened.
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              1);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
           const id = testSupport.generateZeroId();
           await testSupport.uploadFileAndVerify(
               testProxy, id,
@@ -55,9 +53,7 @@ import * as testSupport from './test_support.js';
           assertEquals(
               testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 1);
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              2);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
 
           // The suggest request should be triggered before the file has
           // finished uploading.
@@ -83,9 +79,7 @@ import * as testSupport from './test_support.js';
           assertEquals(
               testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 2);
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              3);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
         });
 
         test('uploading image file without flag does nothing', async () => {
@@ -96,9 +90,7 @@ import * as testSupport from './test_support.js';
 
           // Autocomplete queried once when composebox is opened.
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              1);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
           const id = testSupport.generateZeroId();
           await testSupport.uploadFileAndVerify(
               testProxy, id,
@@ -111,9 +103,7 @@ import * as testSupport from './test_support.js';
           // Autocomplete should not be queried again since the uploaded file is
           // an image and the image suggest flag is disabled.
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              1);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
         });
 
         test(
@@ -126,8 +116,7 @@ import * as testSupport from './test_support.js';
 
               // Autocomplete queried once when composebox is opened.
               assertEquals(
-                  testProxy.searchboxHandler.getCallCount(
-                      'queryAutocompleteWithSuggestInventory'),
+                  testProxy.searchboxHandler.getCallCount('queryAutocomplete'),
                   1);
               const id = testSupport.generateZeroId();
               await testSupport.uploadFileAndVerify(
@@ -145,8 +134,7 @@ import * as testSupport from './test_support.js';
                   testProxy.searchboxHandler.getCallCount('stopAutocomplete'),
                   1);
               assertEquals(
-                  testProxy.searchboxHandler.getCallCount(
-                      'queryAutocompleteWithSuggestInventory'),
+                  testProxy.searchboxHandler.getCallCount('queryAutocomplete'),
                   2);
             });
 
@@ -644,8 +632,7 @@ import * as testSupport from './test_support.js';
 
               // Autocomplete queried once when composebox is opened for ZPS.
               assertEquals(
-                  testProxy.searchboxHandler.getCallCount(
-                      'queryAutocompleteWithSuggestInventory'),
+                  testProxy.searchboxHandler.getCallCount('queryAutocomplete'),
                   1);
 
               testProxy.searchboxHandler.setPromiseResolveFor(
@@ -1212,9 +1199,7 @@ import * as testSupport from './test_support.js';
           testSupport.createComposeboxElement(testProxy);
           // Autocomplete queried once when composebox is created.
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              1);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
 
           const matches = [createSearchMatchForTesting()];
           testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
@@ -1246,9 +1231,7 @@ import * as testSupport from './test_support.js';
               new Event('input'));
           await microtasksFinished();
           assertEquals(
-              testProxy.searchboxHandler.getCallCount(
-                  'queryAutocompleteWithSuggestInventory'),
-              2);
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
         });
 
         test('add file context fails', async () => {

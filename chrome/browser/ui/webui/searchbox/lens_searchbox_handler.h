@@ -35,14 +35,8 @@ class LensSearchboxHandler : public SearchboxHandler {
                          const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position,
+                         omnibox::SuggestInventory suggest_inventory,
                          bool is_on_focus) override;
-  void QueryAutocompleteWithSuggestInventory(
-      int32_t query_id,
-      const std::u16string& input,
-      bool prevent_inline_autocomplete,
-      uint32_t cursor_position,
-      omnibox::SuggestInventory suggest_inventory,
-      bool is_on_focus) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override {}
   void ExecuteAction(uint8_t line,
                      uint8_t action_index,

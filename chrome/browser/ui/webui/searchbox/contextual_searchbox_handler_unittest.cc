@@ -2297,9 +2297,10 @@ TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
   handler().SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
 
-  handler().QueryAutocomplete(0, u"test",
-                              /*prevent_inline_autocomplete=*/false, 0,
-                              /*is_on_focus=*/false);
+  handler().QueryAutocomplete(
+      0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/false);
 
   EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
   EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
@@ -2331,9 +2332,10 @@ TEST_F(ContextualSearchboxHandlerTest,
     handler().SetAutocompleteControllerForTesting(
         std::move(autocomplete_controller));
 
-    handler().QueryAutocomplete(0, u"test",
-                                /*prevent_inline_autocomplete=*/false, 0,
-                                /*is_on_focus=*/false);
+    handler().QueryAutocomplete(
+        0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/false);
     EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
     EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
               "xyz");
@@ -2356,9 +2358,10 @@ TEST_F(ContextualSearchboxHandlerTest,
     handler().SetAutocompleteControllerForTesting(
         std::move(autocomplete_controller));
 
-    handler().QueryAutocomplete(0, u"test",
-                                /*prevent_inline_autocomplete=*/false, 0,
-                                /*is_on_focus=*/false);
+    handler().QueryAutocomplete(
+        0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/false);
     EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
     EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
               "xyz");

@@ -11,27 +11,21 @@ export class TestSearchboxPageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'queryAutocomplete',
-      'queryAutocompleteWithSuggestInventory',
       'openAutocompleteMatch',
     ]);
   }
 
   queryAutocomplete(
-      input: string, preventInlineAutocomplete: boolean,
-      cursorPosition: number) {
-    this.methodCalled(
-        'queryAutocomplete',
-        [input, preventInlineAutocomplete, cursorPosition]);
-  }
-
-  queryAutocompleteWithSuggestInventory(
-      input: string, preventInlineAutocomplete: boolean, cursorPosition: number,
-      suggestInventory: SuggestInventory) {
-    this.methodCalled('queryAutocompleteWithSuggestInventory', [
+      queryId: number, input: string, preventInlineAutocomplete: boolean,
+      cursorPosition: number, suggestInventory: SuggestInventory,
+      isOnFocus: boolean) {
+    this.methodCalled('queryAutocomplete', [
+      queryId,
       input,
       preventInlineAutocomplete,
       cursorPosition,
       suggestInventory,
+      isOnFocus,
     ]);
   }
 

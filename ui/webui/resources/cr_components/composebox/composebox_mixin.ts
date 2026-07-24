@@ -2022,7 +2022,7 @@ export const ComposeboxEmbedderMixin =
               this.getInputElement().inputElement.value === this.input ?
               this.getInputElement().inputElement.selectionStart || 0 :
               this.input.length;
-          this.getSearchboxHandler().queryAutocompleteWithSuggestInventory(
+          this.getSearchboxHandler().queryAutocomplete(
               this.activeQueryId, this.input,
               /*preventInlineAutocomplete=*/ false, cursorPosition,
               this.suggestInventory ?? SuggestInventory.kDefault,

@@ -1154,8 +1154,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           simulateUserInput(inputElement, TEST_QUERY);
           mockTimer.tick(300);
 
-          await mockSearchboxPageHandler.whenCalled(
-              'queryAutocompleteWithSuggestInventory');
+          await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
 
           await setupAutocompleteResults(
               searchboxCallbackRouterRemote, innerComposebox.activeQueryId,
@@ -1331,7 +1330,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
       `ContextualTasksComposeboxForkInjectInputTest ` +
           `(useContextualTasksComposeboxFork = ${useFork})`,
       () => {
-        const QUERY_AUTOCOMPLETE_FN = 'queryAutocompleteWithSuggestInventory';
+        const QUERY_AUTOCOMPLETE_FN = 'queryAutocomplete';
         let testProxy: TestContextualTasksBrowserProxy;
         let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
             ComposeboxPageHandlerRemote;

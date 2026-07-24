@@ -311,8 +311,10 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false,
-                                0, /*is_on_focus=*/true);
+    handler_->QueryAutocomplete(
+        0, u"", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/true);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -338,8 +340,10 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocomplete(0, u"a", /*prevent_inline_autocomplete=*/false,
-                                0, /*is_on_focus=*/false);
+    handler_->QueryAutocomplete(
+        0, u"a", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/false);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
@@ -384,7 +388,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_StartWithSuggestInventory) {
         .Times(1)
         .WillOnce(SaveArg<0>(&input));
 
-    handler_->QueryAutocompleteWithSuggestInventory(
+    handler_->QueryAutocomplete(
         0, u"a", /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
         /*is_on_focus=*/false);
@@ -437,7 +441,7 @@ TEST_F(RealboxHandlerTest, SetInputMethodTest) {
 
     handler_->SetInputMethod(searchbox::mojom::InputMethod::kSmartCompose);
 
-    handler_->QueryAutocompleteWithSuggestInventory(
+    handler_->QueryAutocomplete(
         0, u"test query", /*prevent_inline_autocomplete=*/false, 10,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
         /*is_on_focus=*/false);
@@ -465,7 +469,7 @@ TEST_F(RealboxHandlerTest, SetInputMethodTest) {
 
     // No SetInputMethod call - should default to KEYBOARD.
 
-    handler_->QueryAutocompleteWithSuggestInventory(
+    handler_->QueryAutocomplete(
         0, u"another query", /*prevent_inline_autocomplete=*/false, 13,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
         /*is_on_focus=*/false);
@@ -695,8 +699,10 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(0, u"", /*prevent_inline_autocomplete=*/false,
-                                0, /*is_on_focus=*/true);
+    handler_->QueryAutocomplete(
+        0, u"", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/true);
 
     EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
@@ -748,8 +754,10 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
         .WillRepeatedly(Return(suggest_inputs));
 
-    handler_->QueryAutocomplete(0, u"a", /*prevent_inline_autocomplete=*/false,
-                                0, /*is_on_focus=*/false);
+    handler_->QueryAutocomplete(
+        0, u"a", /*prevent_inline_autocomplete=*/false, 0,
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+        /*is_on_focus=*/false);
 
     EXPECT_EQ(input_text, u"a");
     EXPECT_EQ(input.text(), u"a");
