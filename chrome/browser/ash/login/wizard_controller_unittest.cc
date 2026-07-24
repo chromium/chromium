@@ -142,12 +142,6 @@ OobeScreenId CurrentScreenId(WizardController* wizard_controller) {
   return wizard_controller->current_screen()->screen_id();
 }
 
-bool WaitForDeviceOwnershipStatusCallback() {
-  base::test::TestFuture<DeviceSettingsService::OwnershipStatus> future;
-  DeviceSettingsService::Get()->GetOwnershipStatusAsync(future.GetCallback());
-  return future.Wait();
-}
-
 class ScreenWaiter : public WizardController::ScreenObserver {
  public:
   explicit ScreenWaiter(WizardController& wizard_controller)
@@ -592,10 +586,9 @@ TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
   MakeNonCriticalUpdateAvailable();
   ASSERT_TRUE(AwaitScreen(kConsolidateConsentScreen));
 
-  // The consent screen queued its own ownership-status callback before it was
-  // shown. Waiting for a later callback ensures that owner-flow state is set
-  // before accepting the screen.
-  ASSERT_TRUE(WaitForDeviceOwnershipStatusCallback());
+  // Consolidate consent screen with DCHECKs turned on crashes if you are too
+  // fast. Need to wait for it to fetch owner state asynchronously.
+  base::RunLoop().RunUntilIdle();
 
   PerformUserAction(kActionTosAccept, /*enable_usage=*/true,
                     /*enable_backup=*/true, /*enable_location=*/true,
