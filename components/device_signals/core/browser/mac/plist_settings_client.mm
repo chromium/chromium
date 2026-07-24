@@ -9,11 +9,10 @@
 #include <utility>
 
 #import "base/apple/foundation_util.h"
-#include "base/compiler_specific.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -26,10 +25,10 @@ namespace device_signals {
 namespace {
 
 // Max plist file size.
-constexpr int kMaxFileSizeInMb = 500;
+constexpr base::ByteSize kMaxFileSize = base::MiBU(500);
 
 // Max size of the setting element.
-constexpr size_t kMaxStringSizeInBytes = 1024;
+constexpr base::ByteSize kMaxStringSize = base::KiBU(1);
 
 // Parses the `data_obj` for the item at the given key `path`. Returns the
 // object in the event of a successful parse, and nil otherwise.
@@ -137,7 +136,8 @@ std::vector<SettingsItem> GetSettingItems(
 
     std::optional<int64_t> plist_file_size = base::GetFileSize(resolved_path);
     if (!plist_file_size.has_value() ||
-        plist_file_size.value() > (kMaxFileSizeInMb << 20)) {
+        base::checked_cast<uint64_t>(plist_file_size.value()) >
+            kMaxFileSize.InBytes()) {
       item.presence = PresenceValue::kNotFound;
       items.push_back(item);
       continue;
@@ -172,22 +172,13 @@ std::vector<SettingsItem> GetSettingItems(
     }
 
     if (NSString* setting_str = base::apple::ObjCCast<NSString>(value_ptr)) {
-      if (setting_str.length <= kMaxStringSizeInBytes) {
+      if (setting_str.length <= kMaxStringSize.InBytes()) {
         item.setting_json_value =
             base::WriteJson(base::SysNSStringToUTF8(setting_str)).value_or("");
       }
     } else if (NSNumber* value_num =
                    base::apple::ObjCCast<NSNumber>(value_ptr)) {
-      // Differentiating between integer and float types.
-      const char* value_type = value_num.objCType;
-      if (UNSAFE_TODO(strcmp(value_type, "d")) == 0 ||
-          UNSAFE_TODO(strcmp(value_type, "f")) == 0) {
-        double setting_num = value_num.doubleValue;
-        item.setting_json_value = base::StringPrintf("%f", setting_num);
-      } else {
-        int setting_num = value_num.integerValue;
-        item.setting_json_value = base::StringPrintf("%d", setting_num);
-      }
+      item.setting_json_value = base::SysNSStringToUTF8(value_num.stringValue);
     }
     items.push_back(item);
   }
