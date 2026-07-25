@@ -22,6 +22,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payments_experimental_features.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/web_contents.h"
@@ -71,6 +72,7 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
 // resource Id.
 ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     content::WebContents* web_contents,
+    content::GlobalRenderFrameHostId requesting_frame_id,
     const GURL& top_origin,
     const GURL& frame_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -95,7 +97,8 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       needs_installation_(true),
       installable_web_app_info_(std::move(installable_payment_app_info)),
       installable_enabled_method_(enabled_method),
-      web_contents_(web_contents->GetWeakPtr()) {
+      web_contents_(web_contents->GetWeakPtr()),
+      requesting_frame_id_(requesting_frame_id) {
   DCHECK(web_contents);
   DCHECK(top_origin_.is_valid());
   DCHECK(frame_origin_.is_valid());
@@ -251,7 +254,8 @@ void ServiceWorkerPaymentApp::InvokePaymentApp(
 
   if (needs_installation_) {
     payment_app_provider->InstallAndInvokePaymentApp(
-        CreatePaymentRequestEventData(), installable_web_app_info_->name,
+        requesting_frame_id_, CreatePaymentRequestEventData(),
+        installable_web_app_info_->name,
         installable_web_app_info_->icon == nullptr
             ? SkBitmap()
             : *(installable_web_app_info_->icon),

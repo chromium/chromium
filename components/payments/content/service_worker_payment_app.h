@@ -14,6 +14,7 @@
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -52,6 +53,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   // should not be null.
   ServiceWorkerPaymentApp(
       content::WebContents* web_contents,
+      content::GlobalRenderFrameHostId requesting_frame_id,
       const GURL& top_origin,
       const GURL& frame_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
@@ -173,6 +175,19 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // The frame ID is used by payment app service worker registration to enforce
+  // connection allowlists checks. Those checks only apply if there is an
+  // initiator frame of the PaymentRequest API. By default, it is an invalid
+  // `GlobalRenderFrameHostId`, which bypasses the connection allowlists checks.
+  // The invalid ID is used for payment app that does not require service worker
+  // registration, for example,  a payment app that has been installed in
+  // Chrome. See: https://github.com/WICG/connection-allowlists.
+  //
+  // TODO(crbug.com/537630723): Replace this with a `WeakDocumentPtr` to avoid
+  // referencing a reused `RenderFrameHost` via the `GlobalRenderFrameHostId`,
+  // which can happen when there is a same-site navigation.
+  content::GlobalRenderFrameHostId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerPaymentApp> weak_ptr_factory_{this};
 };

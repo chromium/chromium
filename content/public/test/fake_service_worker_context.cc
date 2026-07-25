@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -34,6 +35,7 @@ void FakeServiceWorkerContext::RegisterServiceWorker(
     const GURL& script_url,
     const blink::StorageKey& key,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    GlobalRenderFrameHostId requesting_frame_id,
     StatusCodeCallback callback) {
   NOTREACHED();
 }

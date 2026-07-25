@@ -19,6 +19,7 @@
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/supported_delegations.h"
 #include "content/public/browser/web_contents.h"
@@ -92,7 +93,8 @@ class ServiceWorkerPaymentAppCreator {
         continue;
       }
       auto app = std::make_unique<ServiceWorkerPaymentApp>(
-          delegate_->GetWebContents(), delegate_->GetTopOrigin(),
+          delegate_->GetWebContents(),
+          delegate_->GetInitiatorRenderFrameHostId(), delegate_->GetTopOrigin(),
           delegate_->GetFrameOrigin(), delegate_->GetSpec(),
           std::move(installable_app.second), installable_app.first.spec(),
           delegate_->IsOffTheRecord(), delegate_->PrefsCanMakePayment(),

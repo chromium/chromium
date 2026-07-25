@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -336,6 +337,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
       // Register returns when the promise is resolved.
       public_context()->RegisterServiceWorker(
           embedded_test_server()->GetURL(kServiceWorkerUrl), key, options,
+          GlobalRenderFrameHostId(),
           base::BindOnce(&ExpectRegisterResultAndRun,
                          blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
@@ -705,6 +707,7 @@ IN_PROC_BROWSER_TEST_F(
     // Register returns when the promise is resolved.
     public_context()->RegisterServiceWorker(
         https_server()->GetURL("b.test", kServiceWorkerUrl), key, options,
+        GlobalRenderFrameHostId(),
         base::BindOnce(&ExpectRegisterResultAndRun,
                        blink::ServiceWorkerStatusCode::kOk,
                        run_loop.QuitClosure()));

@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_running_info.h"
@@ -550,7 +551,7 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   service_worker_context->RegisterServiceWorker(
       script_url,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(option.scope)),
-      option,
+      option, content::GlobalRenderFrameHostId(),
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
                      weak_factory_.GetWeakPtr(), context_id, reason,
                      base::Time::Now()));

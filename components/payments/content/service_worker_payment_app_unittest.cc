@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/core/features.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -118,7 +119,8 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
 
     icon_bitmap_ = app_info->icon.get();
     app_ = std::make_unique<ServiceWorkerPaymentApp>(
-        web_contents_, GURL("https://testmerchant.com"),
+        web_contents_, content::GlobalRenderFrameHostId(),
+        GURL("https://testmerchant.com"),
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(app_info), /*enabled_method=*/"https://bobpay.test",
         /*is_incognito=*/false, /*prefs_can_make_payment=*/true,

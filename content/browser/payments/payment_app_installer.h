@@ -16,6 +16,7 @@ class GURL;
 namespace content {
 
 class WebContents;
+struct GlobalRenderFrameHostId;
 
 // Installs a web payment app with a default payment instrument and returns
 // the registration Id through callback on success.
@@ -29,6 +30,7 @@ class PaymentAppInstaller {
   PaymentAppInstaller& operator=(const PaymentAppInstaller&) = delete;
 
   // Installs the payment app.
+  // |requesting_frame_id| is the id of the initiator frame.
   // |app_name| is the name of the payment app.
   // |app_icon| is the icon of the payment app.
   // |sw_url| is the url to get the service worker js script.
@@ -38,6 +40,7 @@ class PaymentAppInstaller {
   // |supported_delegations| are the supported delegations of the payment app.
   // |callback| to send back registration result.
   static void Install(WebContents* web_contents,
+                      GlobalRenderFrameHostId requesting_frame_id,
                       const std::string& app_name,
                       const std::string& app_icon,
                       const GURL& sw_url,

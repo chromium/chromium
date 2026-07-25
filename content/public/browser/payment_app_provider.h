@@ -19,6 +19,7 @@ class Origin;
 namespace content {
 
 class WebContents;
+struct GlobalRenderFrameHostId;
 struct SupportedDelegations;
 
 // This is providing the service worker based payment app related APIs to
@@ -52,6 +53,7 @@ class CONTENT_EXPORT PaymentAppProvider {
       payments::mojom::PaymentRequestEventDataPtr event_data,
       InvokePaymentAppCallback callback) = 0;
   virtual void InstallAndInvokePaymentApp(
+      GlobalRenderFrameHostId requesting_frame_id,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       const std::string& app_name,
       const SkBitmap& app_icon,

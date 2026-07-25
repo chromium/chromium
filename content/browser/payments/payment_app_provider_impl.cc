@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_background_services_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -141,6 +142,7 @@ void PaymentAppProviderImpl::InvokePaymentApp(
 }
 
 void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
+    GlobalRenderFrameHostId requesting_frame_id,
     PaymentRequestEventDataPtr event_data,
     const std::string& app_name,
     const SkBitmap& app_icon,
@@ -185,8 +187,9 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
   }
 
   PaymentAppInstaller::Install(
-      payment_request_web_contents_, app_name, EncodeIcon(app_icon), sw_js_url,
-      sw_scope, sw_use_cache, method, supported_delegations,
+      payment_request_web_contents_, requesting_frame_id, app_name,
+      EncodeIcon(app_icon), sw_js_url, sw_scope, sw_use_cache, method,
+      supported_delegations,
       base::BindOnce(&PaymentAppProviderImpl::OnInstallPaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), sw_origin,
                      std::move(event_data), std::move(registration_id_callback),
@@ -321,9 +324,11 @@ void PaymentAppProviderImpl::InstallPaymentAppForTesting(
   CHECK(!payment_method_identifier.empty());
 
   PaymentAppInstaller::Install(
-      payment_request_web_contents_, /*app_name=*/"Test App Name",
-      EncodeIcon(app_icon), service_worker_javascript_file_url,
-      service_worker_scope, /*use_cache=*/false, payment_method_identifier,
+      payment_request_web_contents_,
+      payment_request_web_contents_->GetPrimaryMainFrame()->GetGlobalId(),
+      /*app_name=*/"Test App Name", EncodeIcon(app_icon),
+      service_worker_javascript_file_url, service_worker_scope,
+      /*use_cache=*/false, payment_method_identifier,
       content::SupportedDelegations(),
       base::BindOnce(&CheckRegistrationSuccess, std::move(callback)));
 }

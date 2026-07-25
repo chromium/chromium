@@ -412,6 +412,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     return job_coordinator_.get();
   }
 
+  // TODO(crbug.com/537630723): Replace the `requesting_frame_id`, which is a
+  // `GlobalRenderFrameHostId`, with a `WeakDocumentPtr` to avoid referencing a
+  // reused `RenderFrameHost` via the `GlobalRenderFrameHostId`, which can
+  // happen when there is a same-site navigation.
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::StorageKey& key,

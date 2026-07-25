@@ -16,6 +16,7 @@
 namespace content {
 
 class PaymentHandlerWebContentsObserver;
+struct GlobalRenderFrameHostId;
 
 // Lives on the UI thread.
 class CONTENT_EXPORT PaymentAppProviderImpl
@@ -35,6 +36,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
                         payments::mojom::PaymentRequestEventDataPtr event_data,
                         InvokePaymentAppCallback callback) override;
   void InstallAndInvokePaymentApp(
+      GlobalRenderFrameHostId requesting_frame_id,
       payments::mojom::PaymentRequestEventDataPtr event_data,
       const std::string& app_name,
       const SkBitmap& app_icon,

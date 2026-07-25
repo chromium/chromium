@@ -55,6 +55,7 @@ namespace content {
 class ServiceWorkerContext;
 class ServiceWorkerContextObserver;
 
+struct GlobalRenderFrameHostId;
 struct ServiceWorkerRunningInfo;
 struct StorageUsageInfo;
 
@@ -212,6 +213,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
       const GURL& script_url,
       const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      GlobalRenderFrameHostId requesting_frame_id,
       StatusCodeCallback callback) = 0;
 
   // Equivalent to calling ServiceWorkerRegistration#unregister on the

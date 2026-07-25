@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -53,7 +54,9 @@ class SelfDeleteInstaller
   SelfDeleteInstaller(const SelfDeleteInstaller& other) = delete;
   SelfDeleteInstaller& operator=(const SelfDeleteInstaller& other) = delete;
 
-  void Init(WebContents* web_contents, bool use_cache) {
+  void Init(WebContents* web_contents,
+            GlobalRenderFrameHostId requesting_frame_id,
+            bool use_cache) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     AddRef();  // Balanced by Release() in FinishInstallation.
@@ -61,6 +64,7 @@ class SelfDeleteInstaller
     // TODO: Switch to being a WebContentsObserver and listen for events to
     // terminate installation early?
     web_contents_ = web_contents->GetWeakPtr();
+    requesting_frame_id_ = requesting_frame_id;
 
     use_cache_ = use_cache;
 
@@ -107,7 +111,7 @@ class SelfDeleteInstaller
     service_worker_context_->RegisterServiceWorker(
         sw_url_,
         blink::StorageKey::CreateFirstParty(url::Origin::Create(option.scope)),
-        option,
+        option, requesting_frame_id_,
         base::BindOnce(&SelfDeleteInstaller::OnRegisterServiceWorkerResult,
                        this));
   }
@@ -222,6 +226,7 @@ class SelfDeleteInstaller
   }
 
   base::WeakPtr<WebContents> web_contents_;
+  GlobalRenderFrameHostId requesting_frame_id_;
   std::string app_name_;
   std::string app_icon_;
   GURL sw_url_;
@@ -240,6 +245,7 @@ class SelfDeleteInstaller
 // Static
 void PaymentAppInstaller::Install(
     WebContents* web_contents,
+    GlobalRenderFrameHostId requesting_frame_id,
     const std::string& app_name,
     const std::string& app_icon,
     const GURL& sw_url,
@@ -253,7 +259,7 @@ void PaymentAppInstaller::Install(
   auto installer = base::MakeRefCounted<SelfDeleteInstaller>(
       app_name, app_icon, sw_url, scope, method, supported_delegations,
       std::move(callback));
-  installer->Init(web_contents, use_cache);
+  installer->Init(web_contents, requesting_frame_id, use_cache);
 }
 
 }  // namespace content

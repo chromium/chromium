@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -912,6 +913,67 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
   // the network service.
   monitor.WaitForUrls({redirect_url});
   EXPECT_TRUE(monitor.GetRequestInfo(redirect_url).has_value());
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       PaymentHandlerServiceWorkerRegistrationAllowed) {
+  RegisterResponse(
+      "/payment_request.html",
+      ResponseEntry{"<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}});
+  RegisterResponse(
+      "/sw_allowed.js",
+      ResponseEntry{
+          "self.addEventListener('install', e => self.skipWaiting());",
+          {{"Content-Type", "text/javascript"}}});
+
+  GURL main_url = https_server()->GetURL("a.test", "/payment_request.html");
+  GURL service_worker_url = https_server()->GetURL("a.test", "/sw_allowed.js");
+
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url));
+  content::URLLoaderMonitor monitor;
+
+  // Install a payment app, which registers a service worker using the URL.
+  // Payment service worker registration succeeded because the URL is allowed by
+  // the connection allowlist.
+  ASSERT_TRUE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *GetActiveWebContents(), service_worker_url, "https://bobpay.com",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
+  monitor.WaitForUrls({service_worker_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(service_worker_url).error_code,
+            net::OK);
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+                       PaymentHandlerServiceWorkerRegistrationBlocked) {
+  RegisterResponse("/payment_request.html",
+                   ResponseEntry{"<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist", "()"}}});
+  RegisterResponse(
+      "/sw_denied.js",
+      ResponseEntry{
+          "self.addEventListener('install', e => self.skipWaiting());",
+          {{"Content-Type", "text/javascript"}}});
+
+  GURL main_url = https_server()->GetURL("a.test", "/payment_request.html");
+  GURL service_worker_url = https_server()->GetURL("a.test", "/sw_denied.js");
+
+  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(), main_url));
+  content::URLLoaderMonitor monitor;
+
+  // Install a payment app, which registers a service worker using the URL.
+  // Payment service worker registration failed because the URL is blocked by
+  // the connection allowlist.
+  ASSERT_FALSE(
+      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *GetActiveWebContents(), service_worker_url, "https://bobpay.com",
+          PaymentAppInstallUtil::IconInstall::kWithIcon));
+
+  monitor.WaitForUrls({service_worker_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(service_worker_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

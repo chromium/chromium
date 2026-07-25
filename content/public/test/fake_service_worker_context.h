@@ -24,6 +24,7 @@ class StorageKey;
 namespace content {
 
 class ServiceWorkerContextObserver;
+struct GlobalRenderFrameHostId;
 
 // Fake implementation of ServiceWorkerContext.
 //
@@ -47,6 +48,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       const GURL& script_url,
       const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      GlobalRenderFrameHostId requesting_frame_id,
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                const blink::StorageKey& key,
