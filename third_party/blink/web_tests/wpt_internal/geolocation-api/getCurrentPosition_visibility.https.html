@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 <meta charset='utf-8'>
-<title>Geolocation Test: getCurrentPosition returns after visibilityState changes</title>
+<title>Geolocation Test: getCurrentPosition and visibilityState changes</title>
 <link rel='help' href='http://www.w3.org/TR/geolocation-API/#get-current-position'>
+<meta name="timeout" content="long">
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
 <script src="/resources/testdriver.js"></script>
@@ -10,16 +11,25 @@
 <p>Clear all Geolocation permissions before running this test. If prompted for permission, please allow.</p>
 <div id='log'></div>
 
-<script>
-setup(test_driver.set_permission({name: 'geolocation'}, 'granted', true));
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+await test_driver.set_permission({name: 'geolocation'}, 'granted', true);
+const mock = new GeolocationMock();
 
 promise_test(async t => {
   assert_equals(document.visibilityState, "visible");
 
   const gcp = new Promise(resolve => navigator.geolocation.getCurrentPosition(
-    p => resolve(pos),
-    e => resolve(e),
-    {timeout: 100, maximumAge: 0}))
+    p => {
+      assert_equals(document.visibilityState, "visible", "First success callback should run while visible");
+      resolve(p);
+    },
+    e => {
+      assert_equals(document.visibilityState, "visible", "First error callback should run while visible");
+      resolve(e);
+    },
+    {timeout: 100, maximumAge: 0}));
   await gcp;
 
   const changed = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
@@ -28,8 +38,14 @@ promise_test(async t => {
   assert_equals(document.visibilityState, "hidden");
 
   const gcp2 = new Promise(resolve => navigator.geolocation.getCurrentPosition(
-    p => resolve(pos),
-    e => resolve(e),
+    p => {
+      assert_equals(document.visibilityState, "visible", "Second success callback should run while visible");
+      resolve(p);
+    },
+    e => {
+      assert_equals(document.visibilityState, "visible", "Second error callback should run while visible");
+      resolve(e);
+    },
     {timeout: 100, maximumAge: 0}));
 
   const changed2 = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
@@ -39,4 +55,48 @@ promise_test(async t => {
 
   await gcp2;
 }, "getCurrentPosition returns after visibilityState changes");
+
+promise_test(async t => {
+  mock.setGeolocationPermission(true);
+  mock.setGeolocationTimeoutError(true); // Force hardware to never reply
+
+  assert_equals(document.visibilityState, "visible");
+
+  let resolve_error;
+  const error_promise = new Promise(resolve => {
+    resolve_error = resolve;
+  });
+
+  navigator.geolocation.getCurrentPosition(
+    p => {
+      assert_unreached("Success callback should not be invoked");
+    },
+    e => {
+      assert_equals(e.code, e.TIMEOUT, "Should fail with TIMEOUT");
+      assert_equals(document.visibilityState, "visible", "Callback should run while visible");
+      resolve_error(e);
+    },
+    {timeout: 600, maximumAge: 0}
+  );
+
+  // Let it be visible for 100ms
+  await new Promise(resolve => t.step_timeout(resolve, 100));
+
+  // Hide the tab
+  const changed = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(true);
+  await changed;
+  assert_equals(document.visibilityState, "hidden");
+
+  // Stay hidden for 1000ms (well past the original 600ms absolute deadline)
+  await new Promise(resolve => t.step_timeout(resolve, 1000));
+
+  // Unhide the tab
+  const changed2 = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(false);
+  await changed2;
+  assert_equals(document.visibilityState, "visible");
+
+  await error_promise;
+}, "getCurrentPosition timeout correctly pauses and resumes on visibility change");
 </script>

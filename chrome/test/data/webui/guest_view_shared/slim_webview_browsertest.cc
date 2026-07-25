@@ -60,6 +60,7 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
 
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
+    web_contents->WasShown();
     auto* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     auto* permission_manager = PermissionManagerFactory::GetForProfile(profile);

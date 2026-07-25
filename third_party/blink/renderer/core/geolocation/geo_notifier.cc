@@ -20,7 +20,9 @@ GeoNotifier::GeoNotifier(Geolocation* geolocation,
           geolocation->DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI),
           this,
           &GeoNotifier::TimerFired)),
-      use_cached_position_(false) {
+      use_cached_position_(false),
+      initial_callback_run_(false),
+      remaining_timeout_(std::nullopt) {
   DCHECK(geolocation_);
 }
 
@@ -50,6 +52,7 @@ void GeoNotifier::SetUseCachedPosition() {
 }
 
 void GeoNotifier::RunSuccessCallback(Geoposition* position) {
+  initial_callback_run_ = true;
   LocalDOMWindow* win = geolocation_->DomWindow();
   UseCounter::Count(win, WebFeature::kGeolocationSucceeded);
 
@@ -61,15 +64,22 @@ void GeoNotifier::RunSuccessCallback(Geoposition* position) {
 }
 
 void GeoNotifier::RunErrorCallback(GeolocationPositionError* error) {
+  initial_callback_run_ = true;
   RunCallback(nullptr, error);
 }
 
 void GeoNotifier::StartTimer() {
-  timer_->StartOneShot(base::Milliseconds(options_->timeout()), FROM_HERE);
+  base::TimeDelta timeout =
+      remaining_timeout_.value_or(base::Milliseconds(options_->timeout()));
+  remaining_timeout_ = std::nullopt;
+  timer_->StartOneShot(timeout, FROM_HERE);
 }
 
 void GeoNotifier::StopTimer() {
-  timer_->Stop();
+  if (timer_->IsActive()) {
+    remaining_timeout_ = timer_->RemainingTimeout();
+    timer_->Stop();
+  }
 }
 
 bool GeoNotifier::IsTimerActive() const {
@@ -90,6 +100,11 @@ void GeoNotifier::Timer::StartOneShot(base::TimeDelta interval,
 void GeoNotifier::Timer::Stop() {
   DCHECK(notifier_->geolocation_->DoesOwnNotifier(notifier_));
   timer_.Stop();
+}
+
+base::TimeDelta GeoNotifier::Timer::RemainingTimeout() const {
+  DCHECK(notifier_->geolocation_->DoesOwnNotifier(notifier_));
+  return timer_.NextFireInterval();
 }
 
 void GeoNotifier::TimerFired(TimerBase*) {

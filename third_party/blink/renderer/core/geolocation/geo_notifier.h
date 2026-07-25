@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEO_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEO_NOTIFIER_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_error_callback.h"
@@ -28,6 +30,7 @@ class GeoNotifier : public GarbageCollectedMixin, public NameClient {
   void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override { return "GeoNotifier"; }
   const PositionOptions* Options() const { return options_.Get(); }
+  bool InitialCallbackRun() const { return initial_callback_run_; }
 
   // Sets the given error as the fatal error if there isn't one yet.
   // Starts the timer with an interval of 0.
@@ -64,6 +67,7 @@ class GeoNotifier : public GarbageCollectedMixin, public NameClient {
     void StartOneShot(base::TimeDelta interval, const base::Location& caller);
     void Stop();
     bool IsActive() const { return timer_.IsActive(); }
+    base::TimeDelta RemainingTimeout() const;
 
    private:
     HeapTaskRunnerTimer<GeoNotifier> timer_;
@@ -84,6 +88,8 @@ class GeoNotifier : public GarbageCollectedMixin, public NameClient {
   Member<Timer> timer_;
   Member<GeolocationPositionError> fatal_error_;
   bool use_cached_position_;
+  bool initial_callback_run_;
+  std::optional<base::TimeDelta> remaining_timeout_;
 };
 
 }  // namespace blink
