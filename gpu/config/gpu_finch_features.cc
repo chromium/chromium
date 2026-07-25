@@ -170,7 +170,8 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kRelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist{
         &kRelaxLimitAImageReaderMaxSizeToOne,
-        "RelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist", ""};
+        "RelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist",
+        "G08|G10|G17|BRAVIA_CT1"};
 const base::FeatureParam<std::string>
     kRelaxLimitAImageReaderMaxSizeToOneModelBlocklist{
         &kRelaxLimitAImageReaderMaxSizeToOne,
