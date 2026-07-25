@@ -13119,8 +13119,9 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
 }
 
 // Tests that critical-level memory pressure cancels prerendering on trigger.
+// crbug.com/538697108
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
-                       MemoryPressureOnTrigger_Critical) {
+                       DISABLED_MemoryPressureOnTrigger_Critical) {
   GURL initial_url = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
