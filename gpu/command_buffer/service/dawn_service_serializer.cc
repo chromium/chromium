@@ -30,8 +30,9 @@ static_assert(kDawnReturnCmdsOffset < kMaxWireBufferSize, "");
 DawnServiceSerializer::CommandBuffer::CommandBuffer(size_t size)
     : buffer(base::AlignedUninit<std::byte>(size, kWireAlignment)),
       put_offset(kDawnReturnCmdsOffset) {
-  // We prepopulate the message with the header and keep it between flushes so
-  // we never need to write it again.
+  // Zero-initialize the entire buffer because wire command serialization
+  // does not initialize struct alignment padding or trailing padding bytes.
+  std::ranges::fill(buffer, std::byte{0});
   cmds::DawnReturnCommandsInfoHeader* header =
       reinterpret_cast<cmds::DawnReturnCommandsInfoHeader*>(&buffer[0]);
   header->return_data_header.return_data_type =
