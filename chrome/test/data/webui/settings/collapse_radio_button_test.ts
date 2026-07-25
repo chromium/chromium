@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import  'chrome://settings/lazy_load.js';
+import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-// clang-format on
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('CrCollapseRadioButton', function() {
   let collapseRadioButton: SettingsCollapseRadioButtonElement;
@@ -210,5 +210,59 @@ suite('CrCollapseRadioButton', function() {
 
     collapseRadioButton.set('icon', 'cr:location-on');
     assertTrue(isChildVisible(collapseRadioButton, '#buttonIcon'));
+  });
+});
+
+suite('CollapseRadioButtonPrefKey', () => {
+  let collapseRadioButton: SettingsCollapseRadioButtonElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+
+  const initialPrefs = [
+    {
+      key: 'test_boolean',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+  ];
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
+    collapseRadioButton =
+        document.createElement('settings-collapse-radio-button');
+    collapseRadioButton.prefKey = 'test_boolean';
+    document.body.appendChild(collapseRadioButton);
+  });
+
+  test('prefKey works', async () => {
+    assertTrue(!!collapseRadioButton.pref);
+    assertEquals('test_boolean', collapseRadioButton.pref.key);
+    assertTrue(collapseRadioButton.pref.value as boolean);
+
+    // Update pref via PrefService and verify element updates
+    PrefService.getInstance().setPrefValue('test_boolean', false);
+    await microtasksFinished();
+    assertFalse(collapseRadioButton.pref.value as boolean);
+  });
+
+  test('disablesWhenPrefIsManaged', async () => {
+    assertFalse(collapseRadioButton.disabled);
+
+    // Make it managed.
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'test_boolean',
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    }]);
+    await microtasksFinished();
+
+    assertTrue(collapseRadioButton.disabled);
+    assertTrue(isChildVisible(collapseRadioButton, 'cr-policy-pref-indicator'));
   });
 });
