@@ -74,6 +74,7 @@ public class ForegroundServiceUtils {
                 service.startForeground(id, notification, foregroundServiceType);
             } catch (ForegroundServiceStartNotAllowedException e) {
                 Log.e(TAG, "channelId=%s notificationId=%s", notification.getChannelId(), id, e);
+                throw e;
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             service.startForeground(id, notification, foregroundServiceType);

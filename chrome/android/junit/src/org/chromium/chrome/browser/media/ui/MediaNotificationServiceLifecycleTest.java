@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -152,7 +151,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         verify(getController(), times(1)).updateNotificationBuilder();
         verify(mMockContext, never()).startService(any(Intent.class));
         verify(mMockForegroundServiceUtils, times(1)).startForegroundService(any(Intent.class));
-        verify(getController(), never()).updateNotification(anyBoolean(), eq(false));
+        verify(getController(), never()).updateNotification(eq(false));
     }
 
     @Test
@@ -167,7 +166,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         verify(getController()).showNotification(newInfo);
         verify(mMockForegroundServiceUtils, never()).startForegroundService(any(Intent.class));
         verify(mMockContext, never()).startService(any(Intent.class));
-        verify(getController()).updateNotification(anyBoolean(), eq(false));
+        verify(getController()).updateNotification(eq(false));
         verify(mMockUmaTracker, never()).onNotificationShown(anyInt(), any(Notification.class));
     }
 
@@ -187,7 +186,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         order.verify(getController(), times(1)).updateNotificationBuilder();
         order.verify(mMockForegroundServiceUtils, times(1))
                 .startForegroundService(any(Intent.class));
-        order.verify(getController(), never()).updateNotification(anyBoolean(), eq(false));
+        order.verify(getController(), never()).updateNotification(eq(false));
 
         // The second call to |showNotification()| should only update the notification info.
         mMediaNotificationInfoBuilder.setMetadata(new MediaMetadata("new title", "", ""));
@@ -199,14 +198,14 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         order.verify(getController(), times(1)).updateNotificationBuilder();
         order.verify(mMockForegroundServiceUtils, times(1))
                 .startForegroundService(any(Intent.class));
-        order.verify(getController(), never()).updateNotification(anyBoolean(), eq(false));
+        order.verify(getController(), never()).updateNotification(eq(false));
 
         verify(getController(), never()).onServiceStarted(any(MockListenerService.class));
 
         // Simulate the service has started.
         mMockContext.startService(getController().mDelegate.createServiceIntent());
         order.verify(getController(), times(1)).onServiceStarted(mService);
-        order.verify(getController(), times(1)).updateNotification(anyBoolean(), eq(true));
+        order.verify(getController(), times(1)).updateNotification(eq(true));
         verify(mMockUmaTracker)
                 .onNotificationShown(
                         eq(NotificationUmaTracker.SystemNotificationType.MEDIA),
@@ -216,10 +215,10 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
     @Test
     public void updateNotificationIsNoOpBeforeServiceCreated() {
         getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
-        getController().updateNotification(false, false);
+        getController().updateNotification(false);
 
         waitForAsync();
-        verify(getController()).updateNotification(anyBoolean(), eq(false));
+        verify(getController()).updateNotification(eq(false));
         verify(getController(), never()).updateMediaSession();
         verify(getController(), never()).updateNotificationBuilder();
     }
@@ -229,10 +228,10 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         setUpService();
         getController().mService = mService;
         getController().mMediaNotificationInfo = null;
-        getController().updateNotification(false, false);
+        getController().updateNotification(false);
 
         waitForAsync();
-        verify(getController()).updateNotification(anyBoolean(), eq(false));
+        verify(getController()).updateNotification(eq(false));
         verify(getController(), never()).updateMediaSession();
         verify(getController(), never()).updateNotificationBuilder();
 
@@ -248,7 +247,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         getController().mService = mService;
         getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
         getController().setIsForegroundForTesting(true);
-        getController().updateNotification(false, false);
+        getController().demote(/* stopFgs= */ true);
 
         waitForAsync();
         verify(mMockForegroundServiceUtils)
@@ -262,7 +261,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         setUpService();
         getController().mService = mService;
         getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
-        getController().updateNotification(false, false);
+        getController().promote();
 
         waitForAsync();
         verify(mMockForegroundServiceUtils)
@@ -279,7 +278,7 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         setUpService();
         getController().mService = mService;
         getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
-        getController().updateNotification(false, false);
+        getController().promote();
 
         waitForAsync();
         verify(mMockForegroundServiceUtils)

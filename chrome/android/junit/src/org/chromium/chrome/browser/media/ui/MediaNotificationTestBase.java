@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.media.ui;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -61,6 +62,7 @@ public class MediaNotificationTestBase {
     ForegroundServiceUtils mMockForegroundServiceUtils;
     NotificationUmaTracker mMockUmaTracker;
     MediaNotificationInfo.Builder mMediaNotificationInfoBuilder;
+    int mFgsNotificationId = -1;
 
     protected MediaNotificationTestTabHolder createMediaNotificationTestTabHolder(
             int tabId, String url, String title) {
@@ -180,6 +182,46 @@ public class MediaNotificationTestBase {
         getController().mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
 
         mMockForegroundServiceUtils = mock(ForegroundServiceUtils.class);
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                int id = invocation.getArgument(1);
+                                android.app.Notification notification = invocation.getArgument(2);
+                                mFgsNotificationId = id;
+                                android.app.NotificationManager nm =
+                                        (android.app.NotificationManager)
+                                                RuntimeEnvironment.getApplication()
+                                                        .getSystemService(
+                                                                Context.NOTIFICATION_SERVICE);
+                                nm.notify(id, notification);
+                                return null;
+                            }
+                        })
+                .when(mMockForegroundServiceUtils)
+                .startForeground(any(), anyInt(), any(), anyInt());
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                int flags = invocation.getArgument(1);
+                                if ((flags & android.app.Service.STOP_FOREGROUND_REMOVE) != 0) {
+                                    if (mFgsNotificationId != -1) {
+                                        android.app.NotificationManager nm =
+                                                (android.app.NotificationManager)
+                                                        RuntimeEnvironment.getApplication()
+                                                                .getSystemService(
+                                                                        Context
+                                                                                .NOTIFICATION_SERVICE);
+                                        nm.cancel(mFgsNotificationId);
+                                        mFgsNotificationId = -1;
+                                    }
+                                }
+                                return null;
+                            }
+                        })
+                .when(mMockForegroundServiceUtils)
+                .stopForeground(any(), anyInt());
         ForegroundServiceUtils.setInstanceForTesting(mMockForegroundServiceUtils);
     }
 

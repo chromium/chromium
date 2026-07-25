@@ -124,6 +124,53 @@ public class MediaNotificationManager {
         return MediaNotificationInfo.INVALID_ID;
     }
 
+    private static boolean tryFallbackPromotion(int mediaTypeId, int excludeId) {
+        // Explicitly detach the old controller from FGS before searching for/promoting a new one
+        // to prevent the OS from archiving the old notification.
+        MediaNotificationController oldController = sControllers.get(excludeId);
+        if (oldController != null) {
+            oldController.demote(/* stopFgs= */ true);
+        }
+
+        int newActiveId = getFallbackPlayingControllerId(mediaTypeId, excludeId);
+        if (newActiveId == MediaNotificationInfo.INVALID_ID) {
+            return false;
+        }
+
+        MediaNotificationController activeController = sControllers.get(newActiveId);
+        if (activeController == null) {
+            return false;
+        }
+
+        boolean success = activeController.promote();
+        if (success) {
+            sActiveNotificationIds.put(mediaTypeId, newActiveId);
+            return true;
+        }
+        return false;
+    }
+
+    private static void handleFallbackOnPause(
+            MediaNotificationController controller,
+            MediaNotificationInfo notificationInfo,
+            int mediaTypeId,
+            int targetId) {
+        if (tryFallbackPromotion(mediaTypeId, targetId)) {
+            return;
+        }
+
+        // Fallback promotion did not succeed (no fallback candidate or promotion failed).
+        if (notificationInfo.supportsSwipeAway()) {
+            // Swipeable paused media should not hold the FGS slot, so clear the active ID.
+            sActiveNotificationIds.delete(mediaTypeId);
+        } else {
+            // Non-swipeable media (e.g. Cast) must stay in FGS even when paused to prevent
+            // process termination, so restore the active ID and re-promote to FGS.
+            sActiveNotificationIds.put(mediaTypeId, targetId);
+            controller.promote();
+        }
+    }
+
     /**
      * Shows the notification with media controls with the specified media info. Replaces/updates
      * the current notification if already showing. Does nothing if |mediaNotificationInfo| hasn't
@@ -185,23 +232,13 @@ public class MediaNotificationManager {
                     MediaNotificationController previousController =
                             sControllers.get(previousActiveId);
                     if (previousController != null) {
-                        previousController.demote(/* stopFgs= */ false);
+                        previousController.demote(/* stopFgs= */ true);
                     }
                 }
             }
         } else if (targetId == activeNotificationId) {
             // Active controller is pausing. Look for another playing controller.
-            int newActiveId = getFallbackPlayingControllerId(mediaTypeId, targetId);
-            if (newActiveId != MediaNotificationInfo.INVALID_ID) {
-                sActiveNotificationIds.put(mediaTypeId, newActiveId);
-                MediaNotificationController activeController = sControllers.get(newActiveId);
-                if (activeController != null) {
-                    // Fallback to the other playing notification and promote it to FGS.
-                    activeController.promote();
-                }
-            } else {
-                sActiveNotificationIds.delete(mediaTypeId);
-            }
+            handleFallbackOnPause(controller, notificationInfo, mediaTypeId, targetId);
         }
 
         controller.queueNotification(infoToShow);
@@ -231,22 +268,10 @@ public class MediaNotificationManager {
         Pair<Integer, Integer> mapKey = Pair.create(tabId, mediaTypeId);
         sUniqueIdMap.remove(mapKey);
 
-        // If the active FGS notification is being hidden, look for another playing notification
-        // of the same media type to promote to FGS.
-        int activeNotificationId =
-                sActiveNotificationIds.get(mediaTypeId, MediaNotificationInfo.INVALID_ID);
-        if (targetId == activeNotificationId) {
-            sActiveNotificationIds.delete(mediaTypeId);
-            int newActiveId = getFallbackPlayingControllerId(mediaTypeId, targetId);
-            if (newActiveId != MediaNotificationInfo.INVALID_ID) {
-                sActiveNotificationIds.put(mediaTypeId, newActiveId);
-                MediaNotificationController activeController = sControllers.get(newActiveId);
-                if (activeController != null) {
-                    // Fallback to the other playing notification and promote it to FGS.
-                    activeController.promote();
-                }
-            }
-        }
+        // Clear the active ID; tryFallbackPromotion will set sActiveNotificationIds correctly if
+        // there is a fallback playing controller that already is or becomes promoted to FGS.
+        sActiveNotificationIds.delete(mediaTypeId);
+        tryFallbackPromotion(mediaTypeId, targetId);
     }
 
     /**
