@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
@@ -2742,8 +2743,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
     SidePanelUI* const browser_to_close_ui =
         browser_to_close->GetFeatures().side_panel_ui();
     TestSidePanelEntryWaiter waiter(extension_entry);
+
+    // Prepare to wait for Extensionhost so that onOpened can be dispatched.
+    extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
+
     browser_to_close_ui->Show(GetKey(extension->id()));
     waiter.WaitForEntryShown();
+
+    // Ensures onOpened is dispatched before closing the window.
+    host_helper.WaitForHostCompletedFirstLoad();
+
     EXPECT_TRUE(browser_to_close_ui->IsSidePanelShowing());
   }
 
