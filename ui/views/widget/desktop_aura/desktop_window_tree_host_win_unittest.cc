@@ -283,5 +283,35 @@ TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoop) {
   EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
 }
 
+TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoopAcrossWindows) {
+  Widget widget_a;
+  widget_a.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW));
+  widget_a.Show();
+
+  Widget widget_b;
+  widget_b.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW));
+  widget_b.Show();
+
+  DesktopWindowTreeHostWin* host_a = static_cast<DesktopWindowTreeHostWin*>(
+      widget_a.GetNativeWindow()->GetHost());
+  DesktopWindowTreeHostWin* host_b = static_cast<DesktopWindowTreeHostWin*>(
+      widget_b.GetNativeWindow()->GetHost());
+  EXPECT_FALSE(host_a->IsInNativeMoveResizeLoop());
+  EXPECT_FALSE(host_b->IsInNativeMoveResizeLoop());
+
+  // While one window is running a native menu loop, all hosts on the thread
+  // should report that a modal loop is active.
+  HWND hwnd_a = widget_a.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  ::SendMessage(hwnd_a, WM_ENTERMENULOOP, FALSE, 0);
+  EXPECT_TRUE(host_a->IsInNativeMoveResizeLoop());
+  EXPECT_TRUE(host_b->IsInNativeMoveResizeLoop());
+
+  ::SendMessage(hwnd_a, WM_EXITMENULOOP, FALSE, 0);
+  EXPECT_FALSE(host_a->IsInNativeMoveResizeLoop());
+  EXPECT_FALSE(host_b->IsInNativeMoveResizeLoop());
+}
+
 }  // namespace test
 }  // namespace views
