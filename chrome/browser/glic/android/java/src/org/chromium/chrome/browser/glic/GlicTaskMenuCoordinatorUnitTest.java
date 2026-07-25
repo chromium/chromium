@@ -94,6 +94,13 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildModelList_TabStripSource() {
+        ActorTask task1 = mock(ActorTask.class);
+        doReturn("Task One").when(task1).getTitle();
+        doReturn(true).when(task1).isCompleted();
+        ActorTask task2 = mock(ActorTask.class);
+        doReturn("Task Two").when(task2).getTitle();
+        doReturn(true).when(task2).isCompleted();
+
         GlicTaskMenuCoordinator tabStripCoordinator =
                 new GlicTaskMenuCoordinator(
                         mContext,
@@ -101,7 +108,7 @@ public class GlicTaskMenuCoordinatorUnitTest {
                         mToggleGlicCallback,
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON,
                         GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
-        ModelList modelList = tabStripCoordinator.buildModelList(mTasks);
+        ModelList modelList = tabStripCoordinator.buildModelList(Arrays.asList(task1, task2));
 
         // 2 tasks = 2 items total (Ask Gemini hidden)
         assertEquals(2, modelList.size());
@@ -186,7 +193,7 @@ public class GlicTaskMenuCoordinatorUnitTest {
     }
 
     @Test
-    public void testClickActorTask_EmptyTabs_OpensNewTab() {
+    public void testClickActorTask_EmptyTabs_DoesNotOpenNewTab() {
         ActorTask task = mock(ActorTask.class);
         doReturn("Task Title").when(task).getTitle();
         doReturn(Collections.emptySet()).when(task).getLastActedTabs();
@@ -198,12 +205,28 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 taskItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         clickListener.onClick(null);
 
-        verify(mTabModelSelector)
-                .openNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null), eq(false));
         verify(mToggleGlicCallback)
                 .onClick(
                         /* preventClose= */ true,
                         GlicKeyedService.GlicInvocationSource.TOP_CHROME_BUTTON);
+    }
+
+    @Test
+    public void testClickActorTask_CompletedTaskClosedTab_OpensNewTab() {
+        ActorTask task = mock(ActorTask.class);
+        doReturn("Task Title").when(task).getTitle();
+        doReturn(Collections.emptySet()).when(task).getLastActedTabs();
+        doReturn(true).when(task).isCompleted();
+
+        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(task));
+        ListItem taskItem = modelList.get(0);
+
+        View.OnClickListener clickListener =
+                taskItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        clickListener.onClick(null);
+
+        verify(mTabModelSelector)
+                .openNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null), eq(false));
     }
 
     @Test

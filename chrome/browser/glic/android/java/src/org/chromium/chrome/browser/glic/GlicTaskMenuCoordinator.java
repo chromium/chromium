@@ -40,7 +40,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -197,7 +196,7 @@ public class GlicTaskMenuCoordinator {
                             .withIsTextEllipsizedAtEnd(true)
                             .withClickListener(
                                     v -> {
-                                        switchToActuatingTab(task.getLastActedTabs());
+                                        switchToActuatingTab(task);
                                         mToggleGlicCallback.onClick(
                                                 /* preventClose= */ true, mInvocationSource);
                                         dismiss();
@@ -258,7 +257,7 @@ public class GlicTaskMenuCoordinator {
             }
         }
 
-        if (!hasTab) {
+        if (!hasTab && task.isCompleted()) {
             return context.getString(R.string.actor_task_list_bubble_row_tab_closed_subtitle);
         }
 
@@ -278,18 +277,20 @@ public class GlicTaskMenuCoordinator {
         }
     }
 
-    private void switchToActuatingTab(Set<Integer> tabs) {
+    private void switchToActuatingTab(ActorTask task) {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
 
-        if (!tabs.isEmpty()) {
-            for (int tabId : tabs) {
-                if (selector.getTabById(tabId) != null) {
-                    TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
-                    break;
-                }
+        for (int tabId : task.getLastActedTabs()) {
+            if (selector.getTabById(tabId) != null) {
+                TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+                return;
             }
-        } else {
+        }
+
+        if (task.isCompleted()) {
+            // If the task is completed/stopped and its tab was closed by the user, open a new NTP
+            // tab.
             selector.openNewTab(
                     new LoadUrlParams(UrlConstantResolver.getOriginalNativeNtpUrl()),
                     TabLaunchType.FROM_CHROME_UI,
