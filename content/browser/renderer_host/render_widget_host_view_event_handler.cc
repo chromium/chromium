@@ -148,6 +148,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewEventHandler::LockPointer(
   }
   mouse_locked_ = true;
 
+  aura::Window::ScopedDeleteBlocker delete_blocker(window_);
   window_->GetHost()->LockMouse(window_);
 
   if (ShouldMoveToCenter(unlocked_global_mouse_position_))
