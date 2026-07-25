@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -25,14 +26,9 @@ import java.util.List;
 @NullMarked
 public class NtpThemeSyncHistoryRecyclerViewAdaptor
         extends RecyclerView.Adapter<NtpThemeSyncHistoryRecyclerViewAdaptor.ImageViewHolder> {
-    /** Callback interface for when an item in the adapter is clicked. */
-    public interface OnItemClickCallback {
-        void onClicked(NtpBackgroundDataBase backgroundData, int position);
-    }
-
     private final Context mContext;
     private final List<NtpBackgroundDataBase> mBackgroundDataList;
-    private final OnItemClickCallback mOnClickCallback;
+    private final Callback<NtpBackgroundDataBase> mOnClickCallback;
 
     // Variable to hold the position of the selected item.
     private int mSelectedPosition;
@@ -50,7 +46,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
     public NtpThemeSyncHistoryRecyclerViewAdaptor(
             Context context,
             List<NtpBackgroundDataBase> backgroundDataList,
-            OnItemClickCallback onClickCallback,
+            Callback<NtpBackgroundDataBase> onClickCallback,
             int selectedPosition) {
         mContext = context;
         mBackgroundDataList = backgroundDataList;
@@ -135,7 +131,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
         }
 
         if (backgroundDataInfo != null && isFromClick) {
-            mOnClickCallback.onClicked(backgroundDataInfo, newPosition);
+            mOnClickCallback.onResult(backgroundDataInfo);
         }
 
         // Notify the adapter to un-draw its selection.
