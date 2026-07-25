@@ -25481,21 +25481,6 @@
             ]
         }
     ],
-    "UseSurfaceViewForThinWebView": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSurfaceViewForThinWebView"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseUIGraphicsImageRendererForFallbackIconsIOS": [
         {
             "platforms": [

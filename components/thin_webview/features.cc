@@ -6,6 +6,6 @@
 
 namespace thin_webview::android {
 
-BASE_FEATURE(kUseSurfaceViewForThinWebView, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseSurfaceViewForThinWebView, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace thin_webview::android
