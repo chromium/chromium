@@ -537,12 +537,19 @@ CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
   if (!css_value || css_value->IsCSSWideKeyword()) {
     return operations;
   }
-  // The style resolution for fonts is not available in frame-less documents.
+  // The style resolution is not available in frame-less documents.
   if (style_resolution_host != nullptr &&
       style_resolution_host->GetDocument().GetFrame() != nullptr) {
-    return style_resolution_host->GetDocument()
-        .GetStyleResolver()
-        .ComputeFilterOperations(style_resolution_host, *font, *css_value);
+    Document& document = style_resolution_host->GetDocument();
+
+    // Update the filter value to the proper base URL if needed.
+    if (css_value->MayContainUrl()) {
+      document.UpdateStyleAndLayout(DocumentUpdateReason::kCanvas);
+      css_value->ReResolveUrl(document);
+    }
+
+    return document.GetStyleResolver().ComputeFilterOperations(
+        style_resolution_host, *font, *css_value);
   } else {
     return FilterOperationResolver::CreateOffscreenFilterOperations(*css_value,
                                                                     font);

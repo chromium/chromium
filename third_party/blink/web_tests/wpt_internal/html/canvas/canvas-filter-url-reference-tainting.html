@@ -42,7 +42,8 @@ await new Promise(resolve => window.addEventListener('load', resolve));
 // Not tainted.
 for (let filter of [
   `url(${location.href}#floodLime)`,
-  `url(${location.href}#sameOriginImage)`,
+  `url(#floodLime)`,
+  `url(#sameOriginImage)`,
 ]) {
   test(() => {
     const ctx = document.createElement('canvas').getContext('2d');
@@ -63,8 +64,9 @@ for (let filter of [
 // Tainted.
 for (let filter of [
   `url(${location.href}#floodCurrentColor)`,
-  `url(${location.href}#elementImage)`,
-  `url(${location.href}#crossOriginImage)`,
+  `url(#floodCurrentColor)`,
+  `url(#elementImage)`,
+  `url(#crossOriginImage)`,
 ]) {
   test(() => {
     const ctx = document.createElement('canvas').getContext('2d');
