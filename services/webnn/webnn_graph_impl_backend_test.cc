@@ -1118,10 +1118,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //   [output1]  reshape
 //                 |
 //             [output2]
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeGraphWithSplitAndReshape) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeGraphWithSplitAndReshape) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -1242,9 +1239,7 @@ struct UnaryOperatorTester {
 };
 
 // Test building and computing a graph with single operator clamp.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildAndComputeSingleOperatorClamp) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorClamp) {
   {
     // Test clamp for 0-D scalar input.
     UnaryOperatorTester<float>{.tag = mojom::Operation::Tag::kClamp,
@@ -1261,10 +1256,7 @@ TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildAndComputeSingleOperatorClamp) {
 }
 
 // Test building and computing a graph with single operator hardSigmoid.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeSingleOperatorHardSigmoid) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorHardSigmoid) {
   {
     // Test sigmoid for 0-D scalar input.
     UnaryOperatorTester<float>{.tag = mojom::Operation::Tag::kHardSigmoid,
@@ -1525,9 +1517,7 @@ struct GemmTester {
 
 // Test building and computing a graph of fusing a standalone activation
 // into gemm automatically.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_FuseStandaloneActivationIntoGemm) {
+TEST_P(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoGemm) {
   // Test gemm without a third input, activation = linear.
   {
     GemmTester<float>{.input_a = {.type = OperandDataType::kFloat32,
@@ -1644,9 +1634,7 @@ struct GruTester {
 };
 
 // Test building and computing a graph with single operator gru.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildAndComputeSingleOperatorGru) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
   // Test gru without bias and initial hidden state.
   {
     const uint32_t steps = 1;
@@ -1882,17 +1870,17 @@ TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildAndComputeSingleOperatorGru) {
             {.return_sequence = true,
              .activations = {mojom::RecurrentNetworkActivation::kRelu,
                              mojom::RecurrentNetworkActivation::kRelu}},
-        .outputs = {{.type = OperandDataType::kFloat32,
-                     .dimensions = {num_directions, batch_size, hidden_size},
-                     .values = {-725., -725., -725., -725., -725., -2399.,
-                                -2399., -2399., -2399., -2399., -5045., -5045.,
-                                -5045., -5045., -5045.}},
-                    {.type = OperandDataType::kFloat32,
-                     .dimensions = {steps, num_directions, batch_size,
-                                    hidden_size},
-                     .values = {-725., -725., -725., -725., -725., -2399.,
-                                -2399., -2399., -2399., -2399., -5045., -5045.,
-                                -5045., -5045., -5045.}}}}
+        .outputs =
+            {{.type = OperandDataType::kFloat32,
+              .dimensions = {num_directions, batch_size, hidden_size},
+              .values = {-725., -725., -725., -725., -725., -2399., -2399.,
+                         -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
+                         -5045.}},
+             {.type = OperandDataType::kFloat32,
+              .dimensions = {steps, num_directions, batch_size, hidden_size},
+              .values = {-725., -725., -725., -725., -725., -2399., -2399.,
+                         -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
+                         -5045.}}}}
         .Test(*this);
   }
 }
@@ -1966,10 +1954,7 @@ struct GruCellTester {
 };
 
 // Test building and computing a graph with single operator gruCell.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeSingleOperatorGruCell) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
   // Test gruCell without bias and initial hidden state.
   {
     const uint32_t batch_size = 3;
@@ -2048,10 +2033,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //            gemm                  gemm
 //                \                /
 //                       gemm
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeMultipleOperatorGemm) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeMultipleOperatorGemm) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -2085,9 +2067,7 @@ TEST_P(WebNNGraphImplBackendTest,
 }
 
 // Test building and computing a graph with one input and one constant.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildOneInputAndOneConstantOperand) {
+TEST_P(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
   // Build the mojom graph info.
   std::vector<float> constant_data = {5, 6, 7, 8};
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
@@ -2298,10 +2278,7 @@ TEST_P(WebNNGraphImplBackendTest,
 
 // Test building and computing a graph with single operator
 // layerNormalization.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildSingleOperatorLayerNormalization) {
+TEST_P(WebNNGraphImplBackendTest, BuildSingleOperatorLayerNormalization) {
   {
     // Test layerNormalization with a scalar input with default scale and bias.
     LayerNormalizationTester<float>{
@@ -2721,9 +2698,7 @@ struct MatmulTester {
 
 // Test building and computing a graph of fusing standalone operations
 // into matmul when possible.
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_FuseStandaloneOperationsIntoMatmul) {
+TEST_P(WebNNGraphImplBackendTest, FuseStandaloneOperationsIntoMatmul) {
   // Test matmul with fusible transpose for input a.
   {
     MatmulTester<float>{
@@ -2842,10 +2817,7 @@ TEST_P(WebNNGraphImplBackendTest, DISABLED_FuseStandaloneOperationsIntoMatmul) {
 //            gemm                  gemm
 //                \                /
 //                       gemm
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildMultipleInputsAppendingConstants) {
+TEST_P(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -2893,10 +2865,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //            gemm                  gemm
 //                \                /
 //                       gemm
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildMultipleConstantsAppendingInputs) {
+TEST_P(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -2947,10 +2916,7 @@ TEST_P(WebNNGraphImplBackendTest,
 // This test case could reproduce the issue of ResNetV2 50 model of WebNN image
 // classification sample:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1509747
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildGemmWithReshapedConstantOperand) {
+TEST_P(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -2991,10 +2957,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //    [input_a]  reshape
 //           \    /
 //            add
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAddWithReshapedConstantOperand) {
+TEST_P(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -3270,10 +3233,7 @@ TEST_P(WebNNGraphImplBackendTest, BuildMaxPoolingAsFirstOperator) {
 //             concat
 //               |
 //             clamp
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeReshapeConcatAndClamp) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeReshapeConcatAndClamp) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -3330,9 +3290,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //             concat   [constant_b]
 //               \           /
 //                   concat
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest, DISABLED_BuildAndComputeConcatWithConstants) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
   std::vector<float> expected_output = {0,  0,  0,  1,  2,  3,
                                         -1, -2, -3, -4, -5, -6};
 
@@ -3437,10 +3395,7 @@ TEST_P(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorResample2d) {
 //     transpose
 //         |
 //     transpose
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeGraphWithTwoTranspose) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoTranspose) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
@@ -3493,10 +3448,7 @@ TEST_P(WebNNGraphImplBackendTest,
 //     transpose
 //         |
 //       relu
-//
-// TODO(crbug.com/537769664): Re-enable once LiteRT has been rolled.
-TEST_P(WebNNGraphImplBackendTest,
-       DISABLED_BuildAndComputeGraphWithTransposeAndRelu) {
+TEST_P(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
   // Build the mojom graph info.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
