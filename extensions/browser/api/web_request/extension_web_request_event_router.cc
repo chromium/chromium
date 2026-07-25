@@ -578,7 +578,7 @@ struct WebRequestEventRouter::BlockedRequest {
   //  - a blocking listener registered with a legacy per-listener sub-event
   //    name (resolved by `OnEventHandled()`),
   //  - a dispatch target with blocking listeners under per-context
-  //    dispatch (resolved by `OnEventHandlingDone()`).
+  //    dispatch (resolved by `OnEventHandlingDone()`),
   //  - a not-yet-ready declarative rules registry (see
   //    `ProcessDeclarativeRules()`).
   int num_blocking_sources = 0;
@@ -1707,6 +1707,22 @@ void WebRequestEventRouter::DispatchEventToListeners(
   }
 }
 
+// static
+std::map<WebRequestEventRouter::DispatchTargetKey,
+         WebRequestEventRouter::RawListeners>
+WebRequestEventRouter::GroupListenersByDispatchTarget(
+    const RawListeners& listeners) {
+  std::map<DispatchTargetKey, RawListeners> targets;
+  for (EventListener* listener : listeners) {
+    targets[DispatchTargetKey::ForListener(*listener)].push_back(listener);
+  }
+  // TODO(andreaorru): fold each lazy group into the corresponding concrete
+  // group to support receiving events while listeners are in the process of
+  // being registered (e.g. while a service worker top level is in the process
+  // of being run).
+  return targets;
+}
+
 int WebRequestEventRouter::DispatchEventToTargets(
     content::BrowserContext* browser_context,
     const WebRequestInfo* request,
@@ -1723,13 +1739,11 @@ int WebRequestEventRouter::DispatchEventToTargets(
   // Group the matched listeners by their dispatch target. Each target
   // receives one event; targets with blocking listeners reply with one
   // completion signal.
-  std::map<DispatchTargetKey, RawListeners> targets;
-  for (EventListener* listener : listeners) {
-    targets[DispatchTargetKey::ForListener(*listener)].push_back(listener);
-  }
+  const std::map<DispatchTargetKey, RawListeners> targets =
+      GroupListenersByDispatchTarget(listeners);
 
   int num_blocking_targets = 0;
-  for (auto& [key, group] : targets) {
+  for (const auto& [key, group] : targets) {
     int union_spec_all = 0;
     int union_spec_blocking = 0;
     bool await_response = false;
@@ -1738,6 +1752,25 @@ int WebRequestEventRouter::DispatchEventToTargets(
       if (listener->IsBlocking()) {
         union_spec_blocking |= listener->extra_info_spec;
         await_response = true;
+      }
+    }
+
+    // WebView targets keep the bespoke dispatch mechanism. Several instances
+    // can share one embedder process and WebUI/ControlledFrame embedders have
+    // an empty extension id, so these targets cannot be addressed through
+    // extension-scoped dispatch.
+    const bool is_web_view_target = key.web_view_instance_id != 0;
+    CHECK(!is_web_view_target || !key.IsLazy());
+    content::RenderProcessHost* web_view_render_process = nullptr;
+    if (is_web_view_target) {
+      web_view_render_process =
+          content::RenderProcessHost::FromID(key.render_process_id);
+      if (!web_view_render_process) {
+        // The embedder process is already gone; its listener records just
+        // have not been cleaned up yet. Nothing could deliver the event or
+        // send a completion signal, so skip the target without recording a
+        // pending target for it.
+        continue;
       }
     }
 
@@ -1765,8 +1798,6 @@ int WebRequestEventRouter::DispatchEventToTargets(
     payload.Set(kContextDispatchAwaitResponseKey, await_response);
     args.Append(std::move(payload));
 
-    // TODO(crbug.com/494684626): pending targets block the request but nothing
-    // resolves them yet; the resolution paths land in a follow-up.
     if (await_response) {
       BlockedRequest& blocked_request =
           GetOrAddBlockedRequest(browser_context, request->id);
@@ -1774,24 +1805,16 @@ int WebRequestEventRouter::DispatchEventToTargets(
       ++num_blocking_targets;
     }
 
-    if (!key.IsLazy() && key.web_view_instance_id != 0) {
-      // Active WebView targets keep the bespoke dispatch mechanism. Several
-      // instances can share one embedder process and WebUI/ControlledFrame
-      // embedders have an empty extension id, so these targets cannot be
-      // addressed through extension-scoped dispatch.
-      content::RenderProcessHost* render_process =
-          content::RenderProcessHost::FromID(key.render_process_id);
-      if (render_process) {
-        EventRouter::Get(group_browser_context)
-            ->DispatchEventToSender(
-                render_process, group_browser_context,
-                /*host_id=*/
-                mojom::HostID(mojom::HostID::HostType::kExtensions,
-                              key.extension_id),
-                histogram_value, event_name, key.worker_thread_id,
-                key.service_worker_version_id, std::move(args),
-                mojom::EventFilteringInfo::New());
-      }
+    if (is_web_view_target) {
+      EventRouter::Get(group_browser_context)
+          ->DispatchEventToSender(
+              web_view_render_process, group_browser_context,
+              /*host_id=*/
+              mojom::HostID(mojom::HostID::HostType::kExtensions,
+                            key.extension_id),
+              histogram_value, event_name, key.worker_thread_id,
+              key.service_worker_version_id, std::move(args),
+              mojom::EventFilteringInfo::New());
     } else {
       // Every other target goes through the regular extension event dispatching
       // code, narrowed to this target. For a lazy target this wakes up the lazy
@@ -1802,6 +1825,14 @@ int WebRequestEventRouter::DispatchEventToTargets(
       event->restrict_to_dispatch_target =
           Event::DispatchTarget{key.render_process_id, key.worker_thread_id,
                                 key.service_worker_version_id};
+      if (await_response) {
+        // If the target cannot be dispatched to, resolve the pending target so
+        // that the request does not block indefinitely.
+        event->cannot_dispatch_callback = base::BindRepeating(
+            &WebRequestEventRouter::OnTargetCannotDispatch,
+            weak_ptr_factory_.GetWeakPtr(), group_browser_context, event_name,
+            request->id, /*dispatch_key=*/key);
+      }
       EventRouter::Get(group_browser_context)
           ->DispatchEventToExtension(key.extension_id, std::move(event));
     }
@@ -1867,15 +1898,33 @@ void WebRequestEventRouter::OnEventHandledForTarget(
     const ExtensionId& extension_id,
     const std::string& event_name,
     uint64_t request_id,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     int web_view_instance_id,
     int worker_thread_id,
     int64_t service_worker_version_id,
     int extra_info_spec,
     std::unique_ptr<EventResponse> response) {
-  // TODO(crbug.com/494684626): per-context dispatch is not wired up yet;
-  // drop the report. The browser-side dispatch target tracking will land in
-  // a follow-up.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::optional<RespondingTarget> responding_target = FindTargetForResponse(
+      *browser_context, extension_id, event_name, request_id, render_process_id,
+      web_view_instance_id, worker_thread_id, service_worker_version_id);
+  if (!responding_target) {
+    // Stale or unmatched response; see `FindTargetForResponse()`.
+    return;
+  }
+
+  // Reject responses containing `extra_info_spec` flags that none of the
+  // target's matching blocking listeners requested.
+  if ((extra_info_spec & ~responding_target->blocking_union_spec) != 0) {
+    return;
+  }
+
+  if (response) {
+    AppendResponseDelta(browser_context, *responding_target->blocked_request,
+                        extension_id, event_name, *response, extra_info_spec);
+  }
+  // Do not resolve the target here; `OnEventHandlingDone()` will resolve it
+  // once all matching listeners in the target context have handled the event.
 }
 
 void WebRequestEventRouter::OnEventHandlingDone(
@@ -1883,13 +1932,32 @@ void WebRequestEventRouter::OnEventHandlingDone(
     const ExtensionId& extension_id,
     const std::string& event_name,
     uint64_t request_id,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     int web_view_instance_id,
     int worker_thread_id,
     int64_t service_worker_version_id) {
-  // TODO(crbug.com/494684626): per-context dispatch is not wired up yet;
-  // drop the signal. The browser-side dispatch target tracking will land in
-  // a follow-up.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::optional<RespondingTarget> responding_target = FindTargetForResponse(
+      *browser_context, extension_id, event_name, request_id, render_process_id,
+      web_view_instance_id, worker_thread_id, service_worker_version_id);
+  if (!responding_target) {
+    // Stale or unmatched completion signal; see `FindTargetForResponse()`.
+    return;
+  }
+
+  // Extract values and reset `responding_target` prior to target resolution. If
+  // resolving the target decrements the final blocking source, `BlockedRequest`
+  // will be deleted, triggering a dangling pointer check on
+  // `responding_target->blocked_request` if left in scope.
+  BlockedRequest& blocked_request = *responding_target->blocked_request;
+  const DispatchTargetKey target_key = std::move(responding_target->key);
+  responding_target.reset();
+  // Because response IPCs and this completion signal share an ordered message
+  // pipe, all responses from `OnEventHandledForTarget()` have already been
+  // appended. Resolve the target to apply the collected responses and unblock
+  // the request if no other blocking sources remain.
+  ResolvePendingTarget(browser_context, blocked_request, target_key, event_name,
+                       request_id);
 }
 
 // static
@@ -1904,6 +1972,146 @@ WebRequestEventRouter::DispatchTargetKey::ForListener(
   key.worker_thread_id = listener.id.worker_thread_id;
   key.service_worker_version_id = listener.id.service_worker_version_id;
   return key;
+}
+
+// static
+WebRequestEventRouter::DispatchTargetKey
+WebRequestEventRouter::DispatchTargetKey::ForResponse(
+    content::BrowserContext& browser_context,
+    const ExtensionId& extension_id,
+    content::ChildProcessId render_process_id,
+    int web_view_instance_id,
+    int worker_thread_id,
+    int64_t service_worker_version_id) {
+  DispatchTargetKey key;
+  key.listener_context_id = GetBrowserContextID(&browser_context);
+  key.extension_id = extension_id;
+  key.render_process_id = render_process_id;
+  key.web_view_instance_id = web_view_instance_id;
+  key.worker_thread_id = worker_thread_id;
+  key.service_worker_version_id = service_worker_version_id;
+  return key;
+}
+
+std::optional<WebRequestEventRouter::RespondingTarget>
+WebRequestEventRouter::FindPendingTarget(BlockedRequest& blocked_request,
+                                         const DispatchTargetKey& key) {
+  auto it = blocked_request.pending_targets.find(key);
+  if (it != blocked_request.pending_targets.end()) {
+    return RespondingTarget{&blocked_request, it->first, it->second};
+  }
+
+  // If no exact match exists, this response may be for an event dispatched
+  // under the target's lazy key. This is the normal path for lazy targets: a
+  // stopped context has no renderer identity at dispatch time, so its pending
+  // target is recorded under its lazy key; once started, the context always
+  // responds under its concrete identity (actual process ID, worker version,
+  // etc.), which never equals the lazy key in the map. Fall back to the lazy
+  // target with the same browser context, extension, and webview instance.
+  auto lazy_it = std::ranges::find_if(
+      blocked_request.pending_targets, [&key](const auto& entry) {
+        const DispatchTargetKey& candidate_key = entry.first;
+        return candidate_key.IsLazy() &&
+               candidate_key.listener_context_id == key.listener_context_id &&
+               candidate_key.extension_id == key.extension_id &&
+               candidate_key.web_view_instance_id == key.web_view_instance_id;
+      });
+  if (lazy_it == blocked_request.pending_targets.end()) {
+    return std::nullopt;
+  }
+  return RespondingTarget{&blocked_request, lazy_it->first, lazy_it->second};
+}
+
+std::optional<WebRequestEventRouter::RespondingTarget>
+WebRequestEventRouter::FindTargetForResponse(
+    content::BrowserContext& browser_context,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    uint64_t request_id,
+    content::ChildProcessId render_process_id,
+    int web_view_instance_id,
+    int worker_thread_id,
+    int64_t service_worker_version_id) {
+  BlockedRequest* blocked_request =
+      GetBlockedRequestForEvent(&browser_context, request_id, event_name);
+  if (!blocked_request) {
+    return std::nullopt;
+  }
+
+  DispatchTargetKey concrete_key = DispatchTargetKey::ForResponse(
+      browser_context, extension_id, render_process_id, web_view_instance_id,
+      worker_thread_id, service_worker_version_id);
+  return FindPendingTarget(*blocked_request, concrete_key);
+}
+
+void WebRequestEventRouter::OnTargetCannotDispatch(
+    content::BrowserContext* browser_context,
+    const std::string& event_name,
+    uint64_t request_id,
+    const DispatchTargetKey& dispatch_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Because this callback can run from a posted task, `browser_context` may
+  // have been destroyed. Verify its liveness by identity before dereferencing.
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
+    return;
+  }
+
+  BlockedRequest* blocked_request =
+      GetBlockedRequestForEvent(browser_context, request_id, event_name);
+  if (!blocked_request) {
+    return;
+  }
+
+  ResolvePendingTarget(browser_context, *blocked_request, dispatch_key,
+                       event_name, request_id);
+}
+
+void WebRequestEventRouter::ResolvePendingTarget(
+    content::BrowserContext* browser_context,
+    BlockedRequest& blocked_request,
+    const DispatchTargetKey& target_key,
+    const std::string& event_name,
+    uint64_t request_id) {
+  const ExtensionId extension_id = target_key.extension_id;
+  if (blocked_request.pending_targets.erase(target_key) == 0) {
+    // The target was already resolved. Several independent triggers can
+    // resolve a pending target, in any order:
+    // - Renderer completion signals: renderer-controlled IPCs, which a
+    //   misbehaving renderer can send unsolicited.
+    // - `OnTargetCannotDispatch()`, which runs from a posted task.
+    // - Teardown of the target's renderer context.
+    // A trigger that runs after the target is resolved must do nothing; in
+    // particular, it must not decrement the block count again.
+    //
+    // TODO(crbug.com/494684626): CHECK the erase on the completion signal
+    // path. `OnEventHandlingDone()` resolves only targets it just found, and
+    // stale renderer signals fail that lookup. Only `OnTargetCannotDispatch()`
+    // needs this return. Killing renderers that send unsolicited signals would
+    // require some additional tracking on the browser side.
+    return;
+  }
+  DecrementBlockCount(browser_context, extension_id, event_name, request_id,
+                      /*response=*/nullptr,
+                      /*extra_info_spec=*/0);
+}
+
+void WebRequestEventRouter::AppendResponseDelta(
+    content::BrowserContext* browser_context,
+    BlockedRequest& blocked_request,
+    const ExtensionId& extension_id,
+    const std::string& event_name,
+    EventResponse& response,
+    int extra_info_spec) {
+  helpers::EventResponseDelta delta = CalculateDelta(
+      browser_context, &blocked_request, &response, extra_info_spec);
+
+  activity_monitor::OnWebRequestApiUsed(
+      browser_context, extension_id, blocked_request.request->url,
+      blocked_request.is_incognito, event_name,
+      SummarizeResponseDelta(event_name, delta));
+
+  blocked_request.response_deltas.push_back(std::move(delta));
 }
 
 bool WebRequestEventRouter::AddEventListener(
@@ -2551,6 +2759,28 @@ WebRequestEventRouter::BlockedRequest* WebRequestEventRouter::GetBlockedRequest(
   return it == blocked_requests.end() ? nullptr : &it->second;
 }
 
+WebRequestEventRouter::BlockedRequest*
+WebRequestEventRouter::GetBlockedRequestForEvent(
+    content::BrowserContext* browser_context,
+    uint64_t request_id,
+    const std::string& event_name) {
+  BlockedRequest* blocked_request =
+      GetBlockedRequest(browser_context, request_id);
+  if (!blocked_request ||
+      blocked_request->event != GetEventTypeFromEventName(event_name)) {
+    // A response may address a request that is:
+    // - Missing: the request completed or was canceled while responses were
+    //   in flight.
+    // - Blocked on a different event stage: a misbehaving renderer can send
+    //   responses for a stage it already completed; and since targets can be
+    //   resolved without a renderer response (e.g. `OnTargetCannotDispatch()`,
+    //   context teardown), a torn-down context's final in-flight responses
+    //   can arrive after the request advanced.
+    return nullptr;
+  }
+  return blocked_request;
+}
+
 bool WebRequestEventRouter::IsPageLoad(const WebRequestInfo& request) const {
   return request.web_request_type == WebRequestResourceType::MAIN_FRAME;
 }
@@ -2751,18 +2981,15 @@ void WebRequestEventRouter::DecrementBlockCount(
   CHECK_GE(num_blocking_sources, 0);
 
   if (response) {
-    helpers::EventResponseDelta delta = CalculateDelta(
-        browser_context, blocked_request, response.get(), extra_info_spec);
-
-    activity_monitor::OnWebRequestApiUsed(
-        static_cast<content::BrowserContext*>(browser_context), extension_id,
-        blocked_request->request->url, blocked_request->is_incognito,
-        event_name, SummarizeResponseDelta(event_name, delta));
-
-    blocked_request->response_deltas.push_back(std::move(delta));
+    AppendResponseDelta(browser_context, *blocked_request, extension_id,
+                        event_name, *response, extra_info_spec);
   }
 
   if (num_blocking_sources == 0) {
+    // All pending targets must be resolved by the time the last blocking
+    // source is decremented: each pending target holds exactly one blocking
+    // source until it is resolved.
+    DCHECK(blocked_request->pending_targets.empty());
     ExecuteDeltas(browser_context, blocked_request->request, true);
     // Note: `blocked_request` can be deleted here, depending on the outcome
     // of ExecuteDeltas(). Use the cached `request_event` and `request_id`

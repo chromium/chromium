@@ -36,6 +36,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
@@ -1452,10 +1453,12 @@ void WebRequestInternalEventHandledFunction::RouteEventResponse(
     // Append this listener's response to the pending dispatch target without
     // resolving it; the target is resolved by a separate `eventHandlingDone`
     // signal.
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue.
     router->OnEventHandledForTarget(
         browser_context(), extension_id_safe(), event_name, request_id,
-        render_process_id, web_view_instance_id, worker_thread_id(),
-        service_worker_version_id(), extra_info_spec, std::move(response));
+        content::ChildProcessId::FromUnsafeValue(render_process_id),
+        web_view_instance_id, worker_thread_id(), service_worker_version_id(),
+        extra_info_spec, std::move(response));
     return;
   }
 
@@ -1653,11 +1656,13 @@ WebRequestInternalEventHandlingDoneFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(
       base::StringToUint64(request_id_str, &request_id));
 
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue.
   WebRequestEventRouter::Get(browser_context())
-      ->OnEventHandlingDone(browser_context(), extension_id_safe(), event_name,
-                            request_id, source_process_id(),
-                            web_view_instance_id, worker_thread_id(),
-                            service_worker_version_id());
+      ->OnEventHandlingDone(
+          browser_context(), extension_id_safe(), event_name, request_id,
+          content::ChildProcessId::FromUnsafeValue(source_process_id()),
+          web_view_instance_id, worker_thread_id(),
+          service_worker_version_id());
 
   return RespondNow(NoArguments());
 }

@@ -268,7 +268,7 @@ class WebRequestEventRouter : public KeyedService {
                                const ExtensionId& extension_id,
                                const std::string& event_name,
                                uint64_t request_id,
-                               int render_process_id,
+                               content::ChildProcessId render_process_id,
                                int web_view_instance_id,
                                int worker_thread_id,
                                int64_t service_worker_version_id,
@@ -282,7 +282,7 @@ class WebRequestEventRouter : public KeyedService {
                            const ExtensionId& extension_id,
                            const std::string& event_name,
                            uint64_t request_id,
-                           int render_process_id,
+                           content::ChildProcessId render_process_id,
                            int web_view_instance_id,
                            int worker_thread_id,
                            int64_t service_worker_version_id);
@@ -510,6 +510,17 @@ class WebRequestEventRouter : public KeyedService {
     // a stopped lazy context's registration this is the target's lazy key.
     static DispatchTargetKey ForListener(const EventListener& listener);
 
+    // Constructs a key from a renderer response's routing IDs. The returned key
+    // is always concrete (non-lazy) because event responses originate from
+    // active renderer contexts.
+    static DispatchTargetKey ForResponse(
+        content::BrowserContext& browser_context,
+        const ExtensionId& extension_id,
+        content::ChildProcessId render_process_id,
+        int web_view_instance_id,
+        int worker_thread_id,
+        int64_t service_worker_version_id);
+
     BrowserContextID listener_context_id = 0;
     ExtensionId extension_id;
     content::ChildProcessId render_process_id;
@@ -532,6 +543,17 @@ class WebRequestEventRouter : public KeyedService {
   // even when the underlying context starts up and acquires a concrete
   // identity.
   using PendingTargetMap = base::flat_map<DispatchTargetKey, int>;
+
+  // A matched pending target for a renderer event response. `key` is the
+  // matched map key; note that for a woken lazy context it remains lazy,
+  // differing from the responding context's concrete identity.
+  // `blocking_union_spec` is the union of the target's matched blocking
+  // listeners' `extra_info_spec`.
+  struct RespondingTarget {
+    raw_ptr<BlockedRequest> blocked_request;
+    DispatchTargetKey key;
+    int blocking_union_spec;
+  };
 
   enum class ListenerCountUpdate {
     kIncrement,
@@ -728,6 +750,64 @@ class WebRequestEventRouter : public KeyedService {
                              const RawListeners& listeners,
                              const WebRequestEventDetails& event_details);
 
+  // Groups the matched `listeners` by their renderer dispatch target,
+  // producing exactly one entry per context.
+  //
+  // Static member rather than anonymous namespace helper because the signature
+  // names private nested types (`RawListeners`, `DispatchTargetKey`).
+  static std::map<DispatchTargetKey, RawListeners>
+  GroupListenersByDispatchTarget(const RawListeners& listeners);
+
+  // Finds the pending target in `blocked_request` matching `key`, returning
+  // std::nullopt if not found. If an exact match fails, falls back to
+  // searching for a lazy entry with the same logical identity (extension ID,
+  // browser context, and webview ID) to account for lazy contexts that woke up
+  // under a concrete identity.
+  std::optional<RespondingTarget> FindPendingTarget(
+      BlockedRequest& blocked_request,
+      const DispatchTargetKey& key);
+
+  // Finds the pending target addressed by a renderer response matching the
+  // given request, event stage, extension, and routing IDs. Returns
+  // std::nullopt if no matching target exists.
+  std::optional<RespondingTarget> FindTargetForResponse(
+      content::BrowserContext& browser_context,
+      const ExtensionId& extension_id,
+      const std::string& event_name,
+      uint64_t request_id,
+      content::ChildProcessId render_process_id,
+      int web_view_instance_id,
+      int worker_thread_id,
+      int64_t service_worker_version_id);
+
+  // Resolves the pending target matching `dispatch_key` for `request_id`
+  // without applying response deltas. Bound as an event's
+  // `cannot_dispatch_callback` to unblock requests when a target is unreachable
+  // at dispatch time (e.g., worker start failure).
+  void OnTargetCannotDispatch(content::BrowserContext* browser_context,
+                              const std::string& event_name,
+                              uint64_t request_id,
+                              const DispatchTargetKey& dispatch_key);
+
+  // Resolves a pending target by erasing it from `blocked_request` and
+  // decrementing the blocking count (which resumes the request if no blocking
+  // sources remain). Does nothing if no such target remains.
+  void ResolvePendingTarget(content::BrowserContext* browser_context,
+                            BlockedRequest& blocked_request,
+                            const DispatchTargetKey& target_key,
+                            const std::string& event_name,
+                            uint64_t request_id);
+
+  // Converts `response` into an EventResponseDelta clamped by the permissions
+  // in `extra_info_spec`, logs the API usage to the activity monitor, and
+  // appends the delta to `blocked_request`.
+  void AppendResponseDelta(content::BrowserContext* browser_context,
+                           BlockedRequest& blocked_request,
+                           const ExtensionId& extension_id,
+                           const std::string& event_name,
+                           EventResponse& response,
+                           int extra_info_spec);
+
   // Returns a list of event listeners that care about the given event, based
   // on their filter parameters. `extra_info_spec` will contain the combined
   // set of extra_info_spec flags that every matching listener asked for.
@@ -882,6 +962,13 @@ class WebRequestEventRouter : public KeyedService {
   // with `id`. The entry is not created if it doesn't exist.
   BlockedRequest* GetBlockedRequest(content::BrowserContext* browser_context,
                                     uint64_t id);
+
+  // Returns the blocked request identified by `request_id` if it is currently
+  // waiting on the stage named `event_name`, or nullptr otherwise.
+  BlockedRequest* GetBlockedRequestForEvent(
+      content::BrowserContext* browser_context,
+      uint64_t request_id,
+      const std::string& event_name);
 
   // A map of data associated with given BrowserContexts.
   DataMap data_;
