@@ -41,7 +41,7 @@
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
 <translation id="1145516343487477149">‏חיפוש של מאמרי עזרה ותשובות לשאלות נפוצות בנושא Chromebook</translation>
 <translation id="1154390310959620237">אפשר להתאים אישית רק 5 קיצורי דרך. עליך למחוק קיצור דרך כדי להוסיף קיצור דרך חדש.</translation>
-<translation id="1155154308031262006">כאן מקלידים הנחיה</translation>
+<translation id="1155154308031262006">כאן נותנים פרומפט</translation>
 <translation id="115705039208660697">אננסים</translation>
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
 <translation id="1171349345463658120">לגונה חולית</translation>
@@ -365,7 +365,7 @@
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2448857983905133469">כלי עזר להוראה</translation>
-<translation id="2468124392950503650">אפשר לבחור הנחיה ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="2468124392950503650">אפשר לבחור פרומפט ליצירה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך לכתיבת פרומפטים<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">‏אפשר להשתמש בכלי 'עזרה בכתיבה' כדי ליצור טיוטה או לשפר עבודה קיימת. הכלי מבוסס על AI מבית Google</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="2480572840229215612">סרטנים</translation>
@@ -447,8 +447,8 @@
 <translation id="2878126681324394319">הורדת מודל ליצירת סיכום ושם</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
-<translation id="2882230315487799269">‏התאמה אישית של ההנחיה ל-AI</translation>
-<translation id="2888298276507578975">אפשר להזין הנחיה כמו "אני רוצה לכתוב מכתב תודה"</translation>
+<translation id="2882230315487799269">‏התאמה אישית של הפרומפט ל-AI</translation>
+<translation id="2888298276507578975">אפשר לתת פרומפט כמו "אני רוצה לכתוב מכתב תודה"</translation>
 <translation id="2890557891229184386">אי טרופי</translation>
 <translation id="2895772081848316509">כהה</translation>
 <translation id="2915996080311180594">הפעלה מחדש מאוחר יותר</translation>
@@ -498,7 +498,7 @@
 <translation id="3170673040743561620">צריך להניח את המסמך על הסורק</translation>
 <translation id="3174321110679064523">הטפט: מעלות השחר עד לרדת החושך</translation>
 <translation id="3178532070248519384">אוונגרד</translation>
-<translation id="3182676044300231689">אפשר להזין הנחיה כמו "אני רוצה שזה יישמע עם יותר ביטחון עצמי"</translation>
+<translation id="3182676044300231689">אפשר לתת פרומפט כמו "אני רוצה שזה יישמע עם יותר ביטחון עצמי"</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
