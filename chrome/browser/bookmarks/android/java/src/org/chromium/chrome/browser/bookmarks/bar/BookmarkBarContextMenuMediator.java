@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -381,17 +379,15 @@ class BookmarkBarContextMenuMediator {
             boolean isIncognito,
             boolean enabled,
             View.OnClickListener listener) {
-        Drawable icon = iconResId != 0 ? AppCompatResources.getDrawable(mContext, iconResId) : null;
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, title)
-                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, icon)
+                        .with(ListMenuItemProperties.END_ICON_ID, iconResId)
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                                 isIncognito
                                         ? R.color.default_icon_color_light
                                         : R.color.default_icon_color_secondary_tint_list)
-                        .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, true)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.CLICK_LISTENER, listener);
         if (isIncognito) {
