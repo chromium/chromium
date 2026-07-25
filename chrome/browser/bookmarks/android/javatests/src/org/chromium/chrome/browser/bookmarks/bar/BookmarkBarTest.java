@@ -40,7 +40,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -318,7 +317,7 @@ public class BookmarkBarTest {
         pressBack(); // Dismiss for batched test.
     }
 
-    private @Nullable BookmarkId addBookmark(int index, @NonNull String title, @NonNull GURL url)
+    private @Nullable BookmarkId addBookmark(int index, String title, GURL url)
             throws ExecutionException {
         return BookmarkTestUtil.addBookmark(
                 mCtaTestRule.getActivityTestRule(),
@@ -329,29 +328,29 @@ public class BookmarkBarTest {
                 /* parent= */ mDesktopFolderId);
     }
 
-    private @Nullable BookmarkId addFolder(@NonNull String title) throws ExecutionException {
+    private @Nullable BookmarkId addFolder(String title) throws ExecutionException {
         return BookmarkTestUtil.addFolder(
                 mCtaTestRule.getActivityTestRule(), mModel, title, /* parent= */ mDesktopFolderId);
     }
 
-    private @NonNull Matcher<View> bookmarkBarItemWithText(@NonNull String text) {
+    private Matcher<View> bookmarkBarItemWithText(String text) {
         return allOf(
                 isDescendantOfA(withClassName(endsWith("BookmarkBar"))),
                 withClassName(endsWith("BookmarkBarButton")),
                 hasDescendant(withText(text)));
     }
 
-    private @NonNull Matcher<View> bookmarkBarOverflowButton() {
+    private Matcher<View> bookmarkBarOverflowButton() {
         return allOf(
                 isDescendantOfA(withClassName(endsWith("BookmarkBar"))),
                 withId(R.id.bookmark_bar_overflow_button));
     }
 
-    private @NonNull Matcher<View> bookmarkManagerToolbarWithText(@NonNull String text) {
+    private Matcher<View> bookmarkManagerToolbarWithText(String text) {
         return allOf(isDescendantOfA(withClassName(endsWith("BookmarkToolbar"))), withText(text));
     }
 
-    private @NonNull ViewAction clickWith(int metaState) {
+    private ViewAction clickWith(int metaState) {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
@@ -364,13 +363,13 @@ public class BookmarkBarTest {
             }
 
             @Override
-            public void perform(@NonNull UiController uiController, @NonNull View view) {
+            public void perform(UiController uiController, View view) {
                 TouchCommon.singleClickView(view, metaState);
             }
         };
     }
 
-    private @NonNull ViewAction focus() {
+    private ViewAction focus() {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
@@ -383,7 +382,7 @@ public class BookmarkBarTest {
             }
 
             @Override
-            public void perform(@NonNull UiController uiController, @NonNull View view) {
+            public void perform(UiController uiController, View view) {
                 // NOTE: Focus doesn't exist in touch mode except under special circumstances.
                 // Temporarily enable focusability to ensure the focus request can succeed.
                 // See https://android-developers.googleblog.com/2008/12/touch-mode.html.
@@ -405,7 +404,7 @@ public class BookmarkBarTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(tabModel.getCount() - 1));
     }
 
-    private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {
+    private GURL getTestServerUrl(String relativeUrl) {
         return new GURL(mCtaTestRule.getTestServer().getURL(relativeUrl));
     }
 
@@ -415,23 +414,23 @@ public class BookmarkBarTest {
         activity.onConfigurationChanged(newConfig);
     }
 
-    private ViewInteraction onViewDisplayed(@NonNull Matcher<View> viewMatcher) {
+    private ViewInteraction onViewDisplayed(Matcher<View> viewMatcher) {
         return onViewWaiting(allOf(viewMatcher, isDisplayed()));
     }
 
-    private @Nullable <T> T itemOrNull(@NonNull Callable<T> callable) {
+    private @Nullable <T> T itemOrNull(Callable<T> callable) {
         try {
             return callable.call();
-        } catch (@NonNull Throwable e) {
+        } catch (Throwable e) {
             return null;
         }
     }
 
-    private @NonNull ViewAction pressKey(int keyCode) {
+    private ViewAction pressKey(int keyCode) {
         return pressKey(keyCode, /* metaState= */ 0);
     }
 
-    private @NonNull ViewAction pressKey(int keyCode, int metaState) {
+    private ViewAction pressKey(int keyCode, int metaState) {
         final var isAltPressed = (metaState & META_ALT_ON) != 0;
         final var isCtrlPressed = (metaState & META_CTRL_ON) != 0;
         final var isShiftPressed = (metaState & META_SHIFT_ON) != 0;
