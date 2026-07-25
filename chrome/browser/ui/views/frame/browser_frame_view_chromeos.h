@@ -195,6 +195,10 @@ class BrowserFrameViewChromeOS
 
   void UpdateUnframedModeEnabled();
 
+  void RelayoutBrowserWindow();
+
+  ImmersiveModeController* GetImmersiveModeController() const;
+
   // Returns whether this window is currently in the overview list.
   bool GetOverviewMode() const;
 
