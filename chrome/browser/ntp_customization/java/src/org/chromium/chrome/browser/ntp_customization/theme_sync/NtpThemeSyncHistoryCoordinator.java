@@ -7,53 +7,108 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataGroup;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /** Coordinator for the NTP theme sync history. */
 @NullMarked
 public class NtpThemeSyncHistoryCoordinator {
+    public static final int MAXIMUM_HISTORY_ITEM = 6;
+
     private final Context mContext;
     private final BottomSheetDelegate mBottomSheetDelegate;
+    private final Profile mProfile;
     private final PropertyModel mPropertyModel;
     private final NtpBackgroundDataManager mNtpBackgroundDataManager;
     private final List<NtpBackgroundDataBase> mDataShowingList;
+    private final NtpThemeCollectionManager mThemeCollectionManager;
+    // A list of background data including default, and color themes.
     private final List<NtpBackgroundDataBase> mDefaultOptions;
+    // A list of theme collection background data ad default options.
+    private final List<NtpBackgroundDataThemeCollection> mDefaultThemeCollections;
+    private final Set<GURL> mLocalHistoryThemeCollectionUrlSet;
 
     private NtpBackgroundDataGroup @Nullable [] mNtpBackgroundDataGroups;
     private @Nullable NtpThemeSyncHistoryRecyclerViewAdaptor mRecyclerViewAdaptor;
     private @Nullable NtpBackgroundDataBase mInitiallySelectedNtpBackgroundData;
+    private @Nullable ImageFetcher mImageFetcher;
     private int mLastSelectedIndex;
+    private @Nullable Integer mLocalHistoryStartIndex;
+    private @Nullable Integer mLocalHistoryEndIndex;
 
+    /**
+     * Creates a new instance of {@link NtpThemeSyncHistoryCoordinator}.
+     *
+     * @param context The activity context.
+     * @param parentView The parent view that contains the history container.
+     * @param bottomSheetDelegate The delegate for handling bottom sheet actions.
+     * @param moreOptionsClickListener The click listener for the "More options" button.
+     * @param profile The current user profile.
+     */
     public NtpThemeSyncHistoryCoordinator(
             Context context,
             ViewGroup parentView,
             BottomSheetDelegate bottomSheetDelegate,
-            View.OnClickListener moreOptionsClickListener) {
+            View.OnClickListener moreOptionsClickListener,
+            Profile profile) {
+        this(
+                context,
+                parentView,
+                bottomSheetDelegate,
+                moreOptionsClickListener,
+                new NtpThemeCollectionManager(context, profile, bitmap -> {}),
+                profile);
+    }
+
+    @VisibleForTesting
+    NtpThemeSyncHistoryCoordinator(
+            Context context,
+            ViewGroup parentView,
+            BottomSheetDelegate bottomSheetDelegate,
+            View.OnClickListener moreOptionsClickListener,
+            NtpThemeCollectionManager themeCollectionManager,
+            Profile profile) {
         mContext = context;
         mBottomSheetDelegate = bottomSheetDelegate;
+        mProfile = profile;
+        mThemeCollectionManager = themeCollectionManager;
 
         ViewGroup historyContainerView =
                 parentView.findViewById(R.id.ntp_theme_sync_history_container);
@@ -73,6 +128,8 @@ public class NtpThemeSyncHistoryCoordinator {
                 moreOptionsClickListener);
 
         mDefaultOptions = new ArrayList<>();
+        mDefaultThemeCollections = new ArrayList<>();
+        mLocalHistoryThemeCollectionUrlSet = new HashSet<>();
         initDefaultOptions(context);
         mDataShowingList = new ArrayList<>();
     }
@@ -88,18 +145,90 @@ public class NtpThemeSyncHistoryCoordinator {
         mDefaultOptions.add(
                 new NtpBackgroundDataColor(
                         context, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_VIOLET, false));
+
+        mThemeCollectionManager.getBackgroundCollections(this::onTheCollectionIdAvailable);
+    }
+
+    /**
+     * Fetches the background images for the first collection once the collections are available.
+     *
+     * @param collections The list of available {@link BackgroundCollection}s.
+     */
+    private void onTheCollectionIdAvailable(@Nullable List<BackgroundCollection> collections) {
+        if (collections == null || collections.isEmpty()) return;
+
+        String firstCollectionId = collections.get(0).id;
+        mThemeCollectionManager.getBackgroundImages(
+                firstCollectionId, this::onThemeCollectionImageListForCollectionIdAvailable);
+    }
+
+    /**
+     * Processes the list of images for a collection, fetching preview bitmaps for up to two images
+     * that are not already in the local history.
+     *
+     * @param images The list of {@link CollectionImage}s in the collection.
+     */
+    private void onThemeCollectionImageListForCollectionIdAvailable(
+            @Nullable List<CollectionImage> images) {
+        if (images == null || images.size() == 0) return;
+
+        int countToAdd = Math.min(2, images.size());
+        int count = 0;
+        int index = 0;
+        while (count < countToAdd && index < images.size()) {
+            CollectionImage image = images.get(index);
+            index++;
+            // If the URL matches a data in local history, skip it.
+            if (mLocalHistoryThemeCollectionUrlSet.contains(image.imageUrl)) continue;
+
+            count++;
+            CustomBackgroundInfo info =
+                    new CustomBackgroundInfo(
+                            image.imageUrl,
+                            image.collectionId,
+                            /* isUploadedImage= */ false,
+                            /* isDailyRefreshEnabled= */ false);
+            if (mImageFetcher == null) {
+                mImageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
+            }
+            NtpCustomizationUtils.fetchThemeCollectionImage(
+                    mImageFetcher,
+                    image.previewImageUrl,
+                    (bitmap) -> {
+                        onThemeCollectionPreviewBitmapAvailable(info, bitmap);
+                    });
+        }
+    }
+
+    /**
+     * Called when a theme collection preview bitmap is available. Creates the background data
+     * object and adds it to the list of displayed items if there is space.
+     *
+     * @param info The {@link CustomBackgroundInfo} for the theme collection.
+     * @param bitmap The preview bitmap.
+     */
+    private void onThemeCollectionPreviewBitmapAvailable(
+            CustomBackgroundInfo info, @Nullable Bitmap bitmap) {
+        if (bitmap == null) return;
+
+        NtpBackgroundDataThemeCollection themeCollection =
+                new NtpBackgroundDataThemeCollection(PlatformType.ANDROID, info, bitmap);
+        mDefaultThemeCollections.add(themeCollection);
+        if (mDataShowingList.size() >= MAXIMUM_HISTORY_ITEM) {
+            return;
+        }
+
+        mDataShowingList.add(themeCollection);
+        if (mRecyclerViewAdaptor != null) {
+            mRecyclerViewAdaptor.notifyItemInserted(mDataShowingList.size() - 1);
+        }
     }
 
     /** Setups the recycler view. */
     private void setupRecyclerView(ViewGroup parentView) {
         RecyclerView recyclerView =
                 parentView.findViewById(R.id.ntp_theme_sync_history_recycler_view);
-        RecyclerView.ItemAnimator animator = recyclerView.getItemAnimator();
-
-        if (animator instanceof SimpleItemAnimator) {
-            // Stops the flashing effect on item updates.
-            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
-        }
+        recyclerView.setItemAnimator(null);
     }
 
     /**
@@ -129,16 +258,19 @@ public class NtpThemeSyncHistoryCoordinator {
 
         int defaultOptionSize = 1;
         NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID];
-        if (localGroup.size() < NtpBackgroundDataManager.MAXIMUM_LOCAL_HISTORY) {
-            for (int i = 1; i < mDefaultOptions.size(); i++) {
-                NtpBackgroundDataBase data = mDefaultOptions.get(i);
-                if (!localGroup.getList().contains(data)) {
-                    mDataShowingList.add(data);
-                    defaultOptionSize++;
-                }
-            }
-        }
+        cacheThemeCollectionUrls(localGroup);
+
+        // Adds all previously selected theming by the users.
         assumeNonNull(localGroup);
+        if (!localGroup.isEmpty()) {
+            mLocalHistoryStartIndex = mDataShowingList.size();
+            mDataShowingList.addAll(localGroup.getList());
+            mLocalHistoryEndIndex = mDataShowingList.size() - 1;
+        } else {
+            mLocalHistoryStartIndex = null;
+            mLocalHistoryEndIndex = null;
+        }
+
         if (currentNtpBackgroundData == null) {
             // Sets the index to the default theme if there isn't any NTP theme set before.
             lastSelectedIndex = 0;
@@ -149,10 +281,6 @@ public class NtpThemeSyncHistoryCoordinator {
                 // current theme.
                 lastSelectedIndex = index + defaultOptionSize;
             }
-        }
-
-        if (!localGroup.isEmpty()) {
-            mDataShowingList.addAll(localGroup.getList());
         }
 
         // Adds sync data from remote platforms.
@@ -171,10 +299,52 @@ public class NtpThemeSyncHistoryCoordinator {
                 }
             }
         }
+
+        // Adds pre-defined color themes, starting from index 1 because index 0 (DEFAULT) is already
+        // added.
+        for (int i = 1; i < mDefaultOptions.size(); i++) {
+            if (mDataShowingList.size() >= MAXIMUM_HISTORY_ITEM) break;
+
+            NtpBackgroundDataBase data = mDefaultOptions.get(i);
+            if (!localGroup.getList().contains(data)) {
+                mDataShowingList.add(data);
+            }
+        }
+
+        // Adds pre-defined theme collections images.
+        for (NtpBackgroundDataThemeCollection data : mDefaultThemeCollections) {
+            if (mDataShowingList.size() >= MAXIMUM_HISTORY_ITEM) break;
+
+            if (!mLocalHistoryThemeCollectionUrlSet.contains(
+                    data.getCustomBackgroundInfo().backgroundUrl)) {
+                mDataShowingList.add(data);
+            }
+        }
+
         return lastSelectedIndex;
     }
 
-    /** Called before showing the NTP theme customization history items. */
+    /**
+     * Caches the URLs of theme collection data present in the local history to prevent showing
+     * duplicates in the pre-defined options.
+     *
+     * @param localGroup The {@link NtpBackgroundDataGroup} containing the local history.
+     */
+    private void cacheThemeCollectionUrls(NtpBackgroundDataGroup localGroup) {
+        mLocalHistoryThemeCollectionUrlSet.clear();
+
+        for (NtpBackgroundDataBase data : localGroup.getList()) {
+            if (data instanceof NtpBackgroundDataThemeCollection themeCollectionData) {
+                mLocalHistoryThemeCollectionUrlSet.add(
+                        themeCollectionData.getCustomBackgroundInfo().backgroundUrl);
+            }
+        }
+    }
+
+    /**
+     * Prepares the history items to be shown in the customization sheet by populating the data list
+     * and instantiating the adapter.
+     */
     public void prepareToShow() {
         mLastSelectedIndex = prepareData();
         if (mInitiallySelectedNtpBackgroundData == null
@@ -192,25 +362,112 @@ public class NtpThemeSyncHistoryCoordinator {
                 NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX, mLastSelectedIndex);
     }
 
-    private void onItemClicked(NtpBackgroundDataBase backgroundData) {
+    /**
+     * Called when an item in the history recycler view is clicked. Applies the selected background
+     * data or fetches the full-size image if it is a theme collection.
+     *
+     * @param backgroundData The {@link NtpBackgroundDataBase} of the clicked item.
+     */
+    private void onItemClicked(NtpBackgroundDataBase backgroundData, int position) {
         boolean shouldRecreate = shouldRecreateActivity(backgroundData);
         mBottomSheetDelegate.onNewColorSelected(shouldRecreate);
 
-        NtpCustomizationConfigManager.getInstance()
-                .onBackgroundDataChanged(mContext, backgroundData);
+        if (backgroundData instanceof NtpBackgroundDataThemeCollection themeCollectionData
+                && themeCollectionData.getBitmap() == null) {
+            NtpCustomizationUtils.fetchThemeCollectionImage(
+                    assumeNonNull(mImageFetcher),
+                    themeCollectionData.getCustomBackgroundInfo().backgroundUrl,
+                    (bitmap) -> {
+                        onThemeCollectionImageBitmapAvailable(themeCollectionData, bitmap);
+                    });
+        } else {
+            NtpCustomizationConfigManager.getInstance()
+                    .onBackgroundDataChanged(mContext, backgroundData);
+
+            if (isLocalHistory(position)
+                    && backgroundData instanceof NtpBackgroundDataImageBase imageBaseData) {
+                // When any item is clicked, we will update the local history in the
+                // SharedPreference. This will lead to the existing saved bitmap being deleted. When
+                // the user re-select a theme option originally from the local history, its bitmap
+                // might haven deleted. Save it to the disk again.
+                Bitmap bitmap = imageBaseData.getBitmap();
+                if (bitmap != null) {
+                    NtpCustomizationUtils.saveBackgroundImageFile(
+                            imageBaseData.getLastUploadImageFilePath(), bitmap);
+                }
+            }
+        }
     }
 
-    /** Returns whether to recreate the activity to apply the new theme color. */
+    /**
+     * Returns whether the selected theme item was originally from a local history.
+     *
+     * @param position The position of the item on the recyclerview.
+     */
+    private boolean isLocalHistory(int position) {
+        if (mLocalHistoryStartIndex == null || mLocalHistoryEndIndex == null) {
+            return false;
+        }
+        return position >= mLocalHistoryStartIndex && position <= mLocalHistoryEndIndex;
+    }
+
+    /**
+     * Called when the full-size image bitmap for a theme collection is available. Updates the
+     * background data with the bitmap, primary color, and file path, and applies the new theme.
+     *
+     * @param themeCollectionData The {@link NtpBackgroundDataThemeCollection} being updated.
+     * @param bitmap The full-size image bitmap.
+     */
+    private void onThemeCollectionImageBitmapAvailable(
+            NtpBackgroundDataThemeCollection themeCollectionData, @Nullable Bitmap bitmap) {
+        if (bitmap == null || isDestroy()) return;
+
+        CustomBackgroundInfo info = themeCollectionData.getCustomBackgroundInfo();
+        String fileHashId = NtpThemeCollectionManager.getFileName(info.backgroundUrl.getPath());
+        BackgroundImageInfo backgroundImageInfo =
+                NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
+        @ColorInt
+        Integer primaryColor =
+                NtpCustomizationUtils.pickAndSavePrimaryColor(
+                        assumeNonNull(themeCollectionData.getPreviewBitmap()));
+
+        themeCollectionData.setBitmap(bitmap);
+        themeCollectionData.setFileIdHash(fileHashId);
+        themeCollectionData.setBackgroundImageInfo(backgroundImageInfo);
+        themeCollectionData.setPrimaryColor(primaryColor);
+
+        NtpCustomizationConfigManager.getInstance()
+                .onBackgroundDataChanged(mContext, themeCollectionData);
+        // onBackgroundDataChanged() will skip saving the bitmap when the primary color has been
+        // set. Saves it here.
+        NtpCustomizationUtils.saveBackgroundImageFile(
+                themeCollectionData.getLastUploadImageFilePath(), bitmap);
+    }
+
+    /**
+     * Determines whether the activity should be recreated to apply the new theme.
+     *
+     * @param backgroundData The newly selected background data.
+     * @return True if the activity should be recreated, false otherwise.
+     */
     private boolean shouldRecreateActivity(NtpBackgroundDataBase backgroundData) {
         return !Objects.equals(mInitiallySelectedNtpBackgroundData, backgroundData);
     }
 
-    /** Called to destroy the NtpThemeSyncHistoryCoordinator. */
+    /** Cleans up resources and references when the coordinator is destroyed. */
     public void destroy() {
         mDataShowingList.clear();
         mInitiallySelectedNtpBackgroundData = null;
         mPropertyModel.set(NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER, null);
         mPropertyModel.set(NtpThemeSyncHistoryProperties.RECYCLER_VIEW_LAYOUT_MANAGER, null);
+        mThemeCollectionManager.destroy();
+        mRecyclerViewAdaptor = null;
+        mLocalHistoryStartIndex = null;
+        mLocalHistoryEndIndex = null;
+    }
+
+    private boolean isDestroy() {
+        return mRecyclerViewAdaptor == null;
     }
 
     PropertyModel getPropertyModelForTesting() {

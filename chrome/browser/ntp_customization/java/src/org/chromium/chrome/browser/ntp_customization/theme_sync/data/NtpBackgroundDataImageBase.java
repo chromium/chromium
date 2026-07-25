@@ -23,11 +23,11 @@ import java.util.Objects;
 /** Base data class for NTP image-based background data. */
 @NullMarked
 public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
-    private final @Nullable BackgroundImageInfo mBackgroundImageInfo;
+    private @Nullable BackgroundImageInfo mBackgroundImageInfo;
     // The mFileIdHash isn't null when NTP theme sync is enabled.
-    private final @Nullable String mFileIdHash;
+    private @Nullable String mFileIdHash;
     // The mLastUploadImageFilePath isn't null when mFileIdHash isn't null.
-    private final @Nullable String mLastUploadImageFilePath;
+    private @Nullable String mLastUploadImageFilePath;
     private @Nullable Bitmap mBitmap;
     private @Nullable @ColorInt Integer mPrimaryColor;
 
@@ -48,19 +48,17 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
         mBackgroundImageInfo = backgroundImageInfo;
         mBitmap = bitmap;
         mPrimaryColor = primaryColor;
-        mFileIdHash = fileIdHash;
 
-        if (mFileIdHash != null) {
-            mLastUploadImageFilePath =
-                    NtpCustomizationUtils.createThemeImageFileInDir(mFileIdHash, getImageDirName())
-                            .getAbsolutePath();
-        } else {
-            mLastUploadImageFilePath = null;
-        }
+        setFileIdHash(fileIdHash);
     }
 
     /** Returns the subdirectory name for saving the image file. */
     public abstract String getImageDirName();
+
+    /** Returns the bitmap for preview, or null if not available. */
+    public @Nullable Bitmap getPreviewBitmap() {
+        return null;
+    }
 
     /** Returns the file path of the last uploaded image. */
     public @Nullable String getLastUploadImageFilePath() {
@@ -72,13 +70,18 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
         return mBackgroundImageInfo;
     }
 
+    /** Sets the background image info containing matrices and window sizes. */
+    public void setBackgroundImageInfo(@Nullable BackgroundImageInfo info) {
+        mBackgroundImageInfo = info;
+    }
+
     /** Returns the local bitmap, which is not synced. */
     public @Nullable Bitmap getBitmap() {
         return mBitmap;
     }
 
     /** Sets the bitmap. */
-    public void setBitmap(Bitmap bitmap) {
+    public void setBitmap(@Nullable Bitmap bitmap) {
         mBitmap = bitmap;
     }
 
@@ -101,6 +104,22 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
         return mFileIdHash;
     }
 
+    /**
+     * Sets the file ID hash of the background image and updates the last upload image file path.
+     *
+     * @param fileIdHash The file ID hash to set.
+     */
+    public void setFileIdHash(@Nullable String fileIdHash) {
+        mFileIdHash = fileIdHash;
+        if (mFileIdHash != null) {
+            mLastUploadImageFilePath =
+                    NtpCustomizationUtils.createThemeImageFileInDir(mFileIdHash, getImageDirName())
+                            .getAbsolutePath();
+        } else {
+            mLastUploadImageFilePath = null;
+        }
+    }
+
     // NtpBackgroundDataBase implementations.
     @Override
     public void getBitmapOrLoadImage(Callback<@Nullable Bitmap> onImageLoadedCallback) {
@@ -115,6 +134,8 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
                 && Objects.equals(currentBackgroundData, this)) {
             mBitmap = imageBaseData.getBitmap();
             onImageLoadedCallback.onResult(mBitmap);
+        } else if (getPreviewBitmap() != null) {
+            onImageLoadedCallback.onResult(getPreviewBitmap());
         } else {
             NtpBackgroundDataUtils.loadImage(
                     (result) -> {

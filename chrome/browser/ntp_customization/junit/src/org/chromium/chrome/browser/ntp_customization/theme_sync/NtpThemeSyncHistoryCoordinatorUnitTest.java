@@ -5,17 +5,20 @@
 package org.chromium.chrome.browser.ntp_customization.theme_sync;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -30,26 +33,43 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link NtpThemeSyncHistoryCoordinator}. */
@@ -62,15 +82,33 @@ import java.util.List;
 public class NtpThemeSyncHistoryCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final String TEST_COLLECTION_ID = "collection_id";
+    private static final String TEST_COLLECTION_LABEL = "Label";
+    private static final int TEST_COLLECTION_ORDER = 123;
+    private static final String TEST_IMAGE_URL_1 = "https://img1.png/";
+    private static final String TEST_IMAGE_URL_2 = "https://img2.png/";
+    private static final String TEST_PREVIEW_URL_1 = "https://preview1.png/";
+    private static final String TEST_PREVIEW_URL_2 = "https://preview2.png/";
+    private static final String TEST_ATTRIBUTE_1 = "attr1";
+    private static final String TEST_ATTRIBUTE_2 = "attr2";
+    private static final int BITMAP_SIZE = 1;
+    private static final int FULL_BITMAP_SIZE = 10;
+
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private View.OnClickListener mMoreOptionsClickListener;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    @Mock private NtpThemeCollectionManager mThemeCollectionManager;
+    @Mock private Profile mProfile;
+    @Captor private ArgumentCaptor<Callback<List<BackgroundCollection>>> mCollectionsCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mImagesCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mPreviewCallbackCaptor;
 
     private Context mContext;
     private NtpThemeSyncHistoryCoordinator mCoordinator;
     private NtpBackgroundDataManager mNtpBackgroundDataManager;
     private ViewGroup mParentView;
     private PropertyModel mPropertyModel;
+    private ImageFetcher mMockImageFetcher;
 
     @Before
     public void setUp() {
@@ -91,7 +129,12 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         mCoordinator =
                 new NtpThemeSyncHistoryCoordinator(
-                        mContext, mParentView, mBottomSheetDelegate, mMoreOptionsClickListener);
+                        mContext,
+                        mParentView,
+                        mBottomSheetDelegate,
+                        mMoreOptionsClickListener,
+                        mThemeCollectionManager,
+                        mProfile);
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
     }
 
@@ -161,23 +204,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         assertEquals(4, dataList.size());
-        // First three items are default options, fourth is local history
+        // First item is Default 0, second is local history, third and fourth are other defaults.
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_ORANGE,
+                NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIOLET,
+                NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpThemeColorId.NTP_COLORS_VIOLET,
                 ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
 
-        // Highlighted index should be 3 (the local history item)
+        // Highlighted index should be 1 (the local history item)
         assertEquals(
-                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -271,23 +314,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, Orange, Violet, Local history (blue), Remote history (blue).
+        // Should contain: Default, Local history (blue), Remote history (blue), Orange, Violet.
         assertEquals(5, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(localColor, dataList.get(1));
+        assertEquals(remoteDuplicateColor, dataList.get(2));
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_ORANGE,
-                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_VIOLET,
-                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
-        assertEquals(localColor, dataList.get(3));
-        assertEquals(remoteDuplicateColor, dataList.get(4));
+                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
 
-        // Highlighted index should be 3 (local history)
+        // Highlighted index should be 1 (local history)
         assertEquals(
-                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -310,15 +353,11 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 mCoordinator.getRecyclerViewAdaptorForTesting();
         assertNotNull(adapter);
 
-        int position = 3;
-        // Click the remote history item (index 3, after Default, Orange, and Violet)
+        int position = 1;
+        // Click the remote history item (index 1, after Default)
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
-        // Verify config manager is notified.
-        verify(mNtpCustomizationConfigManager)
-                .onBackgroundDataChanged(eq(mContext), eq(remoteColor));
-        // Verify delegate is notified (it is a different color from default, so true)
-        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+        assertBackgroundDataChangedImpl(remoteColor, /* expectedRecreate= */ true);
 
         // Click it again, should not trigger changes since it's already selected.
         clearInvocations(mNtpCustomizationConfigManager);
@@ -347,7 +386,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertNotNull(adapter);
 
         // Click the Default item (index 0), which is different from the original selected item
-        // (index 3).
+        // (index 1).
         int position = 0;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
@@ -356,13 +395,11 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate);
 
-        // Click back to the original selected item (index 3).
-        position = 3;
+        // Click back to the original selected item (index 1).
+        position = 1;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
-        verify(mNtpCustomizationConfigManager)
-                .onBackgroundDataChanged(eq(mContext), eq(localColor));
-        verify(mBottomSheetDelegate).onNewColorSelected(eq(false));
+        assertBackgroundDataChangedImpl(localColor, /* expectedRecreate= */ false);
     }
 
     @Test
@@ -393,23 +430,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, Orange, Violet, localColor1 (blue), remoteColor1 (cyan).
+        // Should contain: Default, localColor1 (blue), remoteColor1 (cyan), Orange, Violet.
         assertEquals(5, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_ORANGE,
+                NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(2));
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_VIOLET,
-                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
-                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
-        assertEquals(remoteColor1, dataList.get(4));
-        assertEquals(
-                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
 
         // 2. Update Setup: add new local (VIRIDIAN), add new remote (GREEN).
         NtpBackgroundDataColor localColor2 =
@@ -437,30 +474,30 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, Orange, Violet, localColor2 (viridian), localColor1 (blue),
-        // remoteColor1 (cyan)
+        // Should contain: Default, localColor2 (viridian), localColor1 (blue),
+        // remoteColor1 (cyan), Orange, Violet.
         // remoteColor2 (green) should NOT be here because remote history is not reloaded.
         assertEquals(6, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_ORANGE,
+                NtpThemeColorId.NTP_COLORS_VIRIDIAN,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIOLET,
-                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIRIDIAN,
-                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
-        assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
-                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
-        assertEquals(remoteColor1, dataList.get(5));
-
-        // Highlighted index should be 3 (localColor2, the new first local history item).
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(3));
         assertEquals(
-                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(5)).getThemeColorId());
+
+        // Highlighted index should be 1 (localColor2, the new first local history item).
+        assertEquals(
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -479,21 +516,21 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain 3 items: DEFAULT, VIOLET (default option), and ORANGE (local history).
+        // Should contain 3 items: DEFAULT, ORANGE (local history), and VIOLET (default option).
         assertEquals(3, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIOLET,
+                NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_ORANGE,
+                NtpThemeColorId.NTP_COLORS_VIOLET,
                 ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
 
-        // Highlighted index should be 2 (the local history item)
+        // Highlighted index should be 1 (the local history item)
         assertEquals(
-                2, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -526,9 +563,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain 4 items: only DEFAULT from default options, then the 3 local history
-        // items.
-        assertEquals(4, dataList.size());
+        // Should contain 6 items: DEFAULT, the 3 local history items, and ORANGE, VIOLET to fill up
+        // to MAXIMUM_HISTORY_ITEM.
+        assertEquals(6, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
@@ -541,9 +578,464 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(5)).getThemeColorId());
 
         // Highlighted index should be 2 (localColor2)
         assertEquals(
                 2, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testInitDefaultOptions_WithThemeCollections() {
+        BackgroundCollection collection =
+                new BackgroundCollection(
+                        TEST_COLLECTION_ID,
+                        TEST_COLLECTION_LABEL,
+                        GURL.emptyGURL(),
+                        TEST_COLLECTION_ORDER);
+        CollectionImage image1 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+        CollectionImage image2 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_2),
+                        new GURL(TEST_PREVIEW_URL_2),
+                        Arrays.asList(TEST_ATTRIBUTE_2),
+                        GURL.emptyGURL());
+
+        ImageFetcher mockImageFetcher = Mockito.mock(ImageFetcher.class);
+        NtpCustomizationUtils.setImageFetcherForTesting(mockImageFetcher);
+        doAnswer(
+                        invocation -> {
+                            Callback<Bitmap> callback = invocation.getArgument(1);
+                            callback.onResult(
+                                    Bitmap.createBitmap(
+                                            BITMAP_SIZE, BITMAP_SIZE, Bitmap.Config.ARGB_8888));
+                            return null;
+                        })
+                .when(mockImageFetcher)
+                .fetchImage(any(), any());
+
+        NtpThemeCollectionManager mockManager = Mockito.mock(NtpThemeCollectionManager.class);
+
+        NtpThemeSyncHistoryCoordinator coordinator =
+                new NtpThemeSyncHistoryCoordinator(
+                        mContext,
+                        mParentView,
+                        mBottomSheetDelegate,
+                        mMoreOptionsClickListener,
+                        mockManager,
+                        mProfile);
+
+        verify(mockManager).getBackgroundCollections(mCollectionsCallbackCaptor.capture());
+        mCollectionsCallbackCaptor.getValue().onResult(Arrays.asList(collection));
+
+        verify(mockManager)
+                .getBackgroundImages(eq(TEST_COLLECTION_ID), mImagesCallbackCaptor.capture());
+        mImagesCallbackCaptor.getValue().onResult(Arrays.asList(image1, image2));
+
+        verify(mockImageFetcher, Mockito.times(2)).fetchImage(any(), any());
+        coordinator.prepareToShow();
+        List<NtpBackgroundDataBase> dataList = coordinator.getDataShowingListForTesting();
+        // It should contain: Default Color, Orange, Violet, 2 Theme Collections.
+        assertEquals(5, dataList.size());
+        assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
+        assertTrue(dataList.get(1) instanceof NtpBackgroundDataColor);
+        assertTrue(dataList.get(2) instanceof NtpBackgroundDataColor);
+        assertTrue(dataList.get(3) instanceof NtpBackgroundDataThemeCollection);
+        assertTrue(dataList.get(4) instanceof NtpBackgroundDataThemeCollection);
+
+        NtpBackgroundDataThemeCollection theme1 =
+                (NtpBackgroundDataThemeCollection) dataList.get(3);
+        assertEquals(TEST_COLLECTION_ID, theme1.getCustomBackgroundInfo().collectionId);
+        assertEquals(TEST_IMAGE_URL_1, theme1.getCustomBackgroundInfo().backgroundUrl.getSpec());
+
+        NtpBackgroundDataThemeCollection theme2 =
+                (NtpBackgroundDataThemeCollection) dataList.get(4);
+        assertEquals(TEST_COLLECTION_ID, theme2.getCustomBackgroundInfo().collectionId);
+        assertEquals(TEST_IMAGE_URL_2, theme2.getCustomBackgroundInfo().backgroundUrl.getSpec());
+    }
+
+    @Test
+    public void testPrepareToShow_ThemeCollectionsAvoidDuplicates() {
+        CollectionImage image1 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+
+        // Save a theme collection to local history with the same URL.
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        new GURL(TEST_IMAGE_URL_1),
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection localTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        Bitmap.createBitmap(BITMAP_SIZE, BITMAP_SIZE, Bitmap.Config.ARGB_8888));
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localTheme);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localTheme);
+
+        NtpThemeSyncHistoryCoordinator coordinator = setupThemeCollectionsAndCoordinator(image1);
+
+        coordinator.prepareToShow();
+        List<NtpBackgroundDataBase> dataList = coordinator.getDataShowingListForTesting();
+
+        // Should contain 4 items: Default, Local History (theme1), Orange, Violet.
+        // It should NOT contain theme1 again at the end!
+        assertEquals(4, dataList.size());
+        assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
+        assertEquals(localTheme, dataList.get(1));
+        assertTrue(dataList.get(2) instanceof NtpBackgroundDataColor);
+        assertTrue(dataList.get(3) instanceof NtpBackgroundDataColor);
+    }
+
+    @Test
+    public void testOnItemClicked_ThemeCollectionFetchesImage() {
+        CollectionImage image1 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+
+        NtpThemeSyncHistoryCoordinator coordinator = setupThemeCollectionsAndCoordinator(image1);
+
+        coordinator.prepareToShow();
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                coordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
+
+        // Click the theme collection item (index 3).
+        int position = 3;
+        NtpBackgroundDataThemeCollection themeData =
+                (NtpBackgroundDataThemeCollection)
+                        coordinator.getDataShowingListForTesting().get(position);
+        assertNull(themeData.getBitmap());
+
+        // Setup image fetcher for the full image click.
+        Bitmap fullBitmap =
+                Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        doAnswer(
+                        invocation -> {
+                            Callback<Bitmap> callback = invocation.getArgument(1);
+                            callback.onResult(fullBitmap);
+                            return null;
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any());
+
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        // Verify it fetches the image again.
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(Params.class);
+        verify(mMockImageFetcher).fetchImage(paramsCaptor.capture(), any());
+        assertEquals(TEST_IMAGE_URL_1, paramsCaptor.getValue().url);
+
+        // Verify the bitmap is set.
+        assertEquals(fullBitmap, themeData.getBitmap());
+        // Verify primary color and other fields are set.
+        assertNotNull(themeData.getPrimaryColor());
+        assertNotNull(themeData.getFileIdHash());
+        assertNotNull(themeData.getBackgroundImageInfo());
+
+        assertBackgroundDataChangedImpl(themeData, /* expectedRecreate= */ true);
+    }
+
+    @Test
+    public void testOnItemClicked_ThemeCollectionAlreadyHasBitmap() {
+        CollectionImage image1 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+
+        NtpThemeSyncHistoryCoordinator coordinator = setupThemeCollectionsAndCoordinator(image1);
+
+        coordinator.prepareToShow();
+        NtpBackgroundDataThemeCollection themeData =
+                (NtpBackgroundDataThemeCollection)
+                        coordinator.getDataShowingListForTesting().get(3);
+
+        // Manually set the bitmap.
+        Bitmap fullBitmap =
+                Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        themeData.setBitmap(fullBitmap);
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                coordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
+
+        // Click the theme collection item (index 3).
+        int position = 3;
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        // Verify it does NOT fetch the image again.
+        verify(mMockImageFetcher, never()).fetchImage(any(), any());
+
+        assertBackgroundDataChangedImpl(themeData, /* expectedRecreate= */ true);
+    }
+
+    @Test
+    public void testOnThemeCollectionPreviewBitmapAvailable_CallsNotifyItemInserted() {
+        CollectionImage image1 =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+
+        NtpThemeSyncHistoryCoordinator coordinator =
+                setupThemeCollectionsAndCoordinatorInternal(
+                        /* fetchPreviewsSynchronously= */ false, image1);
+
+        // Verify fetchImage was called, and capture the callback.
+        verify(mMockImageFetcher).fetchImage(any(), mPreviewCallbackCaptor.capture());
+
+        // Now call prepareToShow.
+        coordinator.prepareToShow();
+
+        // Register an observer to verify the adapter notification.
+        androidx.recyclerview.widget.RecyclerView.AdapterDataObserver mockObserver =
+                Mockito.mock(androidx.recyclerview.widget.RecyclerView.AdapterDataObserver.class);
+        coordinator.getRecyclerViewAdaptorForTesting().registerAdapterDataObserver(mockObserver);
+
+        // Simulate the preview bitmap arriving.
+        Bitmap previewBitmap =
+                Bitmap.createBitmap(BITMAP_SIZE, BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        mPreviewCallbackCaptor.getValue().onResult(previewBitmap);
+
+        // Verify that onItemRangeInserted was called for the new item!
+        int expectedIndex = coordinator.getDataShowingListForTesting().size() - 1;
+        verify(mockObserver).onItemRangeInserted(eq(expectedIndex), eq(1));
+    }
+
+    @Test
+    public void testOnItemClicked_LocalHistorySavesToDisk() {
+        ImageFetcher mockImageFetcher = Mockito.mock(ImageFetcher.class);
+        NtpCustomizationUtils.setImageFetcherForTesting(mockImageFetcher);
+
+        String fileIdHash = "test_hash_saves";
+        NtpBackgroundDataImageBase localThemeInList =
+                prepareLocalHistoryWithThemeCollectionImpl(fileIdHash);
+
+        String filePath = localThemeInList.getLastUploadImageFilePath();
+        Bitmap diskBitmap =
+                Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        NtpCustomizationUtils.saveBackgroundImageFile(filePath, diskBitmap);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        localThemeInList.getBitmapOrLoadImage((result) -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertNotNull(localThemeInList.getBitmap());
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                mCoordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        File expectedSavedFile = new File(filePath);
+        assertTrue(expectedSavedFile.exists());
+        expectedSavedFile.delete();
+        assertFalse(expectedSavedFile.exists());
+
+        int position = 1;
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(expectedSavedFile.exists());
+        verify(mockImageFetcher, never()).fetchImage(any(), any());
+    }
+
+    @Test
+    public void testOnItemClicked_LocalHistoryNullBitmapDoesNotSave() {
+        ImageFetcher mockImageFetcher = Mockito.mock(ImageFetcher.class);
+        NtpCustomizationUtils.setImageFetcherForTesting(mockImageFetcher);
+
+        String fileIdHash = "test_hash_null_bitmap";
+        NtpBackgroundDataImageBase localThemeInList =
+                prepareLocalHistoryWithThemeCollectionImpl(fileIdHash);
+
+        String filePath = localThemeInList.getLastUploadImageFilePath();
+        File expectedSavedFile = new File(filePath);
+        if (expectedSavedFile.exists()) {
+            expectedSavedFile.delete();
+        }
+        assertFalse(expectedSavedFile.exists());
+
+        assertNull(localThemeInList.getBitmap());
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                mCoordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        int position = 1;
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(expectedSavedFile.exists());
+        verify(mockImageFetcher).fetchImage(any(), any());
+    }
+
+    private NtpBackgroundDataImageBase prepareLocalHistoryWithThemeCollectionImpl(
+            String fileIdHash) {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        new GURL(TEST_IMAGE_URL_1),
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection localTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        fileIdHash);
+
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localTheme);
+
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> list = mCoordinator.getDataShowingListForTesting();
+        return (NtpBackgroundDataImageBase) list.get(1);
+    }
+
+    @Test
+    public void testOnItemClicked_NotLocalHistoryDoesNotSave() {
+        CollectionImage image =
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        new GURL(TEST_IMAGE_URL_1),
+                        new GURL(TEST_PREVIEW_URL_1),
+                        Arrays.asList(TEST_ATTRIBUTE_1),
+                        GURL.emptyGURL());
+
+        NtpThemeSyncHistoryCoordinator coordinator = setupThemeCollectionsAndCoordinator(image);
+
+        coordinator.prepareToShow();
+
+        NtpThemeSyncHistoryRecyclerViewAdaptor adapter =
+                coordinator.getRecyclerViewAdaptorForTesting();
+        assertNotNull(adapter);
+
+        int position = -1;
+        List<NtpBackgroundDataBase> list = coordinator.getDataShowingListForTesting();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof NtpBackgroundDataThemeCollection) {
+                position = i;
+                break;
+            }
+        }
+        assertTrue(position != -1);
+
+        NtpBackgroundDataThemeCollection themeData =
+                (NtpBackgroundDataThemeCollection) list.get(position);
+
+        Bitmap fullBitmap =
+                Bitmap.createBitmap(FULL_BITMAP_SIZE, FULL_BITMAP_SIZE, Bitmap.Config.ARGB_8888);
+        themeData.setBitmap(fullBitmap);
+        String fileIdHash = "test_hash_not_local";
+        themeData.setFileIdHash(fileIdHash);
+
+        File expectedSavedFile =
+                NtpCustomizationUtils.createThemeImageFileInDir(
+                        fileIdHash, themeData.getImageDirName());
+        if (expectedSavedFile.exists()) {
+            expectedSavedFile.delete();
+        }
+        assertFalse(expectedSavedFile.exists());
+
+        adapter.setSelectedPosition(position, /* isFromClick= */ true);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(expectedSavedFile.exists());
+    }
+
+    private NtpThemeSyncHistoryCoordinator setupThemeCollectionsAndCoordinator(
+            CollectionImage... images) {
+        NtpThemeSyncHistoryCoordinator coordinator =
+                setupThemeCollectionsAndCoordinatorInternal(
+                        /* fetchPreviewsSynchronously= */ true, images);
+        verify(mMockImageFetcher, Mockito.times(images.length)).fetchImage(any(), any());
+        return coordinator;
+    }
+
+    private NtpThemeSyncHistoryCoordinator setupThemeCollectionsAndCoordinatorInternal(
+            boolean fetchPreviewsSynchronously, CollectionImage... images) {
+        BackgroundCollection collection =
+                new BackgroundCollection(
+                        TEST_COLLECTION_ID,
+                        TEST_COLLECTION_LABEL,
+                        GURL.emptyGURL(),
+                        TEST_COLLECTION_ORDER);
+
+        mMockImageFetcher = Mockito.mock(ImageFetcher.class);
+        NtpCustomizationUtils.setImageFetcherForTesting(mMockImageFetcher);
+        if (fetchPreviewsSynchronously) {
+            doAnswer(
+                            invocation -> {
+                                Callback<Bitmap> callback = invocation.getArgument(1);
+                                callback.onResult(
+                                        Bitmap.createBitmap(
+                                                BITMAP_SIZE, BITMAP_SIZE, Bitmap.Config.ARGB_8888));
+                                return null;
+                            })
+                    .when(mMockImageFetcher)
+                    .fetchImage(any(), any());
+        }
+
+        NtpThemeCollectionManager mockManager = Mockito.mock(NtpThemeCollectionManager.class);
+
+        NtpThemeSyncHistoryCoordinator coordinator =
+                new NtpThemeSyncHistoryCoordinator(
+                        mContext,
+                        mParentView,
+                        mBottomSheetDelegate,
+                        mMoreOptionsClickListener,
+                        mockManager,
+                        mProfile);
+
+        verify(mockManager).getBackgroundCollections(mCollectionsCallbackCaptor.capture());
+        mCollectionsCallbackCaptor.getValue().onResult(Arrays.asList(collection));
+
+        verify(mockManager)
+                .getBackgroundImages(eq(TEST_COLLECTION_ID), mImagesCallbackCaptor.capture());
+        mImagesCallbackCaptor.getValue().onResult(Arrays.asList(images));
+
+        return coordinator;
+    }
+
+    private void assertBackgroundDataChangedImpl(
+            NtpBackgroundDataBase expectedData, boolean expectedRecreate) {
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mContext), eq(expectedData));
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(expectedRecreate));
     }
 }

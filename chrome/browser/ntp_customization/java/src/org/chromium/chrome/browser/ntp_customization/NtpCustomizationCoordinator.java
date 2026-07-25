@@ -253,7 +253,8 @@ public class NtpCustomizationCoordinator {
                                 mContext,
                                 mViewFlipperView,
                                 mDelegate,
-                                (view) -> showThemeBottomSheet());
+                                (view) -> showThemeBottomSheet(),
+                                assumeNonNull(mProfileSupplier.get()));
             }
             mNtpThemeSyncHistoryCoordinator.prepareToShow();
         }

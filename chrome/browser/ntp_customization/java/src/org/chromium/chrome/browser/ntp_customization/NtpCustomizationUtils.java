@@ -518,8 +518,7 @@ public class NtpCustomizationUtils {
      *
      * @param backgroundImageBitmap The bitmap of the theme collection or uploaded image.
      */
-    @VisibleForTesting
-    static void saveBackgroundImageFile(
+    public static void saveBackgroundImageFile(
             @Nullable String filePath, @Nullable Bitmap backgroundImageBitmap) {
         File file = getBackgroundImageFileFromPath(filePath);
         saveBitmapImageToFile(backgroundImageBitmap, file);
@@ -903,7 +902,7 @@ public class NtpCustomizationUtils {
      *
      * @param bitmap The bitmap from which to extract and save the primary color.
      */
-    static @Nullable @ColorInt Integer pickAndSavePrimaryColor(Bitmap bitmap) {
+    public static @Nullable @ColorInt Integer pickAndSavePrimaryColor(Bitmap bitmap) {
         @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
         if (primaryColor != null) {
             setCustomizedPrimaryColorToSharedPreference(primaryColor.intValue());

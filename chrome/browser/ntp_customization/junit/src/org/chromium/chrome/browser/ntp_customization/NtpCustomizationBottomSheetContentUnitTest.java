@@ -46,6 +46,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 import java.util.function.Supplier;
@@ -67,6 +70,7 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
     @Mock private RecyclerView mThemeCollectionsRecyclerView;
     @Mock private RecyclerView mSingleThemeCollectionRecyclerView;
     @Mock private RecyclerView mChromeColorsRecyclerView;
+    @Mock private RecyclerView mNtpThemeSyncHistoryRecyclerView;
     @Mock private View mChromeColorsRecyclerViewContainer;
     @Mock private View mViewFlipper;
 
@@ -93,6 +97,8 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
                 .thenReturn(mSingleThemeCollectionRecyclerView);
         when(mView.findViewById(R.id.chrome_colors_recycler_view))
                 .thenReturn(mChromeColorsRecyclerView);
+        when(mView.findViewById(R.id.ntp_theme_sync_history_recycler_view))
+                .thenReturn(mNtpThemeSyncHistoryRecyclerView);
         when(mView.findViewById(R.id.chrome_colors_recycler_view_container))
                 .thenReturn(mChromeColorsRecyclerViewContainer);
         when(mView.findViewById(R.id.ntp_customization_view_flipper)).thenReturn(mViewFlipper);
@@ -126,6 +132,7 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testFullHeightRatio_noActiveRecyclerView() {
         mBottomSheetTypeSupplier = () -> MAIN;
         assertNull(mBottomSheetContent.getActiveRecyclerView());
@@ -201,7 +208,8 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
     }
 
     @Test
-    public void testGetActiveRecyclerView() {
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testGetActiveRecyclerView_themeSyncDisabled() {
         // Returns the theme collections recycler view for THEME_COLLECTIONS type.
         mBottomSheetTypeSupplier = () -> THEME_COLLECTIONS;
         assertEquals(mThemeCollectionsRecyclerView, mBottomSheetContent.getActiveRecyclerView());
@@ -211,9 +219,28 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         assertEquals(
                 mSingleThemeCollectionRecyclerView, mBottomSheetContent.getActiveRecyclerView());
 
-        // Returns null for other types like MAIN.
+        // Returns null for other types like MAIN when theme sync is disabled.
         mBottomSheetTypeSupplier = () -> MAIN;
         assertNull(mBottomSheetContent.getActiveRecyclerView());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testGetActiveRecyclerView_themeSyncEnabled() {
+        // Returns the theme collections recycler view for THEME_COLLECTIONS type.
+        mBottomSheetTypeSupplier = () -> THEME_COLLECTIONS;
+        assertEquals(mThemeCollectionsRecyclerView, mBottomSheetContent.getActiveRecyclerView());
+
+        // Returns the single theme collection recycler view for SINGLE_THEME_COLLECTION type.
+        mBottomSheetTypeSupplier = () -> SINGLE_THEME_COLLECTION;
+        assertEquals(
+                mSingleThemeCollectionRecyclerView, mBottomSheetContent.getActiveRecyclerView());
+
+        mBottomSheetTypeSupplier = () -> MAIN;
+        assertEquals(mNtpThemeSyncHistoryRecyclerView, mBottomSheetContent.getActiveRecyclerView());
     }
 
     @Test
