@@ -5497,7 +5497,7 @@ targets.bundle(
     per_test_modifications = {
         "js_code_coverage_browser_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 16,
+                shards = 30,
             ),
         ),
     },

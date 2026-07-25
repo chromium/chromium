@@ -1221,7 +1221,7 @@ try_.builder(
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
     cq_settings = try_.cq_settings(
-        experiment_percentage = 50,
+        experiment_percentage = 5,
         location_filters = [
             cq.location_filter(path_regexp = r".*\.(js|ts)"),
         ],
