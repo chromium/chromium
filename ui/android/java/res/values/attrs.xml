@@ -95,7 +95,8 @@ found in the LICENSE file.
     <attr name="listItemIconTextSpacing" format="dimension"/>
     <attr name="listDividerHeight" format="dimension"/>
 
-    <attr name="popupBg" format="reference"/>
+    <attr name="popupBgShadow" format="reference"/>
+    <attr name="popupBgShape" format="reference"/>
     <attr name="popupBgCornerRadius" format="dimension"/>
     <!-- This attr is only ever set to 0 to work around an issue in shape drawables where hardcoded
          or @dimen radius values are ignored when used in combination with attrs. -->

@@ -154,7 +154,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
 
         <!-- Popup attributes. -->
-        <item name="popupBg">@drawable/popup_bg_24dp</item>
+        <item name="popupBgShadow">@drawable/popup_bg_shadow_24dp</item>
+        <item name="popupBgShape">@drawable/popup_bg_shape_24dp</item>
         <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_24dp</item>
         <item name="zeroRadius">0dp</item>
 
@@ -363,7 +364,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="textLargeLeading">@dimen/text_size_large_leading_desktop</item>
 
         <!-- Popup attributes. -->
-        <item name="popupBg">@drawable/popup_bg_16dp</item>
+        <item name="popupBgShadow">@drawable/popup_bg_shadow_16dp</item>
+        <item name="popupBgShape">@drawable/popup_bg_shape_16dp</item>
         <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_16dp</item>
 
         <!-- List item dimensions. -->

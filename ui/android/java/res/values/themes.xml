@@ -22,7 +22,8 @@ found in the LICENSE file.
         <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
 
         <!-- Popup attributes. -->
-        <item name="popupBg">@drawable/popup_bg_24dp</item>
+        <item name="popupBgShadow">@drawable/popup_bg_24dp</item>
+        <item name="popupBgShape">@drawable/popup_bg_shape_24dp_baseline</item>
         <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_24dp</item>
         <item name="zeroRadius">0dp</item>
 

@@ -94,7 +94,7 @@ class DropdownPopupWindowImpl
         rectProvider.setIncludePadding(true);
         TypedValue typedValue = new TypedValue();
         int bgResId =
-                context.getTheme().resolveAttribute(R.attr.popupBg, typedValue, true)
+                context.getTheme().resolveAttribute(R.attr.popupBgShadow, typedValue, true)
                         ? typedValue.resourceId
                         : R.drawable.menu_bg_baseline;
         mBackground = assumeNonNull(AppCompatResources.getDrawable(context, bgResId));
