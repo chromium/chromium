@@ -77,7 +77,7 @@ public class UnsyncedSuggestionsListAnimation
 
     private long getDuration() {
         if (sAnimationsDisabledForTesting) return 0;
-        if (OmniboxCapabilities.isDesktopPlatform()
+        if (!OmniboxCapabilities.areAnimationsEnabled()
                 && !mUsePopoverAnimationSupplier.getAsBoolean()) {
             return 0;
         }

@@ -103,6 +103,11 @@ public class OmniboxCapabilities {
         return DeviceInfo.isDesktop();
     }
 
+    /** Returns whether animations are enabled for Omnibox (disabled on desktop platforms). */
+    public static boolean areAnimationsEnabled() {
+        return !isDesktopPlatform();
+    }
+
     /** Modifies the output of {@link #isDesktopPlatform()} for testing. */
     public static void setIsDesktopPlatformForTesting(Boolean isDesktopPlatform) {
         sIsDesktopPlatformForTesting = isDesktopPlatform;

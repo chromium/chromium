@@ -2037,7 +2037,7 @@ class LocationBarMediator
 
     private void updateShouldAnimateIconChanges() {
         boolean shouldAnimate;
-        if (OmniboxCapabilities.isDesktopPlatform()) {
+        if (!OmniboxCapabilities.areAnimationsEnabled()) {
             shouldAnimate = false;
         } else if (mIsTablet) {
             shouldAnimate = isUrlBarFocused();
