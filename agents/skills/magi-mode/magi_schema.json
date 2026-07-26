@@ -296,6 +296,10 @@
         },
         "refactoring_meta": {
           "$ref": "#/definitions/RefactoringMeta"
+        },
+        "routing_overlay": {
+          "type": "string",
+          "description": "Optional path to an internal routing overlay file (e.g., in google3) to merge with ROUTING.md."
         }
       },
       "required": [

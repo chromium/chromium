@@ -19,6 +19,12 @@
      definition) to perform an exhaustive diff audit. The subagent's report MUST
      be saved to the configured temporary directory and presented to the user
      for verification.
+4. **Internal Scanners (G3 Overlay):** If `project.magi.json#routing_overlay` is
+   specified and the Orchestrator is running in a G3-capable environment, it
+   MUST check for the overlay file at the resolved path. If present and
+   readable, the Orchestrator MUST parse it and merge its definitions with the
+   public `ROUTING.md`. If not present or not running in G3, it MUST be silently
+   ignored.
 
 ## Step 2: Consolidate (The Orchestrator / Consolidation)
 

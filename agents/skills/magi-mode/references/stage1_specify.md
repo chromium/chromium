@@ -74,7 +74,11 @@
 6. **Refactoring Metadata:** If `task_type` is `REFACTORING`, Scoping MUST
    populate `refactoring_meta` in `project.magi.json` with the `original_commit`
    and `file_mappings` to trace code movement.
-7. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](../EXAMPLES.md)
+7. **Routing Overlay:** If the project requires internal scanners (e.g., in
+   Google3), Scoping SHOULD populate `routing_overlay` in `project.magi.json`
+   with the G3 routing path (e.g.,
+   `google3/chrome/remoting/skills/magi_mode/ROUTING_CHROME.md`).
+8. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](../EXAMPLES.md)
    for a full example. *Tooling Selection:* The combination of `repo_type`,
    `vcs`, and `harness` in the `environment` block determines the exact build,
    test, and upload commands used by the agents.
