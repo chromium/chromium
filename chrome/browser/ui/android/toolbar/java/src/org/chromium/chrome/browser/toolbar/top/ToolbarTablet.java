@@ -114,6 +114,7 @@ public class ToolbarTablet extends ToolbarLayout {
     private boolean mShouldShowGlicButton;
     private boolean mHasSpaceToShowGlicButton = true;
     private View.@Nullable OnClickListener mGlicClickListener;
+    private View.@Nullable OnLongClickListener mGlicLongClickListener;
 
     private final @Nullable ToolbarWidthConsumer[] mToolbarWidthConsumers =
             new ToolbarWidthConsumer[ToolbarComponentId.COUNT];
@@ -722,10 +723,14 @@ public class ToolbarTablet extends ToolbarLayout {
      *
      * @param visible Whether the button should be visible or not.
      * @param clickListener Callback to invoke when the Glic action button is clicked.
+     * @param longClickListener Callback to invoke when the Glic action button is long-pressed or
+     *     right-clicked.
      */
-    public void setGlicActionChipVisibility(boolean visible, OnClickListener clickListener) {
+    public void setGlicActionChipVisibility(
+            boolean visible, OnClickListener clickListener, OnLongClickListener longClickListener) {
         mShouldShowGlicButton = visible;
         mGlicClickListener = clickListener;
+        mGlicLongClickListener = longClickListener;
         updateGlicActionChipVisibilityInternal();
     }
 
@@ -745,7 +750,13 @@ public class ToolbarTablet extends ToolbarLayout {
                         getContext().getString(R.string.glic_tab_strip_button_tooltip));
                 ImageViewCompat.setImageTintList(mGlicActionChip, getButtonTintList());
             }
-            assumeNonNull(mGlicActionChip).setVisibility(VISIBLE);
+            ImageButton actionChip = assumeNonNull(mGlicActionChip);
+            actionChip.setVisibility(VISIBLE);
+            View.OnLongClickListener longClickListener = assumeNonNull(mGlicLongClickListener);
+            // These listeners are for Vertical Tabs only.
+            actionChip.setOnLongClickListener(longClickListener);
+            // Right-click has the same behavior as long-press.
+            actionChip.setOnContextClickListener(longClickListener::onLongClick);
         } else {
             if (mGlicActionChip != null) {
                 mGlicActionChip.setVisibility(GONE);

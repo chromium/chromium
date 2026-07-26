@@ -99,6 +99,7 @@ import java.util.function.Supplier;
 public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private static final int UNSPECIFIED_TOOLBAR_OFFSET = -1234;
     private static final String TAG = "TopToolbarCoord";
+    private View.@Nullable OnLongClickListener mGlicLongClickListener;
 
     /** Observes toolbar color or expanding state change. */
     public interface ToolbarColorObserver {
@@ -1208,16 +1209,21 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      *
      * @param isVerticalTabsActiveSupplier Supplier of whether vertical tab is active.
      * @param isGlicPinnedSupplier Supplier of whether glic is pinned.
+     * @param incognitoStateProvider Provider for observing incognito state changes.
+     * @param glicLongClickListener Listener invoked when the Glic action chip is long-pressed or
+     *     right-clicked.
      */
     public void observeGlicVerticalTabs(
             NonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier,
             NonNullObservableSupplier<Boolean> isGlicPinnedSupplier,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            View.OnLongClickListener glicLongClickListener) {
         if (!(mToolbarLayout instanceof ToolbarTablet tabletLayout)) return;
 
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
         mIsGlicPinnedSupplier = isGlicPinnedSupplier;
         mIncognitoStateProvider = incognitoStateProvider;
+        mGlicLongClickListener = glicLongClickListener;
 
         mGlicVerticalTabsObserver = this::onGlicVisibilityNeedsUpdate;
         mIncognitoStateObserver = this::onGlicVisibilityNeedsUpdate;
@@ -1255,7 +1261,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private void onGlicVisibilityNeedsUpdate(boolean state) {
         if (mToolbarLayout instanceof ToolbarTablet tabletLayout) {
             tabletLayout.setGlicActionChipVisibility(
-                    shouldShowGlicToolbarButton(), v -> assumeNonNull(mToggleGlicCallback).run());
+                    shouldShowGlicToolbarButton(),
+                    v -> assumeNonNull(mToggleGlicCallback).run(),
+                    assumeNonNull(mGlicLongClickListener));
         }
     }
 

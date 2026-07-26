@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.compositor.overlays.strip.GlicButtonContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper.LeadingButtonDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
@@ -308,6 +309,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -354,6 +356,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable PrivacySandbox3pcdRollbackMessageController
             mPrivacySandbox3pcdRollbackMessageController;
     private @Nullable GestureUserEducationIphController mGestureUserEducationIphController;
+    private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<@Nullable Tab> mSendToBackground;
@@ -964,6 +967,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mGlicUiCoordinator != null) {
             mGlicUiCoordinator.destroy();
             mGlicUiCoordinator = null;
+        }
+
+        if (mGlicButtonContextMenuCoordinator != null) {
+            mGlicButtonContextMenuCoordinator.dismiss();
+            mGlicButtonContextMenuCoordinator = null;
         }
 
         if (mGestureUserEducationIphController != null) {
@@ -2438,7 +2446,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         var toolbar = assumeNonNull(getToolbarManagerSupplier().get()).getTopToolbarCoordinator();
         toolbar.observeGlicVerticalTabs(
-                mIsVerticalTabsActiveSupplier, mIsGlicPinnedSupplier, mIncognitoStateProvider);
+                mIsVerticalTabsActiveSupplier,
+                mIsGlicPinnedSupplier,
+                mIncognitoStateProvider,
+                anchorView -> {
+                    ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
+
+                    if (mGlicButtonContextMenuCoordinator == null) {
+                        mGlicButtonContextMenuCoordinator =
+                                new GlicButtonContextMenuCoordinator(mActivity);
+                    }
+
+                    // Build and show the "Unpin" context menu for the VT toolbar Gemini button.
+                    mGlicButtonContextMenuCoordinator.showMenu(
+                            rectProvider,
+                            mActivity,
+                            profile.getOriginalProfile(),
+                            /* menuWidth= */ 0f);
+                    return true;
+                });
     }
 
     /** Toggle the visibility between horizontal tab strip and vertical tab list. */

@@ -10,12 +10,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.core.app.ApplicationProvider;
@@ -24,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -124,6 +127,7 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private View mGlicActionChipView;
     @Mock private Resources mResources;
     @Mock private CoordinatorLayout.LayoutParams mCoordinatorLayoutParams;
+    @Mock private View.OnLongClickListener mGlicLongClickListener;
 
     private final MonotonicObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier =
             ObservableSuppliers.createMonotonic();
@@ -226,37 +230,48 @@ public class TopToolbarCoordinatorUnitTest {
 
         InOrder inOrder = Mockito.inOrder(mToolbarLayout);
         mCoordinator.observeGlicVerticalTabs(
-                isVerticalTabActiveSupplier, isGlicPinnedSupplier, incognitoStateProvider);
+                isVerticalTabActiveSupplier,
+                isGlicPinnedSupplier,
+                incognitoStateProvider,
+                mGlicLongClickListener);
 
         // 1. Initial state (both false) -> Glic chip hidden.
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         // 2. VT active = true, Glic pinned = false -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(true);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         // 3. VT active = true, Glic pinned = true -> Glic chip visible.
         isGlicPinnedSupplier.set(true);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(true), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(true), any(), eq(mGlicLongClickListener));
 
         // 4. VT active = false, Glic pinned = true -> Glic chip hidden.
         isVerticalTabActiveSupplier.set(false);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         // 5. Repeat the combinations above with Incognito = true. Glic should remain hidden.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
 
         incognitoStateProvider.setIncognitoStateForTesting(true);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         isVerticalTabActiveSupplier.set(true);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         isGlicPinnedSupplier.set(false);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
 
         isVerticalTabActiveSupplier.set(false);
-        inOrder.verify(mToolbarLayout).setGlicActionChipVisibility(eq(false), any());
+        inOrder.verify(mToolbarLayout)
+                .setGlicActionChipVisibility(eq(false), any(), eq(mGlicLongClickListener));
     }
 
     @Test
@@ -267,7 +282,10 @@ public class TopToolbarCoordinatorUnitTest {
                 ObservableSuppliers.createNonNull(false);
         IncognitoStateProvider incognitoStateProvider = new IncognitoStateProvider();
         mCoordinator.observeGlicVerticalTabs(
-                isVerticalTabActiveSupplier, isGlicPinnedSupplier, incognitoStateProvider);
+                isVerticalTabActiveSupplier,
+                isGlicPinnedSupplier,
+                incognitoStateProvider,
+                mGlicLongClickListener);
         assertEquals(1, isVerticalTabActiveSupplier.getObserverCount());
         assertEquals(1, isGlicPinnedSupplier.getObserverCount());
         assertEquals(1, incognitoStateProvider.getObserverCountForTesting());
@@ -299,7 +317,10 @@ public class TopToolbarCoordinatorUnitTest {
         incognitoStateProvider.setTabModelSelector(mTabModelSelector);
 
         mCoordinator.observeGlicVerticalTabs(
-                isVerticalTabActiveSupplier, isGlicPinnedSupplier, incognitoStateProvider);
+                isVerticalTabActiveSupplier,
+                isGlicPinnedSupplier,
+                incognitoStateProvider,
+                mGlicLongClickListener);
 
         assertFalse(mCoordinator.shouldShowGlicToolbarButton());
 
@@ -310,6 +331,19 @@ public class TopToolbarCoordinatorUnitTest {
         // VerticalTabs active = true, Glic pinned = true -> true.
         isGlicPinnedSupplier.set(true);
         assertTrue(mCoordinator.shouldShowGlicToolbarButton());
+
+        // Verify long-click listener was passed to mToolbarLayout and forwards correctly when
+        // triggered.
+        ArgumentCaptor<OnLongClickListener> captor =
+                ArgumentCaptor.forClass(View.OnLongClickListener.class);
+        // When isGlicPinnedSupplier.set(true) is called, #onGlicVisibilityNeedsUpdate ->
+        // #setGlicActionChipVisibility gets triggered.
+        verify(mToolbarLayout).setGlicActionChipVisibility(eq(true), any(), captor.capture());
+        View mockView = mock(View.class);
+        // Simulate a long-press with the captured listener object.
+        captor.getValue().onLongClick(mockView);
+        // Verify that the long-press event was delegated to mGlicLongClickListener.
+        verify(mGlicLongClickListener).onLongClick(mockView);
 
         // In incognito mode -> false.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);

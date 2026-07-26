@@ -65,6 +65,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -1354,7 +1355,7 @@ public final class ToolbarTabletUnitTest {
         ToolbarWidthConsumer consumer = mToolbarTablet.getGlicWidthConsumerForTesting();
         assertNotNull(consumer);
 
-        mToolbarTablet.setGlicActionChipVisibility(true, v -> {});
+        mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
         View glicChip = mToolbarTablet.getGlicActionChipForTesting();
         assertNotNull(glicChip);
         assertEquals(View.VISIBLE, glicChip.getVisibility());
@@ -1379,7 +1380,7 @@ public final class ToolbarTabletUnitTest {
         assertEquals(View.GONE, glicChip.getVisibility());
 
         // Re-triggering visibility update while no space is available must keep chip GONE.
-        mToolbarTablet.setGlicActionChipVisibility(true, v -> {});
+        mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
         assertEquals(View.GONE, glicChip.getVisibility());
     }
 
@@ -1413,6 +1414,35 @@ public final class ToolbarTabletUnitTest {
 
         mToolbarTablet.setIsBottomMostTopControlsLayer(true);
         assertEquals(View.VISIBLE, mToolbarHairline.getVisibility());
+    }
+
+    @Test
+    public void testSetGlicActionChipVisibility_ListenersAndVisibility() {
+        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
+        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
+        when(mockLongClickListener.onLongClick(any())).thenReturn(true);
+
+        // Show the action chip and set listeners.
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ true, mockClickListener, mockLongClickListener);
+
+        View actionChip = mToolbarTablet.getGlicActionChipView();
+        assertNotNull("Glic action chip should be inflated and non-null.", actionChip);
+        assertEquals(
+                "Glic action chip should be visible.", View.VISIBLE, actionChip.getVisibility());
+
+        // Perform long click and verify longClickListener is called.
+        actionChip.performLongClick();
+        verify(mockLongClickListener).onLongClick(actionChip);
+
+        // Perform context click (right-click) and verify longClickListener is called again.
+        actionChip.performContextClick();
+        verify(mockLongClickListener, Mockito.times(2)).onLongClick(actionChip);
+
+        // Hide the action chip and verify visibility.
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ false, mockClickListener, mockLongClickListener);
+        assertEquals("Glic action chip should be hidden.", View.GONE, actionChip.getVisibility());
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
