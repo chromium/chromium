@@ -141,43 +141,27 @@ namespace remoting {
 using protocol::ActionRequest;
 
 PeerSessionImpl::PeerSessionImpl(
-    PeerSession::EventHandler* event_handler,
-    const std::string& client_jid,
     std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     DesktopEnvironmentFactory* desktop_environment_factory,
-    const DesktopEnvironmentOptions& desktop_environment_options,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions)
-    : PeerSessionImpl(event_handler,
-                      client_jid,
-                      std::make_unique<protocol::WebrtcConnectionToClient>(
+    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    : PeerSessionImpl(std::make_unique<protocol::WebrtcConnectionToClient>(
                           std::move(ice_config_fetcher),
-                          audio_task_runner),
+                          std::move(audio_task_runner)),
                       desktop_environment_factory,
-                      desktop_environment_options,
-                      pairing_registry,
-                      extensions) {}
+                      std::move(pairing_registry)) {}
 
 PeerSessionImpl::PeerSessionImpl(
-    PeerSession::EventHandler* event_handler,
-    const std::string& client_jid,
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
-    const DesktopEnvironmentOptions& desktop_environment_options,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions)
-    : event_handler_(event_handler),
-      desktop_environment_factory_(desktop_environment_factory),
-      desktop_environment_options_(desktop_environment_options),
+    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    : desktop_environment_factory_(desktop_environment_factory),
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
       client_clipboard_factory_(&client_clipboard_filter_),
       input_pipeline_(&coordinate_converter_, this),
       pairing_registry_(std::move(pairing_registry)),
-      connection_(std::move(connection)),
-      client_jid_(client_jid),
-      extensions_(extensions) {
+      connection_(std::move(connection)) {
   connection_->SetEventHandler(this);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -187,9 +171,21 @@ PeerSessionImpl::PeerSessionImpl(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
-void PeerSessionImpl::Start(const SessionPolicies& session_policies,
-                            const SessionOptions& session_options) {
+void PeerSessionImpl::Start(
+    PeerSession::EventHandler* event_handler,
+    std::string_view client_jid,
+    const DesktopEnvironmentOptions& desktop_environment_options,
+    const std::vector<HostExtension*>& extensions,
+    const SessionPolicies& session_policies,
+    const SessionOptions& session_options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!event_handler_) << "Start() should only be called once.";
+  CHECK(event_handler);
+  CHECK(!client_jid.empty());
+  event_handler_ = event_handler;
+  client_jid_ = std::string(client_jid);
+  desktop_environment_options_ = desktop_environment_options;
+  extensions_.assign(extensions.begin(), extensions.end());
   effective_policies_ = session_policies;
 
   base::TimeDelta max_duration =
@@ -1562,6 +1558,30 @@ void PeerSessionImpl::SetComposeEnabledOnVideoStreams(bool enabled) {
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetComposeEnabled(enabled);
   }
+}
+
+PeerSessionImplFactory::PeerSessionImplFactory(
+    DesktopEnvironmentFactory* desktop_environment_factory,
+    GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
+    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    : desktop_environment_factory_(desktop_environment_factory),
+      get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)),
+      audio_task_runner_(std::move(audio_task_runner)),
+      pairing_registry_(std::move(pairing_registry)) {}
+
+PeerSessionImplFactory::~PeerSessionImplFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+std::unique_ptr<PeerSession> PeerSessionImplFactory::Create() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(get_ice_config_fetcher_cb_) << "Missing Ice Config Fetcher callback.";
+  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher =
+      get_ice_config_fetcher_cb_.Run();
+  return std::make_unique<PeerSessionImpl>(
+      std::move(ice_config_fetcher), audio_task_runner_,
+      desktop_environment_factory_, pairing_registry_);
 }
 
 }  // namespace remoting

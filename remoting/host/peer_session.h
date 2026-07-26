@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/base/source_location.h"
@@ -21,6 +22,8 @@ class Transport;
 struct TransportRoute;
 }  // namespace protocol
 
+class DesktopEnvironmentOptions;
+class HostExtension;
 class SessionOptions;
 struct SessionPolicies;
 
@@ -51,9 +54,17 @@ class PeerSession {
 
   virtual ~PeerSession() = default;
 
-  // Starts the session with the specified policies and options.
-  virtual void Start(const SessionPolicies& session_policies,
-                     const SessionOptions& session_options) = 0;
+  // Starts the session with the specified `event_handler`, `client_jid`,
+  // `desktop_environment_options`, `extensions`, `session_policies`, and
+  // `session_options`.
+  // `event_handler` and all elements of `extensions` must outlive this object.
+  virtual void Start(
+      EventHandler* event_handler,
+      std::string_view client_jid,
+      const DesktopEnvironmentOptions& desktop_environment_options,
+      const std::vector<HostExtension*>& extensions,
+      const SessionPolicies& session_policies,
+      const SessionOptions& session_options) = 0;
 
   // Disconnects the peer session and tears down transport and desktop
   // resources.
@@ -66,6 +77,15 @@ class PeerSession {
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver) = 0;
 
   virtual protocol::Transport* transport() const = 0;
+};
+
+// Factory interface for creating `PeerSession` instances.
+class PeerSessionFactory {
+ public:
+  virtual ~PeerSessionFactory() = default;
+
+  // Creates a new `PeerSession` instance.
+  virtual std::unique_ptr<PeerSession> Create() = 0;
 };
 
 }  // namespace remoting

@@ -81,19 +81,15 @@ const net::BackoffEntry::Policy kDefaultBackoffPolicy = {
 }  // namespace
 
 ChromotingHost::ChromotingHost(
-    DesktopEnvironmentFactory* desktop_environment_factory,
+    std::unique_ptr<PeerSessionFactory> peer_session_factory,
     std::unique_ptr<protocol::SessionManager> session_manager,
     std::unique_ptr<protocol::SessionManager> secondary_session_manager,
-    GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     const DesktopEnvironmentOptions& options,
     const SessionPoliciesValidator& per_session_policies_validator,
     const LocalSessionPoliciesProvider* local_session_policies_provider)
-    : desktop_environment_factory_(desktop_environment_factory),
-      session_manager_(std::move(session_manager)),
+    : session_manager_(std::move(session_manager)),
       secondary_session_manager_(std::move(secondary_session_manager)),
-      get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)),
-      audio_task_runner_(audio_task_runner),
+      peer_session_factory_(std::move(peer_session_factory)),
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
       desktop_environment_options_(options),
@@ -336,13 +332,6 @@ void ChromotingHost::OnIncomingSession(
 
   HOST_LOG << "Client connected: " << session->jid();
 
-  LOG_IF(WARNING, !get_ice_config_fetcher_cb_)
-      << "Missing Ice Config Fetcher callback.";
-  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher;
-  if (get_ice_config_fetcher_cb_) {
-    ice_config_fetcher = get_ice_config_fetcher_cb_.Run();
-  }
-
   // Create a ClientSession object.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;
   for (const auto& extension : extensions_) {
@@ -352,12 +341,10 @@ void ChromotingHost::OnIncomingSession(
   std::string client_id;
   SplitSignalingIdResource(session->jid(), &client_id, nullptr);
   clients_.emplace(
-      client_id,
-      std::make_unique<ClientSession>(
-          this, base::WrapUnique(session), std::move(ice_config_fetcher),
-          audio_task_runner_, desktop_environment_factory_,
-          desktop_environment_options_, pairing_registry_, extension_ptrs,
-          local_session_policies_provider_));
+      client_id, std::make_unique<ClientSession>(
+                     this, base::WrapUnique(session),
+                     peer_session_factory_.get(), desktop_environment_options_,
+                     extension_ptrs, local_session_policies_provider_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {

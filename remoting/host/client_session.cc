@@ -24,7 +24,6 @@
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/host_extension.h"
-#include "remoting/host/peer_session_impl.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/errors.h"
@@ -36,20 +35,14 @@ namespace remoting {
 ClientSession::ClientSession(
     EventHandler* event_handler,
     std::unique_ptr<protocol::Session> session,
-    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-    DesktopEnvironmentFactory* desktop_environment_factory,
+    PeerSessionFactory* peer_session_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry,
     const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
     const LocalSessionPoliciesProvider* local_session_policies_provider)
     : event_handler_(event_handler),
-      desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
-      pairing_registry_(std::move(pairing_registry)),
       extensions_(extensions),
-      ice_config_fetcher_(std::move(ice_config_fetcher)),
-      audio_task_runner_(audio_task_runner),
+      peer_session_factory_(peer_session_factory),
       session_(std::move(session)),
       client_jid_(session_->jid()),
       local_session_policies_provider_(local_session_policies_provider) {
@@ -153,18 +146,15 @@ void ClientSession::OnConnectionAuthenticated(
       desktop_environment_options_;
   desktop_environment_options.ApplySessionOptions(session_options);
 
-  if (peer_session_for_tests_) {
-    peer_session_ = std::move(peer_session_for_tests_);
-  } else {
-    peer_session_ = std::make_unique<PeerSessionImpl>(
-        this, client_jid_, std::move(ice_config_fetcher_), audio_task_runner_,
-        desktop_environment_factory_, desktop_environment_options,
-        pairing_registry_, extensions_);
-  }
+  peer_session_ = peer_session_factory_->Create();
 
   session_->SetTransport(peer_session_->transport());
 
-  peer_session_->Start(effective_policies_, session_options);
+  std::vector<HostExtension*> extension_ptrs;
+  extension_ptrs.assign(extensions_.begin(), extensions_.end());
+
+  peer_session_->Start(this, client_jid_, desktop_environment_options,
+                       extension_ptrs, effective_policies_, session_options);
 
   for (auto& receiver : pending_session_services_receivers_) {
     peer_session_->OnSessionServicesClientConnected(std::move(receiver));

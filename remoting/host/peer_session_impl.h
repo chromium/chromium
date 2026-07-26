@@ -91,27 +91,16 @@ class PeerSessionImpl : public PeerSession,
                         public protocol::MouseCursorMonitor::Callback,
                         public mojom::ChromotingSessionServices {
  public:
-  // `event_handler` and `desktop_environment_factory` must outlive `this`.
-  // All `HostExtension`s in `extensions` must outlive `this`.
+  // `desktop_environment_factory` must outlive `this`.
   PeerSessionImpl(
-      PeerSession::EventHandler* event_handler,
-      const std::string& client_jid,
       std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       DesktopEnvironmentFactory* desktop_environment_factory,
-      const DesktopEnvironmentOptions& desktop_environment_options,
-      scoped_refptr<protocol::PairingRegistry> pairing_registry,
-      const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
-          extensions);
+      scoped_refptr<protocol::PairingRegistry> pairing_registry);
 
-  PeerSessionImpl(PeerSession::EventHandler* event_handler,
-                  const std::string& client_jid,
-                  std::unique_ptr<protocol::ConnectionToClient> connection,
+  PeerSessionImpl(std::unique_ptr<protocol::ConnectionToClient> connection,
                   DesktopEnvironmentFactory* desktop_environment_factory,
-                  const DesktopEnvironmentOptions& desktop_environment_options,
-                  scoped_refptr<protocol::PairingRegistry> pairing_registry,
-                  const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
-                      extensions);
+                  scoped_refptr<protocol::PairingRegistry> pairing_registry);
 
   PeerSessionImpl(const PeerSessionImpl&) = delete;
   PeerSessionImpl& operator=(const PeerSessionImpl&) = delete;
@@ -119,7 +108,11 @@ class PeerSessionImpl : public PeerSession,
   ~PeerSessionImpl() override;
 
   // PeerSession interface.
-  void Start(const SessionPolicies& session_policies,
+  void Start(PeerSession::EventHandler* event_handler,
+             std::string_view client_jid,
+             const DesktopEnvironmentOptions& desktop_environment_options,
+             const std::vector<HostExtension*>& extensions,
+             const SessionPolicies& session_policies,
              const SessionOptions& session_options) override;
 
   HostExtensionSessionManager* extension_manager_for_tests() const {
@@ -433,6 +426,36 @@ class PeerSessionImpl : public PeerSession,
   // Used to disable callbacks to `this` once DisconnectSession() has been
   // called.
   base::WeakPtrFactory<PeerSessionImpl> weak_factory_{this};
+};
+
+// Factory for creating `PeerSessionImpl` instances.
+class PeerSessionImplFactory : public PeerSessionFactory {
+ public:
+  using GetIceConfigFetcherCallback =
+      base::RepeatingCallback<std::unique_ptr<protocol::IceConfigFetcher>()>;
+
+  PeerSessionImplFactory(
+      DesktopEnvironmentFactory* desktop_environment_factory,
+      GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
+      scoped_refptr<protocol::PairingRegistry> pairing_registry = nullptr);
+  PeerSessionImplFactory(const PeerSessionImplFactory&) = delete;
+  PeerSessionImplFactory& operator=(const PeerSessionImplFactory&) = delete;
+  ~PeerSessionImplFactory() override;
+
+  std::unique_ptr<PeerSession> Create() override;
+
+  void set_pairing_registry(
+      scoped_refptr<protocol::PairingRegistry> pairing_registry) {
+    pairing_registry_ = std::move(pairing_registry);
+  }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
+  GetIceConfigFetcherCallback get_ice_config_fetcher_cb_;
+  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
+  scoped_refptr<protocol::PairingRegistry> pairing_registry_;
 };
 
 }  // namespace remoting

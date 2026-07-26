@@ -52,6 +52,7 @@
 #include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/host/passthrough_register_support_host_request.h"
+#include "remoting/host/peer_session_impl.h"
 #include "remoting/host/session_policies_from_dict.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
@@ -417,12 +418,14 @@ void It2MeHost::ConnectOnNetworkThread(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 
+  auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
+      desktop_environment_factory_.get(), std::move(get_ice_config_fetcher_cb),
+      host_context_->audio_task_runner());
+
   // Create the host.
   host_ = std::make_unique<ChromotingHost>(
-      desktop_environment_factory_.get(), std::move(session_manager),
-      /* secondary_session_manager */ nullptr,
-      std::move(get_ice_config_fetcher_cb), host_context_->audio_task_runner(),
-      options,
+      std::move(peer_session_factory), std::move(session_manager),
+      /* secondary_session_manager */ nullptr, options,
       base::BindRepeating(&It2MeHost::OnEffectiveSessionPoliciesReceived,
                           base::Unretained(this)),
       local_session_policies_provider_.get());

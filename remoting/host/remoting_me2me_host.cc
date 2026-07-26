@@ -106,6 +106,7 @@
 #endif
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
+#include "remoting/host/peer_session_impl.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
@@ -538,10 +539,11 @@ class HostProcess : public ConfigWatcher::Delegate,
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
 
-  // Only set if |is_corp_host_| is true.
+  // Only set if `is_corp_host_` is true.
   std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
+  raw_ptr<PeerSessionImplFactory> peer_session_factory_ = nullptr;
 
   // Used to keep this HostProcess alive until it is shutdown.
   scoped_refptr<HostProcess> self_;
@@ -982,7 +984,9 @@ void HostProcess::CreateAuthenticatorFactory() {
 
     auth_config->AddPairingAuth(pairing_registry);
     auth_config->AddSharedSecretAuth(pin_hash_);
-    host_->set_pairing_registry(pairing_registry);
+    if (peer_session_factory_) {
+      peer_session_factory_->set_pairing_registry(pairing_registry);
+    }
   }
   HOST_LOG << "Host's supported authentication methods: ";
   for (const auto& method : auth_config->GetSupportedMethods()) {
@@ -1962,7 +1966,7 @@ void HostProcess::StartHost() {
 
   // Create the appropriate API service client (corp, cloud, or me2me) for the
   // IceConfigFetcher.
-  ChromotingHost::GetIceConfigFetcherCallback get_ice_config_fetcher_cb;
+  PeerSessionImplFactory::GetIceConfigFetcherCallback get_ice_config_fetcher_cb;
   if (is_cloud_host_) {
     get_ice_config_fetcher_cb = base::BindRepeating(
         [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -2030,10 +2034,14 @@ void HostProcess::StartHost() {
       ->set_allow_directx_capturer(true);
 #endif
 
+  auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
+      desktop_environment_factory_.get(), std::move(get_ice_config_fetcher_cb),
+      context_->audio_task_runner());
+  peer_session_factory_ = peer_session_factory.get();
+
   host_ = std::make_unique<ChromotingHost>(
-      desktop_environment_factory_.get(), std::move(session_manager),
-      std::move(corp_session_manager), std::move(get_ice_config_fetcher_cb),
-      context_->audio_task_runner(), desktop_environment_options_,
+      std::move(peer_session_factory), std::move(session_manager),
+      std::move(corp_session_manager), desktop_environment_options_,
       base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
                           base::Unretained(this)),
       &local_session_policies_provider_);
@@ -2141,6 +2149,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
          (state_ == HOST_SUSPENDED));
 
   // Shut down everything except the HostSignalingManager.
+  peer_session_factory_ = nullptr;
   host_.reset();
   host_event_logger_.reset();
   power_save_blocker_.reset();

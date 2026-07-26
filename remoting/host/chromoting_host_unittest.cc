@@ -64,6 +64,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::AtMost;
+using testing::ByMove;
 using testing::DeleteArg;
 using testing::DoAll;
 using testing::Expectation;
@@ -94,12 +95,18 @@ class ChromotingHostTest : public testing::Test {
             base::SingleThreadTaskRunner::GetCurrentDefault());
     session_manager_ = new protocol::MockSessionManager();
 
-    host_ = std::make_unique<ChromotingHost>(
+    auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
         desktop_environment_factory_.get(),
+        /*get_ice_config_fetcher_cb=*/
+        base::BindRepeating(
+            []() -> std::unique_ptr<protocol::IceConfigFetcher> {
+              return nullptr;
+            }),
+        task_runner_);
+    host_ = std::make_unique<ChromotingHost>(
+        std::move(peer_session_factory),
         base::WrapUnique(session_manager_.get()),
         /* secondary_session_manager */ nullptr,
-        /*get_ice_config_fetcher_cb=*/base::NullCallback(),
-        task_runner_,  // Audio
         DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
         &local_session_policies_provider_);
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
@@ -144,19 +151,20 @@ class ChromotingHostTest : public testing::Test {
         std::move((connection_index == 0) ? connection1_ : connection2_);
     std::unique_ptr<protocol::Session> session =
         (connection_index == 0) ? std::move(session1_) : std::move(session2_);
+    auto mock_factory = std::make_unique<MockPeerSessionFactory>();
+    EXPECT_CALL(*mock_factory, Create())
+        .Times(AtMost(1))
+        .WillOnce(Return(ByMove(std::make_unique<PeerSessionImpl>(
+            std::move(connection), desktop_environment_factory_.get(),
+            nullptr))));
+    MockPeerSessionFactory* mock_factory_ptr = mock_factory.get();
+    mock_peer_session_factories_.push_back(std::move(mock_factory));
+
     auto client = base::WrapUnique(new ClientSession(
-        host_.get(), std::move(session), /* ice_config_fetcher= */ nullptr,
-        /* audio_task_runner= */ nullptr, desktop_environment_factory_.get(),
-        DesktopEnvironmentOptions::CreateDefault(), nullptr,
+        host_.get(), std::move(session), mock_factory_ptr,
+        DesktopEnvironmentOptions::CreateDefault(),
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
         &local_session_policies_provider_));
-    auto peer_session = std::make_unique<PeerSessionImpl>(
-        client.get(), get_session_jid(connection_index), std::move(connection),
-        desktop_environment_factory_.get(),
-        DesktopEnvironmentOptions::CreateDefault(), nullptr,
-        std::vector<raw_ptr<HostExtension, VectorExperimental>>());
-    PeerSessionImpl* peer_session_impl = peer_session.get();
-    client->set_peer_session_for_testing(std::move(peer_session));
     ClientSession* client_ptr = client.get();
 
     get_client(connection_index) = client_ptr;
@@ -174,7 +182,8 @@ class ChromotingHostTest : public testing::Test {
       }
       client_ptr->OnConnectionAuthenticated(nullptr);
       if (!reject) {
-        peer_session_impl->OnConnectionChannelsConnected();
+        static_cast<PeerSessionImpl*>(client_ptr->peer_session())
+            ->OnConnectionChannelsConnected();
       }
     } else {
       PrepareForClientDisconnection(connection_index);
@@ -225,6 +234,7 @@ class ChromotingHostTest : public testing::Test {
     client2_ = nullptr;
     session2_ = nullptr;
     host_.reset();
+    mock_peer_session_factories_.clear();
     desktop_environment_factory_.reset();
   }
 
@@ -323,6 +333,8 @@ class ChromotingHostTest : public testing::Test {
   std::string session_unowned_jid2_;
   raw_ptr<protocol::Session::EventHandler> session_unowned1_event_handler_;
   raw_ptr<protocol::Session::EventHandler> session_unowned2_event_handler_;
+  std::vector<std::unique_ptr<MockPeerSessionFactory>>
+      mock_peer_session_factories_;
 
   // Returns the cached client pointers client1_ or client2_.
   raw_ptr<ClientSession>& get_client(int connection_index) {
@@ -452,12 +464,16 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
   session_manager_ = new protocol::MockSessionManager();
   auto secondary_session_manager =
       std::make_unique<protocol::MockSessionManager>();
-  host_ = std::make_unique<ChromotingHost>(
+  auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
       desktop_environment_factory_.get(),
-      base::WrapUnique(session_manager_.get()),
+      /*get_ice_config_fetcher_cb=*/
+      base::BindRepeating([]() -> std::unique_ptr<protocol::IceConfigFetcher> {
+        return nullptr;
+      }),
+      task_runner_);
+  host_ = std::make_unique<ChromotingHost>(
+      std::move(peer_session_factory), base::WrapUnique(session_manager_.get()),
       std::move(secondary_session_manager),
-      /*get_ice_config_fetcher_cb=*/base::NullCallback(),
-      task_runner_,  // Audio
       DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
       &local_session_policies_provider_);
   host_->status_monitor()->AddStatusObserver(&host_status_observer_);

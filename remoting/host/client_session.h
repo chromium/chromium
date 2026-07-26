@@ -33,12 +33,7 @@
 
 namespace remoting {
 
-class DesktopEnvironmentFactory;
 class HostExtension;
-
-namespace protocol {
-class IceConfigFetcher;
-}  // namespace protocol
 
 // A ClientSession keeps a reference to a connection to a client, and maintains
 // per-client state.
@@ -82,16 +77,13 @@ class ClientSession : public protocol::Session::EventHandler,
     virtual ~EventHandler() {}
   };
 
-  // `event_handler` and `desktop_environment_factory` must outlive `this`.
+  // `event_handler` and `peer_session_factory` must outlive `this`.
   // All `HostExtension`s in `extensions` must outlive `this`.
   ClientSession(
       EventHandler* event_handler,
       std::unique_ptr<protocol::Session> session,
-      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-      DesktopEnvironmentFactory* desktop_environment_factory,
+      PeerSessionFactory* peer_session_factory,
       const DesktopEnvironmentOptions& desktop_environment_options,
-      scoped_refptr<protocol::PairingRegistry> pairing_registry,
       const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
       const LocalSessionPoliciesProvider* local_session_policies_provider);
 
@@ -121,10 +113,6 @@ class ClientSession : public protocol::Session::EventHandler,
   // protocol::Session::EventHandler interface.
   void OnSessionStateChange(protocol::Session::State state) override;
 
-  void set_peer_session_for_testing(std::unique_ptr<PeerSession> peer_session) {
-    peer_session_for_tests_ = std::move(peer_session);
-  }
-
   bool is_authenticated() const { return is_authenticated_; }
 
   bool channels_connected() const { return channels_connected_; }
@@ -144,14 +132,8 @@ class ClientSession : public protocol::Session::EventHandler,
 
   raw_ptr<EventHandler> event_handler_;
 
-  // Used to create a DesktopEnvironment instance for this session.
-  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
-
   // The DesktopEnvironmentOptions used to initialize DesktopEnvironment.
   DesktopEnvironmentOptions desktop_environment_options_;
-
-  // The pairing registry for PIN-less authentication.
-  scoped_refptr<protocol::PairingRegistry> pairing_registry_;
 
   // HostExtensions passed when creating the session.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
@@ -162,11 +144,8 @@ class ClientSession : public protocol::Session::EventHandler,
   // Set to true after all data channels have been connected.
   bool channels_connected_ = false;
 
-  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
-
-  std::unique_ptr<PeerSession> peer_session_for_tests_;
+  // Factory to create `PeerSession` objects.
+  raw_ptr<PeerSessionFactory> peer_session_factory_;
 
   // The signaling session.
   std::unique_ptr<protocol::Session> session_;

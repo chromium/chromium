@@ -40,6 +40,8 @@ using protocol::FakeSession;
 using protocol::MockClientStub;
 
 using testing::_;
+using testing::AtMost;
+using testing::ByMove;
 using testing::Return;
 
 class ClientSessionTest : public testing::Test {
@@ -86,12 +88,13 @@ class ClientSessionTest : public testing::Test {
   // ClientSession::EventHandler mock for use in tests.
   MockClientSessionEventHandler session_event_handler_;
 
+  MockPeerSessionFactory mock_peer_session_factory_;
+
   // Stubs returned to `client_session_` components by mock peer session.
   MockClientStub client_stub_;
   raw_ptr<MockPeerSession> mock_peer_session_ = nullptr;
 
   raw_ptr<protocol::FakeSession, DisableDanglingPtrDetection> session_;
-  std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
   DesktopEnvironmentOptions desktop_environment_options_;
 };
 
@@ -100,9 +103,6 @@ void ClientSessionTest::SetUp() {
   task_runner_ = new AutoThreadTaskRunner(
       task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
-  desktop_environment_factory_ =
-      std::make_unique<FakeDesktopEnvironmentFactory>(
-          task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
 
   initial_local_policies_.maximum_session_duration = base::Hours(10);
@@ -120,7 +120,6 @@ void ClientSessionTest::TearDown() {
     mock_peer_session_ = nullptr;
     client_session_.reset();
     session_ = nullptr;
-    desktop_environment_factory_.reset();
   }
 
   // Clear out `task_runner_` reference so the loop can quit, and run it until
@@ -134,12 +133,6 @@ void ClientSessionTest::CreateClientSession(
   DCHECK(session);
   session_ = session.get();
 
-  client_session_ = base::WrapUnique(new ClientSession(
-      &session_event_handler_, std::move(session),
-      /* ice_config_fetcher= */ nullptr, /* audio_task_runner= */ nullptr,
-      desktop_environment_factory_.get(), desktop_environment_options_, nullptr,
-      extensions_, &local_session_policies_provider_));
-
   auto mock_peer = std::make_unique<testing::NiceMock<MockPeerSession>>();
   mock_peer_session_ = mock_peer.get();
   ON_CALL(*mock_peer_session_, DisconnectSession(_, _, _))
@@ -148,7 +141,15 @@ void ClientSessionTest::CreateClientSession(
                             const SourceLocation& error_location) {
         client_session_->OnSessionClosed(error, error_details, error_location);
       });
-  client_session_->set_peer_session_for_testing(std::move(mock_peer));
+
+  EXPECT_CALL(mock_peer_session_factory_, Create())
+      .Times(AtMost(1))
+      .WillOnce(Return(ByMove(std::move(mock_peer))));
+
+  client_session_ = std::make_unique<ClientSession>(
+      &session_event_handler_, std::move(session), &mock_peer_session_factory_,
+      desktop_environment_options_, extensions_,
+      &local_session_policies_provider_);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -182,7 +183,8 @@ TEST_F(ClientSessionTest,
 
   EXPECT_CALL(
       *mock_peer_session_,
-      Start(testing::Field(&SessionPolicies::allow_file_transfer, std::nullopt),
+      Start(_, _, _, _,
+            testing::Field(&SessionPolicies::allow_file_transfer, std::nullopt),
             _));
 
   ConnectClientSession();
@@ -196,7 +198,8 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(testing::Field(&SessionPolicies::allow_file_transfer,
+              Start(_, _, _, _,
+                    testing::Field(&SessionPolicies::allow_file_transfer,
                                    std::optional<bool>(true)),
                     _));
 
@@ -211,7 +214,8 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(testing::Field(&SessionPolicies::allow_file_transfer,
+              Start(_, _, _, _,
+                    testing::Field(&SessionPolicies::allow_file_transfer,
                                    std::optional<bool>(false)),
                     _));
 
@@ -230,7 +234,8 @@ TEST_F(ClientSessionTest, ApplyPoliciesFromRemotePolicies) {
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(testing::AllOf(
+              Start(_, _, _, _,
+                    testing::AllOf(
                         testing::Field(&SessionPolicies::allow_file_transfer,
                                        std::optional<bool>(false)),
                         testing::Field(&SessionPolicies::allow_uri_forwarding,
@@ -250,8 +255,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions1) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _))
-      .WillOnce(testing::SaveArg<1>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
+      .WillOnce(testing::SaveArg<5>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.Get("Detect-Updated-Region"), "true");
@@ -267,8 +272,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _))
-      .WillOnce(testing::SaveArg<1>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
+      .WillOnce(testing::SaveArg<5>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.Get("Detect-Updated-Region"), "false");

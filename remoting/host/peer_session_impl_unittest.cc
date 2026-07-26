@@ -305,9 +305,8 @@ void PeerSessionImplTest::CreatePeerSession() {
   connection_ = connection->GetWeakPtr();
 
   peer_session_ = std::make_unique<PeerSessionImpl>(
-      &session_event_handler_, kTestClientJid, std::move(connection),
-      desktop_environment_factory_.get(), desktop_environment_options_,
-      /* pairing_registry= */ nullptr, extensions_);
+      std::move(connection), desktop_environment_factory_.get(),
+      /* pairing_registry= */ nullptr);
 }
 
 void PeerSessionImplTest::StartPeerSession(
@@ -316,7 +315,14 @@ void PeerSessionImplTest::StartPeerSession(
   if (!peer_session_) {
     CreatePeerSession();
   }
-  peer_session_->Start(session_policies, session_options);
+  std::vector<HostExtension*> extension_ptrs;
+  extension_ptrs.reserve(extensions_.size());
+  for (HostExtension* ext : extensions_) {
+    extension_ptrs.push_back(ext);
+  }
+  peer_session_->Start(&session_event_handler_, kTestClientJid,
+                       desktop_environment_options_, extension_ptrs,
+                       session_policies, session_options);
 }
 
 void PeerSessionImplTest::ConnectPeerSession(

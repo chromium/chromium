@@ -415,7 +415,11 @@ class MockPeerSession : public PeerSession {
 
   MOCK_METHOD(void,
               Start,
-              (const SessionPolicies& session_policies,
+              (EventHandler * event_handler,
+               std::string_view client_jid,
+               const DesktopEnvironmentOptions& desktop_environment_options,
+               const std::vector<HostExtension*>& extensions,
+               const SessionPolicies& session_policies,
                const SessionOptions& session_options),
               (override));
   MOCK_METHOD(void,
@@ -430,6 +434,18 @@ class MockPeerSession : public PeerSession {
       (mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver),
       (override));
   MOCK_METHOD(protocol::Transport*, transport, (), (const, override));
+};
+
+class MockPeerSessionFactory : public PeerSessionFactory {
+ public:
+  MockPeerSessionFactory();
+
+  MockPeerSessionFactory(const MockPeerSessionFactory&) = delete;
+  MockPeerSessionFactory& operator=(const MockPeerSessionFactory&) = delete;
+
+  ~MockPeerSessionFactory() override;
+
+  MOCK_METHOD(std::unique_ptr<PeerSession>, Create, (), (override));
 };
 
 }  // namespace remoting
