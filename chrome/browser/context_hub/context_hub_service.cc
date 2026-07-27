@@ -174,16 +174,16 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
     tab_proto->set_url(tab.url.spec());
   }
 
+  for (const auto& turn : GetTabGroupChatHistory()) {
+    *request.add_chat_history() = turn;
+  }
+
   std::string_view trimmed_command =
       base::TrimWhitespaceASCII(user_command, base::TRIM_ALL);
   if (!trimmed_command.empty()) {
     request.set_user_command(std::string(trimmed_command));
     AddTabGroupChatHistoryTurn(
         optimization_guide::proto::ChatHistoryTurn::ROLE_USER, trimmed_command);
-  }
-
-  for (const auto& turn : GetTabGroupChatHistory()) {
-    *request.add_chat_history() = turn;
   }
 
   optimization_guide_remote_model_executor_->ExecuteModel(

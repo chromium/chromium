@@ -182,13 +182,21 @@ export class TabGroupsElement extends CrLitElement {
     }
   }
 
-  protected onUngroupTabsClick_() {
-    // TODO(crbug.com/535675010): Synchronize with the backend.
+  protected async onUngroupTabsClick_() {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
+    await browserProxyFactory.getInstance().handler.clearTabGroups();
     this.inputValue_ = '';
-    this.fetchTabs_();
+    await this.fetchTabs_();
+  }
+
+  protected async onClearChatHistoryClick_() {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    await browserProxyFactory.getInstance().handler.clearTabGroupChatHistory();
+    this.chatHistory_ = [];
   }
 
   protected async onDefaultGroupingClick_() {

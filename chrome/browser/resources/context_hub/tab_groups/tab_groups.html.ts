@@ -106,6 +106,12 @@ export function getHtml(this: TabGroupsElement) {
         <div class="right-panel">
             <div class="chat-header">
                 <h2>Chat</h2>
+                <cr-button class="action-button"
+                    id="clear-chat-history-button"
+                    ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_}"
+                    @click="${this.onClearChatHistoryClick_}">
+                    Clear context
+                </cr-button>
             </div>
 
             <div class="chat-messages" id="chat-messages">
