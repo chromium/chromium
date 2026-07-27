@@ -95,7 +95,7 @@ line. For example:
   accessor isActive: boolean = false;
   accessor isDefault: boolean = false;
 
-  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 ```
 
 ### Leverage helper methods of the CrLitElement superclass.

@@ -773,9 +773,9 @@ build_webui("build") {
   #  3) the HTML template is checked in as an .html.ts file and not
   #     auto-generated.
   ts_files = [
-    "app_proxy.ts",
-    "bar_proxy.ts",
-    "foo_proxy.ts",
+    "app_util.ts",
+    "bar_model.ts",
+    "foo_types.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
