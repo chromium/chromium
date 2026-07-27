@@ -168,7 +168,7 @@ export class NearbyContactVisibilityElement extends
   declare isVisibilitySelected: boolean;
   declare selectedVisibility: string|null;
   declare settings: NearbySettings|null;
-  isSelectedContactsToggled: boolean;
+  declare isSelectedContactsToggled: boolean;
   declare profileEmail: string;
 
   private contactManager_: ContactManagerInterface|null;

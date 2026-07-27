@@ -50,7 +50,7 @@ export const NearbyShareSettingsMixin = dedupingMixin(
           return ['settingsChanged_(settings.*)'];
         }
 
-        settings: NearbySettings;
+        declare settings: NearbySettings;
         private nearbyShareSettings_: NearbyShareSettingsInterface|null;
         private observerReceiver_: NearbyShareSettingsObserverReceiver|null;
 
