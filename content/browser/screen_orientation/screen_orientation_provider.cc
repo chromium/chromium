@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "content/browser/bad_message.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -48,15 +48,14 @@ void ScreenOrientationProvider::LockOrientation(
     LockOrientationCallback callback) {
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(&receivers_.CurrentTargetFrame());
-  if (rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrientationLock)) {
-    bad_message::ReceivedBadMessage(
-        rfh->GetProcess(),
-        bad_message::RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME);
-    std::move(callback).Run(
-        ScreenOrientationLockResult::
-            SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE);
-    return;
-  }
+  const bool is_sandboxed =
+      rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrientationLock);
+  base::UmaHistogramBoolean("Security.ScreenOrientation.LockRequestIsSandboxed",
+                            is_sandboxed);
+
+  // Media controls intentionally bypass ScreenOrientation::lock() and can issue
+  // orientation lock requests from sandboxed frames. Record these requests to
+  // measure their usage, but do not treat them as bad IPC.
 
   // Cancel any pending lock request.
   NotifyLockResult(ScreenOrientationLockResult::

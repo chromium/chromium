@@ -840,6 +840,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.ScreenOrientation.LockRequestIsSandboxed"
+    enum="Boolean" expires_after="2027-01-27">
+  <owner>alexmos@chromium.org</owner>
+  <owner>helmut@januschka.com</owner>
+  <summary>
+    Records whether the requesting frame lacks the allow-orientation-lock
+    sandbox permission for each browser-side screen orientation lock request.
+    This measures how often media controls request orientation locks from
+    sandboxed frames before browser-side enforcement is reconsidered.
+  </summary>
+</histogram>
+
 <histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
     units="reports" expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
