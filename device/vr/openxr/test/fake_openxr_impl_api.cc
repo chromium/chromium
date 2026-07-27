@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
@@ -17,7 +18,10 @@ namespace {
 // Global test helper that communicates with the test and contains the mock
 // OpenXR runtime state/properties. A reference to this is returned as the
 // instance handle through xrCreateInstance.
-OpenXrTestHelper g_test_helper;
+OpenXrTestHelper& GetTestHelper() {
+  static base::NoDestructor<OpenXrTestHelper> test_helper;
+  return *test_helper;
+}
 }  // namespace
 
 // Extension methods
@@ -25,12 +29,12 @@ OpenXrTestHelper g_test_helper;
 // Mock implementations of openxr runtime.dll APIs.
 // Please add new APIs in alphabetical order.
 
-XrResult xrAcquireSwapchainImage(
-    XrSwapchain swapchain,
-    const XrSwapchainImageAcquireInfo* acquire_info,
-    uint32_t* index) {
+XrResult XRAPI_PTR
+xrAcquireSwapchainImage(XrSwapchain swapchain,
+                        const XrSwapchainImageAcquireInfo* acquire_info,
+                        uint32_t* index) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSwapchain(swapchain));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSwapchain(swapchain));
   RETURN_IF(acquire_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageAcquireInfo is nullptr");
   RETURN_IF(acquire_info->type != XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO,
@@ -41,40 +45,40 @@ XrResult xrAcquireSwapchainImage(
 
   RETURN_IF(index == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrAcquireSwapchainImage index is nullptr");
-  *index = g_test_helper.NextSwapchainImageIndex(swapchain);
+  *index = GetTestHelper().NextSwapchainImageIndex(swapchain);
 
   return XR_SUCCESS;
 }
 
-XrResult xrAttachSessionActionSets(
-    XrSession session,
-    const XrSessionActionSetsAttachInfo* attach_info) {
+XrResult XRAPI_PTR
+xrAttachSessionActionSets(XrSession session,
+                          const XrSessionActionSetsAttachInfo* attach_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(attach_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionActionSetsAttachInfo is nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.AttachActionSets(*attach_info));
+  RETURN_IF_XR_FAILED(GetTestHelper().AttachActionSets(*attach_info));
 
   return XR_SUCCESS;
 }
 
-XrResult xrBeginFrame(XrSession session,
-                      const XrFrameBeginInfo* frame_begin_info) {
+XrResult XRAPI_PTR xrBeginFrame(XrSession session,
+                                const XrFrameBeginInfo* frame_begin_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(frame_begin_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrFrameBeginInfo is nullptr");
   RETURN_IF(frame_begin_info->type != XR_TYPE_FRAME_BEGIN_INFO,
             XR_ERROR_VALIDATION_FAILURE, "XrFrameBeginInfo type invalid");
   RETURN_IF(frame_begin_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrFrameBeginInfo next is not nullptr");
-  return g_test_helper.BeginFrame();
+  return GetTestHelper().BeginFrame();
 }
 
-XrResult xrBeginSession(XrSession session,
-                        const XrSessionBeginInfo* begin_info) {
+XrResult XRAPI_PTR xrBeginSession(XrSession session,
+                                  const XrSessionBeginInfo* begin_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(begin_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionBeginInfo is nullptr");
   RETURN_IF(begin_info->type != XR_TYPE_SESSION_BEGIN_INFO,
@@ -107,69 +111,72 @@ XrResult xrBeginSession(XrSession session,
                       std::back_inserter(view_configs));
   }
 
-  RETURN_IF_XR_FAILED(g_test_helper.BeginSession(view_configs));
+  RETURN_IF_XR_FAILED(GetTestHelper().BeginSession(view_configs));
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateAction(XrActionSet action_set,
-                        const XrActionCreateInfo* create_info,
-                        XrAction* action) {
+XrResult XRAPI_PTR xrCreateAction(XrActionSet action_set,
+                                  const XrActionCreateInfo* create_info,
+                                  XrAction* action) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionCreateInfo is nullptr");
   RETURN_IF_XR_FAILED(
-      g_test_helper.CreateAction(action_set, *create_info, action));
+      GetTestHelper().CreateAction(action_set, *create_info, action));
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateActionSet(XrInstance instance,
-                           const XrActionSetCreateInfo* create_info,
-                           XrActionSet* action_set) {
+XrResult XRAPI_PTR xrCreateActionSet(XrInstance instance,
+                                     const XrActionSetCreateInfo* create_info,
+                                     XrActionSet* action_set) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionSetCreateInfo is nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateActionSetCreateInfo(*create_info));
+  RETURN_IF_XR_FAILED(
+      GetTestHelper().ValidateActionSetCreateInfo(*create_info));
   RETURN_IF(action_set == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionSet is nullptr");
-  *action_set = g_test_helper.CreateActionSet(*create_info);
+  *action_set = GetTestHelper().CreateActionSet(*create_info);
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateActionSpace(XrSession session,
-                             const XrActionSpaceCreateInfo* create_info,
-                             XrSpace* space) {
+XrResult XRAPI_PTR
+xrCreateActionSpace(XrSession session,
+                    const XrActionSpaceCreateInfo* create_info,
+                    XrSpace* space) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionSpaceCreateInfo is nullptr");
   RETURN_IF(space == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSpace is nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.CreateActionSpace(*create_info, space));
+  RETURN_IF_XR_FAILED(GetTestHelper().CreateActionSpace(*create_info, space));
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateHandTrackerEXT(XrSession session,
-                                const XrHandTrackerCreateInfoEXT* create_info,
-                                XrHandTrackerEXT* hand_tracker) {
+XrResult XRAPI_PTR
+xrCreateHandTrackerEXT(XrSession session,
+                       const XrHandTrackerCreateInfoEXT* create_info,
+                       XrHandTrackerEXT* hand_tracker) {
   DVLOG(2) << __func__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandTrackerCreateInfoEXT is nullptr");
   RETURN_IF(create_info->hand == XR_HAND_MAX_ENUM_EXT,
             XR_ERROR_VALIDATION_FAILURE, "XrHand is unsupported");
   RETURN_IF(hand_tracker == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandTrackerEXT is null");
-  *hand_tracker = g_test_helper.CreateHandTracker(create_info->hand);
+  *hand_tracker = GetTestHelper().CreateHandTracker(create_info->hand);
   return XR_SUCCESS;
 }
 
-XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
-                          XrInstance* instance) {
+XrResult XRAPI_PTR xrCreateInstance(const XrInstanceCreateInfo* create_info,
+                                    XrInstance* instance) {
   DVLOG(2) << __FUNCTION__;
 
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
@@ -227,16 +234,17 @@ XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
 
   RETURN_IF(instance == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInstance is nullptr");
-  *instance = g_test_helper.CreateInstance();
+  *instance = GetTestHelper().CreateInstance();
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateReferenceSpace(XrSession session,
-                                const XrReferenceSpaceCreateInfo* create_info,
-                                XrSpace* space) {
+XrResult XRAPI_PTR
+xrCreateReferenceSpace(XrSession session,
+                       const XrReferenceSpaceCreateInfo* create_info,
+                       XrSpace* space) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrReferenceSpaceCreateInfo is nullptr");
   RETURN_IF(create_info->type != XR_TYPE_REFERENCE_SPACE_CREATE_INFO,
@@ -252,27 +260,28 @@ XrResult xrCreateReferenceSpace(XrSession session,
               XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT,
       XR_ERROR_REFERENCE_SPACE_UNSUPPORTED,
       "XrReferenceSpaceCreateInfo referenceSpaceType invalid");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateXrPosefIsIdentity(
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateXrPosefIsIdentity(
       create_info->poseInReferenceSpace));
   RETURN_IF(space == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSpace is nullptr");
-  *space = g_test_helper.CreateReferenceSpace(create_info->referenceSpaceType);
+  *space =
+      GetTestHelper().CreateReferenceSpace(create_info->referenceSpaceType);
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateSession(XrInstance instance,
-                         const XrSessionCreateInfo* create_info,
-                         XrSession* session) {
+XrResult XRAPI_PTR xrCreateSession(XrInstance instance,
+                                   const XrSessionCreateInfo* create_info,
+                                   XrSession* session) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionCreateInfo is nullptr");
   RETURN_IF(create_info->type != XR_TYPE_SESSION_CREATE_INFO,
             XR_ERROR_VALIDATION_FAILURE, "XrSessionCreateInfo type invalid");
   RETURN_IF(create_info->createFlags != 0, XR_ERROR_VALIDATION_FAILURE,
             "XrSessionCreateInfo createFlags is not 0");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(create_info->systemId));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(create_info->systemId));
 #if BUILDFLAG(IS_WIN)
   const XrGraphicsBindingD3D11KHR* binding =
       static_cast<const XrGraphicsBindingD3D11KHR*>(create_info->next);
@@ -284,7 +293,7 @@ XrResult xrCreateSession(XrInstance instance,
   RETURN_IF(binding->device == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "D3D11Device is nullptr");
 
-  g_test_helper.SetD3DDevice(binding->device);
+  GetTestHelper().SetD3DDevice(binding->device);
 #elif BUILDFLAG(IS_ANDROID)
   const XrGraphicsBindingOpenGLESAndroidKHR* binding =
       static_cast<const XrGraphicsBindingOpenGLESAndroidKHR*>(
@@ -296,20 +305,20 @@ XrResult xrCreateSession(XrInstance instance,
             "XrGraphicsBindingOpenGLESAndroidKHR type invalid");
   RETURN_IF(binding->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrGraphicsBindingOpenGLESAndroidKHR next is not nullptr");
-  g_test_helper.SetOpenGLESInfo(binding->display, binding->context);
+  GetTestHelper().SetOpenGLESInfo(binding->display, binding->context);
 #endif
   RETURN_IF(session == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSession is nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.CreateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().CreateSession(session));
 
   return XR_SUCCESS;
 }
 
-XrResult xrCreateSwapchain(XrSession session,
-                           const XrSwapchainCreateInfo* create_info,
-                           XrSwapchain* swapchain) {
+XrResult XRAPI_PTR xrCreateSwapchain(XrSession session,
+                                     const XrSwapchainCreateInfo* create_info,
+                                     XrSwapchain* swapchain) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo is nullptr");
   RETURN_IF(create_info->type != XR_TYPE_SWAPCHAIN_CREATE_INFO,
@@ -348,56 +357,57 @@ XrResult xrCreateSwapchain(XrSession session,
 
   RETURN_IF(swapchain == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchain is nullptr");
-  *swapchain = g_test_helper.CreateSwapchain(*create_info);
+  *swapchain = GetTestHelper().CreateSwapchain(*create_info);
 
   return XR_SUCCESS;
 }
 
-XrResult xrDestroyActionSet(XrActionSet action_set) {
+XrResult XRAPI_PTR xrDestroyActionSet(XrActionSet action_set) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroyActionSet(action_set));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroyActionSet(action_set));
   return XR_SUCCESS;
 }
 
-XrResult xrDestroyHandTrackerEXT(XrHandTrackerEXT hand_tracker) {
+XrResult XRAPI_PTR xrDestroyHandTrackerEXT(XrHandTrackerEXT hand_tracker) {
   DVLOG(2) << __func__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroyHandTracker(hand_tracker));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroyHandTracker(hand_tracker));
   return XR_SUCCESS;
 }
 
-XrResult xrDestroyInstance(XrInstance instance) {
+XrResult XRAPI_PTR xrDestroyInstance(XrInstance instance) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroyInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroyInstance(instance));
   return XR_SUCCESS;
 }
 
-XrResult xrDestroySession(XrSession session) {
+XrResult XRAPI_PTR xrDestroySession(XrSession session) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroySession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroySession(session));
   return XR_SUCCESS;
 }
 
-XrResult xrDestroySpace(XrSpace space) {
+XrResult XRAPI_PTR xrDestroySpace(XrSpace space) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroySpace(space));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroySpace(space));
   return XR_SUCCESS;
 }
 
-XrResult xrDestroySwapchain(XrSwapchain swapchain) {
+XrResult XRAPI_PTR xrDestroySwapchain(XrSwapchain swapchain) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.DestroySwapchain(swapchain));
+  RETURN_IF_XR_FAILED(GetTestHelper().DestroySwapchain(swapchain));
   return XR_SUCCESS;
 }
 
-XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
+XrResult XRAPI_PTR xrEndFrame(XrSession session,
+                              const XrFrameEndInfo* frame_end_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(frame_end_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrFrameEndInfo is nullptr");
   RETURN_IF(frame_end_info->type != XR_TYPE_FRAME_END_INFO,
             XR_ERROR_VALIDATION_FAILURE, "XrFrameEndInfo type invalid");
-  RETURN_IF_XR_FAILED(
-      g_test_helper.ValidatePredictedDisplayTime(frame_end_info->displayTime));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidatePredictedDisplayTime(
+      frame_end_info->displayTime));
   RETURN_IF(frame_end_info->environmentBlendMode !=
                 OpenXrTestHelper::kEnvironmentBlendMode,
             XR_ERROR_VALIDATION_FAILURE,
@@ -415,28 +425,29 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
       if (layer->type == XR_TYPE_COMPOSITION_LAYER_PROJECTION) {
         const XrCompositionLayerProjection* primary_layer_ptr =
             reinterpret_cast<const XrCompositionLayerProjection*>(layer);
-        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerProjection(
-            g_test_helper.PrimaryViewConfig(), *primary_layer_ptr));
+        RETURN_IF_XR_FAILED(
+            GetTestHelper().ValidateXrCompositionLayerProjection(
+                GetTestHelper().PrimaryViewConfig(), *primary_layer_ptr));
       } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_QUAD) {
         const auto* quad_layer_ptr =
             reinterpret_cast<const XrCompositionLayerQuad*>(layer);
         RETURN_IF_XR_FAILED(
-            g_test_helper.ValidateXrCompositionLayerQuad(*quad_layer_ptr));
+            GetTestHelper().ValidateXrCompositionLayerQuad(*quad_layer_ptr));
       } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR) {
         const auto* cylinder_layer_ptr =
             reinterpret_cast<const XrCompositionLayerCylinderKHR*>(layer);
-        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerCylinder(
+        RETURN_IF_XR_FAILED(GetTestHelper().ValidateXrCompositionLayerCylinder(
             *cylinder_layer_ptr));
       } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR) {
         const auto* equirect_layer_ptr =
             reinterpret_cast<const XrCompositionLayerEquirect2KHR*>(layer);
-        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerEquirect2(
+        RETURN_IF_XR_FAILED(GetTestHelper().ValidateXrCompositionLayerEquirect2(
             *equirect_layer_ptr));
       } else if (layer->type == XR_TYPE_COMPOSITION_LAYER_CUBE_KHR) {
         const auto* cube_layer_ptr =
             reinterpret_cast<const XrCompositionLayerCubeKHR*>(layer);
         RETURN_IF_XR_FAILED(
-            g_test_helper.ValidateXrCompositionLayerCube(*cube_layer_ptr));
+            GetTestHelper().ValidateXrCompositionLayerCube(*cube_layer_ptr));
       }
     }
   }
@@ -470,12 +481,12 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
       RETURN_IF(
           layer_info.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
           "XrSecondaryViewConfigurationLayerInfoMSFT next is not nullptr");
-      RETURN_IF(
-          layer_info.viewConfigurationType == g_test_helper.PrimaryViewConfig(),
-          XR_ERROR_LAYER_INVALID,
-          "XrSecondaryViewConfigurationLayerInfoMSFT cannot have a "
-          "primary view configuration");
-      RETURN_IF_XR_FAILED(g_test_helper.ValidateViewConfigType(
+      RETURN_IF(layer_info.viewConfigurationType ==
+                    GetTestHelper().PrimaryViewConfig(),
+                XR_ERROR_LAYER_INVALID,
+                "XrSecondaryViewConfigurationLayerInfoMSFT cannot have a "
+                "primary view configuration");
+      RETURN_IF_XR_FAILED(GetTestHelper().ValidateViewConfigType(
           layer_info.viewConfigurationType));
       RETURN_IF(layer_info.environmentBlendMode !=
                     OpenXrTestHelper::kEnvironmentBlendMode,
@@ -495,26 +506,27 @@ XrResult xrEndFrame(XrSession session, const XrFrameEndInfo* frame_end_info) {
       for (const auto* layer : secondary_layers) {
         const XrCompositionLayerProjection* secondary_layer_ptr =
             reinterpret_cast<const XrCompositionLayerProjection*>(layer);
-        RETURN_IF_XR_FAILED(g_test_helper.ValidateXrCompositionLayerProjection(
-            layer_info.viewConfigurationType, *secondary_layer_ptr));
+        RETURN_IF_XR_FAILED(
+            GetTestHelper().ValidateXrCompositionLayerProjection(
+                layer_info.viewConfigurationType, *secondary_layer_ptr));
       }
     }
   }
 
-  RETURN_IF_XR_FAILED(g_test_helper.EndFrame());
-  g_test_helper.OnPresentedFrame(frame_end_info);
+  RETURN_IF_XR_FAILED(GetTestHelper().EndFrame());
+  GetTestHelper().OnPresentedFrame(frame_end_info);
   return XR_SUCCESS;
 }
 
-XrResult xrEndSession(XrSession session) {
+XrResult XRAPI_PTR xrEndSession(XrSession session) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
-  RETURN_IF_XR_FAILED(g_test_helper.EndSession());
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().EndSession());
 
   return XR_SUCCESS;
 }
 
-XrResult xrEnumerateEnvironmentBlendModes(
+XrResult XRAPI_PTR xrEnumerateEnvironmentBlendModes(
     XrInstance instance,
     XrSystemId system_id,
     XrViewConfigurationType view_configuration_type,
@@ -522,10 +534,10 @@ XrResult xrEnumerateEnvironmentBlendModes(
     uint32_t* environment_blend_mode_count_output,
     XrEnvironmentBlendMode* environment_blend_modes) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF_XR_FAILED(
-      g_test_helper.ValidateViewConfigType(view_configuration_type));
+      GetTestHelper().ValidateViewConfigType(view_configuration_type));
 
   RETURN_IF(environment_blend_mode_count_output == nullptr,
             XR_ERROR_VALIDATION_FAILURE,
@@ -548,11 +560,11 @@ XrResult xrEnumerateEnvironmentBlendModes(
 // Even thought xrEnumerateInstanceExtensionProperties is not directly called
 // in our implementation, it is used inside loader so this function mock is
 // needed
-XrResult xrEnumerateInstanceExtensionProperties(
-    const char* layer_name,
-    uint32_t property_capacity_input,
-    uint32_t* property_count_output,
-    XrExtensionProperties* properties) {
+XrResult XRAPI_PTR
+xrEnumerateInstanceExtensionProperties(const char* layer_name,
+                                       uint32_t property_capacity_input,
+                                       uint32_t* property_count_output,
+                                       XrExtensionProperties* properties) {
   DVLOG(2) << __FUNCTION__;
 
   auto supported_extensions = OpenXrTestHelper::GetSupportedExtensions();
@@ -592,21 +604,21 @@ XrResult xrEnumerateInstanceExtensionProperties(
   return XR_SUCCESS;
 }
 
-XrResult xrEnumerateViewConfigurations(
+XrResult XRAPI_PTR xrEnumerateViewConfigurations(
     XrInstance instance,
     XrSystemId system_id,
     uint32_t view_configuration_type_capacity_input,
     uint32_t* view_configuration_type_count_output,
     XrViewConfigurationType* view_configuration_types) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF(view_configuration_type_count_output == nullptr,
             XR_ERROR_VALIDATION_FAILURE,
             "view_configuration_type_count_output is nullptr");
 
   std::vector<XrViewConfigurationType> view_configs =
-      g_test_helper.SupportedViewConfigs();
+      GetTestHelper().SupportedViewConfigs();
   *view_configuration_type_count_output = view_configs.size();
   if (view_configuration_type_capacity_input == 0) {
     return XR_SUCCESS;
@@ -628,7 +640,7 @@ XrResult xrEnumerateViewConfigurations(
   return XR_SUCCESS;
 }
 
-XrResult xrEnumerateViewConfigurationViews(
+XrResult XRAPI_PTR xrEnumerateViewConfigurationViews(
     XrInstance instance,
     XrSystemId system_id,
     XrViewConfigurationType view_configuration_type,
@@ -636,15 +648,15 @@ XrResult xrEnumerateViewConfigurationViews(
     uint32_t* view_count_output,
     XrViewConfigurationView* views) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF_XR_FAILED(
-      g_test_helper.ValidateViewConfigType(view_configuration_type));
+      GetTestHelper().ValidateViewConfigType(view_configuration_type));
   RETURN_IF(view_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "view_count_output is nullptr");
 
   const std::vector<device::OpenXrViewProperties>& view_properties =
-      g_test_helper.GetViewConfigInfo(view_configuration_type).Properties();
+      GetTestHelper().GetViewConfigInfo(view_configuration_type).Properties();
   *view_count_output = view_properties.size();
   if (view_capacity_input == 0) {
     return XR_SUCCESS;
@@ -665,12 +677,12 @@ XrResult xrEnumerateViewConfigurationViews(
   return XR_SUCCESS;
 }
 
-XrResult xrEnumerateSwapchainFormats(XrSession session,
-                                     uint32_t format_capacity_input,
-                                     uint32_t* format_count_output,
-                                     int64_t* formats) {
+XrResult XRAPI_PTR xrEnumerateSwapchainFormats(XrSession session,
+                                               uint32_t format_capacity_input,
+                                               uint32_t* format_count_output,
+                                               int64_t* formats) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(format_capacity_input != 1 && format_capacity_input != 0,
             XR_ERROR_SIZE_INSUFFICIENT,
             "xrEnumerateSwapchainFormats does not equal length returned by "
@@ -698,12 +710,13 @@ XrResult xrEnumerateSwapchainFormats(XrSession session,
   return XR_SUCCESS;
 }
 
-XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
-                                    uint32_t image_capacity_input,
-                                    uint32_t* image_count_output,
-                                    XrSwapchainImageBaseHeader* images) {
+XrResult XRAPI_PTR
+xrEnumerateSwapchainImages(XrSwapchain swapchain,
+                           uint32_t image_capacity_input,
+                           uint32_t* image_count_output,
+                           XrSwapchainImageBaseHeader* images) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSwapchain(swapchain));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSwapchain(swapchain));
   RETURN_IF(image_capacity_input != OpenXrTestHelper::kMinSwapchainBuffering &&
                 image_capacity_input != 0,
             XR_ERROR_SIZE_INSUFFICIENT,
@@ -724,7 +737,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
             "XrSwapchainImageBaseHeader is nullptr");
 #if BUILDFLAG(IS_WIN)
   const std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>& textures =
-      g_test_helper.GetSwapchainTextures();
+      GetTestHelper().GetSwapchainTextures();
   DCHECK_EQ(textures.size(), image_capacity_input);
 
   // SAFETY: Test-only implementation of a C-Style API that thus has to provide
@@ -746,7 +759,7 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
   }
 #elif BUILDFLAG(IS_ANDROID)
   const std::vector<uint32_t>& texture_ids =
-      g_test_helper.GetSwapchainTextureIDs(swapchain);
+      GetTestHelper().GetSwapchainTextureIDs(swapchain);
   DCHECK_EQ(texture_ids.size(), image_capacity_input);
 
   // SAFETY: Test-only implementation of a C-Style API that thus has to provide
@@ -772,13 +785,13 @@ XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
 }
 
 #if BUILDFLAG(IS_WIN)
-__stdcall XrResult xrGetD3D11GraphicsRequirementsKHR(
+XrResult XRAPI_PTR xrGetD3D11GraphicsRequirementsKHR(
     XrInstance instance,
     XrSystemId system_id,
     XrGraphicsRequirementsD3D11KHR* graphics_requirements) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF(graphics_requirements == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrGraphicsRequirementsD3D11KHR is nullptr");
   RETURN_IF(
@@ -808,11 +821,11 @@ __stdcall XrResult xrGetD3D11GraphicsRequirementsKHR(
 }
 #endif
 
-XrResult xrGetActionStateFloat(XrSession session,
-                               const XrActionStateGetInfo* get_info,
-                               XrActionStateFloat* state) {
+XrResult XRAPI_PTR xrGetActionStateFloat(XrSession session,
+                                         const XrActionStateGetInfo* get_info,
+                                         XrActionStateFloat* state) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(get_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionStateGetInfo is nullptr");
   RETURN_IF(get_info->type != XR_TYPE_ACTION_STATE_GET_INFO,
@@ -820,22 +833,22 @@ XrResult xrGetActionStateFloat(XrSession session,
             "xrGetActionStateFloat has wrong type");
   RETURN_IF(get_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStateFloat next is not nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateAction(get_info->action));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateAction(get_info->action));
   RETURN_IF(get_info->subactionPath != XR_NULL_PATH,
             XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStateFloat has subactionPath != nullptr which is not "
             "supported by current version of test.");
   RETURN_IF_XR_FAILED(
-      g_test_helper.GetActionStateFloat(get_info->action, state));
+      GetTestHelper().GetActionStateFloat(get_info->action, state));
 
   return XR_SUCCESS;
 }
 
-XrResult xrGetActionStateBoolean(XrSession session,
-                                 const XrActionStateGetInfo* get_info,
-                                 XrActionStateBoolean* state) {
+XrResult XRAPI_PTR xrGetActionStateBoolean(XrSession session,
+                                           const XrActionStateGetInfo* get_info,
+                                           XrActionStateBoolean* state) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(get_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionStateGetInfo is nullptr");
   RETURN_IF(get_info->type != XR_TYPE_ACTION_STATE_GET_INFO,
@@ -843,22 +856,23 @@ XrResult xrGetActionStateBoolean(XrSession session,
             "xrGetActionStateBoolean get_info has wrong type");
   RETURN_IF(get_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStateBoolean next is not nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateAction(get_info->action));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateAction(get_info->action));
   RETURN_IF(get_info->subactionPath != XR_NULL_PATH,
             XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStateBoolean has subactionPath != nullptr which is not "
             "supported by current version of test.");
   RETURN_IF_XR_FAILED(
-      g_test_helper.GetActionStateBoolean(get_info->action, state));
+      GetTestHelper().GetActionStateBoolean(get_info->action, state));
 
   return XR_SUCCESS;
 }
 
-XrResult xrGetActionStateVector2f(XrSession session,
-                                  const XrActionStateGetInfo* get_info,
-                                  XrActionStateVector2f* state) {
+XrResult XRAPI_PTR
+xrGetActionStateVector2f(XrSession session,
+                         const XrActionStateGetInfo* get_info,
+                         XrActionStateVector2f* state) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(get_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionStateGetInfo is nullptr");
   RETURN_IF(get_info->type != XR_TYPE_ACTION_STATE_GET_INFO,
@@ -866,22 +880,22 @@ XrResult xrGetActionStateVector2f(XrSession session,
             "xrGetActionStateVector2f get_info has wrong type");
   RETURN_IF(get_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStateVector2f next is not nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateAction(get_info->action));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateAction(get_info->action));
   RETURN_IF(
       get_info->subactionPath != XR_NULL_PATH, XR_ERROR_VALIDATION_FAILURE,
       "xrGetActionStateVector2f has subactionPath != nullptr which is not "
       "supported by current version of test.");
   RETURN_IF_XR_FAILED(
-      g_test_helper.GetActionStateVector2f(get_info->action, state));
+      GetTestHelper().GetActionStateVector2f(get_info->action, state));
 
   return XR_SUCCESS;
 }
 
-XrResult xrGetActionStatePose(XrSession session,
-                              const XrActionStateGetInfo* get_info,
-                              XrActionStatePose* state) {
+XrResult XRAPI_PTR xrGetActionStatePose(XrSession session,
+                                        const XrActionStateGetInfo* get_info,
+                                        XrActionStatePose* state) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(get_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionStateGetInfo is nullptr");
   RETURN_IF(get_info->type != XR_TYPE_ACTION_STATE_GET_INFO,
@@ -889,28 +903,28 @@ XrResult xrGetActionStatePose(XrSession session,
             "xrGetActionStatePose get_info has wrong type");
   RETURN_IF(get_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStatePose next is not nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateAction(get_info->action));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateAction(get_info->action));
   RETURN_IF(get_info->subactionPath != XR_NULL_PATH,
             XR_ERROR_VALIDATION_FAILURE,
             "xrGetActionStatePose has subactionPath != nullptr which is not "
             "supported by current version of test.");
   RETURN_IF_XR_FAILED(
-      g_test_helper.GetActionStatePose(get_info->action, state));
+      GetTestHelper().GetActionStatePose(get_info->action, state));
 
   return XR_SUCCESS;
 }
 
-XrResult xrGetCurrentInteractionProfile(
-    XrSession session,
-    XrPath top_level_user_path,
-    XrInteractionProfileState* interaction_profile) {
+XrResult XRAPI_PTR
+xrGetCurrentInteractionProfile(XrSession session,
+                               XrPath top_level_user_path,
+                               XrInteractionProfileState* interaction_profile) {
   DVLOG(1) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(
-      g_test_helper.AttachedActionSetsSize() == 0,
+      GetTestHelper().AttachedActionSetsSize() == 0,
       XR_ERROR_ACTIONSET_NOT_ATTACHED,
       "xrGetCurrentInteractionProfile action sets have not been attached yet");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidatePath(top_level_user_path));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidatePath(top_level_user_path));
   RETURN_IF(interaction_profile == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInteractionProfileState is nullptr");
   RETURN_IF(interaction_profile->type != XR_TYPE_INTERACTION_PROFILE_STATE,
@@ -921,30 +935,30 @@ XrResult xrGetCurrentInteractionProfile(
             "xrGetCurrentInteractionProfile next is not "
             "nullptr");
   interaction_profile->interactionProfile =
-      g_test_helper.GetCurrentInteractionProfile();
+      GetTestHelper().GetCurrentInteractionProfile();
   return XR_SUCCESS;
 }
 
 #if BUILDFLAG(IS_ANDROID)
-XrResult xrGetOpenGLESGraphicsRequirementsKHR(
+XrResult XRAPI_PTR xrGetOpenGLESGraphicsRequirementsKHR(
     XrInstance instance,
     XrSystemId system_id,
     XrGraphicsRequirementsOpenGLESKHR* graphics_requirements) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF(graphics_requirements == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "graphicsRequirements object must not be nullptr");
   return XR_SUCCESS;
 }
 #endif
 
-XrResult xrGetReferenceSpaceBoundsRect(
-    XrSession session,
-    XrReferenceSpaceType refernece_space_type,
-    XrExtent2Df* bounds) {
+XrResult XRAPI_PTR
+xrGetReferenceSpaceBoundsRect(XrSession session,
+                              XrReferenceSpaceType refernece_space_type,
+                              XrExtent2Df* bounds) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(refernece_space_type != XR_REFERENCE_SPACE_TYPE_STAGE,
             XR_ERROR_REFERENCE_SPACE_UNSUPPORTED,
             "xrGetReferenceSpaceBoundsRect type is not stage");
@@ -955,14 +969,14 @@ XrResult xrGetReferenceSpaceBoundsRect(
   return XR_SUCCESS;
 }
 
-XrResult xrGetViewConfigurationProperties(
+XrResult XRAPI_PTR xrGetViewConfigurationProperties(
     XrInstance instance,
     XrSystemId system_id,
     XrViewConfigurationType view_configuration_type,
     XrViewConfigurationProperties* configuration_properties) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF(
       view_configuration_type != XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
       XR_ERROR_VALIDATION_FAILURE, "viewConfigurationType must be stereo");
@@ -980,30 +994,31 @@ XrResult xrGetViewConfigurationProperties(
   return XR_SUCCESS;
 }
 
-XrResult xrGetVisibilityMaskKHR(XrSession session,
-                                XrViewConfigurationType viewConfigurationType,
-                                uint32_t viewIndex,
-                                XrVisibilityMaskTypeKHR visibilityMaskType,
-                                XrVisibilityMaskKHR* visibilityMask) {
+XrResult XRAPI_PTR
+xrGetVisibilityMaskKHR(XrSession session,
+                       XrViewConfigurationType viewConfigurationType,
+                       uint32_t viewIndex,
+                       XrVisibilityMaskTypeKHR visibilityMaskType,
+                       XrVisibilityMaskKHR* visibilityMask) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF_XR_FAILED(
-      g_test_helper.ValidateViewConfigType(viewConfigurationType));
+      GetTestHelper().ValidateViewConfigType(viewConfigurationType));
   RETURN_IF(visibilityMask == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrVisibilityMaskKHR is nullptr");
   RETURN_IF(visibilityMask->type != XR_TYPE_VISIBILITY_MASK_KHR,
             XR_ERROR_VALIDATION_FAILURE,
             "xrGetVisibilityMaskKHR visibilityMask type invalid");
 
-  return g_test_helper.GetVisibilityMask(viewConfigurationType, viewIndex,
-                                         visibilityMaskType, visibilityMask);
+  return GetTestHelper().GetVisibilityMask(viewConfigurationType, viewIndex,
+                                           visibilityMaskType, visibilityMask);
 }
 
-XrResult xrGetSystem(XrInstance instance,
-                     const XrSystemGetInfo* get_info,
-                     XrSystemId* system_id) {
+XrResult XRAPI_PTR xrGetSystem(XrInstance instance,
+                               const XrSystemGetInfo* get_info,
+                               XrSystemId* system_id) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
   RETURN_IF(get_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSystemGetInfo is nullptr");
   RETURN_IF(get_info->type != XR_TYPE_SYSTEM_GET_INFO,
@@ -1015,71 +1030,73 @@ XrResult xrGetSystem(XrInstance instance,
 
   RETURN_IF(system_id == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSystemId is nullptr");
-  *system_id = g_test_helper.GetSystemId();
+  *system_id = GetTestHelper().GetSystemId();
 
   return XR_SUCCESS;
 }
 
-XrResult xrGetSystemProperties(XrInstance instance,
-                               XrSystemId system_id,
-                               XrSystemProperties* system_properties) {
+XrResult XRAPI_PTR
+xrGetSystemProperties(XrInstance instance,
+                      XrSystemId system_id,
+                      XrSystemProperties* system_properties) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSystemId(system_id));
   RETURN_IF(system_properties == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSystemProperties is nullptr");
   RETURN_IF(system_properties->type != XR_TYPE_SYSTEM_PROPERTIES,
             XR_ERROR_VALIDATION_FAILURE, "XrSystemProperties type invalid");
 
-  *system_properties = g_test_helper.GetSystemProperties();
+  *system_properties = GetTestHelper().GetSystemProperties();
   system_properties->systemId = system_id;
   system_properties->graphicsProperties.maxLayerCount = 16;
 
   return XR_SUCCESS;
 }
 
-XrResult xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
-                               const XrHandJointsLocateInfoEXT* locate_info,
-                               XrHandJointLocationsEXT* locations) {
+XrResult XRAPI_PTR
+xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
+                      const XrHandJointsLocateInfoEXT* locate_info,
+                      XrHandJointLocationsEXT* locations) {
   DVLOG(2) << __func__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateHandTracker(hand_tracker));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateHandTracker(hand_tracker));
   RETURN_IF(locate_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandJointsLocateInfoEXT is nullptr");
   RETURN_IF(locations == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrHandJointLocationsEXT is nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(locate_info->baseSpace));
-  g_test_helper.LocateJoints(hand_tracker, locate_info, locations);
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSpace(locate_info->baseSpace));
+  GetTestHelper().LocateJoints(hand_tracker, locate_info, locations);
   // No tests actually use hand joint data, so we leave them unpopulated at this
   // time.
   return XR_SUCCESS;
 }
 
-XrResult xrLocateSpace(XrSpace space,
-                       XrSpace base_space,
-                       XrTime time,
-                       XrSpaceLocation* location) {
+XrResult XRAPI_PTR xrLocateSpace(XrSpace space,
+                                 XrSpace base_space,
+                                 XrTime time,
+                                 XrSpaceLocation* location) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(space));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(base_space));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidatePredictedDisplayTime(time));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSpace(space));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSpace(base_space));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidatePredictedDisplayTime(time));
 
   RETURN_IF(location == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSpaceLocation is nullptr");
-  g_test_helper.LocateSpace(space, &(location->pose));
+  GetTestHelper().LocateSpace(space, &(location->pose));
 
   location->locationFlags = OpenXrTestHelper::kValidTrackedPoseFlags;
 
   return XR_SUCCESS;
 }
 
-XrResult xrLocateViews(XrSession session,
-                       const XrViewLocateInfo* view_locate_info,
-                       XrViewState* view_state,
-                       uint32_t view_capacity_input,
-                       uint32_t* view_count_output,
-                       XrView* views) {
+XrResult XRAPI_PTR xrLocateViews(XrSession session,
+                                 const XrViewLocateInfo* view_locate_info,
+                                 XrViewState* view_state,
+                                 uint32_t view_capacity_input,
+                                 uint32_t* view_count_output,
+                                 XrView* views) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(view_locate_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrViewLocateInfo is nullptr");
   RETURN_IF(view_locate_info->type != XR_TYPE_VIEW_LOCATE_INFO,
@@ -1087,18 +1104,19 @@ XrResult xrLocateViews(XrSession session,
             "xrLocateViews view_locate_info type invalid");
   RETURN_IF(view_locate_info->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrViewLocateInfo next is not nullptr");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateViewConfigType(
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateViewConfigType(
       view_locate_info->viewConfigurationType));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidatePredictedDisplayTime(
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidatePredictedDisplayTime(
       view_locate_info->displayTime));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(view_locate_info->space));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSpace(view_locate_info->space));
   RETURN_IF(view_state == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrViewState is nullptr");
   RETURN_IF(view_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "view_count_output is nullptr");
 
   const device::OpenXrViewConfiguration& view_config =
-      g_test_helper.GetViewConfigInfo(view_locate_info->viewConfigurationType);
+      GetTestHelper().GetViewConfigInfo(
+          view_locate_info->viewConfigurationType);
   const std::vector<XrView>& view_config_views = view_config.Views();
   *view_count_output = view_config_views.size();
   if (view_capacity_input == 0) {
@@ -1108,10 +1126,11 @@ XrResult xrLocateViews(XrSession session,
   RETURN_IF(view_capacity_input != view_config_views.size(),
             XR_ERROR_SIZE_INSUFFICIENT,
             "view_capacity_input is neither 0 or OpenXrTestHelper::kViewCount");
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateViews(view_capacity_input, views));
+  RETURN_IF_XR_FAILED(
+      GetTestHelper().ValidateViews(view_capacity_input, views));
   RETURN_IF_FALSE(
-      g_test_helper.UpdateViews(view_locate_info->viewConfigurationType, views,
-                                view_capacity_input),
+      GetTestHelper().UpdateViews(view_locate_info->viewConfigurationType,
+                                  views, view_capacity_input),
       XR_ERROR_VALIDATION_FAILURE, "xrLocateViews UpdateViews failed");
   view_state->viewStateFlags =
       XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT;
@@ -1119,18 +1138,19 @@ XrResult xrLocateViews(XrSession session,
   return XR_SUCCESS;
 }
 
-XrResult xrPollEvent(XrInstance instance, XrEventDataBuffer* event_data) {
+XrResult XRAPI_PTR xrPollEvent(XrInstance instance,
+                               XrEventDataBuffer* event_data) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
 
-  return g_test_helper.PollEvent(event_data);
+  return GetTestHelper().PollEvent(event_data);
 }
 
-XrResult xrReleaseSwapchainImage(
-    XrSwapchain swapchain,
-    const XrSwapchainImageReleaseInfo* release_info) {
+XrResult XRAPI_PTR
+xrReleaseSwapchainImage(XrSwapchain swapchain,
+                        const XrSwapchainImageReleaseInfo* release_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSwapchain(swapchain));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSwapchain(swapchain));
   RETURN_IF(release_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageReleaseInfo is nullptr");
   RETURN_IF(release_info->type != XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO,
@@ -1142,11 +1162,11 @@ XrResult xrReleaseSwapchainImage(
   return XR_SUCCESS;
 }
 
-XrResult xrSuggestInteractionProfileBindings(
+XrResult XRAPI_PTR xrSuggestInteractionProfileBindings(
     XrInstance instance,
     const XrInteractionProfileSuggestedBinding* suggested_bindings) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
   RETURN_IF(suggested_bindings == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrInteractionProfileSuggestedBinding is nullptr");
   RETURN_IF(
@@ -1156,15 +1176,15 @@ XrResult xrSuggestInteractionProfileBindings(
   RETURN_IF(suggested_bindings->next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "xrSetInteractionProfileSuggestedBindings next is not nullptr");
   RETURN_IF_XR_FAILED(
-      g_test_helper.ValidatePath(suggested_bindings->interactionProfile));
+      GetTestHelper().ValidatePath(suggested_bindings->interactionProfile));
   std::string interaction_profile =
-      g_test_helper.PathToString(suggested_bindings->interactionProfile);
+      GetTestHelper().PathToString(suggested_bindings->interactionProfile);
 
   RETURN_IF(suggested_bindings->suggestedBindings == nullptr,
             XR_ERROR_VALIDATION_FAILURE,
             "XrInteractionProfileSuggestedBinding has nullptr "
             "XrActionSuggestedBinding");
-  RETURN_IF(g_test_helper.AttachedActionSetsSize() != 0,
+  RETURN_IF(GetTestHelper().AttachedActionSetsSize() != 0,
             XR_ERROR_ACTIONSETS_ALREADY_ATTACHED,
             "xrSuggestInteractionProfileBindings called after "
             "xrAttachSessionActionSets");
@@ -1175,34 +1195,34 @@ XrResult xrSuggestInteractionProfileBindings(
       UNSAFE_BUFFERS(base::span(suggested_bindings->suggestedBindings,
                                 suggested_bindings->countSuggestedBindings));
   for (XrActionSuggestedBinding suggested_binding : suggested_bindings_span) {
-    RETURN_IF_XR_FAILED(g_test_helper.BindActionAndPath(
+    RETURN_IF_XR_FAILED(GetTestHelper().BindActionAndPath(
         suggested_bindings->interactionProfile, suggested_binding));
   }
 
   return XR_SUCCESS;
 }
 
-XrResult xrStringToPath(XrInstance instance,
-                        const char* path_string,
-                        XrPath* path) {
+XrResult XRAPI_PTR xrStringToPath(XrInstance instance,
+                                  const char* path_string,
+                                  XrPath* path) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
   RETURN_IF(path == nullptr, XR_ERROR_VALIDATION_FAILURE, "path is nullptr");
-  *path = g_test_helper.GetPath(path_string);
+  *path = GetTestHelper().GetPath(path_string);
 
   return XR_SUCCESS;
 }
 
-XrResult xrPathToString(XrInstance instance,
-                        XrPath path,
-                        uint32_t buffer_capacity_input,
-                        uint32_t* buffer_count_output,
-                        char* buffer) {
+XrResult XRAPI_PTR xrPathToString(XrInstance instance,
+                                  XrPath path,
+                                  uint32_t buffer_capacity_input,
+                                  uint32_t* buffer_count_output,
+                                  char* buffer) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
-  RETURN_IF_XR_FAILED(g_test_helper.ValidatePath(path));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidatePath(path));
 
-  std::string path_string = g_test_helper.PathToString(path);
+  std::string path_string = GetTestHelper().PathToString(path);
   RETURN_IF(buffer_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "buffer_count_output is nullptr");
   // OpenXR spec counts terminating '\0'
@@ -1221,10 +1241,11 @@ XrResult xrPathToString(XrInstance instance,
   return XR_SUCCESS;
 }
 
-XrResult xrSyncActions(XrSession session, const XrActionsSyncInfo* sync_info) {
+XrResult XRAPI_PTR xrSyncActions(XrSession session,
+                                 const XrActionsSyncInfo* sync_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
-  RETURN_IF_FALSE(g_test_helper.UpdateData(), XR_ERROR_VALIDATION_FAILURE,
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
+  RETURN_IF_FALSE(GetTestHelper().UpdateData(), XR_ERROR_VALIDATION_FAILURE,
                   "xrSyncActionData can't receive data from test");
   RETURN_IF(sync_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrActionsSyncInfo is nullptr");
@@ -1244,17 +1265,17 @@ XrResult xrSyncActions(XrSession session, const XrActionsSyncInfo* sync_info) {
     RETURN_IF(
         action_set.subactionPath != XR_NULL_PATH, XR_ERROR_VALIDATION_FAILURE,
         "xrSyncActionData does not support use of subactionPath for test yet");
-    RETURN_IF_XR_FAILED(g_test_helper.SyncActionData(action_set.actionSet));
+    RETURN_IF_XR_FAILED(GetTestHelper().SyncActionData(action_set.actionSet));
   }
 
   return XR_SUCCESS;
 }
 
-XrResult xrWaitFrame(XrSession session,
-                     const XrFrameWaitInfo* frame_wait_info,
-                     XrFrameState* frame_state) {
+XrResult XRAPI_PTR xrWaitFrame(XrSession session,
+                               const XrFrameWaitInfo* frame_wait_info,
+                               XrFrameState* frame_state) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSession(session));
   RETURN_IF(frame_wait_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrFrameWaitInfo is nullptr");
   RETURN_IF(frame_wait_info->type != XR_TYPE_FRAME_WAIT_INFO,
@@ -1281,20 +1302,22 @@ XrResult xrWaitFrame(XrSession session,
               "XrSecondaryViewConfigurationFrameStateMSFT "
               "viewConfigurationStates must point to an array");
 
-    RETURN_IF_XR_FAILED(g_test_helper.GetSecondaryConfigStates(
+    RETURN_IF_XR_FAILED(GetTestHelper().GetSecondaryConfigStates(
         secondary_frame_state->viewConfigurationCount,
         secondary_frame_state->viewConfigurationStates));
   }
 
-  frame_state->predictedDisplayTime = g_test_helper.NextPredictedDisplayTime();
+  frame_state->predictedDisplayTime =
+      GetTestHelper().NextPredictedDisplayTime();
 
   return XR_SUCCESS;
 }
 
-XrResult xrWaitSwapchainImage(XrSwapchain swapchain,
-                              const XrSwapchainImageWaitInfo* wait_info) {
+XrResult XRAPI_PTR
+xrWaitSwapchainImage(XrSwapchain swapchain,
+                     const XrSwapchainImageWaitInfo* wait_info) {
   DVLOG(2) << __FUNCTION__;
-  RETURN_IF_XR_FAILED(g_test_helper.ValidateSwapchain(swapchain));
+  RETURN_IF_XR_FAILED(GetTestHelper().ValidateSwapchain(swapchain));
   RETURN_IF(wait_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainImageWaitInfo is nullptr");
   RETURN_IF(wait_info->type != XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO,

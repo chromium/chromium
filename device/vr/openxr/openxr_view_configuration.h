@@ -86,7 +86,7 @@ class DEVICE_VR_EXPORT OpenXrViewProperties {
 // the OpenXR runtime, as well as any properties associated with the view
 // configuration. These are intiialized at the beginning of a session and
 // updated on each frame.
-class OpenXrViewConfiguration {
+class DEVICE_VR_EXPORT OpenXrViewConfiguration {
  public:
   OpenXrViewConfiguration();
   OpenXrViewConfiguration(XrViewConfigurationType type,
