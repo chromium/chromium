@@ -206,6 +206,7 @@ void OmniboxAutofillBubbleView::OnSuggestionAccepted(
     size_t row_index) {
   if (controller_) {
     controller_->OnSuggestionAccepted(suggestion, row_index);
+    CloseBubble();
   }
 }
 

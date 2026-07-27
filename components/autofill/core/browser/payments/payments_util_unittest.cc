@@ -6,11 +6,27 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace payments {
@@ -123,6 +139,139 @@ TEST_F(PaymentsUtilTest, IsCreditCardNumberSupported_SeparatorStripped) {
   // The separators are correctly stripped and the card number is supported.
   EXPECT_TRUE(
       IsCreditCardNumberSupported(card_number, supported_card_bin_ranges));
+}
+
+namespace {
+
+using ::testing::Pointee;
+using ::testing::Property;
+using ::testing::VariantWith;
+
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
+ public:
+  explicit MockBrowserAutofillManager(TestAutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
+  MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
+  MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
+      delete;
+  ~MockBrowserAutofillManager() override = default;
+
+  MOCK_METHOD(void,
+              FillOrPreviewForm,
+              (mojom::ActionPersistence action_persistence,
+               const FormGlobalId& form_id,
+               const FieldGlobalId& trigger_field_id,
+               const FillingPayload& filling_payload,
+               AutofillTriggerSource trigger_source,
+               const base::flat_set<FieldGlobalId>& blocked_fields),
+              (override));
+};
+
+}  // namespace
+
+class PaymentsUtilFillOrPreviewCardTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
+                                                 TestAutofillDriver,
+                                                 MockBrowserAutofillManager> {
+ public:
+  void SetUp() override {
+    InitAutofillClient();
+    autofill_client().GetPersonalDataManager().set_payments_data_manager(
+        std::make_unique<TestPaymentsDataManager>());
+    autofill_client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetPrefService(autofill_client().GetPrefs());
+    card_ = test::GetMaskedServerCard();
+    autofill_client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager()
+        .AddCreditCard(card_);
+    CreateAutofillDriver();
+  }
+
+  void TearDown() override { DestroyAutofillClient(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_environment_;
+  CreditCard card_;
+};
+
+// Tests that filling a regular credit card suggestion calls `FillOrPreviewForm`
+// with `kFill` action persistence and the corresponding credit card.
+TEST_F(PaymentsUtilFillOrPreviewCardTest, NormalCreditCardFill) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, form_id, field_id,
+                        VariantWith<const CreditCard*>(Pointee(card_)),
+                        AutofillTriggerSource::kPopup,
+                        base::flat_set<FieldGlobalId>()));
+
+  FillOrPreviewCard(mojom::ActionPersistence::kFill,
+                    SuggestionType::kCreditCardEntry,
+                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
+                    field_id, AutofillTriggerSource::kPopup);
+}
+
+// Tests that previewing a regular credit card suggestion calls
+// `FillOrPreviewForm` with `kPreview` action persistence and the credit card.
+TEST_F(PaymentsUtilFillOrPreviewCardTest, NormalCreditCardPreview) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kPreview, form_id, field_id,
+                        VariantWith<const CreditCard*>(Pointee(card_)),
+                        AutofillTriggerSource::kPopup,
+                        base::flat_set<FieldGlobalId>()));
+
+  FillOrPreviewCard(mojom::ActionPersistence::kPreview,
+                    SuggestionType::kCreditCardEntry,
+                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
+                    field_id, AutofillTriggerSource::kPopup);
+}
+
+// Tests that filling a virtual credit card suggestion calls
+// `FillOrPreviewForm` with a virtual card variant of the credit card.
+TEST_F(PaymentsUtilFillOrPreviewCardTest, VirtualCreditCardFill) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(
+          mojom::ActionPersistence::kFill, form_id, field_id,
+          VariantWith<const CreditCard*>(Pointee(Property(
+              &CreditCard::record_type, CreditCard::RecordType::kVirtualCard))),
+          AutofillTriggerSource::kPopup, base::flat_set<FieldGlobalId>()));
+
+  FillOrPreviewCard(mojom::ActionPersistence::kFill,
+                    SuggestionType::kVirtualCreditCardEntry,
+                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
+                    field_id, AutofillTriggerSource::kPopup);
+}
+
+// Tests that previewing a virtual credit card suggestion calls
+// `FillOrPreviewForm` with the underlying real credit card.
+TEST_F(PaymentsUtilFillOrPreviewCardTest, VirtualCreditCardPreview) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  // Previewing a virtual card suggestion should preview the original card, not
+  // a virtual card.
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kPreview, form_id, field_id,
+                        VariantWith<const CreditCard*>(Pointee(card_)),
+                        AutofillTriggerSource::kPopup,
+                        base::flat_set<FieldGlobalId>()));
+
+  FillOrPreviewCard(mojom::ActionPersistence::kPreview,
+                    SuggestionType::kVirtualCreditCardEntry,
+                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
+                    field_id, AutofillTriggerSource::kPopup);
 }
 
 }  // namespace payments

@@ -11,8 +11,15 @@
 #include <utility>
 #include <vector>
 
+#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
+
 namespace autofill {
 
+class BrowserAutofillManager;
 class PaymentsDataManager;
 
 namespace payments {
@@ -45,6 +52,16 @@ bool HasGooglePaymentsAccount(const PaymentsDataManager& payments_data_manager);
 bool IsCreditCardNumberSupported(
     const std::u16string& card_number,
     const std::vector<std::pair<int, int>>& supported_card_bin_ranges);
+
+// Fills or previews the credit card corresponding to `payload` into the form
+// and field corresponding to `form_id` and `field_id`.
+void FillOrPreviewCard(mojom::ActionPersistence action_persistence,
+                       SuggestionType suggestion_type,
+                       const Suggestion::Payload& payload,
+                       BrowserAutofillManager& manager,
+                       const FormGlobalId& form_id,
+                       const FieldGlobalId& field_id,
+                       AutofillTriggerSource trigger_source);
 
 }  // namespace payments
 }  // namespace autofill

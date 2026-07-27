@@ -93,6 +93,10 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // from the DOM.
   void HideOmniboxAutofillChip();
 
+  // Fills or previews the card associated with the `suggestion`.
+  void FillOrPreviewCard(const Suggestion& suggestion,
+                         mojom::ActionPersistence action_persistence);
+
   // If true, the OmniboxAutofillDelegate is likely waiting for the user to
   // scroll the candidate form into the viewport, so parsing logic to find
   // candidate forms should no longer be run.
@@ -104,6 +108,10 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // The global ID of the field on which Omnibox Autofill should trigger. Note
   // that this is ensured to be of type CREDIT_CARD_NUMBER.
   FieldGlobalId trigger_field_global_id_;
+
+  // The AutofillManager that contains `trigger_form_global_id_` and
+  // `trigger_field_global_id_`.
+  base::WeakPtr<AutofillManager> trigger_autofill_manager_;
 
   const raw_ref<AutofillClient> client_;
 
