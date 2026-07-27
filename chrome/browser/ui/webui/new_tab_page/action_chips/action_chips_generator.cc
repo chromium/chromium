@@ -65,6 +65,15 @@ using ::action_chips::mojom::TabInfoPtr;
 using ::action_chips::mojom::ToolMode;
 using ::tabs::TabInterface;
 
+const size_t kMaxActionChips = 3;
+
+size_t GetMaxNumChips() {
+  return static_cast<size_t>(
+      base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall)
+          ? ntp_features::kNtpMaxSmallChips.Get()
+          : kMaxActionChips);
+}
+
 template <typename T>
 void AssignMojoField(const T& source, T& dest) {
   dest = source;
@@ -501,8 +510,9 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
               base::FeatureList::IsEnabled(ntp_features::kNtpStarterChip)
           ? base::span<GeneratorFn>(kNewGenerators)
           : base::span<GeneratorFn>(kOldGenerators);
+  const size_t max_num_chips = GetMaxNumChips();
   for (const GeneratorFn generator : generators) {
-    if (chips.size() >= 3) {
+    if (chips.size() >= max_num_chips) {
       break;
     }
     if (std::optional<ActionChipPtr> chip =
@@ -635,8 +645,12 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     return;
   }
 
+  const size_t max_num_chips = GetMaxNumChips();
   std::vector<ActionChipPtr> chips;
   for (const auto& suggestion : *result) {
+    if (chips.size() >= max_num_chips) {
+      break;
+    }
     std::optional<ParsedActionChipData> parsed_data =
         ExtractActionChipData(suggestion, page_vertical);
     if (!parsed_data.has_value()) {

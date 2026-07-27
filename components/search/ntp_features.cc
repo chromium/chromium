@@ -417,6 +417,10 @@ const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
     &ntp_features::kNtpNextFeatures,
     "AddTabUploadDelayOnActionChipClick",
     false);
+const base::FeatureParam<int> kNtpMaxSmallChips(
+    &ntp_features::kNtpScaledActionChipsSmall,
+    "kNtpMaxSmallChips",
+    6);
 
 const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
     &ntp_features::kNtpCustomizeChromeAutoOpen,

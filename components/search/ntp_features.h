@@ -268,6 +268,9 @@ extern const base::FeatureParam<bool> kNtpNextDisablementParam;
 // added from an action chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;
 
+// Parameter determining the maximum number of small action chips to show.
+extern const base::FeatureParam<int> kNtpMaxSmallChips;
+
 // Parameter determining the minimum amount of time that must pass before
 // shortcuts staleness counters will be incremented.
 extern const base::FeatureParam<base::TimeDelta>
