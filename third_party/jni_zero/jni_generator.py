@@ -435,7 +435,6 @@ def _generate_headers(jni_mode,
                       shared_header_file,
                       unshared_header_file,
                       *,
-                      enable_definition_macros,
                       include_path_prefix,
                       extra_includes=None,
                       add_natives_macro_definition=True):
@@ -478,13 +477,8 @@ def _generate_headers(jni_mode,
   sb(preamble)
 
   if add_natives_macro_definition:
-    natives_header.natives_macro_definition(
-        sb,
-        jni_mode,
-        jni_obj,
-        gen_jni_class,
-        unshared_header_file,
-        enable_definition_macros=enable_definition_macros)
+    natives_header.natives_macro_definition(sb, jni_mode, jni_obj,
+                                            gen_jni_class, unshared_header_file)
 
   java_classes = jni_obj.CollectClassesThatRequireAccessors()
   if java_classes:
@@ -501,16 +495,6 @@ def _generate_headers(jni_mode,
 
   has_called_by_natives = any(c.called_by_natives for c in jni_obj.jni_classes)
   with sb.namespace(jni_obj.jni_namespace):
-    if jni_obj.natives and not enable_definition_macros:
-      with sb.section('Java to native functions'):
-        for native in jni_obj.natives:
-          natives_header.entry_point_method(sb,
-                                            jni_mode,
-                                            jni_obj,
-                                            native,
-                                            gen_jni_class,
-                                            unshared_header_file,
-                                            include_forward_declaration=True)
     if has_called_by_natives:
       with sb.section('Native to Java functions'):
         for jni_class in jni_obj.jni_classes:
@@ -673,7 +657,6 @@ def _WriteHeaders(jni_mode,
                   *,
                   include_path_prefix,
                   gen_jni_class=None,
-                  enable_definition_macros=False,
                   extra_includes=None,
                   add_natives_macro_definition=True):
   for jni_obj, shared_header_name, unshared_header_name in zip(
@@ -687,7 +670,6 @@ def _WriteHeaders(jni_mode,
           gen_jni_class,
           shared_header_file,
           unshared_header_file,
-          enable_definition_macros=enable_definition_macros,
           include_path_prefix=include_path_prefix,
           extra_includes=extra_includes,
           add_natives_macro_definition=add_natives_macro_definition)
@@ -768,7 +750,6 @@ def GenerateFromSource(parser, args, jni_mode):
                 args.output_dir,
                 include_path_prefix=args.include_path_prefix,
                 gen_jni_class=gen_jni_class,
-                enable_definition_macros=args.enable_definition_macros,
                 extra_includes=args.extra_includes)
 
   jni_objs_with_proxy_natives = [x for x in jni_objs if x.proxy_natives]
