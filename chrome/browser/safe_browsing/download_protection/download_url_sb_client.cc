@@ -12,6 +12,7 @@
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,7 +25,9 @@ DownloadUrlSBClient::DownloadUrlSBClient(
     DownloadProtectionService* service,
     CheckDownloadCallback callback,
     const scoped_refptr<SafeBrowsingUIManager>& ui_manager,
-    const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager)
+    const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager)
     : SafeBrowsingDatabaseManager::Client(GetPassKey()),
       item_(item),
       sha256_hash_(item->GetHash()),
@@ -36,7 +39,8 @@ DownloadUrlSBClient::DownloadUrlSBClient(
       callback_(std::move(callback)),
       ui_manager_(ui_manager),
       start_time_(base::TimeTicks::Now()),
-      database_manager_(database_manager) {
+      database_manager_(database_manager),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(item_);
   DCHECK(service_);
@@ -75,6 +79,11 @@ void DownloadUrlSBClient::OnCheckDownloadUrlResult(
   UMA_HISTOGRAM_TIMES("SB2.DownloadUrlCheckDuration",
                       base::TimeTicks::Now() - start_time_);
   Release();
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+DownloadUrlSBClient::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }
 
 DownloadUrlSBClient::~DownloadUrlSBClient() {

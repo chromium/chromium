@@ -35,6 +35,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "chrome/common/url_constants.h"
@@ -48,6 +49,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -305,8 +307,17 @@ void DownloadProtectionService::CheckDownloadUrl(
     }
   }
 
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(item);
+  auto* v5_manager = browser_context
+                         ? safe_browsing::V5GetHashProtocolManagerFactory::
+                               GetForBrowserContext(browser_context)
+                         : nullptr;
+
   auto client = base::MakeRefCounted<DownloadUrlSBClient>(
-      item, this, std::move(callback), ui_manager_, database_manager_);
+      item, this, std::move(callback), ui_manager_, database_manager_,
+      v5_manager ? v5_manager->GetWeakPtr()
+                 : /*v5_get_hash_protocol_manager=*/nullptr);
   // The client will release itself once it is done.
   client->StartCheck();
 }

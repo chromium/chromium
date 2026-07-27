@@ -63,6 +63,7 @@
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -99,10 +100,12 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -110,9 +113,11 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_download_manager.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -6551,5 +6556,62 @@ TEST_P(AndroidDownloadProtectionTest,
           }));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+class V5TestingDatabaseManager : public TestSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager()
+      : TestSafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({})) {}
+
+  bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
+                        Client* client) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+    }
+    return true;
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ private:
+  ~V5TestingDatabaseManager() override = default;
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_manager_from_client_;
+};
+
+}  // namespace
+
+TEST_F(DownloadProtectionServiceTest,
+       DownloadUrlSBClientGetV5GetHashProtocolManager) {
+  scoped_refptr<V5TestingDatabaseManager> v5_db_manager =
+      base::MakeRefCounted<V5TestingDatabaseManager>();
+
+  safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
+      /*url_loader_factory=*/nullptr,
+      safe_browsing::V4ProtocolConfig("test", false, "key", "1.0"),
+      /*cache=*/nullptr);
+
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},
+                           "http://www.google.com/", FILE_PATH_LITERAL("a.tmp"),
+                           FILE_PATH_LITERAL("a.exe"));
+
+  auto client = base::MakeRefCounted<DownloadUrlSBClient>(
+      &item, download_service_.get(), base::DoNothing(),
+      sb_service_->ui_manager(), v5_db_manager,
+      v5_protocol_manager.GetWeakPtr());
+
+  EXPECT_EQ(client->GetV5GetHashProtocolManager().get(), &v5_protocol_manager);
+
+  client->StartCheck();
+
+  EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
+            &v5_protocol_manager);
+}
 
 }  // namespace safe_browsing

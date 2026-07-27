@@ -823,6 +823,7 @@ source_set("unit_tests") {
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
       "//components/safe_browsing/core/browser/sync",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/ukm:test_support",
