@@ -778,6 +778,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetDataForClosedWidget(ui::AXNodeData* data) const;
 
+  // Returns the node that this node's bounds are relative to, or
+  // `ui::kInvalidAXNodeID` if they are relative to the root of the tree.
+  virtual ui::AXNodeID GetOffsetContainerId() const;
+
+  void UpdateOffsetContainerId();
+
   // Contains data that is populated by the accessibility attributes setters.
   ui::AXNodeData data_;
 
