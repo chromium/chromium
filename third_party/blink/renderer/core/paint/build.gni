@@ -289,6 +289,7 @@ blink_core_tests_paint = [
   "timing/largest_contentful_paint_calculator_test.cc",
   "timing/mock_paint_timing_callback_manager.h",
   "timing/mock_paint_timing_callback_manager.cc",
+  "timing/paint_timing_test_base.h",
   "timing/text_paint_timing_detector_test.cc",
   "video_painter_test.cc",
   "view_painter_test.cc",

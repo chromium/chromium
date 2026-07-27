@@ -45,4 +45,8 @@ void MockPaintTimingCallbackManager::InvokeCallback(
   std::move(callbacks_.TakeFirst()).Run(details);
 }
 
+void MockPaintTimingCallbackManager::Shutdown() {
+  callbacks_.clear();
+}
+
 }  // namespace blink

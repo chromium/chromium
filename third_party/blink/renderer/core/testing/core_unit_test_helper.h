@@ -117,13 +117,14 @@ class RenderingTest : public PageTestBase {
   USING_FAST_MALLOC(RenderingTest);
 
  public:
-  RenderingTest(base::test::TaskEnvironment::TimeSource time_source);
+  explicit RenderingTest(LocalFrameClient* = nullptr);
+  explicit RenderingTest(base::test::TaskEnvironment::TimeSource time_source,
+                         LocalFrameClient* = nullptr);
+
   virtual FrameSettingOverrideFunction SettingOverrider() const {
     return nullptr;
   }
   virtual RenderingTestChromeClient& GetChromeClient() const;
-
-  explicit RenderingTest(LocalFrameClient* = nullptr);
 
   const Node* HitTest(int x, int y);
   const HitTestResult::NodeSet& RectBasedHitTest(const PhysicalRect& rect);

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -29,50 +29,14 @@ constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
 constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 }  // namespace
 
-class LargestContentfulPaintCalculatorTest : public RenderingTest {
+class LargestContentfulPaintCalculatorTest : public PaintTimingTestBase {
  public:
-  enum class ImageStatus { kLoaded, kPending };
-
   void SetUp() override {
-    // Advance the clock so we do not assign null TimeTicks.
-    simulated_clock_.Advance(base::Milliseconds(100));
-    EnableCompositing();
-    RenderingTest::SetUp();
+    PaintTimingTestBase::SetUp();
 
     test_delegate_ = MakeGarbageCollected<LcpTestDelegate>();
     GetLargestContentfulPaintCalculator()->SetDelegateForTest(test_delegate_);
-    mock_callback_manager_ =
-        MakeGarbageCollected<MockPaintTimingCallbackManager>();
-    PaintTiming::From(GetDocument())
-        .SetCallbackManagerForTest(mock_callback_manager_);
-    // Set this so presentation time callbacks aren't coarsened, which would
-    // result in the callback running in a separate task.
-    DOMWindowPerformance::performance(*GetDocument().domWindow())
-        ->SetCrossOriginIsolatedCapabilityForTesting(true);
     trace_analyzer::Start(kTraceCategories);
-  }
-
-  void TearDown() override { RenderingTest::TearDown(); }
-
-  // Note that unlike `PageTestBase::SetBodyInnerHTML`, which this method hides,
-  // this does not also simulate a rendering lifecycle update.
-  void SetBodyInnerHTML(const String& body_content) {
-    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content);
-  }
-
-  void SimulateRendering() {
-    UpdateAllLifecyclePhasesForTest();
-    mock_callback_manager_->OnAnimationFrameComplete();
-  }
-
-  void SimulatePresentationTime() {
-    mock_callback_manager_->InvokeCallbacksForOneAnimationFrame(
-        simulated_clock_.NowTicks());
-  }
-
-  void SimulateRenderingAndPresentationTime() {
-    SimulateRendering();
-    SimulatePresentationTime();
   }
 
   void SetImage(const char* id,
@@ -82,32 +46,6 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
                 ImageStatus status = ImageStatus::kLoaded) {
     To<HTMLImageElement>(GetElementById(id))
         ->SetImageForTest(CreateImageForTest(width, height, bytes, status));
-  }
-
-  static ImageResourceContent* CreateImageForTest(int width,
-                                                  int height,
-                                                  int bytes,
-                                                  ImageStatus status) {
-    sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
-    SkImageInfo raster_image_info =
-        SkImageInfo::MakeN32Premul(width, height, src_rgb_color_space);
-    sk_sp<SkSurface> surface(SkSurfaces::Raster(raster_image_info));
-    sk_sp<SkImage> image = surface->makeImageSnapshot();
-    scoped_refptr<UnacceleratedStaticBitmapImage> original_image_data =
-        UnacceleratedStaticBitmapImage::Create(image);
-    // If a byte size is specified, then also assign a suitably-sized
-    // vector of 0s to the image. This is used for bits-per-pixel
-    // calculations.
-    if (bytes > 0) {
-      scoped_refptr<SharedBuffer> shared_buffer =
-          SharedBuffer::Create(Vector<char>(bytes));
-      const bool all_data_received = status == ImageStatus::kLoaded;
-      original_image_data->SetData(shared_buffer, all_data_received);
-    }
-    return status == ImageStatus::kLoaded
-               ? ImageResourceContent::CreateLoaded(original_image_data.get())
-               : ImageResourceContent::CreatePendingForTest(
-                     original_image_data.get());
   }
 
   uint64_t LargestReportedSize() {
@@ -178,13 +116,11 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   };
 
   base::test::TracingEnvironment tracing_environment_;
-  base::SimpleTestTickClock simulated_clock_;
-  Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
   Persistent<LcpTestDelegate> test_delegate_;
 };
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='target'/>
   )HTML");
@@ -213,7 +149,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <p id='text'>This is some text</p>
   )HTML");
@@ -227,7 +163,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='target'/>
     <p id='text'>This text should be larger than the image!!!!</p>
@@ -245,7 +181,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='target'/>
     <p>.</p>
@@ -261,7 +197,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='large'/>
     <img id='small'/>
@@ -286,7 +222,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='medium'/>
     <p id='large'>
@@ -313,7 +249,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
   )HTML");
   SimulateRenderingAndPresentationTime();
@@ -324,7 +260,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, NoPaint) {
 
 TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
   base::test::ScopedFeatureList scoped_features;
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='target'/>
   )HTML");
@@ -340,7 +276,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImageExcludedForEntropy) {
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
   base::test::ScopedFeatureList scoped_features;
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='small'/>
     <img id='large'/>
@@ -360,7 +296,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargerImageExcludedForEntropy) {
 TEST_F(LargestContentfulPaintCalculatorTest,
        LowEntropyImageNotExcludedAtLowerThreshold) {
   base::test::ScopedFeatureList scoped_features;
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='small'/>
     <img id='large'/>
@@ -377,7 +313,7 @@ TEST_F(LargestContentfulPaintCalculatorTest,
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, LargestPendingImage) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='small' width=3 height=3 />
     <img id='large' width=100 height=300 />
@@ -398,7 +334,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestPendingImage) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='small' width=3 height=3 />
     <img id='large' width=100 height=300 />
@@ -436,7 +372,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // has width 1 and on other platforms it has width 0, which means the text
   // inconsistently counts as an LCP candidate. Excluding whitespace-only text
   // nodes would fix this.
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <div><img id='small' width=3 height=3 /></div>
     <div><img id='large' width=100 height=100 /></div>

@@ -7,38 +7,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-class FirstMeaningfulPaintDetectorTest : public PageTestBase {
+class FirstMeaningfulPaintDetectorTest : public PaintTimingTestBase {
  public:
-  FirstMeaningfulPaintDetectorTest()
-      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  FirstMeaningfulPaintDetectorTest() = default;
 
  protected:
-  void SetUp() override {
-    EnablePlatform();
-    AdvanceClock(base::Seconds(1));
-    const base::TickClock* test_clock = platform()->GetTickClock();
-    FirstMeaningfulPaintDetector::SetTickClockForTesting(test_clock);
-    PageTestBase::SetUp();
-    GetPaintTiming().SetTickClockForTesting(test_clock);
-  }
-
-  void TearDown() override {
-    const base::TickClock* clock = base::DefaultTickClock::GetInstance();
-    GetPaintTiming().SetTickClockForTesting(clock);
-    PageTestBase::TearDown();
-    FirstMeaningfulPaintDetector::SetTickClockForTesting(clock);
-  }
-
-  base::TimeTicks Now() { return platform()->NowTicks(); }
-
   base::TimeTicks AdvanceClockAndGetTime() {
     AdvanceClock(base::Seconds(1));
-    return Now();
+    return base::TimeTicks::Now();
   }
 
   PaintTiming& GetPaintTiming() { return PaintTiming::From(GetDocument()); }
@@ -66,7 +47,8 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
   void ClearFirstPaintPresentationPromise() {
     AdvanceClock(base::Milliseconds(1));
     viz::FrameTimingDetails presentation_details;
-    presentation_details.presentation_feedback.timestamp = Now();
+    presentation_details.presentation_feedback.timestamp =
+        base::TimeTicks::Now();
     GetPaintTiming().ReportPresentationTime(
         PaintEvent::kFirstPaint, base::TimeTicks(), presentation_details);
   }
@@ -74,7 +56,8 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
   void ClearFirstContentfulPaintPresentationPromise() {
     AdvanceClock(base::Milliseconds(1));
     viz::FrameTimingDetails presentation_details;
-    presentation_details.presentation_feedback.timestamp = Now();
+    presentation_details.presentation_feedback.timestamp =
+        base::TimeTicks::Now();
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
                                             base::TimeTicks(),
                                             presentation_details);
@@ -82,7 +65,8 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise() {
     AdvanceClock(base::Milliseconds(1));
-    ClearProvisionalFirstMeaningfulPaintPresentationPromise(Now());
+    ClearProvisionalFirstMeaningfulPaintPresentationPromise(
+        base::TimeTicks::Now());
   }
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise(

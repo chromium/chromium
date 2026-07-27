@@ -105,18 +105,19 @@ void RenderingTestChromeClient::InjectScrollbarGestureScroll(
   local_frame.GetEventHandler().HandleGestureEvent(*gesture_event);
 }
 
+RenderingTest::RenderingTest(LocalFrameClient* local_frame_client)
+    : local_frame_client_(local_frame_client) {}
+
 RenderingTest::RenderingTest(
-    base::test::TaskEnvironment::TimeSource time_source)
-    : PageTestBase(time_source) {}
+    base::test::TaskEnvironment::TimeSource time_source,
+    LocalFrameClient* local_frame_client)
+    : PageTestBase(time_source), local_frame_client_(local_frame_client) {}
 
 RenderingTestChromeClient& RenderingTest::GetChromeClient() const {
   DEFINE_STATIC_LOCAL(Persistent<RenderingTestChromeClient>, client,
                       (MakeGarbageCollected<RenderingTestChromeClient>()));
   return *client;
 }
-
-RenderingTest::RenderingTest(LocalFrameClient* local_frame_client)
-    : local_frame_client_(local_frame_client) {}
 
 const Node* RenderingTest::HitTest(int x, int y) {
   HitTestLocation location(PhysicalOffset(x, y));

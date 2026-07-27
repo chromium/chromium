@@ -23,10 +23,6 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-namespace base {
-class TickClock;
-}
-
 namespace blink {
 struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
@@ -192,9 +188,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       wtf_size_t index,
       const viz::FrameTimingDetails&);
 
-  // The caller owns the |clock| which must outlive the PaintTiming.
-  void SetTickClockForTesting(const base::TickClock* clock);
-
   void OnRestoredFromBackForwardCache();
 
   void MarkPaintTiming();
@@ -317,8 +310,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // The callback ID for requestAnimationFrame to record its time after the page
   // is restored from the back-forward cache.
   int raf_after_bfcache_restore_measurement_callback_id_ = 0;
-
-  const base::TickClock* clock_;
 
   HashSet<PaintEvent> pending_paint_events_;
 

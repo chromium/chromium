@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
@@ -19,66 +18,34 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class TextPaintTimingDetectorTest : public testing::Test {
+class TextPaintTimingDetectorTest : public PaintTimingTestBase {
  public:
-  TextPaintTimingDetectorTest()
-      : test_task_runner_(
-            base::MakeRefCounted<base::TestMockTimeTaskRunner>()) {}
+  TextPaintTimingDetectorTest() = default;
 
   void SetUp() override {
-    web_view_helper_.Initialize();
-
-    // Enable compositing on the page before running the document lifecycle.
-    web_view_helper_.GetWebView()
-        ->GetPage()
-        ->GetSettings()
-        .SetAcceleratedCompositingEnabled(true);
-
-    WebLocalFrameImpl& frame_impl = *web_view_helper_.LocalMainFrame();
-    frame_impl.ViewImpl()->MainFrameViewWidget()->Resize(gfx::Size(640, 480));
-
-    frame_test_helpers::LoadFrame(
-        web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
-    GetDocument().View()->SetParentVisible(true);
-    GetDocument().View()->SetSelfVisible(true);
-    // Advance clock so it isn't 0 as rendering code asserts in that case.
-    AdvanceClock(base::Microseconds(1));
+    PaintTimingTestBase::SetUp();
+    // Cache the main frame LCP calculator so it can still be accessed after
+    // input events.
+    main_frame_lcp_calculator_ =
+        PaintTiming::From(GetDocument())
+            .GetLargestContentfulPaintManager()
+            ->LargestContentfulPaintCalculatorForTest();
   }
 
  protected:
-  static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
-
-  LocalFrameView& GetFrameView() { return *GetFrame()->View(); }
-  PaintTimingDetector& GetPaintTimingDetector() {
-    return PaintTimingDetector::From(GetDocument());
-  }
-  Document& GetDocument() { return *GetFrame()->GetDocument(); }
-
-  LocalFrameView& GetChildFrameView() {
-    return *To<LocalFrame>(GetFrame()->Tree().FirstChild())->View();
-  }
+  LocalFrameView& GetChildFrameView() { return *ChildFrame().View(); }
 
   TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
-    return PaintTimingDetector::From(*GetChildDocument())
+    return PaintTimingDetector::From(ChildDocument())
         .GetTextPaintTimingDetector();
-  }
-
-  gfx::Rect GetViewportRect(LocalFrameView& view) {
-    ScrollableArea* scrollable_area = view.GetScrollableArea();
-    DCHECK(scrollable_area);
-    return scrollable_area->VisibleContentRect(kExcludeScrollbars);
-  }
-
-  Document* GetChildDocument() {
-    return To<LocalFrame>(GetFrame()->Tree().FirstChild())->GetDocument();
   }
 
   Element* GetElement(const char* name) {
@@ -112,14 +79,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
     GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kMouseDown);
   }
 
-  void SimulateScroll() {
-    GetPaintTimingDetector().NotifyScroll(mojom::blink::ScrollType::kUser);
-  }
-
-  void SimulateKeyUp() {
-    GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kKeyUp);
-  }
-
   base::TimeTicks LargestPaintTime() {
     return main_frame_lcp_calculator_->LatestLcpDetails()
         .largest_text_paint_time;
@@ -128,54 +87,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
   uint64_t LargestPaintSize() {
     return main_frame_lcp_calculator_->LatestLcpDetails()
         .largest_text_paint_size;
-  }
-
-  void SetBodyInnerHTML(const std::string& content) {
-    frame_test_helpers::LoadHTMLString(
-        web_view_helper_.GetWebView()->MainFrameImpl(), content,
-        KURL("http://test.com"));
-    mock_callback_manager_ =
-        MakeGarbageCollected<MockPaintTimingCallbackManager>();
-    PaintTiming::From(GetDocument())
-        .SetCallbackManagerForTest(mock_callback_manager_);
-    main_frame_lcp_calculator_ =
-        PaintTiming::From(GetDocument())
-            .GetLargestContentfulPaintManager()
-            ->LargestContentfulPaintCalculatorForTest();
-    // Set this so presentation time callbacks aren't coarsened, which would
-    // result in the callback running in a separate task.
-    DOMWindowPerformance::performance(*GetDocument().domWindow())
-        ->SetCrossOriginIsolatedCapabilityForTesting(true);
-  }
-
-  void SetChildBodyInnerHTML(const String& content) {
-    GetChildDocument()->SetBaseURLOverride(KURL("http://test.com"));
-    GetChildDocument()->body()->SetInnerHTMLWithoutTrustedTypes(
-        content, ASSERT_NO_EXCEPTION);
-    PaintTiming& timing = PaintTiming::From(*GetChildDocument());
-    timing.SetCallbackManagerForTest(mock_callback_manager_);
-    child_frame_lcp_calculator_ =
-        timing.GetLargestContentfulPaintManager()
-            ->LargestContentfulPaintCalculatorForTest();
-    // Set this so presentation time callbacks aren't coarsened, which would
-    // result in the callback running in a separate task.
-    DOMWindowPerformance::performance(*GetChildDocument()->domWindow())
-        ->SetCrossOriginIsolatedCapabilityForTesting(true);
-  }
-
-  void SimulateRendering() {
-    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    mock_callback_manager_->OnAnimationFrameComplete();
-  }
-
-  void SimulatePresentationTime() {
-    AdvanceClock(kQuantumOfTime);
-    mock_callback_manager_->InvokeCallbacksForOneAnimationFrame(NowTicks());
-  }
-
-  void SimulateRenderingAndPresentationTime() {
-    SimulateRendering();
-    SimulatePresentationTime();
   }
 
   void CheckSizeOfTextQueuedForPaintTimeAfterBeginMainFrame(wtf_size_t size) {
@@ -209,7 +120,11 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextRecord* ChildFrameTextRecordOfLargestTextPaint() {
-    return child_frame_lcp_calculator_->LargestTextForTest();
+    LargestContentfulPaintCalculator* calculator =
+        PaintTiming::From(ChildDocument())
+            .GetLargestContentfulPaintManager()
+            ->LargestContentfulPaintCalculatorForTest();
+    return calculator->LargestTextForTest();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
@@ -226,44 +141,23 @@ class TextPaintTimingDetectorTest : public testing::Test {
     element->GetLayoutObject()->Parent()->GetNode()->removeChild(element);
   }
 
-  base::TimeTicks NowTicks() const { return test_task_runner_->NowTicks(); }
-
-  void AdvanceClock(base::TimeDelta delta) {
-    test_task_runner_->FastForwardBy(delta);
-  }
-
-  void LoadAhem() { web_view_helper_.LoadAhem(); }
-
   bool IsRecordingLargestTextPaint() {
     return !!PaintTiming::From(GetDocument())
                  .GetLargestContentfulPaintManager();
   }
 
- private:
-  LocalFrame* GetFrame() {
-    return web_view_helper_.GetWebView()->MainFrameImpl()->GetFrame();
-  }
-
-  test::TaskEnvironment task_environment_;
-  frame_test_helpers::WebViewHelper web_view_helper_;
-  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
-  // Cache the LCP calculators so they can still be accessed after input events.
   Persistent<LargestContentfulPaintCalculator> main_frame_lcp_calculator_;
-  Persistent<LargestContentfulPaintCalculator> child_frame_lcp_calculator_;
 };
 
-constexpr base::TimeDelta TextPaintTimingDetectorTest::kQuantumOfTime;
-
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_NoText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   SimulateRenderingAndPresentationTime();
   EXPECT_FALSE(TextRecordOfLargestTextPaint());
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OneText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* only_text = AppendDivElementToBody("The only text");
   SimulateRenderingAndPresentationTime();
@@ -271,7 +165,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OneText) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, LaterSameSizeCandidate) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* first = AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -284,7 +178,7 @@ TEST_F(TextPaintTimingDetectorTest, LaterSameSizeCandidate) {
 
 TEST_F(TextPaintTimingDetectorTest,
        LargestTextPaint_FontSizeChange_MultipleUpdates) {
-  SetBodyInnerHTML(R"HTML()HTML");
+  SetMainFrameBodyContent(R"HTML()HTML");
   Element* text = AppendDivElementToBody("text");
   SetElementStyle(text, "font-size: 200px");
   SimulateRenderingAndPresentationTime();
@@ -298,7 +192,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {
-    SetBodyInnerHTML(R"HTML(
+    SetMainFrameBodyContent(R"HTML(
       )HTML");
     AppendDivElementToBody("The only text");
     SimulateRenderingAndPresentationTime();
@@ -344,11 +238,11 @@ TEST_F(TextPaintTimingDetectorTest,
   trace_analyzer::Start("loading");
   {
     GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-    SetBodyInnerHTML(R"HTML(
+    SetMainFrameBodyContent(R"HTML(
       <style>body { margin: 15px; } iframe { display: block; position: relative; margin-top: 50px; } </style>
       <iframe> </iframe>
     )HTML");
-    SetChildBodyInnerHTML(R"HTML(
+    SetChildFrameBodyContent(R"HTML(
       <style>body { margin: 10px;} #target { width: 200px; height: 200px; }
       </style>
       <div>Some content</div>
@@ -392,7 +286,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, AggregationBySelfPaintingInlineElement) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div style="background: yellow">
       tiny
       <span id="target"
@@ -406,7 +300,7 @@ TEST_F(TextPaintTimingDetectorTest, AggregationBySelfPaintingInlineElement) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OpacityZero) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
     div {
       opacity: 0;
@@ -422,7 +316,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OpacityZero) {
 
 TEST_F(TextPaintTimingDetectorTest,
        NodeRemovedBeforeAssigningPresentationTime) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div id="parent">
       <div id="remove">The only text</div>
     </div>
@@ -437,7 +331,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_LargestText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("medium text");
   SimulateRenderingAndPresentationTime();
@@ -453,7 +347,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_LargestText) {
 
 TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
   base::TimeTicks time1 = NowTicks();
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div>small text</div>
   )HTML");
   SimulateRenderingAndPresentationTime();
@@ -474,7 +368,7 @@ TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
 // metric candidate. The algorithm should skip the text record if its paint time
 // hasn't been recorded yet.
 TEST_F(TextPaintTimingDetectorTest, PendingTextIsLargest) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   SimulateRendering();
@@ -486,7 +380,7 @@ TEST_F(TextPaintTimingDetectorTest, PendingTextIsLargest) {
 // The same node may be visited by recordText for twice before the paint time
 // is set. In some previous design, this caused the node to be recorded twice.
 TEST_F(TextPaintTimingDetectorTest, VisitSameNodeTwiceBeforePaintTimeIsSet) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* text = AppendDivElementToBody("text");
   SimulateRendering();
@@ -501,7 +395,7 @@ TEST_F(TextPaintTimingDetectorTest, VisitSameNodeTwiceBeforePaintTimeIsSet) {
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
   base::TimeTicks start_time = NowTicks();
   AdvanceClock(base::Seconds(1));
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* text = AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -519,7 +413,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
 
 TEST_F(TextPaintTimingDetectorTest,
        LargestTextPaint_IgnoreTextOutsideViewport) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       div.out {
         position: fixed;
@@ -533,7 +427,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* large_text = AppendDivElementToBody(
       "(large text)(large text)(large text)(large text)(large text)(large "
@@ -558,7 +452,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
 
 TEST_F(TextPaintTimingDetectorTest,
        DestroyLargestTextPaintMangerAfterUserInput) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -569,7 +463,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, DoNotStopRecordingLCPAfterKeyUp) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -580,7 +474,7 @@ TEST_F(TextPaintTimingDetectorTest, DoNotStopRecordingLCPAfterKeyUp) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TextRecordAfterRemoval) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* text = AppendDivElementToBody("text to remove");
   SimulateRenderingAndPresentationTime();
@@ -602,7 +496,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TextRecordAfterRemoval) {
 
 TEST_F(TextPaintTimingDetectorTest,
        LargestTextPaint_CompareVisualSizeNotActualSize) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("a long text", "position:fixed;left:-10px");
   Element* short_text = AppendDivElementToBody("short");
@@ -611,7 +505,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_CompareSizesAtFirstPaint) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   Element* shortening_long_text = AppendDivElementToBody("123456789");
   AppendDivElementToBody("12345678");  // 1 letter shorter than the above.
@@ -625,7 +519,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_CompareSizesAtFirstPaint) {
 
 TEST_F(TextPaintTimingDetectorTest, TreatEllipsisAsText) {
   LoadAhem();
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div style="font:10px Ahem;white-space:nowrap;width:50px;overflow:hidden;text-overflow:ellipsis;">
     00000000000000000000000000000000000000000000000000000000000000000000000000
     00000000000000000000000000000000000000000000000000000000000000000000000000
@@ -638,16 +532,17 @@ TEST_F(TextPaintTimingDetectorTest, TreatEllipsisAsText) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, CaptureFileUploadController) {
-  SetBodyInnerHTML("<input type='file'>");
+  SetMainFrameBodyContent("<input type='file'>");
   Element* element = GetDocument().QuerySelector(AtomicString("input"));
   SimulateRenderingAndPresentationTime();
 
   EXPECT_EQ(RecordedSetSize(), 1u);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), element);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode()->OwnerShadowHost(),
+            element);
 }
 
 TEST_F(TextPaintTimingDetectorTest, CapturingListMarkers) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <ul>
       <li>List item</li>
     </ul>
@@ -660,7 +555,7 @@ TEST_F(TextPaintTimingDetectorTest, CapturingListMarkers) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <svg height="40" width="300">
       <text x="0" y="15">A SVG text.</text>
     </svg>
@@ -675,7 +570,7 @@ TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
 
 // This is for comparison with the ClippedByViewport test.
 TEST_F(TextPaintTimingDetectorTest, NormalTextUnclipped) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div id='d'>text</div>
   )HTML");
   SimulateRendering();
@@ -683,7 +578,7 @@ TEST_F(TextPaintTimingDetectorTest, NormalTextUnclipped) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, ClippedByViewport) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       #d { margin-top: 1234567px }
     </style>
@@ -696,7 +591,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByViewport) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       #outer1 {
         overflow: hidden;
@@ -751,10 +646,10 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, Iframe) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <iframe width=100px height=100px></iframe>
   )HTML");
-  SetChildBodyInnerHTML("A");
+  SetChildFrameBodyContent("A");
   SimulateRendering();
   EXPECT_EQ(ChildFrameTextQueuedForPaintTimeSize(), 1u);
   SimulatePresentationTime();
@@ -763,22 +658,22 @@ TEST_F(TextPaintTimingDetectorTest, Iframe) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, Iframe_ClippedByViewport) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <iframe width=100px height=100px></iframe>
   )HTML");
-  SetChildBodyInnerHTML(R"HTML(
+  SetChildFrameBodyContent(R"HTML(
     <style>
       #d { margin-top: 200px }
     </style>
     <div id='d'>text</div>
   )HTML");
-  EXPECT_EQ(GetViewportRect(GetChildFrameView()).height(), 100);
   SimulateRendering();
+  EXPECT_EQ(GetViewportRect(GetChildFrameView()).height(), 100);
   EXPECT_EQ(ChildFrameTextQueuedForPaintTimeSize(), 0u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div>text</div>
     <div>text</div>
     <div>text</div>
@@ -788,7 +683,7 @@ TEST_F(TextPaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserInput) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -800,7 +695,7 @@ TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserInput) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserScroll) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
   SimulateRenderingAndPresentationTime();
@@ -812,7 +707,7 @@ TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserScroll) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       :root {
         opacity: 0;
@@ -833,7 +728,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       #target {
         opacity: 0;
@@ -854,7 +749,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLTextRecordedOnce) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       :root {
         opacity: 0;
@@ -881,7 +776,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLTextRecordedOnce) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       :root {
         opacity: 0;
@@ -912,7 +807,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <style>
       :root {
         opacity: 0;
@@ -934,7 +829,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {
 
 TEST_F(TextPaintTimingDetectorTest,
        QueuedRecordsWaitForCorrectPresentationFeedback) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div id="target1"></div>
     <div id="target2"></div>
   )HTML");
@@ -979,7 +874,7 @@ class TestClient : public GarbageCollected<TestClient>,
 }  // namespace
 
 TEST_F(TextPaintTimingDetectorTest, NodeModifiedWhileRecordPending) {
-  SetBodyInnerHTML(R"HTML(
+  SetMainFrameBodyContent(R"HTML(
     <div id="target"></div>
   )HTML");
 

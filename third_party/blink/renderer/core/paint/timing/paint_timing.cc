@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -80,8 +79,8 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
   ~RecodingTimeAfterBackForwardCacheRestoreFrameCallback() override = default;
 
   void Invoke(double high_res_time_ms) override {
-    // Instead of |high_res_time_ms|, use PaintTiming's |clock_->NowTicks()| for
-    // consistency and testability.
+    // Instead of `high_res_time_ms`, use base::TimeTicks::Now() for consistency
+    // and testability.
     paint_timing_->SetRequestAnimationFrameAfterBackForwardCacheRestore(
         record_index_, count_);
 
@@ -139,7 +138,7 @@ void PaintTiming::MarkFirstPaint() {
     return;
   }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
-  SetFirstPaint(clock_->NowTicks());
+  SetFirstPaint(base::TimeTicks::Now());
   pending_paint_events_.insert(PaintEvent::kFirstPaint);
 }
 
@@ -154,7 +153,7 @@ void PaintTiming::MarkFirstContentfulPaint() {
   }
   if (IgnorePaintTimingScope::IgnoreDepth() > 0)
     return;
-  SetFirstContentfulPaint(clock_->NowTicks());
+  SetFirstContentfulPaint(base::TimeTicks::Now());
 }
 
 void PaintTiming::MarkFirstImagePaint() {
@@ -163,7 +162,7 @@ void PaintTiming::MarkFirstImagePaint() {
     return;
   }
   DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
-  relevant_paint_details.first_image_paint_ = clock_->NowTicks();
+  relevant_paint_details.first_image_paint_ = base::TimeTicks::Now();
   SetFirstContentfulPaint(relevant_paint_details.first_image_paint_);
   Mark(PaintEvent::kFirstImagePaint);
 }
@@ -172,7 +171,7 @@ void PaintTiming::MarkFirstEligibleToPaint() {
   if (!first_eligible_to_paint_.is_null())
     return;
 
-  first_eligible_to_paint_ = clock_->NowTicks();
+  first_eligible_to_paint_ = base::TimeTicks::Now();
   NotifyPaintTimingChanged();
 }
 
@@ -474,10 +473,6 @@ void PaintTiming::MarkPaintTimingInternal() {
       paint_timing_record));
 }
 
-void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
-  clock_ = clock;
-}
-
 void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(fmp_detector_);
@@ -492,8 +487,7 @@ void PaintTiming::Trace(Visitor* visitor) const {
 PaintTiming::PaintTiming(Document& document)
     : Supplement<Document>(document),
       paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
-      fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)) {
   // `window` will be null if `document` has already been shut down (frame
   // detach). Typically `PaintTiming` will be created before this, but this
   // isn't guaranteed since it's created lazily.
@@ -739,7 +733,7 @@ void PaintTiming::SetFirstPaintAfterBackForwardCacheRestorePresentation(
 void PaintTiming::SetRequestAnimationFrameAfterBackForwardCacheRestore(
     wtf_size_t index,
     size_t count) {
-  auto now = clock_->NowTicks();
+  auto now = base::TimeTicks::Now();
 
   // The elements are allocated when the page is restored from the cache.
   DCHECK_LT(index,

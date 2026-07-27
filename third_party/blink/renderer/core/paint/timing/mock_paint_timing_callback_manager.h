@@ -34,6 +34,8 @@ class MockPaintTimingCallbackManager final
   // set by `OnFrameComplete()`.
   void InvokeCallbacksForOneAnimationFrame(base::TimeTicks presentation_time);
 
+  void Shutdown();
+
  private:
   void InvokeCallback(base::TimeTicks presentation_time);
 
