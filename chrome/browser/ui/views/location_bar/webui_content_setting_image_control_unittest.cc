@@ -27,7 +27,7 @@ class TestDelegate : public ContentSettingImageViewDelegate {
   TestDelegate() = default;
   ~TestDelegate() override = default;
 
-  bool ShouldHideContentSettingImage() override { return false; }
+  bool ShouldHideContentSettingImage() override { return should_hide_; }
   content::WebContents* GetContentSettingWebContents() override {
     return web_contents_;
   }
@@ -40,7 +40,11 @@ class TestDelegate : public ContentSettingImageViewDelegate {
     web_contents_ = web_contents;
   }
 
+  void set_should_hide(bool v) { should_hide_ = v; }
+
  private:
+  bool should_hide_ = false;
+
   // Safe, this delegate is destroyed in TearDown(), before the WebContents.
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
@@ -147,6 +151,11 @@ TEST_F(WebUIContentSettingImageControlTest,
             cookie_state->explanatory_string);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TOOLTIP),
             cookie_state->accessibility_string);
+
+  // Turn off via delegate.
+  delegate_->set_should_hide(true);
+  state = control_->ProcessContentSettingState(web_contents());
+  ASSERT_EQ(0u, state.size());
 }
 
 TEST_F(WebUIContentSettingImageControlTest,

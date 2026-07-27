@@ -34,8 +34,10 @@ using Error = mojo_base::mojom::Error;
 
 toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
     ContentSettingImageModel* model,
+    ContentSettingImageViewDelegate* delegate,
     content::WebContents* web_contents) {
-  model->Update(web_contents);
+  model->Update(delegate->ShouldHideContentSettingImage() ? nullptr
+                                                          : web_contents);
 
   if (!model->is_visible()) {
     return nullptr;
@@ -95,7 +97,8 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
       continue;
     }
 
-    auto image_state = GetImageStateForModel(model.get(), web_contents);
+    auto image_state = GetImageStateForModel(
+        model.get(), setting_view_delegate_.get(), web_contents);
     if (image_state) {
       state.push_back(std::move(image_state));
 
