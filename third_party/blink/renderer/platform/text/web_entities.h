@@ -61,12 +61,6 @@ class PLATFORM_EXPORT WebEntities {
   // entities.
   explicit WebEntities(bool xml_entities);
 
-  // Check whether specified unicode has corresponding html or xml built-in
-  // entity name. If yes, return the entity notation. If not, returns an
-  // empty string. Parameter isHTML indicates check the code in html entity
-  // map or in xml entity map.
-  String EntityNameByCode(int code) const;
-
   // Returns a new string with corresponding entity names replaced.
   String ConvertEntitiesInString(const String&) const;
 

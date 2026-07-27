@@ -48,14 +48,6 @@ WebEntities::WebEntities(bool xml_entities) {
     entities_map_.Set(0x0027, String("#39"));
 }
 
-String WebEntities::EntityNameByCode(int code) const {
-  const auto it = entities_map_.find(code);
-  if (it != entities_map_.end()) {
-    return it->value;
-  }
-  return "";
-}
-
 String WebEntities::ConvertEntitiesInString(const String& value) const {
   StringBuilder result;
   bool did_convert_entity = false;
