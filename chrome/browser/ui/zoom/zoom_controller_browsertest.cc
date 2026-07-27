@@ -4,6 +4,7 @@
 
 #include "components/zoom/zoom_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -465,4 +467,88 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,
   EXPECT_TRUE(host_observer.was_activated());
   // OnZoomChanged should be called after the prerendered page was activated.
   EXPECT_TRUE(is_on_zoom_changed_called());
+}
+
+IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
+                       TopChromeWebUIResetsZoomModeOnNavigation) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ZoomController* zoom_controller =
+      ZoomController::FromWebContents(web_contents);
+
+  // Initially, zoom mode should be DEFAULT.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DEFAULT, zoom_controller->zoom_mode());
+
+  // Navigate to a TopChrome WebUI page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUITabSearchURL)));
+
+  // Zoom mode should now be DISABLED because TopChromeWebUIController disables
+  // it.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DISABLED, zoom_controller->zoom_mode());
+
+  // Keep track of the TopChrome RenderFrameHost.
+  content::RenderFrameHost* top_chrome_rfh =
+      web_contents->GetPrimaryMainFrame();
+  content::RenderFrameDeletedObserver deleted_observer(top_chrome_rfh);
+
+  // Navigate away to a standard page (e.g., about:blank).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Wait for the old TopChrome RenderFrameHost (and its controller/lock) to be
+  // destroyed.
+  deleted_observer.WaitUntilDeleted();
+
+  // Zoom mode should be reset to DEFAULT.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DEFAULT, zoom_controller->zoom_mode());
+}
+
+IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
+                       TopChromeWebUIToTopChromeWebUINavigation) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ZoomController* zoom_controller =
+      ZoomController::FromWebContents(web_contents);
+
+  // Initially, zoom mode should be DEFAULT.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DEFAULT, zoom_controller->zoom_mode());
+
+  // Navigate to a TopChrome WebUI page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUITabSearchURL)));
+
+  // Zoom mode should now be DISABLED.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DISABLED, zoom_controller->zoom_mode());
+
+  // Set up observer to wait for the old RFH (Tab Search) to be deleted.
+  content::RenderFrameHost* old_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameDeletedObserver delete_observer(old_rfh);
+
+  // Navigate directly to another TopChrome WebUI page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUICustomizeChromeSidePanelURL)));
+
+  // Wait for the old Tab Search RFH to be destroyed, ensuring its destructor
+  // has run.
+  delete_observer.WaitUntilDeleted();
+
+  // Zoom mode should STILL be DISABLED because the new page is also TopChrome.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DISABLED, zoom_controller->zoom_mode());
+
+  // Set up watcher to wait for zoom mode to become DEFAULT.
+  ZoomChangedWatcher watcher(
+      web_contents,
+      base::BindRepeating([](const ZoomController::ZoomChangedEventData& data) {
+        return data.zoom_mode == ZoomController::ZOOM_MODE_DEFAULT;
+      }));
+
+  // Navigate away to a standard page (e.g., about:blank).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Wait for the zoom mode to be reset asynchronously by CustomizeChrome's
+  // destructor.
+  watcher.Wait();
+
+  // Zoom mode should now be reset to DEFAULT.
+  EXPECT_EQ(ZoomController::ZOOM_MODE_DEFAULT, zoom_controller->zoom_mode());
 }

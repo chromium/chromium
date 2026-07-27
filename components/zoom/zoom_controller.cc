@@ -4,8 +4,11 @@
 
 #include "components/zoom/zoom_controller.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_observer.h"
@@ -282,6 +285,14 @@ bool ZoomController::SetZoomLevelByClient(
 
 void ZoomController::SetZoomMode(ZoomMode new_mode) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (zoom_disable_lock_count_ > 0) {
+    saved_zoom_mode_ = new_mode;
+    return;
+  }
+  SetZoomModeInternal(new_mode);
+}
+
+void ZoomController::SetZoomModeInternal(ZoomMode new_mode) {
   if (new_mode == zoom_mode_)
     return;
 
@@ -290,7 +301,16 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::Get(rfh->GetSiteInstance());
   DCHECK(zoom_map);
+
+  // GetZoomLevel() depends on zoom_mode_, so compute the level before
+  // switching to the new mode.
   double original_zoom_level = GetZoomLevel();
+
+  // Update zoom_mode_ early to prevent re-entrancy bugs if observers
+  // synchronously respond to OnZoomChanged by modifying zoom settings or
+  // acquiring locks. Cache the previous mode in old_mode for switch checks.
+  ZoomMode old_mode = zoom_mode_;
+  zoom_mode_ = new_mode;
 
   DCHECK(!event_data_);
   event_data_ = std::make_unique<ZoomChangedEventData>(
@@ -323,13 +343,20 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
       }
       // Remove per-tab zoom data for this tab. No event callback expected.
       zoom_map->ClearTemporaryZoomLevel(rfh_id);
+      if (event_data_) {
+        ZoomChangedEventData zoom_change_data = *event_data_;
+        event_data_.reset();
+        for (auto& observer : observers_) {
+          observer.OnZoomChanged(zoom_change_data);
+        }
+      }
       break;
     }
     case ZOOM_MODE_ISOLATED: {
       // Unless the zoom mode was |ZOOM_MODE_DISABLED| before this call, the
       // page needs an initial isolated zoom back to the same level it was at
       // in the other mode.
-      if (zoom_mode_ != ZOOM_MODE_DISABLED) {
+      if (old_mode != ZOOM_MODE_DISABLED) {
         zoom_map->SetTemporaryZoomLevel(rfh_id, original_zoom_level);
       } else {
         // When we don't call any HostZoomMap set functions, we send the event
@@ -344,7 +371,7 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
       // Unless the zoom mode was |ZOOM_MODE_DISABLED| before this call, the
       // page needs to be resized to the default zoom. While in manual mode,
       // the zoom level is handled independently.
-      if (zoom_mode_ != ZOOM_MODE_DISABLED) {
+      if (old_mode != ZOOM_MODE_DISABLED) {
         zoom_map->SetTemporaryZoomLevel(rfh_id, GetDefaultZoomLevel());
         zoom_level_ = original_zoom_level;
       } else {
@@ -366,12 +393,21 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
   }
   // Any event data we've stored should have been consumed by this point.
   DCHECK(!event_data_);
-
-  zoom_mode_ = new_mode;
 }
 
 void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (zoom_disable_lock_count_ > 0) {
+    // Zoom is locked to DISABLED; make sure a per-page-load mode from the
+    // previous page isn't restored onto the new page when the locks are
+    // released.
+    if (saved_zoom_mode_ == ZOOM_MODE_ISOLATED ||
+        saved_zoom_mode_ == ZOOM_MODE_MANUAL) {
+      saved_zoom_mode_ = ZOOM_MODE_DEFAULT;
+    }
+    return;
+  }
+
   if (zoom_mode_ != ZOOM_MODE_ISOLATED && zoom_mode_ != ZOOM_MODE_MANUAL)
     return;
 
@@ -554,6 +590,45 @@ bool ZoomController::PageScaleFactorIsOne() const {
     return page_scale_factor_is_one_for_testing_.value();
 
   return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
+}
+
+class ZoomController::DisableLockImpl : public zoom::ZoomDisableLock {
+ public:
+  explicit DisableLockImpl(base::WeakPtr<ZoomController> controller)
+      : controller_(controller) {
+    if (controller_) {
+      controller_->AddDisableLock();
+    }
+  }
+
+  ~DisableLockImpl() override {
+    if (controller_) {
+      controller_->RemoveDisableLock();
+    }
+  }
+
+ private:
+  base::WeakPtr<ZoomController> controller_;
+};
+
+std::unique_ptr<zoom::ZoomDisableLock> ZoomController::CreateZoomDisableLock() {
+  return std::make_unique<DisableLockImpl>(weak_ptr_factory_.GetWeakPtr());
+}
+
+void ZoomController::AddDisableLock() {
+  zoom_disable_lock_count_++;
+  if (zoom_disable_lock_count_ == 1) {
+    saved_zoom_mode_ = zoom_mode_;
+    SetZoomModeInternal(ZOOM_MODE_DISABLED);
+  }
+}
+
+void ZoomController::RemoveDisableLock() {
+  CHECK_GT(zoom_disable_lock_count_, 0);
+  zoom_disable_lock_count_--;
+  if (zoom_disable_lock_count_ == 0 && !web_contents()->IsBeingDestroyed()) {
+    SetZoomModeInternal(saved_zoom_mode_);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController::Manager);

@@ -8,6 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace zoom {
+class ZoomDisableLock;
+}
+
 namespace gfx {
 class Point;
 }
@@ -51,6 +55,7 @@ class TopChromeWebUIController : public ui::MojoWebUIController {
 
  private:
   base::WeakPtr<Embedder> embedder_;
+  std::unique_ptr<zoom::ZoomDisableLock> zoom_lock_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEB_UI_CONTROLLER_H_

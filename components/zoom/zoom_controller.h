@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -42,6 +43,16 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
 
  private:
   friend class base::RefCounted<ZoomRequestClient>;
+};
+
+// A lock that disables zoom for the WebContents associated with the
+// ZoomController as long as it is held.
+class ZoomDisableLock {
+ public:
+  virtual ~ZoomDisableLock() = default;
+
+ protected:
+  ZoomDisableLock() = default;
 };
 
 // ZoomController manages zoom changes and the Omnibox zoom icon. It can be
@@ -183,6 +194,11 @@ class ZoomController : public content::WebContentsObserver {
   // Sets the zoom mode, which defines zoom behavior (see enum ZoomMode).
   void SetZoomMode(ZoomMode zoom_mode);
 
+  // Creates a lock that disables zoom. Zoom is disabled as long as the lock
+  // is alive. When all locks are destroyed, the zoom mode is restored to what
+  // it was.
+  std::unique_ptr<ZoomDisableLock> CreateZoomDisableLock();
+
   // Set and query whether or not the page scale factor is one.
   void SetPageScaleFactorIsOneForTesting(bool is_one);
   bool PageScaleFactorIsOne() const;
@@ -203,6 +219,7 @@ class ZoomController : public content::WebContentsObserver {
 
  private:
   friend class ::ZoomControllerTest;
+  class DisableLockImpl;
 
   // A class to (i) be owned by WebContents as UserData, and (ii) own and manage
   // all the ZoomControllers in that WebContents.
@@ -249,6 +266,14 @@ class ZoomController : public content::WebContentsObserver {
   // change only affects sites with the given host.
   void UpdateState(const std::string& host);
 
+  // Applies a zoom mode change immediately, bypassing the disable-lock
+  // guard in SetZoomMode(). Only the lock plumbing (and SetZoomMode()
+  // itself, when no locks are held) should call this.
+  void SetZoomModeInternal(ZoomMode new_mode);
+
+  void AddDisableLock();
+  void RemoveDisableLock();
+
   // Stores the FrameTreeNodeId of the RenderFrameHost this ZoomController was
   // created with.
   const content::FrameTreeNodeId frame_tree_node_id_;
@@ -283,6 +308,20 @@ class ZoomController : public content::WebContentsObserver {
 
   // If set, this value is returned in PageScaleFactorIsOne.
   std::optional<bool> page_scale_factor_is_one_for_testing_;
+
+  // The number of active ZoomDisableLocks. Zoom is disabled as long as this
+  // count is greater than 0.
+  int zoom_disable_lock_count_ = 0;
+
+  // The zoom mode to restore once all locks are released: the mode active when
+  // the first lock was acquired, or the most recently requested mode if
+  // SetZoomMode() was called while locked.
+  ZoomMode saved_zoom_mode_ = ZOOM_MODE_DEFAULT;
+
+  // Used to produce weak pointers for ZoomDisableLocks to safely detect
+  // ZoomController destruction. Must be the last member variable to ensure it
+  // is destroyed first.
+  base::WeakPtrFactory<ZoomController> weak_ptr_factory_{this};
 };
 
 }  // namespace zoom

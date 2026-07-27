@@ -6,6 +6,7 @@
 
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
 TopChromeWebUIController::TopChromeWebUIController(
@@ -25,7 +26,7 @@ void TopChromeWebUIController::WebUIPrimaryPageChanged(content::Page& page) {
   if (!zoom_controller) {
     zoom_controller = zoom::ZoomController::CreateForWebContents(web_contents);
   }
-  zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
+  zoom_lock_ = zoom_controller->CreateZoomDisableLock();
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::Get(web_contents->GetSiteInstance());
   zoom_map->SetTemporaryZoomLevel(
