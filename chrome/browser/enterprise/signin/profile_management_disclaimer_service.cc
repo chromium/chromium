@@ -32,6 +32,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -53,8 +55,13 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "url/gurl.h"
 
 namespace {
+
+// TODO(b/537182192): Replace with a P-link.
+constexpr char kSignalsDisclaimerLearnMoreURL[] =
+    "https://support.google.com/chrome/a/answer/16191236";
 
 bool CanTryPolicyRegistration(std::optional<base::Time> last_failure_time) {
   if (!last_failure_time) {
@@ -321,8 +328,8 @@ void ProfileManagementDisclaimerService::
       !IsSigninRegistration(*state_->access_point));
 }
 
-bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired()
-    const {
+bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired(
+    BrowserWindowInterface* browser) const {
   if (!base::FeatureList::IsEnabled(
           policy::features::kDeviceSignalsBackfillDisclaimer)) {
     return false;
@@ -348,12 +355,19 @@ bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired()
     return false;
   }
 
+  // Browsers hosting the privacy article should not be blocked by the
+  // disclaimer. `browser` can be nullptr when this is called by the profile
+  // picker.
+  if (browser && browser == privacy_article_browser_.get()) {
+    return false;
+  }
+
   return true;
 }
 
 void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
     BrowserWindowInterface* browser) {
-  if (!IsDeviceSignalsDisclaimerRequired()) {
+  if (!IsDeviceSignalsDisclaimerRequired(browser)) {
     return;
   }
 
@@ -582,4 +596,33 @@ void ProfileManagementDisclaimerService::
     OnDeviceSignalsCollectionConsentGranted() {
   profile_->GetPrefs()->SetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+}
+
+void ProfileManagementDisclaimerService::OpenPrivacyPolicyArticlePopUp() {
+  // If the dedicated browser for the privacy article has already been created
+  // bring it to focus instead of creating a new window.
+  if (privacy_article_browser_) {
+    if (auto* window = privacy_article_browser_->GetWindow()) {
+      window->Show();
+      window->Activate();
+      return;
+    } else {
+      privacy_article_browser_.reset();
+    }
+  }
+
+  // This will open a new browser window in the same profile. We need to make
+  // sure the dialog is not shown in that window to allow the user to read the
+  // article.
+  Browser::CreateParams create_params(Browser::TYPE_POPUP, &*profile_,
+                                      /*user_gesture=*/true);
+  Browser* popup_browser = Browser::Create(create_params);
+  if (popup_browser) {
+    privacy_article_browser_ = popup_browser->GetWeakPtr();
+    chrome::AddSelectedTabWithURL(popup_browser,
+                                  GURL(kSignalsDisclaimerLearnMoreURL),
+                                  ui::PAGE_TRANSITION_LINK);
+    popup_browser->GetWindow()->Show();
+    popup_browser->GetWindow()->Activate();
+  }
 }

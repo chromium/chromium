@@ -50,4 +50,8 @@ export class TestManagedUserProfileNoticeBrowserProxy extends TestBrowserProxy
   setMatchMediaMatches(matches: boolean): void {
     this.mediaQueryList_.matches = matches;
   }
+
+  learnMoreClicked() {
+    this.methodCalled('learnMoreClicked');
+  }
 }

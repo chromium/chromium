@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/policy/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -74,6 +76,31 @@ namespace {
   if (!result && log_on_failure) {
     LOG(ERROR) << "WaitForAndClickButton failed for " << app << " -> "
                << button_id << ": " << result.message();
+  }
+  return result;
+}
+
+::testing::AssertionResult WaitForAndClickLearnMoreLink(
+    content::WebContents* web_contents) {
+  content::WaitForLoadStop(web_contents);
+  std::string script = R"(
+    new Promise((resolve) => {
+      const interval = setInterval(() => {
+        const link = document.querySelector('managed-user-profile-notice-app')
+                         ?.shadowRoot?.querySelector('signals-disclaimer')
+                         ?.shadowRoot?.querySelector('.subtitle a');
+        if (link && !link.hidden) {
+          clearInterval(interval);
+          link.click();
+          resolve(true);
+        }
+      }, 50);
+    });
+  )";
+
+  ::testing::AssertionResult result = content::ExecJs(web_contents, script);
+  if (!result) {
+    LOG(ERROR) << "WaitForAndClickLearnMoreLink failed: " << result.message();
   }
   return result;
 }
@@ -607,6 +634,67 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   destroyed_waiter2.Wait();
   EXPECT_TRUE(new_browser->GetProfile()->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
+                       LearnMore_OpenAndClose) {
+  // The dialog opens in the current browser.
+  SimulateBrowserFocus(browser());
+  views::Widget* widget = widget_waiter_->WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
+  ASSERT_TRUE(dialog_contents);
+
+  // Click `Learn More` and wait for the popup browser to open.
+  ui_test_utils::BrowserCreatedObserver browser_creation_observer;
+  ASSERT_TRUE(WaitForAndClickLearnMoreLink(dialog_contents));
+  Browser* popup_browser = browser_creation_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  auto* browser_collection =
+      ProfileBrowserCollection::GetForProfile(browser()->GetProfile());
+  EXPECT_EQ(browser_collection->GetSize(), 2);
+
+  // Simulate the user clicking Close button and wait for destruction.
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
+      popup_browser);
+  BrowserView::GetBrowserViewForBrowser(popup_browser)
+      ->GetWidget()
+      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  browser_destroyed_observer.Wait();
+
+  EXPECT_EQ(browser_collection->GetSize(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
+                       LearnMore_OpenAndOpen) {
+  // The dialog opens in the current browser.
+  SimulateBrowserFocus(browser());
+  views::Widget* widget = widget_waiter_->WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  content::WebContents* dialog_contents = GetModalDialogWebContents(browser());
+  ASSERT_TRUE(dialog_contents);
+
+  // Click `Learn More` and wait for the popup browser to open.
+  ui_test_utils::BrowserCreatedObserver browser_creation_observer;
+  ASSERT_TRUE(WaitForAndClickLearnMoreLink(dialog_contents));
+  Browser* popup_browser = browser_creation_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+  auto* browser_collection =
+      ProfileBrowserCollection::GetForProfile(browser()->GetProfile());
+  EXPECT_EQ(browser_collection->GetSize(), 2u);
+
+  popup_browser->DidBecomeInactive();
+  SimulateBrowserFocus(browser());
+
+  // Click `Learn More` again.
+  ASSERT_FALSE(popup_browser->IsActive());
+  ASSERT_TRUE(WaitForAndClickLearnMoreLink(dialog_contents));
+
+  // New window should not be opened, instead the existing popup should be
+  // focused.
+  ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
+  EXPECT_EQ(browser_collection->GetSize(), 2u);
 }
 
 // Profile picker tests are located in

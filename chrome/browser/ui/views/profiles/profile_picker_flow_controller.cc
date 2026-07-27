@@ -899,7 +899,7 @@ void ProfilePickerFlowController::OnProfileLoadedForPicking(
   ProfileManagementDisclaimerService* disclaimer_service =
       ProfileManagementDisclaimerServiceFactory::GetForProfile(profile);
   if (disclaimer_service &&
-      disclaimer_service->IsDeviceSignalsDisclaimerRequired()) {
+      disclaimer_service->IsDeviceSignalsDisclaimerRequired(nullptr)) {
     // Cleanup the step controller if already initialized.
     if (IsStepInitialized(Step::kDeviceSignalsDisclaimer)) {
       UnregisterStep(Step::kDeviceSignalsDisclaimer);

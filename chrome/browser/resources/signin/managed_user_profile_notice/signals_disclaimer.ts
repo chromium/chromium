@@ -13,6 +13,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
 import {getCss} from './signals_disclaimer.css.js';
 import {getHtml} from './signals_disclaimer.html.js';
 
@@ -45,6 +46,10 @@ export class SignalsDisclaimerElement extends SignalsDisclaimerElementBase {
     const titleElement = this.shadowRoot.querySelector<HTMLElement>('.title');
     assert(titleElement);
     titleElement.focus();
+  }
+
+  protected onLearnMoreClick() {
+    ManagedUserProfileNoticeBrowserProxyImpl.getInstance().learnMoreClicked();
   }
 }
 

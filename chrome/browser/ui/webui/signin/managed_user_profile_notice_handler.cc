@@ -15,6 +15,8 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -184,6 +186,11 @@ void ManagedUserProfileNoticeHandler::RegisterMessages() {
       "cancel",
       base::BindRepeating(&ManagedUserProfileNoticeHandler::HandleCancel,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "learnMoreClicked",
+      base::BindRepeating(
+          &ManagedUserProfileNoticeHandler::HandleLearnMoreClicked,
+          base::Unretained(this)));
 }
 
 void ManagedUserProfileNoticeHandler::OnProfileAvatarChanged(
@@ -402,6 +409,15 @@ void ManagedUserProfileNoticeHandler::HandleCancel(
   }
   if (done_callback) {
     std::move(done_callback).Run();
+  }
+}
+
+void ManagedUserProfileNoticeHandler::HandleLearnMoreClicked(
+    const base::ListValue& args) {
+  auto* service = ProfileManagementDisclaimerServiceFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
+  if (service) {
+    service->OpenPrivacyPolicyArticlePopUp();
   }
 }
 

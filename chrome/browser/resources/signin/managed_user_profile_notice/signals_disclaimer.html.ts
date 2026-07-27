@@ -21,7 +21,10 @@ export function getHtml(this: SignalsDisclaimerElement) {
   </div>
   <div id="text-container">
     <h1 class="title" tabindex="-1">${this.i18n('signalsDisclaimerTitle')}</h1>
-    <p class="subtitle">${this.i18n('signalsDisclaimerSubtitle')}</p>
+    <p class="subtitle">
+      ${this.i18n('signalsDisclaimerSubtitle')}
+      <a href="#" @click="${this.onLearnMoreClick}">${this.i18n('learnMore')}</a>
+    </p>
   </div>
   <div class="disclaimer-container">
     <section class="disclaimer">

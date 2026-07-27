@@ -108,6 +108,7 @@ class ManagedUserProfileNoticeHandler
   void HandleInitializedWithSize(const base::ListValue& args);
   void HandleProceed(const base::ListValue& args);
   void HandleCancel(const base::ListValue& args);
+  void HandleLearnMoreClicked(const base::ListValue& args);
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
   // Processes the enterprise-signin-dialog-behavior command line switch.

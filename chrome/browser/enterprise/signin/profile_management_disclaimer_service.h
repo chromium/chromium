@@ -86,10 +86,13 @@ class ProfileManagementDisclaimerService
   AutoAcceptManagementDisclaimerUntilReset();
 
   // Returns whether the device signals disclaimer is required for this profile.
-  bool IsDeviceSignalsDisclaimerRequired() const;
+  bool IsDeviceSignalsDisclaimerRequired(
+      BrowserWindowInterface* browser = nullptr) const;
 
   // Marks the consent as granted in the profile preferences.
   void OnDeviceSignalsCollectionConsentGranted();
+
+  void OpenPrivacyPolicyArticlePopUp();
 
   // The device signals disclaimer is gated behind --no-first-run, however for
   // accurate browser tests it can be bypassed using this function.
@@ -196,6 +199,7 @@ class ProfileManagementDisclaimerService
 
   std::vector<base::WeakPtr<BrowserWindowInterface>>
       opened_device_signals_disclaimers_;
+  base::WeakPtr<BrowserWindowInterface> privacy_article_browser_;
   bool bypass_no_first_run_ = false;
 
   std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
