@@ -16,6 +16,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -217,15 +218,27 @@ UIImage* GetEnterpriseIcon() {
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
-  NSMutableString* accessibilityLabel =
-      [NSMutableString stringWithString:_name];
-  if (_email) {
-    [accessibilityLabel appendFormat:@", %@", _email];
+  if (_name) {
+    if ([self managed]) {
+      return l10n_util::GetNSStringF(
+          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS,
+          base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
+          base::SysNSStringToUTF16([self managementDescription]));
+    } else {
+      return l10n_util::GetNSStringF(
+          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME,
+          base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email));
+    }
+  } else {
+    if ([self managed]) {
+      return l10n_util::GetNSStringF(
+          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS,
+          base::SysNSStringToUTF16(_email),
+          base::SysNSStringToUTF16([self managementDescription]));
+    } else {
+      return _email;
+    }
   }
-  if ([self managed]) {
-    [accessibilityLabel appendFormat:@". %@", [self managementDescription]];
-  }
-  return accessibilityLabel;
 }
 
 // Updates the frame size.
