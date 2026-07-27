@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -48,16 +49,15 @@ TEST_F(RemoteValidationTest, CspDisallowedInitial) {
       std::move(source_list);
   policies.push_back(std::move(policy));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<ValidationStatus> future;
   auto validation = RemoteValidation::Create(
       url::Origin::Create(GURL("https://example.com")), "disallowed.com",
       shared_url_loader_factory_, std::move(policies), log_use_counter.Get(),
-      base::BindLambdaForTesting(
-          [&](ValidationStatus status) { run_loop.Quit(); }));
+      future.GetCallback());
 
   test_url_loader_factory_.AddResponse(
       "https://disallowed.com/.well-known/webauthn", "");
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 
   histograms.ExpectUniqueSample("WebAuthentication.CspAllow.Remote", false, 1);
 }
@@ -80,16 +80,15 @@ TEST_F(RemoteValidationTest, CspAllowedInitial) {
       std::move(source_list);
   policies.push_back(std::move(policy));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<ValidationStatus> future;
   auto validation = RemoteValidation::Create(
       url::Origin::Create(GURL("https://example.com")), "allowed.com",
       shared_url_loader_factory_, std::move(policies), log_use_counter.Get(),
-      base::BindLambdaForTesting(
-          [&](ValidationStatus status) { run_loop.Quit(); }));
+      future.GetCallback());
 
   test_url_loader_factory_.AddResponse(
       "https://allowed.com/.well-known/webauthn", "");
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 
   histograms.ExpectUniqueSample("WebAuthentication.CspAllow.Remote", true, 1);
 }
@@ -113,12 +112,11 @@ TEST_F(RemoteValidationTest, CspDisallowedRedirect) {
       std::move(source_list);
   policies.push_back(std::move(policy));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<ValidationStatus> future;
   auto validation = RemoteValidation::Create(
       url::Origin::Create(GURL("https://example.com")), "allowed.com",
       shared_url_loader_factory_, std::move(policies), log_use_counter.Get(),
-      base::BindLambdaForTesting(
-          [&](ValidationStatus status) { run_loop.Quit(); }));
+      future.GetCallback());
 
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://disallowed.com/somewhere");
@@ -131,7 +129,7 @@ TEST_F(RemoteValidationTest, CspDisallowedRedirect) {
       GURL("https://allowed.com/.well-known/webauthn"),
       network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::OK), std::move(redirects));
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
 
   histograms.ExpectUniqueSample("WebAuthentication.CspAllow.Remote", false, 1);
 }
