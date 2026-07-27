@@ -91,7 +91,7 @@ TEST_F(PlatformRuntimeImplTest, LoadAndUnloadSuccess) {
   base::FilePath exe_path;
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &exe_path));
-#elif !BUILDFLAG(IS_FUCHSIA)
+#else
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 #endif
 
@@ -114,7 +114,7 @@ TEST_F(PlatformRuntimeImplTest, ProcessRequestHeaders) {
   base::FilePath exe_path;
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &exe_path));
-#elif !BUILDFLAG(IS_FUCHSIA)
+#else
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 #endif
 

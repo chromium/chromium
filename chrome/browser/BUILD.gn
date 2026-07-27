@@ -1281,6 +1281,7 @@ source_set("core") {
       "//chrome/browser/device_api:impl",
       "//chrome/browser/dictation",
       "//chrome/browser/direct_sockets",
+      "//chrome/browser/error_reporting",
       "//chrome/browser/ui:browser_actions_impl",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/lens",
@@ -1295,6 +1296,7 @@ source_set("core") {
       "//chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble:mojo_bindings",
       "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webnn_internals",
+      "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
@@ -1306,13 +1308,6 @@ source_set("core") {
       "//components/soda:constants",
       "//components/soda:utils",
       "//components/webapps/isolated_web_apps/key_distribution",
-    ]
-  }
-
-  if (!is_android && !is_fuchsia) {
-    deps += [
-      "//chrome/browser/error_reporting",
-      "//chrome/browser/ui/webui/whats_new",
     ]
   }
 

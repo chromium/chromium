@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-is_desktop = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
+is_desktop = is_mac || is_win || is_linux || is_chromeos
 
 source_set("browser_bound_key_deleter") {
   sources = [

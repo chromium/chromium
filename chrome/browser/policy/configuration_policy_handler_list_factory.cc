@@ -543,11 +543,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kManagedWebHidBlockedForUrls,
     base::Value::Type::LIST },
 // Policies for all platforms - End
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  { key::kChromeSuggestionsSettings,
-    optimization_guide::prefs::kChromeSuggestionsSettings,
-    base::Value::Type::INTEGER },
-#endif
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
     prefs::kAccessibilityPerformanceFilteringAllowed,
@@ -628,6 +623,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserLabsEnabled,
     chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy,
     base::Value::Type::BOOLEAN },
+  { key::kChromeSuggestionsSettings,
+    optimization_guide::prefs::kChromeSuggestionsSettings,
+    base::Value::Type::INTEGER },
 #if defined(TOOLKIT_VIEWS)
   { key::kSideSearchEnabled,
     side_search_prefs::kSideSearchEnabled,
