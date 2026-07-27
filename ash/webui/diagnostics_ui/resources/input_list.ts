@@ -133,7 +133,9 @@ export class InputListElement extends InputListElementBase {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    const keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
+    const keyboardTester =
+        this.shadowRoot!.querySelector<KeyboardTesterElement>(
+            'keyboard-tester');
     assert(keyboardTester);
     this.keyboardTester = keyboardTester;
   }

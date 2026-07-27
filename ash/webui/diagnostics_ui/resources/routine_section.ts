@@ -282,8 +282,9 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   }
 
   private getResultListElem(): RoutineResultListElement {
-    const routineResultList: RoutineResultListElement|null =
-        this.shadowRoot!.querySelector('routine-result-list');
+    const routineResultList =
+        this.shadowRoot!.querySelector<RoutineResultListElement>(
+            'routine-result-list');
     assert(routineResultList);
     return routineResultList;
   }

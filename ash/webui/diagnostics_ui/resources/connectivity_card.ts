@@ -99,7 +99,9 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       null;
 
   private getRoutineSectionElem(): RoutineSectionElement {
-    const routineSection = this.shadowRoot!.querySelector('routine-section');
+    const routineSection =
+        this.shadowRoot!.querySelector<RoutineSectionElement>(
+            'routine-section');
     assert(routineSection);
     return routineSection;
   }

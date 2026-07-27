@@ -155,11 +155,12 @@ export class SystemPageElement extends SystemPageElementBase {
     this.isActive = isActive;
     if (isActive) {
       // Focus the topmost system page element.
-      const overviewCard: OverviewCardElement|null =
-          this.shadowRoot!.querySelector('#overviewCard');
+      const overviewCard =
+          this.shadowRoot!.querySelector<OverviewCardElement>('#overviewCard');
       assert(overviewCard);
-      const overviewCardContainer: HTMLDivElement|null =
-          overviewCard.shadowRoot!.querySelector('#overviewCardContainer');
+      const overviewCardContainer =
+          overviewCard.shadowRoot!.querySelector<HTMLDivElement>(
+              '#overviewCardContainer');
       assert(overviewCardContainer);
       overviewCardContainer.focus();
       // TODO(ashleydp): Remove when a call can be made at a higher component

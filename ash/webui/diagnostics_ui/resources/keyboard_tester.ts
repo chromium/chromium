@@ -434,8 +434,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     this.inputDataProvider.observeKeyEvents(
         this.keyboard.id, this.receiver.$.bindNewPipeAndPassRemote());
     this.addEventListeners();
-    const title: HTMLElement|null =
-        this.shadowRoot!.querySelector('div[slot="title"]');
+    const title =
+        this.shadowRoot!.querySelector<HTMLElement>('div[slot="title"]');
     this.$.dialog.getNative().removeAttribute('aria-describedby');
     this.$.dialog.showModal();
     title?.focus();
@@ -465,8 +465,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
 
   close(): void {
     if (this.shouldDisplayDiagram) {
-      const diagram: KeyboardDiagramElement|null =
-          this.shadowRoot!.querySelector('#diagram');
+      const diagram =
+          this.shadowRoot!.querySelector<KeyboardDiagramElement>('#diagram');
       assert(diagram);
       diagram.resetAllKeys();
     }
