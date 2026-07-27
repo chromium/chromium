@@ -7934,8 +7934,6 @@ data/indexeddb/force_close_event.html
 data/indexeddb/force_close_event.js
 data/indexeddb/get_all_chunking.html
 data/indexeddb/get_all_chunking.js
-data/indexeddb/get_all_large_values.html
-data/indexeddb/get_all_large_values.js
 data/indexeddb/index_test.html
 data/indexeddb/index_test.js
 data/indexeddb/key_path_test.html
