@@ -53,9 +53,18 @@ public class VerticalTabUtils {
         return outValue.getFloat();
     }
 
+    /** Feature parameter name for enabling dragging out tab group headers. */
+    public static final String GROUP_HEADER_DRAG_PARAM = "group_header_drag";
+
     /** Returns whether expand-on-hover behavior is enabled for Vertical Tabs. */
     public static boolean isExpandOnHoverEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+    }
+
+    /** Returns whether dragging out tab group headers is enabled for Vertical Tabs. */
+    public static boolean isGroupHeaderDragEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, GROUP_HEADER_DRAG_PARAM, false);
     }
 }

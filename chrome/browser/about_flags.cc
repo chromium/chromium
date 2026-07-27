@@ -2504,9 +2504,18 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExpandOnHover[] = {
     {"expand_on_hover", "true"}};
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_GroupHeaderDrag[] = {
+    {"group_header_drag", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidVerticalTabs_ExpandOnHoverAndGroupHeaderDrag[] = {
+        {"expand_on_hover", "true"},
+        {"group_header_drag", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with expand-on-hover", kAndroidVerticalTabs_ExpandOnHover, nullptr},
+    {"with group-header-drag", kAndroidVerticalTabs_GroupHeaderDrag, nullptr},
+    {"with expand-on-hover and group-header-drag",
+     kAndroidVerticalTabs_ExpandOnHoverAndGroupHeaderDrag, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
