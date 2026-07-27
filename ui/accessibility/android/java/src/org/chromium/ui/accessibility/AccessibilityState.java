@@ -539,7 +539,7 @@ public class AccessibilityState {
         getDelegate().setServiceIdsForTesting(newServiceId, isAccessibilityTool);
     }
 
-    protected static void uninitializeForTesting() {
+    public static void uninitializeForTesting() {
         getDelegate().uninitializeForTesting();
     }
 }

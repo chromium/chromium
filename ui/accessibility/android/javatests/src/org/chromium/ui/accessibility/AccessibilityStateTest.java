@@ -13,7 +13,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.test.filters.SmallTest;
 
@@ -29,12 +28,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSettings;
 
@@ -43,6 +39,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper.BuilderForTests;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {AccessibilityStateTest.ShadowAccessibilityServiceInfo.class})
+@Config(shadows = {AccessibilityStateTestHelper.ShadowAccessibilityServiceInfo.class})
 public class AccessibilityStateTest {
     private static final String EVENT_TYPE_MASK_ERROR =
             "Conversion of event masks to event types not correct.";
@@ -85,29 +82,13 @@ public class AccessibilityStateTest {
         mDelegate = AccessibilityState.getDelegate();
 
         // Reset all flags to empty/default state.
-        setEnabledAccessibilityServiceList(new ArrayList<>());
-        setEnabledAccessibilityServices(null);
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, new ArrayList<>());
         mDelegate.updateAccessibilityServices();
     }
 
     @After
     public void tearDown() throws Exception {
         mCloseableMocks.close();
-    }
-
-    private void setEnabledAccessibilityServices(String value) {
-        Settings.Secure.putString(
-                mContext.getContentResolver(),
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-                value);
-    }
-
-    private void setEnabledAccessibilityServiceList(List<AccessibilityServiceInfo> services) {
-        ShadowAccessibilityManager shadowManager =
-                Shadows.shadowOf(
-                        (AccessibilityManager)
-                                mContext.getSystemService(Context.ACCESSIBILITY_SERVICE));
-        shadowManager.setEnabledAccessibilityServiceList(services);
     }
 
     private AccessibilityServiceInfo createPasswordManagerServiceInfoWithFlags(int flags) {
@@ -224,7 +205,10 @@ public class AccessibilityStateTest {
     @SmallTest
     public void testEnabledServices() {
         String enabledServices = "placeholder:services";
-        setEnabledAccessibilityServices(enabledServices);
+        AccessibilityServiceInfo service1 = new BuilderForTests().setId("placeholder").build();
+        AccessibilityServiceInfo service2 = new BuilderForTests().setId("services").build();
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(service1, service2));
 
         Assert.assertEquals(enabledServices, mDelegate.getEnabledServiceString(mContext));
     }
@@ -237,7 +221,7 @@ public class AccessibilityStateTest {
         List<AccessibilityServiceInfo> serviceInfoList = new ArrayList<>();
         serviceInfoList.add(service1);
         serviceInfoList.add(service2);
-        setEnabledAccessibilityServiceList(serviceInfoList);
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, serviceInfoList);
 
         List<AccessibilityServiceInfo> runningServices = mDelegate.getRunningServiceInfoList();
         Assert.assertNotNull(runningServices);
@@ -265,19 +249,19 @@ public class AccessibilityStateTest {
         // Convert each mask to a set of eventTypes.
         AccessibilityServiceInfo serviceEmpty =
                 new BuilderForTests().setEventTypes(serviceEventMask_empty).build();
-        setEnabledAccessibilityServiceList(List.of(serviceEmpty));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceEmpty));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_empty = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceFull =
                 new BuilderForTests().setEventTypes(serviceEventMask_full).build();
-        setEnabledAccessibilityServiceList(List.of(serviceFull));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceFull));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_full = AccessibilityState.relevantEventTypesForCurrentServices();
 
         AccessibilityServiceInfo serviceTest =
                 new BuilderForTests().setEventTypes(serviceEventMask_test).build();
-        setEnabledAccessibilityServiceList(List.of(serviceTest));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(serviceTest));
         mDelegate.updateAccessibilityServices();
         Set<Integer> outcome_test = AccessibilityState.relevantEventTypesForCurrentServices();
 
@@ -314,7 +298,8 @@ public class AccessibilityStateTest {
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(
                         AccessibilityStateDelegateImpl.PASSWORD_MANAGER_FLAG_TYPE_MASK);
-        setEnabledAccessibilityServiceList(List.of(passwordManagerService));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
         Assert.assertTrue(mDelegate.areOnlyPasswordManagerMasksRequested());
@@ -334,7 +319,8 @@ public class AccessibilityStateTest {
 
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(flags_mask);
-        setEnabledAccessibilityServiceList(List.of(passwordManagerService));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
         Assert.assertTrue(mDelegate.areOnlyPasswordManagerMasksRequested());
@@ -355,7 +341,8 @@ public class AccessibilityStateTest {
 
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(flags_mask);
-        setEnabledAccessibilityServiceList(List.of(passwordManagerService));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(passwordManagerService));
         mDelegate.updateAccessibilityServices();
 
         Assert.assertFalse(mDelegate.areOnlyPasswordManagerMasksRequested());
@@ -369,9 +356,7 @@ public class AccessibilityStateTest {
                                 AccessibilityStateDelegateImpl.PASSWORD_MANAGER_FLAG_TYPE_MASK)
                         .setId(AccessibilityState.AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)
                         .build();
-        startTestWithService(
-                myService,
-                "android/com.android.server.autofill.AutofillCompatAccessibilityService");
+        startTestWithService(myService);
 
         mDelegate.updateAccessibilityServices();
 
@@ -444,7 +429,8 @@ public class AccessibilityStateTest {
 
         // Now enable the proper config, and ensure we do not enter an infinite loop and that
         // we now show touch exploration as being enabled.
-        setEnabledAccessibilityServiceList(List.of(properConfigService));
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(
+                mContext, List.of(properConfigService));
 
         mDelegate.updateAccessibilityServices();
 
@@ -465,8 +451,7 @@ public class AccessibilityStateTest {
                 AccessibilityEvent.TYPE_VIEW_CLICKED | AccessibilityEvent.TYPE_VIEW_FOCUSED;
         AccessibilityServiceInfo newService =
                 new BuilderForTests().setEventTypes(newServiceEventMask).build();
-        startTestWithService(
-                newService, "com.example.google/app.accessibility.AccessibilityService");
+        startTestWithService(newService);
         RobolectricUtil.runAllBackgroundAndUi();
 
         Set<Integer> expectedEventTypes =
@@ -547,83 +532,9 @@ public class AccessibilityStateTest {
     }
 
     private void startTestWithService(AccessibilityServiceInfo newService) {
-        startTestWithService(
-                newService, "com.example.google/app.accessibility.AccessibilityService");
-    }
-
-    private void startTestWithService(AccessibilityServiceInfo newService, String serviceName) {
         Assert.assertNotNull(newService);
         Assert.assertFalse(AccessibilityState.isAnyAccessibilityServiceEnabled());
-        setEnabledAccessibilityServiceList(List.of(newService));
-        setEnabledAccessibilityServices(serviceName);
-    }
-
-    public static class BuilderForTests {
-
-        private String mId = "com.example.google/app.accessibility.AccessibilityService";
-        private int mEventTypes;
-        private int mFeedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
-        private int mFlags;
-        private int mCapabilities;
-
-        public BuilderForTests setId(String id) {
-            this.mId = id;
-            return this;
-        }
-
-        public BuilderForTests setEventTypes(int eventTypes) {
-            this.mEventTypes = eventTypes;
-            return this;
-        }
-
-        public BuilderForTests setFeedbackType(int feedbackType) {
-            this.mFeedbackType = feedbackType;
-            return this;
-        }
-
-        public BuilderForTests setFlags(int flags) {
-            this.mFlags = flags;
-            return this;
-        }
-
-        public BuilderForTests setCapabilities(int capabilities) {
-            this.mCapabilities = capabilities;
-            return this;
-        }
-
-        public AccessibilityServiceInfo build() {
-            AccessibilityServiceInfo service = new AccessibilityServiceInfo();
-            service.eventTypes = mEventTypes;
-            service.feedbackType = mFeedbackType;
-            service.flags = mFlags;
-
-            ShadowAccessibilityServiceInfo shadow = Shadow.extract(service);
-            shadow.mCapabilities = mCapabilities;
-            shadow.mId = mId;
-
-            return service;
-        }
-    }
-
-    @Implements(AccessibilityServiceInfo.class)
-    public static class ShadowAccessibilityServiceInfo {
-        public int mCapabilities;
-        public String mId;
-
-        @Implementation
-        protected int getCapabilities() {
-            return mCapabilities;
-        }
-
-        @Implementation
-        protected String getId() {
-            return mId;
-        }
-
-        @Implementation
-        protected boolean isAccessibilityTool() {
-            return false;
-        }
+        AccessibilityStateTestHelper.setEnabledAccessibilityServiceList(mContext, List.of(newService));
     }
 
     @Implements(Settings.Global.class)
