@@ -3083,11 +3083,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   enum class MultiCaptureChanged { kStarted, kStopped };
 
   // Notifies embedders that a the `state` of a multi capture with `label`
-  // changed for a certain `capturer_rfh_id`.
+  // changed for a certain `capturer_rfh_id`. `stop_callback` can be used by
+  // the embedder to terminate the newly started capture.
   virtual void NotifyMultiCaptureStateChanged(
       GlobalRenderFrameHostId capturer_rfh_id,
       const std::string& label,
-      MultiCaptureChanged state);
+      MultiCaptureChanged state,
+      base::OnceClosure stop_callback);
 
   // BTM will be enabled in browser contexts for which this returns true. The
   // default implementation returns true for all contexts.

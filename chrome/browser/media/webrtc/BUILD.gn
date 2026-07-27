@@ -281,6 +281,10 @@ source_set("webrtc") {
       "multi_capture/multi_capture_data_service.h",
       "multi_capture/multi_capture_data_service_factory.cc",
       "multi_capture/multi_capture_data_service_factory.h",
+      "multi_capture/multi_capture_session_controller.cc",
+      "multi_capture/multi_capture_session_controller.h",
+      "multi_capture/multi_capture_session_controller_factory.cc",
+      "multi_capture/multi_capture_session_controller_factory.h",
       "multi_capture/multi_capture_usage_indicator_service.cc",
       "multi_capture/multi_capture_usage_indicator_service.h",
       "multi_capture/multi_capture_usage_indicator_service_factory.cc",
@@ -429,6 +433,7 @@ if (!is_android) {
         "capture_handle_app_window_browsertest.cc",
         "get_all_screens_media_browsertest.cc",
         "multi_capture/multi_capture_data_service_browsertest.cc",
+        "multi_capture/multi_capture_session_controller_browsertest.cc",
         "multi_capture/multi_capture_usage_indicator_service_browsertest.cc",
       ]
       deps += [

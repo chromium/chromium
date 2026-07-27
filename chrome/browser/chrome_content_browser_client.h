@@ -1104,7 +1104,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void NotifyMultiCaptureStateChanged(
       content::GlobalRenderFrameHostId capturer_rfh_id,
       const std::string& label,
-      MultiCaptureChanged state) override;
+      MultiCaptureChanged state,
+      base::OnceClosure stop_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool ShouldEnableBtm(content::BrowserContext* browser_context) override;

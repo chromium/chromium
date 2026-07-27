@@ -604,6 +604,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_ash.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_session_controller.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_session_controller_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -1356,20 +1358,31 @@ void MaybeAddCondition(
 void NotifyMultiCaptureStarted(const std::string& label,
                                content::WebContents* web_contents,
                                const webapps::AppId* app_id,
-                               content::BrowserContext* browser_context) {
+                               content::BrowserContext* browser_context,
+                               base::OnceClosure stop_callback) {
   const url::Origin origin =
       url::Origin::Create(web_contents->GetLastCommittedURL());
   CHECK(app_id);
 
   CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
-                  GetForBrowserContext(web_contents->GetBrowserContext()))
+                  GetForBrowserContext(browser_context))
       .MultiCaptureStarted(label, *app_id);
+
+  CHECK_DEREF(
+      multi_capture::MultiCaptureSessionControllerFactory::GetForBrowserContext(
+          browser_context))
+      .MultiCaptureStarted(label, std::move(stop_callback));
 }
 
 void NotifyMultiCaptureStopped(const std::string& label,
                                content::BrowserContext* browser_context) {
   CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
                   GetForBrowserContext(browser_context))
+      .MultiCaptureStopped(label);
+
+  CHECK_DEREF(
+      multi_capture::MultiCaptureSessionControllerFactory::GetForBrowserContext(
+          browser_context))
       .MultiCaptureStopped(label);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -9054,14 +9067,15 @@ void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
 void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
     content::GlobalRenderFrameHostId capturer_rfh_id,
     const std::string& label,
-    MultiCaptureChanged state) {
+    MultiCaptureChanged state,
+    base::OnceClosure stop_callback) {
   switch (state) {
     case MultiCaptureChanged::kStarted: {
       WebContents* web_contents = WebContents::FromRenderFrameHost(
           RenderFrameHost::FromID(capturer_rfh_id));
       NotifyMultiCaptureStarted(
           label, web_contents, web_app::WebAppTabHelper::GetAppId(web_contents),
-          web_contents->GetBrowserContext());
+          web_contents->GetBrowserContext(), std::move(stop_callback));
     } break;
     case MultiCaptureChanged::kStopped:
       NotifyMultiCaptureStopped(

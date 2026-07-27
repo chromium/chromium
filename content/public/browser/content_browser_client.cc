@@ -1851,7 +1851,8 @@ void ContentBrowserClient::MaybePrewarmHttpDiskCache(
 void ContentBrowserClient::NotifyMultiCaptureStateChanged(
     GlobalRenderFrameHostId capturer_rfh_id,
     const std::string& label,
-    MultiCaptureChanged state) {}
+    MultiCaptureChanged state,
+    base::OnceClosure stop_callback) {}
 
 bool ContentBrowserClient::ShouldEnableBtm(BrowserContext* browser_context) {
   return true;

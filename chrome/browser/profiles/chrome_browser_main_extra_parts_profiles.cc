@@ -467,6 +467,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_download_observer_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_session_controller_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
@@ -906,6 +907,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   multi_capture::MultiCaptureDataServiceFactory::GetInstance();
   multi_capture::MultiCaptureUsageIndicatorServiceFactory::GetInstance();
+  multi_capture::MultiCaptureSessionControllerFactory::GetInstance();
 
   if (chromeos::features::
           IsMicrosoftOneDriveIntegrationForEnterpriseEnabled()) {

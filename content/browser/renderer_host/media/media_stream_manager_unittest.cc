@@ -305,7 +305,8 @@ class TestBrowserClient : public ContentBrowserClient {
               NotifyMultiCaptureStateChanged,
               (GlobalRenderFrameHostId render_frame_host_id,
                const std::string& label,
-               MultiCaptureChanged state),
+               MultiCaptureChanged state,
+               base::OnceClosure stop_callback),
               (override));
 
  private:
