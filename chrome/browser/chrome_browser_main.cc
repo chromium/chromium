@@ -365,8 +365,8 @@ void DeleteMediaHistoryDatabase(const base::FilePath& profile_path) {
   sql::Database::Delete(db_path);
 }
 
-void DeleteDeprecatedPrivacySandboxDatabases(
-    const base::FilePath& profile_path) {
+void DeleteDeprecatedPrivacySandboxData(const base::FilePath& profile_path) {
+  // Delete the deprecated Privacy Sandbox databases.
   static constexpr struct {
     base::FilePath::StringViewType db_name;
     std::string_view histogram_name;
@@ -390,6 +390,13 @@ void DeleteDeprecatedPrivacySandboxDatabases(
     if (exists) {
       sql::Database::Delete(db_path);
     }
+  }
+
+  // Delete the BrowsingTopicsState file.
+  base::FilePath topics_state_path =
+      profile_path.Append(FILE_PATH_LITERAL("BrowsingTopicsState"));
+  if (base::PathExists(topics_state_path)) {
+    base::DeleteFile(topics_state_path);
   }
 }
 #endif
@@ -1603,14 +1610,13 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeleteMediaHistoryDatabase, profile->GetPath()));
 
-  // Delete the deprecated Privacy Sandbox databases if they still exist.
+  // Delete the deprecated Privacy Sandbox data if they still exist.
   // TODO(crbug.com/462465887): Remove this in August 2028.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&DeleteDeprecatedPrivacySandboxDatabases,
-                     profile->GetPath()));
+      base::BindOnce(&DeleteDeprecatedPrivacySandboxData, profile->GetPath()));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
