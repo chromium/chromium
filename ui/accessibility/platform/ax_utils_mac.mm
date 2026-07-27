@@ -6,8 +6,13 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
+#include <string.h>
 
+#include <optional>
+
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
@@ -126,6 +131,40 @@ id AXTextMarkerRangeStart(id text_marker_range) {
 id AXTextMarkerRangeEnd(id text_marker_range) {
   return CFBridgingRelease(AXTextMarkerRangeCopyEndMarker(
       (__bridge AXTextMarkerRangeRef)text_marker_range));
+}
+
+std::optional<NSRange> NSValueGetRange(id value) {
+  NSValue* valueValue = base::apple::ObjCCast<NSValue>(value);
+  if (!valueValue) {
+    return std::nullopt;
+  }
+
+  // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
+  // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
+  // and @encode(...) is a NUL-terminated string literal. Foundation exposes
+  // no length-bearing counterpart, so strcmp is the documented comparison.
+  if (UNSAFE_BUFFERS(strcmp(valueValue.objCType, @encode(NSRange))) != 0) {
+    return std::nullopt;
+  }
+
+  return valueValue.rangeValue;
+}
+
+std::optional<NSSize> NSValueGetSize(id value) {
+  NSValue* valueValue = base::apple::ObjCCast<NSValue>(value);
+  if (!valueValue) {
+    return std::nullopt;
+  }
+
+  // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
+  // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
+  // and @encode(...) is a NUL-terminated string literal. Foundation exposes
+  // no length-bearing counterpart, so strcmp is the documented comparison.
+  if (UNSAFE_BUFFERS(strcmp(valueValue.objCType, @encode(NSSize))) != 0) {
+    return std::nullopt;
+  }
+
+  return valueValue.sizeValue;
 }
 
 }  // namespace ui

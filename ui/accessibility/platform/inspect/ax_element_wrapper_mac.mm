@@ -9,12 +9,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 
-#include <ostream>
+#include <optional>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -22,6 +21,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 
 // TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
@@ -287,14 +287,9 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFTypeRef> parameter_ref(
         CFBridgingRetain(parameter));
-    // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
-    // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
-    // and @encode(...) is a NUL-terminated string literal. Foundation exposes
-    // no length-bearing counterpart, so strcmp is the documented comparison.
-    if ([parameter isKindOfClass:[NSValue class]] &&
-        !UNSAFE_BUFFERS(strcmp([parameter objCType], @encode(NSRange)))) {
-      NSRange range = [parameter rangeValue];
-      parameter_ref.reset(AXValueCreate(kAXValueTypeCFRange, &range));
+
+    if (std::optional<NSRange> range = ui::NSValueGetRange(parameter)) {
+      parameter_ref.reset(AXValueCreate(kAXValueTypeCFRange, &range.value()));
     }
 
     // Get value.

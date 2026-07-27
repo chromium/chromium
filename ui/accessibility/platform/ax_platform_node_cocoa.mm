@@ -7,9 +7,10 @@
 #include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -2652,16 +2653,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXStringForRange:(id)parameter {
-  // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
-  // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
-  // and @encode(...) is a NUL-terminated string literal. Foundation exposes
-  // no length-bearing counterpart, so strcmp is the documented comparison.
-  if (![parameter isKindOfClass:[NSValue class]] ||
-      (0 != UNSAFE_BUFFERS(strcmp([parameter objCType], @encode(NSRange))))) {
-    return nil;
+  if (std::optional<NSRange> range = ui::NSValueGetRange(parameter)) {
+    return [self accessibilityStringForRange:range.value()];
   }
 
-  return [self accessibilityStringForRange:[parameter rangeValue]];
+  return nil;
 }
 
 - (id)AXRangeForPosition:(id)parameter {

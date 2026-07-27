@@ -10,7 +10,6 @@
 #include <execinfo.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <algorithm>
 #include <iterator>
@@ -22,7 +21,6 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -426,15 +424,6 @@ AXTextEdit::AXTextEdit(const AXTextEdit& other) = default;
 AXTextEdit::~AXTextEdit() = default;
 
 }  // namespace ui
-
-bool ui::IsNSRange(id value) {
-  // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
-  // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
-  // and @encode(...) is a NUL-terminated string literal. Foundation exposes
-  // no length-bearing counterpart, so strcmp is the documented comparison.
-  return [value isKindOfClass:[NSValue class]] &&
-         0 == UNSAFE_BUFFERS(strcmp([value objCType], @encode(NSRange)));
-}
 
 // Per-node half of WebKit's `AXCoreObject::isEmptyGroup()` parity (the group
 // role and subtree-walk halves live in -subrole / -isEmptyGroupSubtree):
@@ -3486,8 +3475,8 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     [self setAccessibilityFocused:[value boolValue]];
   }
   if ([attribute isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
-    if (ui::IsNSRange(value)) {
-      [self setAccessibilitySelectedTextRange:[(NSValue*)value rangeValue]];
+    if (std::optional<NSRange> range = ui::NSValueGetRange(value)) {
+      [self setAccessibilitySelectedTextRange:range.value()];
     }
   }
   if ([attribute

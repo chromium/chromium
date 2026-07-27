@@ -37,9 +37,6 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTextEdit {
   id __strong edit_text_marker;
 };
 
-// Returns true if the given object is an NSRange instance.
-bool IsNSRange(id value);
-
 // Per-node "announceable" predicate backing the Mac AXEmptyGroup subrole.
 // Returns true when `data` carries semantics that make the node (and therefore
 // any group ancestor wrapping it) non-empty for VoiceOver.
