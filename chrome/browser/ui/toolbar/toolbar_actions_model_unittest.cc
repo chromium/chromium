@@ -466,6 +466,9 @@ TEST_F(ToolbarActionsModelUnitTest,
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       0 /* kPinnedByDefault */, 1);
+  EXPECT_EQ(std::make_optional(true),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension->id()));
 }
 
 // Test that new extension actions are NOT pinned on installation when the
@@ -490,6 +493,9 @@ TEST_F(ToolbarActionsModelUnitTest,
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       1 /* kNotPinnedToggleOff */, 1);
+  EXPECT_EQ(std::make_optional(false),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension->id()));
 }
 
 // Test that new extension actions are NOT pinned on installation when the
@@ -513,6 +519,9 @@ TEST_F(ToolbarActionsModelUnitTest,
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       2 /* kNotPinnedFeatureDisabled */, 1);
+  EXPECT_EQ(std::make_optional(false),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension->id()));
 }
 
 // Test that new extension actions are NOT pinned on installation when the
@@ -1257,6 +1266,9 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
 
 TEST_F(ToolbarActionsModelUnitTest, DefaultPinnedByPolicy) {
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+
   Init();
 
   extensions::TestExtensionDir dir;
@@ -1303,6 +1315,8 @@ TEST_F(ToolbarActionsModelUnitTest, DefaultPinnedByPolicy) {
   EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
   EXPECT_THAT(toolbar_model()->pinned_action_ids(),
               ::testing::ElementsAre(extension->id()));
+  EXPECT_FALSE(extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+      extension->id()));
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       3 /* kOverriddenByPolicy */, 1);

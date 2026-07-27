@@ -1014,6 +1014,23 @@ void ExtensionPrefs::SetExternalInstallFirstRun(
                       base::Value(true));
 }
 
+std::optional<bool> ExtensionPrefs::WasPinnedByDefault(
+    const ExtensionId& extension_id) const {
+  bool was_pinned = false;
+  if (ReadPrefAsBoolean(extension_id, pref_names::kWasPinnedByDefault,
+                        &was_pinned)) {
+    return was_pinned;
+  }
+  return std::nullopt;
+}
+
+void ExtensionPrefs::SetWasPinnedByDefault(const ExtensionId& extension_id,
+                                           bool was_pinned) {
+  DCHECK(crx_file::id_util::IdIsValid(extension_id));
+  UpdateExtensionPref(extension_id, pref_names::kWasPinnedByDefault,
+                      base::Value(was_pinned));
+}
+
 bool ExtensionPrefs::SetAlertSystemFirstRun() {
   if (prefs_->GetBoolean(pref_names::kAlertsInitialized)) {
     return true;

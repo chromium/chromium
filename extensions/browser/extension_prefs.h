@@ -520,6 +520,12 @@ class ExtensionPrefs : public KeyedService {
   bool IsExternalInstallFirstRun(const ExtensionId& extension_id) const;
   void SetExternalInstallFirstRun(const ExtensionId& extension_id);
 
+  // Whether the extension was pinned by default upon installation.
+  // Returns std::nullopt if the extension was installed before this preference
+  // was introduced.
+  std::optional<bool> WasPinnedByDefault(const ExtensionId& extension_id) const;
+  void SetWasPinnedByDefault(const ExtensionId& extension_id, bool was_pinned);
+
   // Returns true if the extension notification code has already run for the
   // first time for this profile. Currently we use this flag to mean that any
   // extensions that would trigger notifications should get silently

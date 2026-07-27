@@ -136,11 +136,20 @@ void ToolbarActionsModel::OnExtensionInstalled(
   // Pin the extension if the policy enforces default pinning, OR if no policy
   // is set and the feature flag for pinning new extensions by default is
   // enabled.
-  if (pin_mode == extensions::ManagedToolbarPinMode::kDefaultPinned ||
-      (pin_mode == extensions::ManagedToolbarPinMode::kNotSet &&
-       base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault) &&
-       profile_->GetPrefs()->GetBoolean(prefs::kExtensionsPinnedByDefault))) {
+  const bool is_pinned_by_policy =
+      pin_mode == extensions::ManagedToolbarPinMode::kDefaultPinned;
+  const bool is_pinned_by_feature =
+      pin_mode == extensions::ManagedToolbarPinMode::kNotSet &&
+      base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kExtensionsPinnedByDefault);
+
+  if (is_pinned_by_policy || is_pinned_by_feature) {
     SetActionVisibility(extension->id(), true);
+  }
+
+  if (pin_mode == extensions::ManagedToolbarPinMode::kNotSet) {
+    extension_prefs_->SetWasPinnedByDefault(extension->id(),
+                                            is_pinned_by_feature);
   }
 }
 

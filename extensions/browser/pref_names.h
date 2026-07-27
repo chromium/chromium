@@ -175,6 +175,11 @@ inline constexpr char kEnterprisePromotionExpirationTime[] =
 inline constexpr char kHasDismissedEnterprisePromotion[] =
     "extensions.has_dismissed_enterprise_promotion";
 
+// A pref that stores whether the extension was pinned to the toolbar by default
+// upon installation. This excludes extensions that are pinned by default due to
+// policies.
+inline constexpr char kWasPinnedByDefault[] = "was_pinned_by_default";
+
 }  // namespace pref_names
 }  // namespace extensions
 
