@@ -557,12 +557,13 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
   CHECK(d3d12_buffer)
       << "[WebNN] Failed to get D3D12 buffer from shared image.";
 
-  // Validate the shared image matches TensorInfo.
-  // Note: Shared image size is guaranteed to be at-least the required size for
-  // the D3D buffer (may be larger due to alignment requirements).
-  const size_t buffer_size =
+  // Validate the shared image logical size matches TensorInfo.
+  // The logical size must equal PackedByteLength() since read/write access
+  // requires an exact buffer size. Only the backing heap allocation may be
+  // rounded up for alignment.
+  const size_t shared_image_byte_size =
       base::checked_cast<size_t>(representation->size().width());
-  if (buffer_size < tensor_info->descriptor.PackedByteLength()) {
+  if (shared_image_byte_size != tensor_info->descriptor.PackedByteLength()) {
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create tensor."));
   }
@@ -588,7 +589,7 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
     OrtExternalMemoryDescriptor memory_descriptor{};
     memory_descriptor.version = ORT_API_VERSION;
     memory_descriptor.handle_type = ORT_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP;
-    memory_descriptor.size_bytes = buffer_size;
+    memory_descriptor.size_bytes = shared_image_byte_size;
     memory_descriptor.native_handle = d3d12_heap_handle.get();
     ScopedOrtExternalMemoryHandle memory_handle;
     ScopedOrtStatus status(ort_interop_api->ImportMemory(
@@ -636,7 +637,7 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
         ScopedOrtMemoryInfo::Receiver(memory_info).get()));
 
     CHECK_STATUS(ort_api->CreateTensorWithDataAsOrtValue(
-        memory_info.get(), mapped_ptr, buffer_size, ort_shape.data(),
+        memory_info.get(), mapped_ptr, shared_image_byte_size, ort_shape.data(),
         ort_shape.size(), ort_data_type,
         ScopedOrtValue::Receiver(tensor).get()));
     CHECK(tensor.get());
@@ -655,8 +656,8 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
   // tensor is alive, so we also need to pass the handle to TensorImplOrt.
   return base::MakeRefCounted<TensorImplOrt>(
       std::move(receiver), *this, std::move(tensor_info),
-      std::move(representation), buffer_size, std::move(external_memory_handle),
-      std::move(tensor));
+      std::move(representation), shared_image_byte_size,
+      std::move(external_memory_handle), std::move(tensor));
 }
 
 std::string_view ContextImplOrt::GetBackendName() const {
