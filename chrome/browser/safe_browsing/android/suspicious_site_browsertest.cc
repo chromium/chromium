@@ -156,6 +156,44 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest, DismissalContinueAnyway) {
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
+                       AllowlistedSiteBypassesWarning) {
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  // 1. Navigate and click Continue anyway to allowlist the site.
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      GetActiveWebContents(), malicious_url,
+      /* number_of_navigations= */ 1);
+
+  auto* controller =
+      safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
+          GetActiveWebContents());
+  ASSERT_TRUE(controller);
+  controller->OnContinueButtonClicked();
+  EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
+      GetActiveWebContents()));
+
+  // 2. Navigate away to reset state.
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      GetActiveWebContents(), GURL("about:blank"),
+      /* number_of_navigations= */ 1);
+
+  // 3. Navigate back to the malicious URL. Because it was allowlisted, no
+  // dialog should be shown.
+  bool dialog_shown = false;
+  SuspiciousSiteControllerAndroid::SetDialogShownCallbackForTesting(
+      base::BindLambdaForTesting([&]() { dialog_shown = true; }));
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      GetActiveWebContents(), malicious_url,
+      /* number_of_navigations= */ 1);
+
+  EXPECT_FALSE(dialog_shown);
+  EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerAndroid::FromWebContents(
+      GetActiveWebContents()));
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteBrowserTest,
                        NavigateAwayDismissesWarning) {
   GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
   GURL safe_url = embedded_test_server()->GetURL("/title2.html");

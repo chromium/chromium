@@ -8,8 +8,12 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/safe_browsing/suspicious_site_dialog_view_android.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
@@ -162,7 +166,23 @@ void SuspiciousSiteControllerAndroid::MaybeShowDialog() {
     }
   }
 
-  // 4. Defer if native Android window is not attached or web contents is
+  // 4. Suppress and clean up if the site has been allowlisted by the user.
+  if (web_contents()->GetBrowserContext()) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    if (profile) {
+      HostContentSettingsMap* hcsm =
+          HostContentSettingsMapFactory::GetForProfile(profile);
+      if (hcsm &&
+          SuspiciousSiteWarningAllowlist(hcsm).IsSiteAllowedForHost(
+              std::string(web_contents()->GetLastCommittedURL().host()))) {
+        web_contents()->RemoveUserData(UserDataKey());
+        return;
+      }
+    }
+  }
+
+  // 5. Defer if native Android window is not attached or web contents is
   // hidden.
   ui::WindowAndroid* window_android = web_contents()->GetTopLevelNativeWindow();
   if (!window_android ||
@@ -254,6 +274,18 @@ void SuspiciousSiteControllerAndroid::OnContinueButtonClicked() {
       "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
       WarningOutcome::kBypassed);
   dialog_view_.reset();
+  if (web_contents()->GetBrowserContext()) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    if (profile) {
+      HostContentSettingsMap* hcsm =
+          HostContentSettingsMapFactory::GetForProfile(profile);
+      if (hcsm) {
+        SuspiciousSiteWarningAllowlist(hcsm).AllowSiteForHost(
+            std::string(web_contents()->GetLastCommittedURL().host()));
+      }
+    }
+  }
   // NOTE: Calling RemoveUserData synchronously destroys this object, so there
   // must be no member accesses after this point.
   web_contents()->RemoveUserData(UserDataKey());
