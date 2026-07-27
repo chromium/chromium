@@ -539,6 +539,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="362" label="RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME"/>
   <int value="363" label="RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME"/>
   <int value="364" label="RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME"/>
+  <int value="365" label="INSTALLED_APP_PROVIDER_FACTORY_INVALID_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

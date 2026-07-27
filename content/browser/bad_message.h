@@ -390,6 +390,7 @@ enum BadMessageReason {
   RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME = 362,
   RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 363,
   RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 364,
+  INSTALLED_APP_PROVIDER_FACTORY_INVALID_FRAME = 365,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

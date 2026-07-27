@@ -38,7 +38,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public boolean isInPrimaryMainFrame() {
+    public boolean isOutermostMainFrame() {
         return false;
     }
 

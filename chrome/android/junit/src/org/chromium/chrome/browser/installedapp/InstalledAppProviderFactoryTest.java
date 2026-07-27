@@ -34,7 +34,7 @@ public class InstalledAppProviderFactoryTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
-    private static final int RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME = 227;
+    private static final int INSTALLED_APP_PROVIDER_FACTORY_INVALID_FRAME = 365;
 
     @Before
     public void setUp() {
@@ -43,19 +43,20 @@ public class InstalledAppProviderFactoryTest {
     }
 
     @Test
-    public void testCreateImpl_primaryMainFrame() {
-        doReturn(true).when(mRenderFrameHost).isInPrimaryMainFrame();
+    public void testCreateImpl_outermostMainFrame() {
+        doReturn(true).when(mRenderFrameHost).isOutermostMainFrame();
         InstalledAppProviderFactory factory = new InstalledAppProviderFactory(mRenderFrameHost);
         InstalledAppProvider provider = factory.createImpl();
         assertNotNull(provider);
     }
 
     @Test
-    public void testCreateImpl_notPrimaryMainFrame() {
-        doReturn(false).when(mRenderFrameHost).isInPrimaryMainFrame();
+    public void testCreateImpl_notOutermostMainFrame() {
+        doReturn(false).when(mRenderFrameHost).isOutermostMainFrame();
         InstalledAppProviderFactory factory = new InstalledAppProviderFactory(mRenderFrameHost);
         InstalledAppProvider provider = factory.createImpl();
         assertNull(provider);
-        verify(mRenderFrameHost).terminateRendererDueToBadMessage(RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
+        verify(mRenderFrameHost)
+                .terminateRendererDueToBadMessage(INSTALLED_APP_PROVIDER_FACTORY_INVALID_FRAME);
     }
 }

@@ -72,9 +72,9 @@ public interface RenderFrameHost {
     @Nullable RenderFrameHost getMainFrame();
 
     /**
-     * @return Whether the frame is the primary main frame.
+     * @return Whether the frame is an outermost main frame.
      */
-    boolean isInPrimaryMainFrame();
+    boolean isOutermostMainFrame();
 
     /**
      * Fetch the canonical URL associated with the fame.
