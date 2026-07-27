@@ -154,7 +154,7 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
       (a.type_name != b.type_name || a.type_name.empty())) {
     return false;
   }
-  if (a.value != b.value) {
+  if (base::i18n::FoldCase(a.value) != base::i18n::FoldCase(b.value)) {
     return false;
   }
 
@@ -183,7 +183,8 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
                 GetValueForMemoryDataType(a, mem_type);
             std::optional<std::u16string_view> val_b =
                 GetValueForMemoryDataType(b, mem_type);
-            return val_a && val_b && *val_a == *val_b;
+            return val_a && val_b &&
+                   base::i18n::FoldCase(*val_a) == base::i18n::FoldCase(*val_b);
           })) {
         return true;
       }
@@ -196,7 +197,8 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
         result.metadata_list, [&meta](const EntryMetadata& result_meta) {
           return result_meta.type == meta.type &&
                  result_meta.type_name == meta.type_name &&
-                 result_meta.value != meta.value;
+                 base::i18n::FoldCase(result_meta.value) !=
+                     base::i18n::FoldCase(meta.value);
         });
   };
 
