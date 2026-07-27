@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {TextMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
@@ -42,6 +42,7 @@ suite('TextMenuElement', () => {
       'updating font preference property renders checkmark on the selected font item',
       async () => {
         const newFont = 'Serif';
+        chrome.readingMode.fontName = newFont;
         textMenu.settingsPrefs = {
           ...textMenu.settingsPrefs,
           font: newFont,
@@ -224,5 +225,99 @@ suite('TextMenuElement', () => {
     assertTrue(textMenu.$.menu.$.lazyMenu.get().open);
     textMenu.close();
     assertFalse(textMenu.$.menu.$.lazyMenu.get().open);
+  });
+});
+
+suite('TextMenuExpandableFonts', () => {
+  let textMenu: TextMenuElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const readingMode = new FakeReadingMode();
+    // Mock 5 supported fonts so truncation kicks in
+    readingMode.supportedFonts = [
+      'Poppins',
+      'Sans-serif',
+      'Serif',
+      'Arial',
+      'Comic Sans MS',
+    ];
+    // Default active font is the first one
+    readingMode.fontName = 'Poppins';
+    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+
+    textMenu = document.createElement('text-menu');
+    textMenu.areFontsLoaded = true;
+    document.body.appendChild(textMenu);
+    await microtasksFinished();
+    textMenu.open(document.body);
+    await microtasksFinished();
+  });
+
+  test('initial view shows top 3 fonts plus expand button', () => {
+    const fontGroupButtons =
+        textMenu.shadowRoot.querySelector('grouped-action-menu')!.shadowRoot
+            .querySelectorAll<HTMLButtonElement>(
+                'button[data-group-index="0"]');
+
+    // 3 fonts + 1 expand button = 4 buttons total
+    assertEquals(4, fontGroupButtons.length);
+
+    // Verify first 3 buttons have role="menuitemradio" and checkmark icon slots
+    for (let i = 0; i < 3; i++) {
+      assertEquals('menuitemradio', fontGroupButtons[i]!.getAttribute('role'));
+      assertTrue(!!fontGroupButtons[i]!.querySelector('.check-mark'));
+    }
+
+    // Verify 4th button is the expand trigger with role="menuitem" and NO
+    // checkmark slot
+    const expandButton = fontGroupButtons[3]!;
+    assertEquals('menuitem', expandButton.getAttribute('role'));
+    assertNull(expandButton.getAttribute('aria-checked'));
+    assertNull(expandButton.querySelector('.check-mark'));
+  });
+
+  test('expanding font menu reveals all supported fonts', async () => {
+    // Set active font in settingsPrefs so an item is selected
+    textMenu.settingsPrefs = {
+      ...textMenu.settingsPrefs,
+      font: 'Poppins',
+    };
+    await microtasksFinished();
+
+    // Initial state: 3 fonts + 1 expand item = 4 items
+    assertEquals(4, textMenu.$.menu.menuGroups[0]!.items.length);
+    assertEquals(
+        ToolbarEvent.EXPAND_FONTS_SENTINEL,
+        textMenu.$.menu.menuGroups[0]!.items[3]!.data);
+
+    // Expand the menu
+    textMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.FONT,
+        {detail: {data: ToolbarEvent.EXPAND_FONTS_SENTINEL}}));
+    await microtasksFinished();
+
+    // Verify all 5 fonts are now present
+    assertEquals(5, textMenu.$.menu.menuGroups[0]!.items.length);
+
+    // Verify checkmark selection is maintained (exactly 1 selected item)
+    const selectedItems =
+        textMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+    assertEquals(1, selectedItems.length);
+    assertEquals('Poppins', selectedItems[0]!.data);
+  });
+
+  test('closing the menu resets it to unexpanded state', async () => {
+    // Expand the menu
+    textMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.FONT,
+        {detail: {data: ToolbarEvent.EXPAND_FONTS_SENTINEL}}));
+    await microtasksFinished();
+    assertEquals(5, textMenu.$.menu.menuGroups[0]!.items.length);
+    // Close the menu
+    textMenu.close();
+    await microtasksFinished();
+    // Verify menu returned to unexpanded state (3 fonts + 1 expand = 4 items)
+    assertEquals(4, textMenu.$.menu.menuGroups[0]!.items.length);
   });
 });

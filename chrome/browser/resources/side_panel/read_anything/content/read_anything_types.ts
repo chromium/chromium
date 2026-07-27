@@ -128,6 +128,7 @@ export enum ToolbarEvent {
   SETTINGS_OPENED = 'settings-opened',
   SETTINGS_CLOSED = 'settings-closed',
   TRANSLATION_REQUESTED = 'translation-requested',
+  EXPAND_FONTS_SENTINEL = 'expand-fonts-sentinel',
 }
 
 // The available menu items in Reading mode
