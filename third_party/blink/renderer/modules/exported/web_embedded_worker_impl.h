@@ -50,6 +50,7 @@ namespace blink {
 
 class ServiceWorkerInstalledScriptsManager;
 class ServiceWorkerThread;
+class WorkerThread;
 struct CrossThreadFetchClientSettingsObjectData;
 
 // The implementation of WebEmbeddedWorker. This is responsible for starting
@@ -87,6 +88,7 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
   void TerminateWorkerContext() override;
 
   void WaitForShutdownForTesting();
+  WorkerThread* GetWorkerThreadForTesting() const;
 
  private:
   void StartWorkerThread(

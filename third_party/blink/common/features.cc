@@ -2221,6 +2221,11 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
+// Enables fallback to network request when the RaceNetworkRequest Mojo pipe is
+// disconnected.
+BASE_FEATURE(kServiceWorkerRaceNetworkRequestFallbackOnDisconnect,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // (crbug.com/352578800): Enables building a sysnthetic response by
 // ServiceWorker. For navigation requests, the pre-learned static response
 // header is returned in parallel with dispatching the network request.

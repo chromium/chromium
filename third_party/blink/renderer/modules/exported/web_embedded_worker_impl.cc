@@ -354,4 +354,8 @@ void WebEmbeddedWorkerImpl::WaitForShutdownForTesting() {
   worker_thread_->WaitForShutdownForTesting();
 }
 
+WorkerThread* WebEmbeddedWorkerImpl::GetWorkerThreadForTesting() const {
+  return worker_thread_.get();
+}
+
 }  // namespace blink

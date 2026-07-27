@@ -816,6 +816,7 @@ void ServiceWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(remote_associated_interfaces_);
   visitor->Trace(associated_interfaces_receiver_);
   visitor->Trace(active_fetch_respond_with_observers_);
+  visitor->Trace(race_network_requests_);
   WorkerGlobalScope::Trace(visitor);
 }
 
@@ -2825,16 +2826,45 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
   return WorkerGlobalScope::SetAttributeEventListener(event_type, listener);
 }
 
+ServiceWorkerGlobalScope::RaceNetworkRequestInfo::RaceNetworkRequestInfo(
+    ExecutionContext* execution_context,
+    int fetch_event_id,
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+        url_loader_factory,
+    bool fallback_on_disconnect_enabled)
+    : fetch_event_id_(fetch_event_id),
+      url_loader_factory_remote_(execution_context) {
+  if (fallback_on_disconnect_enabled) {
+    url_loader_factory_remote_.Bind(
+        std::move(url_loader_factory),
+        execution_context->GetTaskRunner(TaskType::kNetworking));
+  } else {
+    pending_url_loader_factory_ = std::move(url_loader_factory);
+  }
+}
+
 std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
 ServiceWorkerGlobalScope::FindRaceNetworkRequestURLLoaderFactory(
     const base::UnguessableToken& token) {
-  if (RaceNetworkRequestInfo result =
-          race_network_requests_.Take(String(token.ToString()));
-      result.IsValid()) {
-    fetch_event_ids_to_token_map_.erase(result.fetch_event_id);
-    return std::move(result.url_loader_factory);
+  const String token_key = String(token.ToString());
+  Member<RaceNetworkRequestInfo> info = race_network_requests_.Take(token_key);
+  if (info) {
+    fetch_event_ids_to_token_map_.erase(info->fetch_event_id());
+    if (info->IsValid()) {
+      return info->TakePendingRemote();
+    }
   }
   return std::nullopt;
+}
+
+void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequestsForTesting(
+    int fetch_event_id,
+    const base::UnguessableToken& token,
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+        url_loader_factory,
+    const KURL& request_url) {
+  InsertNewItemToRaceNetworkRequests(
+      fetch_event_id, token, std::move(url_loader_factory), request_url);
 }
 
 void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
@@ -2844,11 +2874,18 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
         url_loader_factory,
     const KURL& request_url) {
   auto race_network_request_token = String(token.ToString());
-  RaceNetworkRequestInfo info{
-      .fetch_event_id = fetch_event_id,
-      .url_loader_factory = std::move(url_loader_factory)};
-  auto insert_result = race_network_requests_.insert(race_network_request_token,
-                                                     std::move(info));
+  const bool fallback_on_disconnect_enabled = base::FeatureList::IsEnabled(
+      features::kServiceWorkerRaceNetworkRequestFallbackOnDisconnect);
+  auto* info = MakeGarbageCollected<RaceNetworkRequestInfo>(
+      this, fetch_event_id, std::move(url_loader_factory),
+      fallback_on_disconnect_enabled);
+  if (fallback_on_disconnect_enabled) {
+    info->remote().set_disconnect_handler(blink::BindOnce(
+        &ServiceWorkerGlobalScope::OnRaceNetworkRequestDisconnected,
+        WrapWeakPersistent(this), token));
+  }
+  auto insert_result =
+      race_network_requests_.insert(race_network_request_token, info);
   CHECK(insert_result.is_new_entry) << "Collided UnguessableToken";
   fetch_event_ids_to_token_map_.insert(fetch_event_id,
                                        std::move(race_network_request_token));
@@ -2860,6 +2897,15 @@ void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequests(
           fetch_event_ids_to_token_map_.Take(fetch_event_id);
       !token_to_remove.empty()) {
     race_network_requests_.erase(token_to_remove);
+  }
+}
+
+void ServiceWorkerGlobalScope::OnRaceNetworkRequestDisconnected(
+    const base::UnguessableToken& token) {
+  const String token_key = String(token.ToString());
+  if (Member<RaceNetworkRequestInfo> info =
+          race_network_requests_.Take(token_key)) {
+    fetch_event_ids_to_token_map_.erase(info->fetch_event_id());
   }
 }
 

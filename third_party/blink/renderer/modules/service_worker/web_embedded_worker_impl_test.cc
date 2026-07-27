@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +47,8 @@
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
@@ -628,6 +631,104 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
+  void RunRaceNetworkRequestFallbackOnDisconnectTest(bool feature_enabled) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        features::kServiceWorkerRaceNetworkRequestFallbackOnDisconnect,
+        feature_enabled);
+
+    std::unique_ptr<WebEmbeddedWorkerStartData> start_data = CreateStartData();
+    start_data->script_url = url_test_helpers::ToKURL(kEmptyURL);
+    FakeBrowserInterfaceBroker browser_interface_broker;
+    worker_->StartWorkerContext(
+        std::move(start_data),
+        /*installed_scripts_manager_params=*/nullptr,
+        /*content_settings=*/mojo::NullRemote(),
+        /*cache_storage=*/mojo::NullRemote(),
+        browser_interface_broker.BindNewPipeAndPassRemote(),
+        InterfaceRegistry::GetEmptyInterfaceRegistry(),
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
+        /*coep_reporting_observer=*/mojo::NullReceiver(),
+        /*dip_reporting_observer=*/mojo::NullReceiver());
+    mock_client_->WaitUntilScriptEvaluated();
+
+    WorkerThread* worker_thread = worker_->GetWorkerThreadForTesting();
+    base::RunLoop run_loop;
+    base::UnguessableToken token = base::UnguessableToken::Create();
+
+    worker_thread->GetTaskRunner(TaskType::kInternalDefault)
+        ->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              ASSERT_TRUE(worker_thread);
+              auto* global_scope =
+                  To<ServiceWorkerGlobalScope>(worker_thread->GlobalScope());
+              EXPECT_TRUE(global_scope);
+
+              class MockURLLoaderFactory
+                  : public network::mojom::blink::URLLoaderFactory {
+               public:
+                void CreateLoaderAndStart(
+                    mojo::PendingReceiver<network::mojom::blink::URLLoader>
+                        receiver,
+                    int32_t request_id,
+                    uint32_t options,
+                    const network::ResourceRequest& resource_request,
+                    mojo::PendingRemote<network::mojom::blink::URLLoaderClient>
+                        client,
+                    const net::MutableNetworkTrafficAnnotationTag&
+                        traffic_annotation) override {}
+                void Clone(mojo::PendingReceiver<
+                           network::mojom::blink::URLLoaderFactory> receiver)
+                    override {}
+              };
+
+              // Instantiate a MockURLLoaderFactory and bind it to a
+              // mojo::Receiver. Note: Resetting a bound mojo::Receiver
+              // explicitly dispatches a PEER_CLOSED signal to the
+              // HeapMojoRemote in ServiceWorkerGlobalScope, whereas resetting
+              // an un-bound PendingReceiver handle does not establish or signal
+              // pipe closure.
+              MockURLLoaderFactory mock_factory;
+              mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+                  pending_remote;
+              auto receiver = std::make_unique<
+                  mojo::Receiver<network::mojom::blink::URLLoaderFactory>>(
+                  &mock_factory,
+                  pending_remote.InitWithNewPipeAndPassReceiver());
+
+              global_scope->InsertNewItemToRaceNetworkRequestsForTesting(
+                  /*fetch_event_id=*/1, token, std::move(pending_remote),
+                  KURL("https://example.com"));
+
+              // Reset the receiver to simulate peer pipe disconnection.
+              receiver.reset();
+
+              // Mojo disconnect notification is posted asynchronously to the
+              // TaskType::kNetworking task runner. Post our verification task
+              // to the same TaskType::kNetworking task runner to rely on FIFO
+              // task queue ordering, ensuring OnRaceNetworkRequestDisconnected
+              // completes before we check the result.
+              global_scope->GetTaskRunner(TaskType::kNetworking)
+                  ->PostTask(
+                      FROM_HERE,
+                      base::BindLambdaForTesting([&, global_scope]() {
+                        auto result =
+                            global_scope
+                                ->FindRaceNetworkRequestURLLoaderFactory(token);
+                        if (feature_enabled) {
+                          EXPECT_FALSE(result.has_value());
+                        } else {
+                          EXPECT_TRUE(result.has_value());
+                        }
+                        run_loop.Quit();
+                      }));
+            }));
+    run_loop.Run();
+
+    worker_->TerminateWorkerContext();
+    worker_->WaitForShutdownForTesting();
+  }
+
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockServiceWorkerContextClient> mock_client_;
   std::unique_ptr<WebEmbeddedWorkerImpl> worker_;
@@ -640,8 +741,8 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
   worker_->StartWorkerContext(
       CreateStartData(),
       /*installed_scripts_manager_params=*/nullptr,
-      /*content_settings_proxy=*/mojo::NullRemote(),
-      /*cache_storage_remote=*/mojo::NullRemote(),
+      /*content_settings=*/mojo::NullRemote(),
+      /*cache_storage=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -668,8 +769,8 @@ TEST_F(WebEmbeddedWorkerImplTest, MAYBE_TerminateWhileWaitingForDebugger) {
   worker_->StartWorkerContext(
       std::move(start_data),
       /*installed_scripts_manager_params=*/nullptr,
-      /*content_settings_proxy=*/mojo::NullRemote(),
-      /*cache_storage_remote=*/mojo::NullRemote(),
+      /*content_settings=*/mojo::NullRemote(),
+      /*cache_storage=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -698,8 +799,8 @@ TEST_F(WebEmbeddedWorkerImplTest, MAYBE_ScriptNotFound) {
   worker_->StartWorkerContext(
       std::move(start_data),
       /*installed_scripts_manager_params=*/nullptr,
-      /*content_settings_proxy=*/mojo::NullRemote(),
-      /*cache_storage_remote=*/mojo::NullRemote(),
+      /*content_settings=*/mojo::NullRemote(),
+      /*cache_storage=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -730,8 +831,8 @@ TEST_F(WebEmbeddedWorkerImplTest,
       std::move(start_data),
       // CreateStartData(),
       /*installed_scripts_manager_params=*/nullptr,
-      /*content_settings_proxy=*/mojo::NullRemote(),
-      /*cache_storage_remote=*/mojo::NullRemote(),
+      /*content_settings=*/mojo::NullRemote(),
+      /*cache_storage=*/mojo::NullRemote(),
       browser_interface_broker.BindNewPipeAndPassRemote(),
       InterfaceRegistry::GetEmptyInterfaceRegistry(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -761,6 +862,16 @@ TEST_F(WebEmbeddedWorkerImplTest,
   // Terminate the worker for cleanup.
   worker_->TerminateWorkerContext();
   worker_->WaitForShutdownForTesting();
+}
+
+TEST_F(WebEmbeddedWorkerImplTest,
+       RaceNetworkRequestFallbackOnDisconnect_FeatureEnabled) {
+  RunRaceNetworkRequestFallbackOnDisconnectTest(/*feature_enabled=*/true);
+}
+
+TEST_F(WebEmbeddedWorkerImplTest,
+       RaceNetworkRequestFallbackOnDisconnect_FeatureDisabled) {
+  RunRaceNetworkRequestFallbackOnDisconnectTest(/*feature_enabled=*/false);
 }
 
 }  // namespace blink
