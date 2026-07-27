@@ -154,11 +154,9 @@ class IndigoOverlayLayoutManager : public views::LayoutManagerBase {
     gfx::Insets insets = child->GetInsets();
 
     if (tracked_rect && !tracked_rect->IsEmpty() && corner_offset) {
-      gfx::Point top_right = tracked_rect->top_right();
-      gfx::Point toolbar_top_right = top_right + *corner_offset;
-      return gfx::Point(
-          toolbar_top_right.x() - preferred_size.width() + insets.right(),
-          toolbar_top_right.y() - insets.top());
+      gfx::Point origin = tracked_rect->top_right() + *corner_offset;
+      origin.Offset(insets.right() - preferred_size.width(), -insets.top());
+      return origin;
     }
     return gfx::Point(kToolbarInitialOffset, kToolbarInitialOffset);
   }
