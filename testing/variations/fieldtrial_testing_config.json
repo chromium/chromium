@@ -18229,6 +18229,24 @@
             ]
         }
     ],
+    "OpenTranslationSettings": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TranslateOpenSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptGuideBatchSRPTuning": [
         {
             "platforms": [
@@ -24722,24 +24740,6 @@
                     "enable_features": [
                         "TrackEmptyRendererProcessesForReuse",
                         "TransientKeepAlivePolicy"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TranslateBubbleOpenSettings": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TranslateBubbleOpenSettings",
-                    "enable_features": [
-                        "TranslateOpenSettings"
                     ]
                 }
             ]
