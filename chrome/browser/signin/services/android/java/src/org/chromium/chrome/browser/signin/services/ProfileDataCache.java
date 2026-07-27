@@ -30,7 +30,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -40,7 +39,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
@@ -56,8 +54,7 @@ import java.util.function.Function;
  */
 @MainThread
 @NullMarked
-public class ProfileDataCache
-        implements IdentityManager.Observer, SubscriptionEligibilityService.Observer {
+public class ProfileDataCache implements IdentityManager.Observer {
     /** Observer to get notifications about changes in profile data. */
     public interface Observer {
 
@@ -94,20 +91,14 @@ public class ProfileDataCache
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final AccountsCache mAccountsCache = new AccountsCache();
-    private final boolean mAiTierRingEnabled;
-    private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
-    private final @Px int mRingThicknessPx;
 
     @VisibleForTesting
     ProfileDataCache(
             Context context,
             AccountManagerFacade accountManagerFacade,
             IdentityManager identityManager,
-            @Nullable SubscriptionEligibilityService subscriptionEligibilityService,
             @Px int imageSize,
-            @Px int ringThicknessPx,
-            @Nullable BadgeConfig badgeConfig,
-            boolean aiTierRingEnabled) {
+            @Nullable BadgeConfig badgeConfig) {
         assert identityManager != null;
         mContext = context;
         mAccountManagerFacade = accountManagerFacade;
@@ -120,41 +111,9 @@ public class ProfileDataCache
             mIdentityManagerAccountsChangeObserver = null;
         }
         mImageSize = imageSize;
-        mRingThicknessPx = ringThicknessPx;
         mDefaultBadgeConfig = badgeConfig;
-        mAiTierRingEnabled = aiTierRingEnabled;
-        mSubscriptionEligibilityService = subscriptionEligibilityService;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
         updateCache();
-    }
-
-    /**
-     * @param context Context of the application to extract resources from.
-     * @param identityManager IdentityManager to use.
-     * @param subscriptionEligibilityService SubscriptionEligibilityService to observe.
-     * @param imageSize Size of the image.
-     * @param ringThicknessPx The thickness of the AI tier ring in pixels.
-     * @param badgeConfig Badge config to use.
-     * @return A {@link ProfileDataCache} object configured to draw the AI tier ring. Note that the
-     *     final generated image size will be larger than imageSize (expanded by 2 * (ringThickness
-     *     + spacing)) if the ring is added.
-     */
-    public static ProfileDataCache createWithAiTierRingOrBadge(
-            Context context,
-            IdentityManager identityManager,
-            SubscriptionEligibilityService subscriptionEligibilityService,
-            @Px int imageSize,
-            @Px int ringThicknessPx,
-            @Nullable BadgeConfig badgeConfig) {
-        return new ProfileDataCache(
-                context,
-                AccountManagerFacadeProvider.getInstance(),
-                identityManager,
-                subscriptionEligibilityService,
-                imageSize,
-                ringThicknessPx,
-                badgeConfig,
-                /* aiTierRingEnabled= */ true);
     }
 
     /**
@@ -168,11 +127,8 @@ public class ProfileDataCache
                 context,
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
-                /* subscriptionEligibilityService= */ null,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                /* ringThicknessPx= */ 0,
-                /* badgeConfig= */ null,
-                /* aiTierRingEnabled= */ false);
+                /* badgeConfig= */ null);
     }
 
     /**
@@ -189,11 +145,8 @@ public class ProfileDataCache
                 context,
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
-                /* subscriptionEligibilityService= */ null,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                /* ringThicknessPx= */ 0,
-                BadgeConfig.create(badgeResId).withDefaultSizeChildAccountConfig().build(context),
-                /* aiTierRingEnabled= */ false);
+                BadgeConfig.create(badgeResId).withDefaultSizeChildAccountConfig().build(context));
     }
 
     /**
@@ -207,11 +160,8 @@ public class ProfileDataCache
                 context,
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
-                /* subscriptionEligibilityService= */ null,
                 context.getResources().getDimensionPixelSize(imageSizeResId),
-                /* ringThicknessPx= */ 0,
-                /* badgeConfig= */ null,
-                /* aiTierRingEnabled= */ false);
+                /* badgeConfig= */ null);
     }
 
     /**
@@ -312,9 +262,6 @@ public class ProfileDataCache
                         assumeNonNull(mAccountManagerAccountsChangeObserver));
             }
             mIdentityManager.addObserver(this);
-            if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
-                mSubscriptionEligibilityService.addObserver(this);
-            }
         }
         mObservers.addObserver(observer);
     }
@@ -327,9 +274,6 @@ public class ProfileDataCache
         mObservers.removeObserver(observer);
         if (mObservers.isEmpty()) {
             mIdentityManager.removeObserver(this);
-            if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
-                mSubscriptionEligibilityService.removeObserver(this);
-            }
             if (SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
                 mIdentityManager.removeObserver(
@@ -339,24 +283,6 @@ public class ProfileDataCache
                         assumeNonNull(mAccountManagerAccountsChangeObserver));
             }
         }
-    }
-
-    /** Implements {@link SubscriptionEligibilityService.Observer}. */
-    @Override
-    public void onAiSubscriptionTierChanged() {
-        // AI tier rings are only displayed for eligible tiers. We must update the cache
-        // when the tier changes so that the ring is applied (or removed) accordingly.
-        if (!mAiTierRingEnabled) return;
-        updateCache();
-    }
-
-    /** Implements {@link IdentityManager.Observer}. */
-    @Override
-    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        // AI tier rings are only displayed for the primary account. We must update the cache
-        // when the primary account changes so that the ring is applied (or removed) accordingly.
-        if (!mAiTierRingEnabled) return;
-        updateCache();
     }
 
     /** Implements {@link IdentityManager.Observer}. */
@@ -432,15 +358,8 @@ public class ProfileDataCache
                                 mContext.getResources(), accountInfo.getAccountImage(), mImageSize)
                         : mPlaceholderImage;
         BadgeConfig badgeConfig = getBadgeConfigForAccount(accountInfo.getId());
-        boolean hasAiTierRing = false;
-
         if (badgeConfig != null) {
             croppedAvatar = overlayBadgeOnUserPicture(badgeConfig, croppedAvatar);
-        } else if (isEligibleForAiTierRing(accountInfo)) {
-            croppedAvatar =
-                    AvatarGenerator.getAvatarWithAiTierRing(
-                            mContext, croppedAvatar, mRingThicknessPx);
-            hasAiTierRing = true;
         }
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
@@ -451,7 +370,7 @@ public class ProfileDataCache
                     accountInfo.getFullName(),
                     accountInfo.getGivenName(),
                     accountInfo.canHaveEmailAddressDisplayed(),
-                    hasAiTierRing);
+                    /* hasAiTierRing= */ false);
         } else {
             final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
             return new DisplayableProfileData(
@@ -461,16 +380,8 @@ public class ProfileDataCache
                     shouldPopulateNames ? accountInfo.getFullName() : null,
                     shouldPopulateNames ? accountInfo.getGivenName() : null,
                     accountInfo.canHaveEmailAddressDisplayed(),
-                    hasAiTierRing);
+                    /* hasAiTierRing= */ false);
         }
-    }
-
-    private boolean isEligibleForAiTierRing(AccountInfo accountInfo) {
-        if (!mAiTierRingEnabled || mSubscriptionEligibilityService == null) return false;
-        AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
-        boolean isPrimary =
-                primaryAccount != null && primaryAccount.getId().equals(accountInfo.getId());
-        return isPrimary && mSubscriptionEligibilityService.getAiSubscriptionTier() > 0;
     }
 
     private void fireOnAccountsUpdated(List<DisplayableProfileData> accounts) {

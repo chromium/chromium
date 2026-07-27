@@ -9,7 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +27,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -58,15 +56,12 @@ public class ProfileDataCacheUnitTest {
         return Arrays.asList(false, true);
     }
 
-    private static final int RING_THICKNESS = 3;
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(
                     spy(new FakeAccountManagerFacade()), spy(new FakeIdentityManager()));
 
     @Mock private ProfileDataCache.Observer mObserverMock;
-    @Mock private SubscriptionEligibilityService mSubscriptionEligibilityServiceMock;
 
     private ProfileDataCache mProfileDataCache;
 
@@ -602,145 +597,5 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getId(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
-    }
-
-    @Test
-    public void testAiTierRingEnabledAndPrimaryAccount() {
-        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        mProfileDataCache =
-                ProfileDataCache.createWithAiTierRingOrBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mSubscriptionEligibilityServiceMock,
-                        100,
-                        RING_THICKNESS,
-                        null);
-
-        DisplayableProfileData profileData =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertTrue(profileData.hasAiTierRing());
-    }
-
-    @Test
-    public void testAiTierRingDisabledForSecondaryAccount() {
-        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        mProfileDataCache =
-                ProfileDataCache.createWithAiTierRingOrBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mSubscriptionEligibilityServiceMock,
-                        100,
-                        RING_THICKNESS,
-                        null);
-
-        DisplayableProfileData primaryProfileData =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertTrue(primaryProfileData.hasAiTierRing());
-
-        DisplayableProfileData secondaryProfileData =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId());
-        Assert.assertFalse(secondaryProfileData.hasAiTierRing());
-    }
-
-    @Test
-    public void testAiTierRingYieldsToBadgeConfig() {
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        BadgeConfig errorBadge =
-                BadgeConfig.create(R.drawable.ic_error)
-                        .withDefaultSizeChildAccountConfig()
-                        .build(RuntimeEnvironment.application.getApplicationContext());
-
-        mProfileDataCache =
-                ProfileDataCache.createWithAiTierRingOrBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mSubscriptionEligibilityServiceMock,
-                        100,
-                        RING_THICKNESS,
-                        errorBadge);
-
-        DisplayableProfileData profileData =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertFalse(profileData.hasAiTierRing());
-    }
-
-    @Test
-    public void testPrimaryAccountChangedUpdatesCache() {
-        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        mProfileDataCache =
-                ProfileDataCache.createWithAiTierRingOrBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mSubscriptionEligibilityServiceMock,
-                        100,
-                        RING_THICKNESS,
-                        null);
-
-        // Before sign-in, neither is primary, so no ring
-        DisplayableProfileData profileData1 =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertFalse(profileData1.hasAiTierRing());
-
-        // Simulate sign in with ACCOUNT1
-        mProfileDataCache.addObserver(mObserverMock);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // The cache should be updated and the ring should now be present on ACCOUNT1
-        DisplayableProfileData newProfileData1 =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertTrue(newProfileData1.hasAiTierRing());
-
-        // Simulate sign in with ACCOUNT2 instead
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(null);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT2);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // The cache should be updated and the ring should now be present on ACCOUNT2
-        DisplayableProfileData newProfileData2 =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId());
-        Assert.assertTrue(newProfileData2.hasAiTierRing());
-
-        // And ACCOUNT1 should no longer have it
-        DisplayableProfileData updatedProfileData1 =
-                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
-        Assert.assertFalse(updatedProfileData1.hasAiTierRing());
-
-        // Observer should be notified
-        verify(mObserverMock, org.mockito.Mockito.atLeastOnce()).onProfileDataUpdated(any());
-    }
-
-    @Test
-    public void testAiTierRingRegistersAndUnregistersObserver() {
-        mProfileDataCache =
-                ProfileDataCache.createWithAiTierRingOrBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),
-                        mAccountManagerTestRule.getIdentityManager(),
-                        mSubscriptionEligibilityServiceMock,
-                        100,
-                        RING_THICKNESS,
-                        null);
-
-        mProfileDataCache.addObserver(mObserverMock);
-        verify(mSubscriptionEligibilityServiceMock).addObserver(mProfileDataCache);
-
-        mProfileDataCache.removeObserver(mObserverMock);
-        verify(mSubscriptionEligibilityServiceMock).removeObserver(mProfileDataCache);
     }
 }

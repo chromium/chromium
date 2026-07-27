@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -38,7 +37,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -58,8 +56,6 @@ import java.util.List;
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheRenderTest {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
-
-    private static final int RING_THICKNESS = 3;
 
     // TODO(crbug.com/493130564) - Remove the data source parameterization after
     // MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
@@ -104,7 +100,6 @@ public class ProfileDataCacheRenderTest {
     private FrameLayout mContentView;
     private ImageView mImageView;
     @Mock private ProfileDataCache.Observer mObserver;
-    @Mock private SubscriptionEligibilityService mSubscriptionEligibilityServiceMock;
     private ProfileDataCache mProfileDataCache;
 
     @BeforeClass
@@ -130,11 +125,8 @@ public class ProfileDataCacheRenderTest {
                                     sActivity,
                                     mAccountManagerTestRule.getAccountManagerFacade(),
                                     mAccountManagerTestRule.getIdentityManager(),
-                                    /* subscriptionEligibilityService= */ null,
                                     mImageSize,
-                                    /* ringThicknessPx= */ 0,
-                                    /* badgeConfig= */ null,
-                                    /* aiTierRingEnabled= */ false);
+                                    /* badgeConfig= */ null);
                 });
     }
 
@@ -164,11 +156,8 @@ public class ProfileDataCacheRenderTest {
                                     sActivity,
                                     mAccountManagerTestRule.getAccountManagerFacade(),
                                     mAccountManagerTestRule.getIdentityManager(),
-                                    /* subscriptionEligibilityService= */ null,
                                     mImageSize,
-                                    /* ringThicknessPx= */ 0,
-                                    /* badgeConfig= */ null,
-                                    /* aiTierRingEnabled= */ false);
+                                    /* badgeConfig= */ null);
 
                     final DisplayableProfileData profileData =
                             mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
@@ -208,52 +197,11 @@ public class ProfileDataCacheRenderTest {
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testAiTierRingIsScaled() throws IOException {
-        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mProfileDataCache =
-                            ProfileDataCache.createWithAiTierRingOrBadge(
-                                    sActivity,
-                                    mAccountManagerTestRule.getIdentityManager(),
-                                    mSubscriptionEligibilityServiceMock,
-                                    mImageSize,
-                                    RING_THICKNESS,
-                                    /* badgeConfig= */ null);
-                    mProfileDataCache.addObserver(mObserver);
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> mProfileDataCache.hasProfileDataForTesting(TestAccounts.ACCOUNT1.getId()));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    int ringSpacingPx =
-                            sActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            org.chromium.components.browser_ui.util.R.dimen
-                                                    .ai_tier_ring_spacing);
-                    int expectedSize = mImageSize + 2 * (RING_THICKNESS + ringSpacingPx);
-                    checkImageIsScaled(TestAccounts.ACCOUNT1.getId(), expectedSize);
-                });
-        mRenderTestRule.render(mImageView, "profile_data_cache_avatar_ai_tier_ring" + mImageSize);
-    }
-
-    private void checkImageIsScaled(CoreAccountId accountId, int expectedSize) {
+    private void checkImageIsScaled(CoreAccountId accountId) {
         DisplayableProfileData displayableProfileData = mProfileDataCache.getById(accountId);
         Drawable profileDataImage = displayableProfileData.getImage();
-        assertEquals(expectedSize, profileDataImage.getIntrinsicHeight());
-        assertEquals(expectedSize, profileDataImage.getIntrinsicWidth());
+        assertEquals(mImageSize, profileDataImage.getIntrinsicHeight());
+        assertEquals(mImageSize, profileDataImage.getIntrinsicWidth());
         mImageView.setImageDrawable(profileDataImage);
-    }
-
-    private void checkImageIsScaled(CoreAccountId accountId) {
-        checkImageIsScaled(accountId, mImageSize);
     }
 }

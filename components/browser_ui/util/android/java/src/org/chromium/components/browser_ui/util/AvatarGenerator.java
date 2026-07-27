@@ -225,8 +225,6 @@ public class AvatarGenerator {
 
     /**
      * Wraps the given avatar in a custom drawable that renders an AI tier status ring around it.
-     * Note that the final generated image size will be larger than avatar's size (expanded by 2 *
-     * (ringThickness + spacing)).
      *
      * @param context the context used to retrieve display metrics.
      * @param avatar the existing avatar drawable to wrap.
