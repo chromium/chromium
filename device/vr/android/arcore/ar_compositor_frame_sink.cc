@@ -463,9 +463,6 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
 
     viz::TransferableResource::MetadataOverride render_resource_overrides = {
         .is_overlay_candidate = false,
-        .origin = frame_type == FrameType::kHasWebGlContent
-                      ? kBottomLeft_GrSurfaceOrigin
-                      : kTopLeft_GrSurfaceOrigin,
     };
 
     auto renderer_resource = viz::TransferableResource::Make(
@@ -513,7 +510,6 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
 
   viz::TransferableResource::MetadataOverride camera_resource_overrides = {
       .is_overlay_candidate = false,
-      .origin = kBottomLeft_GrSurfaceOrigin,
   };
 
   // Additionally append to the resource_list

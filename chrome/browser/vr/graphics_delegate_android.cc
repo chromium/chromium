@@ -176,7 +176,7 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
 
   shared_buffer_->shared_image = mailbox_bridge_->CreateSharedImage(
       std::move(gmb_handle), format, buffer_size, gfx::ColorSpace(),
-      shared_image_usage, shared_buffer_->sync_token);
+      kTopLeft_GrSurfaceOrigin, shared_image_usage, shared_buffer_->sync_token);
   DVLOG(2) << ": CreateSharedImage, mailbox="
            << shared_buffer_->shared_image->mailbox().ToDebugString()
            << ", SyncToken=" << shared_buffer_->sync_token.ToDebugString()

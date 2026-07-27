@@ -98,7 +98,8 @@ class XrImageTransportBase {
   // Returns true if the buffer was resized and its sync token updated.
   bool ResizeSharedBuffer(WebXrPresentationState* webxr,
                           const gfx::Size& size,
-                          WebXrSharedBuffer* buffer);
+                          WebXrSharedBuffer* buffer,
+                          GrSurfaceOrigin surface_origin);
 
   // This method provides an abstraction to the caller about whether the system
   // is running in SharedBuffer mode or not, and returns the texture that the

@@ -67,6 +67,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override;
 

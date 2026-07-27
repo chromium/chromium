@@ -46,7 +46,8 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
   WebXrSharedBuffer* camera_image_shared_buffer =
       webxr->GetAnimatingFrame()->camera_image_shared_buffer.get();
   bool was_resized =
-      ResizeSharedBuffer(webxr, frame_size, camera_image_shared_buffer);
+      ResizeSharedBuffer(webxr, frame_size, camera_image_shared_buffer,
+                         kBottomLeft_GrSurfaceOrigin);
   if (was_resized) {
     DCHECK(camera_image_shared_buffer->sync_token.HasData());
     DVLOG(3) << __func__
