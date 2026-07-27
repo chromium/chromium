@@ -96,8 +96,11 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
 
   // Notify the effect of the latest scroll offset and overflow properties.
   // The effect will be disabled when the offset is non-zero or overflow is
-  // hidden. Note: All dimensions are in device pixels.
-  void OnFrameUpdated(const gfx::SizeF& viewport_size,
+  // hidden. Note: All dimensions are in device pixels. `view_width` is the
+  // width of the embedding native view and is used for edge-swipe gating;
+  // `scrollable_viewport_height` reflects the page's scrollable viewport.
+  void OnFrameUpdated(float view_width,
+                      float scrollable_viewport_height,
                       const gfx::PointF& content_scroll_offset,
                       const gfx::SizeF& content_size,
                       bool root_overflow_y_hidden);

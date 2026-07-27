@@ -17,6 +17,8 @@ const float kDipScale = 1.f;
 const float kDefaultEdgeWidth =
     OverscrollRefresh::kDefaultNavigationEdgeWidth * kDipScale;
 const gfx::SizeF kViewport(100, 100);
+const float kViewWidth = 100;
+const float kViewportHeight = 100;
 const gfx::PointF kZeroOffset(0, 0);
 const gfx::SizeF kContentSize(100, 10000);
 const bool kOverflowYNotHidden = false;
@@ -29,8 +31,8 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   OverscrollRefreshTest()
       : OverscrollRefreshHandler(nullptr),
         effect_(OverscrollRefresh(this, kDefaultEdgeWidth)) {
-    effect_.OnFrameUpdated(kViewport, kZeroOffset, kContentSize,
-                           kOverflowYNotHidden);
+    effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset,
+                           kContentSize, kOverflowYNotHidden);
   }
 
   // OverscrollRefreshHandler implementation.
@@ -192,11 +194,11 @@ TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfInitialYOffsetIsNotZero) {
   // A positive y scroll offset at the start of scroll will prevent activation,
   // even if the subsequent scroll overscrolls upward.
   gfx::PointF nonzero_offset(0, 10);
-  effect_.OnFrameUpdated(kViewport, nonzero_offset, kContentSize,
-                         kOverflowYNotHidden);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, nonzero_offset,
+                         kContentSize, kOverflowYNotHidden);
   effect_.OnScrollBegin(kStartPos);
 
-  effect_.OnFrameUpdated(kViewport, kZeroOffset, kContentSize,
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset, kContentSize,
                          kOverflowYNotHidden);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
   ASSERT_FALSE(effect_.WillHandleScrollUpdate(scroll_delta));
@@ -214,7 +216,8 @@ TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfInitialYOffsetIsNotZero) {
 
 TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfOverflowYHidden) {
   // overflow-y:hidden at the start of scroll will prevent activation.
-  effect_.OnFrameUpdated(kViewport, kZeroOffset, kContentSize, true);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset, kContentSize,
+                         true);
   effect_.OnScrollBegin(kStartPos);
 
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -234,7 +237,8 @@ TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfOverflowYHidden) {
 TEST_F(OverscrollRefreshTest,
        RefreshNotTriggeredIfOverflowYHiddenNoUpdateBeforeOverscroll) {
   // overflow-y:hidden at the start of scroll will prevent activation.
-  effect_.OnFrameUpdated(kViewport, kZeroOffset, kContentSize, true);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset, kContentSize,
+                         true);
   effect_.OnScrollBegin(kStartPos);
 
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -350,8 +354,8 @@ TEST_F(OverscrollRefreshTest, TriggerPullFromBottomEdge) {
   // Set yOffset as reaching the bottom of the page.
   gfx::PointF nonzero_offset(0, 900);
   gfx::SizeF content_size(100, 1000);
-  effect_.OnFrameUpdated(kViewport, nonzero_offset, content_size,
-                         kOverflowYNotHidden);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, nonzero_offset,
+                         content_size, kOverflowYNotHidden);
 
   gfx::PointF start(2.f, 902.f);
   effect_.OnScrollBegin(start);
@@ -397,11 +401,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollNotFromBottom) {
   // since it's not starting from the bottom, even if the subsequent scroll
   // overscrolls upward.
   gfx::SizeF content_size(100, 110);
-  effect_.OnFrameUpdated(kViewport, kZeroOffset, content_size,
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset, content_size,
                          kOverflowYNotHidden);
   effect_.OnScrollBegin(kStartPos);
 
-  effect_.OnFrameUpdated(kViewport, kZeroOffset, content_size,
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, kZeroOffset, content_size,
                          kOverflowYNotHidden);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, -10);
   ASSERT_FALSE(effect_.WillHandleScrollUpdate(scroll_delta));
@@ -419,11 +423,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollNotFromBottom) {
 
 TEST_F(OverscrollRefreshTest, NotTriggeredIfContentSizeEqualsToViewport) {
   // bottom overscroll only triggers when content is scrollable.
-  effect_.OnFrameUpdated(kViewport, gfx::PointF(), kViewport,
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, gfx::PointF(), kViewport,
                          kOverflowYNotHidden);
   effect_.OnScrollBegin(kStartPos);
 
-  effect_.OnFrameUpdated(kViewport, gfx::PointF(), kViewport,
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, gfx::PointF(), kViewport,
                          kOverflowYNotHidden);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, -10);
   ASSERT_FALSE(effect_.WillHandleScrollUpdate(scroll_delta));
@@ -444,8 +448,8 @@ TEST_F(OverscrollRefreshTest,
   // Set yOffset as reaching the bottom of the page.
   gfx::PointF nonzero_offset(0, 900);
   gfx::SizeF content_size(100, 1000);
-  effect_.OnFrameUpdated(kViewport, nonzero_offset, content_size,
-                         kOverflowYNotHidden);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, nonzero_offset,
+                         content_size, kOverflowYNotHidden);
 
   gfx::PointF start(2.f, 902.f);
   effect_.OnScrollBegin(start);
@@ -469,8 +473,8 @@ TEST_F(OverscrollRefreshTest, PullFromBottomEdgeNotTriggeredIfFlungDownward) {
   // Set yOffset as reaching the bottom of the page.
   gfx::PointF nonzero_offset(0, 900);
   gfx::SizeF content_size(100, 1000);
-  effect_.OnFrameUpdated(kViewport, nonzero_offset, content_size,
-                         kOverflowYNotHidden);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, nonzero_offset,
+                         content_size, kOverflowYNotHidden);
 
   gfx::PointF start(2.f, 902.f);
   effect_.OnScrollBegin(start);
@@ -713,8 +717,8 @@ TEST_F(OverscrollRefreshTest, RightEdgeHistoryNavigationFlingToStart) {
 }
 
 TEST_F(OverscrollRefreshTest, MultidimensionalOverscroll) {
-  effect_.OnFrameUpdated(kViewport, gfx::PointF(0, 100), kContentSize,
-                         kOverflowYNotHidden);
+  effect_.OnFrameUpdated(kViewWidth, kViewportHeight, gfx::PointF(0, 100),
+                         kContentSize, kOverflowYNotHidden);
   effect_.OnScrollBegin(gfx::PointF(2.f, 50.f));
 
   // First overscroll event: pure horizontal overscroll starts History Nav

@@ -115,6 +115,8 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     }
   } else if (in_x_direction) {
     DCHECK_GE(viewport_width_, 0);
+    DCHECK_LE(scroll_begin_x_, viewport_width_);
+    DCHECK_GE(scroll_begin_x_, 0);
     bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
                             viewport_width_ - scroll_begin_x_ < edge_width_;
     bool touchpad_swipe_to_navigate =
@@ -205,15 +207,17 @@ bool OverscrollRefresh::IsAwaitingScrollUpdateAck() const {
   return scroll_state_.IsAwaitingAck();
 }
 
-void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
+void OverscrollRefresh::OnFrameUpdated(float view_width,
+                                       float scrollable_viewport_height,
                                        const gfx::PointF& content_scroll_offset,
                                        const gfx::SizeF& content_size,
                                        bool root_overflow_y_hidden) {
-  viewport_width_ = viewport_size.width();
+  viewport_width_ = view_width;
   scrolled_to_top_ = content_scroll_offset.y() == 0;
   if (base::FeatureList::IsEnabled(kReportBottomOverscrolls)) {
-    scrolled_to_bottom_ = content_size.height() <=
-                          content_scroll_offset.y() + viewport_size.height();
+    scrolled_to_bottom_ =
+        content_size.height() <=
+        content_scroll_offset.y() + scrollable_viewport_height;
   }
   overflow_y_hidden_ = root_overflow_y_hidden;
 }

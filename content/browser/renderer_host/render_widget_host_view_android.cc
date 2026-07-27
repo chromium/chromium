@@ -1003,8 +1003,9 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
 
   if (overscroll_controller_) {
     overscroll_controller_->OnFrameMetadataUpdated(
-        metadata.page_scale_factor, metadata.device_scale_factor,
-        metadata.scrollable_viewport_size, metadata.root_layer_size,
+        view_.GetSizeDevicePx().width(), metadata.page_scale_factor,
+        metadata.device_scale_factor, metadata.scrollable_viewport_size,
+        metadata.root_layer_size,
         metadata.root_scroll_offset.value_or(gfx::PointF()),
         metadata.root_overflow_y_hidden);
   }
