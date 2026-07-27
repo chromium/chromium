@@ -250,8 +250,8 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 - (UIButton*)createContextMenuButton {
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
-  config.image =
-      SymbolTemplateWithPointSize(SymbolMenu, kHeaderActionSymbolPointSize);
+  config.image = SymbolTemplateWithPointSize(SymbolLineThreeSpark,
+                                             kHeaderActionSymbolPointSize);
   config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
 
   // TODO(crbug.com/493128413): Implement missing actions.
