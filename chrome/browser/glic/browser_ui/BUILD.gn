@@ -106,6 +106,7 @@ source_set("impl") {
       "//components/omnibox/browser:vector_icons",
       "//components/prefs",
       "//content/public/browser",
+      "//third_party/re2",
       "//ui/strings",
       "//ui/strings:ui_strings__strings_grit",
     ]

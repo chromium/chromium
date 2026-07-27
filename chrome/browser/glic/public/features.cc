@@ -42,6 +42,10 @@ const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt{
     &kGlicSelectionPrompt, "auto_send_prompt", true};
 const base::FeatureParam<std::string> kGlicSelectionPromptCta{
     &kGlicSelectionPrompt, "cta", kGlicSelectionPromptCtaExplain};
+const base::FeatureParam<bool> kGlicSelectionPromptInlineFulfillment{
+    &kGlicSelectionPrompt, "inline_fulfillment", false};
+const base::FeatureParam<std::string> kGlicSelectionPromptInlinePromptTemplate{
+    &kGlicSelectionPrompt, "inline_prompt_template", ""};
 
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);

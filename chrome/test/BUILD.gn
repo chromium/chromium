@@ -5925,6 +5925,7 @@ test("unit_tests") {
       "//chrome/browser/background:unit_tests",
       "//chrome/browser/dictation:unit_tests",
       "//chrome/browser/feedback/report_unsafe_site:unit_tests",
+      "//chrome/browser/glic/selection:unit_tests",
       "//chrome/browser/lifetime:unit_tests",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",

@@ -70,10 +70,15 @@ class TestWidgetActionDelegate
     : public GlicSelectionWidgetDelegate::ActionDelegate {
  public:
   void OnAskGemini() override { ask_gemini_called = true; }
+  void OnAskGeminiForQuery(const std::u16string& query) override {}
+  void OnAskGeminiMoreAboutThis(
+      const std::u16string& selected_text,
+      const std::string& explanation_text) override {}
   void OnCopy() override { copy_called = true; }
   void OnCopyLink() override { copy_link_called = true; }
   void OnHide() override { hide_called = true; }
   void OnSettings() override { settings_called = true; }
+  void OnOpenInSidePanel() override {}
   void OnWidgetClose() override { widget_close_called = true; }
 
   bool widget_close_called = false;

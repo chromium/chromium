@@ -43,6 +43,7 @@ namespace glic {
 
 enum class GlicNudgeActivity;
 
+class ExplainSelectionTrigger;
 class GlicSelectionWidgetDelegate;
 class GlicKeyedService;
 
@@ -112,11 +113,19 @@ class GlicSelectionObserver
       std::u16string selected_text,
       bool is_widget,
       base::WeakPtr<content::WebContents> web_contents,
-      GlicNudgeActivity activity);
+      GlicNudgeActivity activity,
+      std::u16string prompt_override = u"");
 
 
   bool ShouldShowSelectionWidget();
   void OnAskGemini();
+  void OnAskGeminiForQuery(const std::u16string& query);
+  void OnAskGeminiMoreAboutThis(
+      const std::u16string& selected_text,
+      const std::string& explanation_text);
+  void OnInlineExplanationUpdate(const std::string& markdown_output,
+                                 bool is_complete,
+                                 const std::string& error_message);
   void OnCopy();
   void OnCopyLink();
   void OnHide();
@@ -166,6 +175,8 @@ class GlicSelectionObserver
   // True during active user selection (mouse drag or key hold) to defer UI
   // updates until the input event completes.
   bool is_selecting_ = false;
+  // True when an inline explanation is currently being fetched or displayed.
+  bool is_explaining_ = false;
 
   // Private bridge implementation of
   // GlicSelectionWidgetDelegate::ActionDelegate. This is required because
@@ -175,11 +186,13 @@ class GlicSelectionObserver
   class WidgetActionDelegate;
 
   void OnWidgetClose();
+  void OnOpenInSidePanel();
 
   std::unique_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   std::unique_ptr<WidgetActionDelegate> action_delegate_;
   mojo::Remote<blink::mojom::TextFragmentReceiver> text_fragment_remote_;
   std::optional<GURL> generated_link_;
+  std::unique_ptr<ExplainSelectionTrigger> explain_selection_trigger_;
 
   friend class GlicSelectionObserverTest;
 

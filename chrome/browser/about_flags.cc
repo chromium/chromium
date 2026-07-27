@@ -3717,7 +3717,9 @@ const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
     {"Enabled with Copy Buttons", switches::kEnableFeatures,
      "GlicSelectionPrompt:show_copy_buttons/true"},
     {"Enabled (CTA: Tell me about this)", switches::kEnableFeatures,
-     "GlicSelectionPrompt:cta/tell_me_about_this"}};
+     "GlicSelectionPrompt:cta/tell_me_about_this"},
+    {"Enabled (Inline Fulfillment)", switches::kEnableFeatures,
+     "GlicSelectionPrompt:inline_fulfillment/true"}};
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};

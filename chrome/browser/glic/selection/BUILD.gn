@@ -10,6 +10,8 @@ assert(!is_android)
 
 source_set("selection") {
   sources = [
+    "explain_selection_trigger.cc",
+    "explain_selection_trigger.h",
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",
@@ -18,14 +20,16 @@ source_set("selection") {
 
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/glic",
     "//chrome/browser/ui/lens",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/actor",
-    "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic:public_types",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/resources/glic/selection_overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",
@@ -87,5 +91,21 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "explain_selection_trigger_unittest.cc" ]
+  deps = [
+    ":selection",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/glic/public:features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
   ]
 }
