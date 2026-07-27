@@ -16,14 +16,18 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionUtils;
@@ -64,6 +68,19 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                             .build());
         }
+        if (menuType == MenuType.DROPDOWN
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
+                && !selectedText.isEmpty()
+                && !isSelectionPassword) {
+            SelectionMenuItem copyLinkItem =
+                    new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
+                            .setId(R.id.contextmenu_copy_link_to_highlight)
+                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
+                            .setOrderAndCategory(1, ItemGroupOffset.DEFAULT_ITEMS)
+                            .build();
+
+            items.add(copyLinkItem);
+        }
         return items;
     }
 
@@ -88,6 +105,12 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                 readerModeManager.activateReaderMode(ReaderModeManager.EntryPoint.CONTEXT_MENU);
             }
             return true;
+        } else if (item.id == R.id.contextmenu_copy_link_to_highlight) {
+            RenderFrameHost rfh = webContents.getFocusedFrame();
+            if (rfh != null) {
+                LinkToTextCoordinator.copyLinkToText(mTab, rfh);
+                return true;
+            }
         }
         return false;
     }

@@ -111,6 +111,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_share_highlight" />
     <item type="id" name="contextmenu_remove_highlight" />
     <item type="id" name="contextmenu_learn_more" />
+    <item type="id" name="contextmenu_copy_link_to_highlight" />
 
     <!-- Video Group -->
     <item type="id" name="contextmenu_save_video" />

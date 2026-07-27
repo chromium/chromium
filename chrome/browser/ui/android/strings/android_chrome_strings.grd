@@ -3057,6 +3057,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SHARE_LINK" desc="Context sensitive menu item for sharing a link via the Android system share action. [CHAR_LIMIT=30]">
         Share link
       </message>
+      <message name="IDS_CONTEXTMENU_COPY_LINK_TO_HIGHLIGHT" desc="This string is shown in the context menu for copying the link-to-text.">
+        Copy link to highlight
+      </message>
       <message name="IDS_CONTEXTMENU_SAVE_VIDEO" desc="Context sensitive menu item for saving the selected video. [CHAR_LIMIT=30]">
         Download video
       </message>

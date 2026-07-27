@@ -1152,10 +1152,12 @@ if (is_android) {
       "src/org/chromium/chrome/browser/share/ShareDelegateImplUnitTest.java",
       "src/org/chromium/chrome/browser/share/ShareHelperMultiInstanceUnitTest.java",
       "src/org/chromium/chrome/browser/share/ShareHelperUnitTest.java",
+      "src/org/chromium/chrome/browser/share/link_to_text/CopyLinkToHighlightTest.java",
     ]
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//base:flagged_apis_java",
       "//chrome/browser/tab:junit",
       "//chrome/browser/ui/android/pdf:pdf_utils_java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",
