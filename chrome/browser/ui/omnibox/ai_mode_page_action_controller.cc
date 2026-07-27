@@ -233,7 +233,15 @@ bool AiModePageActionController::ShouldShowPageAction(
   // Otherwise, we should show the AIM view if the focus is within any view in
   // the location bar, including the omnibox, this view or any other page action
   // icon views.
-  const bool has_focus = location_bar.IsFocusWithin();
+  //
+  // When the "full" WebUI Omnibox popup is enabled, OmniboxEditModel needs to
+  // be queried to determine focus state, as focus gets transferred to an
+  // entirely separate widget (containing the WebContents) when the popup is
+  // shown.
+  const bool has_focus =
+      location_bar.IsFocusWithin() ||
+      (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+       edit_model->has_focus());
 
   // TODO(crbug.com/448234135): Remove this logic from the migrated path when
   // Page Action framework supports suggestion chip queueing.

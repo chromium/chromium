@@ -50,10 +50,11 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
         ` :
                                                                     ''}
         ${
-      this.composeButtonEnabled ? html`
+      this.aimButtonEnabled_ ? html`
           <cr-searchbox-compose-button id="composeButton" slot="compose-button"
               ?dynamic="${this.searchboxDynamicAnimation_}"
               ?has-user-input="${this.hasUserInput_}"
+              ?hidden="${!this.aimButtonVisible_}"
               @compose-click="${this.onComposeClick_}">
           </cr-searchbox-compose-button>` : ''}
       </cr-searchbox-input>

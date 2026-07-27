@@ -261,6 +261,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 #composeButton::part(compose-button) {
   --cr-hover-background-color: transparent;
+  cursor: default;
   background-color: var(--color-sys-tonal-container);
   color: var(--color-sys-on-tonal-container);
   font-size: 13px;

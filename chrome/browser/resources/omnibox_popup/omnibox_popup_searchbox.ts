@@ -102,9 +102,8 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
-      composeButtonEnabled: {
+      aimButtonEnabled_: {
         type: Boolean,
-        reflect: true,
       },
       searchboxDynamicColorScheme_: {
         type: Boolean,
@@ -114,6 +113,9 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
       },
       searchboxDynamicAnimation_: {
+        type: Boolean,
+      },
+      aimButtonVisible_: {
         type: Boolean,
       },
     };
@@ -137,13 +139,14 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
   protected accessor omniboxPopupDebugEnabled_: boolean =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
-  protected accessor composeButtonEnabled: boolean =
+  protected accessor aimButtonEnabled_: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
   protected accessor searchboxDynamicColorScheme_: boolean =
       loadTimeData.getBoolean('searchboxDynamicColorScheme');
   protected accessor searchboxDynamicAnimation_: boolean =
       loadTimeData.getBoolean('searchboxDynamicAnimation');
   protected accessor hasUserInput_: boolean = false;
+  protected accessor aimButtonVisible_: boolean = false;
 
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
@@ -189,6 +192,10 @@ export class OmniboxPopupSearchboxElement extends
     this.listenerIds_ = [
       this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
           this.onAutocompleteResultChanged.bind(this)),
+      this.searchboxCallbackRouter_.setAimButtonVisible.addListener(
+          (visible: boolean) => {
+            this.aimButtonVisible_ = visible;
+          }),
     ];
     this.popupListenerIds_ = [
       this.popupCallbackRouter_.setInputState.addListener(
@@ -591,7 +598,6 @@ export class OmniboxPopupSearchboxElement extends
       }
     }
   }
-
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {

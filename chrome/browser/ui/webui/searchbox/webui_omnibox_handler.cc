@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -377,6 +379,19 @@ void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
     metrics_reporter_->Mark("ResultChanged");
   }
+
+  // Update visibility of the AIM page action.
+  if (omnibox_controller() &&
+      omnibox_controller()->client()->IsChromeOmniboxClient()) {
+    auto* client =
+        static_cast<ChromeOmniboxClient*>(omnibox_controller()->client());
+    if (LocationBar* location_bar = client->GetLocationBar()) {
+      SetAimButtonVisible(
+          omnibox::AiModePageActionController::ShouldShowPageAction(
+              profile_, *location_bar));
+    }
+  }
+
   SearchboxHandler::OnResultChanged(controller, default_match_changed);
 }
 
