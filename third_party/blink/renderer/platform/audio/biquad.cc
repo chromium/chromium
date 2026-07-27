@@ -603,13 +603,13 @@ static double RepeatedRootResponse(double n,
   // for n such that |h(n)| = eps.  Equivalently, we want a root
   // of the equation log(|h(n)|) - log(eps) = 0 or
   //
-  //   (n-2)*log(r) + log(|c1*(n+1)*r^2+c2|) - log(eps)
+  //   (n-2)*log(|r|) + log(|c1*(n+1)*r^2+c2|) - log(eps)
   //
   // This helps with finding a nuemrical solution because this
   // approximately linearizes the response for large n.
 
-  return (n - 2) * fdlibm::log(r) +
-         fdlibm::log(fabs(c1 * (n + 1) * r * r + c2)) - log_eps;
+  return (n - 2) * fdlibm::log(std::abs(r)) +
+         fdlibm::log(std::abs(c1 * (n + 1) * r * r + c2)) - log_eps;
 }
 
 // Regula Falsi root finder, Illinois variant
@@ -622,6 +622,8 @@ static double RepeatedRootResponse(double n,
 // response.
 static double RootFinder(double low,
                          double high,
+                         double f_low,
+                         double f_high,
                          double log_eps,
                          double c1,
                          double c2,
@@ -636,8 +638,6 @@ static double RootFinder(double low,
 
   int side = 0;
   double root = 0;
-  double f_low = RepeatedRootResponse(low, c1, c2, r, log_eps);
-  double f_high = RepeatedRootResponse(high, c1, c2, r, log_eps);
 
   // The function values must be finite and have opposite signs!
   DCHECK(std::isfinite(f_low));
@@ -794,6 +794,13 @@ double Biquad::TailFrame(int coef_index, double max_frame) const {
   double b1 = b1_[coef_index];
   double b2 = b2_[coef_index];
 
+  // If any coefficient is not finite, we cannot calculate a meaningful tail
+  // time. Return 0 to avoid propagating NaNs or causing crashes.
+  if (!std::isfinite(a1) || !std::isfinite(a2) || !std::isfinite(b0) ||
+      !std::isfinite(b1) || !std::isfinite(b2)) {
+    return 0;
+  }
+
   double tail_frame = 0;
   double discrim = a1 * a1 - 4 * a2;
 
@@ -891,15 +898,31 @@ double Biquad::TailFrame(int coef_index, double max_frame) const {
         // -(1+log(r))/log(r). so we can start our search from that
         // point to max_frames.
 
-        double low = ClampTo(-(1 + fdlibm::log(r)) / fdlibm::log(r), 1.0,
+        double log_r = fdlibm::log(std::abs(r));
+        double low = ClampTo(-(1 + log_r) / log_r, 1.0,
                              static_cast<double>(max_frame - 1));
         double high = max_frame;
 
         DCHECK(std::isfinite(low));
         DCHECK(std::isfinite(high));
 
-        tail_frame =
-            RootFinder(low, high, fdlibm::log(kMaxTailAmplitude), c1, c2, r);
+        double log_eps = fdlibm::log(kMaxTailAmplitude);
+        // Check if the signal is already silent at the peak (low) and at the
+        // limit (high). RepeatedRootResponse returns > 0 if active, <= 0 if
+        // silent.
+        double f_low = RepeatedRootResponse(low, c1, c2, r, log_eps);
+        double f_high = RepeatedRootResponse(high, c1, c2, r, log_eps);
+        if (f_low <= 0) {
+          // The peak of the signal is already below the silence threshold.
+          tail_frame = 0;
+        } else if (f_high >= 0) {
+          // The signal is still active at the maximum frame limit.
+          tail_frame = high;
+        } else {
+          // The signal becomes silent somewhere between the peak (low) and the
+          // limit (high). Find the exact frame using RootFinder.
+          tail_frame = RootFinder(low, high, f_low, f_high, log_eps, c1, c2, r);
+        }
       }
     }
   }
