@@ -291,4 +291,18 @@ suite('SuggestionsFromGeminiSubpage', function() {
     assertEquals(newPrefValue.trigger, '@@');
     assertFalse(newPrefValue.is_shortcut);
   });
+
+  test('FocusBackButton', async function() {
+    const subpage = await setupPage();
+    let focusCalled = false;
+    const settingsSubpage =
+        subpage.shadowRoot!.querySelector('settings-subpage');
+    assertTrue(!!settingsSubpage);
+    settingsSubpage.focusBackButton = () => {
+      focusCalled = true;
+      return Promise.resolve();
+    };
+    subpage.focusBackButton();
+    assertTrue(focusCalled);
+  });
 });

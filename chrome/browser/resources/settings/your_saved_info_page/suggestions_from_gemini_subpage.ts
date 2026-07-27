@@ -129,6 +129,11 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
     }
     return triggerPrefValue.trigger;
   }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {
