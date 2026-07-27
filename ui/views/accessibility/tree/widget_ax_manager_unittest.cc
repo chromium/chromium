@@ -831,6 +831,94 @@ TEST_F(WidgetAXManagerTest, SerializesOffsetContainerIdAfterReparenting) {
   EXPECT_EQ(offset_container_id(child), id(root));
 }
 
+TEST_F(WidgetAXManagerTest, SerializesVirtualViewOffsetContainerId) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto container = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kGroup);
+  nested_virtual->SetRole(ax::mojom::Role::kGroup);
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  View* root = widget()->GetRootView();
+  auto* container_ptr = root->AddChildView(std::move(container));
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID container_id = static_cast<ui::AXNodeID>(
+      container_ptr->GetViewAccessibility().GetUniqueId());
+  ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
+  ASSERT_NE(browser_manager, nullptr);
+
+  ui::BrowserAccessibility* virtual_child_node =
+      browser_manager->GetFromID(virtual_child_id);
+  ui::BrowserAccessibility* nested_virtual_node =
+      browser_manager->GetFromID(nested_virtual_id);
+  ASSERT_NE(virtual_child_node, nullptr);
+  ASSERT_NE(nested_virtual_node, nullptr);
+
+  EXPECT_EQ(virtual_child_node->GetData().relative_bounds.offset_container_id,
+            container_id);
+  EXPECT_EQ(nested_virtual_node->GetData().relative_bounds.offset_container_id,
+            container_id);
+}
+
+TEST_F(WidgetAXManagerTest,
+       SerializesVirtualViewOffsetContainerIdAfterReparenting) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto container = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kGroup);
+  nested_virtual->SetRole(ax::mojom::Role::kGroup);
+  auto* virtual_child_ptr = virtual_child.get();
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  View* root = widget()->GetRootView();
+  auto* container_ptr = root->AddChildView(std::move(container));
+  auto* other_container_ptr = root->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
+
+  auto offset_container_id = [&](ui::AXNodeID id) {
+    ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(id);
+    return node ? node->GetData().relative_bounds.offset_container_id
+                : ui::kInvalidAXNodeID;
+  };
+
+  ASSERT_EQ(offset_container_id(virtual_child_id),
+            static_cast<ui::AXNodeID>(
+                container_ptr->GetViewAccessibility().GetUniqueId()));
+
+  other_container_ptr->GetViewAccessibility().AddVirtualChildView(
+      container_ptr->GetViewAccessibility().RemoveVirtualChildView(
+          virtual_child_ptr));
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID other_container_id = static_cast<ui::AXNodeID>(
+      other_container_ptr->GetViewAccessibility().GetUniqueId());
+  EXPECT_EQ(offset_container_id(virtual_child_id), other_container_id);
+  EXPECT_EQ(offset_container_id(nested_virtual_id), other_container_id);
+}
+
 TEST_F(WidgetAXManagerTest, AccessibilityViewHasFocusAndSetFocus) {
   EXPECT_FALSE(widget()->IsActive());
   EXPECT_FALSE(manager()->AccessibilityViewHasFocus());

@@ -109,6 +109,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   added_view->OnViewHasNewAncestor(
       /* ancestor_focusable */ data().HasState(ax::mojom::State::kFocusable) ||
       has_focusable_ancestor());
+  added_view->OnOwnerViewChanged();
 
   AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kAdditions);
@@ -184,6 +185,7 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kRemovals);
 
   child->virtual_parent_view_ = nullptr;
+  child->OnOwnerViewChanged();
 
   if (GetOwnerView()) {
     if (active_descendant_removed) {
@@ -300,6 +302,24 @@ void AXVirtualView::NotifyDataChanged() {
   AXUpdateNotifier::Get()->NotifyVirtualViewDataChanged(this);
 }
 
+ui::AXNodeID AXVirtualView::GetOffsetContainerId() const {
+  // Virtual view bounds are relative to the owner View, no matter how deeply
+  // the virtual view is nested.
+  // TODO(crbug.com/539373399): Make these bounds relative to the parent
+  // virtual view instead.
+  View* owner_view = GetOwnerView();
+  return owner_view ? static_cast<ui::AXNodeID>(
+                          owner_view->GetViewAccessibility().GetUniqueId())
+                    : ui::kInvalidAXNodeID;
+}
+
+void AXVirtualView::OnOwnerViewChanged() {
+  UpdateOffsetContainerId();
+  for (auto& child : virtual_children_) {
+    child->OnOwnerViewChanged();
+  }
+}
+
 // ui::AXPlatformNodeDelegate
 
 const ui::AXNodeData& AXVirtualView::GetData() const {
@@ -374,7 +394,8 @@ gfx::Rect AXVirtualView::GetBoundsRect(
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
   // We could optionally add clipping here if ever needed.
-  // TODO(nektar): Implement bounds that are relative to the parent.
+  // TODO(crbug.com/539373399): Implement bounds that are relative to the
+  // parent.
   gfx::Rect bounds = gfx::ToEnclosingRect(GetData().relative_bounds.bounds);
   View* owner_view = GetOwnerView();
   if (owner_view && owner_view->GetWidget()) {

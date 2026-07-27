@@ -158,6 +158,7 @@ void ViewAccessibility::AddVirtualChildViewAt(
 
   AXVirtualView* added_view = virtual_children_[index].get();
   added_view->OnViewHasNewAncestor(view_);
+  added_view->OnOwnerViewChanged();
 
   AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kAdditions);
@@ -179,6 +180,7 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kRemovals);
 
   child->set_parent_view(nullptr);
+  child->OnOwnerViewChanged();
 
   // If the removed child (or any of its descendants) was the active descendant,
   // clear it.

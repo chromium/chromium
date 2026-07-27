@@ -101,6 +101,14 @@ class TestAXUpdateObserver : public AXUpdateObserver {
       this};
 };
 
+ui::AXNodeID GetUniqueId(const View* view) {
+  return static_cast<ui::AXNodeID>(view->GetViewAccessibility().GetUniqueId());
+}
+
+ui::AXNodeID GetOffsetContainerId(const AXVirtualView* virtual_view) {
+  return virtual_view->GetData().relative_bounds.offset_container_id;
+}
+
 }  // namespace
 
 class AXVirtualViewTest : public ViewsTestBase,
@@ -356,6 +364,69 @@ TEST_P(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
                       ax::mojom::Event::kChildrenChanged),
        std::make_pair(GetButtonAccessibility(),
                       ax::mojom::Event::kChildrenChanged)});
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_NoOwnerView) {
+  auto virtual_view = std::make_unique<AXVirtualView>();
+
+  EXPECT_EQ(GetOffsetContainerId(virtual_view.get()), ui::kInvalidAXNodeID);
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_VirtualViewOwnedByView) {
+  EXPECT_EQ(GetOffsetContainerId(virtual_label_), GetUniqueId(button_));
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_NestedVirtualViews) {
+  auto* virtual_child = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child));
+  auto* virtual_grandchild = new AXVirtualView;
+  virtual_child->AddChildView(base::WrapUnique(virtual_grandchild));
+
+  EXPECT_EQ(GetOffsetContainerId(virtual_child), GetUniqueId(button_));
+  EXPECT_EQ(GetOffsetContainerId(virtual_grandchild), GetUniqueId(button_));
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_SubtreeMovedToOtherOwnerView) {
+  auto* virtual_child = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child));
+  auto* virtual_grandchild = new AXVirtualView;
+  virtual_child->AddChildView(base::WrapUnique(virtual_grandchild));
+
+  auto* other_button =
+      widget_->GetContentsView()->AddChildView(std::make_unique<TestButton>());
+  other_button->GetViewAccessibility().AddVirtualChildView(
+      virtual_label_->RemoveChildView(virtual_child));
+
+  EXPECT_EQ(GetOffsetContainerId(virtual_child), GetUniqueId(other_button));
+  EXPECT_EQ(GetOffsetContainerId(virtual_grandchild),
+            GetUniqueId(other_button));
+  EXPECT_EQ(GetOffsetContainerId(virtual_label_), GetUniqueId(button_));
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_ClearedWhenRemovedFromVirtualView) {
+  auto* virtual_child = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child));
+  auto* virtual_grandchild = new AXVirtualView;
+  virtual_child->AddChildView(base::WrapUnique(virtual_grandchild));
+  ASSERT_EQ(GetOffsetContainerId(virtual_child), GetUniqueId(button_));
+
+  std::unique_ptr<AXVirtualView> removed =
+      virtual_label_->RemoveChildView(virtual_child);
+
+  EXPECT_EQ(GetOffsetContainerId(removed.get()), ui::kInvalidAXNodeID);
+  EXPECT_EQ(GetOffsetContainerId(virtual_grandchild), ui::kInvalidAXNodeID);
+}
+
+TEST_P(AXVirtualViewTest, OffsetContainerId_ClearedWhenRemovedFromOwnerView) {
+  auto* virtual_view = new AXVirtualView;
+  button_->GetViewAccessibility().AddVirtualChildView(
+      base::WrapUnique(virtual_view));
+  ASSERT_EQ(GetOffsetContainerId(virtual_view), GetUniqueId(button_));
+
+  std::unique_ptr<AXVirtualView> removed =
+      button_->GetViewAccessibility().RemoveVirtualChildView(virtual_view);
+
+  EXPECT_EQ(GetOffsetContainerId(removed.get()), ui::kInvalidAXNodeID);
 }
 
 TEST_P(AXVirtualViewTest, NotifiesUpdateObserverForVirtualChildChanges) {
