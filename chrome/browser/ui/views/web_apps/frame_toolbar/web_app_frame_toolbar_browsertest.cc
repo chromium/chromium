@@ -1400,6 +1400,14 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     helper()->browser_view()->GetWidget()->SetBounds(new_bounds);
     std::ignore = title_watcher.WaitAndGetTitle();
+
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetWindowControlOverlayBoundingClientRectFromEvent() ==
+             GetWindowControlOverlayBoundingClientRect();
+    })) << "Event bounds: "
+        << GetWindowControlOverlayBoundingClientRectFromEvent().ToString()
+        << ", DOM bounds: "
+        << GetWindowControlOverlayBoundingClientRect().ToString();
   }
 
   gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {
