@@ -41,7 +41,7 @@ them in the future.
 All FFI code is `unsafe` by definition, since the Rust compiler cannot enforce
 its rules on non-Rust code. This means that when working with FFI, you must be
 careful to understand exactly what behaviors are possible. Make sure you're
-familiar with our [safety guidelines](docs/rust/unsafe.md#how-to-use-unsafe).
+familiar with our [safety guidelines](unsafe.md#how-to-use-unsafe).
 So long as you're consistent about writing and following safety comments, you
 can avoid most problems.
 
