@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/template_expressions.h"
 
 class Profile;
 
@@ -39,7 +38,6 @@ class TerminalSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
   std::string GetMimeType(const GURL& url) override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
-  const ui::TemplateReplacements* GetReplacements() override;
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override;
   std::string GetCrossOriginOpenerPolicy() override;
@@ -50,7 +48,6 @@ class TerminalSource : public content::URLDataSource {
   std::string default_file_;
   const bool ssh_allowed_;
   const base::FilePath downloads_;
-  ui::TemplateReplacements replacements_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_TERMINAL_SOURCE_H_

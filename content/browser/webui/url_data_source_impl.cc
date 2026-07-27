@@ -26,4 +26,8 @@ bool URLDataSourceImpl::IsWebUIDataSourceImpl() const {
   return false;
 }
 
+const ui::TemplateReplacements* URLDataSourceImpl::GetReplacements() const {
+  return nullptr;
+}
+
 }  // namespace content
