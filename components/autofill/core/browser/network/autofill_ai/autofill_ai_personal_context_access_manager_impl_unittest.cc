@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/to_vector.h"
 #include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -28,7 +27,6 @@
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
-#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -54,8 +52,6 @@ using ::personal_context::MockPersonalContextEligibilityService;
 using ::personal_context::MockPersonalContextService;
 using ::personal_context::proto::SensitivePiiPresence;
 using ::testing::_;
-using ::testing::DoAll;
-using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -63,7 +59,6 @@ using ::testing::IsEmpty;
 using ::testing::MockFunction;
 using ::testing::Optional;
 using ::testing::Property;
-using ::testing::ResultOf;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
@@ -210,7 +205,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     spii_response.SerializeToString(any_spii_response.mutable_value());
 
     {
-      testing::InSequence s;
+      InSequence s;
 
       EXPECT_CALL(
           mock_personal_context_service(),
@@ -425,10 +420,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextFailure) {
   const std::vector<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
-  personal_context::ContextMemoryError expected_error =
-      personal_context::ContextMemoryError::FromExecutionError(
-          personal_context::ContextMemoryError::ExecutionError::
-              kGenericFailure);
+  ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
+      ContextMemoryError::ExecutionError::kGenericFailure);
 
   EXPECT_CALL(
       mock_personal_context_service(),
@@ -489,10 +482,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // Skipped in Backoff (After Failure)
   FastForwardBy(base::Minutes(31));
 
-  personal_context::ContextMemoryError expected_error =
-      personal_context::ContextMemoryError::FromExecutionError(
-          personal_context::ContextMemoryError::ExecutionError::
-              kGenericFailure);
+  ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
+      ContextMemoryError::ExecutionError::kGenericFailure);
   EXPECT_CALL(
       mock_personal_context_service(),
       FetchContext(
@@ -643,7 +634,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       presence_response;
   presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      personal_context::proto::SensitivePiiPresence::PASSPORT);
+      SensitivePiiPresence::PASSPORT);
   personal_context::proto::ContextMemoryAmbientAutofillResponse
       expected_response;
   personal_context::proto::Entity* entity = expected_response.add_entities();
@@ -1314,7 +1305,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   ASSERT_EQ(entities.size(), 1u);
   EntityInstance::EntityId passport_guid = entities[0].guid();
 
-  using personal_context::ContextMemoryError;
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
       ContextMemoryError::ExecutionError::kGenericFailure);
 
@@ -1352,7 +1342,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        GetUnmaskedSpiiEntity_ResponseParseError) {
   EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
 
-  using personal_context::ContextMemoryError;
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
       ContextMemoryError::ExecutionError::kResponseParseError);
 
