@@ -218,6 +218,33 @@ TEST_F(CorsTest, SafelistedHeader) {
   EXPECT_FALSE(IsCorsSafelistedHeader("user-agent", "foo"));
 }
 
+TEST_F(CorsTest, SafelistedResponseHeaderName) {
+  // The seven CORS-safelisted response header names, in mixed case to exercise
+  // the case-insensitive match.
+  static constexpr std::string_view kSafelisted[] = {
+      "cache-control", "Content-Language", "CONTENT-LENGTH", "content-type",
+      "Expires",       "Last-Modified",    "pragma",
+  };
+  for (std::string_view name : kSafelisted) {
+    SCOPED_TRACE(name);
+    EXPECT_TRUE(IsCorsSafelistedResponseHeaderName(name));
+  }
+
+  // "content-range" is deliberately excluded: it is a media-only carve-out
+  // kept out of the JS-visible safelist. The rest are ordinary non-safelisted
+  // headers.
+  static constexpr std::string_view kNotSafelisted[] = {
+      "content-range",
+      "set-cookie",
+      "x-auth-token",
+      "sec-ch-ua",
+  };
+  for (std::string_view name : kNotSafelisted) {
+    SCOPED_TRACE(name);
+    EXPECT_FALSE(IsCorsSafelistedResponseHeaderName(name));
+  }
+}
+
 TEST_F(CorsTest, SafelistedAccept) {
   EXPECT_TRUE(IsCorsSafelistedHeader("accept", "text/html"));
   EXPECT_TRUE(IsCorsSafelistedHeader("AccepT", "text/html"));
