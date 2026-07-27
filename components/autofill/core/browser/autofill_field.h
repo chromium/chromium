@@ -625,6 +625,18 @@ class AutofillField : public FormFieldData {
   // Tracks the relative order of all the modifiers of the field. Each
   // `FieldModifier` value is present at most once in the list, and the order of
   // the list depends on the order of events that modified the field's value.
+  //
+  // Only `FillingProduct`s in //components/autofill/ do mutate this, meaning
+  // that products like Password Manager do not append `kAutofill` to this list.
+  //
+  // This attribute is slightly similar to
+  // `FormFieldData::is_autofill_according_to_renderer` with the following
+  // difference in definition:
+  // - `field_modifiers_` is tracked by the browser process using the
+  //   autofill/user-edit signals there.
+  // - `is_autofill_according_to_renderer` is the exact copy of the
+  //   `blink::WebFormControlElement`'s `WebAutofillState` at form extraction
+  //   time in the renderer process.
   std::vector<FieldModifier> field_modifiers_;
 
   // Whether the field should be filled when it is not the highlighted field.
