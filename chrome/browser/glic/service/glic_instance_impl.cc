@@ -1817,6 +1817,10 @@ void GlicInstanceImpl::MaybeRemoveBlankInstanceOnClose() {
   if (conversation_id().has_value()) {
     return;
   }
+  // If an invocation is active, do not remove the instance.
+  if (IsInvoking()) {
+    return;
+  }
   // If the user has submitted input, the instance is not blank.
   if (!last_prompt_submission_time_.is_null()) {
     return;
