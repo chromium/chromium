@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.mojom.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -118,8 +120,9 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
     base::OnceCallback<void(bool)> callback) {
   tabs::TabInterface* target_tab = EnsureTabForSkills();
   if (!target_tab || !target_tab->IsInNormalWindow()) {
-    const GURL skills_url = GURL(chrome::kChromeUISkillsURL)
-                                .Resolve(chrome::kChromeUISkillsBrowsePath);
+    const GURL skills_url = skills::AppendOpenStartTime(
+        GURL(chrome::kChromeUISkillsURL)
+            .Resolve(chrome::kChromeUISkillsBrowsePath));
 
     BrowserWindowCreateParams create_params(
         BrowserWindowInterface::Type::TYPE_NORMAL, *profile_,
@@ -185,14 +188,17 @@ void GlicSkillsManagerImpl::ShowBrowseSkillsUi() {
 
 void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
     const std::string& path) {
-  const GURL skills_url = GURL(chrome::kChromeUISkillsURL).Resolve(path);
+  const GURL skills_url_without_query =
+      GURL(chrome::kChromeUISkillsURL).Resolve(path);
+  const GURL skills_url = skills::AppendOpenStartTime(skills_url_without_query);
+
   bool existing_skills_tab_found = false;
 
   BrowserWindowInterface* most_recent_browser = nullptr;
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&skills_url, &existing_skills_tab_found, &most_recent_browser,
-       this](BrowserWindowInterface* browser) {
+      [&skills_url_without_query, &existing_skills_tab_found,
+       &most_recent_browser, this](BrowserWindowInterface* browser) {
         if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL ||
             browser->GetProfile() != &*profile_) {
           return true;
@@ -208,13 +214,18 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
         }
         for (const auto& tab : tab_list->GetAllTabs()) {
           content::WebContents* web_contents = tab->GetContents();
-          if (web_contents && web_contents->GetURL() == skills_url) {
-            if (browser->GetWindow()) {
-              browser->GetWindow()->Activate();
+          if (web_contents) {
+            GURL::Replacements clear_query;
+            clear_query.ClearQuery();
+            if (web_contents->GetURL().ReplaceComponents(clear_query) ==
+                skills_url_without_query) {
+              if (browser->GetWindow()) {
+                browser->GetWindow()->Activate();
+              }
+              tab_list->ActivateTab(tab->GetHandle());
+              existing_skills_tab_found = true;
+              return false;
             }
-            tab_list->ActivateTab(tab->GetHandle());
-            existing_skills_tab_found = true;
-            return false;
           }
         }
         return true;

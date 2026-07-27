@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -21,7 +22,7 @@ class SkillsDialogView : public views::View,
                          public content::WebContentsDelegate {
   METADATA_HEADER(SkillsDialogView, views::View)
  public:
-  explicit SkillsDialogView(Profile* profile);
+  SkillsDialogView(Profile* profile, const GURL& url);
   SkillsDialogView(const SkillsDialogView&) = delete;
   SkillsDialogView& operator=(const SkillsDialogView&) = delete;
   ~SkillsDialogView() override;

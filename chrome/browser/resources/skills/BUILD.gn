@@ -76,6 +76,7 @@ build_webui("build") {
 
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
   ]
 

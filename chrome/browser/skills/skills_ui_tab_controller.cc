@@ -26,6 +26,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/gurl.h"
 
 DEFINE_USER_DATA(skills::SkillsUiTabController);
 
@@ -80,7 +81,11 @@ void SkillsUiTabController::ShowDialog(Skill skill,
   content::WebContents* contents = tab_->GetContents();
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto dialog_view = std::make_unique<skills::SkillsDialogView>(profile);
+  GURL dialog_url =
+      skills::AppendOpenStartTime(GURL(std::string(chrome::kChromeUISkillsURL) +
+                                       chrome::kChromeUISkillsDialogPath));
+  auto dialog_view =
+      std::make_unique<skills::SkillsDialogView>(profile, dialog_url);
 
   dialog_delegate_ = std::make_unique<views::DialogDelegate>();
   dialog_delegate_->SetShowCloseButton(false);

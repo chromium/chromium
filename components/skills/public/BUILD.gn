@@ -99,6 +99,8 @@ source_set("metrics") {
     "//components/skills/public:mojo_bindings",
     "//components/skills/public:mojo_bindings__generator",
   ]
+
+  deps = [ "//components/skills:features" ]
 }
 
 if (is_ios) {

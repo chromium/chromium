@@ -136,7 +136,10 @@ void AddSkillsV1Resources(content::WebUIDataSource* source, Profile* profile) {
 
 }  // namespace
 
-SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+SkillsUI::SkillsUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui,
+                              /*enable_chrome_send=*/false,
+                              /*enable_chrome_histograms=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISkillsHost);

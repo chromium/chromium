@@ -53,6 +53,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogEntryPoint) -->
 
+<!-- LINT.IfChange(SkillsLoadingStage) -->
+
+<variants name="SkillsLoadingStage">
+  <variant name="COOKIE_SYNC"
+      summary="Time spent copying cookies from main profile."/>
+  <variant name="GUEST_FRAMEWORK"
+      summary="Time to bootstrap the Angular framework."/>
+  <variant name="GUEST_WEB_CLIENT"
+      summary="Time to load and render initial skills data."/>
+  <variant name="HANDSHAKE"
+      summary="Time to establish postMessage connection."/>
+  <variant name="NAVIGATION"
+      summary="Time for webview to load and commit URL."/>
+</variants>
+
 <histogram name="Skills.Dialog.PromptRefinementOutcome"
     enum="SkillsPromptRefinementOutcome" expires_after="2027-02-01">
   <owner>howardcha@google.com</owner>
@@ -200,6 +215,38 @@ chromium-metrics-reviews@google.com.
     SkillsMetricsProvider.
   </summary>
 </histogram>
+
+<histogram name="Skills.Webview.Handshake.Result" enum="Boolean"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records whether the postMessage handshake between the Skills host and guest
+    Webview succeeded or timed out (after 5 seconds).
+  </summary>
+</histogram>
+
+<histogram name="Skills.Webview.LoadingStageDuration.{Stage}" units="ms"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the duration of the {Stage} loading stage for the Skills Webview V2.
+  </summary>
+  <token key="Stage" variants="SkillsLoadingStage"/>
+</histogram>
+
+<histogram name="Skills.Webview.TotalInitLatency" units="ms"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the total initialization latency of the Skills Webview V2 on
+    startup, from the beginning of init() to handshake completion.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/skills/v2/skills_webview_bridge_constants.ts:LoadingStage) -->
 
 </histograms>
 

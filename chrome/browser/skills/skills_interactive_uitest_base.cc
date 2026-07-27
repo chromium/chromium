@@ -392,7 +392,11 @@ SkillsInteractiveUiTestBase::WaitForTabOpenedTo(int tab, GURL url) {
             if (model->active_index() != tab) {
               return GURL();
             }
-            return model->GetTabAtIndex(tab)->GetContents()->GetVisibleURL();
+            GURL url =
+                model->GetTabAtIndex(tab)->GetContents()->GetVisibleURL();
+            GURL::Replacements clear_query;
+            clear_query.ClearQuery();
+            return url.ReplaceComponents(clear_query);
           }),
       WaitForState(kOpenedTabUrlState, url),
       StopObservingState(kOpenedTabUrlState));

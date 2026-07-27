@@ -35,7 +35,7 @@ gfx::Size kWebViewMaxSize = gfx::Size(kWebViewWidth, kWebViewMaxHeight);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsDialogView, kSkillsDialogElementId);
 
-SkillsDialogView::SkillsDialogView(Profile* profile) {
+SkillsDialogView::SkillsDialogView(Profile* profile, const GURL& url) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Create the webview.
@@ -50,8 +50,7 @@ SkillsDialogView::SkillsDialogView(Profile* profile) {
       gfx::RoundedCornersF(kCornerRadius));
   web_view_->layer()->SetMasksToBounds(true);
   web_view_->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  web_view_->LoadInitialURL(GURL(std::string(chrome::kChromeUISkillsURL) +
-                                 chrome::kChromeUISkillsDialogPath));
+  web_view_->LoadInitialURL(url);
   web_view_->GetWebContents()->SetDelegate(this);
   zoom::ZoomController::CreateForWebContents(web_view_->GetWebContents());
   zoom::ZoomController::FromWebContents(web_view_->GetWebContents())

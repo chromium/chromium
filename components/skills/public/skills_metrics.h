@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/skills/public/skill.h"
+#include "url/gurl.h"
 namespace skills {
 
 namespace mojom {
@@ -191,6 +192,9 @@ void RecordSkillsDownloadRequestStatus(SkillsDownloadRequestStatus status);
 
 // Records errors encountered during skills management operations.
 void RecordSkillsManagementError(SkillsManagementError error);
+
+// Appends openStartTime query parameter to the GURL with current time.
+GURL AppendOpenStartTime(const GURL& url);
 
 }  // namespace skills
 

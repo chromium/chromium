@@ -12,7 +12,7 @@ import type {ToastType} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
-import {getChromePathForRemoteUrl, getRemoteUrlForChromePath, IS_SAVING_GEMINI_QUERY_PARAMETER} from './skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage} from './skills_webview_bridge_constants.js';
 
 export class SkillsWebview {
   protected remoteUrl: string = '';
@@ -20,6 +20,10 @@ export class SkillsWebview {
   protected webview: chrome.webviewTag.WebView|null = null;
   protected bridge: SkillsWebviewBridge|null = null;
   private promptToSend = '';
+  private initStartTime_: number = 0;
+  private navigationStartTime_: number = 0;
+  private isInitialNavigation_: boolean = false;
+  private hasLoggedInitLatency_: boolean = false;
 
   constructor() {
     this.initializeRemoteUrl();
@@ -45,11 +49,25 @@ export class SkillsWebview {
     }
   }
 
+  getInitStartTimeForTesting(searchParams: URLSearchParams): number {
+    const openStartTime = searchParams.get('openStartTime');
+    if (openStartTime) {
+      return parseFloat(openStartTime) - performance.timeOrigin;
+    }
+    return performance.now();
+  }
+
   async init() {
+    this.initStartTime_ = this.getInitStartTimeForTesting(
+        new URLSearchParams(window.location.search));
+    if (window.location.search) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
     this.webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
 
     // Wait for cookie sync to complete before setting src
-    const {success} = await this.handler.syncCookies();
+    const success = await this.syncCookiesAndRecordMetric();
+
     if (!success) {
       this.showError(ErrorType.GLIC_NOT_ENABLED);
       return;
@@ -61,10 +79,13 @@ export class SkillsWebview {
       onInvokeSkill: (skillId: string) => this.handler.invokeSkill(skillId),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
       onCloseDialog: () => this.handler.closeDialog(),
+      onHandshakeComplete: () => this.recordTotalInitLatencyMetric(),
     };
 
     // Initiate handshake. Show error page on failure.
     this.bridge = new SkillsWebviewBridge(this.webview, delegate);
+    this.navigationStartTime_ = performance.now();
+    this.isInitialNavigation_ = true;
     this.webview.setAttribute('src', this.remoteUrl);
 
     // Send remote url more information, if needed.
@@ -87,6 +108,8 @@ export class SkillsWebview {
   }
 
   protected handleUrlChanged(url: URL) {
+    this.recordInitialNavigationMetric();
+
     const chromePath = getChromePathForRemoteUrl(url);
     if (window.location.pathname === chromePath) {
       return;
@@ -102,5 +125,34 @@ export class SkillsWebview {
       errorPage.removeAttribute('hidden');
     }
     this.webview?.setAttribute('hidden', 'true');
+  }
+
+  private async syncCookiesAndRecordMetric(): Promise<boolean> {
+    const syncStart = performance.now();
+    const {success} = await this.handler.syncCookies();
+    const syncDuration = performance.now() - syncStart;
+    chrome.histograms.recordMediumTime(
+        getLoadingStageHistogramName(LoadingStage.COOKIE_SYNC),
+        Math.floor(syncDuration));
+    return success;
+  }
+
+  private recordTotalInitLatencyMetric() {
+    if (!this.hasLoggedInitLatency_) {
+      const totalDuration = performance.now() - this.initStartTime_;
+      chrome.histograms.recordMediumTime(
+          HISTOGRAM_TOTAL_INIT_LATENCY, Math.floor(totalDuration));
+      this.hasLoggedInitLatency_ = true;
+    }
+  }
+
+  private recordInitialNavigationMetric() {
+    if (this.isInitialNavigation_) {
+      const navDuration = performance.now() - this.navigationStartTime_;
+      chrome.histograms.recordMediumTime(
+          getLoadingStageHistogramName(LoadingStage.NAVIGATION),
+          Math.floor(navDuration));
+      this.isInitialNavigation_ = false;
+    }
   }
 }

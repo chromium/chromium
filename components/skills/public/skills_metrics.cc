@@ -4,7 +4,10 @@
 
 #include "components/skills/public/skills_metrics.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skill_metrics.mojom.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 
@@ -173,6 +176,21 @@ void RecordSkillsDownloadRequestStatus(SkillsDownloadRequestStatus status) {
 
 void RecordSkillsManagementError(SkillsManagementError error) {
   base::UmaHistogramEnumeration("Skills.Management.Error", error);
+}
+
+GURL AppendOpenStartTime(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
+    return url;
+  }
+  double open_start_time_ms = base::Time::Now().InMillisecondsFSinceUnixEpoch();
+  std::string query(url.query());
+  if (!query.empty()) {
+    query += "&";
+  }
+  query += "openStartTime=" + base::NumberToString(open_start_time_ms);
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query);
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace skills
