@@ -1561,6 +1561,16 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
       ->mutable_state_history(0)
       ->set_state(chrome_root_store::STATE_FROZEN);
 
+  const std::vector<uint8_t> kIssuerNoSignatureAlgorithm = {0x09};
+  AddSignerSetIssuer(proto, kIssuerNoSignatureAlgorithm, "op", std::nullopt)
+      ->clear_signature_algorithm();
+
+  const std::vector<uint8_t> kIssuerUnknownSignatureAlgorithm = {0x0a};
+  AddSignerSetIssuer(proto, kIssuerUnknownSignatureAlgorithm, "op",
+                     std::nullopt)
+      ->set_signature_algorithm(
+          static_cast<chrome_root_store::SignatureAlgorithm>(999999));
+
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures({features::kVerifyMTCs},
@@ -1638,6 +1648,15 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationMirrorFiltering) {
   AddSignerSetMirror(proto, kMirrorStateFrozen, "op")
       ->mutable_state_history(0)
       ->set_state(chrome_root_store::STATE_FROZEN);
+
+  const std::vector<uint8_t> kMirrorNoSignatureAlgorithm = {0x09};
+  AddSignerSetMirror(proto, kMirrorNoSignatureAlgorithm, "op")
+      ->clear_signature_algorithm();
+
+  const std::vector<uint8_t> kMirrorUnknownSignatureAlgorithm = {0x0a};
+  AddSignerSetMirror(proto, kMirrorUnknownSignatureAlgorithm, "op")
+      ->set_signature_algorithm(
+          static_cast<chrome_root_store::SignatureAlgorithm>(999999));
 
   {
     base::test::ScopedFeatureList feature_list;

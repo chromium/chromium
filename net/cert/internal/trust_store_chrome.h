@@ -19,6 +19,7 @@
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -168,7 +169,7 @@ struct NET_EXPORT Signer {
   std::vector<ChromeRootCertConstraints> constraints;
   std::optional<int32_t> crs_root_id;
   int32_t min_log_number;
-  chrome_root_store::SignatureAlgorithm signature_algorithm;
+  bssl::SignatureAlgorithm signature_algorithm;
 };
 
 class NET_EXPORT ChromeRootStoreSignerSet {

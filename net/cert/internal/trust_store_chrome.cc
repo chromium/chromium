@@ -31,8 +31,24 @@
 namespace net {
 
 namespace {
+
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
 #include "net/data/ssl/chrome_root_store/signer-set-inc.cc"
+
+std::optional<bssl::SignatureAlgorithm>
+SignerSignatureAlgorithmToBsslSignatureAlgorithm(
+    chrome_root_store::SignatureAlgorithm signature_algorithm) {
+  switch (signature_algorithm) {
+    case chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA44:
+      return bssl::SignatureAlgorithm::kMldsa44;
+    case chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA65:
+      return bssl::SignatureAlgorithm::kMldsa65;
+    case chrome_root_store::SIGNATURE_ALGORITHM_ML_DSA87:
+      return bssl::SignatureAlgorithm::kMldsa87;
+    default:
+      return std::nullopt;
+  }
+}
 
 }  // namespace
 
@@ -940,7 +956,6 @@ bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
     signer.crs_root_id = signer_proto.crs_root_id();
   }
   signer.min_log_number = signer_proto.min_log_number();
-  signer.signature_algorithm = signer_proto.signature_algorithm();
 
   // For component updates, key bytes may be included directly in the proto.
   // We parse them into a bssl::UniquePtr<CRYPTO_BUFFER>.
@@ -979,6 +994,23 @@ bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
     // This is safe since this is a key that's compiled in and static.
     signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
   }
+
+  std::optional<bssl::SignatureAlgorithm> sigalg =
+      SignerSignatureAlgorithmToBsslSignatureAlgorithm(
+          signer_proto.signature_algorithm());
+  if (!sigalg) {
+    // An unknown signature algorithm causes the signer to be ignored, and is
+    // not considered a parsing failure. We may want to add new signature
+    // algorithms in the future, and this gives us more flexibility in how to
+    // handle that. (We can still cause clients to fail the whole update by
+    // bumping compatibility version if we want that behavior.)
+    // This is done after all the other parsing is done to ensure that any
+    // parsing errors still cause the proto parsing to fail, rather than being
+    // ignored if the error was in a signer with an unknown signature
+    // algorithm.
+    return true;
+  }
+  signer.signature_algorithm = *sigalg;
 
   if (!IsSignerTrustedAndUsable(signer_proto)) {
     // If the signer is not trusted or is retired, don't save it in the output
