@@ -34,16 +34,15 @@ public class SettingsPromoCardPreference extends Preference {
                         DefaultBrowserPromoUtils.getInstance(),
                         tracker,
                         this::onPromoCardUpdated);
+        setVisible(mProvider.isPromoShowing());
     }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        setVisible(false);
 
         if (mProvider != null && mProvider.isPromoShowing()) {
             mProvider.setUpPromoCardView(holder.findViewById(R.id.promo_card_view));
-            setVisible(true);
         }
     }
 
@@ -54,6 +53,7 @@ public class SettingsPromoCardPreference extends Preference {
     public void updatePreferences() {
         if (mProvider != null) {
             mProvider.updatePromoCard();
+            setVisible(mProvider.isPromoShowing());
         }
     }
 
