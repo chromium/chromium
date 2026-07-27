@@ -156,10 +156,9 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     recorder_for_external_draws_->DisableLineDrawingAsPaths();
   }
 
-  if (shared_image_) {
-    WaitSyncToken(shared_image_->creation_sync_token());
-    release_sync_token_ = shared_image_->creation_sync_token();
-  }
+  CHECK(shared_image_);
+  WaitSyncToken(shared_image_->creation_sync_token());
+  release_sync_token_ = shared_image_->creation_sync_token();
 }
 
 WebGpuSharedImageWrapper::~WebGpuSharedImageWrapper() {
@@ -388,23 +387,15 @@ gpu::SyncToken WebGpuSharedImageWrapper::GetSyncToken() const {
   if (IsGpuContextLost()) {
     return gpu::SyncToken();
   }
-  return shared_image_ ? release_sync_token_ : gpu::SyncToken();
+  return release_sync_token_;
 }
 
 base::ByteSize WebGpuSharedImageWrapper::EstimatedSizeInBytes() const {
-  base::ByteSize result;
-  if (shared_image_) {
-    result += shared_image_->EstimatedSizeInBytes();
-  }
-  return result;
+  return shared_image_->EstimatedSizeInBytes();
 }
 
 void WebGpuSharedImageWrapper::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (!shared_image_) {
-    return;
-  }
-
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
 
