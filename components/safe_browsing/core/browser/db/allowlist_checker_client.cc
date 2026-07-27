@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 
 namespace safe_browsing {
 
@@ -105,6 +106,14 @@ AllowlistCheckerClient::~AllowlistCheckerClient() {
 void AllowlistCheckerClient::OnCheckAllowlistUrlResult(
     bool did_match_allowlist) {
   OnCheckUrlResult(did_match_allowlist);
+}
+base::WeakPtr<V5GetHashProtocolManager>
+AllowlistCheckerClient::GetV5GetHashProtocolManager() {
+  // Allowlist checks just check the local database; they don't make get hash
+  // requests. So, there's no need to provide a V5GetHashProtocolManager.
+  // TODO(crbug.com/372395685): Refactor so this override is unneeded once the
+  // v4 code is deprecated.
+  NOTREACHED();
 }
 
 void AllowlistCheckerClient::OnCheckUrlResult(bool did_match_allowlist) {

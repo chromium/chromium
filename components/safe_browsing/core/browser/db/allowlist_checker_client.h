@@ -15,6 +15,8 @@
 
 namespace safe_browsing {
 
+class V5GetHashProtocolManager;
+
 // This provides a simpler interface to
 // SafeBrowsingDatabaseManager::CheckCsdAllowlistUrl() for callers that
 // don't want to track their own clients.
@@ -42,6 +44,8 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
 
   // SafeBrowsingDatabaseMananger::Client impl
   void OnCheckAllowlistUrlResult(bool is_allowlisted) override;
+  base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
+      override;
 
  private:
   // Helper method to instantiate a AllowlistCheckerClient object.
