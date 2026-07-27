@@ -222,6 +222,92 @@ class MojoWatcher {
 
 Mojo.internal = Mojo.internal || {};
 
+// Holds messages to be sent to the native side.
+Mojo.internal.queuedMessages = Mojo.internal.queuedMessages || [];
+// Holds messages sent by the native side to JS.
+Mojo.internal.receivedMessagesByHandle =
+    Mojo.internal.receivedMessagesByHandle || {};
+// Holds the Promise 'resolve' callback for a waiting fetchNextMessageFromJS()
+// call when the outgoing queue is empty.
+Mojo.internal.sendNextMessagePromiseResolver =
+    Mojo.internal.sendNextMessagePromiseResolver || undefined;
+// Holds message ID counter for outgoing JS -> Native messages.
+Mojo.internal.nextAvailableMessageId =
+    Mojo.internal.nextAvailableMessageId || 0;
+// Map of sent message IDs to their Promise resolve callbacks, waiting for
+// responses from native side.
+Mojo.internal.sendMessageResultPromises =
+    Mojo.internal.sendMessageResultPromises || {};
+
+/**
+ * Called by the native iOS bridge to deliver and buffer messages/results
+ * coming from native side for a specific handle ID until readMessage() is
+ * called by JS.
+ * @param {number} handleId
+ * @param {!Object} result
+ */
+
+Mojo.internal.fetchNextMessageFromNative = function(handleId, result) {
+  if (!Mojo.internal.receivedMessagesByHandle[handleId]) {
+    Mojo.internal.receivedMessagesByHandle[handleId] = [];
+  }
+  Mojo.internal.receivedMessagesByHandle[handleId].push(result);
+};
+
+/**
+ * Asynchronously sends a message to the native side.
+ * If the native bridge is currently waiting via fetchNextMessageFromJS(),
+ * delivers directly by resolving its Promise; otherwise buffers the message in
+ * queuedMessages.
+ * @param {!Object} message
+ * @return {!Promise<Object>}
+ */
+
+Mojo.internal.sendMessageAsync = async function(message) {
+  const messageId = Mojo.internal.nextAvailableMessageId++;
+  const wrappedMessage = {message_id: messageId, message: message};
+
+  if (Mojo.internal.sendNextMessagePromiseResolver) {
+    Mojo.internal.sendNextMessagePromiseResolver(wrappedMessage);
+    Mojo.internal.sendNextMessagePromiseResolver = undefined;
+  } else {
+    Mojo.internal.queuedMessages.push(wrappedMessage);
+  }
+
+  return new Promise((resolve) => {
+    Mojo.internal.sendMessageResultPromises[messageId] = resolve;
+  });
+};
+
+// Resolves a waiting promise created in sendMessageAsync for `messageId` with
+// `result`.
+Mojo.internal.messageReceived = function(messageId, result) {
+  const resolver = Mojo.internal.sendMessageResultPromises[messageId];
+  delete Mojo.internal.sendMessageResultPromises[messageId];
+
+  if (resolver) {
+    resolver(result);
+  }
+};
+
+/**
+ * Called by the native iOS bridge to retrieve the next outgoing message from
+ * JS. If the outgoing queue is empty, returns a Promise that resolves as soon
+ * as sendMessageAsync() is next called.
+ * @return {!Promise<Object>}
+ */
+
+Mojo.internal.fetchNextMessageFromJS = async function() {
+  const queueLength = Mojo.internal.queuedMessages.length;
+  if (queueLength) {
+    const nextMsg = Mojo.internal.queuedMessages.shift();
+    return nextMsg;
+  }
+  return new Promise((resolve) => {
+    Mojo.internal.sendNextMessagePromiseResolver = resolve;
+  });
+};
+
 /**
  * Synchronously sends a message to Mojo backend.
  * @param {!Object} message The message to send.
