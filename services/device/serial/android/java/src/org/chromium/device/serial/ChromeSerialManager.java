@@ -151,7 +151,7 @@ public class ChromeSerialManager implements SerialPortListener {
                 return;
             }
             int fd = response.getFileDescriptor().detachFd();
-            Log.d(TAG, "Returning file descriptor " + fd + " for port " + mPortName);
+            Log.d(TAG, "Returning file descriptor %d for port %s", fd, mPortName);
             ChromeSerialManagerJni.get().openPathCallbackViaJni(mNativePointer, mPortName, fd);
         }
 
