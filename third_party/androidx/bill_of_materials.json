@@ -1392,7 +1392,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha11"
+        "version": "16.0.0-alpha12"
     },
     {
         "name": "play-services-tasks",

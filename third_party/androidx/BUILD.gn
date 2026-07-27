@@ -638,6 +638,7 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_credentials_registry_registry_provider/androidx_credentials_registry_registry_provider.info"
     enable_bytecode_checks = false
     deps = [
+      ":androidx_core_core_java",
       ":androidx_credentials_credentials_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
@@ -652,6 +653,7 @@ if (!limit_android_deps) {
     info_path = "../androidx/committed/libs/androidx_credentials_registry_registry_provider_play_services/androidx_credentials_registry_registry_provider_play_services.info"
     enable_bytecode_checks = false
     deps = [
+      ":androidx_core_core_java",
       ":androidx_credentials_registry_registry_provider_java",
       "$google_play_services_package:google_play_services_identity_credentials_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
