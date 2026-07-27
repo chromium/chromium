@@ -28,8 +28,6 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
-import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityServiceFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
@@ -52,7 +50,6 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -341,28 +338,9 @@ final class SigninButtonMediator
         mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(mSigninManager).addSignInStateObserver(this);
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)) {
-            SubscriptionEligibilityService subscriptionEligibilityService =
-                    SubscriptionEligibilityServiceFactory.getForProfile(profile);
-            int imageSize =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size);
-            int ringThicknessPx =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_identity_disc);
-            mProfileDataCache =
-                    ProfileDataCache.createWithAiTierRingOrBadge(
-                            mContext,
-                            mIdentityManager,
-                            subscriptionEligibilityService,
-                            imageSize,
-                            ringThicknessPx,
-                            null);
-        } else {
-            mProfileDataCache =
-                    ProfileDataCache.createWithoutBadge(
-                            mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
-        }
+        mProfileDataCache =
+                ProfileDataCache.createWithoutBadge(
+                        mContext, mIdentityManager, R.dimen.toolbar_identity_disc_size);
         mProfileDataCache.addObserver(this);
         mSyncService = SyncServiceFactory.getForProfile(profile);
         if (mSyncService != null) {

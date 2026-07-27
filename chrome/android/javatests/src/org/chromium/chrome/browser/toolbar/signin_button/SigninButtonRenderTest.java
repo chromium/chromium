@@ -171,31 +171,6 @@ public class SigninButtonRenderTest {
                 "signin_button_identity_error_exist");
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSigninButton_SignedIn_withAiTierRingEnabled(boolean nightModeEnabled)
-            throws IOException {
-        startActivityOnNtp();
-
-        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
-
-        // Set the pref natively to trigger the AI tier ring.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                            .setInteger("sync.ai_subscription_tier", 1);
-                });
-
-        mRenderTestRule.render(
-                mActivityTestRule.getActivity().findViewById(R.id.signin_button),
-                "signin_button_signed_in_with_ai_tier_ring");
-    }
-
     private void startActivityOnNtp() {
         RegularNewTabPageStation page = mActivityTestRule.startOnNtp();
         NewTabPageTestUtils.waitForNtpLoaded(page.getTab());
