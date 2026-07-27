@@ -22279,27 +22279,6 @@
             ]
         }
     ],
-    "SearchEngineExplicitChoiceDialog": [
-        {
-            "platforms": [
-                "windows",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "unlimited_shows": "false"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDesktopSEHijacking",
-                        "SearchEngineExplicitChoiceDialog",
-                        "SearchEngineUnconditionalDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "SearchEnginePreconnectInterval": [
         {
             "platforms": [
