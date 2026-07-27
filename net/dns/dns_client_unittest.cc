@@ -106,7 +106,7 @@ class DnsClientTest : public TestWithTaskEnvironment {
 };
 
 TEST_F(DnsClientTest, NoConfig) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
 
   EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
@@ -122,7 +122,7 @@ TEST_F(DnsClientTest, NoConfig) {
 }
 
 TEST_F(DnsClientTest, InvalidConfig) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(DnsConfig());
 
@@ -139,7 +139,7 @@ TEST_F(DnsClientTest, InvalidConfig) {
 }
 
 TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(BasicValidConfig());
 
@@ -158,7 +158,7 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_NoDohServers) {
 }
 
 TEST_F(DnsClientTest, InsecureNotEnabled) {
-  client_->SetInsecureEnabled(/*enabled=*/false,
+  client_->SetInsecureEnabled(InsecureDnsMode::kDisabled,
                               /*additional_types_enabled=*/false);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
 
@@ -177,7 +177,7 @@ TEST_F(DnsClientTest, InsecureNotEnabled) {
 }
 
 TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/false);
   client_->SetSystemConfig(BasicValidConfig());
 
@@ -190,7 +190,7 @@ TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
 }
 
 TEST_F(DnsClientTest, UnhandledOptions) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
   config.unhandled_options = true;
@@ -228,7 +228,7 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
 }
 
 TEST_F(DnsClientTest, DnsOverTlsActive) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
   config.dns_over_tls_active = true;
@@ -247,7 +247,7 @@ TEST_F(DnsClientTest, DnsOverTlsActive) {
 }
 
 TEST_F(DnsClientTest, AllAllowed) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
   resolve_context_->InvalidateCachesAndPerSessionData(
@@ -272,7 +272,7 @@ TEST_F(DnsClientTest, AllAllowed) {
 }
 
 TEST_F(DnsClientTest, FallbackFromSecureTransactionPreferred_Failures) {
-  client_->SetInsecureEnabled(/*enabled=*/true,
+  client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                               /*additional_types_enabled=*/true);
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
 

@@ -39,6 +39,7 @@
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
@@ -181,17 +182,6 @@ class NET_EXPORT HostResolverManager
       NetLogWithSource net_log,
       ResolveHostParameters parameters,
       ResolveContext* resolve_context);
-
-  // Defines the mode of operation of the insecure portion of the built-in
-  // DNS resolver.
-  enum class InsecureDnsMode {
-    // Insecure DNS is disabled.
-    kDisabled,
-    // Insecure DNS is enabled using the built-in DNS client.
-    kEnabledBuiltIn,
-    // Insecure DNS is enabled using the platform DNS APIs.
-    kEnabledPlatform,
-  };
 
   // Enables or disables the built-in asynchronous DnsClient. If enabled, by
   // default (when no |ResolveHostParameters::source| is specified), the

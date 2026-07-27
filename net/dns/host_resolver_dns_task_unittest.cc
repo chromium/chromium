@@ -137,7 +137,7 @@ class HostResolverDnsTaskTest : public WithTaskEnvironment,
     config.nameservers.emplace_back(IPAddress(192, 168, 1, 5), 53);
     CHECK(dns_client_->SetSystemConfig(config));
     // Allow non-DnsTransactionFactory::AttemptMode::kHttp attempts to be made.
-    dns_client_->SetInsecureEnabled(/*enabled=*/true,
+    dns_client_->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                                     /*additional_types_enabled=*/true);
   }
 
@@ -570,7 +570,7 @@ TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSort) {
                      MockDnsClientRule::Result(std::move(aaaa_response)),
                      /*delay=*/false);
   MockDnsClient mock_dns_client(CreateValidDnsConfig(), std::move(rules));
-  mock_dns_client.SetInsecureEnabled(/*enabled=*/true,
+  mock_dns_client.SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                                      /*additional_types_enabled=*/true);
 
   auto test_sorter = std::make_unique<DelayingAddressSorter>();
@@ -638,7 +638,7 @@ TEST_F(HostResolverDnsTaskTest, CanCancelTransactionDuringSort) {
                      MockDnsClientRule::Result(std::move(aaaa_response)),
                      /*delay=*/false);
   MockDnsClient mock_dns_client(CreateValidDnsConfig(), std::move(rules));
-  mock_dns_client.SetInsecureEnabled(/*enabled=*/true,
+  mock_dns_client.SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
                                      /*additional_types_enabled=*/true);
 
   auto test_sorter = std::make_unique<DelayingAddressSorter>();
@@ -939,7 +939,7 @@ TEST_F(HostResolverDnsTaskWithSSLConfigTest,
 
   auto client =
       std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
-  client->SetInsecureEnabled(true, true);
+  client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn, true);
 
   base::SimpleTestTickClock clock;
   DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA,
@@ -1004,7 +1004,7 @@ TEST_F(HostResolverDnsTaskWithSSLConfigTest,
 
   auto client =
       std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
-  client->SetInsecureEnabled(true, true);
+  client->SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn, true);
 
   base::SimpleTestTickClock clock;
   DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA,

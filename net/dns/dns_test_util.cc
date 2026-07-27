@@ -806,7 +806,8 @@ bool MockDnsClient::CanUseSecureDnsTransactions() const {
 
 bool MockDnsClient::CanUseInsecureDnsTransactions() const {
   const DnsConfig* config = GetEffectiveConfig();
-  return config && config->IsValid() && insecure_enabled_ &&
+  return config && config->IsValid() &&
+         insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
          !config->dns_over_tls_active;
 }
 
@@ -815,9 +816,9 @@ bool MockDnsClient::CanQueryAdditionalTypesViaInsecureDns() const {
   return additional_types_enabled_;
 }
 
-void MockDnsClient::SetInsecureEnabled(bool enabled,
+void MockDnsClient::SetInsecureEnabled(InsecureDnsMode mode,
                                        bool additional_types_enabled) {
-  insecure_enabled_ = enabled;
+  insecure_dns_mode_ = mode;
   additional_types_enabled_ = additional_types_enabled;
 }
 

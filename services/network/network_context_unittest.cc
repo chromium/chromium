@@ -6404,7 +6404,7 @@ TEST_F(NetworkContextCreateHostResolverTest, WithConfigOverrides) {
                      false /* delay */);
   auto mock_dns_client = std::make_unique<net::MockDnsClient>(
       base_configuration, std::move(rules));
-  mock_dns_client->SetInsecureEnabled(/*enabled=*/true,
+  mock_dns_client->SetInsecureEnabled(net::InsecureDnsMode::kEnabledBuiltIn,
                                       /*additional_types_enabled=*/false);
   mock_dns_client->set_ignore_system_config_changes(true);
   auto* mock_dns_client_ptr = mock_dns_client.get();

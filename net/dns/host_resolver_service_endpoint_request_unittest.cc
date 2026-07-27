@@ -32,6 +32,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
@@ -457,7 +458,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
   // DNS client causing AbortInsecureDnsTasks. The request falls back to
   // SystemTask, which doesn't resolve the destination.
   resolver_->SetInsecureDnsClientEnabled(
-      HostResolverManager::InsecureDnsMode::kDisabled,
+      InsecureDnsMode::kDisabled,
       /*additional_dns_types_enabled=*/false);
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
@@ -504,7 +505,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTaskFallbackSecure) {
   // DNS client causing AbortInsecureDnsTasks, triggering secure DNS task as
   // fallback.
   resolver_->SetInsecureDnsClientEnabled(
-      HostResolverManager::InsecureDnsMode::kDisabled,
+      InsecureDnsMode::kDisabled,
       /*additional_dns_types_enabled=*/false);
 
   EXPECT_THAT(requester.request()->GetEndpointResults(),

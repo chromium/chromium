@@ -444,7 +444,8 @@ class MockDnsClient : public DnsClient {
   bool CanUseSecureDnsTransactions() const override;
   bool CanUseInsecureDnsTransactions() const override;
   bool CanQueryAdditionalTypesViaInsecureDns() const override;
-  void SetInsecureEnabled(bool enabled, bool additional_types_enabled) override;
+  void SetInsecureEnabled(InsecureDnsMode mode,
+                          bool additional_types_enabled) override;
   bool FallbackFromSecureTransactionPreferred(
       ResolveContext* resolve_context) const override;
   bool FallbackFromInsecureTransactionPreferred() const override;
@@ -498,7 +499,7 @@ class MockDnsClient : public DnsClient {
   std::optional<DnsConfig> BuildEffectiveConfig();
   scoped_refptr<DnsSession> BuildSession();
 
-  bool insecure_enabled_ = false;
+  InsecureDnsMode insecure_dns_mode_ = InsecureDnsMode::kDisabled;
   bool additional_types_enabled_ = false;
   int fallback_failures_ = 0;
   int max_fallback_failures_ = DnsClient::kMaxInsecureFallbackFailures;

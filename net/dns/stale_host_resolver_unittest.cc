@@ -39,6 +39,7 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -182,11 +183,11 @@ class StaleHostResolverTest : public TestWithTaskEnvironment {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
+          InsecureDnsMode::kEnabledBuiltIn,
           /*additional_dns_types_enabled=*/true);
     } else {
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          HostResolverManager::InsecureDnsMode::kDisabled,
+          InsecureDnsMode::kDisabled,
           /*additional_dns_types_enabled=*/false);
     }
     return inner_resolver;

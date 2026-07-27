@@ -41,6 +41,7 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
@@ -157,11 +158,11 @@ class CronetStaleHostResolverTest : public testing::Test {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
+          net::InsecureDnsMode::kEnabledBuiltIn,
           /*additional_dns_types_enabled=*/true);
     } else {
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          net::HostResolverManager::InsecureDnsMode::kDisabled,
+          net::InsecureDnsMode::kDisabled,
           /*additional_dns_types_enabled=*/false);
     }
     return inner_resolver;

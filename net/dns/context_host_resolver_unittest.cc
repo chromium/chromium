@@ -93,7 +93,7 @@ class ContextHostResolverTest : public ::testing::Test,
     dns_client_ = dns_client.get();
     manager_->SetDnsClientForTesting(std::move(dns_client));
     manager_->SetInsecureDnsClientEnabled(
-        HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
+        InsecureDnsMode::kEnabledBuiltIn,
         /*additional_dns_types_enabled=*/true);
 
     // Ensure DnsClient is fully usable.

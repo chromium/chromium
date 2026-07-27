@@ -69,6 +69,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/insecure_dns_mode.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/dns/test_dns_config_service.h"
 #include "net/filter/filter_source_stream.h"
@@ -769,13 +770,13 @@ void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_via_platform_apis_enabled) {
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
-  net::HostResolverManager::InsecureDnsMode mode;
+  net::InsecureDnsMode mode;
   if (insecure_dns_client_enabled && insecure_dns_via_platform_apis_enabled) {
-    mode = net::HostResolverManager::InsecureDnsMode::kEnabledPlatform;
+    mode = net::InsecureDnsMode::kEnabledPlatform;
   } else if (insecure_dns_client_enabled) {
-    mode = net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn;
+    mode = net::InsecureDnsMode::kEnabledBuiltIn;
   } else {
-    mode = net::HostResolverManager::InsecureDnsMode::kDisabled;
+    mode = net::InsecureDnsMode::kDisabled;
   }
 
   host_resolver_manager_->SetInsecureDnsClientEnabled(

@@ -485,8 +485,14 @@ HostResolverManager::HostResolverManager(
 
 #if defined(ENABLE_BUILT_IN_DNS)
   dns_client_ = DnsClient::CreateClient(net_log_);
+  InsecureDnsMode initial_insecure_dns_mode = InsecureDnsMode::kDisabled;
+  if (options.insecure_dns_client_enabled) {
+    initial_insecure_dns_mode = options.insecure_dns_via_platform_apis_enabled
+                                    ? InsecureDnsMode::kEnabledPlatform
+                                    : InsecureDnsMode::kEnabledBuiltIn;
+  }
   dns_client_->SetInsecureEnabled(
-      options.insecure_dns_client_enabled,
+      initial_insecure_dns_mode,
       options.additional_types_via_insecure_dns_enabled);
   dns_client_->SetConfigOverrides(options.dns_config_overrides);
 #else
@@ -645,27 +651,12 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
   if (!dns_client_)
     return;
 
-  bool insecure_dns_enabled = false;
-  switch (mode) {
-    case InsecureDnsMode::kDisabled:
-      insecure_dns_enabled = false;
-      platform_apis_enabled_ = false;
-      break;
-    case InsecureDnsMode::kEnabledBuiltIn:
-      insecure_dns_enabled = true;
-      platform_apis_enabled_ = false;
-      break;
-    case InsecureDnsMode::kEnabledPlatform:
-      insecure_dns_enabled = true;
-      platform_apis_enabled_ = true;
-      break;
-  }
+  platform_apis_enabled_ = mode == InsecureDnsMode::kEnabledPlatform;
 
   bool enabled_before = dns_client_->CanUseInsecureDnsTransactions();
   bool additional_types_before =
       enabled_before && dns_client_->CanQueryAdditionalTypesViaInsecureDns();
-  dns_client_->SetInsecureEnabled(insecure_dns_enabled,
-                                  additional_dns_types_enabled);
+  dns_client_->SetInsecureEnabled(mode, additional_dns_types_enabled);
 
   // Abort current tasks if `CanUseInsecureDnsTransactions()` changes or if
   // insecure transactions are enabled and

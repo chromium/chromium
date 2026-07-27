@@ -164,7 +164,8 @@ class DnsClientImpl : public DnsClient {
 
   bool CanUseInsecureDnsTransactions() const override {
     const DnsConfig* config = GetEffectiveConfig();
-    return config && config->nameservers.size() > 0 && insecure_enabled_ &&
+    return config && config->nameservers.size() > 0 &&
+           insecure_dns_mode_ != InsecureDnsMode::kDisabled &&
            !config->unhandled_options && !config->dns_over_tls_active;
   }
 
@@ -176,9 +177,9 @@ class DnsClientImpl : public DnsClient {
     return can_query_additional_types_via_insecure_;
   }
 
-  void SetInsecureEnabled(bool enabled,
+  void SetInsecureEnabled(InsecureDnsMode mode,
                           bool additional_types_enabled) override {
-    insecure_enabled_ = enabled;
+    insecure_dns_mode_ = mode;
     can_query_additional_types_via_insecure_ = additional_types_enabled;
   }
 
@@ -390,7 +391,7 @@ class DnsClientImpl : public DnsClient {
     }
   }
 
-  bool insecure_enabled_ = false;
+  InsecureDnsMode insecure_dns_mode_ = InsecureDnsMode::kDisabled;
   bool can_query_additional_types_via_insecure_ = false;
   int insecure_fallback_failures_ = 0;
 

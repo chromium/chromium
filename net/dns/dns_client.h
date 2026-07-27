@@ -15,6 +15,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/insecure_dns_mode.h"
 
 namespace url {
 
@@ -71,11 +72,10 @@ class NET_EXPORT DnsClient {
   virtual bool CanUseSecureDnsTransactions() const = 0;
 
   // Returns true if the DnsClient is able and allowed to make insecure DNS
-  // transactions. If false, insecure transactions should not be created. Will
-  // always be false unless SetInsecureEnabled(true) has been called.
+  // transactions. If false, insecure transactions should not be created.
   virtual bool CanUseInsecureDnsTransactions() const = 0;
   virtual bool CanQueryAdditionalTypesViaInsecureDns() const = 0;
-  virtual void SetInsecureEnabled(bool enabled,
+  virtual void SetInsecureEnabled(InsecureDnsMode mode,
                                   bool additional_types_enabled) = 0;
 
   // When true, DoH should not be used in AUTOMATIC mode since no DoH servers
