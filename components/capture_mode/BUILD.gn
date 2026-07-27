@@ -33,7 +33,10 @@ component("capture_mode") {
 }
 source_set("unit_tests") {
   testonly = true
-  sources = [ "capture_mode_util_unittest.cc" ]
+  sources = [
+    "audio_capturer_unittest.cc",
+    "capture_mode_util_unittest.cc",
+  ]
   deps = [
     ":capture_mode",
     "//base",
@@ -41,6 +44,7 @@ source_set("unit_tests") {
     "//components/viz/common",
     "//components/viz/test:test_support",
     "//gpu/config",
+    "//services/audio/public/cpp:test_support",
     "//testing/gtest",
     "//ui/base:features",
     "//ui/compositor",
