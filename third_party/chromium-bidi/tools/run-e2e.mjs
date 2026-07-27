@@ -150,7 +150,13 @@ await matchLine(serverProcess).catch((error) => {
   process.exit(1);
 });
 
-const e2eArgs = ['run', 'pytest'];
+const e2eArgs = [];
+const pythonCommand = argv['python-bin'] || 'pipenv';
+if (pythonCommand === 'pipenv') {
+  e2eArgs.push('run', 'pytest');
+} else {
+  e2eArgs.push('-m', 'pytest');
+}
 e2eArgs.push(
   '--verbose',
   '-vv',
@@ -197,7 +203,7 @@ if (argv.s) {
   e2eArgs.push('-s');
 }
 
-const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
+const e2eProcess = child_process.spawn(pythonCommand, e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
   env: {
     ...process.env,

@@ -51,3 +51,27 @@ script_test("webdriver_bidi_unittests") {
     "src:unit_tests",
   ]
 }
+
+script_test("webdriver_bidi_e2e_tests") {
+  script = "tools/run_e2e.py"
+  args = [
+    "--gen-dir",
+    "@WrappedPath(gen)",
+    "--node-py",
+    "@WrappedPath(../../third_party/node/node.py)",
+    "--",
+  ]
+
+  data = [
+    "pytest.ini",
+    "tests/",
+    "tools/",
+    "//third_party/node/",
+    "node_modules/",
+    "package.json",
+  ]
+
+  data_deps = [
+    "src:all",
+  ]
+}

@@ -19,7 +19,7 @@
     "format:eslint": "eslint --cache --fix .",
     "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -vE '^(wpt|third_party|playwright|puppeteer)(/|$)')",
     "format:prettier": "prettier --cache --write .",
-    "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (pipenv run ruff check --fix . && pipenv run ruff format .)",
+    "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (python3 -m ruff check --fix . && python3 -m ruff format .)",
     "prepare": "npm run build",
     "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",

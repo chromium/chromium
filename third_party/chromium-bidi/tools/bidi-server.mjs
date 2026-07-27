@@ -77,8 +77,15 @@ export function parseCommandLineArgs() {
         type: 'string',
         default: String(process.env.PYTEST_THIS_CHUNK || 0),
       },
+      'gen-dir': {
+        type: 'string',
+      },
+      'python-bin': {
+        type: 'string',
+      },
     },
     allowPositionals: true,
+    strict: false,
   });
 
   return {
@@ -89,6 +96,8 @@ export function parseCommandLineArgs() {
     'reruns-times': Number(values['reruns-times']),
     'total-chunks': Number(values['total-chunks']),
     'this-chunk': Number(values['this-chunk']),
+    'gen-dir': values['gen-dir'],
+    'python-bin': values['python-bin'],
   };
 }
 
@@ -110,13 +119,16 @@ export function createBiDiServerProcess() {
   const PORT = process.env.PORT || '8080';
   const VERBOSE = true;
 
+  const argv = parseCommandLineArgs();
+  const GEN_DIR = argv['gen-dir'] || join('out', 'Default', 'gen');
+
   let runParams;
   if (CHROMEDRIVER) {
     runParams = {
       file: installAndGetChromeDriverPath(),
       args: [
         `--port=${PORT}`,
-        `--bidi-mapper-path=${resolve(join('out', 'Default', 'gen', 'src', 'mapperTab.js'))}`,
+        `--bidi-mapper-path=${resolve(join(GEN_DIR, 'src', 'mapperTab.js'))}`,
         `--log-path=${createLogFile('chromedriver')}`,
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
@@ -130,7 +142,7 @@ export function createBiDiServerProcess() {
     runParams = {
       file: 'node',
       args: [
-        resolve(join('out', 'Default', 'gen', 'src', 'bidiServer', 'index.js')),
+        resolve(join(GEN_DIR, 'src', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),
       ],
       options: {
