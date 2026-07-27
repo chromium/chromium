@@ -69,6 +69,12 @@ class DawnProject : public Project {
   std::string_view GetAutoSpanificationHelperIncludePath() const override {
     return "src/utils/span.h";
   }
+  std::string_view GetUnsafeTodoMacroName() const override {
+    return "DAWN_UNSAFE_TODO";
+  }
+  std::string_view GetUnsafeTodoIncludePath() const override {
+    return "src/utils/compiler.h";
+  }
 
   const std::vector<FuncMapping>& GetFuncMappingTable() const override {
     static const std::vector<FuncMapping> kFuncMappingTable = {};
