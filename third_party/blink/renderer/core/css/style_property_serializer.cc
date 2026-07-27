@@ -3330,7 +3330,7 @@ String StylePropertySerializer::CornerPairShorthandValue(
   if (first_text == second_text) {
     return first_text;
   }
-  return first_text + " / " + second_text;
+  return StrCat({first_text, " / ", second_text});
 }
 
 String StylePropertySerializer::PageBreakPropertyValue(

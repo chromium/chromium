@@ -215,19 +215,19 @@ std::optional<ScriptToolError> FormMCPSchema::FillData(
     if (it == name_to_controls_.end()) {
       return ScriptToolError(
           ScriptToolErrorCode::kInvalidInputArguments,
-          String("Input contains a parameter \"" + parameter_name +
-                 "\" but there is no such parameter for the tool"));
+          StrCat({"Input contains a parameter \"", parameter_name,
+                  "\" but there is no such parameter for the tool"}));
     }
     if (!ValidateParameterData(parameter_name, *entry.second)) {
       String string_value;
       if (ToString(*entry.second, string_value)) {
         return ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
-                               String("Invalid value \"" + string_value +
-                                      "\" for parameter " + parameter_name));
+                               StrCat({"Invalid value \"", string_value,
+                                       "\" for parameter ", parameter_name}));
       }
       return ScriptToolError(
           ScriptToolErrorCode::kInvalidInputArguments,
-          String("Invalid value for parameter " + parameter_name));
+          StrCat({"Invalid value for parameter ", parameter_name}));
     }
   }
 
@@ -1098,7 +1098,7 @@ void FormMCPSchema::AddDescription(const ControlVector& controls,
   String description = ComputeDescription(controls);
   if (!extra_context.empty()) {
     if (!description.empty()) {
-      description = description + " (" + extra_context + ")";
+      description = StrCat({description, " (", extra_context, ")"});
     } else {
       description = extra_context;
     }

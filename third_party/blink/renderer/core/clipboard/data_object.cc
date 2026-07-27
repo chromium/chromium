@@ -571,7 +571,7 @@ WebDragData DataObject::ToWebDragData(ExecutionContext* context) {
                 escaped_name = escaped_name.Replace("\\", "\\\\");
                 escaped_name = escaped_name.Replace("\"", "\\\"");
                 binary_item.content_disposition =
-                    "attachment; filename=\"" + escaped_name + "\"";
+                    StrCat({"attachment; filename=\"", escaped_name, "\""});
               }
 
               const String& name = file->name();

@@ -29,11 +29,11 @@ String XMLTreeViewerScriptWithCall(bool use_shadow_root) {
   String script_string =
       UncompressResourceAsASCIIString(IDR_DOCUMENTXMLTREEVIEWER_JS);
   if (use_shadow_root) {
-    return script_string + "\nprepareWebKitXMLViewer(self." +
-           kXMLViewerShadowRootGlobal + ");\ndelete self." +
-           kXMLViewerShadowRootGlobal + ";\n";
+    return StrCat({script_string, "\nprepareWebKitXMLViewer(self.",
+                   kXMLViewerShadowRootGlobal, ");\ndelete self.",
+                   kXMLViewerShadowRootGlobal, ";\n"});
   }
-  return script_string + "\nprepareWebKitXMLViewer();\n";
+  return StrCat({script_string, "\nprepareWebKitXMLViewer();\n"});
 }
 
 void SetXMLViewerStyle(Element* style_element) {

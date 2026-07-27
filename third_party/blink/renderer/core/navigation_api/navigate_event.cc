@@ -209,10 +209,10 @@ void NavigateEvent::deferPageSwap(NavigationDeferPageSwapOptions* options,
 
   if (!can_intercept_) {
     exception_state.ThrowSecurityError(
-        "A navigation with URL '" + dispatch_params_->url.ElidedString() +
-        "' cannot be deferredf by in a window with origin '" +
-        DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
-        DomWindow()->Url().ElidedString() + "'.");
+        StrCat({"A navigation with URL '", dispatch_params_->url.ElidedString(),
+                "' cannot be deferred in a window with origin '",
+                DomWindow()->GetSecurityOrigin()->ToString(), "' and URL '",
+                DomWindow()->Url().ElidedString(), "'."}));
     return;
   }
 

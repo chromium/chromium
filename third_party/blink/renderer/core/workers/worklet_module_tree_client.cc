@@ -59,10 +59,11 @@ void AugmentExceptionWithSourceLocation(ScriptState* script_state,
   String message_string = ToCoreString(isolate, message_value.As<v8::String>());
   String new_message_string;
   if (line_number != 0) {
-    new_message_string = message_string + " (at " + location_string + ":" +
-                         String::Number(line_number) + ")";
+    new_message_string = StrCat({message_string, " (at ", location_string, ":",
+                                 String::Number(line_number), ")"});
   } else {
-    new_message_string = message_string + " (at " + location_string + ")";
+    new_message_string =
+        StrCat({message_string, " (at ", location_string, ")"});
   }
 
   std::ignore =

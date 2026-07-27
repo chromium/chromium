@@ -451,14 +451,14 @@ void ElementInternals::SetBehaviors(
     String name(behavior->BehaviorName());
     // Check for duplicate instances or duplicate types (same BehaviorName).
     if (seen_names.Contains(name)) {
-      exception_state.ThrowTypeError("Only one instance of " + name +
-                                     " is allowed per element.");
+      exception_state.ThrowTypeError(
+          StrCat({"Only one instance of ", name, " is allowed per element."}));
       return;
     }
     // Check if the behavior is already attached to another element.
     if (behavior->GetElementInternals()) {
       exception_state.ThrowTypeError(
-          name + " instance is already attached to another element.");
+          StrCat({name, " instance is already attached to another element."}));
       return;
     }
     seen_names.insert(name);

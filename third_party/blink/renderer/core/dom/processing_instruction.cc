@@ -180,8 +180,9 @@ bool ProcessingInstruction::ValidateAttributeName(
     const AtomicString& name,
     ExceptionState& exception_state) const {
   if (!Document::IsValidAttributeLocalName(name)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidCharacterError,
-                                      "Invalid attribute name: " + name);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidCharacterError,
+        StrCat({"Invalid attribute name: ", name}));
     return false;
   }
   return true;
