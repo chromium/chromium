@@ -41,6 +41,9 @@ class BottomControlsViewBinder {
     }
 
     private static void hideSceneLayerUntilBitmapCapture(ViewHolder view, PropertyModel model) {
+        if (!model.get(BottomControlsProperties.ANDROID_VIEW_VISIBLE)) {
+            return;
+        }
         view.isWaitingForBitmapCapture = true;
         view.sceneLayer.setIsVisible(false);
         DynamicResourceReadyOnceCallback.onNext(
@@ -78,7 +81,9 @@ class BottomControlsViewBinder {
             final boolean showCompositedView =
                     model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE);
             view.root.setVisibility(showAndroidView ? View.VISIBLE : View.INVISIBLE);
-            if (!view.isWaitingForBitmapCapture) {
+            final boolean isCapturingVisibleAndroidView =
+                    view.isWaitingForBitmapCapture && showAndroidView;
+            if (!isCapturingVisibleAndroidView) {
                 view.sceneLayer.setIsVisible(showCompositedView);
             }
             if (!showAndroidView && !showCompositedView) {

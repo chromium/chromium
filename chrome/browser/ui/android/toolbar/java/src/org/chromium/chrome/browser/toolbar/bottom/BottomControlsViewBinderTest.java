@@ -175,4 +175,44 @@ public class BottomControlsViewBinderTest {
         mModel.set(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, true);
         verify(mSceneLayer).setIsVisible(true);
     }
+
+    @Test
+    public void testBottomPadding_changed_androidViewNotVisible() {
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false);
+        Mockito.clearInvocations(mSceneLayer, mResourceAdapter);
+
+        mModel.set(BottomControlsProperties.BOTTOM_PADDING, 54);
+
+        verify(mRootView).setPadding(anyInt(), anyInt(), anyInt(), eq(54));
+        verify(mSceneLayer).setBottomPadding(eq(54));
+        verify(mSceneLayer, never()).setIsVisible(eq(false));
+        verify(mResourceAdapter, never()).addOnResourceReadyCallback(any());
+        assertFalse(mViewHolder.isWaitingForBitmapCapture);
+    }
+
+    @Test
+    public void testAndroidViewHeightNoPadding_changed_androidViewNotVisible() {
+        mLayoutParams.height = 80;
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false);
+        Mockito.clearInvocations(mSceneLayer, mResourceAdapter);
+
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING, 100);
+
+        verify(mSlotView, atLeastOnce()).getLayoutParams();
+        verify(mSceneLayer, never()).setIsVisible(eq(false));
+        verify(mResourceAdapter, never()).addOnResourceReadyCallback(any());
+        assertFalse(mViewHolder.isWaitingForBitmapCapture);
+    }
+
+    @Test
+    public void testCompositedViewVisible_waitingForBitmapCapture_androidViewNotVisible() {
+        mModel.set(BottomControlsProperties.BOTTOM_PADDING, 54);
+        assertTrue(mViewHolder.isWaitingForBitmapCapture);
+        verify(mSceneLayer).setIsVisible(false);
+        Mockito.clearInvocations(mSceneLayer);
+
+        // Hide Android view and show Composited view.
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false);
+        verify(mSceneLayer).setIsVisible(true);
+    }
 }
