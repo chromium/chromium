@@ -8640,6 +8640,7 @@ from previous Chrome versions.
   <int value="-1856080892" label="UseAdHocSigningForWebAppShims:disabled"/>
   <int value="-1855876994"
       label="SyncEnableContactInfoDataTypeInTransportMode:enabled"/>
+  <int value="-1855602285" label="NativeViewHostManagesLayers:enabled"/>
   <int value="-1855347512" label="FormControlsRefresh:disabled"/>
   <int value="-1855339525"
       label="CompressionDictionaryTransportRequireKnownRootCert:enabled"/>
@@ -9331,6 +9332,7 @@ from previous Chrome versions.
   <int value="-1635048938" label="DetectFormSubmissionOnFormClear:disabled"/>
   <int value="-1634878515" label="ChromeHomeModernLayout:enabled"/>
   <int value="-1634753928" label="QueryTilesDisableCountryOverride:disabled"/>
+  <int value="-1634708108" label="NativeViewHostManagesLayers:disabled"/>
   <int value="-1634490190"
       label="AutofillCreditCardLocalCardMigration:disabled"/>
   <int value="-1634154256" label="ZeroSuggestRedirectToChrome:enabled"/>

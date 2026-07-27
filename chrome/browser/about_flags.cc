@@ -13561,6 +13561,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsInstrumentationBreakpointsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsInstrumentationBreakpoints)},
 
+#if defined(TOOLKIT_VIEWS)
+    {"native-view-host-manages-layers",
+     flag_descriptions::kNativeViewHostManagesLayersName,
+     flag_descriptions::kNativeViewHostManagesLayersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(views::features::kNativeViewHostManagesLayers)},
+#endif  // defined(TOOLKIT_VIEWS)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

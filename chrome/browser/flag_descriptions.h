@@ -6738,6 +6738,11 @@ inline constexpr char kMuteNotificationSnoozeActionName[] =
 inline constexpr char kMuteNotificationSnoozeActionDescription[] =
     "Adds a Snooze action to mute notifications shown while sharing a screen.";
 
+inline constexpr char kNativeViewHostManagesLayersName[] =
+    "NativeViewHost manages layers";
+inline constexpr char kNativeViewHostManagesLayersDescription[] =
+    "Enables NativeViewHost to control the layers of the native view.";
+
 inline constexpr char kNtpAlphaBackgroundCollectionsName[] =
     "NTP Alpha Background Collections";
 inline constexpr char kNtpAlphaBackgroundCollectionsDescription[] =
