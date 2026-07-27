@@ -19,7 +19,7 @@ import type {PageHandlerRemote} from '//resources/cr_components/composebox/compo
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
-import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
+import {ComposeboxEmbedderMixin, SubmitButtonIconType} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -65,12 +65,24 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
       },
       entrypointName: {type: String, reflect: true},
       disableComposeboxAnimation: {type: Boolean},
+      submitButtonIconType: {type: String},
     };
   }
 
   accessor entrypointName: string = 'Omnibox';
   accessor disableComposeboxAnimation: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
+  override accessor submitButtonIconType = SubmitButtonIconType.FORWARD;
+
+  protected onVoiceSearchClick_() {
+    this.dispatchEvent(
+        new Event('open-voice-search', {bubbles: true, composed: true}));
+  }
+
+  protected onLensSearchClick_() {
+    this.dispatchEvent(
+        new Event('open-lens-search', {bubbles: true, composed: true}));
+  }
   private webuiOmniboxSimplificationEnabled_: boolean =
       getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
   private pageHandler_: PageHandlerRemote;

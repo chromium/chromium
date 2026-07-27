@@ -28,9 +28,28 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
           @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
           @input-focus-changed="${this.onInputFocusChanged}">
+        ${
+      this.composeButtonEnabled ? html`
+          <cr-searchbox-compose-button id="composeButton" slot="compose-button"
+              @compose-click="${this.onComposeClick_}">
+          </cr-searchbox-compose-button>
+        ` :
+                                  ''}
+      </cr-searchbox-input>
+      <div class="dropdownContainer">
+        <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+            exportparts="dropdown-content"
+            role="listbox" .result="${this.result}"
+            .selectedMatchIndex="${this.selectedMatchIndex}"
+            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+            @match-focusin="${this.onMatchFocusin}"
+            @match-click="${this.onMatchClick}"
+            ?hidden="${!this.dropdownIsVisible}">
+        </cr-searchbox-dropdown>
+      </div>
+      <div id="bottomControls">
         <div class="contextualEntrypointContainer
-                    contextualEntrypointContainerCompact"
-             slot="contextual-entrypoint">
+                    contextualEntrypointContainerCompact">
           <cr-composebox-file-inputs id="fileInputs" @file-change="${
       this.onFileChange_}">
             <div class="context-menu-container" id="contextMenuContainer">
@@ -60,46 +79,20 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
             </div>
           </cr-composebox-file-inputs>
         </div>
-        ${
-      this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
-          <div slot="action-buttons"
-              class="searchbox-icon-button-container voice">
+        <div id="actionButtons">
+          <div class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
                 @click="${this.onVoiceSearchClick_}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </button>
           </div>
-        ` :
-                                                                     ''}
-        ${
-      this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
-          <div slot="action-buttons"
-              class="searchbox-icon-button-container lens">
+          <div class="searchbox-icon-button-container lens">
             <button id="lensSearchButton" class="searchbox-icon-button"
                 @click="${this.onLensSearchClick_}"
                 title="${this.i18n('lensSearchButtonLabel')}">
             </button>
           </div>
-        ` :
-                                                                    ''}
-        ${
-      this.composeButtonEnabled ? html`
-          <cr-searchbox-compose-button id="composeButton" slot="compose-button"
-              @compose-click="${this.onComposeClick_}">
-          </cr-searchbox-compose-button>
-        ` :
-                                  ''}
-      </cr-searchbox-input>
-      <div class="dropdownContainer">
-        <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-            exportparts="dropdown-content"
-            role="listbox" .result="${this.result}"
-            .selectedMatchIndex="${this.selectedMatchIndex}"
-            @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-            @match-focusin="${this.onMatchFocusin}"
-            @match-click="${this.onMatchClick}"
-            ?hidden="${!this.dropdownIsVisible}">
-        </cr-searchbox-dropdown>
+        </div>
       </div>
     </div>
   `;

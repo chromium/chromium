@@ -129,7 +129,7 @@ cr-searchbox-input::part(searchbox-input) {
 
 :host([ntp-realbox-next-enabled])
     cr-searchbox-input::part(searchbox-input) {
-  padding-inline-start: 0;
+  padding-inline-start: 24px;
 }
 
 :host([multi-line-enabled][ntp-realbox-next-enabled])
@@ -262,6 +262,7 @@ cr-searchbox-input::part(searchbox-input) {
 --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start
   : 0px;
   --text-input-inline-start-spacing: 16px;
+  --cr-searchbox-match-padding-inline-start: 24px;
 
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 16px;
@@ -391,4 +392,34 @@ cr-searchbox-dropdown::part(dropdown-content) {
 :host([ntp-realbox-next-enabled]) #composeButton {
   top: 10px;
   margin-inline-end: 10px;
+}
+
+#bottomControls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline-start: 10px;
+  padding-inline-end: 16px;
+  padding-block: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#bottomControls #context {
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start:
+      0;
+  padding-inline-start: 0;
+}
+
+#actionButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+#bottomControls .searchbox-icon-button-container {
+  inset-inline-end: unset;
+  top: 0;
 }

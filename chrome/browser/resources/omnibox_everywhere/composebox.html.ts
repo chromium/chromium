@@ -79,69 +79,84 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                 ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
                 .lastQueriedInput="${this.lastQueriedInput}">
             </cr-composebox-dropdown>
-            ${this.contextMenuEnabled ? html`
-              <div class="context-menu-container" id="contextMenuContainer"
-                  part="context-menu-and-tools"
-                  @mousedown="${this.onContextMenuContainerMousedown}"
-                  @click="${this.onContextMenuContainerClick}">
-                ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
-                  <cr-composebox-contextual-entrypoint-and-menu
-                      id="contextEntrypoint"
-                      part="composebox-entrypoint"
-                      exportparts="context-menu-entrypoint-icon,
-                                   entrypoint-button"
-                      class="upload-button no-overlap"
-                      @add-tab-context="${this.onAddTabContext}"
-                      @delete-tab-context="${this.onDeleteTabContext}"
-                      @tool-click="${this.onToolClick}"
-                      @model-click="${this.onModelClick}"
-                      @get-tab-preview="${this.onGetTabPreview}"
-                      @context-menu-closed="${this.onContextMenuClosed}"
-                      @context-menu-opened="${this.onContextMenuOpened}"
-                      @open-image-upload="${this.onOpenImageUpload}"
-                      @open-file-upload="${this.onOpenFileUpload}"
-                      @open-drive-upload="${this.onOpenDriveUpload}"
+            <div id="bottomControls">
+              ${this.contextMenuEnabled ? html`
+                <div class="context-menu-container" id="contextMenuContainer"
+                    part="context-menu-and-tools"
+                    @mousedown="${this.onContextMenuContainerMousedown}"
+                    @click="${this.onContextMenuContainerClick}">
+                  ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
+                    <cr-composebox-contextual-entrypoint-and-menu
+                        id="contextEntrypoint"
+                        part="composebox-entrypoint"
+                        exportparts="context-menu-entrypoint-icon,
+                                     entrypoint-button"
+                        class="upload-button no-overlap"
+                        @add-tab-context="${this.onAddTabContext}"
+                        @delete-tab-context="${this.onDeleteTabContext}"
+                        @tool-click="${this.onToolClick}"
+                        @model-click="${this.onModelClick}"
+                        @get-tab-preview="${this.onGetTabPreview}"
+                        @context-menu-closed="${this.onContextMenuClosed}"
+                        @context-menu-opened="${this.onContextMenuOpened}"
+                        @open-image-upload="${this.onOpenImageUpload}"
+                        @open-file-upload="${this.onOpenFileUpload}"
+                        @open-drive-upload="${this.onOpenDriveUpload}"
+                        .inputState="${this.inputState}"
+                        .usePecApi="${this.usePecApi}"
+                        .smartTabSharingActive="${this.smartTabSharingActive}"
+                        .contextManagementInComposeboxEnabled="${
+                            this.contextManagementInComposeboxEnabled}"
+                        .searchboxLayoutMode="${this.searchboxLayoutMode}"
+                        .tabSuggestions="${this.tabSuggestions}"
+                        .recentTabId="${this.recentTabId}"
+                        .hasImageFiles="${this.hasImageFiles()}"
+                        .disabledTabIds="${this.addedTabsIds}"
+                        .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
+                        .fileNum="${this.files.size}"
+                        .sharedTabs="${this.getSharedTabs()}"
+                        ?upload-button-disabled="${this.uploadButtonDisabled}"
+                        ?show-context-menu-description="${
+                            this.showContextMenuDescription}">
+                    </cr-composebox-contextual-entrypoint-and-menu>
+                  ` : ''}
+                  ${this.inToolMode ? html`
+                    <cr-composebox-tool-chip
+                      exportparts="tool-chip-label"
                       .inputState="${this.inputState}"
-                      .usePecApi="${this.usePecApi}"
-                      .smartTabSharingActive="${this.smartTabSharingActive}"
-                      .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled}"
-                      .searchboxLayoutMode="${this.searchboxLayoutMode}"
-                      .tabSuggestions="${this.tabSuggestions}"
-                      .recentTabId="${this.recentTabId}"
-                      .hasImageFiles="${this.hasImageFiles()}"
-                      .disabledTabIds="${this.addedTabsIds}"
-                      .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-                      .fileNum="${this.files.size}"
-                      .sharedTabs="${this.getSharedTabs()}"
-                      ?upload-button-disabled="${this.uploadButtonDisabled}"
-                      ?show-context-menu-description="${
-                          this.showContextMenuDescription}">
-                  </cr-composebox-contextual-entrypoint-and-menu>
-                ` : ''}
-                ${this.searchboxLayoutMode !== 'Compact' &&
-                  this.inToolMode ? html`
-                  <cr-composebox-tool-chip
-                    exportparts="tool-chip-label"
-                    .inputState="${this.inputState}"
-                    .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
-                    @tool-click="${this.onToolClick}">
-                  </cr-composebox-tool-chip>
+                      .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+                      @tool-click="${this.onToolClick}">
+                    </cr-composebox-tool-chip>
+                  ` : ''}
+                </div>
+              ` : ''}
+              <div id="actionButtons">
+                <div class="searchbox-icon-button-container voice">
+                  <button id="voiceSearchButton" class="searchbox-icon-button"
+                      @click="${this.onVoiceSearchClick_}"
+                      title="${this.i18n('voiceSearchButtonLabel')}">
+                  </button>
+                </div>
+                <div class="searchbox-icon-button-container lens">
+                  <button id="lensSearchButton" class="searchbox-icon-button"
+                      @click="${this.onLensSearchClick_}"
+                      title="${this.i18n('lensSearchButtonLabel')}">
+                  </button>
+                </div>
+                ${this.shouldShowSubmitButton() ? html`
+                  <cr-composebox-submit
+                    exportparts="action-icon, submit, submit-icon,
+                                 submit-overlay"
+                    ?disabled="${!this.canSubmitFilesAndInput}"
+                    .iconType="${this.submitButtonIconType}"
+                    .submitButtonTitle="${
+                        this.i18n('composeboxSubmitButtonTitle')}"
+                    @submit-click="${this.onSubmitClick}"
+                    @submit-focusin="${this.onSubmitFocusin}">
+                  </cr-composebox-submit>
                 ` : ''}
               </div>
-            ` : ''}
-            ${this.shouldShowSubmitButton() ? html`
-              <cr-composebox-submit
-                exportparts="action-icon, submit, submit-icon, submit-overlay"
-                ?disabled="${!this.canSubmitFilesAndInput}"
-                .iconType="${
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  'forward' as any
-                }"
-                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
-                @submit-click="${this.onSubmitClick}"
-                @submit-focusin="${this.onSubmitFocusin}">
-              </cr-composebox-submit>
-            ` : ''}
+            </div>
           </cr-composebox-file-inputs>
         </div>
       </div>
