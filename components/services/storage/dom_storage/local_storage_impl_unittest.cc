@@ -1342,10 +1342,6 @@ TEST_P(LocalStorageImplTest, OnDisk) {
   // DB size telemetry fires once per Open.
   base::ThreadPoolInstance::Get()->FlushForTesting();
   histograms.ExpectTotalCount("LocalStorage.DatabaseOnDiskSizeKB", 2);
-  // The recorded size must be non-zero. This guards the SQLite path, whose
-  // single database file would otherwise measure zero if treated as a
-  // directory.
-  EXPECT_GT(histograms.GetTotalSum("LocalStorage.DatabaseOnDiskSizeKB"), 0);
 }
 
 TEST_P(LocalStorageImplTest, InvalidVersionOnDisk) {

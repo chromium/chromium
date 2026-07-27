@@ -6,7 +6,8 @@
 
 #include "base/byte_size.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
+#include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -31,7 +32,9 @@
 #include "components/services/storage/dom_storage/sqlite/local_storage_sqlite.h"
 #include "components/services/storage/dom_storage/sqlite/session_storage_sqlite.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
+#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "sql/database.h"
 
 namespace storage {
@@ -47,13 +50,30 @@ void RecordDatabaseOnDiskSizeKB(StorageType storage_type,
                                 const base::FilePath& db_path,
                                 bool is_sqlite,
                                 DatabaseMetricsType metrics_type) {
+  // The storage service runs in a sandbox, so filesystem access must be
+  // brokered through a `FilesystemProxy`. Raw `base::` calls are blocked by the
+  // sandbox and fail silently, which would record a size of zero.
+  std::unique_ptr<FilesystemProxy> filesystem = CreateFilesystemProxy();
+  auto file_size = [&filesystem](const base::FilePath& path) -> int64_t {
+    std::optional<base::File::Info> info = filesystem->GetFileInfo(path);
+    return info ? info->size : 0;
+  };
+
   int64_t size_bytes = 0;
   if (is_sqlite) {
-    size_bytes += base::GetFileSize(db_path).value_or(0);
-    size_bytes += base::GetFileSize(sql::Database::WriteAheadLogPath(db_path))
-                      .value_or(0);
+    size_bytes += file_size(db_path);
+    size_bytes += file_size(sql::Database::WriteAheadLogPath(db_path));
   } else {
-    size_bytes = base::ComputeDirectorySize(db_path);
+    // LevelDB stores all its files in a directory at `db_path`. There are no
+    // subdirectories, so a non-recursive enumeration captures the size.
+    base::FileErrorOr<std::vector<base::FilePath>> entries =
+        filesystem->GetDirectoryEntries(
+            db_path, FilesystemProxy::DirectoryEntryType::kFilesOnly);
+    if (entries.has_value()) {
+      for (const base::FilePath& entry : entries.value()) {
+        size_bytes += file_size(entry);
+      }
+    }
   }
   std::string_view name_prefix =
       storage_type == StorageType::kLocalStorage
@@ -90,8 +110,10 @@ void RecordOpenDatabaseHistograms(StorageType storage_type,
   status.Log(base::StrCat({prefix, ".OpenDatabase"}), metrics_type);
 
   if (!database_path.empty()) {
+    // The brokered `FilesystemProxy` size read is a synchronous call, so the
+    // task must be allowed to block on sync primitives.
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
+        FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
         base::BindOnce(&RecordDatabaseOnDiskSizeKB, storage_type, database_path,
                        is_sqlite, metrics_type));
   }

@@ -394,11 +394,6 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   // DB size telemetry fires once per Open.
   base::ThreadPoolInstance::Get()->FlushForTesting();
   histograms.ExpectTotalCount("Storage.SessionStorage.DatabaseOnDiskSizeKB", 3);
-  // The recorded size must be non-zero. This guards the SQLite path, whose
-  // single database file would otherwise measure zero if treated as a
-  // directory.
-  EXPECT_GT(
-      histograms.GetTotalSum("Storage.SessionStorage.DatabaseOnDiskSizeKB"), 0);
   // ReadAllMetadata is called once per database open.
   histograms.ExpectUniqueSample("Storage.SessionStorage.ReadAllMetadata.OnDisk",
                                 /*sample=*/0, 3);

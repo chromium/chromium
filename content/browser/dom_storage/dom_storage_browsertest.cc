@@ -5,7 +5,10 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,6 +22,9 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_paths.h"
@@ -45,11 +51,18 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(storage::kDomStorageSqlite) {
     // Match the state of `kDomStorageSqliteInMemory` to the top level
     // kDomStorageSqlite. That way in-memory databases (e.g. incognito) will
-    // use the backend expected by the param state.
+    // use the backend expected by the param state. The fieldtrial testing
+    // config enables kDomStorageSqliteNewDatabases by default for browsertests.
+    // Disable it so this parameter controls the on-disk backend.
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(storage::kDomStorageSqliteInMemory);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{storage::kDomStorageSqliteInMemory},
+          /*disabled_features=*/{storage::kDomStorageSqliteNewDatabases});
     } else {
-      feature_list_.InitAndDisableFeature(storage::kDomStorageSqliteInMemory);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{storage::kDomStorageSqliteInMemory,
+                                 storage::kDomStorageSqliteNewDatabases});
     }
   }
 
@@ -97,7 +110,66 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
         partition()->GetDOMStorageContext());
   }
 
+  // Fuchsia's sandboxed SQLite VFS cannot acquire file locks, so a new SQLite
+  // database cannot be opened there.
+  // TODO(crbug.com/488731425): Re-enable the SQLite arm once the sandboxed
+  // DomStorage SQLite backend runs on Fuchsia.
+  bool IsSqliteBackendOnFuchsia() const {
+#if BUILDFLAG(IS_FUCHSIA)
+    return GetParam();
+#else
+    return false;
+#endif
+  }
+
+  // Stores a >1 KB incompressible value in the current page's `storage_type`
+  // ("localStorage" or "sessionStorage") so the database rounds to a non-zero
+  // on-disk size on both backends.
+  void WriteLargeValue(std::string_view storage_type) {
+    ASSERT_TRUE(
+        ExecJs(shell()->web_contents(),
+               base::StrCat({"let value = '';"
+                             "while (value.length < 16384) {"
+                             "  value += Math.random().toString(36).slice(2);"
+                             "}",
+                             storage_type, ".setItem('big', value);"})));
+  }
+
+  void NavigateToTestOrigin() {
+    ASSERT_TRUE(NavigateToURL(shell()->web_contents(),
+                              GetTestUrl(nullptr, "empty.html")));
+  }
+
+  // `Flush` schedules a commit but returns without waiting for it. `GetUsage`
+  // reads the database on the same sequence the commit runs on, so its reply
+  // running ensures the flushed write has reached the disk.
+  void CommitLocalStorage() {
+    context_wrapper()->Flush();
+    base::RunLoop loop;
+    context_wrapper()->GetLocalStorageUsage(base::BindLambdaForTesting(
+        [&](const std::vector<StorageUsageInfo>&) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  void CommitSessionStorage() {
+    context_wrapper()->Flush();
+    base::RunLoop loop;
+    context_wrapper()->GetSessionStorageUsage(base::BindLambdaForTesting(
+        [&](const std::vector<SessionStorageUsageInfo>&) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  // The size is recorded on a blocking task in the StorageService, so poll
+  // until the sample reaches the browser process.
+  void ExpectNonZeroOnDiskSize(const std::string& histogram) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      FetchHistogramsFromChildProcesses();
+      return histograms_.GetTotalSum(histogram) > 0;
+    }));
+  }
+
  private:
+  base::HistogramTester histograms_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -146,6 +218,62 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_DataPersists) {
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_DataPersists) {
   SimpleTest(GetTestUrl("dom_storage", "verify_data.html"), kNotIncognito);
 }
+
+// A PRE_ run persists a >1 KB database. The main run reopens it and checks the
+// on-disk size histogram records a non-zero sample on both backends.
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_LocalStorageOnDiskSize) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
+  NavigateToTestOrigin();
+  WriteLargeValue("localStorage");
+  CommitLocalStorage();
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, LocalStorageOnDiskSize) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
+  NavigateToTestOrigin();
+  // Accessing localStorage opens its on-disk database, which records the size.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "localStorage.length;"));
+  ExpectNonZeroOnDiskSize("LocalStorage.DatabaseOnDiskSizeKB");
+}
+
+// SessionStorage on Android uses BackingMode::kClearDiskStateOnOpen, which
+// destroys any pre-existing on-disk data on open. That makes the on-disk size
+// unobservable across a restart, so we skip these tests on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_SessionStorageOnDiskSize) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
+  NavigateToTestOrigin();
+  WriteLargeValue("sessionStorage");
+
+  SessionStorageNamespace* session_storage_namespace =
+      shell()
+          ->web_contents()
+          ->GetController()
+          .GetDefaultSessionStorageNamespace();
+  ASSERT_TRUE(session_storage_namespace);
+  // SessionStorage only persists across a restart when its namespace opts in.
+  session_storage_namespace->SetShouldPersist(true);
+
+  CommitSessionStorage();
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, SessionStorageOnDiskSize) {
+  if (IsSqliteBackendOnFuchsia()) {
+    GTEST_SKIP() << "SQLite DomStorage backend unsupported on Fuchsia";
+  }
+  NavigateToTestOrigin();
+  // Accessing sessionStorage opens its on-disk database, which records the
+  // size.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), "sessionStorage.length;"));
+  ExpectNonZeroOnDiskSize("Storage.SessionStorage.DatabaseOnDiskSizeKB");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug/361107780): Fix flakiness on android-bfcache-rel and re-enable.
 #if BUILDFLAG(IS_ANDROID)
