@@ -12,7 +12,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"

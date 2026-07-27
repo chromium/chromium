@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RESOURCE_PROVIDER_CACHE_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RESOURCE_PROVIDER_CACHE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_CACHE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_CACHE_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -20,14 +20,14 @@
 namespace blink {
 
 class WebGpuSharedImageWrapper;
-class WebGPURecyclableResourceCache;
+class WebGpuSharedImageWrapperCache;
 class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
  public:
   WebGpuSharedImageWrapperLease(
       std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
-      base::WeakPtr<WebGPURecyclableResourceCache> cache);
+      base::WeakPtr<WebGpuSharedImageWrapperCache> cache);
 
   ~WebGpuSharedImageWrapperLease();
 
@@ -41,16 +41,16 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapperLease {
 
  private:
   std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper_;
-  base::WeakPtr<WebGPURecyclableResourceCache> cache_;
+  base::WeakPtr<WebGpuSharedImageWrapperCache> cache_;
   gpu::SyncToken completion_sync_token_;
 };
 
-class PLATFORM_EXPORT WebGPURecyclableResourceCache {
+class PLATFORM_EXPORT WebGpuSharedImageWrapperCache {
  public:
-  explicit WebGPURecyclableResourceCache(
+  explicit WebGpuSharedImageWrapperCache(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  ~WebGPURecyclableResourceCache() = default;
+  ~WebGpuSharedImageWrapperCache() = default;
 
   std::unique_ptr<WebGpuSharedImageWrapperLease> LeaseWebGpuSharedImageWrapper(
       viz::SharedImageFormat format,
@@ -73,9 +73,9 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
 
  private:
   // The maximum number of unused WebGpuSharedImageWrappers size, 128 MB.
-  static constexpr int kMaxRecyclableResourceCachesInKB = 128 * 1024;
-  static constexpr int kMaxRecyclableResourceCachesInBytes =
-      kMaxRecyclableResourceCachesInKB * 1024;
+  static constexpr int kMaxSharedImageWrapperCachesInKB = 128 * 1024;
+  static constexpr int kMaxSharedImageWrapperCachesInBytes =
+      kMaxSharedImageWrapperCachesInKB * 1024;
 
   // A resource is deleted from the cache if it's not reused after this delay.
   static constexpr int kCleanUpDelayInSeconds = 2;
@@ -140,10 +140,10 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   unsigned int current_timer_id_ = 0;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtr<WebGPURecyclableResourceCache> weak_ptr_;
-  base::WeakPtrFactory<WebGPURecyclableResourceCache> weak_ptr_factory_{this};
+  base::WeakPtr<WebGpuSharedImageWrapperCache> weak_ptr_;
+  base::WeakPtrFactory<WebGpuSharedImageWrapperCache> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_RESOURCE_PROVIDER_CACHE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_SHARED_IMAGE_WRAPPER_CACHE_H_

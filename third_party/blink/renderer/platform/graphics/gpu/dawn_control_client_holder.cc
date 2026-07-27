@@ -15,7 +15,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -53,7 +53,7 @@ DawnControlClientHolder::DawnControlClientHolder(
       api_channel_(context_provider_->ContextProvider()
                        .WebGPUInterface()
                        ->GetAPIChannel()),
-      recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
+      shared_image_wrapper_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
 DawnControlClientHolder::~DawnControlClientHolder() = default;
 
@@ -118,7 +118,7 @@ DawnControlClientHolder::LeaseWebGpuSharedImageWrapper(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
-  return recyclable_resource_cache_.LeaseWebGpuSharedImageWrapper(
+  return shared_image_wrapper_cache_.LeaseWebGpuSharedImageWrapper(
       format, size, color_space, hdr_metadata, alpha_type);
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,7 +17,7 @@ namespace blink {
 
 WebGpuSharedImageWrapperLease::WebGpuSharedImageWrapperLease(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
-    base::WeakPtr<WebGPURecyclableResourceCache> cache)
+    base::WeakPtr<WebGpuSharedImageWrapperCache> cache)
     : shared_image_wrapper_(std::move(shared_image_wrapper)), cache_(cache) {}
 
 WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
@@ -27,20 +27,20 @@ WebGpuSharedImageWrapperLease::~WebGpuSharedImageWrapperLease() {
   }
 }
 
-WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
+WebGpuSharedImageWrapperCache::WebGpuSharedImageWrapperCache(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : context_provider_(std::move(context_provider)),
       task_runner_(std::move(task_runner)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   timer_func_ = blink::BindRepeating(
-      &WebGPURecyclableResourceCache::ReleaseStaleResources, weak_ptr_);
+      &WebGpuSharedImageWrapperCache::ReleaseStaleResources, weak_ptr_);
 
   DCHECK_LE(kTimerDurationInSeconds, kCleanUpDelayInSeconds);
 }
 
 std::unique_ptr<WebGpuSharedImageWrapperLease>
-WebGPURecyclableResourceCache::LeaseWebGpuSharedImageWrapper(
+WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
@@ -62,7 +62,7 @@ WebGPURecyclableResourceCache::LeaseWebGpuSharedImageWrapper(
                                                          weak_ptr_);
 }
 
-void WebGPURecyclableResourceCache::ReturnWebGpuSharedImageWrapper(
+void WebGpuSharedImageWrapperCache::ReturnWebGpuSharedImageWrapper(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =
@@ -80,7 +80,7 @@ void WebGPURecyclableResourceCache::ReturnWebGpuSharedImageWrapper(
 
   // If the cache is full, release LRU from the back.
   while (total_unused_resources_in_bytes_ >
-         kMaxRecyclableResourceCachesInBytes) {
+         kMaxSharedImageWrapperCachesInBytes) {
     total_unused_resources_in_bytes_ -= unused_wrappers_.back().resource_size_;
     unused_wrappers_.pop_back();
   }
@@ -88,7 +88,7 @@ void WebGPURecyclableResourceCache::ReturnWebGpuSharedImageWrapper(
   StartResourceCleanUpTimer();
 }
 
-WebGPURecyclableResourceCache::Resource::Resource(
+WebGpuSharedImageWrapperCache::Resource::Resource(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     unsigned int timer_id,
     size_t resource_size)
@@ -96,13 +96,13 @@ WebGPURecyclableResourceCache::Resource::Resource(
       timer_id_(timer_id),
       resource_size_(resource_size) {}
 
-WebGPURecyclableResourceCache::Resource::Resource(Resource&& that) noexcept =
+WebGpuSharedImageWrapperCache::Resource::Resource(Resource&& that) noexcept =
     default;
 
-WebGPURecyclableResourceCache::Resource::~Resource() = default;
+WebGpuSharedImageWrapperCache::Resource::~Resource() = default;
 
 std::unique_ptr<WebGpuSharedImageWrapper>
-WebGPURecyclableResourceCache::AcquireCachedWrapper(
+WebGpuSharedImageWrapperCache::AcquireCachedWrapper(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
@@ -133,7 +133,7 @@ WebGPURecyclableResourceCache::AcquireCachedWrapper(
   return nullptr;
 }
 
-void WebGPURecyclableResourceCache::ReleaseStaleResources() {
+void WebGpuSharedImageWrapperCache::ReleaseStaleResources() {
   timer_is_running_ = false;
 
   // Loop from LRU to MRU
@@ -157,7 +157,7 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
   current_timer_id_++;
   StartResourceCleanUpTimer();
 }
-void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
+void WebGpuSharedImageWrapperCache::StartResourceCleanUpTimer() {
   if (unused_wrappers_.size() > 0 && !timer_is_running_) {
     task_runner_->PostDelayedTask(FROM_HERE, timer_func_,
                                   base::Seconds(kTimerDurationInSeconds));
@@ -166,7 +166,7 @@ void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
 }
 
 wtf_size_t
-WebGPURecyclableResourceCache::CleanUpResourcesAndReturnSizeForTesting() {
+WebGpuSharedImageWrapperCache::CleanUpResourcesAndReturnSizeForTesting() {
   ReleaseStaleResources();
   return unused_wrappers_.size();
 }

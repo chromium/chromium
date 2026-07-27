@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_shared_image_wrapper_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -83,7 +83,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
-  WebGPURecyclableResourceCache recyclable_resource_cache_;
+  WebGpuSharedImageWrapperCache shared_image_wrapper_cache_;
   Vector<base::WeakPtr<WebGPUMailboxTexture>> mailbox_textures_;
 
   base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
