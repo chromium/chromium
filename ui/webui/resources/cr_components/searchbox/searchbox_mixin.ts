@@ -216,6 +216,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return false;
     }
 
+    isBackgroundTabNavigation(_e: KeyboardEvent|MouseEvent): boolean {
+      return false;
+    }
+
     navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent) {
       assert(matchIndex >= 0);
       const match = this.result!.matches[matchIndex];
@@ -235,7 +239,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         inline: '',
         moveCursorToEnd: true,
       });
-      this.clearAutocompleteMatches();
+      const isBackgroundTab = this.isBackgroundTabNavigation(e);
+
+      if (!isBackgroundTab) {
+        this.clearAutocompleteMatches();
+      }
       e.preventDefault();
     }
 
@@ -631,6 +639,7 @@ export interface SearchboxMixinInterface {
   handleKeyNavigation(e: KeyboardEvent): void;
   hasMatches(): boolean;
   isAutocompleteResultStale(result: AutocompleteResult): boolean;
+  isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean;
   updateDropdownVisibility(): void;
 
   navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent): void;

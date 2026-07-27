@@ -782,4 +782,43 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(20, searchbox.$.input.inputElement.selectionStart);
     assertEquals(20, searchbox.$.input.inputElement.selectionEnd);
   });
+
+  test('KeepsDropdownOpenOnBackgroundTabNavigation', async () => {
+    // Set some input text to query autocomplete.
+    const mockInput = searchbox.$.input;
+    mockInput.inputElement.value = 'test';
+    mockInput.inputElement.dispatchEvent(new Event('test', {bubbles: true}));
+
+    // Simulate autocomplete results to open the dropdown.
+    searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: searchbox.activeQueryId,
+      input: 'test',
+      matches: [createSearchMatchForTesting(), createSearchMatchForTesting()],
+    }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    // Simulate `Enter` with Alt + Shift keys (background tab).
+    searchbox.navigateToMatch(
+        0,
+        new KeyboardEvent(
+            'keydown', {key: 'Enter', altKey: true, shiftKey: true}));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    // Simulate `Enter` with Meta key and without Shift key (background tab).
+    searchbox.navigateToMatch(
+        0,
+        new KeyboardEvent(
+            'keydown', {key: 'Enter', metaKey: true, shiftKey: false}));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+
+    // Simulate a normal Enter key (foreground tab).
+    searchbox.navigateToMatch(0, new KeyboardEvent('keydown', {key: 'Enter'}));
+    await microtasksFinished();
+
+    // Dropdown should now be closed.
+    assertFalse(searchbox.dropdownIsVisible);
+  });
 });

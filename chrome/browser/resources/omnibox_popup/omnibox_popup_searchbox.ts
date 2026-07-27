@@ -273,6 +273,13 @@ export class OmniboxPopupSearchboxElement extends
     return true;
   }
 
+  override isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean {
+    // Duplicate logic from
+    // `searchbox::ComputeOpenDispositionFromModifiersAndLogToUma()` to
+    // determine if a background tab is opened.
+    return (e.altKey && e.shiftKey) || (e.metaKey && !e.shiftKey);
+  }
+
   focusInput() {
     this.$.input.focus();
   }
