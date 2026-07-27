@@ -8654,6 +8654,106 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_ASK_ABOUT_THIS_PAGE_ARIA_LABEL" desc="The aria-label for the button that allows the user to ask a question about the content of their most recent tab. The $1 is a placeholder for the page title.">
         Ask Google about previous page: <ph name="PAGE_TITLE">$1</ph>
       </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_HEADING" desc="Heading of the brainstorm action chip on the NTP." >
+        Brainstorm
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_HEADING" desc="Heading of the help me learn action chip on the NTP." >
+        Help me learn
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_HEADING" desc="Heading of the write or edit action chip on the NTP." >
+        Write or edit
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_1" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Help me settle a debate with a friend by providing an objective, data-driven analysis that represents both sides fairly
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_2" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        What are some thing I can do to help decrease stress?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_3" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Ask me questions about how I'm feeling and use my answers to make a playlist tailored to my mood
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_4" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Help me practice for my interview by asking me questions like you're a hiring manager
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_5" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Can you help me think through something?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_6" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Can you brainstorm with me to help me solve my problem?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_7" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Brainstorm to help me come up with unique gift ideas for someone, using their hobbies and interests that I share with you
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_8" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Help me prepare for a tough conversation by roleplaying with me so I can practice my responses
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_9" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Compare my health plan options and breakdown the key differences between them
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_10" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        What are some tips to help me promote my brand? Include advice on how I can optimize my website
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_11" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Plan a home fitness routine that helps me meet my goals
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_12" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a packing list for my upcoming trip. Help me make sure I don't forget anything important
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_13" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a to-do list for me today to help me stay on track
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_14" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a customized tracker to stay on top of my goals
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_15" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Make me a grocery list based on a recipe or meal plan
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_1" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Help me learn how to code in python
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_2" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Create practice questions to test my knowledge about a topic
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_3" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Create a beginner's guide to stargazing to help me learn what to look for in the night sky, including 3 easily identifiable constellations
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_4" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Can you breakdown the lifecycle of a star?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_5" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        I'm trying to learn a new language. Create a quiz to help me practice vocabulary and grammar
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_6" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Calculate my GPA by weighting credit hours, course levels, and grade-point values
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_HELP_ME_LEARN_PROMPT_7" desc="Text shown on the composebox searchbox on click of the help me learn chip on the NTP" >
+        Help me graph a function to visualize the mathematical equation and see the shape of the curve
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_1" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Rewrite my email by tweaking the tone to be more persuasive
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_2" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Rewrite the following text to sound professional, polite, and clear for a workplace setting. Maintain the original core message but elevate the tone to be appropriate for an executive audience: [Insert your text here]
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_3" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Draft a brief, polite response declining an invitation
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_4" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Rewrite my bio to sound more professional
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_5" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Shorten my email by trimming the message to its core points
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_6" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Draft an outline that organizes my thoughts into a clear and concise format
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_7" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Help me draft a polite reply to decline plans to meet
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_8" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
+        Draft a cover letter intro that highlights my skills and experience for a specific role
+      </message>
+
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_SETUP_LIST_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
