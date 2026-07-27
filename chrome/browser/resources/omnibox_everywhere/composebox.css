@@ -162,3 +162,13 @@ cr-composebox-submit::part(submit) {
 #lensSearchButton {
   background-image: url(//resources/cr_components/searchbox/icons/camera.svg);
 }
+
+#profileIcon {
+  position: absolute;
+  right: 16px;
+  top: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  z-index: 100;
+}
