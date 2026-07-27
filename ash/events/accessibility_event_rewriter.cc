@@ -93,6 +93,12 @@ AccessibilityEventRewriter::PendingEventInfo::PendingEventInfo(
 
 AccessibilityEventRewriter::PendingEventInfo::~PendingEventInfo() = default;
 
+AccessibilityEventRewriter::PendingEventInfo::PendingEventInfo(
+    PendingEventInfo&&) = default;
+AccessibilityEventRewriter::PendingEventInfo&
+AccessibilityEventRewriter::PendingEventInfo::operator=(PendingEventInfo&&) =
+    default;
+
 AccessibilityEventRewriter::AccessibilityEventRewriter(
     ui::EventRewriterAsh* event_rewriter_ash,
     AccessibilityEventRewriterDelegate* delegate)
@@ -166,10 +172,15 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
   // dropping an event (or sending an event from an old session ID) rather than
   // assuming the next event in the queue is the one we want.
   while (!pending_key_events_.empty() && pending_key_events_.front().id < id) {
-    const auto& pending_event_info = pending_key_events_.front();
+    PendingEventInfo pending_event_info = PopNextPendingEvent();
     SendEventHelper(pending_event_info.continuation,
                     pending_event_info.event.get());
-    pending_key_events_.pop();
+  }
+
+  if (session_id != current_session_id_) {
+    // If SendEventHelper inside the loop triggered a re-entrant session change,
+    // the remaining events were already flushed for the new session.
+    return;
   }
 
   if (pending_key_events_.empty()) {
@@ -184,23 +195,22 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     return;
   }
 
-  const auto& pending_event_info = pending_key_events_.front();
-  if (id != pending_event_info.id) {
+  if (id != pending_key_events_.front().id) {
     // This is unexpected: it may happen if ChromeVox sends an event twice or
     // if the events are not ordered.
     DumpWithoutCrashingHelper(std::string(
         "AccessibilityEventRewriter: mismatched event ID. Expected: " +
-        base::NumberToString(pending_event_info.id) +
+        base::NumberToString(pending_key_events_.front().id) +
         ", got: " + base::NumberToString(id)));
     return;
   }
+
+  PendingEventInfo pending_event_info = PopNextPendingEvent();
 
   if (propagate) {
     SendEventHelper(pending_event_info.continuation,
                     pending_event_info.event.get());
   }
-
-  pending_key_events_.pop();
 }
 
 void AccessibilityEventRewriter::SendEventHelper(
@@ -274,16 +284,11 @@ void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
   }
 
   if (!enabled) {
-    // Post a task to propagate all pending events. We can't immediately
-    // propagate them here because there is a chance that the front-most event
-    // is still in-use; this happens if ChromeVox is disabled with the keyboard
-    // accelerator. We use a cancelable callback to prevent repeatedly clearing
-    // the event queue.
-    send_all_pending_events_callback_.Reset(base::BindOnce(
-        &AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents,
-        GetWeakPtr()));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, send_all_pending_events_callback_.callback());
+    // Post a task to asynchronously flush pending events when ChromeVox key
+    // handling is disabled. Deferring the flush allows active event dispatch
+    // and accelerator callstacks to unwind safely before pending events are
+    // processed.
+    PostSendAllPendingSpokenFeedbackEvents();
   }
   chromevox_mv3_key_handling_enabled_ = enabled;
 }
@@ -566,12 +571,28 @@ void AccessibilityEventRewriter::InputMethodChanged(
       manager->ArePositionalShortcutsUsedByCurrentInputMethod();
 }
 
+AccessibilityEventRewriter::PendingEventInfo
+AccessibilityEventRewriter::PopNextPendingEvent() {
+  CHECK(!pending_key_events_.empty());
+  PendingEventInfo pending_event_info = std::move(pending_key_events_.front());
+  pending_key_events_.pop();
+  return pending_event_info;
+}
+
+void AccessibilityEventRewriter::PostSendAllPendingSpokenFeedbackEvents() {
+  send_all_pending_events_callback_.Reset(base::BindOnce(
+      &AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents,
+      GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, send_all_pending_events_callback_.callback());
+}
+
 void AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents() {
+  send_all_pending_events_callback_.Cancel();
   while (!pending_key_events_.empty()) {
-    const auto& pending_event_info = pending_key_events_.front();
+    PendingEventInfo pending_event_info = PopNextPendingEvent();
     SendEventHelper(pending_event_info.continuation,
                     pending_event_info.event.get());
-    pending_key_events_.pop();
   }
 }
 
