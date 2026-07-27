@@ -19,11 +19,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.StripMenuAction;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -72,22 +73,37 @@ public class TabStripContextMenuCoordinator {
     private final SnackbarManager mSnackbarManager;
     private final Runnable mOnNewTabClick;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
+    private final @TabStripLayoutType int mTabStripLayout;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
+    /**
+     * Creates the TabStripContextMenuCoordinator object.
+     *
+     * @param tabModel The {@link TabModel} to act on.
+     * @param multiInstanceManager The {@link MultiInstanceManager} to manage windows.
+     * @param windowAndroid The {@link WindowAndroid} current window.
+     * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
+     * @param onNewTabClick Runnable executed on new tab button click.
+     * @param canActivateTabLayoutToggleMenuSupplier Supplies whether tab layout toggle menu can be
+     *     activated.
+     * @param tabStripLayout The active {@link TabStripLayoutType}.
+     */
     public static TabStripContextMenuCoordinator createContextMenuCoordinator(
             TabModel tabModel,
             MultiInstanceManager multiInstanceManager,
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
             Runnable onNewTabClick,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            @TabStripLayoutType int tabStripLayout) {
         return new TabStripContextMenuCoordinator(
                 tabModel,
                 multiInstanceManager,
                 windowAndroid,
                 snackbarManager,
                 onNewTabClick,
-                canActivateTabLayoutToggleMenuSupplier);
+                canActivateTabLayoutToggleMenuSupplier,
+                tabStripLayout);
     }
 
     private TabStripContextMenuCoordinator(
@@ -96,7 +112,8 @@ public class TabStripContextMenuCoordinator {
             WindowAndroid windowAndroid,
             SnackbarManager snackbarManager,
             Runnable onNewTabClick,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            @TabStripLayoutType int tabStripLayout) {
         mTabModel = tabModel;
         mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
@@ -104,6 +121,7 @@ public class TabStripContextMenuCoordinator {
         mSnackbarManager = snackbarManager;
         mOnNewTabClick = onNewTabClick;
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
+        mTabStripLayout = tabStripLayout;
     }
 
     /**
@@ -245,7 +263,7 @@ public class TabStripContextMenuCoordinator {
             itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
 
             int layoutTitleRes =
-                    VerticalTabUtils.isVerticalTabsEnabled(mContext)
+                    mTabStripLayout == TabStripLayoutType.VERTICAL
                             ? R.string.show_tabs_horizontally
                             : R.string.show_tabs_vertically;
 
@@ -304,14 +322,16 @@ public class TabStripContextMenuCoordinator {
             if (model.get(MENU_ITEM_ID) == R.id.new_tab_menu_id) {
                 mOnNewTabClick.run();
             } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
-                RecordUserAction.record("Android.TabStripMenu.ReopenClosedEntry");
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.REOPEN_CLOSED_ENTRY, mTabStripLayout);
                 mTabModel.openMostRecentlyClosedEntry();
             } else if (model.get(MENU_ITEM_ID) == R.id.bookmark_all_tabs) {
                 BookmarkAllTabsHandler.bookmarkAllTabs(mTabModel, mWindowAndroid, mSnackbarManager);
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
                 mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
             } else if (model.get(MENU_ITEM_ID) == R.id.toggle_tab_layout_menu_id) {
-                RecordUserAction.record("Android.TabStripMenu.ToggleTabLayout");
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.TOGGLE_TAB_LAYOUT, mTabStripLayout);
                 if (mContext instanceof MenuOrKeyboardActionController controller) {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
@@ -320,17 +340,21 @@ public class TabStripContextMenuCoordinator {
                     || model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
                 boolean isPin = model.get(MENU_ITEM_ID) == R.id.pin_glic;
                 if (isPin) {
-                    RecordUserAction.record("Android.TabStripMenu.PinGlic");
+                    TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                            StripMenuAction.PIN_GLIC, mTabStripLayout);
                 } else {
-                    RecordUserAction.record("Android.TabStripMenu.UnpinGlic");
+                    TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                            StripMenuAction.UNPIN_GLIC, mTabStripLayout);
                 }
                 if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, isPin);
             } else if (model.get(MENU_ITEM_ID) == R.id.task_manager) {
-                RecordUserAction.record("Android.TabStripMenu.TaskManager");
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.TASK_MANAGER, mTabStripLayout);
                 TaskManager taskManager = TaskManagerFactory.createTaskManager();
                 taskManager.launch(ContextUtils.getApplicationContext());
             } else if (model.get(MENU_ITEM_ID) == R.id.send_feedback_about_tab_strip_menu_id) {
-                RecordUserAction.record("Android.TabStripMenu.SendFeedback");
+                TabStripMenuMetricsUtils.recordStripMenuUserAction(
+                        StripMenuAction.SEND_FEEDBACK, mTabStripLayout);
                 Activity activity = mWindowAndroid.getActivity().get();
                 if (activity != null && profile != null) {
                     String categoryTag = getFeedbackCategoryTag();

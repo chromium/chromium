@@ -59,6 +59,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -246,22 +247,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
                 .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
-        mOnItemClickedCallback =
-                TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
-                        activity,
-                        () -> mTabModel,
-                        mMultiInstanceManager,
-                        mDataSharingTabManager,
-                        TabClosingSource.TABLET_TAB_STRIP);
-        mTabGroupContextMenuCoordinator =
-                TabGroupContextMenuCoordinator.createContextMenuCoordinator(
-                        mTabModel,
-                        mMultiInstanceManager,
-                        mWindowAndroid,
-                        mDataSharingTabManager,
-                        mReorderFunction,
-                        TabClosingSource.TABLET_TAB_STRIP);
-
+        initializeCoordinatorForTesting(TabStripLayoutType.HORIZONTAL);
         // Set group ids manually to bypass showMenu() call.
         mTabGroupContextMenuCoordinator.setGroupDataForTesting(TAB_GROUP_ID);
     }
@@ -269,6 +255,26 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @After
     public void tearDown() {
         mTabGroupContextMenuCoordinator.destroyMenuForTesting();
+    }
+
+    private void initializeCoordinatorForTesting(@TabStripLayoutType int layout) {
+        mOnItemClickedCallback =
+                TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
+                        mActivity,
+                        () -> mTabModel,
+                        mMultiInstanceManager,
+                        mDataSharingTabManager,
+                        TabClosingSource.TABLET_TAB_STRIP,
+                        layout);
+        mTabGroupContextMenuCoordinator =
+                TabGroupContextMenuCoordinator.createContextMenuCoordinator(
+                        mTabModel,
+                        mMultiInstanceManager,
+                        mWindowAndroid,
+                        mDataSharingTabManager,
+                        mReorderFunction,
+                        TabClosingSource.TABLET_TAB_STRIP,
+                        layout);
     }
 
     @Test
@@ -659,6 +665,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     public void testKeyboardShowing_ForcesMenuLayoutUpdate() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+        initializeCoordinatorForTesting(TabStripLayoutType.VERTICAL);
+        mTabGroupContextMenuCoordinator.setGroupDataForTesting(TAB_GROUP_ID);
 
         mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
         mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);

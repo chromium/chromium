@@ -33,6 +33,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -1075,7 +1076,8 @@ public class VerticalTabListCoordinator {
                             /* reorderFunction= */ (info, toLeft) -> {
                                 // TODO(crbug.com/521982129): Implement tab reordering for a11y.
                             },
-                            TabClosingSource.VERTICAL_TAB_STRIP);
+                            TabClosingSource.VERTICAL_TAB_STRIP,
+                            TabStripLayoutType.VERTICAL);
         }
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
     }
@@ -1111,7 +1113,8 @@ public class VerticalTabListCoordinator {
                             /* activityResultTracker= */ null,
                             /* modalDialogManager= */ mWindowAndroid.getModalDialogManager(),
                             TabClosingSource.VERTICAL_TAB_STRIP,
-                            mCanActivateTabLayoutToggleMenuSupplier);
+                            mCanActivateTabLayoutToggleMenuSupplier,
+                            TabStripLayoutType.VERTICAL);
         }
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
     }
@@ -1127,7 +1130,8 @@ public class VerticalTabListCoordinator {
                             mWindowAndroid,
                             mSnackbarManager,
                             this::handleNewTabButtonClick,
-                            mCanActivateTabLayoutToggleMenuSupplier);
+                            mCanActivateTabLayoutToggleMenuSupplier,
+                            TabStripLayoutType.VERTICAL);
         }
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();

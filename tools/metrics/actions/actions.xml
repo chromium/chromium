@@ -5195,6 +5195,54 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.GroupMenu{ActionType}">
+  <owner>agazal@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    Recorded when the user interacts with the group context menu on Vertical
+    Tabs on Android. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".CloseGroup"
+        summary="User closed a group from the Vertical Tabs group menu."/>
+    <variant name=".ColorChanged"
+        summary="User changed group color from the Vertical Tabs group menu."/>
+    <variant name=".DeleteGroup"
+        summary="User deleted a group from the Vertical Tabs group menu."/>
+    <variant name=".DeleteSharedGroup"
+        summary="User deleted a shared group from the Vertical Tabs group
+                 menu."/>
+    <variant name=".LeaveSharedGroup"
+        summary="User left a shared group from the Vertical Tabs group menu."/>
+    <variant name=".ManageSharing"
+        summary="User clicked manage sharing from the Vertical Tabs group
+                 menu."/>
+    <variant name=".MoveGroupToAnotherWindow"
+        summary="User moved a group to another window from the Vertical Tabs
+                 group menu."/>
+    <variant name=".MoveGroupToNewWindow"
+        summary="User moved a group to a new window from the Vertical Tabs
+                 group menu."/>
+    <variant name=".NewTabInGroup"
+        summary="User added a new tab in a group from the Vertical Tabs group
+                 menu."/>
+    <variant name=".RecentActivity"
+        summary="User viewed recent activity from the Vertical Tabs group
+                 menu."/>
+    <variant name=".ShareGroup"
+        summary="User shared a group from the Vertical Tabs group menu."/>
+    <variant name=".Shown"
+        summary="Vertical Tabs group context menu was shown."/>
+    <variant name=".TitleChanged"
+        summary="User changed group title from the Vertical Tabs group menu."/>
+    <variant name=".TitleReset"
+        summary="User reset group title from the Vertical Tabs group menu."/>
+    <variant name=".Ungroup"
+        summary="User ungrouped a group from the Vertical Tabs group menu."/>
+  </token>
+</action>
+
 <action name="Android.VerticalTabs.SearchButtonClicked">
   <owner>agazal@google.com</owner>
   <owner>kije@google.com</owner>
@@ -5204,12 +5252,179 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.StripMenu{ActionType}">
+  <owner>agazal@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    Recorded when the user interacts with the empty strip context menu on
+    Vertical Tabs on Android. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".PinGlic"
+        summary="User pinned glic from the Vertical Tabs strip menu."/>
+    <variant name=".ReopenClosedEntry"
+        summary="User reopened a closed entry from the Vertical Tabs strip
+                 menu."/>
+    <variant name=".SendFeedback"
+        summary="User sent feedback from the Vertical Tabs strip menu."/>
+    <variant name=".TaskManager"
+        summary="User opened task manager from the Vertical Tabs strip menu."/>
+    <variant name=".ToggleTabLayout"
+        summary="User toggled tab layout from the Vertical Tabs strip menu."/>
+    <variant name=".UnpinGlic"
+        summary="User unpinned glic from the Vertical Tabs strip menu."/>
+  </token>
+</action>
+
 <action name="Android.VerticalTabs.TabAddedToGroup">
   <owner>agazal@google.com</owner>
   <owner>kije@google.com</owner>
   <description>
     Recorded when a user drags a tab to merge it into a group in Vertical Tabs.
   </description>
+</action>
+
+<action name="Android.VerticalTabs.TabMenu{ActionType}">
+  <owner>agazal@google.com</owner>
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    Recorded when the user interacts with the tab context menu on Vertical Tabs
+    on Android. {ActionType}
+  </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".AddTabToReadingList"
+        summary="User added a tab to their reading list via the tab context
+                 menu on Vertical Tabs."/>
+    <variant name=".AddTabToReadingList.MultiTab"
+        summary="User added multiple tabs to their reading list via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".AddToNewTabGroup"
+        summary="User added a tab to a new tab group via the tab context menu
+                 on Vertical Tabs."/>
+    <variant name=".AddToNewTabGroup.MultiTab"
+        summary="User added multiple tabs to a new tab group via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".AddToTabGroup"
+        summary="User opened the bottom sheet to add a tab to a tab group via
+                 the tab context menu on Vertical Tabs."/>
+    <variant name=".AddToTabGroup.MultiTab"
+        summary="User opened the bottom sheet to add multiple tabs to a tab
+                 group via the tab context menu on Vertical Tabs."/>
+    <variant name=".CloseAllIncognitoTabs"
+        summary="User closed all incognito tabs via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".CloseAllTabs"
+        summary="User closed all tabs via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".CloseOtherTabs"
+        summary="User closed other tabs via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".CloseOtherTabs.MultiTab"
+        summary="User closed other tabs via the tab context menu on Vertical
+                 Tabs while having multiple tabs selected."/>
+    <variant name=".CloseTab"
+        summary="User closed a tab via the tab context menu on Vertical Tabs."/>
+    <variant name=".CloseTab.MultiTab"
+        summary="User closed multiple tabs via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".CloseTabsBelow"
+        summary="User closed tabs below via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".CloseTabsBelow.MultiTab"
+        summary="User closed tabs below via the tab context menu on Vertical
+                 Tabs while having multiple tabs selected."/>
+    <variant name=".DuplicateTab"
+        summary="User duplicated a tab via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".DuplicateTab.MultiTab"
+        summary="User duplicated multiple tabs via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".MoveTabsToOtherWindow"
+        summary="User moved tabs to another window via the tab context menu
+                 on Vertical Tabs."/>
+    <variant name=".MoveTabsToOtherWindow.MultiTab"
+        summary="User moved multiple tabs to another window via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".MoveTabToGroup"
+        summary="User moved a tab to a synced tab group via the tab context
+                 menu on Vertical Tabs."/>
+    <variant name=".MoveTabToGroup.MultiTab"
+        summary="User moved multiple tabs to a synced tab group via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".MoveTabToIncognitoGroup"
+        summary="User moved a tab to an incognito tab group via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".MoveTabToIncognitoGroup.MultiTab"
+        summary="User moved multiple tabs to an incognito tab group via the
+                 tab context menu on Vertical Tabs."/>
+    <variant name=".MoveTabToNewWindow"
+        summary="User moved a tab to a new window via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".MoveTabToNewWindow.MultiTab"
+        summary="User moved multiple tabs to a new window via the tab context
+                 menu on Vertical Tabs."/>
+    <variant name=".MoveTabToOtherWindow"
+        summary="User moved a tab to another window via the tab context menu
+                 on Vertical Tabs."/>
+    <variant name=".MoveTabToOtherWindow.MultiTab"
+        summary="User moved multiple tabs to another window via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".MuteSite"
+        summary="User muted a site via the tab context menu on Vertical Tabs."/>
+    <variant name=".MuteSite.MultiTab"
+        summary="User muted site(s) from multiple selected tabs via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".NewGroup"
+        summary="User created a new group via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".NewGroup.MultiTab"
+        summary="User created a new group from multiple selected tabs via the
+                 tab context menu on Vertical Tabs."/>
+    <variant name=".NewTabBelow"
+        summary="User opened a new tab below via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".PinTab"
+        summary="User pinned a tab via the tab context menu on Vertical Tabs."/>
+    <variant name=".PinTab.MultiTab"
+        summary="User pinned multiple tabs via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".RemoveTabFromTabGroup"
+        summary="User removed a tab from tab group via the tab context menu
+                 on Vertical Tabs."/>
+    <variant name=".RemoveTabFromTabGroup.MultiTab"
+        summary="User removed multiple tabs from tab group via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".SendToYourDevices"
+        summary="User sent tab to another device via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".ShareTab"
+        summary="User shared a tab via the tab context menu on Vertical Tabs."/>
+    <variant name=".ShareTab.MultiTab"
+        summary="User shared multiple tabs via the tab context menu on
+                 Vertical Tabs."/>
+    <variant name=".Shown"
+        summary="Tab context menu was shown on Vertical Tabs."/>
+    <variant name=".Shown.MultiTab"
+        summary="Tab context menu was shown for multiple selected tabs on
+                 Vertical Tabs."/>
+    <variant name=".ToggleTabLayout"
+        summary="User toggled tab layout via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".UnmuteSite"
+        summary="User unmuted a site via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".UnmuteSite.MultiTab"
+        summary="User unmuted site(s) from multiple selected tabs via the tab
+                 context menu on Vertical Tabs."/>
+    <variant name=".UnpinTab"
+        summary="User unpinned a tab via the tab context menu on Vertical
+                 Tabs."/>
+    <variant name=".UnpinTab.MultiTab"
+        summary="User unpinned multiple tabs via the tab context menu on
+                 Vertical Tabs."/>
+  </token>
 </action>
 
 <action name="Android.VerticalTabs.TabRemovedFromGroup">

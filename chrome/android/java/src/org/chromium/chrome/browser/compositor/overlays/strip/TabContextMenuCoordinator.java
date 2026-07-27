@@ -18,11 +18,11 @@ import android.content.res.Resources;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.TabMenuAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -94,6 +95,8 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,6 +150,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
+    /** Layout types for the tab strip. */
+    @IntDef({TabStripLayoutType.HORIZONTAL, TabStripLayoutType.VERTICAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabStripLayoutType {
+        int HORIZONTAL = 0;
+        int VERTICAL = 1;
+    }
+
     @VisibleForTesting
     interface SendTabToSelfCoordinatorCreator {
         SendTabToSelfCoordinator create(
@@ -177,6 +188,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final int mCircleSize;
+    private final @TabStripLayoutType int mTabStripLayout;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
 
     private TabContextMenuCoordinator(
@@ -195,7 +207,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable ModalDialogManager modalDialogManager,
             @TabClosingSource int tabClosingSource,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            @TabStripLayoutType int tabStripLayout) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 R.layout.tab_switcher_action_menu_layout,
@@ -211,7 +224,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         snackbarManager,
                         activityResultTracker,
                         modalDialogManager,
-                        tabClosingSource),
+                        tabClosingSource,
+                        tabStripLayout),
                 tabModelSupplier,
                 multiInstanceManager,
                 tabGroupSyncService,
@@ -222,6 +236,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
+        mTabStripLayout = tabStripLayout;
 
         mCircleSize = getDimensionPixelSize(R.dimen.tab_group_nested_menu_color_icon_size);
     }
@@ -248,6 +263,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      * @param tabClosingSource The {@link TabClosingSource} indicating where the tab is closed from.
      * @param canActivateTabLayoutToggleMenuSupplier Supplies whether tab layout toggle menu can be
      *     activated.
+     * @param tabStripLayout The active {@link TabStripLayoutType}.
      */
     public static TabContextMenuCoordinator createContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -263,7 +279,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable ModalDialogManager modalDialogManager,
             @TabClosingSource int tabClosingSource,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            @TabStripLayoutType int tabStripLayout) {
         Profile profile = assumeNonNull(tabModelSupplier.get().getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
@@ -288,7 +305,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 activityResultTracker,
                 modalDialogManager,
                 tabClosingSource,
-                canActivateTabLayoutToggleMenuSupplier);
+                canActivateTabLayoutToggleMenuSupplier,
+                tabStripLayout);
     }
 
     @VisibleForTesting
@@ -304,7 +322,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
             @Nullable ModalDialogManager modalDialogManager,
-            @TabClosingSource int tabClosingSource) {
+            @TabClosingSource int tabClosingSource,
+            @TabStripLayoutType int tabStripLayout) {
         return (menuId, anchorInfo, collaborationId, listViewTouchTracker) -> {
             List<Integer> tabIds = anchorInfo.getAllTabIds();
             assert !tabIds.isEmpty() : "Empty tab id list provided";
@@ -313,7 +332,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             // Anchored tab(s) may have been moved to another window or closed between menu open
             // and item click. Drop the action if any tabs are no longer in this TabModel.
             if (tabs.size() < tabIds.size()) return;
-            recordMenuAction(menuId, tabs.size() > 1, tabModel.isIncognitoBranded());
+            recordMenuAction(
+                    menuId, tabs.size() > 1, tabModel.isIncognitoBranded(), tabStripLayout);
 
             if (menuId == R.id.add_to_tab_group) {
                 if (tabGroupListBottomSheetCoordinator != null) {
@@ -604,7 +624,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
-        recordUserAction("Shown", anchorInfo.getAllTabIds().size() > 1);
+        TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                TabMenuAction.SHOWN, anchorInfo.getAllTabIds().size() > 1, mTabStripLayout);
     }
 
     @Override
@@ -764,7 +785,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private ListItem createNewTabDirectionalItem(boolean isIncognito) {
-        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        boolean isVerticalTabs = mTabStripLayout == TabStripLayoutType.VERTICAL;
         int stringId =
                 isVerticalTabs
                         ? R.string.new_tab_below_menu_item
@@ -810,7 +831,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     recordMenuAction(
                                             R.id.add_to_new_group_sub_menu_id,
                                             tabs.size() > 1,
-                                            isIncognito);
+                                            isIncognito,
+                                            mTabStripLayout);
                                     createNewGroupForTabs(
                                             tabs,
                                             getTabModel(),
@@ -874,7 +896,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private ListItem createCloseTabsDirectionalItem(boolean isIncognito) {
-        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        boolean isVerticalTabs = mTabStripLayout == TabStripLayoutType.VERTICAL;
         int stringId =
                 isVerticalTabs
                         ? R.string.close_tabs_below_menu_item
@@ -1000,7 +1022,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 itemList.add(buildMenuDivider(isIncognito));
             }
             int layoutTitleRes =
-                    VerticalTabUtils.isVerticalTabsEnabled(mActivity)
+                    mTabStripLayout == TabStripLayoutType.VERTICAL
                             ? R.string.show_tabs_horizontally
                             : R.string.show_tabs_vertically;
 
@@ -1031,60 +1053,101 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return buildListItem(stringRes, menuRes, isIncognito);
     }
 
-    private static void recordMenuAction(int menuId, boolean isMultipleTabs, boolean isIncognito) {
+    private static void recordMenuAction(
+            int menuId,
+            boolean isMultipleTabs,
+            boolean isIncognito,
+            @TabStripLayoutType int tabStripLayout) {
         if (menuId == R.id.add_to_tab_group) {
-            recordUserAction("AddToTabGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.ADD_TO_TAB_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.add_to_new_tab_group) {
-            recordUserAction("AddToNewTabGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.ADD_TO_NEW_TAB_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.remove_from_tab_group) {
-            recordUserAction("RemoveTabFromTabGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.REMOVE_TAB_FROM_TAB_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.move_to_other_window_menu_id) {
             if (MultiWindowUtils.getInstanceCount(getActiveInstanceTypeForProfileType(isIncognito))
                     == 1) {
-                recordUserAction("MoveTabToNewWindow", isMultipleTabs);
+                TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                        TabMenuAction.MOVE_TAB_TO_NEW_WINDOW, isMultipleTabs, tabStripLayout);
             } else {
-                recordUserAction("MoveTabsToOtherWindow", isMultipleTabs);
+                TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                        TabMenuAction.MOVE_TABS_TO_OTHER_WINDOW, isMultipleTabs, tabStripLayout);
             }
         } else if (menuId == R.id.share_tab) {
-            recordUserAction("ShareTab", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.SHARE_TAB, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.pin_tab_menu_id) {
-            recordUserAction("PinTab", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.PIN_TAB, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.unpin_tab_menu_id) {
-            recordUserAction("UnpinTab", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.UNPIN_TAB, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.close_tab) {
-            recordUserAction("CloseTab", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.CLOSE_TAB, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.add_to_new_group_sub_menu_id) {
-            recordUserAction("NewGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.NEW_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.add_to_group_sub_menu_id) {
-            recordUserAction("MoveTabToGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.MOVE_TAB_TO_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.add_to_group_incognito_sub_menu_id) {
-            recordUserAction("MoveTabToIncognitoGroup", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.MOVE_TAB_TO_INCOGNITO_GROUP, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.move_to_new_window_sub_menu_id) {
-            recordUserAction("MoveTabToNewWindow", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.MOVE_TAB_TO_NEW_WINDOW, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.move_to_other_window_sub_menu_id) {
-            recordUserAction("MoveTabToOtherWindow", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.MOVE_TAB_TO_OTHER_WINDOW, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.mute_site_menu_id) {
-            recordUserAction("MuteSite", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.MUTE_SITE, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.unmute_site_menu_id) {
-            recordUserAction("UnmuteSite", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.UNMUTE_SITE, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.duplicate_tab_menu_id) {
-            recordUserAction("DuplicateTab", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.DUPLICATE_TAB, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.close_all_tabs_menu_id) {
-            recordUserAction("CloseAllTabs", /* isMultipleTabs= */ false);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.CLOSE_ALL_TABS, /* isMultipleTabs= */ false, tabStripLayout);
         } else if (menuId == R.id.close_all_incognito_tabs_menu_id) {
-            recordUserAction("CloseAllIncognitoTabs", /* isMultipleTabs= */ false);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.CLOSE_ALL_INCOGNITO_TABS,
+                    /* isMultipleTabs= */ false,
+                    tabStripLayout);
         } else if (menuId == R.id.close_other_tabs_menu_id) {
-            recordUserAction("CloseOtherTabs", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.CLOSE_OTHER_TABS, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.close_tabs_to_the_right_menu_id) {
-            recordUserAction("CloseTabsToTheRight", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    tabStripLayout == TabStripLayoutType.VERTICAL
+                            ? TabMenuAction.CLOSE_TABS_BELOW
+                            : TabMenuAction.CLOSE_TABS_TO_THE_RIGHT,
+                    isMultipleTabs,
+                    tabStripLayout);
         } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
-            recordUserAction("NewTabToTheRight", /* isMultipleTabs= */ false);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    tabStripLayout == TabStripLayoutType.VERTICAL
+                            ? TabMenuAction.NEW_TAB_BELOW
+                            : TabMenuAction.NEW_TAB_TO_THE_RIGHT,
+                    /* isMultipleTabs= */ false,
+                    tabStripLayout);
         } else if (menuId == R.id.add_tab_to_reading_list_menu_id) {
-            recordUserAction("AddTabToReadingList", isMultipleTabs);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.ADD_TAB_TO_READING_LIST, isMultipleTabs, tabStripLayout);
         } else if (menuId == R.id.send_to_your_device_menu_id) {
-            recordUserAction("SendToYourDevices", false);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.SEND_TO_YOUR_DEVICES,
+                    /* isMultipleTabs= */ false,
+                    tabStripLayout);
         } else if (menuId == R.id.toggle_tab_layout_menu_id) {
-            recordUserAction("ToggleTabLayout", /* isMultipleTabs= */ false);
+            TabStripMenuMetricsUtils.recordTabMenuUserAction(
+                    TabMenuAction.TOGGLE_TAB_LAYOUT, /* isMultipleTabs= */ false, tabStripLayout);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }
@@ -1133,7 +1196,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             tabWindowManager, groupId, /* isIncognito= */ false);
             OnClickListener clickListener =
                     (v) -> {
-                        recordMenuAction(R.id.add_to_group_sub_menu_id, tabs.size() > 1, false);
+                        recordMenuAction(
+                                R.id.add_to_group_sub_menu_id,
+                                tabs.size() > 1,
+                                false,
+                                mTabStripLayout);
                         if (isGroupInCurrentWindow) {
                             // If the tab is already in the current window,
                             // then just merge it to the group.
@@ -1181,7 +1248,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             OnClickListener clickListener =
                     (v) -> {
                         recordMenuAction(
-                                R.id.add_to_group_incognito_sub_menu_id, tabs.size() > 1, true);
+                                R.id.add_to_group_incognito_sub_menu_id,
+                                tabs.size() > 1,
+                                true,
+                                mTabStripLayout);
                         mergeTabsToDest(
                                 tabs, tabIdInGroup, getTabModel(), /* tabMovedCallback= */ null);
                     };
@@ -1231,7 +1301,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         recordMenuAction(
                 R.id.move_to_new_window_sub_menu_id,
                 tabs.size() > 1,
-                tabModel.isIncognitoBranded());
+                tabModel.isIncognitoBranded(),
+                mTabStripLayout);
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
@@ -1254,7 +1325,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         recordMenuAction(
                 R.id.move_to_other_window_sub_menu_id,
                 tabs.size() > 1,
-                tabModel.isIncognitoBranded());
+                tabModel.isIncognitoBranded(),
+                mTabStripLayout);
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
@@ -1289,10 +1361,5 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     .getTabUngrouper()
                     .ungroupTabs(groupedTabs, /* trailing= */ true, /* allowDialog= */ false);
         }
-    }
-
-    private static void recordUserAction(String label, boolean isMultipleTabs) {
-        String action = isMultipleTabs ? label + ".MultiTab" : label;
-        RecordUserAction.record("MobileToolbarTabMenu." + action);
     }
 }

@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.Str
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnLongClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate;
@@ -2581,7 +2582,8 @@ public class StripLayoutHelper
                                         findGroupTitle(groupId),
                                         toLeft);
                             },
-                            TabClosingSource.TABLET_TAB_STRIP);
+                            TabClosingSource.TABLET_TAB_STRIP,
+                            TabStripLayoutType.HORIZONTAL);
         }
         StripLayoutUtils.performHapticFeedback(mControlContainer);
 
@@ -2664,7 +2666,8 @@ public class StripLayoutHelper
                             mActivityResultTracker,
                             mWindowAndroid.getModalDialogManager(),
                             TabClosingSource.TABLET_TAB_STRIP,
-                            mCanActivateTabLayoutToggleMenuSupplier);
+                            mCanActivateTabLayoutToggleMenuSupplier,
+                            TabStripLayoutType.HORIZONTAL);
         }
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());
@@ -3369,7 +3372,8 @@ public class StripLayoutHelper
                             mWindowAndroid,
                             mSnackbarManager,
                             () -> handleNewTabClick(NewTabSource.EMPTY_SPACE_CONTEXT_MENU),
-                            mCanActivateTabLayoutToggleMenuSupplier);
+                            mCanActivateTabLayoutToggleMenuSupplier,
+                            TabStripLayoutType.HORIZONTAL);
         }
 
         // Determine the anchor view rect to position the menu.

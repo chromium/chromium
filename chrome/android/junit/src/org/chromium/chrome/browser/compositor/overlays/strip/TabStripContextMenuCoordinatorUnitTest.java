@@ -35,6 +35,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -113,14 +114,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
         doAnswer(invocation -> Collections.emptyIterator()).when((TabList) mTabModel).iterator();
 
-        mCoordinator =
-                TabStripContextMenuCoordinator.createContextMenuCoordinator(
-                        mTabModel,
-                        mMultiInstanceManager,
-                        mWindowAndroid,
-                        mSnackbarManager,
-                        mOnNewTabClick,
-                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
+        initializeCoordinatorForTesting(TabStripLayoutType.HORIZONTAL);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -133,6 +127,18 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
     }
 
+    private void initializeCoordinatorForTesting(@TabStripLayoutType int layout) {
+        mCoordinator =
+                TabStripContextMenuCoordinator.createContextMenuCoordinator(
+                        mTabModel,
+                        mMultiInstanceManager,
+                        mWindowAndroid,
+                        mSnackbarManager,
+                        mOnNewTabClick,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                        layout);
+    }
+
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
@@ -142,6 +148,10 @@ public class TabStripContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, isVerticalTabsEnabled);
+        initializeCoordinatorForTesting(
+                isVerticalTabsEnabled
+                        ? TabStripLayoutType.VERTICAL
+                        : TabStripLayoutType.HORIZONTAL);
 
         // Act.
         mCoordinator.showMenu(mRectProvider, false, mActivity);
@@ -202,7 +212,8 @@ public class TabStripContextMenuCoordinatorUnitTest {
                         mWindowAndroid,
                         mSnackbarManager,
                         mOnNewTabClick,
-                        () -> false);
+                        () -> false,
+                        TabStripLayoutType.HORIZONTAL);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         mCoordinator.showMenu(mRectProvider, false, mActivity);
