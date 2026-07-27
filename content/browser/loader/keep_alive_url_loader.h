@@ -346,6 +346,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            ReceivedResponseWillNotBeRetried);
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           RetryAfterRedirectResetsPerAttemptState);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            ExceededRedirectLimitWillNotBeRetried);
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            SelfDeletionOnMaxAge);

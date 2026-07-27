@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -1879,6 +1880,64 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, ReceivedResponseWillNotBeRetried) {
   // The loader can't be retried. Note that it won't be immediately deleted like
   // in other cases, because it will forward the response to the renderer.
   EXPECT_TRUE(loader->IsForwardURLLoadStarted());
+}
+
+// Regression test for crbug.com/511819962: Test that retrying a request after a
+// redirect resets the per-attempt request state, so that the retried response
+// is forwarded with only the redirects from the retried attempt.
+TEST_F(KeepAliveURLLoaderServiceRetryTest,
+       RetryAfterRedirectResetsPerAttemptState) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 1;
+  resource_request.fetch_retry_options = options;
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      resource_request, renderer_loader_client.BindNewPipeAndPassRemote());
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  base::WeakPtr<KeepAliveURLLoader> loader =
+      loader_service().GetLoaderWithRequestIdForTesting(
+          FakeRemoteURLLoaderFactory::kRequestId);
+
+  // Simulate the first attempt receiving a redirect, then failing with a
+  // retriable error before the redirected request completes.
+  loader->EndReceiveRedirect(CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
+                             CreateResponseHead({{kTestResponseHeaderName,
+                                                  kTestResponseHeaderValue}}));
+  loader->OnComplete(
+      network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
+  ASSERT_TRUE(loader->IsAttemptingRetry(/*include_failed_retry=*/false));
+  ASSERT_FALSE(loader->IsForwardURLLoadStarted());
+
+  // Fast-forward so the scheduled retry runs and starts a new request from the
+  // original URL. The first attempt's loader has been reset, so only the
+  // retried request remains pending.
+  task_environment()->FastForwardBy(kMinRetryDeltaForTesting);
+  ASSERT_TRUE(loader.get());
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(GetLastPendingRequest()->request.url, GURL(kTestRequestUrl));
+
+  // Simulate the retried request receiving a response without redirecting.
+  // The renderer should only see the response from the retried attempt and not
+  // the redirect from the failed first attempt.
+  EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
+  EXPECT_CALL(renderer_loader_client,
+              OnReceiveResponse(ResponseHasHeader(kTestResponseHeaderName,
+                                                  kTestResponseHeaderValue),
+                                _, Eq(std::nullopt)))
+      .Times(1);
+  loader->OnReceiveResponse(
+      CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
+      /*body=*/{}, std::nullopt);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return loader && loader->IsForwardURLLoadStarted(); }));
 }
 
 // Test that hitting the redirect limit won't trigger a retry.
