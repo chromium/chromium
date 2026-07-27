@@ -1413,10 +1413,6 @@ if (is_android) {
       "../browser/android/historical_tab_saver_browsertest.cc",
       "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
       "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
-      "../browser/android/persisted_tab_data/test/bar_persisted_tab_data.cc",
-      "../browser/android/persisted_tab_data/test/bar_persisted_tab_data.h",
-      "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.cc",
-      "../browser/android/persisted_tab_data/test/foo_persisted_tab_data.h",
       "../browser/android/webapk/webapk_icons_hasher_browsertest.cc",
       "../browser/android/webapk/webapk_installer_browsertest.cc",
       "../browser/android/webapk/webapk_restore_task_browsertest.cc",
@@ -1447,7 +1443,6 @@ if (is_android) {
       ":android_browsertests_assets",
       ":android_browsertests_java",
       ":browser_tests_runner",
-      ":persisted_tab_data_test_proto",
       ":platform_browser_tests",
       ":sync_integration_test_support_java",
       ":test_support",
@@ -1462,6 +1457,7 @@ if (is_android) {
       "//chrome/browser/accessibility/accessibility_prefs:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/android",
+      "//chrome/browser/android/persisted_tab_data/test:test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/auxiliary_search:browser_tests",
@@ -1834,13 +1830,6 @@ if (is_android) {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
-
-  proto_library("persisted_tab_data_test_proto") {
-    sources = [
-      "../browser/android/persisted_tab_data/test/bar.proto",
-      "../browser/android/persisted_tab_data/test/foo.proto",
-    ]
   }
 
   test("android_sync_integration_tests") {

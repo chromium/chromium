@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("persisted_tab_data_test_proto") {
+  sources = [
+    "bar.proto",
+    "foo.proto",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "bar_persisted_tab_data.cc",
+    "bar_persisted_tab_data.h",
+    "foo_persisted_tab_data.cc",
+    "foo_persisted_tab_data.h",
+  ]
+
+  public_deps = [ ":persisted_tab_data_test_proto" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/android",
+  ]
+}
