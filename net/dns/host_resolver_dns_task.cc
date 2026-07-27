@@ -698,7 +698,9 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     case DnsQueryType::HTTPS: {
       https_record_end_time_ = now;
       base::TimeTicks first_address_end_time =
-          std::min(a_record_end_time_, aaaa_record_end_time_);
+          (!a_record_end_time_.is_null() && !aaaa_record_end_time_.is_null())
+              ? std::min(a_record_end_time_, aaaa_record_end_time_)
+              : std::max(a_record_end_time_, aaaa_record_end_time_);
       if (!first_address_end_time.is_null()) {
         RecordResolveTimeDiff("AddressRecordBeforeHTTPS", task_start_time_,
                               first_address_end_time, now);

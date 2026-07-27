@@ -1377,4 +1377,184 @@ TEST_F(HostResolverDnsTaskTest, HttpsBeforeAddressHistograms) {
       base::Milliseconds(300), 1);  // 100ms + 200ms
 }
 
+TEST_F(HostResolverDnsTaskTest, AddressRecordBeforeHttps_BothAddresses) {
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  DnsResourceRecord https_record = BuildTestHttpsServiceRecord(
+      kName, /*priority=*/1, /*service_name=*/".", /*params=*/{});
+  DnsResponse https_response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, {https_record});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(std::move(https_response)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(1));
+
+  DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA,
+                           DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kHttp, SecureDnsMode::kAutomatic,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  while (task.num_additional_transactions_needed() > 0) {
+    task.StartNextTransaction();
+  }
+
+  // AAAA resolves first at T=0
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  // A resolves next at T=100
+  clock.Advance(base::Milliseconds(100));
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+
+  // HTTPS resolves last at T=300
+  clock.Advance(base::Milliseconds(200));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) { run_loop.Quit(); });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+  run_loop.Run();
+
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.AddressRecordBeforeHTTPS",
+      base::Milliseconds(300), 1);
+}
+
+TEST_F(HostResolverDnsTaskTest, AddressRecordBeforeHttps_OnlyAaaa) {
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  DnsResourceRecord https_record = BuildTestHttpsServiceRecord(
+      kName, /*priority=*/1, /*service_name=*/".", /*params=*/{});
+  DnsResponse https_response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, {https_record});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(std::move(https_response)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(1));
+
+  DnsQueryTypeSet types = {DnsQueryType::AAAA, DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kHttp, SecureDnsMode::kAutomatic,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  while (task.num_additional_transactions_needed() > 0) {
+    task.StartNextTransaction();
+  }
+
+  // AAAA resolves first at T=0
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  // HTTPS resolves last at T=150
+  clock.Advance(base::Milliseconds(150));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) { run_loop.Quit(); });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+  run_loop.Run();
+
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.AddressRecordBeforeHTTPS",
+      base::Milliseconds(150), 1);
+}
+
+TEST_F(HostResolverDnsTaskTest, AddressRecordBeforeHttps_OnlyA) {
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+
+  DnsResourceRecord https_record = BuildTestHttpsServiceRecord(
+      kName, /*priority=*/1, /*service_name=*/".", /*params=*/{});
+  DnsResponse https_response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, {https_record});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(std::move(https_response)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+
+  base::SimpleTestTickClock clock;
+  clock.Advance(base::Seconds(1));
+
+  DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kHttp, SecureDnsMode::kAutomatic,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  while (task.num_additional_transactions_needed() > 0) {
+    task.StartNextTransaction();
+  }
+
+  // A resolves first at T=0
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+
+  // HTTPS resolves last at T=250
+  clock.Advance(base::Milliseconds(250));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) { run_loop.Quit(); });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+  run_loop.Run();
+
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.AddressRecordBeforeHTTPS",
+      base::Milliseconds(250), 1);
+}
+
 }  // namespace net
