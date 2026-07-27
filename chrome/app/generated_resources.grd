@@ -10480,78 +10480,33 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <!-- /Vertical Tab Strings -->
 
-      <!-- Projects Panel Strings -->
+      <!-- Organizer Panel Strings -->
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_VIEW_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the projects panel.">
+          <message name="IDS_VIEW_ORGANIZER_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the organizer panel.">
             View Organizer
           </message>
-          <message name="IDS_HIDE_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the projects panel.">
+          <message name="IDS_HIDE_ORGANIZER_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the organizer panel.">
             Hide Organizer
-          </message>
-          <message name="IDS_TAB_GROUPS_TITLE" desc="In Title Case: The title for the tab groups container in the projects panel.">
-            Tab Groups
-          </message>
-          <message name="IDS_RECENT_CHATS_TITLE" desc="In Title Case: The title for the recent chats container in the projects panel.">
-            Recent Chats &amp; Threads
           </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
-          <message name="IDS_THREADS_SHOW_MORE" desc="In Title Case: The label for the button that expands the list of recent threads.">
-            Show More
-          </message>
-          <message name="IDS_THREADS_SHOW_LESS" desc="In Title Case: The label for the button that collapses the list of recent threads.">
-            Show Less
-          </message>
         </then>
         <else>
-          <message name="IDS_VIEW_PROJECTS_PANEL" desc="The tooltip for the button in the top container that shows the projects panel.">
+          <message name="IDS_VIEW_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that shows the organizer panel.">
             View organizer
           </message>
-          <message name="IDS_HIDE_PROJECTS_PANEL" desc="The tooltip for the button in the top container that hides the projects panel.">
+          <message name="IDS_HIDE_ORGANIZER_PANEL" desc="The tooltip for the button in the top container that hides the organizer panel.">
             Hide organizer
-          </message>
-          <message name="IDS_TAB_GROUPS_TITLE" desc="The title for the tab groups container in the projects panel.">
-            Tab groups
-          </message>
-          <message name="IDS_RECENT_CHATS_TITLE" desc="The title for the recent chats container in the projects panel.">
-            Recent chats &amp; threads
           </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
-          <message name="IDS_THREADS_SHOW_MORE" desc="The label for the button that expands the list of recent threads.">
-            Show more
-          </message>
-          <message name="IDS_THREADS_SHOW_LESS" desc="The label for the button that collapses the list of recent threads.">
-            Show less
-          </message>
         </else>
       </if>
-      <message name="IDS_PROJECTS_PANEL" desc="The name of the projects panel announced by screenreaders." is_accessibility_with_no_ui="true">
+      <message name="IDS_ORGANIZER_PANEL" desc="The name of the organizer panel announced by screenreaders." is_accessibility_with_no_ui="true">
         Organizer
-      </message>
-      <message name="IDS_PROJECTS_PANEL_GEMINI_ACTIVITY" desc="The label for the Gemini app activity menu item in the projects panel.">
-        Gemini app activity
-      </message>
-      <message name="IDS_PROJECTS_PANEL_AI_MODE_ACTIVITY" desc="The label for the AI Mode activity menu item in the projects panel.">
-        AI Mode activity
-      </message>
-      <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
-        Organize tabs into labeled, color-coded groups for easy access
-      </message>
-      <message name="IDS_OPEN_GEMINI_THREAD_TOOLTIP" desc="Tooltip for a button that opens a Gemini thread.">
-        Open in Gemini
-      </message>
-      <message name="IDS_OPEN_AI_MODE_THREAD_TOOLTIP" desc="Tooltip for a button that opens an AI Mode thread.">
-        Open in AI Mode
-      </message>
-      <message name="IDS_OPEN_GEMINI_THREAD_ACCESSIBILITY_LABEL" desc="Screenreader label for a button that opens a Gemini thread." is_accessibility_with_no_ui="true">
-        Open "<ph name="THREAD_NAME">$1<ex>Compact SUV Comparison</ex></ph>" in Gemini
-      </message>
-      <message name="IDS_OPEN_AI_MODE_THREAD_ACCESSIBILITY_LABEL" desc="Screenreader label for a button that opens an AI Mode thread." is_accessibility_with_no_ui="true">
-        Open "<ph name="THREAD_NAME">$1<ex>Compact SUV Comparison</ex></ph>" in AI Mode
       </message>
       <if expr="use_titlecase">
         <message name="IDS_TAB_STRIP_UNPIN_TAB_SEARCH" desc="In Title Case: Name of the tab strip system menu item for unpinning tab search.">
@@ -10575,10 +10530,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_SEARCH_BUTTON_CXMENU_PIN" desc="Name of the tab search button context menu item for pinning tab search.">
         Pin
       </message>
-      <message name="IDS_PROJECTS_PANEL_BUTTON_CXMENU_UNPIN" desc="Name of the projects panel button context menu item for unpinning the projects panel.">
+      <message name="IDS_ORGANIZER_PANEL_BUTTON_CXMENU_UNPIN" desc="Name of the organizer panel button context menu item for unpinning the organizer panel.">
         Unpin
       </message>
-      <message name="IDS_PROJECTS_PANEL_BUTTON_CXMENU_PIN" desc="Name of the projects panel button context menu item for pinning the projects panel.">
+      <message name="IDS_ORGANIZER_PANEL_BUTTON_CXMENU_PIN" desc="Name of the organizer panel button context menu item for pinning the organizer panel.">
         Pin
       </message>
       <message name="IDS_EVERYTHING_MENU_BUTTON_CXMENU_UNPIN" desc="Name of the everything menu button context menu item for unpinning the everything menu.">

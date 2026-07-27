@@ -89,7 +89,7 @@ OrganizerPanelView::OrganizerPanelView(
 
   auto& accessibility = GetViewAccessibility();
   accessibility.SetRole(ax::mojom::Role::kPane);
-  accessibility.SetName(l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL));
+  accessibility.SetName(l10n_util::GetStringUTF16(IDS_ORGANIZER_PANEL));
   SetFocusBehavior(FocusBehavior::NEVER);
 
   SetVisible(false);

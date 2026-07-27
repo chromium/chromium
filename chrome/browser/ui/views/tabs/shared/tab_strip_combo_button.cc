@@ -298,8 +298,8 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
       command_id = IDC_ORGANIZER_PANEL_TOGGLE_PIN;
       pref_name = prefs::kOrganizerPanelPinnedToTabstrip;
       string_id = prefs->GetBoolean(pref_name)
-                      ? IDS_PROJECTS_PANEL_BUTTON_CXMENU_UNPIN
-                      : IDS_PROJECTS_PANEL_BUTTON_CXMENU_PIN;
+                      ? IDS_ORGANIZER_PANEL_BUTTON_CXMENU_UNPIN
+                      : IDS_ORGANIZER_PANEL_BUTTON_CXMENU_PIN;
       element_id = kOrganizerPanelUnpinMenuItem;
     } else {
       command_id = IDC_EVERYTHING_MENU_TOGGLE_PIN;

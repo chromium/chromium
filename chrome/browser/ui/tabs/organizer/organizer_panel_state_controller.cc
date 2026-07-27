@@ -55,8 +55,8 @@ void OrganizerPanelStateController::NotifyStateChanged() {
 }
 
 void OrganizerPanelStateController::UpdateOrganizerActionItem() {
-  const auto& text = IsOrganizerPanelVisible() ? IDS_HIDE_PROJECTS_PANEL
-                                               : IDS_VIEW_PROJECTS_PANEL;
+  const auto& text = IsOrganizerPanelVisible() ? IDS_HIDE_ORGANIZER_PANEL
+                                               : IDS_VIEW_ORGANIZER_PANEL;
 
   actions::ActionItem* organizer_action =
       actions::ActionManager::Get().FindAction(kActionToggleOrganizerPanel,
