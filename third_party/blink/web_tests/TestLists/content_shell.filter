@@ -12,8 +12,6 @@ virtual/digital-credentials-fake-ui/wpt_internal/*
 virtual/threaded/wpt_internal/*
 virtual/background-fetch-service-worker-allowed/wpt_internal/*
 virtual/stable/wpt_internal/*
-virtual/isolated-context/wpt_internal/*
-virtual/isolated-context-stable/wpt_internal/*
 virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
@@ -756,9 +754,6 @@ virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/ani
 virtual/dark-color-scheme/external/wpt/css/css-color/system-color-consistency.html
 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html
 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html
-virtual/direct-sockets/external/wpt/direct-sockets/disabled-by-permissions-policy.https.sub.html
-virtual/direct-sockets/external/wpt/direct-sockets/tcp_socket.https.html
-virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-036.html
@@ -858,3 +853,13 @@ virtual/lna-webrtc/wpt_internal/*
 
 # Requires content plugin, see crbug.com/476646486:
 external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
+
+# Tests requiring --isolated-context-origins only work in content_shell.
+# See https://crbug.com/368664969.
+virtual/direct-sockets/external/wpt/direct-sockets/disabled-by-permissions-policy.https.sub.html
+virtual/direct-sockets/external/wpt/direct-sockets/tcp_socket.https.html
+virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
+virtual/isolated-context/wpt_internal/*
+virtual/isolated-context-stable/wpt_internal/*
+external/wpt/subapps/*
+virtual/subapps/external/wpt/subapps/*
