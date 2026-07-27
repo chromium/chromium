@@ -107,12 +107,14 @@ class NET_EXPORT UDPSocketPosix {
   int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback);
 
   // Reads multiple datagrams from a connected socket.
-  // Only usable after the socket has been connected.
-  // The number of packets read is determined by the ratio of |buf_len| to
-  // |maximum_packet_size|.
-  // On platforms supporting recvmmsg (Linux, ChromeOS, Android), it uses it
-  // to read multiple datagrams. On other POSIX platforms (e.g., macOS,
-  // Fuchsia), it falls back to reading a single datagram using recvmsg.
+  //
+  // NOTE: When UDP GRO (Generic Receive Offload) is enabled on
+  // Linux/Android/ChromeOS, the kernel can coalesce incoming UDP datagrams into
+  // a single superpacket up to 64KB (64 * 1024 bytes). If the caller provides a
+  // buffer (`buf_len`) smaller than 64KB, recvmsg() sets MSG_TRUNC and returns
+  // ERR_MSG_TOO_BIG whenever enough packets happen to be coalesced to exceed
+  // the buffer size. Callers must pass a buffer of at least
+  // `kMinimumReadMultipleBufferSize` (64KB) to prevent packet truncation.
   base::expected<DatagramsMetadata, Error> ReadMultiple(
       IOBuffer* buffer,
       size_t buf_len,

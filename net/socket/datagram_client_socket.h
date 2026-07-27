@@ -18,6 +18,12 @@
 
 namespace net {
 
+// Minimum buffer size required when calling ReadMultiple(). On platforms
+// supporting kernel-coalesced superpackets (e.g. UDP GRO), superpackets can be
+// up to 64KB (64 * 1024 bytes). Callers must provide a buffer of at least this
+// size to prevent packet truncation.
+inline constexpr size_t kMinimumReadMultipleBufferSize = 64 * 1024;
+
 struct NET_EXPORT_PRIVATE DatagramMetadata {
   // The start offset of this datagram's data within the buffer passed to the
   // read API (e.g., ReadMultiple).
@@ -104,6 +110,9 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // - If the read proceeds asynchronously, it returns `ERR_IO_PENDING`. The
   //   `callback` will be invoked later with the final result (either
   //   `DatagramsMetadata` or an error code other than `ERR_IO_PENDING`).
+  //
+  // NOTE: `buf_len` MUST be at least `kMinimumReadMultipleBufferSize` (64 *
+  // 1024 bytes). See `UDPSocketPosix::ReadMultiple` for details.
   virtual base::expected<DatagramsMetadata, Error> ReadMultiple(
       IOBuffer* buf,
       size_t buf_len,

@@ -24,7 +24,12 @@ namespace {
 const size_t kReadBufferSize =
     static_cast<size_t>(quic::kMaxIncomingPacketSize + 1);
 
-constexpr size_t kNumPacketsToRead = 32;
+// Number of packets to read when using ReadMultiple. Computed to ensure the
+// total read buffer size (kNumPacketsToRead * kReadBufferSize) is at least 64KB
+// (kMinimumReadMultipleBufferSize) to prevent packet truncation when GRO is
+// enabled.
+constexpr size_t kNumPacketsToRead =
+    (kMinimumReadMultipleBufferSize + kReadBufferSize - 1) / kReadBufferSize;
 }  // namespace
 
 QuicChromiumPacketReader::QuicChromiumPacketReader(

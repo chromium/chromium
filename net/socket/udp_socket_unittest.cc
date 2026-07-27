@@ -209,7 +209,8 @@ class UDPSocketTest : public PlatformTest, public WithTaskEnvironment {
       size_t buf_len,
       size_t maximum_packet_size,
       size_t expected_count) {
-    CHECK_GE(buf_len, maximum_packet_size * expected_count);
+    CHECK_GE(buf_len, kMinimumReadMultipleBufferSize +
+                          expected_count * maximum_packet_size);
     DatagramsMetadata accumulated_metadata;
     while (accumulated_metadata.size() < expected_count) {
       base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(5));
@@ -2668,7 +2669,7 @@ TEST_F(UDPSocketTest, ReadMultiple) {
   // Prepare receiver buffer.
   constexpr size_t kMaxPacketSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      base::checked_cast<int>(packets.size() * kMaxPacketSize));
+      kMinimumReadMultipleBufferSize + packets.size() * kMaxPacketSize);
 
   // Read datagrams.
   base::expected<DatagramsMetadata, Error> read_result =
@@ -2762,7 +2763,7 @@ TEST_F(UDPSocketTest, ReadMultipleControlTruncated) {
   // Prepare receiver buffer.
   constexpr size_t kMaxPacketSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
-      base::checked_cast<int>(kMaxPacketSize));
+      kMinimumReadMultipleBufferSize + kMaxPacketSize);
 
   // Read datagrams. We expect this to fail with ERR_CONTROL_MSG_TOO_BIG because
   // of MSG_CTRUNC.
@@ -2810,7 +2811,8 @@ TEST_F(UDPSocketTest, ReadMultiple_TooBig) {
 
   // Receiver reads with max packet size smaller than send size.
   constexpr size_t kMaxPacketSize = 40;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(100);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
+      kMinimumReadMultipleBufferSize + kMaxPacketSize);
 
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver, read_buf.get(),
@@ -2844,7 +2846,8 @@ TEST_F(UDPSocketTest, ReadMultiple_Async) {
 
   // Receiver calls ReadMultiple when NO data is available yet.
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(200);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
 
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
 
@@ -2885,7 +2888,8 @@ TEST_F(UDPSocketTest, ReadMultiple_ClosedSocket) {
   receiver.Close();
 
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(200);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
 
   auto rv_read = receiver.ReadMultiple(read_buf.get(), read_buf->span().size(),
@@ -3024,7 +3028,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroSyncSuccess) {
 
   SendGroPayload(200, 'a');
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(2048);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
+      kMinimumReadMultipleBufferSize + 2 * kMaxPacketSize);
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver_, read_buf.get(),
                                 read_buf->span().size(), kMaxPacketSize, 2);
@@ -3048,7 +3053,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroSingleUncoalescedPacket) {
   SendGroPayload(100, 'a');
 
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(2048);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
+      kMinimumReadMultipleBufferSize + kMaxPacketSize);
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver_, read_buf.get(),
                                 read_buf->span().size(), kMaxPacketSize, 1);
@@ -3073,7 +3079,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroSyncFailure) {
   // maximum_packet_size (100) is smaller than res.gso_size (200), which
   // triggers ERR_MSG_TOO_BIG synchronously.
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(1024);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
   auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
                                         kMaxPacketSize, future.GetCallback());
@@ -3090,7 +3097,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroAsyncSuccess) {
 
   // Call ReadMultiple before any data is sent to trigger async wait.
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(1024);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
   auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
                                         kMaxPacketSize, future.GetCallback());
@@ -3121,7 +3129,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroAsyncFailure) {
   // maximum_packet_size (100) is smaller than res.gso_size (200), which will
   // trigger ERR_MSG_TOO_BIG when the superpacket arrives.
   constexpr size_t kMaxPacketSize = 100;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(1024);
+  auto read_buf =
+      base::MakeRefCounted<IOBufferWithSize>(kMinimumReadMultipleBufferSize);
   base::test::TestFuture<base::expected<DatagramsMetadata, Error>> future;
   auto rv_read = receiver_.ReadMultiple(read_buf.get(), read_buf->span().size(),
                                         kMaxPacketSize, future.GetCallback());
@@ -3150,7 +3159,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroZeroSize) {
   ASSERT_EQ(sent, 0);
 
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(1024);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
+      kMinimumReadMultipleBufferSize + kMaxPacketSize);
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver_, read_buf.get(),
                                 read_buf->span().size(), kMaxPacketSize, 1);
@@ -3172,7 +3182,8 @@ TEST_F(UDPSocketGroTest, ReadMultipleGroUnequalSegments) {
   SendGroPayload(201, 'b');
 
   constexpr size_t kMaxPacketSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(3072);
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(
+      kMinimumReadMultipleBufferSize + 3 * kMaxPacketSize);
   base::expected<DatagramsMetadata, Error> read_result =
       ReadMultipleExpectedCount(&receiver_, read_buf.get(),
                                 read_buf->span().size(), kMaxPacketSize, 3);

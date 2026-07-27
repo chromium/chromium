@@ -518,6 +518,10 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::ReadMultiple(
   CHECK_GT(buf_len, 0u);
   CHECK_GT(maximum_packet_size, 0u);
   CHECK_GE(buf_len, maximum_packet_size);
+  // Unconditionally require callers of ReadMultiple() to provide a buffer of
+  // at least 64KB (kMinimumReadMultipleBufferSize) to prevent packet truncation
+  // when reading coalesced superpackets (e.g. UDP GRO).
+  CHECK_GE(buf_len, kMinimumReadMultipleBufferSize);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   if (gro_status_ == GroStatus::kUnconfigured) {
