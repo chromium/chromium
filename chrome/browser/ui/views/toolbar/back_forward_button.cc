@@ -114,6 +114,27 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
     base::RecordAction(base::UserMetricsAction("Toolbar_BackButton_Clicked"));
   }
 
+  bool play_animation = features::IsToolbarGlowUpBackForwardEnabled() &&
+                        !ui::TouchUiController::Get()->touch_ui() &&
+                        event.IsMouseEvent() &&
+                        event.AsMouseEvent()->IsOnlyLeftMouseButton();
+
+  if (play_animation) {
+    views::SingleAnimatedImageContainer::AnimationConfig config{
+        .boundary =
+            views::SingleAnimatedImageContainer::AnimationBoundary{
+                .start_offset = 0.0f, .end_offset = 0.5f},
+        .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+        .duration = base::Milliseconds(300)};
+    animated_image_container().PlayAnimation(
+        {direction_ == Direction::kBack ? IDR_BACK_ARROW_LOTTIE
+                                        : IDR_FORWARD_ARROW_LOTTIE,
+         GetForegroundColor(GetState()),
+         views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+         views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset},
+        config);
+  }
+
   // Do this last because upon activation the MenuModel gets updated, removing
   // the label for the page about to be loaded. However, the title associated
   // with the ContentsWebView has not yet been updated.
@@ -150,26 +171,6 @@ void BackForwardButton::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
-  const bool play_animation = features::IsToolbarGlowUpBackForwardEnabled() &&
-                              !ui::TouchUiController::Get()->touch_ui() &&
-                              event.IsLeftMouseButton();
-
-  if (play_animation) {
-    views::SingleAnimatedImageContainer::AnimationConfig config{
-        .boundary =
-            views::SingleAnimatedImageContainer::AnimationBoundary{
-                .start_offset = 0.0f, .end_offset = 0.5f},
-        .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
-        .duration = base::Milliseconds(300)};
-    animated_image_container().PlayAnimation(
-        {direction_ == Direction::kBack ? IDR_BACK_ARROW_LOTTIE
-                                        : IDR_FORWARD_ARROW_LOTTIE,
-         GetForegroundColor(GetState()),
-         views::SingleAnimatedImageContainer::AnimationDirection::kForward,
-         views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset},
-        config);
-  }
-
   return ToolbarButton::OnMousePressed(event);
 }
 
