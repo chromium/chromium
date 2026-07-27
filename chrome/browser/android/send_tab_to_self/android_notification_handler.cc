@@ -26,7 +26,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -164,20 +163,6 @@ void AndroidNotificationHandler::DisplayNewEntries(
     return;
   }
 
-  std::vector<std::string> guids;
-  guids.reserve(new_entries.size());
-  for (const SendTabToSelfEntry* entry : new_entries) {
-    guids.push_back(entry->GetGUID());
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AndroidNotificationHandler::DisplayNewEntriesOnUIThread,
-                     weak_factory_.GetWeakPtr(), std::move(guids)));
-}
-
-void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
-    const std::vector<std::string>& guids) {
   // Called when new entries are received from sync.
   content::WebContents* const target_web_contents =
       base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)
@@ -190,10 +175,8 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
   // opened directly as new background tabs.
   if (target_web_contents) {
     std::vector<const SendTabToSelfEntry*> entries;
-    entries.reserve(guids.size());
-    for (const std::string& guid : guids) {
-      const SendTabToSelfEntry* entry =
-          send_tab_to_self_model_->GetEntryByGUID(guid);
+    entries.reserve(new_entries.size());
+    for (const SendTabToSelfEntry* entry : new_entries) {
       if (entry && !entry->IsOpened()) {
         entries.push_back(entry);
       }
@@ -203,9 +186,7 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
         AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
   } else {
     // Otherwise, show a standard system notification.
-    for (const std::string& guid : guids) {
-      const SendTabToSelfEntry* entry =
-          send_tab_to_self_model_->GetEntryByGUID(guid);
+    for (const SendTabToSelfEntry* entry : new_entries) {
       if (!entry || entry->IsOpened()) {
         continue;
       }

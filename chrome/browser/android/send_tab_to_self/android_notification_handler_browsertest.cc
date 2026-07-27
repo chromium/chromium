@@ -9,7 +9,6 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -83,6 +82,11 @@ class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
                        AutoOpenWhenBroughtToForeground) {
+  // Simulating application running in background (e.g. user is in another app).
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  GetTabListInterface()->GetTab(0)->GetContents()->WasHidden();
+
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
@@ -92,6 +96,8 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
 
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 
+  // Simulate application coming to foreground.
+  GetTabListInterface()->GetTab(0)->GetContents()->WasShown();
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
@@ -168,7 +174,6 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerModelNotReadyBrowserTest,
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   // Should not open because model is not ready.
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count, GetTabListInterface()->GetTabCount());
 
@@ -216,8 +221,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // Since there is no active visible web contents and flag is disabled, it
   // should NOT auto-open.
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count, GetTabListInterface()->GetTabCount());
 }

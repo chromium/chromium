@@ -46,6 +46,11 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
       SendTabToSelfModel* send_tab_to_self_model);
   ~AndroidNotificationHandler() override;
 
+  // ReceivingUiHandler implementation.
+  void DisplayNewEntries(
+      base::span<const SendTabToSelfEntry* const> new_entries) override;
+  void DismissEntries(base::span<const std::string> guids) override;
+
  protected:
   // Overridden in tests to mock actual Android JNI notification calls.
   virtual void ShowNotification(const SendTabToSelfEntry& entry);
@@ -54,13 +59,6 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
                                  content::WebContents* web_contents);
 
  private:
-  void DisplayNewEntriesOnUIThread(const std::vector<std::string>& guids);
-
-  // ReceivingUiHandler implementation.
-  void DisplayNewEntries(
-      base::span<const SendTabToSelfEntry* const> new_entries) override;
-  void DismissEntries(base::span<const std::string> guids) override;
-
   // SendTabToSelfModelObserver implementation.
   void OnModelReady() override;
 

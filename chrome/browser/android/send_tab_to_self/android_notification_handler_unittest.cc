@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -100,16 +99,6 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void DisplayNewEntries(base::span<const SendTabToSelfEntry* const> entries) {
-    // This posts a task on the UI thread...
-    static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries(entries);
-    // ... so wait for it to complete.
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   FakeSendTabToSelfModel* model() {
     return static_cast<StubSendTabToSelfSyncService*>(
                SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
@@ -144,7 +133,7 @@ TEST_F(AndroidNotificationHandlerTest,
 
   // Trigger the addition of a new entry using the public ReceivingUiHandler
   // interface.
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   // Verify that the model was notified to mark the entry as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -173,7 +162,7 @@ TEST_F(AndroidNotificationHandlerTest, ShouldNotAutoOpenNewEntriesIfNotActive) {
   EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
 
   // Trigger the addition of a new entry.
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   // Verify that the entry is NOT marked as opened yet.
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -237,7 +226,6 @@ TEST_F(AndroidNotificationHandlerTest,
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  base::RunLoop run_loop;
   // Expect a system notification because OTR tab models are ignored for
   // auto-open.
   EXPECT_CALL(*handler(), ShowNotification(Property(
@@ -246,7 +234,7 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
 
   // Trigger the addition of a new entry.
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   // Verify that the entry is NOT marked as opened.
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -272,7 +260,7 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
   EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
   // Trigger the addition of a new entry.
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   // Verify that the entry is marked as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -464,7 +452,7 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
 
@@ -492,7 +480,7 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(),
               ShowMessageBanner(kRemoteDeviceName, raw_web_contents));
 
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
 }
@@ -524,19 +512,16 @@ TEST_F(AndroidNotificationHandlerWithoutTabGridAutoOpenSupportTest,
   web_contents()->WasHidden();
   ASSERT_EQ(content::Visibility::HIDDEN, web_contents()->GetVisibility());
 
-  base::RunLoop run_loop;
   // Should fallback to notification.
   EXPECT_CALL(*handler(), ShowNotification(Property(&SendTabToSelfEntry::GetURL,
-                                                    Eq(GURL(kExampleUrl)))))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+                                                    Eq(GURL(kExampleUrl)))));
   EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
 
   const SendTabToSelfEntry* entry =
       model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
                                 PageContext(), NavigationHistory());
 
-  static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries({entry});
-  run_loop.Run();
+  handler()->DisplayNewEntries({entry});
 
   EXPECT_FALSE(model()->GetEntryByGUID(entry->GetGUID())->IsOpened());
 
@@ -569,7 +554,7 @@ TEST_F(AndroidNotificationHandlerWithTabGridAutoOpenSupportTest,
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
-  DisplayNewEntries({entry});
+  handler()->DisplayNewEntries({entry});
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
 
