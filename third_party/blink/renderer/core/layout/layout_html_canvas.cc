@@ -78,6 +78,9 @@ PhysicalNaturalSizingInfo LayoutHTMLCanvas::GetNaturalDimensions() const {
 bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
   NOT_DESTROYED();
   auto* canvas = To<HTMLCanvasElement>(GetNode());
+  if (canvas->IsInCanvasSubtree() && canvas->layoutSubtree()) {
+    return false;
+  }
   if (canvas->SurfaceLayerBridge())
     return false;
   CanvasRenderingContext* context = canvas->RenderingContext();
