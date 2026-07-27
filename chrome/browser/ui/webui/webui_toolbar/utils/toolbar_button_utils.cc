@@ -449,8 +449,8 @@ actions::ActionId MojomPageActionIdToActionId(
       return kActionRecordReplay;
     case MojomPageActionId::kActionShowIntentPicker:
       return kActionShowIntentPicker;
-    case MojomPageActionId::kActionZoomNormal:
-      return kActionZoomNormal;
+    case MojomPageActionId::kActionShowZoomBubble:
+      return kActionShowZoomBubble;
     case MojomPageActionId::kActionSidePanelShowReadAnything:
       return kActionSidePanelShowReadAnything;
     case MojomPageActionId::kActionOffersAndRewardsForPage:
@@ -525,8 +525,8 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
       return MojomPageActionId::kActionRecordReplay;
     case kActionShowIntentPicker:
       return MojomPageActionId::kActionShowIntentPicker;
-    case kActionZoomNormal:
-      return MojomPageActionId::kActionZoomNormal;
+    case kActionShowZoomBubble:
+      return MojomPageActionId::kActionShowZoomBubble;
     case kActionSidePanelShowReadAnything:
       return MojomPageActionId::kActionSidePanelShowReadAnything;
     case kActionOffersAndRewardsForPage:

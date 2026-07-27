@@ -376,7 +376,7 @@ enum PageActionId {
   kActionShowJsOptimizationsIcon,
   kActionRecordReplay,
   kActionShowIntentPicker,
-  kActionZoomNormal,
+  kActionShowZoomBubble,
   kActionSidePanelShowReadAnything,
   kActionOffersAndRewardsForPage,
   kActionShowFileSystemAccess,

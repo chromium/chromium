@@ -21,7 +21,7 @@ namespace {
 constexpr int kDefaultBetweenIconSpacing = 8;
 constexpr int kDefaultIconSize = 16;
 
-static constexpr actions::ActionId kTestPageActionId = kActionZoomNormal;
+static constexpr actions::ActionId kTestPageActionId = kActionShowZoomBubble;
 static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
     {
         kTestPageActionId,

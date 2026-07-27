@@ -25,8 +25,8 @@ views::View* GetZoomView(Browser* browser) {
   auto* provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
   return page_actions::GetIconLabelBubbleViewForTesting(
-      provider->GetPageActionViewInterface(kActionZoomNormal),
-      kActionZoomNormal);
+      provider->GetPageActionViewInterface(kActionShowZoomBubble),
+      kActionShowZoomBubble);
 }
 
 }  // namespace

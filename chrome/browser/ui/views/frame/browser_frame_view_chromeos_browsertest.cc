@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
       app_browser_->tab_strip_model()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  IconLabelBubbleView* zoom_icon = GetPageActionView(kActionZoomNormal);
+  IconLabelBubbleView* zoom_icon = GetPageActionView(kActionShowZoomBubble);
 
   ZoomBubbleCoordinator* zoom_bubble_coordinator =
       ZoomBubbleCoordinator::From(app_browser_);

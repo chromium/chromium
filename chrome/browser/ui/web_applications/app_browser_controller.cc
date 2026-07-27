@@ -435,7 +435,7 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
   if (system_app()) {
     return {
         kActionFind,
-        kActionZoomNormal,
+        kActionShowZoomBubble,
     };
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -444,7 +444,7 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
       kActionFind,
       kActionShowPasswordsBubbleOrPage,
       kActionShowTranslate,
-      kActionZoomNormal,
+      kActionShowZoomBubble,
       kActionShowFileSystemAccess,
       kActionShowCookieControls,
       kActionShowAddressesBubbleOrPage,

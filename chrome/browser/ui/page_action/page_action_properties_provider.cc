@@ -112,7 +112,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         },
     },
     {
-        kActionZoomNormal,
+        kActionShowZoomBubble,
         {
             .histogram_name = "Zoom",
             .type = PageActionIconType::kZoom,

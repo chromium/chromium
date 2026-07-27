@@ -120,8 +120,9 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
     return page_actions::GetIconLabelBubbleViewForTesting(
-        toolbar_button_provider->GetPageActionViewInterface(kActionZoomNormal),
-        kActionZoomNormal);
+        toolbar_button_provider->GetPageActionViewInterface(
+            kActionShowZoomBubble),
+        kActionShowZoomBubble);
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -524,7 +525,7 @@ class LocationBarViewPageActionHideWhileEditingTests
   void SetUpOnMainThread() override {
     // 1. Ensure the Zoom action is globally visible/enabled.
     auto* zoom_action =
-        actions::ActionManager::Get().FindAction(kActionZoomNormal);
+        actions::ActionManager::Get().FindAction(kActionShowZoomBubble);
     ASSERT_TRUE(zoom_action);
     zoom_action->SetVisible(true);
     zoom_action->SetEnabled(true);
@@ -535,7 +536,7 @@ class LocationBarViewPageActionHideWhileEditingTests
     page_actions::PageActionController* controller =
         tab_features->page_action_controller();
     ASSERT_TRUE(controller);
-    controller->Show(kActionZoomNormal);
+    controller->Show(kActionShowZoomBubble);
 
     // 3. Make the Zoom icon visible by actually adjusting page zoom from 100%.
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -548,7 +549,7 @@ class LocationBarViewPageActionHideWhileEditingTests
  protected:
   page_actions::PageActionView* GetZoomPageActionView() {
     return GetLocationBarView()->page_action_container()->GetPageActionView(
-        kActionZoomNormal);
+        kActionShowZoomBubble);
   }
 
   LocationBarView* GetLocationBarView() {

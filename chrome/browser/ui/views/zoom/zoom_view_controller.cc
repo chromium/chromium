@@ -66,14 +66,15 @@ void ZoomViewController::UpdatePageActionIconProperties() {
   auto accessible_text = l10n_util::GetStringFUTF16(
       IDS_TOOLTIP_ZOOM, base::FormatPercent(zoom_controller->GetZoomPercent()));
 
-  page_action_controller_->OverrideTooltip(kActionZoomNormal, accessible_text);
-  page_action_controller_->OverrideAccessibleName(kActionZoomNormal,
+  page_action_controller_->OverrideTooltip(kActionShowZoomBubble,
+                                           accessible_text);
+  page_action_controller_->OverrideAccessibleName(kActionShowZoomBubble,
                                                   accessible_text);
 
   switch (zoom_controller->GetZoomRelativeToDefault()) {
     case ZoomController::ZOOM_BELOW_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
-          kActionZoomNormal,
+          kActionShowZoomBubble,
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                              ? kZoomOutIcon
                                              : kZoomMinusChromeRefreshOldIcon));
@@ -81,7 +82,7 @@ void ZoomViewController::UpdatePageActionIconProperties() {
     case ZoomController::ZOOM_AT_DEFAULT_ZOOM:
     case ZoomController::ZOOM_ABOVE_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
-          kActionZoomNormal,
+          kActionShowZoomBubble,
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                              ? kZoomInIcon
                                              : kZoomPlusChromeRefreshOldIcon));
@@ -99,9 +100,9 @@ void ZoomViewController::UpdatePageActionIconVisibility(
 
   const bool is_at_default_zoom = zoom_controller->IsAtDefaultZoom();
   if (is_at_default_zoom && !is_bubble_visible) {
-    page_action_controller_->Hide(kActionZoomNormal);
+    page_action_controller_->Hide(kActionShowZoomBubble);
   } else {
-    page_action_controller_->Show(kActionZoomNormal);
+    page_action_controller_->Show(kActionShowZoomBubble);
   }
 }
 
@@ -131,9 +132,9 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
 
 bool ZoomViewController::IsBubbleVisible() const {
   auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionZoomNormal, tab_interface_->GetBrowserWindowInterface()
-                             ->GetActions()
-                             ->root_action_item());
+      kActionShowZoomBubble, tab_interface_->GetBrowserWindowInterface()
+                                 ->GetActions()
+                                 ->root_action_item());
   return action_item->GetIsShowingBubble();
 }
 
