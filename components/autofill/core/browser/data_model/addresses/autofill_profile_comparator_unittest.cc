@@ -268,14 +268,17 @@ TEST_F(AutofillProfileComparatorTest, Compare) {
 
   // Checks that characters such as 'œ' respect the status quo established by
   // NormalizeForComparison.
-  EXPECT_TRUE(AutofillProfileComparator::Compare(u"œil", u"oeil"));
+  EXPECT_TRUE(AutofillProfileComparator::Compare(
+      u"œil", u"oeil", normalization::WhitespaceSpec::kDiscard));
   EXPECT_TRUE(AutofillProfileComparator::Compare(
       u"Straße", u"Strasse", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that a substring of the string is not considered equal.
-  EXPECT_FALSE(AutofillProfileComparator::Compare(u"A", u"Anna"));
+  EXPECT_FALSE(AutofillProfileComparator::Compare(
+      u"A", u"Anna", normalization::WhitespaceSpec::kDiscard));
 
-  EXPECT_FALSE(AutofillProfileComparator::Compare(u"Anna", u"A"));
+  EXPECT_FALSE(AutofillProfileComparator::Compare(
+      u"Anna", u"A", normalization::WhitespaceSpec::kDiscard));
 
   // Checks that Compare behaves like NormalizeForComparison. Also, checks that
   // diacritics are removed.

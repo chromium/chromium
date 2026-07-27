@@ -63,8 +63,7 @@ class AutofillProfileComparator {
   static bool Compare(
       std::u16string_view text1,
       std::u16string_view text2,
-      normalization::WhitespaceSpec whitespace_spec =
-          normalization::WhitespaceSpec::kDiscard,
+      normalization::WhitespaceSpec whitespace_spec,
       std::optional<FieldType> type = std::nullopt,
       AddressCountryCode country_code_1 = AddressCountryCode(""),
       AddressCountryCode country_code_2 = AddressCountryCode(""));

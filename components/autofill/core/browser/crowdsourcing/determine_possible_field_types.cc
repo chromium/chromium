@@ -287,8 +287,8 @@ void AddPossibleAutofillAiTypesForUnmaskedValue(
     FieldType field_type,
     PossibleTypes& pt) {
   // Test if `value_in_field` and `value_on_file` match.
-  bool full_match =
-      AutofillProfileComparator::Compare(value_in_field, value_on_file);
+  bool full_match = AutofillProfileComparator::Compare(
+      value_in_field, value_on_file, normalization::WhitespaceSpec::kDiscard);
   if (full_match) {
     pt.types.insert(field_type);
     if (IsAffixFormatStringEnabledForType(field_type)) {
