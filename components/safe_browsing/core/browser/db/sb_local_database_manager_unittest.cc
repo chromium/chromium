@@ -33,6 +33,7 @@
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -2207,14 +2208,15 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, NotificationOnUpdate) {
   run_loop.Run();
 }
 
-TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
+TEST_P(SBLocalDatabaseManagerTest_V4V5, FlagOneUrlAsPhishing) {
   SetupFakeManager();
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_phishing", "https://example.com/1/");
   PopulateArtificialDatabase();
 
   const GURL url_bad("https://example.com/1/");
-  TestClient client_bad(SB_THREAT_TYPE_SAFE, url_bad);
+  TestClient client_bad(SB_THREAT_TYPE_URL_PHISHING, url_bad);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_bad, usual_threat_types_, &client_bad,
       CheckBrowseUrlType::kHashDatabase));
@@ -2230,23 +2232,24 @@ TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsPhishing) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-    EXPECT_FALSE(result);
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.on_check_browse_url_result_called());
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
-TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsMalware) {
+TEST_P(SBLocalDatabaseManagerTest_V4V5, FlagOneUrlAsMalware) {
   SetupFakeManager();
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_malware", "https://example.com/1/");
   PopulateArtificialDatabase();
 
   const GURL url_bad("https://example.com/1/");
-  TestClient client_bad(SB_THREAT_TYPE_SAFE, url_bad);
+  TestClient client_bad(SB_THREAT_TYPE_URL_MALWARE, url_bad);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_bad, usual_threat_types_, &client_bad,
       CheckBrowseUrlType::kHashDatabase));
@@ -2262,23 +2265,24 @@ TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsMalware) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-    EXPECT_FALSE(result);
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.on_check_browse_url_result_called());
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
-TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsUWS) {
+TEST_P(SBLocalDatabaseManagerTest_V4V5, FlagOneUrlAsUWS) {
   SetupFakeManager();
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_uws", "https://example.com/1/");
   PopulateArtificialDatabase();
 
   const GURL url_bad("https://example.com/1/");
-  TestClient client_bad(SB_THREAT_TYPE_SAFE, url_bad);
+  TestClient client_bad(SB_THREAT_TYPE_URL_UNWANTED, url_bad);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_bad, usual_threat_types_, &client_bad,
       CheckBrowseUrlType::kHashDatabase));
@@ -2294,37 +2298,40 @@ TEST_F(SBLocalDatabaseManagerTest, FlagOneUrlAsUWS) {
       url_good, usual_threat_types_, &client,
       CheckBrowseUrlType::kHashDatabase);
 
-    EXPECT_FALSE(result);
-    EXPECT_FALSE(client.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client.on_check_browse_url_result_called());
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client.on_check_browse_url_result_called());
 
   WaitForTasksOnTaskRunner();
   StopLocalDatabaseManager();
 }
 
-TEST_F(SBLocalDatabaseManagerTest, FlagMultipleUrls) {
+TEST_P(SBLocalDatabaseManagerTest_V4V5, FlagMultipleUrls) {
   SetupFakeManager();
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_phishing", "https://example.com/1/");
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_malware", "https://2.example.com");
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "mark_as_uws", "https://example.test.com");
   PopulateArtificialDatabase();
 
   const GURL url_phishing("https://example.com/1/");
-  TestClient client_phishing(SB_THREAT_TYPE_SAFE, url_phishing);
+  const GURL url_malware("https://2.example.com");
+  const GURL url_uws("https://example.test.com");
+
+  TestClient client_phishing(SB_THREAT_TYPE_URL_PHISHING, url_phishing);
+  TestClient client_malware(SB_THREAT_TYPE_URL_MALWARE, url_malware);
+  TestClient client_uws(SB_THREAT_TYPE_URL_UNWANTED, url_uws);
+
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_phishing, usual_threat_types_, &client_phishing,
       CheckBrowseUrlType::kHashDatabase));
-  const GURL url_malware("https://2.example.com");
-  TestClient client_malware(SB_THREAT_TYPE_SAFE, url_malware);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_malware, usual_threat_types_, &client_malware,
       CheckBrowseUrlType::kHashDatabase));
-  const GURL url_uws("https://example.test.com");
-  TestClient client_uws(SB_THREAT_TYPE_SAFE, url_uws);
   EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
       url_uws, usual_threat_types_, &client_uws,
       CheckBrowseUrlType::kHashDatabase));
@@ -2340,10 +2347,122 @@ TEST_F(SBLocalDatabaseManagerTest, FlagMultipleUrls) {
       url_good, usual_threat_types_, &client_good,
       CheckBrowseUrlType::kHashDatabase);
 
-    EXPECT_FALSE(result);
-    EXPECT_FALSE(client_good.on_check_browse_url_result_called());
-    WaitForTasksOnTaskRunner();
-    EXPECT_TRUE(client_good.on_check_browse_url_result_called());
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(client_good.on_check_browse_url_result_called());
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client_good.on_check_browse_url_result_called());
+
+  StopLocalDatabaseManager();
+}
+
+namespace {
+
+class MultipleArtificialMatchesTestClient
+    : public SafeBrowsingDatabaseManager::Client {
+ public:
+  explicit MultipleArtificialMatchesTestClient(const GURL& url)
+      : SafeBrowsingDatabaseManager::Client(GetPassKeyForTesting()),
+        expected_url_(url) {}
+
+  void OnCheckBrowseUrlResult(const GURL& url,
+                              SBThreatType threat_type) override {
+    EXPECT_EQ(expected_url_, url);
+    EXPECT_TRUE(threat_type == SBThreatType::SB_THREAT_TYPE_URL_MALWARE ||
+                threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+    called_ = true;
+  }
+
+  bool called() const { return called_; }
+
+ private:
+  GURL expected_url_;
+  bool called_ = false;
+};
+
+}  // namespace
+
+TEST_F(SBLocalDatabaseManagerTest_V5, FlagOneUrlWithMultipleFlags) {
+  SetupFakeManager();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "mark_as_phishing", "https://example.com/1/");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "mark_as_malware", "https://example.com/1/");
+  PopulateArtificialDatabase();
+
+  const GURL url("https://example.com/1/");
+  MultipleArtificialMatchesTestClient client(url);
+  EXPECT_FALSE(sb_local_database_manager_->CheckBrowseUrl(
+      url, usual_threat_types_, &client, CheckBrowseUrlType::kHashDatabase));
+  EXPECT_FALSE(client.called());
+
+  WaitForTasksOnTaskRunner();
+
+  EXPECT_TRUE(client.called());
+  EXPECT_FALSE(FakeSBLocalDatabaseManager::PerformFullHashCheckCalled(
+      sb_local_database_manager_));
+
+  StopLocalDatabaseManager();
+}
+
+TEST_F(SBLocalDatabaseManagerTest_V5,
+       FlagOneUrlAsPasswordProtectionAllowlisted) {
+  SetupFakeManager();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kMarkAsPasswordProtectionAllowlisted, "https://example.com/1/");
+
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  ReplaceSBDatabase(store_and_hash_prefixes, /*stores_available=*/true);
+  PopulateArtificialDatabase();
+
+  const GURL url_allowlisted("https://example.com/1/");
+  TestAllowlistClient client_allowlisted(
+      /*match_expected=*/true, SB_THREAT_TYPE_CSD_ALLOWLIST);
+
+  EXPECT_EQ(AsyncMatch::ASYNC, sb_local_database_manager_->CheckCsdAllowlistUrl(
+                                   url_allowlisted, &client_allowlisted));
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client_allowlisted.callback_called());
+
+  const GURL url_not_allowlisted("https://example.com/not_allowlisted/");
+  TestAllowlistClient client_not_allowlisted(
+      /*match_expected=*/false, SB_THREAT_TYPE_CSD_ALLOWLIST);
+
+  EXPECT_EQ(AsyncMatch::ASYNC,
+            sb_local_database_manager_->CheckCsdAllowlistUrl(
+                url_not_allowlisted, &client_not_allowlisted));
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(client_not_allowlisted.callback_called());
+
+  StopLocalDatabaseManager();
+}
+
+TEST_F(SBLocalDatabaseManagerTest_V5, FlagOneUrlAsHighConfidenceAllowlisted) {
+  SetupFakeManager();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kMarkAsHighConfidenceAllowlisted, "https://example.com/hc/");
+
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  ReplaceSBDatabase(store_and_hash_prefixes, /*stores_available=*/true);
+  PopulateArtificialDatabase();
+
+  const GURL url_allowlisted("https://example.com/hc/");
+  CheckUrlForHighConfidenceAllowlistFuture future_allowlisted;
+  sb_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_allowlisted, future_allowlisted.GetCallback());
+  WaitForTasksOnTaskRunner();
+  WaitForTasksOnTaskRunner();
+  EXPECT_TRUE(future_allowlisted.Get<0>());
+
+  const GURL url_not_allowlisted("https://example.com/not_hc/");
+  CheckUrlForHighConfidenceAllowlistFuture future_not_allowlisted;
+  sb_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_not_allowlisted, future_not_allowlisted.GetCallback());
+  WaitForTasksOnTaskRunner();
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(future_not_allowlisted.Get<0>());
 
   StopLocalDatabaseManager();
 }

@@ -48,11 +48,6 @@ namespace safe_browsing {
 
 namespace {
 
-struct CommandLineSwitchAndThreatType {
-  const char* cmdline_switch;
-  ThreatType threat_type;
-};
-
 // The expiration time of the full hash stored in the artificial database.
 const int64_t kFullHashExpiryTimeInMinutes = 60;
 
@@ -128,16 +123,23 @@ ListInfos GetListInfos() {
   // for all Canary users.
 }
 
-base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
-  static constexpr CommandLineSwitchAndThreatType
-      kCommandLineSwitchAndThreatType[] = {
-          {switches::kMarkAsPasswordProtectionAllowlisted, CSD_ALLOWLIST},
+struct CommandLineSwitchAndListIdentifier {
+  const char* cmdline_switch;
+  ListIdentifier (*get_list_id)();
+};
+
+base::span<const CommandLineSwitchAndListIdentifier>
+GetSwitchAndListIdentifiers() {
+  static constexpr CommandLineSwitchAndListIdentifier
+      kCommandLineSwitchAndListIdentifiers[] = {
+          {switches::kMarkAsPasswordProtectionAllowlisted,
+           &GetUrlCsdAllowlistId},
           {switches::kMarkAsHighConfidenceAllowlisted,
-           HIGH_CONFIDENCE_ALLOWLIST},
-          {switches::kMarkAsPhishing, SOCIAL_ENGINEERING},
-          {switches::kMarkAsMalware, MALWARE_THREAT},
-          {switches::kMarkAsUws, UNWANTED_SOFTWARE}};
-  return kCommandLineSwitchAndThreatType;
+           &GetUrlHighConfidenceAllowlistId},
+          {switches::kMarkAsPhishing, &GetUrlSocEngId},
+          {switches::kMarkAsMalware, &GetUrlMalwareId},
+          {switches::kMarkAsUws, &GetUrlUwsId}};
+  return kCommandLineSwitchAndListIdentifiers;
 }
 
 // Returns the severity information about a given SafeBrowsing list. The lowest
@@ -758,6 +760,7 @@ void SBLocalDatabaseManager::GetArtificialPrefixMatches(
       if (artificial_full_hash == full_hash &&
           check->stores_to_check.contains(
               artificial_store_and_hash_prefix.list_id)) {
+        // If there are multiple artificial threats, we arbitrarily pick one.
         (check->artificial_full_hash_to_store_and_hash_prefixes)[full_hash] = {
             artificial_store_and_hash_prefix};
       }
@@ -894,6 +897,13 @@ void SBLocalDatabaseManager::HandleAllowlistCheckContinuation(
         }
       }
     }
+    // Artificial allowlist entries are always full hashes (32 bytes). If an
+    // artificial entry was matched, then it's a full match.
+    if (!found && base::FeatureList::IsEnabled(kLocalListsUseSBv5) &&
+        !check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
+      local_match = AsyncMatch::MATCH;
+      found = true;
+    }
 
     if (!found) {
       if (!allow_async_full_hash_check) {
@@ -972,14 +982,14 @@ void SBLocalDatabaseManager::HandleCheckContinuation(
 }
 
 void SBLocalDatabaseManager::PopulateArtificialDatabase() {
-  for (const auto& switch_and_threat_type : GetSwitchAndThreatTypes()) {
+  for (const auto& switch_and_list_identifier : GetSwitchAndListIdentifiers()) {
     const std::string raw_artificial_urls =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switch_and_threat_type.cmdline_switch);
+            switch_and_list_identifier.cmdline_switch);
     base::StringTokenizer tokenizer(raw_artificial_urls, ",");
     while (tokenizer.GetNext()) {
-      ListIdentifier artificial_list_id(GetCurrentPlatformType(), URL,
-                                        switch_and_threat_type.threat_type);
+      ListIdentifier artificial_list_id =
+          switch_and_list_identifier.get_list_id();
       FullHashStr full_hash =
           SBProtocolManagerUtil::GetFullHash(GURL(tokenizer.token_piece()));
       artificially_marked_store_and_hash_prefixes_.emplace_back(
@@ -1000,21 +1010,36 @@ void SBLocalDatabaseManager::ScheduleFullHashCheck(
   // If the full hash matches one from the artificial list, don't send the
   // request to the server.
   if (!check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
-    std::vector<FullHashInfo> full_hash_infos;
-    for (const auto& entry :
-         check->artificial_full_hash_to_store_and_hash_prefixes) {
-      for (const auto& store_and_prefix : entry.second) {
-        ListIdentifier list_id = store_and_prefix.list_id;
-        base::Time next =
-            base::Time::Now() + base::Minutes(kFullHashExpiryTimeInMinutes);
-        full_hash_infos.emplace_back(entry.first, list_id, next);
+    if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+      // Extract the single artificial match stored for this check.
+      ListIdentifier list_id =
+          check->artificial_full_hash_to_store_and_hash_prefixes.begin()
+              ->second[0]
+              .list_id;
+      SBThreatType threat_type = GetSBThreatTypeForList(list_id);
+      ui_task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV5,
+                         weak_factory_.GetWeakPtr(), std::move(check),
+                         threat_type, ThreatMetadata()));
+    } else {
+      std::vector<FullHashInfo> full_hash_infos;
+      for (const auto& entry :
+           check->artificial_full_hash_to_store_and_hash_prefixes) {
+        for (const auto& store_and_prefix : entry.second) {
+          ListIdentifier list_id = store_and_prefix.list_id;
+          base::Time next =
+              base::Time::Now() + base::Minutes(kFullHashExpiryTimeInMinutes);
+          full_hash_infos.emplace_back(entry.first, list_id, next);
+        }
       }
-    }
 
-    ui_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV4,
-                                  weak_factory_.GetWeakPtr(), std::move(check),
-                                  full_hash_infos));
+      ui_task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV4,
+                         weak_factory_.GetWeakPtr(), std::move(check),
+                         full_hash_infos));
+    }
   } else {
     // Post on the UI thread to enforce async behavior.
     ui_task_runner()->PostTask(
