@@ -24,7 +24,7 @@ void StartWebRequestProxyingWebTransport(
     const url::Origin& initiator_origin,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
-    int64_t request_id,
+    uint64_t request_id,
     WebRequestAPI::ProxySet& proxies,
     content::ContentBrowserClient::WillCreateWebTransportCallback callback);
 

@@ -390,13 +390,13 @@ void WebRequestAPI::ProxySet::OnDNRExtensionUnloaded(
 WebRequestAPI::RequestIDGenerator::RequestIDGenerator() = default;
 WebRequestAPI::RequestIDGenerator::~RequestIDGenerator() = default;
 
-int64_t WebRequestAPI::RequestIDGenerator::Generate(
+uint64_t WebRequestAPI::RequestIDGenerator::Generate(
     int32_t routing_id,
     int32_t request_id_from_client) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = saved_id_map_.find({routing_id, request_id_from_client});
   if (it != saved_id_map_.end()) {
-    int64_t id = it->second;
+    uint64_t id = it->second;
     saved_id_map_.erase(it);
     return id;
   }

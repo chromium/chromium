@@ -169,7 +169,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     // same (`routing_id`, `request_id_from_client`) pair, returns the saved ID
     // and removes the mapping. Otherwise, generates and returns a new unique
     // ID.
-    int64_t Generate(int32_t routing_id, int32_t request_id_from_client);
+    uint64_t Generate(int32_t routing_id, int32_t request_id_from_client);
 
     // Maps a WebRequest ID to a (`routing_id`, `request_id_from_client`) pair
     // when a request is restarted. Callers must subsequently call `Generate()`
@@ -184,7 +184,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     int32_t GenerateNetworkRequestId();
 
    private:
-    int64_t id_ = 0;
+    uint64_t id_ = 0;
     int32_t network_request_id_ = 0;
     std::map<std::pair<int32_t, int32_t>, uint64_t> saved_id_map_;
   };
