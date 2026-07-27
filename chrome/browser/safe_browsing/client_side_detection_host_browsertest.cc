@@ -1218,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
 
 class ClientSideDetectionHostClipboardTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<std::string_view, bool>> {
+      public testing::WithParamInterface<std::string_view> {
  public:
   ClientSideDetectionHostClipboardTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -1227,8 +1227,7 @@ class ClientSideDetectionHostClipboardTest
          {kCsdClipboardCopyApiSampleRate.name, "1.0"},
          {kCsdClipboardCopyApiMinLength.name, "30"},
          {kCsdClipboardCopyApiMaxLength.name, "50"},
-         {kCSDClipboardCopyApiProcessPayload.name,
-          ShouldProcessClipboardPayload() ? "true" : "false"}});
+         {kCSDClipboardCopyApiProcessPayload.name, "true"}});
   }
 
   ClientSideDetectionHostClipboardTest(
@@ -1286,14 +1285,10 @@ class ClientSideDetectionHostClipboardTest
     std::move(clipboard_copy_done).Run();
   }
 
-  bool ShouldProcessClipboardPayload() { return testing::get<1>(GetParam()); }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::string_view GetClipboardCopyScript() {
-    return testing::get<0>(GetParam());
-  }
+  std::string_view GetClipboardCopyScript() { return GetParam(); }
 
   std::string flatbuffer_model_str_;
 };
@@ -1301,11 +1296,9 @@ class ClientSideDetectionHostClipboardTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClientSideDetectionHostClipboardTest,
-    ::testing::Combine(
-        ::testing::Values(
-            ClientSideDetectionHostClipboardTest::kClipboardApiScriptTemplate,
-            ClientSideDetectionHostClipboardTest::kDocumentExecScriptTemplate),
-        testing::Bool()));
+    ::testing::Values(
+        ClientSideDetectionHostClipboardTest::kClipboardApiScriptTemplate,
+        ClientSideDetectionHostClipboardTest::kDocumentExecScriptTemplate));
 
 class ClipboardObserverWaiter : public content::WebContentsObserver {
  public:
@@ -1382,7 +1375,7 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.ClipboardCopyApi.PayloadLength", 36, 2);
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 2);
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
@@ -1467,7 +1460,6 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
 
   EXPECT_EQ(fake_csd_service.saved_request().http_response_code(), 200);
 
-  if (ShouldProcessClipboardPayload()) {
     EXPECT_TRUE(
         fake_csd_service.saved_request().has_clipboard_extracted_data());
     const ClipboardExtractedData& clipboardExtractedData =
@@ -1477,43 +1469,33 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
     EXPECT_TRUE(clipboardExtractedData.is_first_token_suspicious());
     EXPECT_TRUE(clipboardExtractedData.is_last_token_suspicious());
     histogram_tester.ExpectTotalCount(
-        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 1);
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 2);
     histogram_tester.ExpectUniqueSample(
-        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 3, 1);
+        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 3, 2);
     histogram_tester.ExpectUniqueSample(
         "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
         "SuspiciousTokenCount",
-        2, 1);
+        2, 2);
     histogram_tester.ExpectTotalCount(
         "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
         "SuspiciousTokenCount",
-        1);
-  } else {
-    EXPECT_FALSE(
-        fake_csd_service.saved_request().has_clipboard_extracted_data());
+        2);
+
+    // Expect an interstitial to be shown.
+    EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+
+    ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+    std::move(fake_csd_service.saved_callback())
+        .Run(initial_url, true, net::HTTP_OK, std::nullopt);
+
     histogram_tester.ExpectTotalCount(
-        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount", 0);
+        "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 1);
     histogram_tester.ExpectTotalCount(
-        "SBClientPhishing.ClipboardCopyApi.PayloadExtraction."
-        "SuspiciousTokenCount",
-        0);
-  }
-
-  // Expect an interstitial to be shown.
-  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
-
-  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
-  std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 1);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 1);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 2);
+        "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 1);
+    histogram_tester.ExpectTotalCount(
+        "SBClientPhishing.ClipboardCopyApi.PayloadLength", 2);
 }
 
 IN_PROC_BROWSER_TEST_P(

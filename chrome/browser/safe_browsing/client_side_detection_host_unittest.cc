@@ -2278,27 +2278,15 @@ TEST_F(ClientSideDetectionHostTest,
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
-  // Check that the clipboard histograms haven't been recorded yet.
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+
+  // The feature hasn't been triggered, so nothing will be recorded.
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 0);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 0);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
-  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
-  WaitAndCheckPreClassificationChecks();
-
-  // The feature to send CSP pings is disabled, so nothing will be classified
-  // (or included in the HC allowlist).
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 1);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 1);
-  histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
-      PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -2311,7 +2299,7 @@ TEST_F(ClientSideDetectionHostTest,
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -2325,7 +2313,7 @@ TEST_F(ClientSideDetectionHostTest,
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
-  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"curl example.com");
   WaitAndCheckPreClassificationChecks();
 
   // The feature to send CSP pings is enabled and the host is not included in
@@ -2365,7 +2353,7 @@ TEST_F(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
-  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"curl example.com");
   WaitAndCheckPreClassificationChecks();
 
   // The feature to send CSP pings is enabled, but the host is included in the
@@ -2381,12 +2369,14 @@ TEST_F(
 
 TEST_F(ClientSideDetectionHostTest,
        ClipboardCopyApiCallDoesNotProceedWithClassificationWithZeroSampleRate) {
-  SetFeatures({kClientSideDetectionClipboardCopyApi}, {});
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi,
+      {{kCsdClipboardCopyApiSampleRate.name, "0.0"}});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -2400,7 +2390,7 @@ TEST_F(ClientSideDetectionHostTest,
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
-  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"curl example.com");
   WaitAndCheckPreClassificationChecks();
 
   // The feature to send CSP pings is enabled, but the sampling rate is set to
@@ -2449,7 +2439,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -5413,14 +5403,6 @@ TEST_F(ClientSideDetectionHostClipboardDataTest, SingleSusCommandAtBeginning) {
   EXPECT_FALSE(data.is_overall_suspicious());
 }
 
-TEST_F(ClientSideDetectionHostClipboardDataTest, EchoAndPipe) {
-  ClipboardExtractedData data = ExtractFromPayload(u"echo hello | bash");
-  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("bash"));
-  EXPECT_FALSE(data.is_first_token_suspicious());
-  EXPECT_TRUE(data.is_last_token_suspicious());
-  EXPECT_FALSE(data.is_overall_suspicious());
-}
-
 TEST_F(ClientSideDetectionHostClipboardDataTest, SingleSusCommandAtEnd) {
   ClipboardExtractedData data = ExtractFromPayload(u"some text with wget");
   EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("wget"));
@@ -5451,7 +5433,9 @@ TEST_F(ClientSideDetectionHostClipboardDataTest, MissingRunner) {
 TEST_F(ClientSideDetectionHostClipboardDataTest, MissingURL) {
   // Loader + Runner, but no URL.
   ClipboardExtractedData data = ExtractFromPayload(u"echo hello | bash");
-  EXPECT_EQ(1, data.suspicious_tokens_size());
+  EXPECT_THAT(data.suspicious_tokens(), ::testing::ElementsAre("echo", "bash"));
+  EXPECT_TRUE(data.is_first_token_suspicious());
+  EXPECT_TRUE(data.is_last_token_suspicious());
   EXPECT_FALSE(data.is_overall_suspicious());
 }
 
@@ -5611,7 +5595,7 @@ TEST_F(ClientSideDetectionHostPriorityTest, SameTierTriggerBlocked) {
   std::u16string copied_text =
       u"This string is definitely long enough to pass the length checks for "
       u"the clipboard copy API trigger. We need this string to be quite long "
-      u"indeed to pass the minimum threshold.";
+      u"indeed to pass the minimum threshold. ssh";
   csd_host_->OnTextCopiedToClipboard(web_contents()->GetPrimaryMainFrame(),
                                      copied_text);
 
@@ -5650,7 +5634,7 @@ TEST_F(ClientSideDetectionHostPriorityTest, BypassTiers) {
   std::u16string copied_text =
       u"This string is definitely long enough to pass the length checks for "
       u"the clipboard copy API trigger. We need this string to be quite long "
-      u"indeed to pass the minimum threshold.";
+      u"indeed to pass the minimum threshold. ssh";
   csd_host_->OnTextCopiedToClipboard(web_contents()->GetPrimaryMainFrame(),
                                      copied_text);
 

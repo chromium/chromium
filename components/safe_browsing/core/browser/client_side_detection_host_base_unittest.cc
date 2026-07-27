@@ -91,7 +91,9 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   ClipboardExtractedData ExtractClipboardData(
       const std::u16string& payload) override {
     extracted_payload_ = payload;
-    return ClipboardExtractedData();
+    ClipboardExtractedData extracted_data;
+    extracted_data.add_suspicious_tokens("token_value_1");
+    return extracted_data;
   }
 
   std::u16string extracted_payload_;
