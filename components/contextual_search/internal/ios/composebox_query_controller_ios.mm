@@ -41,6 +41,16 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
       base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
 
+  if (std::optional<lens::ImageData> image_data_proto =
+          MaybeCreateC2paBypassImageData(image_data, image.size.width,
+                                         image.size.height)) {
+    CreateFileUploadRequestProtoWithImageDataAndContinue(
+        request_id, CreateClientContext(), ref_counted_logs,
+        std::move(callback), page_url, page_title, file_name, image_type,
+        std::move(*image_data_proto));
+    return;
+  }
+
   // Downscaling and encoding is done on a background thread.
   create_request_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
