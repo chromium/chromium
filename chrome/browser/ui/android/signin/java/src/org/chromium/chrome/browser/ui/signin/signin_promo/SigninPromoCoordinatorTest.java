@@ -81,6 +81,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -170,6 +171,7 @@ public class SigninPromoCoordinatorTest {
     private @Mock ModalDialogManager mModalDialogManager;
     private @Mock SnackbarManager mSnackbarManager;
     private @Mock DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private @Mock ExternalAuthUtils mExternalAuthUtilsMock;
     private @Mock Runnable mOnPromoStateChange;
     private @Mock Runnable mOnOpenSettings;
 
@@ -188,6 +190,9 @@ public class SigninPromoCoordinatorTest {
                                 any(), any(), any(), any(), any(), any(), any(), any(), any(),
                                 anyInt()))
                 .thenReturn(mCoordinator);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+        lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        lenient().when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(false);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(RenderTestParams.class)

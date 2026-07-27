@@ -82,6 +82,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -139,6 +140,7 @@ public class NewTabPageSigninPromoTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private SetupListManager mSetupListManager;
+    @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
     private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
             new SigninTestUtil.CustomDeviceLockActivityLauncher();
@@ -150,6 +152,12 @@ public class NewTabPageSigninPromoTest {
         Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
         SetupListManager.setInstanceForTesting(mSetupListManager);
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
+
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+        Mockito.lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        Mockito.lenient()
+                .when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(Mockito.any()))
+                .thenReturn(false);
     }
 
     @After
