@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -83,6 +84,8 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
+
+  base::WeakPtrFactory<ArcAppLauncher> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_LAUNCHER_H_
