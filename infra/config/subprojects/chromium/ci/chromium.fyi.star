@@ -2016,7 +2016,7 @@ fyi_mac_builder(
             "all",
         ],
         mixins = [
-            "mac_26_arm64",
+            "mac_27_arm64",
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(

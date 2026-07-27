@@ -1467,6 +1467,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "mac_27_arm64",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",
+            "os": "Mac-27",
+        },
+    ),
+)
+
+targets.mixin(
     name = "mac_26_arm64",
     swarming = targets.swarming(
         dimensions = {
