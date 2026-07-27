@@ -476,4 +476,9 @@ void PerformanceClassifier::OnDeviceAndPerformanceInfo(
   performance_class_callbacks_.Notify();
 }
 
+uint64_t PerformanceClassifier::GetDeviceVramMb() const {
+  return local_state_->GetUint64(
+      model_execution::prefs::localstate::kOnDeviceVramMb);
+}
+
 }  // namespace optimization_guide

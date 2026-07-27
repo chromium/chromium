@@ -419,6 +419,12 @@ OnDeviceModelComponentStateManager::GetBrokerAssets() const {
   return assets;
 }
 
+base::SafeRef<PerformanceClassifier>
+OnDeviceModelComponentStateManager::performance_classifier() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return performance_classifier_;
+}
+
 void OnDeviceModelComponentStateManager::SetReady(
     const base::Version& version,
     const base::FilePath& install_dir,

@@ -115,6 +115,9 @@ struct ChromeMLModelDescriptor {
   bool enable_speculative_decoding;
 
   ml::ModelPerformanceHint performance_hint;
+
+  // The estimated device VRAM capacity in MB (0 if unknown/unqueried).
+  uint64_t vram_mb = 0;
 };
 
 // Describes an adaptation for a model.

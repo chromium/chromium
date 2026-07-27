@@ -813,6 +813,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .enable_speculative_decoding = base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelSpeculativeDecoding),
       .performance_hint = params->performance_hint,
+      .vram_mb = params->vram_mb,
   };
 
   // `SessionCreateModel` may take a long time to load the model. Deactivate

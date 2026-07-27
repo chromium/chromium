@@ -411,6 +411,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
   std::vector<mojom::BrokerAssetInfoPtr> GetBrokerAssets() const;
 
+  base::SafeRef<PerformanceClassifier> performance_classifier() const;
+
  private:
   // Should be called whenever the device performance class changes.
   void OnPerformanceClassAvailable();

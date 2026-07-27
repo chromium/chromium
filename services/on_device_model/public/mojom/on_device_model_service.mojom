@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module on_device_model.mojom;
 
@@ -80,6 +80,9 @@ struct LoadModelParams {
   // Chooses the performance characteristics of the model loaded. If only a
   // single model is available, this field will do nothing.
   ModelPerformanceHint performance_hint = kHighestQuality;
+
+  // Estimated device VRAM capacity in MB (0 if unknown).
+  [MinVersion=4] uint64 vram_mb = 0;
 };
 
 struct TextSafetyModelParams {

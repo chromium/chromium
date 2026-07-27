@@ -273,6 +273,9 @@ class OnDeviceModelServiceController final {
   AdaptationMetadataMap adaptation_metadata_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
 
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
+
   std::optional<BaseModelController> base_model_controller_;
   OnDeviceModelStatus base_model_status_ =
       OnDeviceModelStatus::kNotReadyForUnknownReason;

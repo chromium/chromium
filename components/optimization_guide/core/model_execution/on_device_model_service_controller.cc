@@ -165,7 +165,8 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
       usage_tracker_(usage_tracker),
       model_broker_impl_(model_broker_impl),
       access_controller_(std::move(access_controller)),
-      safety_client_(service_client.GetWeakPtr()) {
+      safety_client_(service_client.GetWeakPtr()),
+      on_device_component_state_manager_(on_device_component_state_manager) {
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(), nullptr);
   service_client_->set_on_disconnect_fn(base::BindRepeating(
       &OnDeviceModelServiceController::OnServiceDisconnected,
@@ -545,6 +546,11 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   params->assets = std::move(assets);
   params->max_tokens = kOnDeviceModelMaxTokens;
   params->adaptation_ranks = supported_adaptation_ranks_;
+  if (controller_->on_device_component_state_manager_) {
+    params->vram_mb = controller_->on_device_component_state_manager_
+                          ->performance_classifier()
+                          ->GetDeviceVramMb();
+  }
 
   proto::OnDeviceModelPerformanceHint hint =
       model_metadata_->performance_hint();

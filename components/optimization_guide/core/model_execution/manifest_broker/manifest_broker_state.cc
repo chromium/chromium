@@ -204,7 +204,7 @@ void ManifestBrokerState::OnManifestUpdated() {
   // for a manifest.
   auto factory = std::make_unique<ManifestSolutionFactory>(
       *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
-      service_client_, access_controller_,
+      service_client_, access_controller_, performance_classifier_,
       base::BindOnce(&ManifestBrokerState::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(

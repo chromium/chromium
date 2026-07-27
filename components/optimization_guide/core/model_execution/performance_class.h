@@ -114,6 +114,9 @@ class PerformanceClassifier final {
 
   std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
 
+  // Returns the device VRAM in MB saved in local state.
+  uint64_t GetDeviceVramMb() const;
+
  private:
   // Called when performance class has finished evaluating.
   void OnDeviceAndPerformanceInfo(

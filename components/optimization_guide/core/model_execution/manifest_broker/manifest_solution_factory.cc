@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -273,12 +274,14 @@ ManifestSolutionFactory::ManifestSolutionFactory(
     UsageTracker& usage_tracker,
     on_device_model::ServiceClient& service_client,
     OnDeviceModelAccessController& access_controller,
+    PerformanceClassifier& performance_classifier,
     base::OnceClosure on_init_complete,
     base::RepeatingClosure on_solutions_updated)
     : broker_impl_(broker_impl),
       service_client_(service_client),
       usage_tracker_(usage_tracker),
       access_controller_(access_controller),
+      performance_classifier_(performance_classifier),
       manifest_(std::move(manifest)),
       assets_(MakeAssetsMap(manifest_.GetAssets())),
       base_models_(MakeBaseModelsMap(manifest_.GetRecipes())),
@@ -644,6 +647,8 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
             }
             params->performance_hint =
                 ConvertPerformanceHint(recipe.performance_hint());
+            params->vram_mb =
+                factory->performance_classifier_->GetDeviceVramMb();
             for (int32_t rank : recipe.supported_adaptation_ranks()) {
               params->adaptation_ranks.push_back(rank);
             }
