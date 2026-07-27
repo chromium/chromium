@@ -736,12 +736,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                               CaretShape caret_shape) const override;
 
   // Returns the intersection of all overflow clips which apply.
-  virtual PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
-  virtual PhysicalRect OverflowClipRectForScrollNode(
-      const PhysicalOffset& location) const;
-  PhysicalRect ClipRect(const PhysicalOffset& location) const;
+  PhysicalRect OverflowClipRect() const {
+    NOT_DESTROYED();
+    return OverflowClipRect(kIgnoreOverlayScrollbarSize);
+  }
+  virtual PhysicalRect OverflowClipRect(OverlayScrollbarClipBehavior) const;
+  virtual PhysicalRect OverflowClipRectForScrollNode() const;
+  PhysicalRect CSSClipRect() const;
 
   // The outsets from this box's border-box that the element's content should be
   // clipped to, including overflow-clip-margin.
@@ -749,7 +750,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Returns the combination of overflow clip, contain: paint clip and CSS clip
   // for this object.
-  PhysicalRect ClippingRect(const PhysicalOffset& location) const;
+  PhysicalRect ClippingRect() const;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const override;

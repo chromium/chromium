@@ -2079,7 +2079,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 320, 105),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(20, 20, 120, 105),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
 }
 
@@ -2105,7 +2105,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 90, 320),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(20, 20, 105, 120),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
 }
 
@@ -2131,7 +2131,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 320, 320),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(20, 20, 105, 105),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
 }
 
@@ -2157,7 +2157,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 120, 120),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(20, 20, 120, 120),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(), scroll->ScrollOrigin());
 }
 
@@ -2184,7 +2184,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(-195, 20, 320, 105),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(20, 20, 120, 105),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
 }
 
@@ -2211,7 +2211,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 90, 320),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(35, 20, 105, 120),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(0, 0), scroll->ScrollOrigin());
 }
 
@@ -2238,7 +2238,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(-195, 20, 320, 320),
             scroll->GetLayoutBox()->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(35, 20, 105, 105),
-            scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
+            scroll->GetLayoutBox()->OverflowClipRect());
   EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
 }
 

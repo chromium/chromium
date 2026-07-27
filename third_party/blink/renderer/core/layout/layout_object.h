@@ -1524,7 +1524,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // CSS clip only applies when position is absolute or fixed. Prefer this check
   // over !StyleRef().HasAutoClip().
-  bool HasClip() const {
+  bool HasCSSClip() const {
     NOT_DESTROYED();
     return IsOutOfFlowPositioned() && !StyleRef().HasAutoClip();
   }

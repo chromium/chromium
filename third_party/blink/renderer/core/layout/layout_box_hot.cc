@@ -53,7 +53,7 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
     // excluding self-painting descendants is more important for performance.
     overflow_box = VisualOverflowRect();
     if (ShouldClipOverflowAlongEitherAxis()) {
-      overflow_box.Intersect(OverflowClipRect(PhysicalOffset()));
+      overflow_box.Intersect(OverflowClipRect());
     }
     overflow_box.Unite(PhysicalBorderBoxRect());
   } else {

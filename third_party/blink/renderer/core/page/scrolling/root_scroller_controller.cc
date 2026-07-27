@@ -320,7 +320,7 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
       }
     } else {
       if (ancestor->ShouldClipOverflowAlongEitherAxis() ||
-          ancestor->HasMask() || ancestor->HasClip() ||
+          ancestor->HasMask() || ancestor->HasCSSClip() ||
           ancestor->HasClipPath()) {
         return false;
       }

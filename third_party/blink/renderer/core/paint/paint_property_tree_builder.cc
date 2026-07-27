@@ -2615,7 +2615,7 @@ static FloatRoundedRect ToSnappedClipRect(const PhysicalRect& rect) {
 }
 
 static bool NeedsCssClip(const LayoutObject& object) {
-  if (object.HasClip()) {
+  if (object.HasCSSClip()) {
     DCHECK(!object.IsText());
     return true;
   }
@@ -2632,8 +2632,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
       // object must be a container for absolute position descendants, and will
       // copy from in-flow context later at updateOutOfFlowContext() step.
       DCHECK(object_.CanContainAbsolutePositionObjects());
-      const auto& clip_rect =
-          To<LayoutBox>(object_).ClipRect(context_.current.paint_offset);
+      PhysicalRect clip_rect = To<LayoutBox>(object_).CSSClipRect();
+      clip_rect.Move(context_.current.paint_offset);
       OnUpdateClip(properties_->UpdateCssClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(*context_.current.transform,
@@ -3162,8 +3162,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
       } else if (object_.IsBox()) {
         const PhysicalBoxFragment& box_fragment = BoxFragment();
         PhysicalRect clip_rect =
-            box_fragment.OverflowClipRect(context_.current.paint_offset,
-                                          FindPreviousBreakToken(box_fragment));
+            box_fragment.OverflowClipRect(FindPreviousBreakToken(box_fragment));
+        clip_rect.Move(context_.current.paint_offset);
 
         if (object_.IsLayoutReplaced()) {
           // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
@@ -3175,10 +3175,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                             ToSnappedClipRect(clip_rect));
         }
 
+        PhysicalRect clip_rect_excluding_overlay_scrollbars =
+            To<LayoutBox>(object_).OverflowClipRect(
+                kExcludeOverlayScrollbarSizeForHitTesting);
+        clip_rect_excluding_overlay_scrollbars.Move(
+            context_.current.paint_offset);
         state.layout_clip_rect_excluding_overlay_scrollbars =
-            FloatClipRect(gfx::RectF(To<LayoutBox>(object_).OverflowClipRect(
-                context_.current.paint_offset,
-                kExcludeOverlayScrollbarSizeForHitTesting)));
+            FloatClipRect(gfx::RectF(clip_rect_excluding_overlay_scrollbars));
       } else {
         DCHECK(object_.IsSVGViewportContainer());
         const auto& viewport_container =
@@ -3453,8 +3456,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
   ScrollPaintPropertyNode::State state;
 
   // clip_rect covers inline-start gutter via https://crrev.com/c/2680371.
-  PhysicalRect clip_rect =
-      box.OverflowClipRectForScrollNode(context_.current.paint_offset);
+  PhysicalRect clip_rect = box.OverflowClipRectForScrollNode();
+  clip_rect.Move(context_.current.paint_offset);
   state.container_rect = ToPixelSnappedRect(clip_rect);
 
   if (RuntimeEnabledFeatures::ScrollbarGutterBugFixEnabled()) {

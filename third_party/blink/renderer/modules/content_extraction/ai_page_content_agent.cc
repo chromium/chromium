@@ -535,8 +535,7 @@ bool IsReachableInOverflowContainer(const LayoutObject& object,
 
   // `overflow:hidden` creates a Blink scroll container, but users cannot scroll
   // it. Only the current overflow clip is reachable.
-  return overflow_container.OverflowClipRect(PhysicalOffset())
-      .Intersects(object_rect);
+  return overflow_container.OverflowClipRect().Intersects(object_rect);
 }
 
 gfx::Rect ComputeDocumentBoundsInViewport(const LayoutView& layout_view) {

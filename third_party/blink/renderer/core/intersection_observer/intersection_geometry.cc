@@ -80,14 +80,14 @@ gfx::RectF InitializeRootRect(const LayoutObject* root) {
     // testing. Use the FrameView geometry instead.
     // 2) An element wider than the ICB can cause us to resize the FrameView so
     // we can zoom out to fit the entire element width.
-    result = layout_view->OverflowClipRect(PhysicalOffset());
+    result = layout_view->OverflowClipRect();
   } else if (auto* layout_box = DynamicTo<LayoutBox>(root)) {
     if (layout_box->ShouldClipOverflowAlongBothAxis()) {
       // TODO(https://github.com/w3c/IntersectionObserver/issues/518):
       // This doesn't strictly conform to the current spec (which says we
       // should use the padding box rect) when there is overflow-clip-margin.
       // We should also consider overflow-clip along only one axis.
-      result = layout_box->OverflowClipRect(PhysicalOffset());
+      result = layout_box->OverflowClipRect();
     } else {
       result = layout_box->PhysicalBorderBoxRect();
     }
@@ -104,7 +104,7 @@ gfx::RectF GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
   // clip edge and not something else.
   if (use_overflow_clip_edge && box->ShouldApplyOverflowClipMargin()) {
     // OverflowClipRect() may be larger than PhysicalBorderBoxRect().
-    bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
+    bounds.Unite(box->OverflowClipRect());
   }
   return gfx::RectF(bounds);
 }
@@ -208,7 +208,7 @@ void ScrollingContentsToBorderBoxSpace(const LayoutBox* box, gfx::RectF& rect) {
 }
 
 bool ClipsSelf(const LayoutObject& object) {
-  return object.HasClip() || object.HasClipPath() || object.HasMask() ||
+  return object.HasCSSClip() || object.HasClipPath() || object.HasMask() ||
          // For simplicity, assume all SVG children clip self (with e.g.
          // SVG mask).
          object.IsSVGChild();
@@ -725,8 +725,7 @@ bool IntersectionGeometry::ClipToRoot(const RootAndTarget& root_and_target,
   if (!scroll_margin.empty()) {
     // Apply clip and scroll margin for each intermediate scroller.
     for (const LayoutBox* scroller : root_and_target.intermediate_scrollers) {
-      gfx::RectF scroller_rect =
-          gfx::RectF(scroller->OverflowClipRect(PhysicalOffset()));
+      gfx::RectF scroller_rect = gfx::RectF(scroller->OverflowClipRect());
       if (std::optional<gfx::RectF> clip_path_box =
               ClipPathClipper::LocalClipPathBoundingBox(*scroller)) {
         scroller_rect.Intersect(*clip_path_box);

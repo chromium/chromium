@@ -145,10 +145,13 @@ bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
     // PaintLayer::HitTestFragmentsWithPhase() checked the fragments'
     // foreground rect for intersection if a layer is self painting,
     // so only do the overflow clip check here for non-self-painting layers.
-    if (!HasSelfPaintingLayer() &&
-        !hit_test_location.Intersects(OverflowClipRect(
-            accumulated_offset, kExcludeOverlayScrollbarSizeForHitTesting))) {
-      skip_children = true;
+    if (!HasSelfPaintingLayer()) {
+      PhysicalRect clip_rect =
+          OverflowClipRect(kExcludeOverlayScrollbarSizeForHitTesting);
+      clip_rect.Move(accumulated_offset);
+      if (!hit_test_location.Intersects(clip_rect)) {
+        skip_children = true;
+      }
     }
     if (!skip_children && StyleRef().HasBorderShape()) {
       skip_children = HitTestClippedOutByBorderShape(*this, hit_test_location,

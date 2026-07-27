@@ -2539,7 +2539,7 @@ int Element::clientWidth() {
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                   layout_view->OverflowClipRect(PhysicalOffset()).Width(),
+                   layout_view->OverflowClipRect().Width(),
                    layout_view->StyleRef())
             .Round();
       }
@@ -2582,7 +2582,7 @@ int Element::clientHeight() {
         // |layout_view| is not a scroll-container.
         DCHECK(layout_view->IsScrollContainer());
         return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                   layout_view->OverflowClipRect(PhysicalOffset()).Height(),
+                   layout_view->OverflowClipRect().Height(),
                    layout_view->StyleRef())
             .Round();
       }
@@ -3267,7 +3267,7 @@ gfx::Rect Element::VisibleBoundsInLocalRoot() const {
   PhysicalRect rect(
       gfx::ToRoundedRect(GetLayoutObject()->AbsoluteBoundingBoxRectF()));
   PhysicalRect frame_clip_rect =
-      GetDocument().View()->GetLayoutView()->ClippingRect(PhysicalOffset());
+      GetDocument().View()->GetLayoutView()->ClippingRect();
   rect.Intersect(frame_clip_rect);
 
   // MapToVisualRectInAncestorSpace, called with a null ancestor argument,

@@ -865,8 +865,9 @@ bool LayoutObject::HasClipRelatedProperty() const {
   // CSS clip-path/mask/filter induces a stacking context and applies inherited
   // clip to that stacking context, while resetting clip for descendants. This
   // special behavior is already handled elsewhere.
-  if (HasClip() || ShouldClipOverflowAlongEitherAxis())
+  if (HasCSSClip() || ShouldClipOverflowAlongEitherAxis()) {
     return true;
+  }
   // Paint containment establishes isolation which creates clip isolation nodes.
   // Style & Layout containment also establish isolation (see
   // |NeedsIsolationNodes| in PaintPropertyTreeBuilder).

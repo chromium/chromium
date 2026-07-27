@@ -1724,14 +1724,15 @@ gfx::Vector2d LayoutBox::PixelSnappedScrolledContentOffset() const {
   return GetScrollableArea()->ScrollOffsetInt();
 }
 
-PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
+PhysicalRect LayoutBox::ClippingRect() const {
   NOT_DESTROYED();
   PhysicalRect result(InfiniteIntRect());
-  if (ShouldClipOverflowAlongEitherAxis())
-    result = OverflowClipRect(location);
-
-  if (HasClip())
-    result.Intersect(ClipRect(location));
+  if (ShouldClipOverflowAlongEitherAxis()) {
+    result = OverflowClipRect();
+  }
+  if (HasCSSClip()) {
+    result.Intersect(CSSClipRect());
+  }
 
   return result;
 }
@@ -1897,7 +1898,7 @@ bool LayoutBox::ApplyBoxClips(
   // This won't work fully correctly for fixed-position elements, who should
   // receive CSS clip but for whom the current object is not in the containing
   // block chain.
-  PhysicalRect clip_rect = ClippingRect(PhysicalOffset());
+  PhysicalRect clip_rect = ClippingRect();
   if (visual_rect_flags & kEdgeInclusive) {
     does_intersect = rect.InclusiveIntersect(clip_rect);
   } else {
@@ -2282,7 +2283,6 @@ void LayoutBox::ClearPaintFlags() {
 }
 
 PhysicalRect LayoutBox::OverflowClipRect(
-    const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
   PhysicalRect clip_rect;
@@ -2293,11 +2293,10 @@ PhysicalRect LayoutBox::OverflowClipRect(
     // box does not. We can do this because the effective root scroller is
     // restricted such that it exactly fills the viewport. See
     // RootScrollerController::IsValidRootScroller()
-    clip_rect = PhysicalRect(location, View()->ViewRect().size);
+    clip_rect = PhysicalRect(PhysicalOffset(), View()->ViewRect().size);
   } else {
     clip_rect = PhysicalBorderBoxRect();
     clip_rect.Contract(BorderOutsets());
-    clip_rect.Move(location);
 
     // Videos need to be pre-snapped so that they line up with the
     // display_rect and can enable hardware overlays.
@@ -2337,16 +2336,14 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
   if (HasControlClip()) [[unlikely]] {
     PhysicalRect control_clip = PhysicalContentBoxRect();
-    control_clip.Move(location);
     clip_rect.Intersect(control_clip);
   }
 
   return clip_rect;
 }
 
-PhysicalRect LayoutBox::OverflowClipRectForScrollNode(
-    const PhysicalOffset& location) const {
-  return OverflowClipRect(location);
+PhysicalRect LayoutBox::OverflowClipRectForScrollNode() const {
+  return OverflowClipRect();
 }
 
 bool LayoutBox::HasControlClip() const {
@@ -2374,10 +2371,10 @@ void LayoutBox::ExcludeScrollbars(
   rect.size.ClampNegativeToZero();
 }
 
-PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
+PhysicalRect LayoutBox::CSSClipRect() const {
   NOT_DESTROYED();
   PhysicalSize stitched_size = StitchedSize();
-  PhysicalRect clip_rect(location, stitched_size);
+  PhysicalRect clip_rect(PhysicalOffset(), stitched_size);
   LayoutUnit width = stitched_size.width;
   LayoutUnit height = stitched_size.height;
 
@@ -4196,7 +4193,7 @@ bool LayoutBox::IsFixedToView(
 PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
-  PhysicalRect constraining_rect(OverflowClipRect(PhysicalOffset()));
+  PhysicalRect constraining_rect = OverflowClipRect();
   constraining_rect.Move(-BorderOutsets().Offset());
   constraining_rect.Contract(PaddingOutsets());
 

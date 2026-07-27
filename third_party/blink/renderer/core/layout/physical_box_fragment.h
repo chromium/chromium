@@ -357,10 +357,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   // update them to use LayoutNG based overflow information from the fragment
   // and change them to use NG geometry types once LayoutNG supports overflow.
   PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
       const BlockBreakToken* incoming_break_token,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   // Returns the total offset of all overscroll area parents. This is used to

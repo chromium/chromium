@@ -111,8 +111,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // https://drafts.csswg.org/css-overflow-3/#scrollport. So we use the
   // PhysicalRect of the padding box here. The coordinate is relative to the
   // container's border box.
-  PhysicalRect container_rect(
-      snap_container.OverflowClipRect(PhysicalOffset()));
+  PhysicalRect container_rect = snap_container.OverflowClipRect();
 
   const ComputedStyle& container_style = snap_container.StyleRef();
   // The percentage of scroll-padding is different from that of normal
@@ -209,8 +208,8 @@ void SnapCoordinator::AddOverscrollSnapAreas(
   // its own initial scroll position.
   cc::SnapAreaData overscroll_initial_snap_area;
   overscroll_initial_snap_area.rect =
-      gfx::RectF(snap_container.OverflowClipRect(
-          PhysicalOffset(snap_container.ScrollOrigin())));
+      gfx::RectF(snap_container.OverflowClipRect()) +
+      gfx::Vector2dF(snap_container.ScrollOrigin().OffsetFromOrigin());
   overscroll_initial_snap_area.element_id = CompositorElementIdFromDOMNodeId(
       snap_container.GetNode()->GetDomNodeId());
   overscroll_initial_snap_area.scroll_snap_align = cc::ScrollSnapAlign(

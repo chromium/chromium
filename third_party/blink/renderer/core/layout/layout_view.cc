@@ -596,32 +596,26 @@ PhysicalRect LayoutView::ViewRect() const {
 }
 
 PhysicalRect LayoutView::OverflowClipRect(
-    const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
-  return OverflowClipRectInternal(location, overlay_scrollbar_clip_behavior,
+  return OverflowClipRectInternal(overlay_scrollbar_clip_behavior,
                                   false /* for_scroll_node */);
 }
 
-PhysicalRect LayoutView::OverflowClipRectForScrollNode(
-    const PhysicalOffset& location) const {
+PhysicalRect LayoutView::OverflowClipRectForScrollNode() const {
   NOT_DESTROYED();
-  return OverflowClipRectInternal(location, kIgnoreOverlayScrollbarSize,
+  return OverflowClipRectInternal(kIgnoreOverlayScrollbarSize,
                                   true /* for_scroll_node */);
 }
 
 PhysicalRect LayoutView::OverflowClipRectInternal(
-    const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
     bool for_scroll_node) const {
   NOT_DESTROYED();
   PhysicalRect rect = ViewRect();
   if (rect.IsEmpty()) {
-    return LayoutBox::OverflowClipRect(location,
-                                       overlay_scrollbar_clip_behavior);
+    return LayoutBox::OverflowClipRect(overlay_scrollbar_clip_behavior);
   }
-
-  rect.offset += location;
 
   // When capturing the root snapshot for a transition, we paint the
   // background color where the scrollbar would be so keep the clip rect

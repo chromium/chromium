@@ -153,11 +153,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
                                MapCoordinatesFlags) const override;
 
   PhysicalRect ViewRect() const override;
-  PhysicalRect OverflowClipRect(const PhysicalOffset& location,
-                                OverlayScrollbarClipBehavior =
-                                    kIgnoreOverlayScrollbarSize) const override;
-  PhysicalRect OverflowClipRectForScrollNode(
-      const PhysicalOffset& location) const override;
+  using LayoutBlockFlow::OverflowClipRect;
+  PhysicalRect OverflowClipRect(OverlayScrollbarClipBehavior) const override;
+  PhysicalRect OverflowClipRectForScrollNode() const override;
 
   // If either direction has a non-auto mode, the other must as well.
   void SetAutosizeScrollbarModes(mojom::blink::ScrollbarMode h_mode,
@@ -299,7 +297,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // attachment backgrounds.
   PhysicalRect BackgroundRect() const {
     NOT_DESTROYED();
-    return OverflowClipRect(PhysicalOffset());
+    return OverflowClipRect();
   }
 
   // The previous BackgroundRect after the previous paint invalidation.
@@ -371,8 +369,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return false;
   }
 
-  PhysicalRect OverflowClipRectInternal(const PhysicalOffset& location,
-                                        OverlayScrollbarClipBehavior,
+  PhysicalRect OverflowClipRectInternal(OverlayScrollbarClipBehavior,
                                         bool for_scroll_node) const;
 
   // The page area (content area) size of the first page, when printing. This

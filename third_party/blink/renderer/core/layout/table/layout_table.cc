@@ -298,12 +298,11 @@ LayoutBox* LayoutTable::CreateAnonymousBoxWithSameTypeAs(
 }
 
 PhysicalRect LayoutTable::OverflowClipRect(
-    const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
   PhysicalRect clip_rect;
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
-    clip_rect = PhysicalRect(location, StitchedSize());
+    clip_rect = PhysicalRect(PhysicalOffset(), StitchedSize());
     const auto overflow_clip = GetOverflowClipAxes();
     gfx::Rect infinite_rect = InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
@@ -315,8 +314,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
       clip_rect.size.height = LayoutUnit(infinite_rect.height());
     }
   } else {
-    clip_rect = LayoutBlock::OverflowClipRect(location,
-                                              overlay_scrollbar_clip_behavior);
+    clip_rect = LayoutBlock::OverflowClipRect(overlay_scrollbar_clip_behavior);
   }
   // TODO(1142929)
   // We cannot handle table hidden overflow with captions correctly.
@@ -330,7 +328,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   while (child) {
     if (child->IsTableCaption()) {
       // If there are captions, we cannot clip to content box.
-      clip_rect.Unite(PhysicalRect(location, StitchedSize()));
+      clip_rect.Unite(PhysicalRect(PhysicalOffset(), StitchedSize()));
       break;
     }
     child = child->NextSibling();

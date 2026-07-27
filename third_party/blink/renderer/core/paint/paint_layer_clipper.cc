@@ -117,11 +117,10 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
   foreground_rect.Reset();
 
   if (ShouldClipOverflowAlongEitherAxis(context)) {
-    LayoutBoxModelObject& layout_object = layer_->GetLayoutObject();
+    auto& layout_object = To<LayoutBox>(layer_->GetLayoutObject());
     foreground_rect =
-        To<LayoutBox>(layout_object)
-            .OverflowClipRect(layer_offset,
-                              context.overlay_scrollbar_clip_behavior);
+        layout_object.OverflowClipRect(context.overlay_scrollbar_clip_behavior);
+    foreground_rect.Move(layer_offset);
     if (layout_object.StyleRef().HasBorderRadius())
       foreground_rect.SetHasRadius(true);
     foreground_rect.Intersect(background_rect);

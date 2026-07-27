@@ -165,8 +165,7 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   // ClientLeft/Top are incorrect for tables, but cannot be fixed
   // by subclassing ClientLeft/Top.
 
-  PhysicalRect OverflowClipRect(const PhysicalOffset&,
-                                OverlayScrollbarClipBehavior) const override;
+  PhysicalRect OverflowClipRect(OverlayScrollbarClipBehavior) const override;
 
   bool VisualRectRespectsVisibility() const override {
     NOT_DESTROYED();

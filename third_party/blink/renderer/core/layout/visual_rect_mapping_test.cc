@@ -1385,7 +1385,7 @@ TEST_P(VisualRectMappingTest, PerspectivePlusScroll) {
 
   PhysicalRect output =
       PhysicalRect::EnclosingRect(transform.MapRect(gfx::RectF(originalRect)));
-  output.Intersect(container->ClippingRect(PhysicalOffset()));
+  output.Intersect(container->ClippingRect());
   CheckVisualRect(*target, *target->View(), originalRect, output);
 }
 

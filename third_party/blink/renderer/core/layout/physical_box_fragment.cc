@@ -705,19 +705,16 @@ PhysicalRect PhysicalBoxFragment::InkOverflowRect() const {
 }
 
 PhysicalRect PhysicalBoxFragment::OverflowClipRect(
-    const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
-  return box->OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+  return box->OverflowClipRect(overlay_scrollbar_clip_behavior);
 }
 
 PhysicalRect PhysicalBoxFragment::OverflowClipRect(
-    const PhysicalOffset& location,
     const BlockBreakToken* incoming_break_token,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
-  PhysicalRect clip_rect =
-      OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+  PhysicalRect clip_rect = OverflowClipRect(overlay_scrollbar_clip_behavior);
   if (!incoming_break_token && !GetBreakToken()) {
     return clip_rect;
   }
@@ -730,8 +727,6 @@ PhysicalRect PhysicalBoxFragment::OverflowClipRect(
   auto writing_direction = Style().GetWritingDirection();
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   WritingModeConverter converter(writing_direction, box->StitchedSize());
-  // Make the clip rectangle relative to the layout box.
-  clip_rect.offset -= location;
   LogicalOffset stitched_offset;
   if (incoming_break_token)
     stitched_offset.block_offset = incoming_break_token->ConsumedBlockSize();
@@ -776,8 +771,6 @@ PhysicalRect PhysicalBoxFragment::OverflowClipRect(
 
   // Make the clip rectangle relative to the fragment.
   clip_rect.offset -= physical_fragment_rect.offset;
-  // Make the clip rectangle relative to whatever the caller wants.
-  clip_rect.offset += location;
   return clip_rect;
 }
 

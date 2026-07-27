@@ -3399,7 +3399,8 @@ void PaintLayerScrollableArea::DropCompositorScrollDeltaNextCommit() {
 gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
     const PhysicalOffset& paint_offset) const {
   const auto* box = GetLayoutBox();
-  auto clip_rect = box->OverflowClipRect(paint_offset);
+  auto clip_rect = box->OverflowClipRect();
+  clip_rect.Move(paint_offset);
   auto overflow_clip_rect = ToPixelSnappedRect(clip_rect);
   auto scroll_size = PixelSnappedContentsSize(clip_rect.offset);
   // Ensure scrolling contents are at least as large as the scroll clip
@@ -3761,9 +3762,7 @@ gfx::Vector2d PaintLayerScrollableArea::ComputeScrollableSize() const {
     visible_size = controller.RootScrollerVisibleArea();
   } else {
     visible_size = ToRoundedSize(
-        GetLayoutBox()
-            ->OverflowClipRect(PhysicalOffset(), kIgnoreOverlayScrollbarSize)
-            .size);
+        GetLayoutBox()->OverflowClipRect(kIgnoreOverlayScrollbarSize).size);
   }
 
   // TODO(skobes): We should really ASSERT that contentSize >= visibleSize

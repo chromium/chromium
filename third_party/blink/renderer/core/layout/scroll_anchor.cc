@@ -342,8 +342,7 @@ static const String ComputeUniqueSelector(LayoutObject* anchor_object) {
 }
 
 static PhysicalRect GetVisibleRect(ScrollableArea* scroller) {
-  auto visible_rect =
-      ScrollerLayoutBox(scroller)->OverflowClipRect(PhysicalOffset());
+  auto visible_rect = ScrollerLayoutBox(scroller)->OverflowClipRect();
 
   const ComputedStyle& style = ScrollerLayoutBox(scroller)->StyleRef();
   visible_rect.ContractEdges(

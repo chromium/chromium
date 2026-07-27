@@ -474,7 +474,7 @@ TEST_F(LayoutBoxTest, ControlClip) {
   LayoutBox* target = GetLayoutBoxByElementId("target");
   EXPECT_TRUE(target->HasClipRelatedProperty());
   EXPECT_TRUE(target->ShouldClipOverflowAlongEitherAxis());
-  EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect(PhysicalOffset()));
+  EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect());
 }
 
 TEST_F(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
@@ -761,8 +761,7 @@ TEST_F(LayoutBoxTest, OverflowRectsContainPaint) {
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
-  EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
-            container->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(PhysicalRect(10, 10, 100, 200), container->OverflowClipRect());
 }
 
 TEST_F(LayoutBoxTest, OverflowRectsOverflowHidden) {
@@ -780,8 +779,7 @@ TEST_F(LayoutBoxTest, OverflowRectsOverflowHidden) {
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
-  EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
-            container->OverflowClipRect(PhysicalOffset()));
+  EXPECT_EQ(PhysicalRect(10, 10, 100, 200), container->OverflowClipRect());
 }
 
 TEST_F(LayoutBoxTest, SetTextFieldIntrinsicInlineSize) {
