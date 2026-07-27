@@ -890,7 +890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2"
-    units="count" expires_after="2026-12-06">
+    units="count" expires_after="2027-07-26">
   <owner>zhouzj@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <summary>
@@ -901,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AdClick.HistoryQueryCount2" units="count"
-    expires_after="2026-10-01">
+    expires_after="2027-07-26">
   <owner>zhouzj@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <summary>
@@ -915,7 +915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaint"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterNoAuction"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-07-26">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -942,7 +942,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterServerAndDeviceAuctions"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-07-26">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -957,7 +957,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfter{Result}{AuctionType}Auction"
-    units="ms" expires_after="2026-12-06">
+    units="ms" expires_after="2027-07-26">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -982,7 +982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
-    expires_after="2026-12-06">
+    expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds"
-    units="%" expires_after="2026-12-06">
+    units="%" expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentTotalBytesAds" units="%"
-    expires_after="2026-12-06">
+    expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AverageViewportAdCountX100" units="count"
-    expires_after="2026-12-06">
+    expires_after="2027-07-26">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1034,7 +1034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AverageViewportAdDensity" units="%"
-    expires_after="2026-12-06">
+    expires_after="2027-07-26">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -1051,7 +1051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist"
-    enum="BooleanBlocked" expires_after="2026-12-06">
+    enum="BooleanBlocked" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -1062,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.HeavyAds.NetworkBytesAtFrameUnload"
-    units="bytes" expires_after="2026-12-06">
+    units="bytes" expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -1074,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
-    expires_after="2026-12-06">
+    expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4079,7 +4079,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Cpu.TotalUsage" units="ms" expires_after="2027-01-17">
+<histogram name="PageLoad.Cpu.TotalUsage" units="ms" expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -4091,7 +4091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Cpu.TotalUsageForegrounded" units="ms"
-    expires_after="2026-11-29">
+    expires_after="2027-07-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5626,7 +5626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
-    units="ms" expires_after="2026-11-29">
+    units="ms" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <summary>
@@ -5645,7 +5645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Bytes" units="KB"
-    expires_after="2027-04-13">
+    expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -5661,7 +5661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Cpu" units="units"
-    expires_after="2027-04-13">
+    expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5682,7 +5682,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.OriginStatus"
-    enum="CrossOriginAdStatus" expires_after="2026-11-29">
+    enum="CrossOriginAdStatus" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5703,7 +5703,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.UserActivation"
-    enum="AdUserActivationStatus" expires_after="2027-04-13">
+    enum="AdUserActivationStatus" expires_after="2027-07-26">
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5724,7 +5724,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.Total"
-    units="Ad frames" expires_after="2026-11-29">
+    units="Ad frames" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5742,7 +5742,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.ComputedTypeWithThresholdNoise"
-    enum="HeavyAdStatus2" expires_after="2026-07-26">
+    enum="HeavyAdStatus2" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -5767,7 +5767,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.InterventionType2"
-    enum="HeavyAdStatus2" expires_after="2026-11-29">
+    enum="HeavyAdStatus2" expires_after="2027-07-26">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
