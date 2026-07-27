@@ -574,7 +574,8 @@ AsyncMatch SBLocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
       /*needs_full_hash_check_after_local_match=*/true);
 
   HandleAllowlistCheck(std::move(check),
-                       /*allow_async_full_hash_check=*/true,
+                       /*allow_async_full_hash_check=*/
+                       !base::FeatureList::IsEnabled(kLocalListsUseSBv5),
                        base::OnceCallback<void(bool)>());
   return AsyncMatch::ASYNC;
 }

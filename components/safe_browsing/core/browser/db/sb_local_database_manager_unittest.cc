@@ -998,11 +998,15 @@ TEST_F(SBLocalDatabaseManagerTest_V5,
   EXPECT_TRUE(client.on_check_browse_url_result_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistWithPrefixMatch) {
+  std::unique_ptr<ScopedFakeGetHashProtocolManagerFactory> pin;
+  if (!IsV5()) {
+    // Setup to receive full-hash misses. We won't make URL requests.
+    pin = std::make_unique<ScopedFakeGetHashProtocolManagerFactory>(
+        FullHashInfos({}));
+    ResetLocalDatabaseManager();
+    WaitForTasksOnTaskRunner();
+  }
 
   std::string url_safe_no_scheme("example.com/safe/");
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
@@ -1030,6 +1034,10 @@ TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
 // full-hash-match results in an appropriate callback value.
 TEST_F(SBLocalDatabaseManagerTest,
        TestCheckCsdAllowlistWithPrefixTheFullMatch) {
+  // v5's get full hash manager does not support CSD allowlist.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kLocalListsUseSBv5);
+
   std::string url_safe_no_scheme("example.com/safe/");
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
@@ -1060,11 +1068,15 @@ TEST_F(SBLocalDatabaseManagerTest,
   EXPECT_TRUE(client.callback_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistWithFullMatch) {
+  std::unique_ptr<ScopedFakeGetHashProtocolManagerFactory> pin;
+  if (!IsV5()) {
+    // Setup to receive full-hash misses. We won't make URL requests.
+    pin = std::make_unique<ScopedFakeGetHashProtocolManagerFactory>(
+        FullHashInfos({}));
+    ResetLocalDatabaseManager();
+    WaitForTasksOnTaskRunner();
+  }
 
   std::string url_safe_no_scheme("example.com/safe/");
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
@@ -1085,11 +1097,15 @@ TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   EXPECT_TRUE(client.callback_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistWithNoMatch) {
+  std::unique_ptr<ScopedFakeGetHashProtocolManagerFactory> pin;
+  if (!IsV5()) {
+    // Setup to receive full-hash misses. We won't make URL requests.
+    pin = std::make_unique<ScopedFakeGetHashProtocolManagerFactory>(
+        FullHashInfos({}));
+    ResetLocalDatabaseManager();
+    WaitForTasksOnTaskRunner();
+  }
 
   // Add a full hash that won't match the URL we check.
   std::string url_safe_no_scheme("example.com/safe/");
@@ -1112,11 +1128,15 @@ TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
 }
 
 // When allowlist is unavailable, all URLS should be allowed.
-TEST_F(SBLocalDatabaseManagerTest, TestCheckCsdAllowlistUnavailable) {
-  // Setup to receive full-hash misses. We won't make URL requests.
-  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
+TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistUnavailable) {
+  std::unique_ptr<ScopedFakeGetHashProtocolManagerFactory> pin;
+  if (!IsV5()) {
+    // Setup to receive full-hash misses. We won't make URL requests.
+    pin = std::make_unique<ScopedFakeGetHashProtocolManagerFactory>(
+        FullHashInfos({}));
+    ResetLocalDatabaseManager();
+    WaitForTasksOnTaskRunner();
+  }
 
   StoreAndHashPrefixes store_and_hash_prefixes;
   ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ false);
