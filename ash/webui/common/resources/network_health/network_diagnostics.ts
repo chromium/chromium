@@ -219,7 +219,7 @@ export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
     };
   }
 
-  private routines_: Routine[];
+  declare private routines_: Routine[];
 
   /**
    * Runs all supported network diagnostics routines.

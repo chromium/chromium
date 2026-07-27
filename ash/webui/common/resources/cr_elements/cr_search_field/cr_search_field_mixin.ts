@@ -45,9 +45,9 @@ export const CrSearchFieldMixin = dedupingMixin(
           };
         }
 
-        label: string;
-        clearLabel: string;
-        hasSearchText: boolean;
+        declare label: string;
+        declare clearLabel: string;
+        declare hasSearchText: boolean;
         private effectiveValue_: string = '';
         private searchDelayTimer_: number = -1;
 

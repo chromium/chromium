@@ -94,10 +94,10 @@ export const CrPolicyIndicatorMixin = dedupingMixin(
           };
         }
 
-        indicatorType: CrPolicyIndicatorType;
-        indicatorSourceName: string;
-        indicatorVisible: boolean;
-        indicatorIcon: string;
+        declare indicatorType: CrPolicyIndicatorType;
+        declare indicatorSourceName: string;
+        declare indicatorVisible: boolean;
+        declare indicatorIcon: string;
 
         /**
          * @return True if the indicator should be shown.

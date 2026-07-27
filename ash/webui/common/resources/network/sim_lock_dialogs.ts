@@ -176,22 +176,22 @@ export class SimLockDialogsElement extends SimLockDialogsElementBase {
     };
   }
 
-  deviceState: OncMojo.DeviceStateProperties|null;
-  globalPolicy: GlobalPolicy|undefined;
-  isDialogOpen: boolean;
-  showChangePin: boolean;
-  private inProgress_: boolean;
-  private error_: ErrorType;
-  private hasErrorText_: boolean;
-  private pendingError_: ErrorType|undefined;
-  private enterPinEnabled_: boolean;
-  private changePinEnabled_: boolean;
-  private enterPukEnabled_: boolean;
-  private pin_: string;
-  private pin_new1_: string;
-  private pin_new2_: string;
-  private puk_: string;
-  private isSimPinLockRestricted_: boolean;
+  declare deviceState: OncMojo.DeviceStateProperties|null;
+  declare globalPolicy: GlobalPolicy|undefined;
+  declare isDialogOpen: boolean;
+  declare showChangePin: boolean;
+  declare private inProgress_: boolean;
+  declare private error_: ErrorType;
+  declare private hasErrorText_: boolean;
+  declare private pendingError_: ErrorType|undefined;
+  declare private enterPinEnabled_: boolean;
+  declare private changePinEnabled_: boolean;
+  declare private enterPukEnabled_: boolean;
+  declare private pin_: string;
+  declare private pin_new1_: string;
+  declare private pin_new2_: string;
+  declare private puk_: string;
+  declare private isSimPinLockRestricted_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {

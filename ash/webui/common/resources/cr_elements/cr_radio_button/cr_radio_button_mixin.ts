@@ -78,13 +78,13 @@ export const CrRadioButtonMixin = dedupingMixin(
           };
         }
 
-        checked: boolean;
-        disabled: boolean;
-        focusable: boolean;
-        hideLabelText: boolean;
-        label: string;
-        name: string;
-        private buttonTabIndex_: number;
+        declare checked: boolean;
+        declare disabled: boolean;
+        declare focusable: boolean;
+        declare hideLabelText: boolean;
+        declare label: string;
+        declare name: string;
+        declare private buttonTabIndex_: number;
 
         override connectedCallback() {
           super.connectedCallback();

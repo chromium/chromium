@@ -72,11 +72,11 @@ export class RoutineGroupElement extends RoutineGroupElementBase {
     };
   }
 
-  routines: Routine[];
-  name: string;
-  expanded: boolean;
-  private running_: boolean;
-  private showGroupIcon_: boolean;
+  declare routines: Routine[];
+  declare name: string;
+  declare expanded: boolean;
+  declare private running_: boolean;
+  declare private showGroupIcon_: boolean;
 
   /**
    * Helper function to get the icon for a group of routines based on all of
