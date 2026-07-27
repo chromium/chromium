@@ -10,8 +10,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,13 +22,11 @@ public class GroupSuggestionsPromotionCoordinator {
     public static final String CREATE_SUGGESTIONS_PROMOTION_UI_PARAM =
             "create_suggestions_promotion_ui";
 
-    private final @NonNull PropertyModelChangeProcessor mModelChangeProcessor;
-    private final @NonNull GroupSuggestionsPromotionMediator mMediator;
+    private final PropertyModelChangeProcessor mModelChangeProcessor;
+    private final GroupSuggestionsPromotionMediator mMediator;
 
     public GroupSuggestionsPromotionCoordinator(
-            @NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull TabModel tabModel) {
+            Context context, BottomSheetController bottomSheetController, TabModel tabModel) {
         LinearLayout groupSuggestionsBottomSheetContainer =
                 (LinearLayout)
                         LayoutInflater.from(context)

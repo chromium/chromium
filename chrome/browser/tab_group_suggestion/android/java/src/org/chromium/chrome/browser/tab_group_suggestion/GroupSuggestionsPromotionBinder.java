@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,10 +15,7 @@ import org.chromium.ui.widget.ButtonCompat;
 /** Binder class for a GroupSuggestions promotion UI. */
 @NullMarked
 public class GroupSuggestionsPromotionBinder {
-    public static void bind(
-            @NonNull PropertyModel model,
-            @NonNull LinearLayout view,
-            @NonNull PropertyKey propertyKey) {
+    public static void bind(PropertyModel model, LinearLayout view, PropertyKey propertyKey) {
         if (propertyKey == GroupSuggestionsPromotionProperties.PROMO_HEADER) {
             TextView promoHeaderView = view.findViewById(R.id.promo_header);
             promoHeaderView.setText(model.get(GroupSuggestionsPromotionProperties.PROMO_HEADER));

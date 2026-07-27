@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,27 +18,23 @@ import org.chromium.components.visited_url_ranking.url_grouping.UserResponseMeta
 @NullMarked
 public class GroupSuggestionsBottomSheetContent implements BottomSheetContent {
 
-    private final @NonNull View mContentView;
-    private final @NonNull GroupSuggestion mGroupSuggestion;
-    private final @NonNull Callback<UserResponseMetadata> mCallback;
+    private final View mContentView;
+    private final GroupSuggestion mGroupSuggestion;
+    private final Callback<UserResponseMetadata> mCallback;
 
     public GroupSuggestionsBottomSheetContent(
-            @NonNull View contentView,
-            @NonNull GroupSuggestion suggestion,
-            @NonNull Callback<UserResponseMetadata> callback) {
+            View contentView, GroupSuggestion suggestion, Callback<UserResponseMetadata> callback) {
         mContentView = contentView;
         mGroupSuggestion = suggestion;
         mCallback = callback;
     }
 
     /** Get the {@link GroupSuggestion} showing in this sheet. */
-    @NonNull
     public GroupSuggestion getGroupSuggestion() {
         return mGroupSuggestion;
     }
 
     /** Get the {@link Callback} showing in this sheet. */
-    @NonNull
     public Callback<UserResponseMetadata> getUserResponseCallback() {
         return mCallback;
     }
