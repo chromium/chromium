@@ -1286,24 +1286,6 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Get an estimate of the TimeTick value at the time of the UnixEpoch. Because
-  // Time and TimeTicks respond differently to user-set time and NTP
-  // adjustments, this number is only an estimate. Nevertheless, this can be
-  // useful when you need to relate the value of TimeTicks to a real time and
-  // date. Note: Upon first invocation, this function takes a snapshot of the
-  // realtime clock to establish a reference point.  This function will return
-  // the same value for the duration of the application, but will be different
-  // in future application runs.
-  // DEPRECATED:
-  // Because TimeTicks increments can get suspended on some platforms (e.g. Mac)
-  // and because this function returns a static value, this value will not get
-  // suspension time into account on those platforms.
-  // As TimeTicks is intended to be used to track a process duration and not an
-  // absolute time, if you plan to use this function, please consider using a
-  // Time instead.
-  // TODO(crbug.com/355423207): Remove function.
-  static TimeTicks UnixEpoch();
-
   // Returns an enum indicating the underlying clock being used to generate
   // TimeTicks timestamps. This function should only be used for debugging and
   // logging purposes.

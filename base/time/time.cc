@@ -221,14 +221,6 @@ TimeTicks TimeTicks::LowResolutionNow() {
       std::memory_order_relaxed)();
 }
 
-// static
-TimeTicks TimeTicks::UnixEpoch() {
-  static const TimeTicks epoch =
-      subtle::TimeTicksNowIgnoringOverride() -
-      (subtle::TimeNowIgnoringOverride() - Time::UnixEpoch());
-  return epoch;
-}
-
 std::ostream& operator<<(std::ostream& os, TimeTicks time_ticks) {
   // This function formats a TimeTicks object as "bogo-microseconds".
   // The origin and granularity of the count are platform-specific, and may very
