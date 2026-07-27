@@ -90,6 +90,9 @@ class DictationKeyedService : public KeyedService,
 
   DictationMultiplexer& multiplexer() { return multiplexer_; }
 
+  // Updates audio level in the current session.
+  void UpdateAudioLevel(float audio_level);
+
  private:
   void OnPrefChanged();
 

@@ -651,6 +651,17 @@ TEST_F(DictationSessionControllerTest, CompletedStreamFailureOnErrorNotCalled) {
       *stream_provider_ptr, StreamProvider::StreamState::kComplete);
 }
 
+// Test that UpdateAudioLevel propagates to the UI.
+TEST_F(DictationSessionControllerTest, UpdateAudioLevelPropagatesToUi) {
+  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
+  MockSessionUi* ui_ptr = mock_ui.get();
+  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
+  controller_->Initialize();
+
+  EXPECT_CALL(*ui_ptr, UpdateAudioLevel(0.8f));
+  controller_->UpdateAudioLevel(0.8f);
+}
+
 }  // namespace
 
 }  // namespace dictation

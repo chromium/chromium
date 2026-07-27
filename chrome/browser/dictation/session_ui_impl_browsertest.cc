@@ -148,6 +148,20 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest, UpdateAudioLevel) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    Do([this]{
+      SessionUi* ui = session_ui();
+      ASSERT_TRUE(ui);
+      ui->UpdateAudioLevel(0.5f);
+    })
+  );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
                        EndSessionTearsDownUI) {
   // clang-format off

@@ -2919,6 +2919,7 @@ Called by update_extension_histograms.py.-->
   <int value="1976" label="DICTATIONPRIVATE_UPDATETRANSCRIPTION"/>
   <int value="1977" label="DICTATIONPRIVATE_SETSTREAMSTATE"/>
   <int value="1978" label="WEBREQUESTINTERNAL_EVENTHANDLINGDONE"/>
+  <int value="1979" label="DICTATIONPRIVATE_UPDATEAUDIOLEVEL"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

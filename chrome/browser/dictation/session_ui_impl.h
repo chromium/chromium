@@ -33,6 +33,7 @@ class SessionUiImpl : public SessionUi {
   // SessionUi:
   void OnError(StreamType stream_type) override;
   void OnStopped() override;
+  void UpdateAudioLevel(float audio_level) override;
 
   void OnDictationBubbleCloseClicked();
   void OnToggleActiveStreamClicked();

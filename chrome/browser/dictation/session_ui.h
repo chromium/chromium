@@ -19,6 +19,9 @@ class SessionUi {
 
   // Called when the dictation session has stopped.
   virtual void OnStopped() = 0;
+
+  // Called when the audio level is updated.
+  virtual void UpdateAudioLevel(float audio_level) = 0;
 };
 
 }  // namespace dictation

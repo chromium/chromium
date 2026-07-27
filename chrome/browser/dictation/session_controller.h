@@ -72,6 +72,9 @@ class SessionController : public SessionUiDelegate,
   // Ends the current dictation stream and detaches the stream provider.
   void EndDictationStream();
 
+  // Updates the audio level in the UI.
+  void UpdateAudioLevel(float audio_level);
+
   StreamProvider* attached_stream_provider() const {
     return attached_stream_provider_.get();
   }

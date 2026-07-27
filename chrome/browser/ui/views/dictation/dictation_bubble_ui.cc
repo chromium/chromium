@@ -55,6 +55,7 @@ class DictationToastView : public views::View {
 
   void Init();
   void UpdateForState(DictationBubbleUi::State state);
+  void UpdateAudioLevel(float audio_level);
 
  private:
   base::RepeatingClosure close_callback_;
@@ -180,6 +181,12 @@ void DictationToastView::UpdateForState(DictationBubbleUi::State state) {
   }
 }
 
+void DictationToastView::UpdateAudioLevel(float audio_level) {
+  if (waveform_view_) {
+    waveform_view_->SetAudioLevel(audio_level);
+  }
+}
+
 BEGIN_METADATA(DictationToastView)
 END_METADATA
 
@@ -227,6 +234,13 @@ void DictationBubbleUi::SetState(State state) {
   }
   if (GetWidget()) {
     SizeToContents();
+  }
+}
+
+void DictationBubbleUi::UpdateAudioLevel(float audio_level) {
+  if (GetContentsView()) {
+    views::AsViewClass<DictationToastView>(GetContentsView())
+        ->UpdateAudioLevel(audio_level);
   }
 }
 

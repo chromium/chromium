@@ -124,6 +124,10 @@ void SessionUiImpl::OnStopped() {
   }
 }
 
+void SessionUiImpl::UpdateAudioLevel(float audio_level) {
+  bubble_ui_->UpdateAudioLevel(audio_level);
+}
+
 void SessionUiImpl::OnSessionStateChanged(SessionState state) {
   bubble_ui_->SetState(ToBubbleUiState(state));
 }

@@ -124,6 +124,7 @@ class MockSessionUi : public SessionUi {
 
   MOCK_METHOD(void, OnError, (StreamType stream_type), (override));
   MOCK_METHOD(void, OnStopped, (), (override));
+  MOCK_METHOD(void, UpdateAudioLevel, (float audio_level), (override));
 };
 
 class MockSessionControllerDelegate : public SessionControllerDelegate {

@@ -195,4 +195,10 @@ void DictationKeyedService::OnPrefChanged() {
   }
 }
 
+void DictationKeyedService::UpdateAudioLevel(float audio_level) {
+  if (session_) {
+    session_->controller_.UpdateAudioLevel(audio_level);
+  }
+}
+
 }  // namespace dictation

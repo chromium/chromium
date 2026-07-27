@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
-#include "base/rand_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -54,8 +52,11 @@ void WaveformView::SetState(DictationBubbleUi::State state) {
 }
 
 void WaveformView::SetAudioLevel(float level) {
-  audio_level_ = std::clamp(level, 0.0f, 1.0f);
-  is_using_simulated_audio_ = false;
+  // An experimentally determined factor to boost the input audio level (0.0 to
+  // 1.0) into a range that works well for visualization. This ensures the
+  // waveform is lively and responsive even at lower input volumes.
+  constexpr float kBoostFactor = 10.0f;
+  audio_level_ = std::clamp(level * kBoostFactor, 0.0f, 1.0f);
 }
 
 gfx::Size WaveformView::CalculatePreferredSize(
@@ -96,41 +97,8 @@ void WaveformView::AnimationProgressed(const gfx::Animation* animation) {
   base::TimeDelta delta = now - last_update_time_;
   last_update_time_ = now;
 
-  if (state_ == DictationBubbleUi::State::kTranscribing &&
-      is_using_simulated_audio_) {
-    UpdateSimulatedAudio(delta);
-  }
-
   UpdatePhysics(delta);
   SchedulePaint();
-}
-
-void WaveformView::UpdateSimulatedAudio(base::TimeDelta delta) {
-  simulated_energy_elapsed_ += delta;
-  if (simulated_energy_elapsed_ >= simulated_energy_duration_) {
-    simulated_energy_elapsed_ = base::TimeDelta();
-    if (simulated_target_energy_ > 0.0f) {
-      // Syllable finished: transition to short pause.
-      simulated_target_energy_ = 0.0f;
-      simulated_energy_duration_ =
-          base::Milliseconds(base::RandIntInclusive(150, 349));
-    } else {
-      // Pause finished: transition to active syllable.
-      simulated_target_energy_ =
-          0.3f + 0.7f * static_cast<float>(base::RandDouble());
-      simulated_energy_duration_ =
-          base::Milliseconds(base::RandIntInclusive(200, 499));
-    }
-  }
-
-  // Smoothly interpolate current energy to the target level.
-  const float interpolation_speed =
-      simulated_target_energy_ > 0.0f ? 12.0f : 6.0f;
-  simulated_speech_energy_ +=
-      (simulated_target_energy_ - simulated_speech_energy_) *
-      interpolation_speed * delta.InSecondsF();
-
-  audio_level_ = simulated_speech_energy_;
 }
 
 void WaveformView::UpdatePhysics(base::TimeDelta delta) {

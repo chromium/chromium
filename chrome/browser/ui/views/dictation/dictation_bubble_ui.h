@@ -31,6 +31,7 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
 
   void Show();
   void SetState(State state);
+  void UpdateAudioLevel(float audio_level);
 
   // views::BubbleDialogDelegate:
   gfx::Rect GetBubbleBounds() override;

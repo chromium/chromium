@@ -44,12 +44,15 @@ if (chrome.dictationPrivate === undefined) {
         typeof chrome.dictationPrivate.updateTranscription === 'function');
     chrome.test.assertTrue(
         typeof chrome.dictationPrivate.setStreamState === 'function');
+    chrome.test.assertTrue(
+        typeof chrome.dictationPrivate.updateAudioLevel === 'function');
 
     try {
       await chrome.dictationPrivate.setStreamState({
         streamId,
         state: chrome.dictationPrivate.StreamState.TRANSCRIBING,
       });
+      await chrome.dictationPrivate.updateAudioLevel(0.5);
       await chrome.dictationPrivate.updateTranscription({
         streamId,
         type: chrome.dictationPrivate.TranscriptionType.PARTIAL,

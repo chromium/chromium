@@ -2041,6 +2041,7 @@ enum HistogramValue {
   DICTATIONPRIVATE_UPDATETRANSCRIPTION = 1976,
   DICTATIONPRIVATE_SETSTREAMSTATE = 1977,
   WEBREQUESTINTERNAL_EVENTHANDLINGDONE = 1978,
+  DICTATIONPRIVATE_UPDATEAUDIOLEVEL = 1979,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

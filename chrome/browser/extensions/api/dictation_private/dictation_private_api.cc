@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/stream_provider.h"
@@ -20,6 +21,8 @@ namespace dictation_private = api::dictation_private;
 namespace {
 
 constexpr std::string_view kInvalidStreamIdError = "Invalid stream ID.";
+constexpr std::string_view kInvalidAudioLevelError =
+    "Invalid audio level (must be between 0.0 and 1.0)";
 
 dictation::StreamProvider::StreamState ConvertStreamState(
     dictation_private::StreamState state) {
@@ -83,6 +86,24 @@ DictationPrivateSetStreamStateFunction::Run() {
                                   ConvertStreamState(params->details.state))) {
     return RespondNow(Error(std::string(kInvalidStreamIdError)));
   }
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+DictationPrivateUpdateAudioLevelFunction::Run() {
+  std::optional<dictation_private::UpdateAudioLevel::Params> params =
+      dictation_private::UpdateAudioLevel::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
+
+  auto* service = dictation::DictationKeyedService::Get(browser_context());
+  EXTENSION_FUNCTION_VALIDATE(service);
+
+  if (params->audio_level < 0.0 || params->audio_level > 1.0) {
+    return RespondNow(Error(std::string(kInvalidAudioLevelError)));
+  }
+
+  service->UpdateAudioLevel(base::saturated_cast<float>(params->audio_level));
 
   return RespondNow(NoArguments());
 }

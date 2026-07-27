@@ -108,4 +108,17 @@ TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
   histogram_tester.ExpectTotalCount(kStreamStartTriggerHistogramName, 2);
 }
 
+TEST_F(DictationKeyedServiceTest, UpdateAudioLevelPropagatesToController) {
+  service_->StartSession(tab_, EmptyTargetId(),
+                         DictationSessionEntryPoint::kContextMenu);
+  auto* controller = service_->session_controller();
+  ASSERT_NE(controller, nullptr);
+
+  auto* mock_ui = static_cast<MockSessionUi*>(controller->ui_for_testing());
+  ASSERT_NE(mock_ui, nullptr);
+
+  EXPECT_CALL(*mock_ui, UpdateAudioLevel(0.5f));
+  service_->UpdateAudioLevel(0.5f);
+}
+
 }  // namespace dictation

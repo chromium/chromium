@@ -36,6 +36,10 @@ namespace extensions {
 
 namespace {
 
+// TODO(b/538580887): Update these tests to use a session like a real stream
+// provider would.
+// TODO(b/538580230): Add a test for UpdateAudioLevel once the above bug is
+// fixed.
 class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
  public:
   ExtensionApiTestStreamProvider(

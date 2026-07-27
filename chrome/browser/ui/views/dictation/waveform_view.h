@@ -22,8 +22,7 @@ namespace dictation {
 
 // A custom View that draws an animated voice waveform consisting of 11 vertical
 // rounded bars. The animation only plays during transcribing, using a
-// spring-damper physics simulation driven by the audio level (simulated by
-// default, but can be overridden by calling SetAudioLevel).
+// spring-damper physics simulation driven by the audio level.
 class WaveformView : public views::View, public gfx::AnimationDelegate {
   METADATA_HEADER(WaveformView, views::View)
 
@@ -37,8 +36,9 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   void SetState(DictationBubbleUi::State state);
   DictationBubbleUi::State state() const { return state_; }
 
-  // Expose a public hook to drive the wave with real mic volume (0.0 to 1.0).
-  // Calling this will automatically disable the internal speech simulation.
+  float audio_level_for_testing() const { return audio_level_; }
+
+  // Drives the wave with real mic volume (0.0 to 1.0).
   void SetAudioLevel(float level);
 
   // views::View:
@@ -53,7 +53,6 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
 
  private:
   // Animation update ticks (running at 60 FPS).
-  void UpdateSimulatedAudio(base::TimeDelta delta);
   void UpdatePhysics(base::TimeDelta delta);
   float GetTargetHeightForBar(size_t index,
                               double time_sec,
@@ -68,7 +67,6 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
 
   // Audio level and ripple history.
   float audio_level_ = 0.0f;
-  bool is_using_simulated_audio_ = true;
   std::vector<float> audio_history_;
   base::TimeDelta history_timer_;
 
@@ -80,11 +78,6 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   };
   std::vector<BarState> bars_;
 
-  // Simulated speech envelope generator state.
-  float simulated_speech_energy_ = 0.0f;
-  float simulated_target_energy_ = 0.0f;
-  base::TimeDelta simulated_energy_duration_;
-  base::TimeDelta simulated_energy_elapsed_;
 };
 
 }  // namespace dictation

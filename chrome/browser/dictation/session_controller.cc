@@ -165,6 +165,12 @@ void SessionController::EndDictationStream() {
   MoveToState(SessionState::kFinalizing);
 }
 
+void SessionController::UpdateAudioLevel(float audio_level) {
+  if (ui_) {
+    ui_->UpdateAudioLevel(audio_level);
+  }
+}
+
 void SessionController::UiRequestEndSession() {
   // EndSession will destroy `this` which owns other objects that call into here
   // so PostTask to avoid destroying objects in the callstack.
