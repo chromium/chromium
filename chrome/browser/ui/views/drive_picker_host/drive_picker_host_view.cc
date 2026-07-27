@@ -221,6 +221,9 @@ content::WebContents* DrivePickerHostView::OpenURLFromTab(
   if (!browser_window_interface_) {
     return nullptr;
   }
+  if (!params.url.SchemeIsHTTPOrHTTPS()) {
+    return nullptr;
+  }
   content::OpenURLParams new_params(params);
   if (new_params.disposition == WindowOpenDisposition::CURRENT_TAB ||
       new_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
@@ -239,6 +242,12 @@ content::WebContents* DrivePickerHostView::AddNewContents(
     bool user_gesture,
     bool* was_blocked) {
   if (!browser_window_interface_) {
+    if (was_blocked) {
+      *was_blocked = true;
+    }
+    return nullptr;
+  }
+  if (!target_url.SchemeIsHTTPOrHTTPS()) {
     if (was_blocked) {
       *was_blocked = true;
     }
