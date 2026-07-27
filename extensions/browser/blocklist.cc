@@ -14,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -132,6 +133,7 @@ class SafeBrowsingClientImpl
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (database_manager->CheckExtensionIDs(extension_ids, this)) {
       // Definitely not blocklisted. Callback immediately.
+      LogBlocklistedCount(0);
       callback_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_), std::set<ExtensionId>()));
@@ -144,8 +146,14 @@ class SafeBrowsingClientImpl
 
   void OnCheckExtensionsResult(const std::set<ExtensionId>& hits) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    LogBlocklistedCount(hits.size());
     std::move(callback_).Run(hits);
     Release();  // Balanced in StartCheck.
+  }
+
+  void LogBlocklistedCount(int count) {
+    base::UmaHistogramCounts100("Extensions.SafeBrowsing.BlocklistedCount",
+                                count);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
