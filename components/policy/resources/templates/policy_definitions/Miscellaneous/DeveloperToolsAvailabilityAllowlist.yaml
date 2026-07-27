@@ -12,6 +12,8 @@ desc: |-
 
   This policy also applies to <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> opened for extensions and web applications.
 
+  Blanket host wildcards (i.e., "*" or "[*]") are not allowed; use the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy to enable the feature globally.
+
   This policy is limited to 1,000 entries.
 
 example_value:

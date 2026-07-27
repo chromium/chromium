@@ -12,6 +12,8 @@ desc: |-
 
   This policy only affects Incognito mode. To allow URLs for all user profiles, please use the <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy.
 
+  Blanket host wildcards (i.e., "*" or "[*]") are not allowed; use the <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME">IncognitoModeAvailability</ph> policy to enable the feature globally.
+
   This policy is limited to 1000 entries.
 example_value:
 - example.com
