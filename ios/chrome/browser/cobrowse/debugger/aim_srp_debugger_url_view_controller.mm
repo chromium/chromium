@@ -252,7 +252,7 @@
 
 - (UIButton*)createCopyButton {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* copyImage = DefaultSymbolWithPointSize(kCopyActionSymbol, 18);
+  UIImage* copyImage = SymbolWithPointSize(SymbolCopyAction, 18);
   [button setImage:copyImage forState:UIControlStateNormal];
   button.tintColor = [UIColor colorNamed:kBlueColor];
   [button addTarget:self
@@ -291,13 +291,13 @@
 
 - (void)copyText:(NSString*)text fromButton:(UIButton*)button {
   UIPasteboard.generalPasteboard.string = text;
-  UIImage* checkmarkImage = DefaultSymbolWithPointSize(kCheckmarkSymbol, 18);
+  UIImage* checkmarkImage = SymbolWithPointSize(SymbolCheckmark, 18);
   [button setImage:checkmarkImage forState:UIControlStateNormal];
   button.enabled = NO;
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
-        UIImage* copyImage = DefaultSymbolWithPointSize(kCopyActionSymbol, 18);
+        UIImage* copyImage = SymbolWithPointSize(SymbolCopyAction, 18);
         [button setImage:copyImage forState:UIControlStateNormal];
         button.enabled = YES;
       });

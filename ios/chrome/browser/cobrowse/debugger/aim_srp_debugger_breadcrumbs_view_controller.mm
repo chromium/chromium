@@ -173,8 +173,7 @@
   UIImage* symbol = nil;
 
   if (event.direction == kClientToAim) {
-    symbol =
-        DefaultSymbolWithConfiguration(@"arrow.up.circle.fill", symbolConfig);
+    symbol = SymbolWithConfiguration(SymbolArrowUpCircleFill, symbolConfig);
     cell.directionIconView.tintColor = [UIColor colorNamed:kBlueColor];
   } else {
     symbol =
