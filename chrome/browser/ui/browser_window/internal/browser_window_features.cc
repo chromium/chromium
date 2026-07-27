@@ -752,7 +752,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // Must be after exclusive_access_manager_ and
   // desktop_browser_window_capabilities_.
   browser_web_contents_delegate_ = std::make_unique<BrowserWebContentsDelegate>(
-      browser, *exclusive_access_manager_, *BrowserWindow::FromBrowser(browser),
+      browser, *exclusive_access_manager_, *browser_command_controller_,
+      *unload_controller_, app_browser_controller_.get(),
+      *BrowserWindow::FromBrowser(browser),
       *desktop_browser_window_capabilities_);
 
   // Must be after exclusive_access_manager_.

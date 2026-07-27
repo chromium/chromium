@@ -559,8 +559,10 @@ class Browser : public TabStripModelObserver,
 
  private:
   friend class BrowserTest;
+  friend class BrowserWebContentsDelegate;
   friend class ExclusiveAccessTest;
   friend class FullscreenControllerInteractiveTest;
+  friend class SessionServiceTestHelper;
   FRIEND_TEST_ALL_PREFIXES(AppModeTest, EnableAppModeTest);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastIncognito);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastRegular);

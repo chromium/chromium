@@ -328,10 +328,6 @@ namespace {
 // How long we wait before updating the browser chrome while loading a page.
 constexpr base::TimeDelta kUIUpdateCoalescingTime = base::Milliseconds(200);
 
-// Kill switch for merge safety for a fix for https://crbug.com/489205993
-// TODO(crbug.com/489205993): Remove in M150 or later.
-BASE_FEATURE(kBackgroundActorTaskPopupsOpenInBackground,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const extensions::Extension* GetExtensionForOrigin(
     Profile* profile,
@@ -1204,17 +1200,13 @@ bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
 content::PreloadingEligibility Browser::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
+  return BrowserWebContentsDelegate::From(this)->IsPrerender2Supported(
+      web_contents, trigger_type);
 }
 
 bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return source == tab_strip_model_->GetActiveWebContents();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  return BrowserWebContentsDelegate::From(this)
+      ->ShouldShowStaleContentOnEviction(source);
 }
 
 void Browser::OnWindowDidShow() {
@@ -1243,244 +1235,54 @@ void Browser::OnWindowDidShow() {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, content::WebContentsDelegate implementation:
 
-WebContents* Browser::OpenURLFromTab(
-    WebContents* source,
-    const OpenURLParams& params,
+content::WebContents* Browser::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  TRACE_EVENT1("navigation", "Browser::OpenURLFromTab", "source", source);
-#if DCHECK_IS_ON()
-  DCHECK(params.Valid());
-#endif
-
-  if (is_type_devtools()) {
-    DevToolsWindow* window = DevToolsWindow::AsDevToolsWindow(source);
-    DCHECK(window);
-    return window->OpenURLFromTab(source, params,
-                                  std::move(navigation_handle_callback));
-  }
-
-  // If the source is already split, navigate the other pane instead of
-  // creating a new tab. Return |source| so that WebContentsImpl::OpenURL()
-  // sees new_contents == this and skips the DidOpenRequestedURL notification,
-  // which is only meant for newly created WebContents.
-  if (params.disposition == WindowOpenDisposition::NEW_SPLIT_VIEW && source) {
-    tabs::TabInterface* const source_tab =
-        tabs::TabInterface::MaybeGetFromContents(source);
-    if (source_tab && source_tab->IsSplit()) {
-      const split_tabs::SplitTabId split_id = source_tab->GetSplit().value();
-      for (tabs::TabInterface* tab :
-           tab_strip_model()->GetSplitData(split_id)->ListTabs()) {
-        if (tab != source_tab) {
-          content::NavigationController::LoadURLParams load_params(params);
-          tab->GetContents()->GetController().LoadURLWithParams(load_params);
-          return source;
-        }
-      }
-    }
-  }
-
-  NavigateParams nav_params(this, params.url, params.transition);
-  nav_params.FillNavigateParamsFromOpenURLParams(params);
-  nav_params.source_contents = source;
-  nav_params.tabstrip_add_types = AddTabTypes::ADD_NONE;
-  if (params.user_gesture) {
-    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
-  }
-  bool is_popup =
-      source && blocked_content::ConsiderForPopupBlocking(params.disposition);
-  auto popup_delegate =
-      std::make_unique<ChromePopupNavigationDelegate>(std::move(nav_params));
-  if (is_popup) {
-    popup_delegate.reset(static_cast<ChromePopupNavigationDelegate*>(
-        blocked_content::MaybeBlockPopup(
-            source, nullptr, std::move(popup_delegate), &params,
-            blink::mojom::WindowFeatures(),
-            HostContentSettingsMapFactory::GetForProfile(
-                source->GetBrowserContext()))
-            .release()));
-    if (!popup_delegate) {
-      return nullptr;
-    }
-  }
-
-  chrome::ConfigureTabGroupForNavigation(popup_delegate->nav_params());
-
-  base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(popup_delegate->nav_params());
-
-  if (navigation_handle_callback && navigation_handle) {
-    std::move(navigation_handle_callback).Run(*navigation_handle);
-  }
-
-  content::WebContents* navigated_or_inserted_contents =
-      popup_delegate->nav_params()->navigated_or_inserted_contents;
-  if (is_popup && navigated_or_inserted_contents) {
-    auto* tracker = blocked_content::PopupTracker::CreateForWebContents(
-        navigated_or_inserted_contents, source, params.disposition);
-    tracker->set_is_trusted(
-        params.triggering_event_info !=
-        blink::mojom::TriggeringEventInfo::kFromUntrustedEvent);
-  }
-
-  TRACE_EVENT_INSTANT("navigation", "Browser::OpenURLFromTab_Result",
-                      "navigated_or_inserted_contents",
-                      navigated_or_inserted_contents);
-
-  return navigated_or_inserted_contents;
+  return BrowserWebContentsDelegate::From(this)->OpenURLFromTab(
+      source, params, std::move(navigation_handle_callback));
 }
 
-void Browser::NavigationStateChanged(WebContents* source,
+void Browser::NavigationStateChanged(content::WebContents* source,
                                      content::InvalidateTypes changed_flags) {
-  // If we're shutting down we should refuse to process this message.
-  // See crbug.com/40827720; it's possible that a WebContents sends navigation
-  // state messages while destructing during browser tear-down. Ironically we
-  // can't use IsShuttingDown() because by this point the browser is entirely
-  // removed from the browser list.
-  if (is_delete_scheduled_) {
-    return;
-  }
-
-  // Only update the UI when something visible has changed.
-  if (changed_flags) {
-    ScheduleUIUpdate(source, changed_flags);
-  }
-
-  // We can synchronously update commands since they will only change once per
-  // navigation, so we don't have to worry about flickering. We do, however,
-  // need to update the command state early on load to always present usable
-  // actions in the face of slow-to-commit pages.
-  if (changed_flags &
-      (content::INVALIDATE_TYPE_URL | content::INVALIDATE_TYPE_LOAD |
-       content::INVALIDATE_TYPE_TAB)) {
-    GetCommandController()->TabStateChanged();
-  }
-
-  if (auto* const app_browser_controller =
-          web_app::AppBrowserController::From(this)) {
-    app_browser_controller->UpdateCustomTabBarVisibility(true);
-  }
+  BrowserWebContentsDelegate::From(this)->NavigationStateChanged(source,
+                                                                 changed_flags);
 }
 
-void Browser::VisibleSecurityStateChanged(WebContents* source) {
-  // When the current tab's security state changes, we need to update the URL
-  // bar to reflect the new state.
-  DCHECK(source);
-  if (tab_strip_model_->GetActiveWebContents() == source) {
-    UpdateToolbarSecurityState();
-
-    if (auto* const app_browser_controller =
-            web_app::AppBrowserController::From(this)) {
-      app_browser_controller->UpdateCustomTabBarVisibility(true);
-    }
-  }
+void Browser::VisibleSecurityStateChanged(content::WebContents* source) {
+  BrowserWebContentsDelegate::From(this)->VisibleSecurityStateChanged(source);
 }
 
 content::WebContents* Browser::AddNewContents(
-    WebContents* source,
-    std::unique_ptr<WebContents> new_contents,
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-  FullscreenController* fullscreen_controller = browser_window_features()
-                                                    ->exclusive_access_manager()
-                                                    ->fullscreen_controller();
-#if BUILDFLAG(IS_MAC)
-  // On the Mac, the convention is to turn popups into new tabs when in browser
-  // fullscreen mode. Only worry about user-initiated fullscreen as showing a
-  // popup in HTML5 fullscreen would have kicked the page out of fullscreen.
-  // However if this Browser is for an app or the popup is being requested on a
-  // different display, we don't want to turn popups into new tabs. Popups
-  // should open as new windows instead.
-  display::Screen* screen = display::Screen::Get();
-  bool targeting_different_display =
-      screen && source && source->GetContentNativeView() &&
-      screen->GetDisplayNearestView(source->GetContentNativeView()) !=
-          screen->GetDisplayMatching(window_features.bounds);
-  if (!web_app::AppBrowserController::From(this) &&
-      disposition == WindowOpenDisposition::NEW_POPUP &&
-      fullscreen_controller->IsFullscreenForBrowser() &&
-      !targeting_different_display) {
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  }
-#endif
-
-  // At this point the |new_contents| is beyond the popup blocker, but we use
-  // the same logic for determining if the popup tracker needs to be attached.
-  if (source && blocked_content::ConsiderForPopupBlocking(disposition)) {
-    blocked_content::PopupTracker::CreateForWebContents(new_contents.get(),
-                                                        source, disposition);
-  }
-
-  // Postpone activating popups opened by content-fullscreen tabs. This permits
-  // popups on other screens and retains fullscreen focus for exit accelerators.
-  // Popups are activated when the opener exits fullscreen, which happens
-  // immediately if the popup would overlap the fullscreen window.
-  // Allow fullscreen-within-tab openers to open popups normally.
-  NavigateParams::WindowAction window_action =
-      NavigateParams::WindowAction::kShowWindow;
-  if (disposition == WindowOpenDisposition::NEW_POPUP &&
-      GetFullscreenState(source).target_mode ==
-          content::FullscreenMode::kContent) {
-    window_action = NavigateParams::WindowAction::kShowWindowInactive;
-    fullscreen_controller->FullscreenTabOpeningPopup(source,
-                                                     new_contents.get());
-    // Defer popup creation if the opener has a fullscreen transition in
-    // progress. This works around a defect on Mac where separate displays
-    // cannot switch their independent spaces simultaneously
-    // (crbug.com/40221919)
-    auto web_contents_creation_callback = base::BindOnce(
-        &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, window_features, window_action, user_gesture);
-    fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
-        base::IgnoreResult(std::move(web_contents_creation_callback))));
-    return nullptr;
-  }
-
-  // If a backgrounded actor task triggered a new tab/popup, don't interrupt the
-  // user.
-  if (base::FeatureList::IsEnabled(
-          kBackgroundActorTaskPopupsOpenInBackground) &&
-      source && actor::IsRunningBackgroundActorTask(*source)) {
-    if (disposition == WindowOpenDisposition::NEW_POPUP) {
-      window_action = NavigateParams::WindowAction::kShowWindowInactive;
-    } else if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-      disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    }
-  }
-
-  return chrome::AddWebContents(this, source, std::move(new_contents),
-                                target_url, disposition, window_features,
-                                window_action, user_gesture);
+  return BrowserWebContentsDelegate::From(this)->AddNewContents(
+      source, std::move(new_contents), target_url, disposition, window_features,
+      user_gesture, was_blocked);
 }
 
-void Browser::ActivateContents(WebContents* contents) {
-  // A WebContents can ask to activate after it's been removed from the
-  // TabStripModel. See https://crbug.com/40679349
-  int index = tab_strip_model_->GetIndexOfWebContents(contents);
-  if (index == TabStripModel::kNoTab) {
-    return;
-  }
-  tab_strip_model_->ActivateTabAt(index);
-  window_->Activate();
+void Browser::ActivateContents(content::WebContents* contents) {
+  BrowserWebContentsDelegate::From(this)->ActivateContents(contents);
 }
 
 bool Browser::IsContentsActive(content::WebContents* contents) {
-  return tab_strip_model_->GetActiveWebContents() == contents;
+  return BrowserWebContentsDelegate::From(this)->IsContentsActive(contents);
 }
 
-void Browser::LoadingStateChanged(WebContents* source,
+void Browser::LoadingStateChanged(content::WebContents* source,
                                   bool should_show_loading_ui) {
-  ScheduleUIUpdate(source, content::INVALIDATE_TYPE_LOAD);
-  UpdateWindowForLoadingStateChanged(source, should_show_loading_ui);
+  BrowserWebContentsDelegate::From(this)->LoadingStateChanged(
+      source, should_show_loading_ui);
 }
 
-void Browser::CloseContents(WebContents* source) {
-  if (UnloadController::From(this)->CanCloseContents(source)) {
-    chrome::CloseWebContents(this, source, true);
-  }
+void Browser::CloseContents(content::WebContents* source) {
+  BrowserWebContentsDelegate::From(this)->CloseContents(source);
 }
 
 void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
