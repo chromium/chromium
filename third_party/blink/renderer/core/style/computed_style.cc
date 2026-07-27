@@ -775,9 +775,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (!diff.NeedsFullLayout()) {
     if (DiffNeedsFullLayout(document, other, field_diff)) {
       diff.SetNeedsFullLayout();
-    } else if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
-      diff.SetNeedsPositionedLayout();
-    } else if ((field_diff & kInset) && HasInFlowPosition()) {
+    } else if ((field_diff & kInset) && GetPosition() != EPosition::kStatic) {
       diff.SetNeedsPositionedLayout();
     }
   }
@@ -978,10 +976,6 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
         BorderLeftWidth() != other.BorderLeftWidth()) {
       return true;
     }
-  }
-
-  if ((field_diff & kMargin) && !HasOutOfFlowPosition()) {
-    return true;
   }
 
   if (field_diff & kStroke) {

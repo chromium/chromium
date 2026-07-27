@@ -1597,10 +1597,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasOutOfFlowPosition() const {
     return HasOutOfFlowPosition(GetPosition());
   }
-  bool HasInFlowPosition() const {
-    return GetPosition() == EPosition::kRelative ||
-           GetPosition() == EPosition::kSticky;
-  }
   bool HasStickyConstrainedPosition() const {
     return GetPosition() == EPosition::kSticky &&
            (!Top().IsAuto() || !Left().IsAuto() || !Right().IsAuto() ||
