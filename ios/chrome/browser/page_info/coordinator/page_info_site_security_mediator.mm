@@ -98,8 +98,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     // Not HTTPS. This maps to the WARNING security level. Show the red
     // triangle icon in page info based on the same logic used to determine
     // the iconography in the omnibox.
-    dataHolder.iconImage = DefaultSymbolTemplateWithPointSize(
-        kWarningSymbol, kPageInfoSymbolPointSize);
+    dataHolder.iconImage =
+        SymbolTemplateWithPointSize(SymbolWarning, kPageInfoSymbolPointSize);
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     dataHolder.message =
@@ -116,8 +116,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   if (net::IsCertStatusError(status.cert_status) ||
       status.security_style == web::SECURITY_STYLE_AUTHENTICATION_BROKEN) {
     // HTTPS with major errors
-    dataHolder.iconImage = DefaultSymbolTemplateWithPointSize(
-        kWarningSymbol, kPageInfoSymbolPointSize);
+    dataHolder.iconImage =
+        SymbolTemplateWithPointSize(SymbolWarning, kPageInfoSymbolPointSize);
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     NSString* certificateDetails = BuildCertificateDetailString(status, URL);
@@ -148,8 +148,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
     // so assume the WARNING state when determining whether to swap the icon for
     // a red triangle. This will result in an inconsistency between the omnibox
     // and page info if the mixed content WARNING feature is disabled.
-    dataHolder.iconImage = DefaultSymbolTemplateWithPointSize(
-        kWarningSymbol, kPageInfoSymbolPointSize);
+    dataHolder.iconImage =
+        SymbolTemplateWithPointSize(SymbolWarning, kPageInfoSymbolPointSize);
     dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     dataHolder.message = BuildMessage(@[
@@ -166,8 +166,8 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   dataHolder.securityStatus = l10n_util::GetNSString(
       IDS_IOS_PAGE_INFO_SECURITY_CONNECTION_STATUS_SECURE);
   dataHolder.secure = YES;
-  dataHolder.iconImage = DefaultSymbolTemplateWithPointSize(
-      kSecureSymbol, kPageInfoSymbolPointSize);
+  dataHolder.iconImage =
+      SymbolTemplateWithPointSize(SymbolSecure, kPageInfoSymbolPointSize);
   dataHolder.iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
 
   dataHolder.message = BuildMessage(@[

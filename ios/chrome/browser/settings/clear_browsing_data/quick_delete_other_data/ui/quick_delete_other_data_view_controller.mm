@@ -50,9 +50,9 @@ enum ItemIdentifier {
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return MakeSymbolMonochrome(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, kDefaultSymbolSize));
+      SymbolWithPointSize(SymbolGoogleIcon, kDefaultSymbolSize));
 #else
-  return DefaultSymbolWithPointSize(kGearshape2Symbol, kDefaultSymbolSize);
+  return SymbolWithPointSize(SymbolGearshape2, kDefaultSymbolSize);
 #endif
 }
 
@@ -73,10 +73,9 @@ NSString* TitleForItemIdentifier(ItemIdentifier item_identifier) {
 UIImage* IconForItemIdentifier(ItemIdentifier item_identifier) {
   switch (item_identifier) {
     case kPasswordsAndPasskeysIdentifier:
-      return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
-                                               kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolPassword, kDefaultSymbolSize);
     case kSearchHistoryIdentifier:
-      return DefaultSymbolWithPointSize(kSearchSymbol, kDefaultSymbolSize);
+      return SymbolWithPointSize(SymbolSearch, kDefaultSymbolSize);
     case kMyActivityIdentifier:
       return GetBrandedGoogleServicesSymbol();
   }

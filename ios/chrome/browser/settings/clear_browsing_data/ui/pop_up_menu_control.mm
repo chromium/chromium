@@ -52,7 +52,7 @@ constexpr CGFloat kChevronLeadingOffset = 5;
     [self addSubview:_subtitleLabel];
 
     UIImage* chevronUpDownDefault =
-        DefaultSymbolWithPointSize(kChevronUpDown, kChevronIconSize);
+        SymbolWithPointSize(SymbolChevronUpDown, kChevronIconSize);
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
         configurationWithHierarchicalColor:
             [UIColor colorNamed:kTextQuaternaryColor]];

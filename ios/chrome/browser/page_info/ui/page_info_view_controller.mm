@@ -334,7 +334,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       ColorfulSymbolContentConfiguration* symbolConfiguration =
           [[ColorfulSymbolContentConfiguration alloc] init];
       symbolConfiguration.symbolImage =
-          CustomSymbolWithPointSize(kCameraSymbol, kPageInfoSymbolPointSize);
+          SymbolWithPointSize(SymbolCamera, kPageInfoSymbolPointSize);
       symbolConfiguration.symbolTintColor = UIColor.whiteColor;
       symbolConfiguration.symbolBackgroundColor =
           [UIColor colorNamed:kOrange500Color];
@@ -372,8 +372,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
       ColorfulSymbolContentConfiguration* symbolConfiguration =
           [[ColorfulSymbolContentConfiguration alloc] init];
-      symbolConfiguration.symbolImage = DefaultSymbolWithPointSize(
-          kMicrophoneSymbol, kPageInfoSymbolPointSize);
+      symbolConfiguration.symbolImage =
+          SymbolWithPointSize(SymbolMicrophone, kPageInfoSymbolPointSize);
       symbolConfiguration.symbolTintColor = UIColor.whiteColor;
       symbolConfiguration.symbolBackgroundColor =
           [UIColor colorNamed:kOrange500Color];
@@ -416,11 +416,11 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
           [[ColorfulSymbolContentConfiguration alloc] init];
       UIImage* icon =
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-          CustomSymbolTemplateWithPointSize(kPageInsightsSymbol,
-                                            kPageInfoSymbolPointSize);
+          SymbolTemplateWithPointSize(SymbolPageInsights,
+                                      kPageInfoSymbolPointSize);
 #else
-          DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
-                                             kPageInfoSymbolPointSize);
+          SymbolTemplateWithPointSize(SymbolInfoCircle,
+                                      kPageInfoSymbolPointSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS),
       iconConfiguration.symbolImage = icon;
       iconConfiguration.symbolBackgroundColor =
@@ -449,8 +449,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
       ColorfulSymbolContentConfiguration* iconConfiguration =
           [[ColorfulSymbolContentConfiguration alloc] init];
-      iconConfiguration.symbolImage = DefaultSymbolTemplateWithPointSize(
-          kClockSymbol, kPageInfoSymbolPointSize);
+      iconConfiguration.symbolImage =
+          SymbolTemplateWithPointSize(SymbolClock, kPageInfoSymbolPointSize);
       iconConfiguration.symbolBackgroundColor =
           [UIColor colorNamed:kBlue500Color];
       iconConfiguration.symbolTintColor = UIColor.whiteColor;

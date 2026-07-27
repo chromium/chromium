@@ -535,24 +535,20 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 - (UIImage*)iconForItemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
-      return DefaultSymbolTemplateWithPointSize(kHistorySymbol,
-                                                kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolHistory, kDefaultSymbolSize);
     }
     case ItemIdentifierTabs: {
-      return DefaultSymbolTemplateWithPointSize(kTabsSymbol,
-                                                kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolTabs, kDefaultSymbolSize);
     }
     case ItemIdentifierSiteData: {
-      return DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
-                                                kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolInfoCircle, kDefaultSymbolSize);
     }
     case ItemIdentifierCache: {
-      return DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
-                                                kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolCachedData, kDefaultSymbolSize);
     }
     case ItemIdentifierAutofill: {
-      return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
-                                                kDefaultSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolAutofillData,
+                                         kDefaultSymbolSize);
     }
     case ItemIdentifierManageOtherData: {
       // This item doesn't have an icon.

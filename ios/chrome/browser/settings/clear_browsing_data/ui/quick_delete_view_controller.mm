@@ -572,9 +572,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       colorWithAlphaComponent:kTrashIconContainerViewAlphaComponent];
 
   // Trash icon that inside the container with the red background.
-  UIImageView* icon =
-      [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
-                                             kTrashSymbol, kTrashIconSize)];
+  UIImageView* icon = [[UIImageView alloc]
+      initWithImage:SymbolTemplateWithPointSize(SymbolTrash, kTrashIconSize)];
   icon.clipsToBounds = YES;
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   icon.tintColor = [UIColor colorNamed:kRedColor];
