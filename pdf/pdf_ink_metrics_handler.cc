@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_conversions.h"
+#include "pdf/pdf_ink_text.h"
 
 namespace chrome_pdf {
 
@@ -217,6 +218,10 @@ void ReportTextAnnotationColor(SkColor color) {
   auto it = kTextAnnotationColors.find(color);
   CHECK(it != kTextAnnotationColors.end());
   base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationColor", it->second);
+}
+
+void ReportTextAnnotationTypeface(TextTypeface typeface) {
+  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationTypeface", typeface);
 }
 
 }  // namespace chrome_pdf

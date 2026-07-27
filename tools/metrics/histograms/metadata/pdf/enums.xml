@@ -299,6 +299,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2TextAnnotationColor) -->
 
+<!-- LINT.IfChange(PDFInk2TextAnnotationTypeface) -->
+
+<enum name="PDFInk2TextAnnotationTypeface">
+  <int value="0" label="SansSerif"/>
+  <int value="1" label="Serif"/>
+  <int value="2" label="Monospace"/>
+</enum>
+
+<!-- LINT.ThenChange(//pdf/pdf_ink_text.h:TextTypeface) -->
+
 <!-- LINT.IfChange(PDFLoadedWithV2InkAnnotations) -->
 
 <enum name="PDFLoadedWithV2InkAnnotations">

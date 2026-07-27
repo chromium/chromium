@@ -236,6 +236,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Ink2TextAnnotationTypeface"
+    enum="PDFInk2TextAnnotationTypeface" expires_after="2026-12-16">
+  <owner>thestig@chromium.org</owner>
+  <owner>andyphan@chromium.org</owner>
+  <summary>
+    Tracks the typeface used for an Ink2 text annotation in the PDF viewer.
+    Specifically, it represents the higher-level user choice, and not the actual
+    underlying system font. This is recorded whenever a non-empty text
+    annotation is committed by the user (either created or edited), but not if
+    it occurs as part of undo or redo operations.
+  </summary>
+</histogram>
+
 <histogram name="PDF.Ink2TextHighlighterColor"
     enum="PDFInk2StrokeHighlighterColor" expires_after="2026-12-16">
   <owner>andyphan@chromium.org</owner>

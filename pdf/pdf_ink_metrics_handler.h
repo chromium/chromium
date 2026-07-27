@@ -14,6 +14,8 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace chrome_pdf {
 
+enum class TextTypeface;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -157,6 +159,7 @@ void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 
 void ReportTextAnnotationColor(SkColor color);
+void ReportTextAnnotationTypeface(TextTypeface typeface);
 
 }  // namespace chrome_pdf
 
