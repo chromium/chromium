@@ -625,40 +625,6 @@ chromium-metrics-reviews@google.com.
   <token key="AuthBlockType" variants="CryptohomeAuthBlockTypes"/>
 </histogram>
 
-<histogram name="Cryptohome.{AuthSessionFunction}.{AuthBlockType}" units="ms"
-    expires_after="2026-08-13">
-  <owner>thomascedeno@google.com</owner>
-  <owner>cros-security-cryptohome+uma@google.com</owner>
-  <summary>
-    AuthSession is a DBus API for various operations dealing with credential
-    storage, processing, and authentication. These metrics record the time an
-    {AuthSessionFunction} takes to complete. Each function is parameterized by
-    an {AuthBlockType}, or credential backend, which significantly influences
-    results. The metric is emitted when the respective {AuthSessionFunction} is
-    requested through the DBus API.
-  </summary>
-  <token key="AuthSessionFunction">
-    <variant name="TimeToAuthSessionAddAuthFactorUSS"/>
-    <variant name="TimeToAuthSessionAddAuthFactorVK"/>
-    <variant name="TimeToAuthSessionAuthenticateAuthFactorUSS"/>
-    <variant name="TimeToAuthSessionAuthenticateAuthFactorVK"/>
-    <variant name="TimeToAuthSessionUpdateAuthFactorUSS"/>
-    <variant name="TimeToAuthSessionUpdateAuthFactorVK"/>
-  </token>
-  <token key="AuthBlockType">
-    <variant name="ChallengeCredential"/>
-    <variant name="CryptohomeRecovery"/>
-    <variant name="DoubleWrappedCompat"/>
-    <variant name="Fingerprint"/>
-    <variant name="LibScryptCompat"/>
-    <variant name="PinWeaver"/>
-    <variant name="Scrypt"/>
-    <variant name="TpmBoundToPcr"/>
-    <variant name="TpmEcc"/>
-    <variant name="TpmNotBoundToPcr"/>
-  </token>
-</histogram>
-
 <histogram name="Cryptohome.{AuthSessionLifetime}.{Type}" units="ms"
     expires_after="2026-08-13">
   <owner>thomascedeno@google.com</owner>
