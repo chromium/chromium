@@ -1,0 +1,120 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+/* Shared styles for both table and card views */
+.error {
+  border: solid 1px red;
+}
+
+button {
+  font-size: 125%;
+  font-weight: bolder;
+  border: 1px solid var(--action-row-button-border);
+}
+
+select:focus {
+  outline: none;
+}
+
+/* Table view for wide screen */
+@media only screen and (min-width: 711px) {
+  :host {
+    display: table-row;
+  }
+
+  div {
+    display: table-cell;
+    padding: 3px;
+  }
+
+  [role='cell'] > * {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--page-background);
+  }
+
+  [role='cell'] > *:not(select) {
+    padding: 7px;
+  }
+
+  [role='cell'] > *:not(.error) {
+    border: none;
+    color: var(--text-color);
+  }
+
+  [role='cell']:not(.row-remove-btn-cell) {
+    border-right: 1px solid var(--table-border);
+  }
+
+  [role='cell'] > select {
+    padding: 0;
+  }
+
+  label {
+    display: none;
+  }
+}
+
+<if expr="is_android or is_ios">
+#namespace-cell-heading {
+  display: none;
+}
+</if>
+
+/* Card view for narrow screen / mobile */
+@media only screen and (max-width: 710px) {
+  :host {
+    display: block;
+    border: 1px solid var(--table-border);
+    margin-bottom: 5px;
+  }
+
+  div {
+    display: flex;
+    border: none;
+    padding: 1px;
+  }
+
+  select,
+  input {
+    background: var(--page-background);
+    border: 1px solid var(--table-border);
+    color: var(--text-color);
+    padding: 5px;
+    margin-top: 5px;
+    margin-right: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    width: 75%;
+  }
+
+  button {
+    background: var(--action-row-button-background);
+    border: 1px solid var(--action-row-button-border);
+    color: var(--action-row-button-color);
+    padding: 5px;
+    margin: 5px;
+    display: flex;
+  }
+
+  input {
+    box-sizing: border-box;
+  }
+
+  label {
+    margin-left: 5px;
+    float: left;
+    width: 20%;
+    display: block;
+    overflow: hidden;
+    align-self: center;
+  }
+}

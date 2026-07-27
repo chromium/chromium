@@ -900,32 +900,28 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestPresetAutofill) {
   }
   ASSERT_TRUE(content::NavigateToURL(web_contents(),
                                      GURL(chrome::kChromeUIPolicyTestURL)));
+  // Async helper to wait for LitElement update before reading preset.
   const std::string getSelectedPresetId =
       R"(
-        const presetDropdown =
-          document
-            .querySelector('policy-test-table')
-            .shadowRoot
-            .querySelector('policy-test-row')
-            .shadowRoot
-            .querySelector('.preset');
-        presetDropdown
-          .options[presetDropdown.selectedIndex]
-          .id;
+        (async () => {
+          const table = document.querySelector('policy-test-table');
+          const row = table.shadowRoot.querySelector('policy-test-row');
+          await row.updateComplete;
+          const presetDropdown = row.shadowRoot.querySelector('.preset');
+          return presetDropdown.options[presetDropdown.selectedIndex].id;
+        })();
       )";
   EXPECT_EQ(content::EvalJs(web_contents(), getSelectedPresetId), "custom");
+  // Async helper to wait for LitElement update before reading source.
   const std::string getSourceValueJs =
       R"(
-        const sourceDropdown =
-          document
-            .querySelector('policy-test-table')
-            .shadowRoot
-            .querySelector('policy-test-row')
-            .shadowRoot
-            .querySelector('.source');
-        sourceDropdown
-          .options[sourceDropdown.selectedIndex]
-          .id;
+        (async () => {
+          const table = document.querySelector('policy-test-table');
+          const row = table.shadowRoot.querySelector('policy-test-row');
+          await row.updateComplete;
+          const sourceDropdown = row.shadowRoot.querySelector('.source');
+          return sourceDropdown.options[sourceDropdown.selectedIndex].id;
+        })();
       )";
   EXPECT_EQ(content::EvalJs(web_contents(), getSourceValueJs),
             "sourceEnterpriseDefault");
@@ -1125,13 +1121,12 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
                                      GURL(chrome::kChromeUIPolicyTestURL)));
   const std::string getNameDropdownInErrorStateJs =
       R"(
-        document.querySelector('policy-test-table')
-          .shadowRoot
-          .querySelector('policy-test-row')
-          .shadowRoot
-          .querySelector('.name')
-          .classList
-          .contains('error');
+        (async () => {
+          const table = document.querySelector('policy-test-table');
+          const row = table.shadowRoot.querySelector('policy-test-row');
+          await row.updateComplete;
+          return row.shadowRoot.querySelector('.name').classList.contains('error');
+        })();
       )";
   EXPECT_EQ(content::EvalJs(web_contents(), getNameDropdownInErrorStateJs),
             false);
@@ -1153,6 +1148,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
             .shadowRoot
             .querySelector('.name');
         nameDropdown.value = 'CloudReportingUploadFrequency';
+        nameDropdown.dispatchEvent(new Event('change'));
         nameDropdown.dispatchEvent(new Event('focus'));
       )";
   EXPECT_TRUE(content::ExecJs(web_contents(), selectPolicyNameJs));
@@ -1198,13 +1194,14 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
             .querySelector('.name');
         nameDropdown.value = 'CookiesAllowedForUrls';
         nameDropdown.dispatchEvent(new Event('change'));
-        document
+        const valueInput = document
           .querySelector('policy-test-table')
           .shadowRoot
           .querySelector('policy-test-row')
           .shadowRoot
-          .querySelector('.value')
-          .value = '123';
+          .querySelector('.value');
+        valueInput.value = '123';
+        valueInput.dispatchEvent(new Event('input'));
         document.querySelector('#apply-policies').click();
       )";
   EXPECT_TRUE(
@@ -1228,13 +1225,14 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
   EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
   const std::string applyWithValidValueJs =
       R"(
-        document
+        const valueInput = document
           .querySelector('policy-test-table')
           .shadowRoot
           .querySelector('policy-test-row')
           .shadowRoot
-          .querySelector('.value')
-          .value = '[]';
+          .querySelector('.value');
+        valueInput.value = '[]';
+        valueInput.dispatchEvent(new Event('input'));
         document.querySelector('#apply-policies').click();
       )";
   EXPECT_TRUE(content::ExecJs(web_contents(), applyWithValidValueJs));
@@ -1262,6 +1260,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestClearPoliciesButton) {
             .shadowRoot
             .querySelector('.name');
         nameDropdown.value = 'CloudReportingUploadFrequency';
+        nameDropdown.dispatchEvent(new Event('change'));
       )";
   EXPECT_TRUE(content::ExecJs(web_contents(), selectPolicyNameJs));
   const std::string getSelectedPolicyNameJs =

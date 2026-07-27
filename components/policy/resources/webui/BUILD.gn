@@ -6,7 +6,6 @@ import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
   grd_prefix = "policy"
-  html_to_wrapper_template = "detect"
 
   static_files = [
     "logs/policy_logs.html",
@@ -14,12 +13,6 @@ build_webui("build") {
     "policy.html",
     "policy_shared_vars.css",
     "test/policy_test.html",
-  ]
-
-  # Files holding a Custom element definition AND have an equivalent .html file.
-  web_component_files = [
-    "test/policy_test_row.ts",
-    "test/policy_test_table.ts",
   ]
 
   ts_files = [
@@ -47,6 +40,10 @@ build_webui("build") {
     "promotion_banner_section_container.ts",
     "test/policy_test.ts",
     "test/policy_test_browser_proxy.ts",
+    "test/policy_test_row.html.ts",
+    "test/policy_test_row.ts",
+    "test/policy_test_table.html.ts",
+    "test/policy_test_table.ts",
   ]
 
   css_files = [
@@ -58,6 +55,8 @@ build_webui("build") {
     "status_box.css",
     "policy_table.css",
     "policy_table_header_cell.css",
+    "test/policy_test_row.css",
+    "test/policy_test_table.css",
   ]
 
   mojo_files = [ "$root_gen_dir/components/policy/resources/webui/" +
