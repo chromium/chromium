@@ -822,6 +822,16 @@ ScriptPromise<IDLUndefined> RTCRtpSender::setParameters(
     const RTCSetParameterOptions* options,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (parameters->hasEncodings()) {
+    for (const auto& encoding : parameters->encodings()) {
+      if (encoding->hasMaxBitrate() && encoding->maxBitrate() == 0) {
+        exception_state.ThrowRangeError("maxBitrate must be greater than 0.");
+        return EmptyPromise();
+      }
+    }
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
