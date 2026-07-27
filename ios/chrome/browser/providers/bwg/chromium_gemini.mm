@@ -93,6 +93,8 @@ int GetLiveCaptionsNumberOfLines() {
 
 void SetShouldShowSuggestionChips(bool should_show) {}
 
+void ShowAccountSnackbar() {}
+
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration) {
   return nil;

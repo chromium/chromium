@@ -263,6 +263,9 @@ int GetLiveCaptionsNumberOfLines();
 // Sets whether the suggestion chips should be shown on the floaty.
 void SetShouldShowSuggestionChips(bool should_show);
 
+// Shows the account snackbar on the Gemini floaty.
+void ShowAccountSnackbar();
+
 // Returns the view controller for the Gemini floaty.
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration);
