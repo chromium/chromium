@@ -325,6 +325,8 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
   return RespondLater();
 }
 
+UserScriptsRegisterFunction::~UserScriptsRegisterFunction() = default;
+
 void UserScriptsRegisterFunction::OnUserScriptFilesValidated(
     scripting::ValidateScriptsResult result) {
   // We cannot proceed if the `browser_context` is not valid as the

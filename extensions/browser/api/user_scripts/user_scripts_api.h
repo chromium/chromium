@@ -25,7 +25,7 @@ class UserScriptsRegisterFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  ~UserScriptsRegisterFunction() override = default;
+  ~UserScriptsRegisterFunction() override;
 
   // Called when user script files have been validated.
   void OnUserScriptFilesValidated(scripting::ValidateScriptsResult result);
