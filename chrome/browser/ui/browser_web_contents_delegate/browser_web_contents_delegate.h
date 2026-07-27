@@ -51,11 +51,25 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
   void RequestKeyboardLock(content::WebContents* web_contents,
                            bool esc_key_locked) override;
   void CancelKeyboardLockRequest(content::WebContents* web_contents) override;
+  void SetTopControlsShownRatio(content::WebContents* web_contents,
+                                float ratio) override;
+  int GetTopControlsHeight() override;
+  bool DoBrowserControlsShrinkRendererSize(
+      content::WebContents* contents) override;
+  int GetVirtualKeyboardHeight(content::WebContents* contents) override;
+  void SetTopControlsGestureScrollInProgress(bool in_progress) override;
+  bool CanOverscrollContent() override;
+  bool ShouldPreserveAbortedURLs(content::WebContents* source) override;
+  void SetFocusToLocationBar() override;
+  void PreHandleDragUpdate(const content::DropData& drop_data,
+                           const gfx::PointF& client_pt) override;
+  void PreHandleDragExit() override;
 
  private:
   const raw_ref<ExclusiveAccessManager> exclusive_access_manager_;
   const raw_ref<BrowserWindow> window_;
   const raw_ref<DesktopBrowserWindowCapabilities> capabilities_;
+  const raw_ref<BrowserWindowInterface> browser_;
   ui::ScopedUnownedUserData<BrowserWebContentsDelegate> scoped_data_holder_;
 };
 

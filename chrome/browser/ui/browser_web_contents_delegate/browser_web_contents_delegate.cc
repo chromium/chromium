@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 
+#include "base/notimplemented.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -14,7 +17,13 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "ui/base/base_window.h"
+
+#if defined(USE_AURA)
+#include "chrome/browser/ui/overscroll_pref_manager.h"
+#endif  // defined(USE_AURA)
 
 DEFINE_USER_DATA(BrowserWebContentsDelegate);
 
@@ -26,6 +35,7 @@ BrowserWebContentsDelegate::BrowserWebContentsDelegate(
     : exclusive_access_manager_(exclusive_access_manager),
       window_(window),
       capabilities_(capabilities),
+      browser_(*browser),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {}
 
 BrowserWebContentsDelegate* BrowserWebContentsDelegate::From(
@@ -104,4 +114,75 @@ void BrowserWebContentsDelegate::CancelKeyboardLockRequest(
     content::WebContents* web_contents) {
   exclusive_access_manager_->keyboard_lock_controller()
       ->CancelKeyboardLockRequest(web_contents);
+}
+
+void BrowserWebContentsDelegate::SetTopControlsShownRatio(
+    content::WebContents* web_contents,
+    float ratio) {
+  window_->SetTopControlsShownRatio(web_contents, ratio);
+}
+
+int BrowserWebContentsDelegate::GetTopControlsHeight() {
+  return window_->GetTopControlsHeight();
+}
+
+bool BrowserWebContentsDelegate::DoBrowserControlsShrinkRendererSize(
+    content::WebContents* contents) {
+  return window_->DoBrowserControlsShrinkRendererSize(contents);
+}
+
+int BrowserWebContentsDelegate::GetVirtualKeyboardHeight(
+    content::WebContents* contents) {
+  // This API is currently only used by View Transitions when the virtual
+  // keyboard resizes content.  On desktop platforms, the virtual keyboard can
+  // only inset the visual viewport so it shouldn't ever be called.
+  NOTIMPLEMENTED();
+  return 0;
+}
+
+void BrowserWebContentsDelegate::SetTopControlsGestureScrollInProgress(
+    bool in_progress) {
+  window_->SetTopControlsGestureScrollInProgress(in_progress);
+}
+
+bool BrowserWebContentsDelegate::CanOverscrollContent() {
+#if defined(USE_AURA)
+  return browser_->GetFeatures()
+      .overscroll_pref_manager()
+      ->CanOverscrollContent();
+#else
+  return false;
+#endif
+}
+
+bool BrowserWebContentsDelegate::ShouldPreserveAbortedURLs(
+    content::WebContents* source) {
+  // Allow failed URLs to stick around in the omnibox on the NTP, but not when
+  // other pages have committed.
+  Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
+  if (!profile || !source->GetController().GetLastCommittedEntry()) {
+    return false;
+  }
+  GURL committed_url(source->GetController().GetLastCommittedEntry()->GetURL());
+  return search::IsNTPOrRelatedURL(committed_url, profile);
+}
+
+void BrowserWebContentsDelegate::SetFocusToLocationBar() {
+  // Two differences between this and FocusLocationBar():
+  // (1) This doesn't get recorded in user metrics, since it's called
+  //     internally.
+  // (2) This is called with |is_user_initiated| == false, because this is a
+  //     renderer initiated focus (this method is a WebContentsDelegate
+  //     override).
+  window_->SetFocusToLocationBar(false);
+}
+
+void BrowserWebContentsDelegate::PreHandleDragUpdate(
+    const content::DropData& drop_data,
+    const gfx::PointF& client_pt) {
+  window_->PreHandleDragUpdate(drop_data, client_pt);
+}
+
+void BrowserWebContentsDelegate::PreHandleDragExit() {
+  window_->PreHandleDragExit();
 }

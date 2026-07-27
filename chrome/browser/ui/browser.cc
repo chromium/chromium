@@ -1085,66 +1085,51 @@ void Browser::TabStripEmpty() {
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
                                        float ratio) {
-  window_->SetTopControlsShownRatio(web_contents, ratio);
+  BrowserWebContentsDelegate::From(this)->SetTopControlsShownRatio(web_contents,
+                                                                   ratio);
 }
 
 int Browser::GetTopControlsHeight() {
-  return window_->GetTopControlsHeight();
+  return BrowserWebContentsDelegate::From(this)->GetTopControlsHeight();
 }
 
 bool Browser::DoBrowserControlsShrinkRendererSize(
     content::WebContents* contents) {
-  return window_->DoBrowserControlsShrinkRendererSize(contents);
+  return BrowserWebContentsDelegate::From(this)
+      ->DoBrowserControlsShrinkRendererSize(contents);
 }
 
 int Browser::GetVirtualKeyboardHeight(content::WebContents* contents) {
-  // This API is currently only used by View Transitions when the virtual
-  // keyboard resizes content.  On desktop platforms, the virtual keyboard can
-  // only inset the visual viewport so it shouldn't ever be called.
-  NOTIMPLEMENTED();
-  return 0;
+  return BrowserWebContentsDelegate::From(this)->GetVirtualKeyboardHeight(
+      contents);
 }
 
 void Browser::SetTopControlsGestureScrollInProgress(bool in_progress) {
-  window_->SetTopControlsGestureScrollInProgress(in_progress);
+  BrowserWebContentsDelegate::From(this)->SetTopControlsGestureScrollInProgress(
+      in_progress);
 }
 
 bool Browser::CanOverscrollContent() {
-#if defined(USE_AURA)
-  return GetFeatures().overscroll_pref_manager()->CanOverscrollContent();
-#else
-  return false;
-#endif
+  return BrowserWebContentsDelegate::From(this)->CanOverscrollContent();
 }
 
 bool Browser::ShouldPreserveAbortedURLs(WebContents* source) {
-  // Allow failed URLs to stick around in the omnibox on the NTP, but not when
-  // other pages have committed.
-  Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
-  if (!profile || !source->GetController().GetLastCommittedEntry()) {
-    return false;
-  }
-  GURL committed_url(source->GetController().GetLastCommittedEntry()->GetURL());
-  return search::IsNTPOrRelatedURL(committed_url, profile);
+  return BrowserWebContentsDelegate::From(this)->ShouldPreserveAbortedURLs(
+      source);
 }
 
 void Browser::SetFocusToLocationBar() {
-  // Two differences between this and FocusLocationBar():
-  // (1) This doesn't get recorded in user metrics, since it's called
-  //     internally.
-  // (2) This is called with |is_user_initiated| == false, because this is a
-  //     renderer initiated focus (this method is a WebContentsDelegate
-  //     override).
-  window_->SetFocusToLocationBar(false);
+  BrowserWebContentsDelegate::From(this)->SetFocusToLocationBar();
 }
 
 void Browser::PreHandleDragUpdate(const content::DropData& drop_data,
                                   const gfx::PointF& client_pt) {
-  window_->PreHandleDragUpdate(drop_data, client_pt);
+  BrowserWebContentsDelegate::From(this)->PreHandleDragUpdate(drop_data,
+                                                              client_pt);
 }
 
 void Browser::PreHandleDragExit() {
-  window_->PreHandleDragExit();
+  BrowserWebContentsDelegate::From(this)->PreHandleDragExit();
 }
 
 void Browser::HandleDragEnded() {
