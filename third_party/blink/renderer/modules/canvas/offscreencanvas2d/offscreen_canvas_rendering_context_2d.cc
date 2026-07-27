@@ -444,7 +444,7 @@ const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
   return nullptr;
 }
 
-void OffscreenCanvasRenderingContext2D::WillDrawWithProvider(
+void OffscreenCanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
   CHECK(shared_image_provider_ || bitmap_provider_);

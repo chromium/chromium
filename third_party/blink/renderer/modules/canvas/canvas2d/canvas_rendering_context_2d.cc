@@ -539,7 +539,7 @@ MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
   return nullptr;
 }
 
-void CanvasRenderingContext2D::WillDrawWithProvider(
+void CanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
   CHECK(shared_image_provider_ || bitmap_provider_);

@@ -211,8 +211,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   const MemoryManagedPaintRecorder* Recorder() const override;
   MemoryManagedPaintRecorder* Recorder();
 
-  void WillDrawWithProvider(const gfx::Rect& dirty_rect,
-                            CanvasPerformanceMonitor::DrawType) final;
+  void WillDraw(const gfx::Rect& dirty_rect,
+                CanvasPerformanceMonitor::DrawType) final;
 
   scoped_refptr<StaticBitmapImage> GetImage() final;
 

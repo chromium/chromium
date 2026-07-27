@@ -608,16 +608,14 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
 
     PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
     if (GetPaintCanvas()) {
-      WillDrawWithProvider(dest_rect,
-                           CanvasPerformanceMonitor::DrawType::kImageData);
+      WillDraw(dest_rect, CanvasPerformanceMonitor::DrawType::kImageData);
     }
     return;
   }
 
   PutByteArray(data_pixmap, source_rect, dest_offset);
   if (GetPaintCanvas()) {
-    WillDrawWithProvider(dest_rect,
-                         CanvasPerformanceMonitor::DrawType::kImageData);
+    WillDraw(dest_rect, CanvasPerformanceMonitor::DrawType::kImageData);
   }
 }
 

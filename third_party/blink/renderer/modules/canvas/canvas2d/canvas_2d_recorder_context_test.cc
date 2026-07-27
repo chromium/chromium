@@ -141,9 +141,8 @@ class Test2DRecordingContext final
   const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
     return &recorder_.getRecordingCanvas();
   }
-  void WillDrawWithProvider(
-      const gfx::Rect& dirty_rect,
-      CanvasPerformanceMonitor::DrawType draw_type) override {}
+  void WillDraw(const gfx::Rect& dirty_rect,
+                CanvasPerformanceMonitor::DrawType) override {}
 
   sk_sp<PaintFilter> StateGetFilter() override {
     return GetState().GetFilterForOffscreenCanvas({}, this);
