@@ -218,11 +218,11 @@ versionCache['androidx.room:room-common'] = '2.8.4'
 versionCache['androidx.room:room-common-jvm'] = '2.8.4'
 versionCache['androidx.room:room-runtime'] = '2.8.4'
 versionCache['androidx.room:room-runtime-android'] = '2.8.4'
-versionCache['androidx.savedstate:savedstate'] = '1.5.0'
-versionCache['androidx.savedstate:savedstate-android'] = '1.5.0'
-versionCache['androidx.savedstate:savedstate-compose'] = '1.5.0'
-versionCache['androidx.savedstate:savedstate-compose-android'] = '1.5.0'
-versionCache['androidx.savedstate:savedstate-ktx'] = '1.5.0'
+versionCache['androidx.savedstate:savedstate'] = '1.6.0-SNAPSHOT'
+versionCache['androidx.savedstate:savedstate-android'] = '1.6.0-SNAPSHOT'
+versionCache['androidx.savedstate:savedstate-compose'] = '1.6.0-SNAPSHOT'
+versionCache['androidx.savedstate:savedstate-compose-android'] = '1.6.0-SNAPSHOT'
+versionCache['androidx.savedstate:savedstate-ktx'] = '1.6.0-SNAPSHOT'
 versionCache['androidx.slidingpanelayout:slidingpanelayout'] = '1.3.0-SNAPSHOT'
 versionCache['androidx.sqlite:sqlite'] = '2.7.0'
 versionCache['androidx.sqlite:sqlite-android'] = '2.7.0'
@@ -350,8 +350,9 @@ versionCache['com.google.guava:listenablefuture'] = '9999.0-empty-to-avoid-confl
 versionCache['com.google.j2objc:j2objc-annotations'] = '3.1'
 versionCache['com.google.jimfs:jimfs'] = '1.3.0'
 versionCache['com.google.mlkit:common'] = '18.11.0'
-versionCache['com.google.mlkit:genai-common'] = '1.0.0-beta3'
-versionCache['com.google.mlkit:genai-prompt'] = '1.0.0-beta2'
+versionCache['com.google.mlkit:genai-common'] = '1.0.0-beta4'
+versionCache['com.google.mlkit:genai-prompt'] = '1.0.0-beta4'
+versionCache['com.google.mlkit:genai-schema'] = '1.0.0-alpha1'
 versionCache['com.google.protobuf:protobuf-javalite'] = '4.36.0-RC1'
 versionCache['com.google.protobuf:protobuf-lite'] = '3.0.1'
 versionCache['com.google.testing.compile:compile-testing'] = '0.23.0'
@@ -413,7 +414,7 @@ versionCache['org.hamcrest:hamcrest-library'] = '2.2'
 versionCache['org.jetbrains.kotlin:kotlin-android-extensions-runtime'] = '1.9.22'
 versionCache['org.jetbrains.kotlin:kotlin-bom'] = '1.8.22'
 versionCache['org.jetbrains.kotlin:kotlin-parcelize-runtime'] = '1.9.22'
-versionCache['org.jetbrains.kotlin:kotlin-stdlib'] = '2.2.20'
+versionCache['org.jetbrains.kotlin:kotlin-stdlib'] = '2.3.21'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-common'] = '2.0.20'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk7'] = '1.9.0'
 versionCache['org.jetbrains.kotlin:kotlin-stdlib-jdk8'] = '1.8.21'
@@ -481,9 +482,8 @@ dependencies {
     compileLatest 'com.google.android.play:feature-delivery:+'
     compileLatest 'com.google.android.play:review:+'
     compileLatest 'com.google.mlkit:common:+'
-    // Pinned to avoid R8 ServiceLoader inlining warnings and size increase.
-    compileLatest 'com.google.mlkit:genai-common:1.0.0-beta3'
-    compileLatest 'com.google.mlkit:genai-prompt:1.0.0-beta2'
+    compileLatest 'com.google.mlkit:genai-common:+'
+    compileLatest 'com.google.mlkit:genai-prompt:+'
     androidTestCompileLatest 'com.google.truth:truth:+'
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
@@ -547,9 +547,9 @@ dependencies {
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
-    pathToBuildGradle 'third_party/android_deps/autorolled'
-    cipdPackagePrefix 'chromium/third_party/android_deps/autorolled'
+    pathToBuildGradle = 'third_party/android_deps/autorolled'
+    cipdPackagePrefix = 'chromium/third_party/android_deps/autorolled'
     internalTargetVisibility = [ '//third_party/androidx:*', ':*' ]
-    ignoreDEPS true
-    writeBoM true
+    ignoreDEPS = true
+    writeBoM = true
 }

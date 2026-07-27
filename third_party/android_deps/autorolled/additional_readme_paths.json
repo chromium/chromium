@@ -62,6 +62,7 @@
     "committed/libs/com_google_mlkit_common",
     "committed/libs/com_google_mlkit_genai_common",
     "committed/libs/com_google_mlkit_genai_prompt",
+    "committed/libs/com_google_mlkit_genai_schema",
     "committed/libs/com_google_protobuf_protobuf_javalite",
     "committed/libs/com_google_testing_compile_compile_testing",
     "committed/libs/com_google_testparameterinjector_test_parameter_injector",

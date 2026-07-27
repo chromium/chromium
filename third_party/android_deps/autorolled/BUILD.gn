@@ -683,6 +683,7 @@ template("define_autorolled_targets") {
         "$google_play_services_package:google_play_services_tasks_java",
         "//third_party/android_deps:com_google_mlkit_common_java",
         "//third_party/android_deps:com_google_mlkit_genai_common_java",
+        "//third_party/android_deps:com_google_mlkit_genai_schema_java",
         "//third_party/android_deps:guava_java",
         "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
         "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
@@ -1604,6 +1605,25 @@ template("define_autorolled_targets") {
       ]
       testonly = true
       deps = [ "//third_party/android_deps:guava_java" ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
+    java_prebuilt("com_google_mlkit_genai_schema_java") {
+      jar_path =
+          "autorolled/cipd/libs/com_google_mlkit_genai_schema/genai-schema.jar"
+      output_name = "com_google_mlkit_genai_schema"
+      supports_android = true
+      requires_android = true
+      enable_bytecode_checks = false
+
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/autorolled/build.gradle.template
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy

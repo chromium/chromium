@@ -57,6 +57,9 @@ _IGNORE_WARNINGS = (
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
     # Happens on internal builds. It's a real failure, but happens in dead code.
     r'(?:GeneratedExtensionRegistryLoader|ExtensionRegistryLite)\.class:.*Could not inline ServiceLoader\.load',
+    # MLKit GenAI Prompt ServiceLoader usages aren't currently optimizable by
+    # r8, see b/538647947.
+    r'com/google/android/gms/internal/mlkit_genai_prompt/zzy[a-z]\.class:.*Could not inline ServiceLoader\.load',
     # This class is referenced by kotlinx-coroutines-core-jvm but it does not
     # depend on it. Not actually needed though.
     r'Missing class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement',
