@@ -1095,15 +1095,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   SetPrimaryAccount();
 
   views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
-  views::Widget* bubble_widget = nullptr;
-  base::RunLoop run_loop;
-  observer.set_shown_callback(base::BindRepeating(
-      [](views::Widget** out_widget, base::RepeatingClosure quit_closure,
-          views::Widget* widget) {
-        *out_widget = widget;
-        quit_closure.Run();
-      },
-      &bubble_widget, run_loop.QuitClosure()));
+  base::test::TestFuture<views::Widget*> widget_future;
+  observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
   EXPECT_CALL(closing_callback, Run()).Times(1);
@@ -1120,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
       .signin_view_controller()
       ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
 
-  run_loop.Run();
+  views::Widget* bubble_widget = widget_future.Get();
   ASSERT_TRUE(bubble_widget);
 
   views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
@@ -1173,20 +1166,17 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ClosesOnSignOut) {
   AccountInfo account_info = SetPrimaryAccount();
 
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  base::test::TestFuture<views::Widget*> widget_future;
+  observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
   base::MockCallback<base::OnceClosure> closing_callback;
   browser()
       ->GetFeatures()
       .signin_view_controller()
       ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  views::Widget* bubble_widget = widget_future.Get();
 
-  views::Widget* bubble_widget =
-      views::ElementTrackerViews::GetInstance()
-          ->GetFirstMatchingView(
-              kCrossDeviceSigninQrBubbleWebViewElementId,
-              views::ElementTrackerViews::GetContextForWidget(
-                  BrowserView::GetBrowserViewForBrowser(browser())
-                      ->GetWidget()))
-          ->GetWidget();
   ASSERT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
 
@@ -1199,20 +1189,17 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ClosesOnRefreshTokenRemoved) {
   AccountInfo account_info = SetPrimaryAccount();
 
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  base::test::TestFuture<views::Widget*> widget_future;
+  observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
   base::MockCallback<base::OnceClosure> closing_callback;
   browser()
       ->GetFeatures()
       .signin_view_controller()
       ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  views::Widget* bubble_widget = widget_future.Get();
 
-  views::Widget* bubble_widget =
-      views::ElementTrackerViews::GetInstance()
-          ->GetFirstMatchingView(
-              kCrossDeviceSigninQrBubbleWebViewElementId,
-              views::ElementTrackerViews::GetContextForWidget(
-                  BrowserView::GetBrowserViewForBrowser(browser())
-                      ->GetWidget()))
-          ->GetWidget();
   ASSERT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
 
@@ -1224,20 +1211,17 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ClosesOnRefreshTokenError) {
   AccountInfo account_info = SetPrimaryAccount();
 
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  base::test::TestFuture<views::Widget*> widget_future;
+  observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
   base::MockCallback<base::OnceClosure> closing_callback;
   browser()
       ->GetFeatures()
       .signin_view_controller()
       ->ShowCrossDeviceSigninQrBubble(closing_callback.Get());
+  views::Widget* bubble_widget = widget_future.Get();
 
-  views::Widget* bubble_widget =
-      views::ElementTrackerViews::GetInstance()
-          ->GetFirstMatchingView(
-              kCrossDeviceSigninQrBubbleWebViewElementId,
-              views::ElementTrackerViews::GetContextForWidget(
-                  BrowserView::GetBrowserViewForBrowser(browser())
-                      ->GetWidget()))
-          ->GetWidget();
   ASSERT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
 

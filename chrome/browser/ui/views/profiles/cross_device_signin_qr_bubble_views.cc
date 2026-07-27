@@ -25,7 +25,10 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -42,6 +45,10 @@
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kCrossDeviceSigninQrBubbleWebViewElementId);
 
 namespace {
+
+constexpr int kDialogWidth = 370;
+constexpr int kHorizontalPadding = 40;
+constexpr int kWebViewWidth = kDialogWidth - kHorizontalPadding;
 
 class CrossDeviceSigninQrWebView : public views::WebView,
                                    public signin::IdentityManager::Observer {
@@ -91,6 +98,32 @@ class CrossDeviceSigninQrWebView : public views::WebView,
       if (GetWidget()) {
         GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       }
+    }
+  }
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override {
+    if (auto* view = GetWebContents()->GetRenderWidgetHostView()) {
+      view->EnableAutoResize(gfx::Size(kWebViewWidth, 100),
+                             gfx::Size(kWebViewWidth, 800));
+    }
+  }
+
+  // content::WebContentsDelegate:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {
+    views::WebView::ResizeDueToAutoResize(source, new_size);
+    views::Widget* widget = GetWidget();
+    if (!widget) {
+      return;
+    }
+    if (auto* bubble_delegate =
+            widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->SizeToContents();
+    }
+
+    if (!widget->IsVisible()) {
+      widget->Show();
     }
   }
 
@@ -159,15 +192,10 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto web_view =
       std::make_unique<CrossDeviceSigninQrWebView>(browser->GetProfile());
   web_view->LoadInitialURL(GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
-  // The overall dialog width is 370px to prevent the native title from
-  // wrapping.
-  constexpr int kDialogWidth = 370;
-  // The DialogModel adds internal padding (typically 20px per side).
-  // The WebView bounds must account for this to prevent horizontal overflow.
-  constexpr int kHorizontalPadding = 40;
-  constexpr int kWebViewWidth = kDialogWidth - kHorizontalPadding;
-  web_view->EnableSizingFromWebContents(gfx::Size(kWebViewWidth, 200),
-                                        gfx::Size(kWebViewWidth, 800));
+  // An initial non-zero height is required on macOS to ensure WebContents
+  // allocates a valid initial viewport for rendering before auto-resize.
+  constexpr int kPlaceholderHeight = 200;
+  web_view->SetPreferredSize(gfx::Size(kWebViewWidth, kPlaceholderHeight));
   web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
 
   auto dialog_model =

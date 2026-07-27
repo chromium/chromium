@@ -561,7 +561,6 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
   bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
       delegate.release(),
       base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));
-  bubble_widget_->Show();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
