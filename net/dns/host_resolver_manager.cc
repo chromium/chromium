@@ -1329,7 +1329,7 @@ bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
 
 void HostResolverManager::PushDnsTasks(bool system_task_allowed,
                                        SecureDnsMode secure_dns_mode,
-                                       bool insecure_tasks_allowed,
+                                       InsecureDnsMode insecure_dns_mode,
                                        bool allow_cache,
                                        bool prioritize_local_lookups,
                                        ResolveContext* resolve_context,
@@ -1341,8 +1341,10 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
   // DnsTasks. It is still necessary to call this method, however, so that the
   // correct cache tasks for the secure dns mode are added.
   const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
+  const bool insecure_tasks_allowed =
+      (insecure_dns_mode != InsecureDnsMode::kDisabled);
   const TaskType dns_task_type =
-      (dns_client_->GetInsecureDnsMode() == InsecureDnsMode::kEnabledPlatform)
+      (insecure_dns_mode == InsecureDnsMode::kEnabledPlatform)
           ? TaskType::DNS_PLATFORM
           : TaskType::DNS;
   // Upgrade the insecure DnsTask depending on the secure dns mode.
@@ -1461,13 +1463,15 @@ void HostResolverManager::CreateTaskSequence(
             has_address_type &&
             job_key.secure_dns_mode != SecureDnsMode::kSecure;
         if (dns_client_ && dns_client_->GetEffectiveConfig()) {
-          bool insecure_allowed =
-              dns_client_->CanUseInsecureDnsTransactions() &&
+          InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
+          if (dns_client_->CanUseInsecureDnsTransactions() &&
               !dns_client_->FallbackFromInsecureTransactionPreferred() &&
               (has_address_type ||
-               dns_client_->CanQueryAdditionalTypesViaInsecureDns());
+               dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
+            insecure_dns_mode = dns_client_->GetInsecureDnsMode();
+          }
           PushDnsTasks(system_task_allowed, job_key.secure_dns_mode,
-                       insecure_allowed, allow_cache, prioritize_local_lookups,
+                       insecure_dns_mode, allow_cache, prioritize_local_lookups,
                        &*job_key.resolve_context, out_tasks);
         } else if (system_task_allowed) {
           out_tasks->push_back(TaskType::SYSTEM);
@@ -1486,12 +1490,14 @@ void HostResolverManager::CreateTaskSequence(
       break;
     case HostResolverSource::DNS:
       if (dns_client_ && dns_client_->GetEffectiveConfig()) {
-        bool insecure_allowed =
-            dns_client_->CanUseInsecureDnsTransactions() &&
+        InsecureDnsMode insecure_dns_mode = InsecureDnsMode::kDisabled;
+        if (dns_client_->CanUseInsecureDnsTransactions() &&
             (has_address_type ||
-             dns_client_->CanQueryAdditionalTypesViaInsecureDns());
+             dns_client_->CanQueryAdditionalTypesViaInsecureDns())) {
+          insecure_dns_mode = dns_client_->GetInsecureDnsMode();
+        }
         PushDnsTasks(false /* system_task_allowed */, job_key.secure_dns_mode,
-                     insecure_allowed, allow_cache, prioritize_local_lookups,
+                     insecure_dns_mode, allow_cache, prioritize_local_lookups,
                      &*job_key.resolve_context, out_tasks);
       }
       break;

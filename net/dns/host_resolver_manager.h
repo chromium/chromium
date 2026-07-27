@@ -453,7 +453,7 @@ class NET_EXPORT HostResolverManager
   // may push an insecure cache lookup ahead of a secure DnsTask.
   void PushDnsTasks(bool system_task_allowed,
                     SecureDnsMode secure_dns_mode,
-                    bool insecure_tasks_allowed,
+                    InsecureDnsMode insecure_dns_mode,
                     bool allow_cache,
                     bool prioritize_local_lookups,
                     ResolveContext* resolve_context,
