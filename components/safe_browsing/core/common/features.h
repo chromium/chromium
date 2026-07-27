@@ -31,11 +31,6 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
-// Controls whether V4Store attempts to migrate V5 stores on disk to V4. This
-// feature is temporary while the `kLocalListsUseSBv5` feature is still only
-// partially implemented.
-BASE_DECLARE_FEATURE(kAllowSafeBrowsingV4StoreDiskMigrationChanges);
-
 // Enables antivirus product info to be included in download pings.
 BASE_DECLARE_FEATURE(kAntivirusTelemetryForDownloads);
 

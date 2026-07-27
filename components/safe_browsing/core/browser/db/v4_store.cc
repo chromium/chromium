@@ -244,9 +244,7 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       is_eligible_for_migration_(is_eligible_for_migration),
       is_extensions_blocklist_(is_extensions_blocklist) {
   CHECK_GT(v5_prefix_size_, 0u);
-  if (base::FeatureList::IsEnabled(
-          kAllowSafeBrowsingV4StoreDiskMigrationChanges) &&
-      is_extensions_blocklist_) {
+  if (is_extensions_blocklist_) {
     CHECK_EQ(v5_prefix_size_, 16u);
   }
 }
@@ -773,11 +771,6 @@ V5ToV4MigrationResult V4Store::AttemptV5ToV4Migration() {
 
 StoreReadResult V4Store::ReadFromDisk() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  if (!base::FeatureList::IsEnabled(
-          kAllowSafeBrowsingV4StoreDiskMigrationChanges)) {
-    return ReadFromDiskInternal();
-  }
 
   V5ToV4MigrationResult migration_result = AttemptV5ToV4Migration();
   base::UmaHistogramEnumeration("SafeBrowsing.V4Store.V5ToV4MigrationResult",
