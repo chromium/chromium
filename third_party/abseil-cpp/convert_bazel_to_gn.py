@@ -14,6 +14,11 @@ import re
 import subprocess
 import sys
 
+# List of targets that do not have matching gn target generated.
+_SKIP_TARGETS = {
+    'types:any_span_test':
+    'any_span_test is not ported because relies on RTTI',
+}
 
 def _ast_get_value(node):
     if isinstance(node, ast.Constant):
@@ -27,8 +32,9 @@ def _ast_get_value(node):
 
 class _Converter:
 
-    def __init__(self, old_gn_content=None):
+    def __init__(self, rel_path, old_gn_content=None):
         self.bazel_targets = []
+        self.rel_path = rel_path
         self.year = str(datetime.datetime.now().year)
         if old_gn_content:
             m = re.search(r'# Copyright (\d{4})', old_gn_content)
@@ -110,6 +116,14 @@ class _Converter:
 
             is_test = bt.get('is_test')
             rule = 'absl_test' if is_test else 'absl_source_set'
+            target_name = f"{self.rel_path}:{name}"
+
+            skip = _SKIP_TARGETS.get(target_name)
+            if skip:
+                out.append(f'# {skip}')
+                out.append(f'# {rule}("{name}")')
+                out.append(f'')
+                continue
 
             # Start writing the output.
             out.append(f'{rule}("{name}") {{')
@@ -159,9 +173,11 @@ class _Converter:
 
 
 def convert_one(path):
+    m = re.search(r'.*/absl/(.*)', path)
+    rel_path = m.group(1) if m else ''
     bazel_path = os.path.join(path, 'BUILD.bazel')
     gn_path = os.path.join(path, 'BUILD.gn')
-    logging.info(f'Converting {bazel_path} -> {gn_path}')
+    logging.info(f'Converting {rel_path}/BUILD.bazel')
     old_gn = None
     if os.path.exists(gn_path):
         with open(gn_path, 'r', encoding='utf-8') as f:
@@ -170,7 +186,7 @@ def convert_one(path):
     with open(bazel_path, 'r', encoding='utf-8') as f:
         bazel_content = f.read()
 
-    converter = _Converter(old_gn)
+    converter = _Converter(rel_path, old_gn)
     converter.parse_bazel(bazel_content)
 
     if not converter.bazel_targets:
@@ -197,6 +213,7 @@ def convert_all(root_dir):
             'meta',
             'numeric',
             'time',
+            'types',
             'utility',
     ]:
         convert_one(os.path.join(root_dir, 'absl', folder))
