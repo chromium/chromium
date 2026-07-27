@@ -273,15 +273,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                                  const url::Origin& top_frame_origin,
                                  bool record_metrics = true);
 
-  // Ensures that `cookie` and `status` are domain-matches for `url`. Returns
-  // true if `cookie` and `status` match `url`, or false otherwise.
-  //
-  // If this returns false, it also calls `mojo::ReportBadMessage()` to close
-  // the pipe.
-  bool ValidateCookieDomain(const GURL& url,
-                            const net::CanonicalCookie* cookie,
-                            const net::CookieInclusionStatus& status);
-
   const net::SiteForCookies& BoundSiteForCookies() const {
     return isolation_info_.site_for_cookies();
   }

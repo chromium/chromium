@@ -151,6 +151,20 @@ void HistogramScriptCookieExpiration(const net::CanonicalCookie& cookie) {
   }
 }
 
+bool IsCookieDomainValid(const GURL& url,
+                         const net::CanonicalCookie* cookie,
+                         const net::CookieInclusionStatus& status) {
+  // Don't allow setting cookies on other domains. See crbug.com/996786.
+  if (cookie && !cookie->IsDomainMatch(url.GetHost())) {
+    return false;
+  }
+  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_DOMAIN_MISMATCH)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 RestrictedCookieManager::UmaMetricsUpdater::UmaMetricsUpdater() = default;
@@ -707,7 +721,9 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie_params->last_access, cookie_params->secure,
           cookie_params->http_only, cookie_params->same_site,
           cookie_params->priority, cookie_partition_key, &status);
-  if (!ValidateCookieDomain(url, cookie.get(), status)) {
+  if (!IsCookieDomainValid(url, cookie.get(), status)) {
+    receiver_.ReportBadMessage(
+        "Setting cookies on other domains is disallowed.");
     std::move(callback).Run(false);
     return;
   }
@@ -733,7 +749,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
                                   /*record_metrics=*/false));
-  CHECK(ValidateCookieDomain(url, &cookie, status));
+  CHECK(IsCookieDomainValid(url, &cookie, status));
   CHECK(status.IsInclude());
   CHECK((!cookie.IsPartitioned() &&
          !net::CookiePartitionKey::HasNonce(cookie_partition_key_)) ||
@@ -942,10 +958,6 @@ void RestrictedCookieManager::SetCookieFromString(
       net::CanonicalCookie::Create(
           url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_, net::CookieSourceType::kScript, &status);
-  // Don't validate the cookie's domain via `ValidateCookieDomain` here. We
-  // don't require the caller to validate `cookie`'s domain before invoking
-  // `SetCookieFromString` since that would involve parsing `cookie`; so we must
-  // not BadMessage the caller if the cookie domain mismatches.
 
   if (!parsed_cookie) {
     if (cookie_observer_) {
@@ -965,6 +977,20 @@ void RestrictedCookieManager::SetCookieFromString(
               storage_access_api_status, is_ad_tagged, apply_devtools_overrides,
               /*force_disable_third_party_cookies=*/false)));
     }
+    return;
+  }
+
+  if (!IsCookieDomainValid(url, parsed_cookie.get(), status)) {
+    // We don't require the caller to validate `cookie`'s domain before invoking
+    // `SetCookieFromString` since that would involve parsing `cookie`; so we
+    // must not BadMessage the caller if the cookie domain mismatches.
+    //
+    // A mismatch could occur here because GURL does not lowercase the host when
+    // the URL uses a custom scheme, but `CanonicalCookie::Create` *does* ensure
+    // the cookie's domain is lowercased; and CanonicalCookie's domain-matching
+    // logic is case-sensitive. So it is possible for CanonicalCookie to create
+    // a cookie that is not a domain-match for the GURL it was created with,
+    // when the GURL uses a custom scheme and non-lowercase host.
     return;
   }
   if (base::ShouldRecordSubsampledMetric(net::kHistogramSampleProbability)) {
@@ -1123,21 +1149,6 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   receiver_.ReportBadMessage("Incorrect url origin");
   return false;
-}
-
-bool RestrictedCookieManager::ValidateCookieDomain(
-    const GURL& url,
-    const net::CanonicalCookie* cookie,
-    const net::CookieInclusionStatus& status) {
-  // Don't allow setting cookies on other domains. See crbug.com/996786.
-  if ((cookie && !cookie->IsDomainMatch(url.GetHost())) ||
-      status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
-                                    EXCLUDE_DOMAIN_MISMATCH)) {
-    receiver_.ReportBadMessage(
-        "Setting cookies on other domains is disallowed.");
-    return false;
-  }
-  return true;
 }
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(

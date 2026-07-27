@@ -1355,6 +1355,84 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWithMismatchingDomain) {
   ASSERT_FALSE(received_bad_message());
 }
 
+TEST_P(RestrictedCookieManagerTest,
+       SetCookieFromStringWithNonStandardSchemeUppercaseHost) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::EnableNonStandardSchemesForAndroidWebView();
+
+  const GURL custom_url("custom://MyHost/test/");
+  const url::Origin custom_origin = url::Origin::Create(custom_url);
+  const net::SiteForCookies custom_site_for_cookies =
+      net::SiteForCookies::FromUrl(custom_url);
+
+  service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, custom_origin, custom_origin,
+      custom_site_for_cookies));
+  service_->OverrideOriginForTesting(custom_origin);
+
+  backend()->SetCookieFromString(
+      custom_url, custom_site_for_cookies, custom_origin,
+      net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      "new-name=new-value;path=/");
+  service_remote_.FlushForTesting();
+  // For non-standard schemes with uppercase letters in the host (like
+  // custom://MyHost), CanonicalCookie::Create lowercases the domain to
+  // "myhost", but GURL does not lowercase the host. Therefore domain matching
+  // against "MyHost" will still fail because that logic assumes the host and
+  // domain have been normalized to lowercase. SetCookieFromString should fail,
+  // without reporting a bad message or crashing.
+  ASSERT_FALSE(received_bad_message());
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->name = "new-name";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  custom_url, custom_site_for_cookies, custom_origin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              IsEmpty());
+
+  EXPECT_THAT(RecordedActivity(), IsEmpty());
+}
+
+TEST_P(
+    RestrictedCookieManagerTest,
+    SetCookieFromStringWithNonStandardSchemeUppercaseHost_UnrelatedErrorRecorded) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::EnableNonStandardSchemesForAndroidWebView();
+
+  const GURL custom_url("custom://MyHost/test/");
+  const url::Origin custom_origin = url::Origin::Create(custom_url);
+  const net::SiteForCookies custom_site_for_cookies =
+      net::SiteForCookies::FromUrl(custom_url);
+
+  service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, custom_origin, custom_origin,
+      custom_site_for_cookies));
+  service_->OverrideOriginForTesting(custom_origin);
+
+  // This line uses the _Secure- prefix incorrectly, and also runs into the
+  // domain mismatch issue from the above test case. The cookie observer should
+  // still be notified about the invalid prefix.
+  backend()->SetCookieFromString(
+      custom_url, custom_site_for_cookies, custom_origin,
+      net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      "__Secure-new-name=new-value;path=/");
+  service_remote_.FlushForTesting();
+  ASSERT_FALSE(received_bad_message());
+
+  WaitForCallback();
+  EXPECT_THAT(RecordedActivity(),
+              ElementsAre(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kChange, custom_url,
+                  custom_site_for_cookies,
+                  CookieOrLine("__Secure-new-name=new-value;path=/",
+                               mojom::CookieOrLine::Tag::kCookieString),
+                  net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_INVALID_PREFIX}))));
+}
+
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromOpaqueOrigin) {
   url::Origin opaque_origin;
   ASSERT_TRUE(opaque_origin.opaque());
