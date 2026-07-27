@@ -449,6 +449,7 @@ public class TabBottomSheetCoordinator {
                 } else {
                     setToFixedHeightOrFallback();
                 }
+                updateRoundingEdges();
             }
 
             @Override

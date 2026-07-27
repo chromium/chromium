@@ -425,9 +425,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                     || mSheetController.isSheetHiding()) {
                 return 0;
             }
-            if (!mSheetController.isFullWidth()) {
-                return 0;
-            }
             return BottomSheetUtils.isContentActingAsBrowserControls(
                             mSheetController, mIsBottomSheetAsBrowserControlsEnabled)
                     ? mSheetController.getCurrentPeekHeightPx()

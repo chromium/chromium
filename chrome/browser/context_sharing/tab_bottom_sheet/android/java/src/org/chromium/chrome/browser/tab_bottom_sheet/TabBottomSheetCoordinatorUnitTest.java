@@ -1007,6 +1007,28 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testUpdateRoundingEdges_FullWidth_OnContainerSizeChanged() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        RoundedCornerOutlineProvider outlineProvider = mCoordinator.getOutlineProviderForTesting();
+
+        when(mMockBottomSheetController.isFullWidth()).thenReturn(true);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        assertFalse(outlineProvider.isTopEdgeRounded());
+    }
+
+    @Test
+    public void testUpdateRoundingEdges_NotFullWidth_OnContainerSizeChanged() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        RoundedCornerOutlineProvider outlineProvider = mCoordinator.getOutlineProviderForTesting();
+
+        when(mMockBottomSheetController.isFullWidth()).thenReturn(false);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        assertTrue(outlineProvider.isTopEdgeRounded());
+    }
+
+    @Test
     public void testSheetEventsCallback_onBottomSheetOpened_SuppressedDuringHide() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 

@@ -286,6 +286,7 @@ public class BottomSheetManagerUnitTest {
     public void testGetBackgroundColor() {
         when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         when(mSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mSheetController.isFullWidth()).thenReturn(true);
         when(mSheetController.getSheetBackgroundColor()).thenReturn(Color.RED);
         assertEquals(Color.RED, (int) mLayer.getBackgroundColor());
     }

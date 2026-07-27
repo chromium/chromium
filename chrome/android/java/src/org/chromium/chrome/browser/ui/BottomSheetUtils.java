@@ -29,6 +29,6 @@ public final class BottomSheetUtils {
         if (!isBottomSheetAsBrowserControlsEnabled) return false;
 
         BottomSheetContent content = controller.getCurrentSheetContent();
-        return content != null && content.actsAsBrowserControls();
+        return content != null && content.actsAsBrowserControls() && controller.isFullWidth();
     }
 }
