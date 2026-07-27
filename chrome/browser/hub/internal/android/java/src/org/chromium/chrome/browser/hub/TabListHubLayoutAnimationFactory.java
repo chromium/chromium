@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.hub;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 
@@ -31,10 +29,10 @@ public class TabListHubLayoutAnimationFactory {
      * @param onAlphaChange Observer to notify when alpha changes during animations.
      */
     public static HubLayoutAnimatorProvider createFadeInTabListAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull SyncOneshotSupplier<List<View>> animationDataSupplier,
+            HubContainerView hubContainerView,
+            SyncOneshotSupplier<List<View>> animationDataSupplier,
             long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            DoubleConsumer onAlphaChange) {
         return new TabListHubLayoutAnimatorProvider(
                 HubLayoutAnimationType.FADE_IN,
                 hubContainerView,

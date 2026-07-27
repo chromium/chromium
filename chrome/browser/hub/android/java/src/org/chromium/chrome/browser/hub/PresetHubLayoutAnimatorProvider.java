@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -24,7 +22,7 @@ public class PresetHubLayoutAnimatorProvider implements HubLayoutAnimatorProvide
      *
      * @param animator The {@link HubLayoutAnimator} to use.
      */
-    public PresetHubLayoutAnimatorProvider(@NonNull HubLayoutAnimator animator) {
+    public PresetHubLayoutAnimatorProvider(HubLayoutAnimator animator) {
         mPresetAnimatorSupplier = new SyncOneshotSupplierImpl<>();
         mPresetAnimatorSupplier.set(animator);
     }
@@ -37,7 +35,7 @@ public class PresetHubLayoutAnimatorProvider implements HubLayoutAnimatorProvide
     }
 
     @Override
-    public @NonNull SyncOneshotSupplier<HubLayoutAnimator> getAnimatorSupplier() {
+    public SyncOneshotSupplier<HubLayoutAnimator> getAnimatorSupplier() {
         return mPresetAnimatorSupplier;
     }
 
