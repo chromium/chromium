@@ -929,6 +929,14 @@ public class BookmarkUtils {
         return bookmarkIds;
     }
 
+    /**
+     * @return Whether the desktop bookmarks layout is enabled.
+     */
+    public static boolean isDesktopBookmarksLayoutEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_DESKTOP_LAYOUT)
+                && DeviceInfo.isDesktop();
+    }
+
     private static Locale getLocale(Activity activity) {
         LocaleList locales = activity.getResources().getConfiguration().getLocales();
         if (locales.size() > 0) {
