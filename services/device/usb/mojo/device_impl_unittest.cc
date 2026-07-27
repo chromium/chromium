@@ -206,6 +206,15 @@ class USBDeviceImplTest : public testing::Test {
   bool is_device_open() const { return open_count_ > 0; }
   MockUsbDeviceHandle& mock_handle() { return *mock_handle_.get(); }
 
+  void WaitForDeviceClose() {
+    if (!is_device_open()) {
+      return;
+    }
+    base::RunLoop run_loop;
+    device_close_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   void set_allow_reset(bool allow_reset) { allow_reset_ = allow_reset; }
 
   // Creates a mock device and binds a Device proxy to a Device service impl
@@ -290,6 +299,16 @@ class USBDeviceImplTest : public testing::Test {
     return GetMockDeviceProxy(/*client=*/mojo::NullRemote());
   }
 
+  mojo::Remote<mojom::UsbDevice> GetNewMockDeviceProxyForExistingDevice() {
+    mojo::Remote<mojom::UsbDevice> proxy;
+    DeviceImpl::Create(mock_device_, proxy.BindNewPipeAndPassReceiver(),
+                       mojo::NullRemote(),
+                       /*blocked_interface_classes=*/{},
+                       /*allow_security_key_requests=*/false,
+                       /*allow_unrestricted_control_transfers=*/false);
+    return proxy;
+  }
+
   void AddMockConfig(mojom::UsbConfigurationInfoPtr config) {
     DCHECK(!mock_configs_.contains(config->configuration_value));
     mock_configs_.insert(
@@ -348,6 +367,9 @@ class USBDeviceImplTest : public testing::Test {
   void CloseMockHandle() {
     EXPECT_GT(open_count_, 0);
     open_count_--;
+    if (open_count_ == 0 && device_close_closure_) {
+      std::move(device_close_closure_).Run();
+    }
   }
 
   void SetConfiguration(uint8_t value,
@@ -551,6 +573,7 @@ class USBDeviceImplTest : public testing::Test {
   base::queue<std::vector<UsbIsochronousPacketPtr>> mock_outbound_packets_;
 
   std::set<uint8_t> claimed_interfaces_;
+  base::OnceClosure device_close_closure_;
 };
 
 }  // namespace
@@ -1020,16 +1043,15 @@ TEST_F(USBDeviceImplTest, ControlTransferInBlockedDuringSetConfiguration) {
   params->value = 0;
   params->index = 0;
 
-  EXPECT_CALL(mock_handle(), Close());
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  device->ControlTransferIn(std::move(params), 8, 0, base::DoNothing());
-
-  EXPECT_EQ("Device or interface state change in progress.",
-            bad_message_observer.WaitForBadMessage());
+  base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+      transfer_future;
+  device->ControlTransferIn(std::move(params), 8, 0,
+                            transfer_future.GetCallback());
+  EXPECT_EQ(transfer_future.Get<0>(),
+            mojom::UsbTransferStatus::PERMISSION_DENIED);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 // Verify that ControlTransferOut requests are blocked and rejected as a bad
@@ -1072,17 +1094,14 @@ TEST_F(USBDeviceImplTest, ControlTransferOutBlockedDuringSetConfiguration) {
   params->value = 0;
   params->index = 0;
 
-  EXPECT_CALL(mock_handle(), Close());
-
-  mojo::test::BadMessageObserver bad_message_observer;
+  base::test::TestFuture<mojom::UsbTransferStatus> transfer_future;
   std::vector<uint8_t> data = {1, 2, 3, 4};
-  device->ControlTransferOut(std::move(params), data, 0, base::DoNothing());
-
-  EXPECT_EQ("Device or interface state change in progress.",
-            bad_message_observer.WaitForBadMessage());
+  device->ControlTransferOut(std::move(params), data, 0,
+                             transfer_future.GetCallback());
+  EXPECT_EQ(transfer_future.Get(), mojom::UsbTransferStatus::PERMISSION_DENIED);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, ControlTransferInBlockedDuringReleaseInterface) {
@@ -1136,16 +1155,134 @@ TEST_F(USBDeviceImplTest, ControlTransferInBlockedDuringReleaseInterface) {
   params->value = 0;
   params->index = 0;
 
-  EXPECT_CALL(mock_handle(), Close());
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  device->ControlTransferIn(std::move(params), 8, 0, base::DoNothing());
-
-  EXPECT_EQ("Device or interface state change in progress.",
-            bad_message_observer.WaitForBadMessage());
+  base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+      transfer_future;
+  device->ControlTransferIn(std::move(params), 8, 0,
+                            transfer_future.GetCallback());
+  EXPECT_EQ(transfer_future.Get<0>(),
+            mojom::UsbTransferStatus::PERMISSION_DENIED);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
+}
+
+TEST_F(USBDeviceImplTest,
+       PipeClosureDuringSetConfigurationDoesNotLeakStateFlag) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/0,
+                                  /*alternate_setting=*/0,
+                                  /*class_code=*/1,
+                                  /*subclass_code=*/2,
+                                  /*protocol_code=*/3)
+                    .Build());
+
+  base::test::TestFuture<UsbDeviceHandle::ResultCallback>
+      set_configuration_future;
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _))
+      .WillOnce([&](int value, UsbDeviceHandle::ResultCallback& callback) {
+        set_configuration_future.SetValue(std::move(callback));
+      });
+
+  // Initiate SetConfiguration but only save the callback without invoking it.
+  device->SetConfiguration(1, base::NullCallback());
+
+  // Ensure the request has reached the service.
+  ASSERT_TRUE(set_configuration_future.Wait());
+
+  // Simulate tab closure / pipe breakage!
+  EXPECT_CALL(mock_handle(), Close());
+  device.reset();
+
+  // Wait until the device is marked closed in the browser.
+  WaitForDeviceClose();
+
+  // Now, invoke the postponed SetConfiguration callback (simulating the
+  // hardware completing the request AFTER the tab was closed).
+  mock_device().ActiveConfigurationChanged(1);
+  std::move(set_configuration_future.Take()).Run(true);
+
+  // Re-open the SAME device from a NEW connection (like a new tab/page).
+  mojo::Remote<mojom::UsbDevice> new_device =
+      GetNewMockDeviceProxyForExistingDevice();
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> new_open_future;
+  new_device->Open(new_open_future.GetCallback());
+  EXPECT_TRUE(new_open_future.Get()->is_success());
+
+  // Try to ClaimInterface(0) on this NEW connection.
+  // If the state flag leaked, this will FAIL as a bad message and kill the
+  // renderer! If it works, it calls mock_handle().ClaimInterfaceInternal and
+  // succeeds!
+  EXPECT_CALL(mock_handle(), ClaimInterfaceInternal(0, _));
+
+  base::test::TestFuture<mojom::UsbClaimInterfaceResult> claim_interface_future;
+  new_device->ClaimInterface(0, claim_interface_future.GetCallback());
+
+  // It should SUCCEED and return kSuccess!
+  EXPECT_EQ(claim_interface_future.Get(),
+            mojom::UsbClaimInterfaceResult::kSuccess);
+
+  // Clean up the new connection.
+  EXPECT_CALL(mock_handle(), Close());
+  new_device.reset();
+  WaitForDeviceClose();
+}
+
+TEST_F(USBDeviceImplTest,
+       DestructionOfUnrelatedDeviceImplDoesNotResetStateFlag) {
+  mojo::Remote<mojom::UsbDevice> device1 = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
+  device1->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  base::test::TestFuture<UsbDeviceHandle::ResultCallback>
+      set_configuration_future;
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _))
+      .WillOnce([&](int value, UsbDeviceHandle::ResultCallback& callback) {
+        set_configuration_future.SetValue(std::move(callback));
+      });
+
+  // Initiate SetConfiguration on device1.
+  device1->SetConfiguration(1, base::NullCallback());
+  ASSERT_TRUE(set_configuration_future.Wait());
+
+  // Confirm state_change_in_progress is true on mock_device.
+  EXPECT_TRUE(mock_device().device_state_change_in_progress());
+
+  // Create a second connection for the SAME device.
+  mojo::Remote<mojom::UsbDevice> device2 =
+      GetNewMockDeviceProxyForExistingDevice();
+
+  // Destroy device2 (simulating tab closure for an unrelated connection).
+  device2.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !device2.is_bound(); }));
+
+  // The state_change_in_progress flag on mock_device MUST STILL BE TRUE!
+  // (Because device1's SetConfiguration is still in progress).
+  EXPECT_TRUE(mock_device().device_state_change_in_progress());
+
+  // Finish device1's SetConfiguration.
+  mock_device().ActiveConfigurationChanged(1);
+  std::move(set_configuration_future.Take()).Run(true);
+
+  // Now state_change_in_progress should be false.
+  EXPECT_FALSE(mock_device().device_state_change_in_progress());
+
+  EXPECT_CALL(mock_handle(), Close());
+  device1.reset();
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, GenericTransferAllowedDuringReleaseOtherInterface) {
@@ -1271,18 +1408,14 @@ TEST_F(USBDeviceImplTest, GenericTransferAllowedDuringReleaseOtherInterface) {
 
   // Test 2: Transfer to interface 1 (blocked).
   // It should fail as a bad message and NOT reach the mock handle.
-  EXPECT_CALL(mock_handle(), Close());  // Bad message causes close
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  device->GenericTransferIn(1, 64, 0, base::DoNothing());
-
-  EXPECT_EQ(
-      "Device or interface state change in progress or interface is not "
-      "claimed.",
-      bad_message_observer.WaitForBadMessage());
+  base::test::TestFuture<mojom::UsbTransferStatus, base::span<const uint8_t>>
+      transfer_future;
+  device->GenericTransferIn(1, 64, 0, transfer_future.GetCallback());
+  EXPECT_EQ(transfer_future.Get<0>(),
+            mojom::UsbTransferStatus::PERMISSION_DENIED);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, ClearHaltBlockedDuringReleaseInterface) {
@@ -1341,22 +1474,18 @@ TEST_F(USBDeviceImplTest, ClearHaltBlockedDuringReleaseInterface) {
   // While releasing interface 1, ClearHalt to endpoint 1 (IN) should be
   // blocked.
   EXPECT_CALL(mock_handle(), ClearHaltInternal(_, _, _)).Times(0);
-  EXPECT_CALL(mock_handle(), Close());  // Bad message causes close
 
-  mojo::test::BadMessageObserver bad_message_observer;
-  device->ClearHalt(UsbTransferDirection::INBOUND, 1, base::DoNothing());
-
-  EXPECT_EQ(
-      "Device or interface state change in progress or interface is not "
-      "claimed.",
-      bad_message_observer.WaitForBadMessage());
+  base::test::TestFuture<bool> clear_halt_future;
+  device->ClearHalt(UsbTransferDirection::INBOUND, 1,
+                    clear_halt_future.GetCallback());
+  EXPECT_FALSE(clear_halt_future.Get());
 
   // Clean up.
   auto [value, callback] = release_interface_future.Take();
   std::move(callback).Run(true);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, ClaimInterfaceAllowedWhileClaimingOtherInterface) {
@@ -1415,16 +1544,14 @@ TEST_F(USBDeviceImplTest, ClaimInterfaceAllowedWhileClaimingOtherInterface) {
   ASSERT_TRUE(claim_interface_future2.Wait());
 
   // Test 2: Claim interface 1 again (blocked).
-  EXPECT_CALL(mock_handle(), Close());  // Bad message causes close
-
-  mojo::test::BadMessageObserver bad_message_observer;
-  device->ClaimInterface(1, base::DoNothing());
-
-  EXPECT_EQ("Device or interface state change in progress.",
-            bad_message_observer.WaitForBadMessage());
+  base::test::TestFuture<mojom::UsbClaimInterfaceResult>
+      claim_interface_future3;
+  device->ClaimInterface(1, claim_interface_future3.GetCallback());
+  EXPECT_EQ(claim_interface_future3.Get(),
+            mojom::UsbClaimInterfaceResult::kFailure);
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, ClaimInterfaceFailsDuringSetConfigurationMultiPipe) {
@@ -1554,17 +1681,12 @@ TEST_F(USBDeviceImplTest, SetConfigurationBlockedDuringClaimInterface) {
   // Renderer immediately sends SetConfiguration(2) on the same pipe.
   // DeviceImpl::ClaimInterface SETS the in-progress flag, so SetConfiguration's
   // guard at device_impl.cc:384 sees `true` and rejects it as a bad message.
-  EXPECT_CALL(mock_handle(), Close());
-
-  mojo::test::BadMessageObserver bad_message_observer;
   base::test::TestFuture<bool> set_config_future;
   device->SetConfiguration(2, set_config_future.GetCallback());
-
-  EXPECT_EQ("Device or interface state change in progress.",
-            bad_message_observer.WaitForBadMessage());
+  EXPECT_FALSE(set_config_future.Get());
 
   device.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !is_device_open(); }));
+  WaitForDeviceClose();
 }
 
 TEST_F(USBDeviceImplTest, SetInterfaceAlternateSetting) {

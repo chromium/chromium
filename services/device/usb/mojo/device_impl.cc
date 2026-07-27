@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/device_features.h"
@@ -170,6 +171,12 @@ void DeviceImpl::Create(scoped_refptr<device::UsbDevice> device,
 }
 
 DeviceImpl::~DeviceImpl() {
+  if (device_state_change_in_progress_) {
+    device_state_change_in_progress_ = false;
+    if (device_) {
+      device_->set_device_state_change_in_progress(false);
+    }
+  }
   CloseHandle();
 }
 
@@ -454,7 +461,8 @@ void DeviceImpl::Close(CloseCallback callback) {
 void DeviceImpl::SetConfiguration(uint8_t value,
                                   SetConfigurationCallback callback) {
   if (any_state_change_in_progress()) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+    RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod::kSetConfiguration,
+                             any_interface_state_change_in_progress());
     std::move(callback).Run(false);
     return;
   }
@@ -463,6 +471,7 @@ void DeviceImpl::SetConfiguration(uint8_t value,
     return;
   }
 
+  device_state_change_in_progress_ = true;
   device_->set_device_state_change_in_progress(true);
   device_handle_->SetConfiguration(
       value, base::BindOnce(&DeviceImpl::OnSetConfigurationComplete,
@@ -471,9 +480,11 @@ void DeviceImpl::SetConfiguration(uint8_t value,
 
 void DeviceImpl::ClaimInterface(uint8_t interface_number,
                                 ClaimInterfaceCallback callback) {
-  if (device_->device_state_change_in_progress() ||
-      IsInterfaceStateChangeInProgress(interface_number)) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+  bool interface_in_progress =
+      IsInterfaceStateChangeInProgress(interface_number);
+  if (device_->device_state_change_in_progress() || interface_in_progress) {
+    RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod::kClaimInterface,
+                             interface_in_progress);
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;
   }
@@ -512,9 +523,11 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
 
 void DeviceImpl::ReleaseInterface(uint8_t interface_number,
                                   ReleaseInterfaceCallback callback) {
-  if (device_->device_state_change_in_progress() ||
-      IsInterfaceStateChangeInProgress(interface_number)) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+  bool interface_in_progress =
+      IsInterfaceStateChangeInProgress(interface_number);
+  if (device_->device_state_change_in_progress() || interface_in_progress) {
+    RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod::kReleaseInterface,
+                             interface_in_progress);
     std::move(callback).Run(false);
     return;
   }
@@ -534,9 +547,12 @@ void DeviceImpl::SetInterfaceAlternateSetting(
     uint8_t interface_number,
     uint8_t alternate_setting,
     SetInterfaceAlternateSettingCallback callback) {
-  if (device_->device_state_change_in_progress() ||
-      IsInterfaceStateChangeInProgress(interface_number)) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+  bool interface_in_progress =
+      IsInterfaceStateChangeInProgress(interface_number);
+  if (device_->device_state_change_in_progress() || interface_in_progress) {
+    RecordStateChangeBlocked(
+        WebUsbStateChangeBlockedMethod::kSetInterfaceAlternateSetting,
+        interface_in_progress);
     std::move(callback).Run(false);
     return;
   }
@@ -573,7 +589,8 @@ void DeviceImpl::SetInterfaceAlternateSetting(
 
 void DeviceImpl::Reset(ResetCallback callback) {
   if (any_state_change_in_progress()) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+    RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod::kReset,
+                             any_interface_state_change_in_progress());
     std::move(callback).Run(false);
     return;
   }
@@ -582,6 +599,7 @@ void DeviceImpl::Reset(ResetCallback callback) {
     return;
   }
 
+  device_state_change_in_progress_ = true;
   device_->set_device_state_change_in_progress(true);
   device_handle_->ResetDevice(base::BindOnce(&DeviceImpl::OnResetComplete,
                                              weak_factory_.GetWeakPtr(),
@@ -595,10 +613,8 @@ void DeviceImpl::ClearHalt(UsbTransferDirection direction,
   if (direction == UsbTransferDirection::INBOUND) {
     endpoint_address |= 0x80;
   }
-  if (!IsEndpointReadyForTransfer(endpoint_address)) {
-    mojo::ReportBadMessage(
-        "Device or interface state change in progress or interface is not "
-        "claimed.");
+  if (!IsEndpointReadyForTransfer(WebUsbStateChangeBlockedMethod::kClearHalt,
+                                  endpoint_address)) {
     std::move(callback).Run(false);
     return;
   }
@@ -611,7 +627,8 @@ void DeviceImpl::ControlTransferIn(UsbControlTransferParamsPtr params,
                                    uint32_t timeout,
                                    ControlTransferInCallback callback) {
   if (any_state_change_in_progress()) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+    RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod::kControlTransferIn,
+                             any_interface_state_change_in_progress());
     std::move(callback).Run(mojom::UsbTransferStatus::PERMISSION_DENIED, {});
     return;
   }
@@ -641,7 +658,9 @@ void DeviceImpl::ControlTransferOut(UsbControlTransferParamsPtr params,
                                     uint32_t timeout,
                                     ControlTransferOutCallback callback) {
   if (any_state_change_in_progress()) {
-    mojo::ReportBadMessage("Device or interface state change in progress.");
+    RecordStateChangeBlocked(
+        WebUsbStateChangeBlockedMethod::kControlTransferOut,
+        any_interface_state_change_in_progress());
     std::move(callback).Run(mojom::UsbTransferStatus::PERMISSION_DENIED);
     return;
   }
@@ -673,10 +692,9 @@ void DeviceImpl::GenericTransferIn(uint8_t endpoint_number,
                                    uint32_t timeout,
                                    GenericTransferInCallback callback) {
   uint8_t endpoint_address = endpoint_number | 0x80;
-  if (!IsEndpointReadyForTransfer(endpoint_address)) {
-    mojo::ReportBadMessage(
-        "Device or interface state change in progress or interface is not "
-        "claimed.");
+  if (!IsEndpointReadyForTransfer(
+          WebUsbStateChangeBlockedMethod::kGenericTransferIn,
+          endpoint_address)) {
     std::move(callback).Run(mojom::UsbTransferStatus::PERMISSION_DENIED, {});
     return;
   }
@@ -695,10 +713,9 @@ void DeviceImpl::GenericTransferOut(uint8_t endpoint_number,
                                     uint32_t timeout,
                                     GenericTransferOutCallback callback) {
   uint8_t endpoint_address = endpoint_number;
-  if (!IsEndpointReadyForTransfer(endpoint_address)) {
-    mojo::ReportBadMessage(
-        "Device or interface state change in progress or interface is not "
-        "claimed.");
+  if (!IsEndpointReadyForTransfer(
+          WebUsbStateChangeBlockedMethod::kGenericTransferOut,
+          endpoint_address)) {
     std::move(callback).Run(mojom::UsbTransferStatus::PERMISSION_DENIED);
     return;
   }
@@ -718,10 +735,9 @@ void DeviceImpl::IsochronousTransferIn(
     uint32_t timeout,
     IsochronousTransferInCallback callback) {
   uint8_t endpoint_address = endpoint_number | 0x80;
-  if (!IsEndpointReadyForTransfer(endpoint_address)) {
-    mojo::ReportBadMessage(
-        "Device or interface state change in progress or interface is not "
-        "claimed.");
+  if (!IsEndpointReadyForTransfer(
+          WebUsbStateChangeBlockedMethod::kIsochronousTransferIn,
+          endpoint_address)) {
     std::move(callback).Run(
         {}, BuildIsochronousPacketArray(
                 packet_lengths, mojom::UsbTransferStatus::PERMISSION_DENIED));
@@ -752,10 +768,9 @@ void DeviceImpl::IsochronousTransferOut(
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {
   uint8_t endpoint_address = endpoint_number;
-  if (!IsEndpointReadyForTransfer(endpoint_address)) {
-    mojo::ReportBadMessage(
-        "Device or interface state change in progress or interface is not "
-        "claimed.");
+  if (!IsEndpointReadyForTransfer(
+          WebUsbStateChangeBlockedMethod::kIsochronousTransferOut,
+          endpoint_address)) {
     std::move(callback).Run(BuildIsochronousPacketArray(
         packet_lengths, mojom::UsbTransferStatus::PERMISSION_DENIED));
     return;
@@ -808,12 +823,18 @@ void DeviceImpl::OnSetInterfaceAlternateSettingComplete(
 
 void DeviceImpl::OnSetConfigurationComplete(SetConfigurationCallback callback,
                                             bool success) {
-  device_->set_device_state_change_in_progress(false);
+  if (device_state_change_in_progress_) {
+    device_state_change_in_progress_ = false;
+    device_->set_device_state_change_in_progress(false);
+  }
   std::move(callback).Run(success);
 }
 
 void DeviceImpl::OnResetComplete(ResetCallback callback, bool success) {
-  device_->set_device_state_change_in_progress(false);
+  if (device_state_change_in_progress_) {
+    device_state_change_in_progress_ = false;
+    device_->set_device_state_change_in_progress(false);
+  }
   std::move(callback).Run(success);
 }
 
@@ -838,19 +859,51 @@ bool DeviceImpl::ShouldRejectUsbTransferLengthAndReportBadMessage(
   return true;
 }
 
-bool DeviceImpl::IsEndpointReadyForTransfer(uint8_t endpoint_address) {
-  if (device_->device_state_change_in_progress() || !device_handle_) {
-    return false;
+bool DeviceImpl::IsEndpointReadyForTransfer(
+    WebUsbStateChangeBlockedMethod method,
+    uint8_t endpoint_address) {
+  bool device_in_progress = device_->device_state_change_in_progress();
+  bool device_closed = !device_handle_;
+
+  std::optional<uint8_t> interface_number;
+  bool interface_not_claimed = true;
+  bool interface_in_progress = false;
+
+  if (device_handle_) {
+    const mojom::UsbInterfaceInfo* interface =
+        device_handle_->FindInterfaceByEndpoint(endpoint_address);
+    if (interface) {
+      interface_number = interface->interface_number;
+      interface_not_claimed = false;
+      interface_in_progress =
+          IsInterfaceStateChangeInProgress(interface->interface_number);
+    }
   }
 
-  const mojom::UsbInterfaceInfo* interface =
-      device_handle_->FindInterfaceByEndpoint(endpoint_address);
-  if (!interface ||
-      IsInterfaceStateChangeInProgress(interface->interface_number)) {
-    return false;
+  if (!device_in_progress && !device_closed && !interface_not_claimed &&
+      !interface_in_progress) {
+    return true;
   }
 
-  return true;
+  WebUsbEndpointNotReadyReason reason;
+  if (device_in_progress) {
+    reason = WebUsbEndpointNotReadyReason::kDeviceStateChangeInProgress;
+  } else if (device_closed) {
+    reason = WebUsbEndpointNotReadyReason::kDeviceNotOpen;
+  } else if (interface_in_progress) {
+    reason = WebUsbEndpointNotReadyReason::kInterfaceStateChangeInProgress;
+  } else {
+    reason =
+        WebUsbEndpointNotReadyReason::kInterfaceNotClaimedOrInvalidEndpoint;
+  }
+
+  base::UmaHistogramEnumeration("WebUsb.EndpointNotReadyReason", reason);
+
+  if (device_in_progress || interface_in_progress) {
+    RecordStateChangeBlocked(method, interface_in_progress);
+  }
+
+  return false;
 }
 
 bool DeviceImpl::IsInterfaceStateChangeInProgress(
@@ -874,6 +927,35 @@ void DeviceImpl::SetInterfaceStateChangeInProgress(uint8_t interface_number,
   } else {
     interface_state_changes_in_progress_.erase(interface_number);
   }
+}
+
+void DeviceImpl::RecordStateChangeBlocked(WebUsbStateChangeBlockedMethod method,
+                                          bool interface_in_progress) {
+  bool device_in_progress = device_->device_state_change_in_progress();
+  bool same_connection_device = device_state_change_in_progress_;
+
+  WebUsbStateChangeBlockedContext context;
+  if (device_in_progress) {
+    if (same_connection_device) {
+      context =
+          WebUsbStateChangeBlockedContext::kDeviceStateChangeSameConnection;
+    } else {
+      context =
+          WebUsbStateChangeBlockedContext::kDeviceStateChangeOtherConnection;
+    }
+  } else if (interface_in_progress) {
+    context =
+        WebUsbStateChangeBlockedContext::kInterfaceStateChangeSameConnection;
+  } else {
+    // This fallback should not be hit under normal circumstances because direct
+    // callers guard against state changes before calling, and endpoint callers
+    // in IsEndpointReadyForTransfer skip logging when known non-state-change
+    // scenarios are detected (e.g. interface is not claimed).
+    context = WebUsbStateChangeBlockedContext::kUnknown;
+  }
+
+  base::UmaHistogramEnumeration("WebUsb.StateChangeBlocked.Context", context);
+  base::UmaHistogramEnumeration("WebUsb.StateChangeBlocked.Method", method);
 }
 
 }  // namespace usb
