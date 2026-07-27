@@ -78,9 +78,11 @@ Do not assume specific tool names (e.g., `update_topic`, `read_file`,
 `project.magi.json#environment` immediately upon invocation to ground themselves
 in the active VCS (`JJ` or `GIT`) and Harness (`JETSKI` or `GENERIC_CLI`). They
 MUST adjust their tool usage and command construction natively to match this
-environment. They MUST also ensure that any interim files generated during
-execution (e.g., drafts, reviews, logs) are placed in the configured directory
-specified by `project.magi.json#environment/temp_directory` (e.g.,
+environment. This includes resolving Google3 paths (e.g., `google3/...`) to
+local absolute paths when running in Google-internal environments. They MUST
+also ensure that any interim files generated during execution (e.g., drafts,
+reviews, logs) are placed in the configured directory specified by
+`project.magi.json#environment/temp_directory` (e.g.,
 `agents/skills/magi-mode/.temp/`) to minimize permission prompts and maintain
 workspace hygiene.
 
