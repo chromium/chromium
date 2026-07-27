@@ -65,9 +65,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         if (displayHandler.shouldDisplayCookies()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.COOKIES);
         }
-        if (displayHandler.shouldDisplayAdTopics()) {
-            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.AD_TOPICS);
-        }
         return Collections.unmodifiableSet(fragmentTypesToDisplay);
     }
 
@@ -85,8 +82,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new SafeBrowsingFragment();
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 return new CookiesFragment();
-            case PrivacyGuideFragment.FragmentType.AD_TOPICS:
-                return new AdTopicsFragment();
             case PrivacyGuideFragment.FragmentType.DONE:
                 return new DoneFragment();
         }

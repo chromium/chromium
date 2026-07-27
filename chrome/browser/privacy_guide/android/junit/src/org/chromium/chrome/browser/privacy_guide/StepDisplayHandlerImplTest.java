@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
@@ -19,10 +18,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
@@ -58,7 +53,6 @@ public class StepDisplayHandlerImplTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private UserPrefs.Natives mUserPrefsNativesMock;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNativesMock;
-    @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
 
     private StepDisplayHandler mStepDisplayHandler;
 
@@ -77,7 +71,6 @@ public class StepDisplayHandlerImplTest {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
 
         SafeBrowsingBridgeJni.setInstanceForTesting(mSBNativesMock);
-        PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
 
         mStepDisplayHandler = new StepDisplayHandlerImpl(mProfile);
     }
@@ -162,29 +155,5 @@ public class StepDisplayHandlerImplTest {
     public void showsCookiesWhenThirdPartyCookiesAllowed() {
         setCookieState(CookieControlsMode.OFF, true);
         assertTrue(mStepDisplayHandler.shouldDisplayCookies());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    public void showsAdTopicsWhenShouldShowAdTopicsIsOn() {
-        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
-                .thenReturn(true);
-        assertTrue(mStepDisplayHandler.shouldDisplayAdTopics());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    public void hidesAdTopicsWhenShouldShowAdTopicsIsOff() {
-        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
-                .thenReturn(false);
-        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    public void hidesAdTopicsWhenDeprecationFeatureEnabled() {
-        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
-                .thenReturn(true);
-        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 }

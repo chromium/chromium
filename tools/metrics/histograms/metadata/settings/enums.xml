@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Settings Link Row Entry"/>
   <int value="7" label="Privacy Guide Promo Entry"/>
   <int value="8" label="sWAA Completion Link"/>
-  <int value="9" label="Privacy Sandbox Completion Link"/>
+  <int value="9" label="(Obsolete) Privacy Sandbox Completion Link"/>
   <int value="10" label="Search Suggestions Next Button"/>
   <int value="11" label="(Obsolete) Tracking Protection Completion Link"/>
   <int value="12" label="(Obsolete) Ad Topics Next Button"/>

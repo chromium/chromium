@@ -572,28 +572,6 @@ TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
             uint64_t(-1));
 }
 
-class PrivacySandboxPrivacyGuideShouldShowAdTopicsTest
-    : public PrivacySandboxServiceTest,
-      public testing::WithParamInterface<bool> {};
-
-TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
-       ShownAccordingToConsentCountryAndFeature) {
-  bool is_consent_country = GetParam();
-
-  ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
-      .WillByDefault(testing::Return(is_consent_country));
-
-  bool should_show_card =
-      privacy_sandbox_service()
-          ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
-  // The expected result is identical to the consent country status.
-  ASSERT_EQ(should_show_card, is_consent_country);
-}
-
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
-                         PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
-                         testing::Bool());
-
 class PrivacySandboxShouldUsePrivacyPolicyChinaDomain
     : public PrivacySandboxServiceTest {};
 

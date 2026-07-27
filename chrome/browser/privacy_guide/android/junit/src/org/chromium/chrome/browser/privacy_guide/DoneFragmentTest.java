@@ -4,20 +4,17 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,31 +26,22 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
 public class DoneFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
-    @Mock private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
 
     private FragmentScenario<DoneFragment> mScenario;
     private DoneFragment mFragment;
-    private View mPsButton;
     private View mWaaButton;
-    private String mPrivacySandboxDescriptionText;
 
     private void initFragment() {
         mScenario =
@@ -76,12 +64,7 @@ public class DoneFragmentTest {
         mScenario.onFragment(
                 fragment -> {
                     mFragment = (DoneFragment) fragment;
-                    mPsButton = fragment.getView().findViewById(R.id.ps_button);
                     mWaaButton = fragment.getView().findViewById(R.id.waa_button);
-                    mPrivacySandboxDescriptionText =
-                            ((TextView) fragment.getView().findViewById(R.id.ps_description))
-                                    .getText()
-                                    .toString();
                 });
     }
 
@@ -89,17 +72,10 @@ public class DoneFragmentTest {
         when(mIdentityManager.hasPrimaryAccount()).thenReturn(isSignedIn);
     }
 
-    private void setPrivacySandboxState(boolean isRestricted, boolean isRestrictedNoticeEnabled) {
-        when(mPrivacySandboxBridge.isPrivacySandboxRestricted(mProfile)).thenReturn(isRestricted);
-        when(mPrivacySandboxBridge.isRestrictedNoticeEnabled(mProfile))
-                .thenReturn(isRestrictedNoticeEnabled);
-    }
-
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
-        PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridge);
     }
 
     @After
@@ -107,51 +83,6 @@ public class DoneFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
-    }
-
-    @Test
-    public void testPSButtonNotVisible() {
-        setPrivacySandboxState(true, false);
-        initFragment();
-
-        assertFalse(mPsButton.isShown());
-    }
-
-    @Test
-    public void testPSButtonVisibleWhenNotRestricted() {
-        setPrivacySandboxState(false, false);
-        initFragment();
-
-        assertTrue(mPsButton.isShown());
-    }
-
-    @Test
-    public void testPSButtonVisibleWhenRestrictedNoticeEnabled() {
-        setPrivacySandboxState(true, true);
-        initFragment();
-
-        assertTrue(mPsButton.isShown());
-    }
-
-    @Test
-    public void testPSButtonVisibleWhenNotRestrictedAndRestrictedNoticeEnabled() {
-        setPrivacySandboxState(false, true);
-        initFragment();
-
-        assertTrue(mPsButton.isShown());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
-    public void testPSSectionNotVisibleWhenDeprecationFeatureEnabled() {
-        setPrivacySandboxState(false, false);
-        initFragment();
-
-        View psHeading = mFragment.getView().findViewById(R.id.ps_heading);
-        View psExplanation = mFragment.getView().findViewById(R.id.ps_explanation);
-        assertFalse(mPsButton.isShown());
-        assertFalse(psHeading.isShown());
-        assertFalse(psExplanation.isShown());
     }
 
     @Test
@@ -168,16 +99,5 @@ public class DoneFragmentTest {
         initFragment();
 
         assertFalse(mWaaButton.isShown());
-    }
-
-    @Test
-    public void testPrivacySandboxDescriptionForAdTopicsIsDisplayedWhenAdTopicsIsEnabled() {
-        setPrivacySandboxState(false, false);
-        initFragment();
-
-        String privacySandboxDescriptionAdTopicsString =
-                ApplicationProvider.getApplicationContext()
-                        .getString(R.string.privacy_guide_privacy_sandbox_description_ad_topics);
-        assertEquals(mPrivacySandboxDescriptionText, privacySandboxDescriptionAdTopicsString);
     }
 }

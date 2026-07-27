@@ -11,7 +11,7 @@ namespace privacy_guide_metrics {
 // numeric values should never be reused.
 //
 // Must be kept in sync with SettingsPrivacyGuideSettingsStates in
-// histograms/enums.xml and PrivacyGuideSettingsStates in
+// histograms/metadata/settings/enums.xml and PrivacyGuideSettingsStates in
 // resources/settings/metrics_browser_proxy.ts.
 //
 // A Java counterpart will be generated for this enum.
@@ -37,19 +37,19 @@ enum class PrivacyGuideSettingsStates {
   kSearchSuggestionsOnToOff = 17,
   kSearchSuggestionsOffToOn = 18,
   kSearchSuggestionsOffToOff = 19,
-  kAdTopicsOnToOn = 20,
-  kAdTopicsOnToOff = 21,
-  kAdTopicsOffToOn = 22,
-  kAdTopicsOffToOff = 23,
-  kMaxValue = kAdTopicsOffToOff,
+  // kAdTopicsOnToOn = 20, // Obsolete
+  // kAdTopicsOnToOff = 21, // Obsolete
+  // kAdTopicsOffToOn = 22, // Obsolete
+  // kAdTopicsOffToOff = 23, // Obsolete
+  kMaxValue = kSearchSuggestionsOffToOff,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
 // Must be kept in sync with SettingsPrivacyGuideInteractions in
-// histograms/enums.xml and SettingsPrivacyGuideInteractions in
-// resources/settings/metrics_browser_proxy.ts.
+// histograms/metadata/settings/enums.xml and SettingsPrivacyGuideInteractions
+// in resources/settings/metrics_browser_proxy.ts.
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
@@ -63,10 +63,10 @@ enum class PrivacyGuideInteractions {
   kSettingsLinkRowEntry = 6,
   kPromoEntry = 7,
   kSWAACompletionLink = 8,
-  kPrivacySandboxCompletionLink = 9,
+  // kPrivacySandboxCompletionLink = 9, // Obsolete
   kSearchSuggestionsNextButton = 10,
   // kTrackingProtectionCompletionLink = 11, // Obsolete
-  kAdTopicsNextButton = 12,
+  // kAdTopicsNextButton = 12, // Obsolete
   kAiSettingsCompletionLink = 13,
   kMaxValue = kAiSettingsCompletionLink,
 };
@@ -93,8 +93,8 @@ enum class PrivacyGuideStepsEligibleAndReached {
   kCompletionReached = 9,
   kSearchSuggestionsEligible = 10,
   kSearchSuggestionsReached = 11,
-  kAdTopicsEligible = 12,
-  kAdTopicsReached = 13,
+  // kAdTopicsEligible = 12, // Obsolete
+  // kAdTopicsReached = 13, // Obsolete
 };
 
 }  // namespace privacy_guide_metrics

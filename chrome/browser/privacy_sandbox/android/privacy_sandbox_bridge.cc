@@ -211,14 +211,6 @@ JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
       ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
 }
 
-static bool
-JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
-  return GetPrivacySandboxService(j_profile)
-      ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
-}
-
 static bool JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {

@@ -23,9 +23,4 @@ public interface StepDisplayHandler {
      * @return Whether the Privacy Guide Cookies page should be displayed.
      */
     boolean shouldDisplayCookies();
-
-    /**
-     * @return Whether the Privacy Guide Ad Topics page should be displayed.
-     */
-    boolean shouldDisplayAdTopics();
 }

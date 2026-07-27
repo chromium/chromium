@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -18,11 +16,9 @@ import org.chromium.components.content_settings.ContentSettingsType;
 @NullMarked
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     private final Profile mProfile;
-    private final PrivacySandboxBridge mPrivacySandboxBridge;
 
     StepDisplayHandlerImpl(Profile profile) {
         mProfile = profile;
-        mPrivacySandboxBridge = new PrivacySandboxBridge(mProfile);
     }
 
     @Override
@@ -40,14 +36,5 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
     public boolean shouldDisplayCookies() {
         // Only show third-party cookies step if first-party cookies are allowed.
         return WebsitePreferenceBridge.isCategoryEnabled(mProfile, ContentSettingsType.COOKIES);
-    }
-
-    @Override
-    public boolean shouldDisplayAdTopics() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
-            return false;
-        }
-        return mPrivacySandboxBridge.privacySandboxPrivacyGuideShouldShowAdTopicsCard();
     }
 }

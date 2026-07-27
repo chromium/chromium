@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -19,7 +18,6 @@ public abstract class PrivacyGuideBasePage extends Fragment
         implements ProfileDependentSetting,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
     private Profile mProfile;
-    private PrivacySandboxBridge mPrivacySandboxBridge;
     private SettingsCustomTabLauncher mCustomTabLauncher;
 
     /** Return the profile associated with this page. */
@@ -37,15 +35,6 @@ public abstract class PrivacyGuideBasePage extends Fragment
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
-        mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
-    }
-
-    /**
-     * Return the {@link PrivacySandboxBridge} associated with the value set in {@link
-     * #setProfile(Profile)}.
-     */
-    public PrivacySandboxBridge getPrivacySandboxBridge() {
-        return mPrivacySandboxBridge;
     }
 
     /**

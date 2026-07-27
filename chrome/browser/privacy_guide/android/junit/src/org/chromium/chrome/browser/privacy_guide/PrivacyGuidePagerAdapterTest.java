@@ -53,7 +53,7 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        int nElements = 4; // Number of elements in each combination
+        int nElements = 3; // Number of elements in each combination
         return generateBooleanCombinations(nElements);
     }
 
@@ -68,9 +68,6 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Parameter(2)
     public boolean mShouldDisplayCookies;
-
-    @Parameter(3)
-    public boolean mShouldDisplayAdTopics;
 
     private StepDisplayHandler mStepDisplayHandler;
     private FragmentScenario<Fragment> mScenario;
@@ -108,11 +105,6 @@ public class PrivacyGuidePagerAdapterTest {
                     public boolean shouldDisplayCookies() {
                         return mShouldDisplayCookies;
                     }
-
-                    @Override
-                    public boolean shouldDisplayAdTopics() {
-                        return mShouldDisplayAdTopics;
-                    }
                 };
         mPagerAdapter =
                 new PrivacyGuidePagerAdapter(
@@ -145,9 +137,5 @@ public class PrivacyGuidePagerAdapterTest {
                 "Safe Browsing step displayed incorrectly",
                 mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
-        Assert.assertEquals(
-                "Ad Topics step displayed incorrectly",
-                mShouldDisplayAdTopics,
-                fragmentClassSet.contains(AdTopicsFragment.class));
     }
 }

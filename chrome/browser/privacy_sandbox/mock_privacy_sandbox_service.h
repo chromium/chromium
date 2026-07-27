@@ -80,10 +80,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               SetTopicAllowed,
               (privacy_sandbox::CanonicalTopic, bool),
               (override));
-  MOCK_METHOD(bool,
-              PrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
-              (),
-              (override));
   MOCK_METHOD(bool, ShouldUsePrivacyPolicyChinaDomain, (), (override));
   MOCK_METHOD(void, TopicsToggleChanged, (bool), (const, override));
   MOCK_METHOD(bool, TopicsConsentRequired, (), (override));

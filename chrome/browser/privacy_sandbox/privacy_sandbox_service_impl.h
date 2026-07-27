@@ -80,7 +80,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const privacy_sandbox::CanonicalTopic& topic) const override;
   void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                        bool allowed) override;
-  bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() override;
   bool ShouldUsePrivacyPolicyChinaDomain() override;
   void TopicsToggleChanged(bool new_value) const override;
   bool TopicsConsentRequired() override;
@@ -110,8 +109,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   FRIEND_TEST_ALL_PREFIXES(LogPrivacySandboxStateNonRegularProfilesTest, APIs);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            LogPrivacySandboxState_APIs);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
-                           ReturnsCorrectStatus);
 
   // Contains all possible states of first party sets preference.
   // These values are persisted to logs. Entries should not be renumbered and

@@ -517,11 +517,6 @@ PrivacySandboxServiceImpl::GetPrivacySandboxCountries() {
   return privacy_sandbox_countries_;
 }
 
-bool PrivacySandboxServiceImpl::
-    PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() {
-  return GetPrivacySandboxCountries()->IsConsentCountry();
-}
-
 bool PrivacySandboxServiceImpl::ShouldUsePrivacyPolicyChinaDomain() {
   return GetPrivacySandboxCountries()->IsLatestCountryChina();
 }

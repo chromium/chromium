@@ -114,10 +114,6 @@ class PrivacySandboxService : public KeyedService {
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed) = 0;
 
-  // Determines whether the Topics API step should be shown in the Privacy
-  // Guide.
-  virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
-
   // Determines whether the China domain should be used for the Privacy Policy
   // page.
   virtual bool ShouldUsePrivacyPolicyChinaDomain() = 0;

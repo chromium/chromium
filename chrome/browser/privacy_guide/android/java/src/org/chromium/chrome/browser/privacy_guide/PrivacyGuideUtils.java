@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -36,10 +35,6 @@ class PrivacyGuideUtils {
                 IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
         return identityManager.hasPrimaryAccount();
-    }
-
-    static boolean isAdTopicsEnabled(Profile profile) {
-        return UserPrefs.get(profile).getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
     }
 
     static @SafeBrowsingState int getSafeBrowsingState(Profile profile) {
@@ -76,8 +71,6 @@ class PrivacyGuideUtils {
                 return R.id.sb_step_header;
             case FragmentType.COOKIES:
                 return R.id.cookies_step_header;
-            case FragmentType.AD_TOPICS:
-                return R.id.ad_topics_switch;
             case FragmentType.DONE:
                 return R.id.done_step_header;
             default:

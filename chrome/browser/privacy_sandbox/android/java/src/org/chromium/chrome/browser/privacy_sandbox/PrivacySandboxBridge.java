@@ -122,11 +122,6 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setAllPrivacySandboxAllowedForTesting(mProfile); // IN-TEST
     }
 
-    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
-        return PrivacySandboxBridgeJni.get()
-                .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
-    }
-
     public boolean shouldUsePrivacyPolicyChinaDomain() {
         return PrivacySandboxBridgeJni.get().shouldUsePrivacyPolicyChinaDomain(mProfile);
     }
@@ -180,8 +175,6 @@ public class PrivacySandboxBridge {
         void topicsToggleChanged(Profile profile, boolean newValue);
 
         void setAllPrivacySandboxAllowedForTesting(Profile profile); // IN-TEST
-
-        boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
 
         boolean shouldUsePrivacyPolicyChinaDomain(Profile profile);
 

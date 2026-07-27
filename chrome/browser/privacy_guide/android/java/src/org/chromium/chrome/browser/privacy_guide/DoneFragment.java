@@ -10,13 +10,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -36,20 +32,6 @@ public class DoneFragment extends PrivacyGuideBasePage {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (!ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-                && (!getPrivacySandboxBridge().isPrivacySandboxRestricted()
-                        || getPrivacySandboxBridge().isRestrictedNoticeEnabled())) {
-            ChromeImageButton psButton = view.findViewById(R.id.ps_button);
-            psButton.setOnClickListener(this::onPsButtonClick);
-            TextView privacySandboxDescription = view.findViewById(R.id.ps_description);
-            privacySandboxDescription.setText(
-                    R.string.privacy_guide_privacy_sandbox_description_ad_topics);
-        } else {
-            view.findViewById(R.id.ps_heading).setVisibility(View.GONE);
-            view.findViewById(R.id.ps_explanation).setVisibility(View.GONE);
-        }
-
         if (isUserSignedIn(getProfile())) {
             ChromeImageButton waaButton = view.findViewById(R.id.waa_button);
             waaButton.setOnClickListener(this::onWaaButtonClick);
@@ -64,15 +46,5 @@ public class DoneFragment extends PrivacyGuideBasePage {
         getCustomTabLauncher()
                 .openUrlInCct(
                         getContext(), UrlConstants.GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL);
-    }
-
-    private void onPsButtonClick(View view) {
-        PrivacyGuideMetricsDelegate.recordMetricsForPsLink();
-        launchPrivacySandboxSettings();
-    }
-
-    private void launchPrivacySandboxSettings() {
-        PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                getContext(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
     }
 }
