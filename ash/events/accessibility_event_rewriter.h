@@ -50,6 +50,8 @@ class ASH_EXPORT AccessibilityEventRewriter
     ~PendingEventInfo();
     PendingEventInfo(const PendingEventInfo&) = delete;
     PendingEventInfo& operator=(const PendingEventInfo&) = delete;
+    PendingEventInfo(PendingEventInfo&&);
+    PendingEventInfo& operator=(PendingEventInfo&&);
 
     unsigned int id;
     std::unique_ptr<ui::Event> event;
@@ -80,6 +82,8 @@ class ASH_EXPORT AccessibilityEventRewriter
   // from the ChromeVox extension once it's ready to start receiving key events.
   // The disable call, e.g. SetSpokenFeedbackMv3KeyHandlingEnabled(false), comes
   // from the AccessibilityController when ChromeVox is ready to teardown.
+  // |session_id| represents the unique session ID associated with the ChromeVox
+  // instance.
   // This ensures that we only queue events if we know that we will get a
   // response from the extension. Otherwise, we run the risk of getting
   // unhandled events or queuing events that never make it to the extension.
@@ -140,8 +144,13 @@ class ASH_EXPORT AccessibilityEventRewriter
                           Profile* profile,
                           bool show_message) override;
 
-  // Propagates all pending spoken feedback events and resets
-  // next_pending_event_id_.
+  // Removes and returns the front pending key event.
+  PendingEventInfo PopNextPendingEvent();
+
+  // Posts a task to asynchronously call SendAllPendingSpokenFeedbackEvents.
+  void PostSendAllPendingSpokenFeedbackEvents();
+
+  // Propagates all pending spoken feedback events.
   void SendAllPendingSpokenFeedbackEvents();
 
   base::WeakPtr<AccessibilityEventRewriter> GetWeakPtr() {

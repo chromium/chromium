@@ -52,6 +52,26 @@
 namespace ash {
 namespace {
 
+// Helper observer to trigger a session ID change during synchronous event
+// dispatch.
+class ReentrantSessionIdChangeObserver : public ui::EventHandler {
+ public:
+  explicit ReentrantSessionIdChangeObserver(
+      AccessibilityEventRewriter* rewriter)
+      : rewriter_(rewriter) {}
+
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    if (!triggered_) {
+      triggered_ = true;
+      rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(true, /*session_id=*/2);
+    }
+  }
+
+ private:
+  bool triggered_ = false;
+  raw_ptr<AccessibilityEventRewriter> rewriter_;
+};
+
 // A test implementation of the spoken feedback delegate interface.
 class TestAccessibilityEventRewriterDelegate
     : public AccessibilityEventRewriterDelegate {
@@ -1000,10 +1020,31 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, NewSessionFlushesOldEvents) {
   accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
       true, /*session_id=*/2);
 
-  // The previous pending event should have been flushed (propagated).
-  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+  // The previous pending event will be flushed synchronously.
+  EXPECT_EQ(0u, GetPendingKeyEventsSize());
   EXPECT_EQ(1, event_recorder().events_seen());
   EXPECT_EQ(ui::VKEY_A, event_capturer().key_events()[0].key_code());
+}
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       ReentrantSessionIdChangeDoesNotCrash) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
+
+  // Queue a pending event.
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1u, GetPendingKeyEventsSize());
+
+  ReentrantSessionIdChangeObserver observer(&accessibility_event_rewriter());
+  GetContext()->AddPreTargetHandler(&observer);
+
+  PropagateNextPendingEvent(true);
+
+  GetContext()->RemovePreTargetHandler(&observer);
+
+  EXPECT_EQ(0u, GetPendingKeyEventsSize());
 }
 
 TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
