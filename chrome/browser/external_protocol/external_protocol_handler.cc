@@ -33,34 +33,18 @@
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #else
-#include "chrome/browser/ui/browser.h"               // nogncheck
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
-#include "components/url_formatter/elide_url.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
-#endif
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#endif
-
-#include "content/public/browser/web_contents.h"
-#include "ui/base/page_transition_types.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/navigation_interception/intercept_navigation_delegate.h"
-#else
-#include "chrome/browser/ui/browser.h"               // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
