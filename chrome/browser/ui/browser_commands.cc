@@ -1538,7 +1538,7 @@ void MoveGroupToNewWindow(BrowserWindowInterface* browser,
                           tab_groups::TabGroupId group) {
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
   Browser* new_browser;
-  if (current_browser->is_type_app() &&
+  if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
@@ -1561,7 +1561,7 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
   Browser* new_browser;
   base::TimeTicks now = base::TimeTicks::Now();
-  if (current_browser->is_type_app() &&
+  if (current_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
     auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(

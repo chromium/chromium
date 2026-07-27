@@ -231,7 +231,8 @@ void AppInfoDialogClosedCallback(SessionID session_id,
 }
 
 bool CanOpenFile(Browser* browser) {
-  if (browser->is_type_devtools() || browser->is_type_app() ||
+  if (browser->is_type_devtools() ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
       browser->is_type_app_popup()) {
     return false;
   }
@@ -443,7 +444,8 @@ bool BrowserCommandController::IsReservedCommandOrKey(
     int command_id,
     const input::NativeWebKeyboardEvent& event) {
   // In Apps mode, no keys are reserved.
-  if (browser_->is_type_app() || browser_->is_type_app_popup()) {
+  if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser_->is_type_app_popup()) {
     return false;
   }
 
@@ -1923,8 +1925,10 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE, true);
   // Navigation commands
   command_updater_->UpdateCommandEnabled(
-      IDC_HOME, normal_window || browser_->is_type_app() ||
-                    browser_->is_type_app_popup());
+      IDC_HOME,
+      normal_window ||
+          browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+          browser_->is_type_app_popup());
 
   // Hosted app browser commands.
   const bool is_web_app_or_custom_tab = IsWebAppOrCustomTab(browser_);
@@ -2149,7 +2153,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 #endif
 
   // Window management commands
-  bool is_app = browser_->is_type_app() || browser_->is_type_app_popup();
+  bool is_app = browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+                browser_->is_type_app_popup();
   bool is_normal = browser_->is_type_normal();
 
   command_updater_->UpdateCommandEnabled(IDC_DUPLICATE_TAB,
@@ -2632,10 +2637,10 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
     std::optional<int> target_index) {
   command_updater_->UpdateCommandEnabled(
-      IDC_DUPLICATE_TARGET_TAB, !browser_->is_type_app() &&
-                                    !browser_->is_type_app_popup() &&
-                                    target_index.has_value() &&
-                                    CanDuplicateTabAt(browser_, *target_index));
+      IDC_DUPLICATE_TARGET_TAB,
+      browser_->GetType() != BrowserWindowInterface::Type::TYPE_APP &&
+          !browser_->is_type_app_popup() && target_index.has_value() &&
+          CanDuplicateTabAt(browser_, *target_index));
   const bool normal_window = browser_->is_type_normal();
   command_updater_->UpdateCommandEnabled(
       IDC_MUTE_TARGET_SITE, normal_window && target_index.has_value());

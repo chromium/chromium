@@ -104,7 +104,8 @@ bool ShouldSaveWindowPlacement(const Browser* browser) {
   // Never track app windows that do not have a trusted source (i.e. windows
   // spawned by an app).  See similar code in
   // SessionServiceBase::ShouldTrackBrowser().
-  return !(browser->is_type_app() || browser->is_type_app_popup()) ||
+  return !(browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+           browser->is_type_app_popup()) ||
          WindowFeatureController::From(browser)->IsTrustedSource();
 }
 

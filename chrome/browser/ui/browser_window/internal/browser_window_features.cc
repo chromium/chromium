@@ -849,7 +849,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       browser, browser->GetTabStripModel(), browser->GetSessionID(),
       browser->GetType());
 
-  if (browser->is_type_normal() || browser->is_type_app()) {
+  if (browser->is_type_normal() ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
 

@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   app_browser->GetWindow()->Maximize();
   app_browser->GetWindow()->Show();
   EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
-  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   // Close the normal browser. After this we only have the app_browser window.
   CloseBrowserSynchronously(browser());
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
 
   ASSERT_TRUE(new_browser);
   EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
-  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3761,7 +3761,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   webapps::AppId app_id = InstallPWA(profile, example_url);
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
 
-  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   // At this point, we have a browser and an app.
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -4280,7 +4280,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   // Check we got all the tabs back.
   const BrowserWindowInterface* const browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  EXPECT_TRUE(browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(1)->GetURL(),
             example_url);
   EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(2)->GetURL(),

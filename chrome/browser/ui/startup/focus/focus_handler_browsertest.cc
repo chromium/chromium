@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, manifest_id);

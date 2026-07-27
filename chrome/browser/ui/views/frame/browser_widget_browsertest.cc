@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, WebAppsHasBoundsOnOpen) {
 
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   app_browser->GetWindow()->Close();
 }
 

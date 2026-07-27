@@ -159,9 +159,10 @@ TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKeyIsApp) {
   params.window = browser_window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
 
-  ASSERT_TRUE(browser->is_type_app());
+  ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
-  // When is_type_app(), no keys are reserved.
+  // When GetType() == BrowserWindowInterface::Type::TYPE_APP, no keys are
+  // reserved.
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(browser->command_controller()->IsReservedCommandOrKey(
       IDC_BACK,
@@ -237,7 +238,7 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
       /*user_gesture=*/true);
   params.window = browser_window.release();
   auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
-  ASSERT_TRUE(browser->is_type_app());
+  ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   browser->command_controller()->FullscreenStateChanged();
   EXPECT_TRUE(chrome::IsCommandEnabled(browser.get(), IDC_FULLSCREEN));
 }

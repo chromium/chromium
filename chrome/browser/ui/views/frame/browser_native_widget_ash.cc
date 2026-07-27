@@ -106,8 +106,9 @@ void BrowserNativeWidgetAsh::OnWidgetInitDone() {
   // For legacy reasons v1 apps (like Secure Shell) are allowed to consume keys
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
-  window_state->SetCanConsumeSystemKeys(browser->is_type_app() ||
-                                        browser->is_type_app_popup());
+  window_state->SetCanConsumeSystemKeys(
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser->is_type_app_popup());
 
   app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(GetWidget());
 }
@@ -199,14 +200,16 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
 
   params.init_properties_container.SetProperty(
       app_restore::kAppTypeBrowser,
-      (browser->is_type_app() || browser->is_type_app_popup()));
+      (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+       browser->is_type_app_popup()));
 
   params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
                                                browser->app_name());
   params.init_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
-  bool is_app = browser->is_type_app() || browser->is_type_app_popup();
+  bool is_app = browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+                browser->is_type_app_popup();
   web_app::AppBrowserController* controller =
       web_app::AppBrowserController::From(browser);
   if (controller && controller->system_app()) {

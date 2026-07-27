@@ -2020,7 +2020,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
-  ASSERT_TRUE(app_browser_->is_type_app());
+  ASSERT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
   active_app_id_ = web_app::AppBrowserController::From(app_browser())->app_id();
 

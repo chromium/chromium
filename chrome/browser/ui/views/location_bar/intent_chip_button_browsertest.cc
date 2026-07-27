@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
   ASSERT_EQ(1, user_action_tester.GetActionCount("IntentPickerIconClicked"));
   ASSERT_TRUE(app_browser);
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 }
 
 IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,

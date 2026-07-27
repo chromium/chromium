@@ -170,14 +170,15 @@ void BrowserWidget::InitBrowserWidget() {
 
 #if BUILDFLAG(IS_OZONE)
   params.inhibit_keyboard_shortcuts =
-      browser->is_type_app() || browser->is_type_app_popup();
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser->is_type_app_popup();
 
   params.session_data = browser->platform_session_data();
 #endif
 
   if (browser_native_widget_->ShouldRestorePreviousBrowserWidgetState()) {
     if (browser->is_type_normal() || browser->is_type_devtools() ||
-        browser->is_type_app()) {
+        browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
       // Typed panel/popup can only return a size once the widget has been
       // created.
       // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser

@@ -103,7 +103,7 @@ bool WindowSizerChromeOS::GetBrowserBounds(
       // active window bounds, only use saved or default bounds.
       // For PWA app windows (which are also a trusted source) we do want to use
       // the last active window bounds.
-      if (!browser()->is_type_app() ||
+      if (browser()->GetType() != BrowserWindowInterface::Type::TYPE_APP ||
           !web_app::AppBrowserController::From(browser()) ||
           !GetAppBrowserBoundsFromLastActive(bounds, show_state)) {
         if (!BrowserInitState::From(browser())->create_params().can_resize ||

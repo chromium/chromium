@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
       "Test", false /* trusted_source */, gfx::Rect(), profile, true));
   chrome::AddTabAt(app_browser, GURL(), -1, true);
-  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   GURL url = GURL("https://www.google.com/");
   content::TestNavigationObserver observer(url);

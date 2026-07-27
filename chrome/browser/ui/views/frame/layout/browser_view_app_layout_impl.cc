@@ -118,8 +118,10 @@ gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
   gfx::Size contents_size = views().contents_container->GetMinimumSize();
 
   // For full PWAs, there is a minimum content width.
-  bool is_web_app = browser() && browser()->is_type_app() &&
-                    web_app::AppBrowserController::IsWebApp(browser());
+  bool is_web_app =
+      browser() &&
+      browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
+      web_app::AppBrowserController::IsWebApp(browser());
 #if BUILDFLAG(IS_CHROMEOS)
   is_web_app = is_web_app &&
                !web_app::AppBrowserController::From(browser())->system_app();

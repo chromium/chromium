@@ -1759,7 +1759,8 @@ std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
 }
 
 bool Browser::ShouldUseInstancedSystemMediaControls() const {
-  return is_type_app() || is_type_app_popup();
+  return GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+         is_type_app_popup();
 }
 
 void Browser::DraggableRegionsChanged(
@@ -1927,7 +1928,8 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
     return blink::mojom::DisplayMode::kPictureInPicture;
   }
 
-  if (is_type_app() || is_type_devtools() || is_type_app_popup()) {
+  if (GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      is_type_devtools() || is_type_app_popup()) {
     auto* const app_browser_controller =
         web_app::AppBrowserController::From(this);
     if (app_browser_controller &&

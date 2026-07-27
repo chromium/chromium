@@ -799,7 +799,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     // Should have opened the requested homepage about:blank in 1st window.
     TabStripModel* tab_strip = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip->count());
-    EXPECT_FALSE(browser()->is_type_app());
+    EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
     EXPECT_TRUE(browser()->is_type_normal());
     EXPECT_EQ(GURL(url::kAboutBlankURL),
               tab_strip->GetWebContentsAt(0)->GetLastCommittedURL());
@@ -840,7 +840,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     // Should have opened the requested homepage about:blank in 1st window.
     TabStripModel* tab_strip = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip->count());
-    EXPECT_FALSE(browser()->is_type_app());
+    EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
     EXPECT_TRUE(browser()->is_type_normal());
     EXPECT_EQ(GURL(url::kAboutBlankURL),
               tab_strip->GetWebContentsAt(0)->GetLastCommittedURL());
@@ -936,7 +936,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
               tab_strip->GetWebContentsAt(1));
 
     // It should be a standard tabbed window, not an app window.
-    EXPECT_FALSE(browser()->is_type_app());
+    EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
     EXPECT_TRUE(browser()->is_type_normal());
 
     // It should have loaded the requested app.
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     ASSERT_TRUE(new_browser);
 
     // Expect an app window.
-    EXPECT_TRUE(new_browser->is_type_app());
+    EXPECT_EQ(new_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
     // The browser's app_name should include the app's ID.
     EXPECT_NE(new_browser->app_name().find(extension_app->id()),
@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
               tab_strip->GetWebContentsAt(1));
 
     // It should be a standard tabbed window, not an app window.
-    EXPECT_FALSE(browser()->is_type_app());
+    EXPECT_NE(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
     EXPECT_TRUE(browser()->is_type_normal());
 
     // It should have loaded the requested app.
@@ -2484,7 +2484,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                     ->GetSize());
 
   // An app window should have been launched.
-  EXPECT_TRUE(browser()->is_type_app());
+  EXPECT_EQ(browser()->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   CloseBrowserSynchronously(browser());
 }
 

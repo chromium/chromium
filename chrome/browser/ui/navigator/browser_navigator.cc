@@ -748,7 +748,8 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
   // focusing a regular browser window and opening a tab in the background
   // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
   // the new tab is focused.
-  if (source_browser && source_browser->is_type_app() &&
+  if (source_browser &&
+      source_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP &&
       params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
       !(web_app::AppBrowserController::From(source_browser) &&
         web_app::AppBrowserController::From(source_browser)->has_tab_strip())) {

@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
   InstallTestWebApp();
   Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
 
-  ASSERT_TRUE(app_browser->is_type_app());
+  ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   CloseAndWait(app_browser);
 
   content::WebContentsAddedObserver new_contents_observer;

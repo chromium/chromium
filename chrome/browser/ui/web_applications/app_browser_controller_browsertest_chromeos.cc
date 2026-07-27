@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       "about:blank");
-  EXPECT_TRUE(app_browser_->is_type_app());
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 1);
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       "chrome://newtab/");
-  EXPECT_TRUE(app_browser_->is_type_app());
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 1);
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
 }

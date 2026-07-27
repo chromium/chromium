@@ -265,7 +265,7 @@ class WebAppBrowserTest : public base::test::WithFeatureOverride,
 
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
-    DCHECK(app_browser->is_type_app());
+    DCHECK(app_browser->GetType() == BrowserWindowInterface::Type::TYPE_APP);
     DCHECK(web_app::AppBrowserController::From(app_browser));
     tester.ExpectUniqueSample(kLaunchWebAppDisplayModeHistogram,
                               expected_launch_display, 1);
@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, PWANavigatedToAboutBlank) {
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
   // The app browser's BrowserWindowInterface::Type should be TYPE_APP.
-  EXPECT_TRUE(app_browser->is_type_app());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   // Navigate to about:blank in the app.
   const GURL about_blank_url("about:blank");

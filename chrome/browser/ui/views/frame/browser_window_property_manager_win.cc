@@ -53,8 +53,8 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   // Set the app user model id for this application to that of the application
   // name. See http://crbug.com/41308099.
   std::wstring app_id =
-      browser->is_type_app() || browser->is_type_app_popup() ||
-              browser->is_type_devtools() ||
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+              browser->is_type_app_popup() || browser->is_type_devtools() ||
               (browser->is_type_picture_in_picture() &&
                !browser->app_name().empty())
           ? shell_integration::win::GetAppUserModelIdForApp(
@@ -62,7 +62,8 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
           : shell_integration::win::GetAppUserModelIdForBrowser(
                 profile->GetPath());
   // Apps set their relaunch details based on app's details.
-  if (browser->is_type_app() || browser->is_type_app_popup()) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      browser->is_type_app_popup()) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         web_app::GetAppIdFromApplicationName(browser->app_name()),

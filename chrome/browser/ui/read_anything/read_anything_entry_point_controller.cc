@@ -401,7 +401,9 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
   // Disable the omnibox on app windows, as these windows don't usually have
   // omnibox support.
   Browser* browser = bwi->GetBrowserForMigrationOnly();
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+  if (browser &&
+      (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+       browser->is_type_app_popup())) {
     LogDecision(ReadAnythingOmniboxChipDecision::kHideAppWindow);
     return false;
   }

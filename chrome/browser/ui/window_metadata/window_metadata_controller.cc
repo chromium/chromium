@@ -230,8 +230,8 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
   // ensures that the native window gets a title which is important for a11y,
   // for example the window selector uses the Aura window title.
   if (title.empty() &&
-      (browser_->is_type_app() || browser_->is_type_app_popup() ||
-       browser_->is_type_devtools()) &&
+      (browser_->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+       browser_->is_type_app_popup() || browser_->is_type_devtools()) &&
       include_app_name) {
     auto* const app_browser_controller =
         web_app::AppBrowserController::From(browser_);
