@@ -594,7 +594,7 @@ CGFloat CompactButtonHorizontalPadding() {
   _largeNewTabButton.hidden = YES;
 }
 
-#pragma mark - Public
+#pragma mark - ResponderChaining
 
 - (void)respondBeforeResponder:(UIResponder*)nextResponder {
   _followingNextResponder = nextResponder;

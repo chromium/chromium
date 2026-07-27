@@ -178,6 +178,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Top and bottom toolbar background views.
   TabGridToolbarBackgroundView* _topToolbarBackground;
   TabGridToolbarBackgroundView* _bottomToolbarBackground;
+  // Following next responder for ResponderChaining.
+  __weak UIResponder* _followingNextResponder;
 
   // The constraints for the bottom anchor of the bottom toolbar.
   NSLayoutConstraint* _bottomToolbarBottomConstraint;
@@ -720,7 +722,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateToolbarsAppearance];
   // Make sure the current page becomes the first responder, so that it can
   // register and handle key commands.
-  [self.currentPageViewController becomeFirstResponder];
   [self.delegate tabGridViewController:self didChangeCurrentPage:currentPage];
 }
 
@@ -1867,6 +1868,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - UIResponder
 
+#pragma mark - ResponderChaining
+
+- (void)respondBeforeResponder:(UIResponder*)nextResponder {
+  _followingNextResponder = nextResponder;
+}
+
 // To always be able to register key commands via -keyCommands, the VC must be
 // able to become first responder.
 - (BOOL)canBecomeFirstResponder {
@@ -1874,7 +1881,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (UIResponder*)nextResponder {
-  UIResponder* nextResponder = [super nextResponder];
+  UIResponder* nextResponder = _followingNextResponder ?: [super nextResponder];
   if (self.viewVisible) {
     // Add toolbars to the responder chain.
     // TODO(crbug.com/40273478): Transform toolbars in view controller directly

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h"
 
 @protocol AppBarMutator;
 @class LayoutGuideCenter;
@@ -21,7 +22,8 @@
 @interface AppBarViewController
     : UIViewController <AppBarConsumer,
                         FullscreenBrowserAgentObserving,
-                        FullscreenUIElement>
+                        FullscreenUIElement,
+                        ResponderChaining>
 
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;

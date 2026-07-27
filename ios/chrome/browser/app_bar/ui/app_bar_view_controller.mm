@@ -208,7 +208,11 @@ UIColor* AssistantHighlightBackgroundColor() {
   __weak UIButton* _previewedButton;
   // Whether the Gemini floaty is currently active/invoked.
   BOOL _geminiFloatyInvoked;
+  // Following next responder for ResponderChaining.
+  __weak UIResponder* _followingNextResponder;
 }
+
+#pragma mark - Public
 
 - (void)setLayoutState:(LayoutState*)layoutState {
   if (_layoutState == layoutState) {
@@ -218,6 +222,18 @@ UIColor* AssistantHighlightBackgroundColor() {
   _layoutState = layoutState;
   [_layoutState addObserver:self];
   _geminiFloatyInvoked = layoutState ? layoutState.geminiFloatyInvoked : NO;
+}
+
+#pragma mark - ResponderChaining
+
+- (void)respondBeforeResponder:(UIResponder*)nextResponder {
+  _followingNextResponder = nextResponder;
+}
+
+#pragma mark - UIResponder
+
+- (UIResponder*)nextResponder {
+  return _followingNextResponder ?: [super nextResponder];
 }
 
 #pragma mark - LayoutStateObserver

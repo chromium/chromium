@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h"
 
 @class AppBarViewController;
 @class LayoutState;
@@ -18,7 +19,9 @@
 // To do this, it is covering the whole screen and then manage the rotation
 // itself. It needs to be centered in the window to work.
 @interface AppBarContainerViewController
-    : UIViewController <FullscreenBrowserAgentObserving, FullscreenUIElement>
+    : UIViewController <FullscreenBrowserAgentObserving,
+                        FullscreenUIElement,
+                        ResponderChaining>
 
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;
