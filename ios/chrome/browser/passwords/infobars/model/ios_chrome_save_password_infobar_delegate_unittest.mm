@@ -26,6 +26,7 @@
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/stored_credential.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/test/test_sync_service.h"
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
@@ -132,10 +133,14 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
     ON_CALL(Const(*form_manager), GetMetricsRecorder)
         .WillByDefault(Return(metrics_recorder_.get()));
 
+    CoreAccountInfo account_info;
+    account_info.email = kAccountToStorePassword;
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+
     delegate_ = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-        kAccountToStorePassword, password_update, kSignedInAccountStoreUser,
-        std::move(form_manager), ukm_source_id_, /*is_replacement=*/false,
-        mock_sync_presenter_, profile_store_.get(), account_store_.get());
+        password_update, std::move(form_manager), ukm_source_id_,
+        /*is_replacement=*/false, mock_sync_presenter_, profile_store_.get(),
+        account_store_.get(), &sync_service_);
     const int different_nav_entry_id = kNavEntryId - 1;
     delegate_->set_nav_entry_id(different_nav_entry_id);
   }
@@ -143,6 +148,7 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   metrics::ProfileMetricsService profile_metrics_service_;
+  syncer::TestSyncService sync_service_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> account_store_;
   // Password form metrics recorder.

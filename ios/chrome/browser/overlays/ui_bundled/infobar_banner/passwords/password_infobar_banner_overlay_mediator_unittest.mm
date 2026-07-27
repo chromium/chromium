@@ -12,6 +12,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/metrics/profile_metrics_service.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
@@ -52,6 +53,14 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
 
   void InitInfobar(
       std::optional<std::string> account_to_store_password = std::nullopt) {
+    if (account_to_store_password.has_value()) {
+      CoreAccountInfo account_info;
+      account_info.email = *account_to_store_password;
+      sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+    } else {
+      sync_service_.SetSignedOut();
+    }
+
     metrics_recorder_ =
         base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
             /*is_main_frame_secure=*/true, ukm::kInvalidSourceId,
@@ -59,7 +68,7 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,
         MockIOSChromeSavePasswordInfoBarDelegate::Create(
-            kUsername, kPassword, GURL(), account_to_store_password,
+            kUsername, kPassword, GURL(), &sync_service_,
             metrics_recorder_.get()));
     request_ =
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
@@ -72,6 +81,7 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
 
  protected:
   metrics::ProfileMetricsService profile_metrics_service_;
+  syncer::TestSyncService sync_service_;
   scoped_refptr<password_manager::PasswordFormMetricsRecorder>
       metrics_recorder_;
   std::unique_ptr<InfoBarIOS> infobar_;

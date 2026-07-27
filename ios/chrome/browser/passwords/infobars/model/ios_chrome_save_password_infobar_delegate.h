@@ -24,6 +24,10 @@ namespace password_manager {
 class PasswordFormManagerForUI;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 // After a successful *new* login attempt, Chrome passes the current
 // password_manager::PasswordFormManager and move it to a
 // IOSChromeSavePasswordInfoBarDelegate while the user makes up their mind
@@ -33,16 +37,14 @@ class PasswordFormManagerForUI;
 class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   IOSChromeSavePasswordInfoBarDelegate(
-      std::optional<std::string> account_to_store_password,
       bool password_update,
-      password_manager::features_util::PasswordAccountStorageUserState
-          account_storage_user_state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       ukm::SourceId ukm_source_id,
       bool is_replacement,
       id<SyncPresenterCommands> sync_presenter_handler,
       password_manager::PasswordStoreInterface* profile_store,
-      password_manager::PasswordStoreInterface* account_store);
+      password_manager::PasswordStoreInterface* account_store,
+      const syncer::SyncService* sync_service);
 
   IOSChromeSavePasswordInfoBarDelegate(
       const IOSChromeSavePasswordInfoBarDelegate&) = delete;
@@ -142,14 +144,6 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The PasswordInfobarType for this delegate.
   const PasswordInfobarType infobar_type_;
 
-  // The account where the password will be stored, or std::nullopt if the
-  // password will only be stored on this device.
-  const std::optional<std::string> account_to_store_password_;
-
-  // Used to record metrics related to passwords account storage.
-  const password_manager::features_util::PasswordAccountStorageUserState
-      account_storage_user_state_;
-
   // Used to track the results we get from the info bar.
   password_manager::metrics_util::UIDismissalReason infobar_response_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
@@ -174,8 +168,13 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::optional<base::TimeTicks> start_timestamp_;
 
   // The password stores.
-  const raw_ptr<password_manager::PasswordStoreInterface> profile_store_;
-  const raw_ptr<password_manager::PasswordStoreInterface> account_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface> profile_store_ =
+      nullptr;
+  const raw_ptr<password_manager::PasswordStoreInterface> account_store_ =
+      nullptr;
+
+  // The SyncService.
+  const raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   base::WeakPtrFactory<IOSChromeSavePasswordInfoBarDelegate> weak_ptr_factory_{
       this};

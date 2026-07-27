@@ -20,6 +20,10 @@ class MockPasswordFormManagerForUI;
 class PasswordFormMetricsRecorder;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Mock queue observer.
 class MockIOSChromeSavePasswordInfoBarDelegate
     : public IOSChromeSavePasswordInfoBarDelegate {
@@ -32,7 +36,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
       NSString* username,
       NSString* password,
       const GURL& url = GURL(),
-      std::optional<std::string> account_to_store_password = std::nullopt,
+      const syncer::SyncService* sync_service = nullptr,
       password_manager::PasswordFormMetricsRecorder* metrics_recorder =
           nullptr);
 
@@ -48,7 +52,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
   MockIOSChromeSavePasswordInfoBarDelegate(
       std::unique_ptr<password_manager::PasswordForm> form,
       std::unique_ptr<GURL> url,
-      std::optional<std::string> account_to_store_password,
+      const syncer::SyncService* sync_service,
       std::unique_ptr<password_manager::MockPasswordFormManagerForUI>
           form_manager,
       password_manager::MockPasswordFormManagerForUI* mock_form_manager_ptr);

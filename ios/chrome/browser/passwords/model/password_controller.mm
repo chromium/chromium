@@ -35,7 +35,6 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -479,11 +478,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(self.profile);
-  const std::optional<std::string> accountToStorePassword =
-      password_manager::sync_util::GetAccountForSaving(syncService);
-  const password_manager::features_util::PasswordAccountStorageUserState
-      accountStorageUserState = password_manager::features_util::
-          ComputePasswordAccountStorageUserState(syncService);
   id<SyncPresenterCommands> syncPresenterHandler =
       HandlerForProtocol(self.dispatcher, SyncPresenterCommands);
   infobars::InfoBarManager* infoBarManager =
@@ -499,10 +493,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       }
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          accountToStorePassword, /*password_update=*/false,
-          accountStorageUserState, std::move(form), self.ukmSourceId,
+          /*password_update=*/false, std::move(form), self.ukmSourceId,
           /*is_replacement=*/false, syncPresenterHandler, profileStore.get(),
-          accountStore.get());
+          accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordSave, std::move(delegate),
           /*skip_banner=*/manual);
@@ -519,12 +512,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       }
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          form->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
-              ? accountToStorePassword
-              : std::nullopt,
-          /*password_update=*/true, accountStorageUserState, std::move(form),
-          self.ukmSourceId, /*is_replacement=*/false, syncPresenterHandler,
-          profileStore.get(), accountStore.get());
+          /*password_update=*/true, std::move(form), self.ukmSourceId,
+          /*is_replacement=*/false, syncPresenterHandler, profileStore.get(),
+          accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
           /*skip_banner=*/manual);

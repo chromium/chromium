@@ -19,6 +19,7 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -26,6 +27,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/stored_credential.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/trusted_vault/trusted_vault_client.h"
@@ -37,6 +39,11 @@
 #import "url/gurl.h"
 
 namespace {
+
+using ::password_manager::PasswordFormManagerForUI;
+using ::password_manager::features_util::ComputePasswordAccountStorageUserState;
+using ::password_manager::features_util::PasswordAccountStorageUserState;
+using ::password_manager::sync_util::GetAccountForSaving;
 
 inline constexpr std::string_view kInfobarSaveDurationHistogramName =
     "PasswordManager.iOS.InfoBar.SaveDuration";
@@ -61,11 +68,10 @@ enum class InfobarTearDownMoment {
 // Save Infobar.
 // `automatic` is YES the Infobar was presented automatically(e.g. The banner
 // was presented), NO if the user triggered it  (e.g. Tapped onthe badge).
-void RecordPresentationMetrics(
-    password_manager::PasswordFormManagerForUI* form_to_save,
-    bool current_password_saved,
-    bool update_infobar,
-    bool automatic) {
+void RecordPresentationMetrics(PasswordFormManagerForUI* form_to_save,
+                               bool current_password_saved,
+                               bool update_infobar,
+                               bool automatic) {
   // TODO(crbug.com/318820862): Consider removing this block as it is
   // theoretically impossible to save the password (e.g., tap on "Accept")
   // before presenting.
@@ -120,10 +126,9 @@ void RecordPresentationMetrics(
 // `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
 void RecordDismissalMetrics(
-    password_manager::PasswordFormManagerForUI* form_to_save,
+    PasswordFormManagerForUI* form_to_save,
     password_manager::metrics_util::UIDismissalReason infobar_response,
-    password_manager::features_util::PasswordAccountStorageUserState
-        account_storage_user_state,
+    PasswordAccountStorageUserState account_storage_user_state,
     bool update_infobar) {
   form_to_save->GetMetricsRecorder()->RecordUIDismissalReason(infobar_response);
 
@@ -223,40 +228,36 @@ NSString* GetSubtitleForActionableError(
 
 }  // namespace
 
-using password_manager::PasswordFormManagerForUI;
-
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
-    std::optional<std::string> account_to_store_password,
     bool password_update,
-    password_manager::features_util::PasswordAccountStorageUserState
-        account_storage_user_state,
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     ukm::SourceId ukm_source_id,
     bool is_replacement,
     id<SyncPresenterCommands> sync_presenter_handler,
     password_manager::PasswordStoreInterface* profile_store,
-    password_manager::PasswordStoreInterface* account_store)
+    password_manager::PasswordStoreInterface* account_store,
+    const syncer::SyncService* sync_service)
     : ukm_source_id_(ukm_source_id),
       sync_presenter_handler_(sync_presenter_handler),
       form_to_save_(std::move(form_to_save)),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
                         : PasswordInfobarType::kPasswordInfobarTypeSave),
-      account_to_store_password_(account_to_store_password),
-      account_storage_user_state_(account_storage_user_state),
       password_update_(password_update),
       is_replacement_(is_replacement),
       profile_store_(profile_store),
-      account_store_(account_store) {}
+      account_store_(account_store),
+      sync_service_(sync_service) {}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
   if (IsPresenting() && form_to_save_) {
     // If by any reason this delegate gets dealloc before the Infobar UI is
     // dismissed, record the dismissal metrics, which happens when navigating
     // away from the page presenting the infobar.
-    RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
-                           account_storage_user_state_,
-                           IsUpdateInfobar(infobar_type_));
+    RecordDismissalMetrics(
+        form_to_save_.get(), infobar_response_,
+        ComputePasswordAccountStorageUserState(sync_service_),
+        IsUpdateInfobar(infobar_type_));
     RecordInfobarDuration(/*on_dismiss=*/false);
   }
 }
@@ -291,10 +292,12 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetSubtitle() const {
     return GetSubtitleForActionableError(error);
   }
 
-  if (account_to_store_password_.has_value()) {
+  std::optional<std::string> account_to_store_password =
+      GetAccountToStorePassword();
+  if (account_to_store_password.has_value()) {
     return l10n_util::GetNSStringF(
         IDS_IOS_PASSWORD_MANAGER_ON_ACCOUNT_SAVE_SUBTITLE,
-        base::UTF8ToUTF16(*account_to_store_password_));
+        base::UTF8ToUTF16(*account_to_store_password));
   }
 
   return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_LOCAL_SAVE_SUBTITLE);
@@ -302,7 +305,11 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetSubtitle() const {
 
 std::optional<std::string>
 IOSChromeSavePasswordInfoBarDelegate::GetAccountToStorePassword() const {
-  return account_to_store_password_;
+  if (IsUpdateInfobar(infobar_type_) && form_to_save_ &&
+      !form_to_save_->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
+    return std::nullopt;
+  }
+  return GetAccountForSaving(sync_service_);
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
@@ -427,7 +434,7 @@ void IOSChromeSavePasswordInfoBarDelegate::InfobarGone() {
   }
 
   RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
-                         account_storage_user_state_,
+                         ComputePasswordAccountStorageUserState(sync_service_),
                          IsUpdateInfobar(infobar_type_));
 
   RecordInfobarDuration(/*on_dismiss=*/true);
@@ -536,10 +543,9 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
   // fixing the error.
   if (infobar_ptr && infobar_ptr->owner()) {
     auto new_delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-        account_to_store_password_, password_update_,
-        account_storage_user_state_, std::move(form_to_save_), ukm_source_id_,
+        password_update_, std::move(form_to_save_), ukm_source_id_,
         /*is_replacement=*/true, sync_presenter_handler_, profile_store_.get(),
-        account_store_.get());
+        account_store_.get(), sync_service_);
     InfobarType type = IsPasswordUpdate()
                            ? InfobarType::kInfobarTypePasswordUpdate
                            : InfobarType::kInfobarTypePasswordSave;
