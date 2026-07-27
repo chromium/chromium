@@ -656,6 +656,25 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kNonDefaultGaiaOriginCheck);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// It enables the pre first run desktop refresh (changes to the onboarding flow
+// prior to the core first run).
+//
+// No-op if previous milestone flags are disabled (see
+// `kFirstRunDesktopRefresh`, `kFirstRunDesktopChoiceScreenRefresh`,
+// `kFirstRunDesktopRevamp`).
+//
+// Clients should never use this feature directly to determine if the
+// refresh is enabled, they should use `IsPreFirstRunDesktopRefreshEnabled`
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kPreFirstRunDesktopRefresh);
+// A helper function to determine if the pre first run desktop refresh is
+// enabled (see `kPreFirstRunDesktopRefresh`, `kFirstRunDesktopRevamp`,
+// `kFirstRunDesktopRefresh` and `kFirstRunDesktopChoiceScreenRefresh` flags).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsPreFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Experimenting with changing the secondary CTA for FRE and new profile
 // creation.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

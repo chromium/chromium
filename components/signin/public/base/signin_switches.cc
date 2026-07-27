@@ -691,6 +691,15 @@ BASE_FEATURE(kNoAccountWebSignin, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNonDefaultGaiaOriginCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kPreFirstRunDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsPreFirstRunDesktopRefreshEnabled(
+    bool is_in_search_engine_choice_region) {
+  return IsFirstRunDesktopRevampEnabled(is_in_search_engine_choice_region) &&
+         base::FeatureList::IsEnabled(kPreFirstRunDesktopRefresh);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
