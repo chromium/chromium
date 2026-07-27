@@ -13,23 +13,6 @@
 
 namespace partition_alloc::internal::base::bits {
 
-TEST(BitsTestPA, BitWidth) {
-  EXPECT_EQ(0, BitWidth(0));
-  EXPECT_EQ(1, BitWidth(1));
-  EXPECT_EQ(2, BitWidth(2));
-  EXPECT_EQ(2, BitWidth(3));
-  EXPECT_EQ(3, BitWidth(4));
-  for (int i = 3; i < 31; ++i) {
-    unsigned int value = 1U << i;
-    EXPECT_EQ(i + 1, BitWidth(value));
-    EXPECT_EQ(i + 1, BitWidth(value + 1));
-    EXPECT_EQ(i + 1, BitWidth(value + 2));
-    EXPECT_EQ(i, BitWidth(value - 1));
-    EXPECT_EQ(i, BitWidth(value - 2));
-  }
-  EXPECT_EQ(32, BitWidth(0xffffffffU));
-}
-
 TEST(BitsTestPA, Log2Ceiling) {
   EXPECT_EQ(-1, Log2Ceiling(0));
   EXPECT_EQ(0, Log2Ceiling(1));
