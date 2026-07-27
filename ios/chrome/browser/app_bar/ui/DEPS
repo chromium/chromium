@@ -2,8 +2,10 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/ui_bundled",
-  "+ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h",
+  "+ios/chrome/browser/intelligence/bwg/utils",
+  "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h",
   "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/grit/ios_strings.h",
   "+ui/base/l10n/l10n_util_mac.h",

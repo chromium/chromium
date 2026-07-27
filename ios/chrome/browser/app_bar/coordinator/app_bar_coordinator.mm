@@ -96,6 +96,7 @@
   _viewController = [[AppBarViewController alloc] init];
   _viewController.sceneHandler = sceneHandler;
   _viewController.tabGridHandler = tabGridHandler;
+  _viewController.geminiHandler = geminiHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForScene(sceneState);
   _viewController.layoutState = sceneState.layoutState;
   ProfileIOS* profile = _regularBrowser->GetProfile();

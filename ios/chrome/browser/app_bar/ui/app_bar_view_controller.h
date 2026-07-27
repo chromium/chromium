@@ -13,10 +13,11 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/responder_chaining.h"
 
 @protocol AppBarMutator;
+@protocol GeminiCommands;
 @class LayoutGuideCenter;
+@class LayoutState;
 @protocol SceneCommands;
 @protocol TabGridCommands;
-@class LayoutState;
 
 // View controller for the App Bar.
 @interface AppBarViewController
@@ -39,6 +40,9 @@
 
 // Tab Grid handler.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+
+// Handler for Gemini commands.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
 // Dynamically updates the corner radius of the app bar.
 - (void)updateCornerRadius:(CGFloat)cornerRadius;
