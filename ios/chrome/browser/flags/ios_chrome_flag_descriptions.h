@@ -960,6 +960,11 @@ inline constexpr char kIOSBackendPromoServiceIntegrationName[] =
 inline constexpr char kIOSBackendPromoServiceIntegrationDescription[] =
     "Enables Backend Promo Service integration.";
 
+inline constexpr char kIOSBackgroundMetricsName[] = "iOS Background Metrics";
+inline constexpr char kIOSBackgroundMetricsDescription[] =
+    "Enables periodic UMA metrics log rotation and uploading in the "
+    "background.";
+
 inline constexpr char kIOSBrowserEditMenuMetricsName[] =
     "Browser edit menu metrics";
 inline constexpr char kIOSBrowserEditMenuMetricsDescription[] =

@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/ios_buildflags.h"
 #include "components/metrics/data_use_tracker.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_features.h"
@@ -30,6 +31,10 @@
 #include "components/background_task_scheduler/background_task_scheduler_factory.h"
 #include "components/background_task_scheduler/task_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
+#include "base/ios/scoped_critical_action.h"
+#endif
 
 namespace metrics {
 
@@ -238,6 +243,24 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
   DVLOG(1) << "SendNextLogImpl";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(upload_scheduler_);
+
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
+  if (base::FeatureList::IsEnabled(features::kIOSBackgroundMetrics)) {
+    // Create a ScopedCriticalAction to indicate to the OS that a critical task
+    // is being run and that it should avoid shutting down Chrome in the
+    // background.
+    done_callback =
+        std::move(done_callback)
+            .Then(base::BindOnce(
+                [](std::unique_ptr<base::ios::ScopedCriticalAction>) {
+                  // This function does nothing but keep the
+                  // ScopedCriticalAction param alive until we have
+                  // finished the upload task.
+                },
+                std::make_unique<base::ios::ScopedCriticalAction>(
+                    "NetMetricsLogUploaderUpload")));
+  }
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 
   upload_scheduler_->SetDoneCallback(std::move(done_callback));
 

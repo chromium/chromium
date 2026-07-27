@@ -291,6 +291,7 @@ if (!is_cronet_build || is_ios) {
       "//base:build_time",
       "//base:i18n",
       "//build:branding_buildflags",
+      "//build:ios_buildflags",
       "//components/background_task_scheduler",
       "//components/keyed_service/core",
       "//components/metrics/private_metrics:private_metrics_features",

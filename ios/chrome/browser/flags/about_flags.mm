@@ -50,6 +50,7 @@
 #import "components/feed/feed_feature_list.h"
 #import "components/history/core/browser/features.h"
 #import "components/lens/lens_features.h"
+#import "components/metrics/metrics_features.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/switches.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
@@ -2783,6 +2784,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSBackendPromoServiceIntegrationName,
      flag_descriptions::kIOSBackendPromoServiceIntegrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSBackendPromoServiceIntegration)},
+    {"ios-background-metrics", flag_descriptions::kIOSBackgroundMetricsName,
+     flag_descriptions::kIOSBackgroundMetricsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(metrics::features::kIOSBackgroundMetrics)},
+
     {"data-controls-search-with",
      flag_descriptions::kDataControlsSearchWithName,
      flag_descriptions::kDataControlsSearchWithDescription, flags_ui::kOsIos,

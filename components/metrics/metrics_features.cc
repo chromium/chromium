@@ -40,6 +40,8 @@ BASE_FEATURE(kRestructureMetricsConsentSettings,
 BASE_FEATURE(kConsolidateMetricsServiceLocales,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSBackgroundMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled,
                              base::FEATURE_ENABLED_BY_DEFAULT);
 

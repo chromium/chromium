@@ -78,6 +78,9 @@ BASE_DECLARE_FEATURE(kRestructureMetricsConsentSettings);
 BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled);
 BASE_DECLARE_FEATURE(kNoopRuntimeMutableFeatureVariationsEnabled);
 
+// Enables log rotation and uploading in the background on iOS.
+BASE_DECLARE_FEATURE(kIOSBackgroundMetrics);
+
 // Enables the no-op runtime mutable features with the FeatureList.
 void EnableNoopRuntimeMutableFeatures(base::FeatureList* feature_list);
 
