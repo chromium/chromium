@@ -13,10 +13,12 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
@@ -1281,6 +1283,112 @@ TEST_F(AccessibilityTest, DisplayLockedContentWithoutScreenReaderIsHidden) {
             DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
                 *paragraph->GetNode()))
       << "The <p> element should be display locked.";
+}
+
+TEST_F(AccessibilityTest, ComputedDetailsRelationWithDisplayLockedHintPopover) {
+  // A popover="hint" inside content-visibility:hidden is pruned from the AX
+  // tree when no screen reader is present (as in kAXModeComplete), so
+  // AXObjectCache::Get() returns null while popoverOpen() stays true.
+  // Serializing an invoking element with such a target must not dereference
+  // that null result.
+  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  SetBodyInnerHTML(R"HTML(
+      <div style="content-visibility: hidden">
+        <div id="popoverTargetHint" popover="hint">tooltip</div>
+      </div>
+      <button id="popoverTargetButton"
+              popovertarget="popoverTargetHint">A</button>
+      <div style="content-visibility: hidden">
+        <div id="commandForHint" popover="hint">tooltip</div>
+      </div>
+      <button id="commandForButton" commandfor="commandForHint"
+              command="show-popover">B</button>
+      )HTML");
+
+  // Returns the button's serialized details relation IDs.
+  auto details_ids = [&](const char* button_id) -> std::vector<int32_t> {
+    AXObject* ax_button = GetAXObjectByElementId(button_id);
+    if (!ax_button) {
+      ADD_FAILURE() << "No AXObject for " << button_id;
+      return {};
+    }
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    ax_button->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data.GetIntListAttribute(
+        ax::mojom::IntListAttribute::kDetailsIds);
+  };
+
+  // popovertarget: the hint is open in the DOM but absent from the AX tree.
+  auto* popover_target_hint =
+      To<HTMLElement>(GetElementById("popoverTargetHint"));
+  popover_target_hint->showPopover(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(popover_target_hint->popoverOpen());
+  ASSERT_EQ(nullptr, GetAXObjectCache().Get(popover_target_hint));
+  EXPECT_TRUE(details_ids("popoverTargetButton").empty());
+
+  // commandfor: the hint is open in the DOM but absent from the AX tree.
+  auto* command_for_hint = To<HTMLElement>(GetElementById("commandForHint"));
+  command_for_hint->showPopover(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(command_for_hint->popoverOpen());
+  ASSERT_EQ(nullptr, GetAXObjectCache().Get(command_for_hint));
+  EXPECT_TRUE(details_ids("commandForButton").empty());
+}
+
+TEST_F(AccessibilityTest, ComputedDetailsRelationForPlainContentPopover) {
+  // For popovertarget and commandfor invoking elements, a plain-content hint
+  // popover is excluded from the details relation, while a plain-content
+  // manual popover still establishes the relation.
+  SetBodyInnerHTML(R"HTML(
+      <div id="hintPopover" popover="hint">tooltip</div>
+      <div id="manualPopover" popover="manual">plain</div>
+      <button id="popoverTargetHintButton"
+              popovertarget="hintPopover">A</button>
+      <button id="popoverTargetManualButton"
+              popovertarget="manualPopover">B</button>
+      <button id="commandForHintButton" commandfor="hintPopover"
+              command="show-popover">C</button>
+      <button id="commandForManualButton" commandfor="manualPopover"
+              command="show-popover">D</button>
+      )HTML");
+
+  auto* hint_popover = To<HTMLElement>(GetElementById("hintPopover"));
+  hint_popover->showPopover(ASSERT_NO_EXCEPTION);
+  auto* manual_popover = To<HTMLElement>(GetElementById("manualPopover"));
+  manual_popover->showPopover(ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(hint_popover->popoverOpen());
+  ASSERT_TRUE(manual_popover->popoverOpen());
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // Both target popovers are present in the AX tree and have plain content,
+  // so popover type is the relevant difference within each pair below.
+  const AXObject* ax_hint_popover = GetAXObjectByElementId("hintPopover");
+  ASSERT_NE(nullptr, ax_hint_popover);
+  ASSERT_TRUE(ax_hint_popover->IsPlainContent());
+  const AXObject* ax_manual_popover = GetAXObjectByElementId("manualPopover");
+  ASSERT_NE(nullptr, ax_manual_popover);
+  ASSERT_TRUE(ax_manual_popover->IsPlainContent());
+
+  // Returns the button's serialized details relation IDs.
+  auto details_ids = [&](const char* button_id) -> std::vector<int32_t> {
+    AXObject* ax_button = GetAXObjectByElementId(button_id);
+    if (!ax_button) {
+      ADD_FAILURE() << "No AXObject for " << button_id;
+      return {};
+    }
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ui::AXNodeData node_data;
+    ax_button->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data.GetIntListAttribute(
+        ax::mojom::IntListAttribute::kDetailsIds);
+  };
+
+  const std::vector<int32_t> manual_popover_ids = {
+      static_cast<int32_t>(ax_manual_popover->AXObjectID())};
+  EXPECT_TRUE(details_ids("popoverTargetHintButton").empty());
+  EXPECT_EQ(manual_popover_ids, details_ids("popoverTargetManualButton"));
+  EXPECT_TRUE(details_ids("commandForHintButton").empty());
+  EXPECT_EQ(manual_popover_ids, details_ids("commandForManualButton"));
 }
 
 TEST_F(AccessibilityTest, ListMarkerIsNotLineBreakingObject) {

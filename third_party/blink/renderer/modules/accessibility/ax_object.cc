@@ -2648,6 +2648,35 @@ bool AXObject::IsPlainContent() const {
   return true;
 }
 
+// Shared checks for the details relation from an invoking element to its
+// target popover.
+AXObject* AXObject::GetPopoverForDetailsRelation(
+    const HTMLElement& popover,
+    bool exclude_plain_content) const {
+  if (ElementTraversal::NextSkippingChildren(*GetElement()) == &popover) {
+    // The next element is already the popover.
+    return nullptr;
+  }
+
+  // Avoid details relation between the popover and one of its descendants.
+  if (GetElement()->IsDescendantOrShadowDescendantOf(&popover)) {
+    return nullptr;
+  }
+
+  // The popover may be absent from the accessibility tree, e.g. when it is
+  // display-locked and its subtree has been pruned.
+  AXObject* ax_popover = AXObjectCache().Get(&popover);
+  if (!ax_popover) {
+    return nullptr;
+  }
+
+  if (exclude_plain_content && ax_popover->IsPlainContent()) {
+    return nullptr;
+  }
+
+  return ax_popover;
+}
+
 // Popover invoking elements should have details relationships with their
 // target popover, when that popover is:
 // a) open, and
@@ -2662,29 +2691,14 @@ AXObject* AXObject::GetPopoverTargetForInvoker() const {
   if (!popover || !popover->popoverOpen()) {
     return nullptr;
   }
-  if (ElementTraversal::NextSkippingChildren(*form_element) == popover) {
-    // The next element is already the popover.
-    return nullptr;
-  }
 
-  // Hint popovers that represent plain text content should not estbablish a details
-  // relation - as they are used to derive the text alternative - as if they are a
-  // tooltip. See the TextAlternativeFromTooltip function for more on this.
-  AXObject* ax_popover = AXObjectCache().Get(popover);
-  if (popover->PopoverType() == PopoverValueType::kHint &&
-      ax_popover->IsPlainContent()) {
-    return nullptr;
-  }
-
-  // Only expose a details relationship if the trigger isn't
-  // contained within the popover itself (shadow-including). E.g. a close
-  // button within the popover should not get a details relationship back
-  // to the containing popover.
-  if (GetElement()->IsDescendantOrShadowDescendantOf(popover)) {
-    return nullptr;
-  }
-
-  return ax_popover;
+  // Hint popovers that represent plain text content should not establish a
+  // details relation - as they are used to derive the text alternative - as if
+  // they are a tooltip. See the TextAlternativeFromTooltip function for more on
+  // this.
+  const bool exclude_plain_content =
+      popover->PopoverType() == PopoverValueType::kHint;
+  return GetPopoverForDetailsRelation(*popover, exclude_plain_content);
 }
 
 // Buttons with the CommandFor attribute should have details relationships with
@@ -2701,19 +2715,6 @@ AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
     return nullptr;
   }
 
-  // The next element is already the target element.
-  if (ElementTraversal::NextSkippingChildren(*html_element) == command_for) {
-    return nullptr;
-  }
-
-  // Only expose a details relationship if the trigger isn't
-  // contained within the popover itself (shadow-including). E.g. a close
-  // button within the popover should not get a details relationship back
-  // to the containing popover.
-  if (html_element->IsDescendantOrShadowDescendantOf(command_for)) {
-    return nullptr;
-  }
-
   // A button with commandfor might point to an open popover, but the command
   // might be unrelated - for example `show-modal`. Commands that aren't related
   // to the showing or hiding of popovers should not establish a details
@@ -2726,17 +2727,10 @@ AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
     return nullptr;
   }
 
-  // Hint popovers that represent plain text content should not estbablish a
-  // details relation - as they are used to derive the text alternative - as if
-  // they are a tooltip. See the TextAlternativeFromTooltip function for more on
-  // this.
-  AXObject* ax_popover = AXObjectCache().Get(command_for);
-  if (command_for->PopoverType() == PopoverValueType::kHint &&
-      ax_popover->IsPlainContent()) {
-    return nullptr;
-  }
-
-  return ax_popover;
+  // Exclude plain-content hint popovers, as in GetPopoverTargetForInvoker().
+  const bool exclude_plain_content =
+      command_for->PopoverType() == PopoverValueType::kHint;
+  return GetPopoverForDetailsRelation(*command_for, exclude_plain_content);
 }
 
 // Interest for invoking elements (with the `interestfor` attribute) should
@@ -2755,27 +2749,10 @@ AXObject* AXObject::GetInterestForTargetPopover() const {
     return nullptr;
   }
 
-  if (ElementTraversal::NextSkippingChildren(*GetElement()) == popover) {
-    // The next element is already the popover.
-    return nullptr;
-  }
-
-  AXObject* ax_popover = AXObjectCache().Get(popover);
-  if (!ax_popover) {
-    return nullptr;
-  }
-
-  // Only expose a details relationship if the trigger isn't
-  // contained within the popover itself (shadow-including).
-  if (GetElement()->IsDescendantOrShadowDescendantOf(popover)) {
-    return nullptr;
-  }
-
-  if (ax_popover->IsPlainContent()) {
-    return nullptr;
-  }
-
-  return ax_popover;
+  // Interest targets act as tooltips regardless of popover type.
+  // See the TextAlternativeFromTooltip function.
+  return GetPopoverForDetailsRelation(*popover,
+                                      /*exclude_plain_content=*/true);
 }
 
 AXObject* AXObject::GetScrollMarkerTarget() const {

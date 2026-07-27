@@ -80,6 +80,7 @@ namespace blink {
 class AbstractInlineTextBox;
 class AXObject;
 class AXObjectCacheImpl;
+class HTMLElement;
 class LayoutObject;
 class LocalFrameView;
 class Node;
@@ -1712,6 +1713,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Returns true if this node should use the aria role combobox menu button.
   bool ShouldUseComboboxMenuButtonRole() const;
+
+  // Returns the AXObject of the invoking element's target `popover` if their
+  // details relation should be set up, and null otherwise.
+  AXObject* GetPopoverForDetailsRelation(const HTMLElement& popover,
+                                         bool exclude_plain_content) const;
 
   // Whether this is an AXNodeObject.
   bool is_node_object_ : 1 = false;
