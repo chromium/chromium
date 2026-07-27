@@ -381,6 +381,27 @@ public class PageContentProviderImplUnitTest {
     }
 
     @Test
+    public void testProtoQuery_destroyedWebContents() {
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+        var eventChecker =
+                getWatcherForEvent(
+                        RequestType.QUERY,
+                        Format.PROTO,
+                        PageContentProviderEvent.REQUEST_STARTED,
+                        PageContentProviderEvent.REQUEST_FAILED_TO_GET_CURRENT_TAB);
+
+        var contentUri =
+                getMetadataFieldFromJson(
+                        structuredDataJson, PageContentProviderImpl.JSON_KEY_PROTO_CONTENT_URI);
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        Cursor resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
+        assertCursorContainsErrorMessage(resultCursor, "Failed to get current tab");
+        eventChecker.assertExpected();
+    }
+
+    @Test
     public void testTextOpenFileValidContentUri() throws Exception {
         setInnerTextExtractionResult("Page contents!", 200);
 

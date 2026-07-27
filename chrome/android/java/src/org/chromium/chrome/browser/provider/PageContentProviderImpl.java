@@ -397,8 +397,10 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                                     Tab currentTab = tabProvider.get();
 
                                     if (currentTab == null
+                                            || currentTab.isDestroyed()
                                             || currentTab.getUrl() == null
                                             || currentTab.getWebContents() == null
+                                            || currentTab.getWebContents().isDestroyed()
                                             || currentTab.getWebContents().getMainFrame() == null) {
                                         return null;
                                     }
@@ -766,6 +768,18 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                             try (var u =
                                     TraceEvent.scoped(
                                             "PageContentProvider.requestStringPageContentsAsyncOnUiThread")) {
+                                if (webContents == null
+                                        || webContents.isDestroyed()
+                                        || webContents.getMainFrame() == null) {
+                                    PageContentProviderMetrics.recordPageProviderEvent(
+                                            requestType,
+                                            Format.TEXT,
+                                            PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
+                                            isGsa);
+                                    pageContentFuture.completeExceptionally(
+                                            new Exception("WebContents destroyed"));
+                                    return;
+                                }
                                 InnerTextBridge.getInnerText(
                                         webContents.getMainFrame(),
                                         result -> {
@@ -802,6 +816,18 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                             try (var u =
                                     TraceEvent.scoped(
                                             "PageContentProvider.requestProtoPageContentsAsyncOnUiThread")) {
+                                if (webContents == null
+                                        || webContents.isDestroyed()
+                                        || webContents.getMainFrame() == null) {
+                                    PageContentProviderMetrics.recordPageProviderEvent(
+                                            requestType,
+                                            Format.PROTO,
+                                            PageContentProviderEvent.REQUEST_FAILED_EMPTY_RESULT,
+                                            isGsa);
+                                    pageContentFuture.completeExceptionally(
+                                            new Exception("WebContents destroyed"));
+                                    return;
+                                }
                                 PageContentProtoProviderBridge.getAiPageContent(
                                         webContents,
                                         result -> {
