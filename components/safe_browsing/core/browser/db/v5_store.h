@@ -279,6 +279,9 @@ class V5Store : public SBStore {
 
   // Records the status of the update being applied to the database.
   V5ApplyUpdateResult last_apply_update_result_ = V5ApplyUpdateResult::kUnknown;
+
+  // The number of database checks attempted against this store.
+  size_t checks_attempted_ = 0;
 };
 
 using V5StorePtr = std::unique_ptr<V5Store, SBStoreDeleter>;

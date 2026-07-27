@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 #include "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #endif
 
 namespace safe_browsing {
@@ -155,8 +156,14 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
                               database_manager_info);
     }
 
-    database_manager_info.Append(
-        web_ui::AddFullHashCacheInfo(full_hash_cache_info_proto));
+    if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+      // Temporarily append an empty string to avoid JS errors.
+      // TODO(crbug.com/362791941): Support v5 local hit debugging.
+      database_manager_info.Append("");
+    } else {
+      database_manager_info.Append(
+          web_ui::AddFullHashCacheInfo(full_hash_cache_info_proto));
+    }
   }
 #endif
 

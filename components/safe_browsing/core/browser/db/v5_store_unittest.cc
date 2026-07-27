@@ -2474,6 +2474,18 @@ TEST_F(V5StoreTest, TestCollectStoreInfo) {
   EXPECT_EQ("kUnknown", store_info.v5_update_status());
   EXPECT_TRUE(store_info.state().empty());
   EXPECT_FALSE(store_info.has_last_apply_update_time_millis());
+  EXPECT_EQ(0u, store_info.checks_attempted());
+
+  // Perform checks and verify checks_attempted increases.
+  store.GetMatchingHashPrefix("12345678901234567890123456789012");
+  DatabaseManagerInfo::DatabaseInfo::StoreInfo checked_store_info;
+  store.CollectStoreInfo(&checked_store_info);
+  EXPECT_EQ(1u, checked_store_info.checks_attempted());
+
+  store.GetMatchingHashPrefix("abcdefghijklmnopqrstuvwxyz123456");
+  DatabaseManagerInfo::DatabaseInfo::StoreInfo checked_store_info_2;
+  store.CollectStoreInfo(&checked_store_info_2);
+  EXPECT_EQ(2u, checked_store_info_2.checks_attempted());
 
   // Simulate successful update.
   auto hash_list = std::make_unique<V5::HashList>();
