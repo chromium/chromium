@@ -15,6 +15,7 @@
 #import "base/notreached.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -32,6 +33,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/passwords/infobars/model/ios_chrome_password_saved_infobar_delegate.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -530,10 +533,25 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
   password_manager::ActionableError error = GetPasswordStoreActionableError(
       profile_store_.get(), account_store_.get());
   infobars::InfoBar* infobar_ptr = infobar();
+  infobars::InfoBarManager* owner =
+      infobar_ptr ? infobar_ptr->owner() : nullptr;
+
   if (error == password_manager::ActionableError::kNoError) {
     SavePassword();
-    if (infobar_ptr) {
-      infobar_ptr->RemoveSelf();
+    if (!owner) {
+      return;
+    }
+    if (std::optional<std::string> account = GetAccountToStorePassword();
+        account.has_value() &&
+        base::FeatureList::IsEnabled(kPasswordSavedInfobar)) {
+      auto new_delegate =
+          std::make_unique<IOSChromePasswordSavedInfoBarDelegate>(
+              base::UTF8ToUTF16(*account));
+      auto new_infobar = std::make_unique<InfoBarIOS>(
+          InfobarType::kInfobarTypeConfirm, std::move(new_delegate));
+      owner->ReplaceInfoBar(infobar_ptr, std::move(new_infobar));
+    } else {
+      owner->RemoveInfoBar(infobar_ptr);
     }
     return;
   }
@@ -541,7 +559,7 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
   // The error was not resolved (or there is a new one). Create a new infobar,
   // so the automatic dismissal timeout kicks in again and the user can retry
   // fixing the error.
-  if (infobar_ptr && infobar_ptr->owner()) {
+  if (owner) {
     auto new_delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
         password_update_, std::move(form_to_save_), ukm_source_id_,
         /*is_replacement=*/true, sync_presenter_handler_, profile_store_.get(),
@@ -553,6 +571,6 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted() {
         std::make_unique<InfoBarIOS>(type, std::move(new_delegate),
                                      /*skip_banner=*/true);
     new_infobar->set_start_animated(false);
-    infobar_ptr->owner()->ReplaceInfoBar(infobar_ptr, std::move(new_infobar));
+    owner->ReplaceInfoBar(infobar_ptr, std::move(new_infobar));
   }
 }

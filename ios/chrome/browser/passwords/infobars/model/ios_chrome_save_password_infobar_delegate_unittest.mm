@@ -29,6 +29,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
@@ -53,7 +54,11 @@ using ::testing::SizeIs;
 
 class MockInfoBarManager : public infobars::InfoBarManager {
  public:
-  MockInfoBarManager() = default;
+  MockInfoBarManager() {
+    ON_CALL(*this, RemoveInfoBar).WillByDefault([this](infobars::InfoBar* infobar) {
+      this->infobars::InfoBarManager::RemoveInfoBar(infobar);
+    });
+  }
   ~MockInfoBarManager() override = default;
 
   MOCK_METHOD(void, RemoveInfoBar, (infobars::InfoBar * infobar), (override));
@@ -188,11 +193,6 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetPasswordText) {
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetURLHostText) {
   EXPECT_NSEQ(@"example.com", delegate_->GetURLHostText());
-}
-
-TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetAccountToStorePassword) {
-  ASSERT_TRUE(delegate_->GetAccountToStorePassword());
-  EXPECT_EQ(kAccountToStorePassword, *delegate_->GetAccountToStorePassword());
 }
 
 // Tests that the infobar expires when reloading the page and other conditions
@@ -1010,8 +1010,52 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
       password_manager::ActionableError::kSignInNeeded);
 
   IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
-  testing::NiceMock<MockInfoBarManager> mock_infobar_manager;
-  infobars::InfoBar* infobar = mock_infobar_manager.AddInfoBar(
+  NiceMock<MockInfoBarManager> mock_infobar_manager;
+  mock_infobar_manager.AddInfoBar(
+      std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect(
+      [mock_sync_presenter_ showPrimaryAccountReauthWithDismissalCompletion:
+                                [OCMArg checkWithBlock:^BOOL(id obj) {
+                                  captured_completion = obj;
+                                  return YES;
+                                }]]);
+
+  // Tap on "Accept" -> starts reauth and returns false.
+  EXPECT_FALSE(delegate_ptr->Accept());
+  ASSERT_TRUE(captured_completion);
+
+  // Simulate error resolved on reauth completion.
+  ON_CALL(*profile_store_, GetError)
+      .WillByDefault(Return(password_manager::ActionableError::kNoError));
+
+  // The password manager should save and the infobar should be replaced with
+  // the saved password confirmation infobar.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
+  form_manager_ptr_ = nullptr;
+  captured_completion();
+
+  ASSERT_THAT(mock_infobar_manager.infobars(), SizeIs(1));
+  EXPECT_EQ(mock_infobar_manager.infobars()[0]->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::PASSWORD_SAVED_INFOBAR_DELEGATE_IOS);
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       DoesNotShowConfirmationInfobarWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kPasswordSaveInContextErrorResolution},
+      /*disabled_features=*/{kPasswordSavedInfobar});
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kSignInNeeded);
+
+  IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
+  NiceMock<MockInfoBarManager> mock_infobar_manager;
+  mock_infobar_manager.AddInfoBar(
       std::make_unique<infobars::InfoBar>(std::move(delegate_)));
 
   __block SyncPresenterCompletionCallback captured_completion;
@@ -1032,9 +1076,53 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 
   // The password manager should save and the infobar should be removed.
   EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
-  EXPECT_CALL(mock_infobar_manager, RemoveInfoBar(infobar)).Times(1);
   form_manager_ptr_ = nullptr;
   captured_completion();
+
+  EXPECT_THAT(mock_infobar_manager.infobars(), IsEmpty());
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       DoesNotShowConfirmationInfobarWithNoSignedInUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kPasswordSaveInContextErrorResolution,
+                            kPasswordSavedInfobar},
+      /*disabled_features=*/{});
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kSignInNeeded);
+  sync_service_.SetSignedOut();
+
+  IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
+  NiceMock<MockInfoBarManager> mock_infobar_manager;
+  mock_infobar_manager.AddInfoBar(
+      std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect(
+      [mock_sync_presenter_ showPrimaryAccountReauthWithDismissalCompletion:
+                                [OCMArg checkWithBlock:^BOOL(id obj) {
+                                  captured_completion = obj;
+                                  return YES;
+                                }]]);
+
+  // Tap on "Accept" -> starts reauth and returns false.
+  EXPECT_FALSE(delegate_ptr->Accept());
+  ASSERT_TRUE(captured_completion);
+
+  // Simulate error resolved on reauth completion.
+  ON_CALL(*profile_store_, GetError)
+      .WillByDefault(Return(password_manager::ActionableError::kNoError));
+
+  // The password manager should save and the infobar should be removed.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
+  form_manager_ptr_ = nullptr;
+  captured_completion();
+
+  EXPECT_THAT(mock_infobar_manager.infobars(), IsEmpty());
 }
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
@@ -1048,7 +1136,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
       password_manager::ActionableError::kSignInNeeded);
 
   IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
-  testing::NiceMock<MockInfoBarManager> mock_infobar_manager;
+  NiceMock<MockInfoBarManager> mock_infobar_manager;
   infobars::InfoBar* infobar = mock_infobar_manager.AddInfoBar(
       std::make_unique<infobars::InfoBar>(std::move(delegate_)));
 
