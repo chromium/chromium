@@ -318,7 +318,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
 }
 
 - (UIImage*)makeDefaultFaviconUIImage {
-  return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kCenterSymbolSize);
+  return SymbolWithPointSize(SymbolGlobeAmericas, kCenterSymbolSize);
 }
 
 - (void)addFaviconImageAndContainer:(UIImage*)faviconImage {
