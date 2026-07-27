@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -71,13 +72,15 @@ SigninQRCodeView::SigninQRCodeView() {
                           .SetText(l10n_util::GetStringUTF16(
                               IDS_SIGNIN_QRCODE_BANNER_TITLE))
                           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                          .SetTextStyle(views::style::STYLE_HEADLINE_4),
+                          .SetTextStyle(views::style::STYLE_HEADLINE_4)
+                          .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                       views::Builder<views::Label>()
                           .SetText(l10n_util::GetStringUTF16(
                               IDS_SIGNIN_QRCODE_BANNER_DESCRIPTION))
                           .SetTextContext(views::style::CONTEXT_LABEL)
                           .SetTextStyle(views::style::STYLE_BODY_3)
-                          .SetMultiLine(true)))
+                          .SetMultiLine(true)
+                          .SetHorizontalAlignment(gfx::ALIGN_LEFT)))
           .Build());
 }
 
