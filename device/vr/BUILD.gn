@@ -444,21 +444,13 @@ if (enable_openxr) {
         "//device/vr/public/mojom:vr_service",
         "//device/vr/public/mojom/test:test_mojom",
         "//third_party/openxr:openxr_headers",
+        "//ui/gl",
       ]
 
       if (is_win) {
         libs = [
           "d3d11.lib",
           "dxgi.lib",
-        ]
-      } else if (is_android) {
-        sources += [
-          "openxr/test/xr_test_gl.cc",
-          "openxr/test/xr_test_gl.h",
-        ]
-        libs = [
-          "EGL",
-          "GLESv2",
         ]
       }
     }

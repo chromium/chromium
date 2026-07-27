@@ -19,10 +19,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "device/vr/openxr/test/xr_test_gl.h"
-#endif
-
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
   return path.contains(s);
@@ -135,7 +131,6 @@ void OpenXrTestHelper::Reset() {
   acquired_swapchain_texture_ = 0;
 #elif BUILDFLAG(IS_ANDROID)
   opengl_es_textures_arrays_.clear();
-  xr_gl_.reset();
   acquired_swapchain_textures_.clear();
 #endif
   next_handle_ = 0;
@@ -337,7 +332,6 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
   constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
   constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  DCHECK_NE(xr_gl_, nullptr);
   // In some build environment, XR_NULL_HANDLE is a signed integer
   // while XrSwapchain is unsigned.
   DCHECK_NE(swapchain, static_cast<XrSwapchain>(XR_NULL_HANDLE));
@@ -347,57 +341,55 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
 
   // Generate a framebuffer to read from and attach the current texture to it.
   GLuint fbo = 0;
-  xr_gl_->glGenFramebuffers_fn(1, &fbo);
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
-  xr_gl_->glFramebufferTexture2D_fn(
-      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-      opengl_es_textures_arrays_[swapchain][texture_index], 0);
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         opengl_es_textures_arrays_[swapchain][texture_index],
+                         0);
 
-  GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
     // Read a horizontal strip of pixels from the start of the texture; however
     // many will fit.
-    xr_gl_->glReadPixels_fn(x_start, 0, buffer_size_pixels, 1, GL_RGBA,
-                            GL_UNSIGNED_BYTE, out_buffer.data());
+    glReadPixels(x_start, 0, buffer_size_pixels, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+                 out_buffer.data());
     data.color = GetFirstColor(data.raw_buffer);
   } else {
     DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
   }
 
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
-  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &fbo);
 }
 
 device::Color OpenXrTestHelper::ReadTextureColor(
     const XrSwapchainSubImage& sub_image) {
   device::Color color;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  DCHECK_NE(xr_gl_, nullptr);
   auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
   DCHECK_LT(texture_index,
             opengl_es_textures_arrays_[sub_image.swapchain].size());
 
   GLuint fbo = 0;
-  xr_gl_->glGenFramebuffers_fn(1, &fbo);
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
   auto texture = opengl_es_textures_arrays_[sub_image.swapchain][texture_index];
-  xr_gl_->glFramebufferTexture2D_fn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                    GL_TEXTURE_2D, texture, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
 
-  GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
     char pixel[4];
-    xr_gl_->glReadPixels_fn(sub_image.imageRect.offset.x,
-                            sub_image.imageRect.offset.y, 1, 1, GL_RGBA,
-                            GL_UNSIGNED_BYTE, pixel);
+    glReadPixels(sub_image.imageRect.offset.x, sub_image.imageRect.offset.y, 1,
+                 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
     color = GetFirstColor(pixel);
   } else {
     DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
   }
 
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
-  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &fbo);
   return color;
 }
 
@@ -405,25 +397,23 @@ std::vector<device::Color> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
     XrSwapchain swapchain) {
   std::vector<device::Color> colors;
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
-  DCHECK_NE(xr_gl_, nullptr);
   auto texture_index = acquired_swapchain_textures_[swapchain];
   DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
 
   GLuint fbo = 0;
-  xr_gl_->glGenFramebuffers_fn(1, &fbo);
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, fbo);
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
   GLuint texture = opengl_es_textures_arrays_[swapchain][texture_index];
   DCHECK_NE(texture, 0u);
   for (int i = 0; i < 6; ++i) {
-    xr_gl_->glFramebufferTexture2D_fn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                      GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                                      texture, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, texture, 0);
 
-    GLenum status = xr_gl_->glCheckFramebufferStatus_fn(GL_FRAMEBUFFER);
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status == GL_FRAMEBUFFER_COMPLETE) {
       char pixel[4];
-      xr_gl_->glReadPixels_fn(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+      glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
       colors.push_back(GetFirstColor(pixel));
     } else {
       DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
@@ -431,8 +421,8 @@ std::vector<device::Color> OpenXrTestHelper::ReadCubeMapFirstPixelColor(
     }
   }
 
-  xr_gl_->glBindFramebuffer_fn(GL_FRAMEBUFFER, 0);
-  xr_gl_->glDeleteFramebuffers_fn(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &fbo);
   return colors;
 }
 #endif
@@ -913,7 +903,6 @@ void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
   }
 #elif BUILDFLAG(IS_ANDROID)
 void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
-  DCHECK_NE(xr_gl_, nullptr);
   DCHECK(swapchains_.contains(swapchain));
 
   // Assume the first layer is projection layer for now.
@@ -924,32 +913,31 @@ void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
   }
 
   textures.resize(kMinSwapchainBuffering);
-  xr_gl_->glGenTextures_fn(kMinSwapchainBuffering, textures.data());
+  glGenTextures(kMinSwapchainBuffering, textures.data());
 
   const auto& swapchain_info = swapchains_[swapchain];
   const bool is_cube = swapchain_info.faceCount == 6;
   for (GLuint texture_id : textures) {
     // Allocate storage for the texture.
     if (is_cube) {
-      xr_gl_->glBindTexture_fn(GL_TEXTURE_CUBE_MAP, texture_id);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
       for (unsigned int i = 0; i < 6; i++) {
-        xr_gl_->glTexImage2D_fn(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-                                kSwapchainFormat, swapchain_info.width,
-                                swapchain_info.height, 0, GL_RGBA,
-                                GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, kSwapchainFormat,
+                     swapchain_info.width, swapchain_info.height, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, nullptr);
       }
     } else {
-      xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, texture_id);
-      xr_gl_->glTexImage2D_fn(GL_TEXTURE_2D, 0, kSwapchainFormat,
-                              swapchain_info.width, swapchain_info.height, 0,
-                              GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+      glBindTexture(GL_TEXTURE_2D, texture_id);
+      glTexImage2D(GL_TEXTURE_2D, 0, kSwapchainFormat, swapchain_info.width,
+                   swapchain_info.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                   nullptr);
     }
   }
   // Unbind the last texture.
   if (is_cube) {
-    xr_gl_->glBindTexture_fn(GL_TEXTURE_CUBE_MAP, 0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   } else {
-    xr_gl_->glBindTexture_fn(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 #endif
 }
@@ -972,7 +960,6 @@ void OpenXrTestHelper::SetOpenGLESInfo(EGLDisplay display, EGLContext context) {
   // a valid display/context.
   DCHECK_NE(display, EGL_NO_DISPLAY);
   DCHECK_NE(context, EGL_NO_CONTEXT);
-  xr_gl_ = std::make_unique<XrTestGl>();
 }
 #endif
 

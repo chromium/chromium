@@ -25,15 +25,12 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include "ui/gl/gl_bindings.h"
 #endif
 
 namespace gfx {
 class Transform;
 }  // namespace gfx
-
-class XrTestGl;
 
 class OpenXrTestHelper : public device::ServiceTestHook {
  public:
@@ -268,7 +265,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   uint32_t acquired_swapchain_texture_ = 0;
   std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
 #elif BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<XrTestGl> xr_gl_;
   // Acquired swapchain texture per swapchain.
   absl::flat_hash_map<XrSwapchain, uint32_t> acquired_swapchain_textures_;
   absl::flat_hash_map<XrSwapchain, std::vector<uint32_t>>
