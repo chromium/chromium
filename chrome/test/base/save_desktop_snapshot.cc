@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"

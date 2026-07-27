@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 
 #include <map>
@@ -17,12 +16,12 @@
 #include "base/cpu.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -488,11 +487,11 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   }
 
   // Log start time (current time).
-  base::Time::Exploded exploded;
-  base::Time::Now().LocalExplode(&exploded);
+  base::Time::Exploded exploded_start;
+  base::Time::Now().LocalExplode(&exploded_start);
   LogToCircularBuffer(base::StringPrintf(
-      "Start %04d-%02d-%02d %02d:%02d:%02d", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second));
+      "Start %04d-%02d-%02d %02d:%02d:%02d", exploded_start.year, exploded_start.month,
+      exploded_start.day_of_month, exploded_start.hour, exploded_start.minute, exploded_start.second));
 
   // Write metadata if received before logging started.
   if (meta_data_ && !meta_data_->empty()) {

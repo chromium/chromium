@@ -117,6 +117,10 @@ BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
 // Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
 BASE_I18N_EXPORT std::string TimeFormatAsIso8601(const Time& time);
 
+// Formats a time in POSIX "unixtime" format with microsecond precision and
+// local timezone offset, e.g., "2020-01-01T12:34:56.000000+00:00".
+BASE_I18N_EXPORT std::string TimeFormatUnix(const Time& time);
+
 // Formats a time in the IMF-fixdate format defined by RFC 7231 (satisfying its
 // HTTP-date format), e.g. "Sun, 06 Nov 1994 08:49:37 GMT".
 BASE_I18N_EXPORT std::string TimeFormatHTTP(const Time& time);

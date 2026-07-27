@@ -222,11 +222,7 @@ TEST_F(DeviceEventLogTest, TestTimeFormat) {
 #if BUILDFLAG(IS_POSIX)
   // External tools expect the "unixtime" format to match the format use in
   // /var/log/messages and other system logs.
-  //
-  // The "xxx" format specifier below converts to the timezone offset in
-  // "+/-HH:MM" format.
-  EXPECT_EQ(base::UnlocalizedTimeFormatWithPattern(
-                time, "'2020-01-01T12:34:56.000000'xxx' event0\n'"),
+  EXPECT_EQ(base::TimeFormatUnix(time) + " event0\n",
             GetLogString(OLDEST_FIRST, "unixtime", kDefaultLevel, 1));
 #endif
 }

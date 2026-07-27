@@ -111,22 +111,33 @@ LogType GetLogTypeFromString(std::string_view desc) {
 }
 
 std::string DateAndTimeWithMicroseconds(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(time,
-                                                "yyyy/MM/dd HH:mm:ss.SSSSSS");
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  int64_t micros = time.ToDeltaSinceWindowsEpoch().InMicroseconds() % 1000000;
+  return base::StringPrintf(
+      "%04d/%02d/%02d %02d:%02d:%02d.%06lld", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
+      static_cast<long long>(micros));
 }
 
 std::string TimeWithSeconds(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(time, "HH:mm:ss");
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  return base::StringPrintf("%02d:%02d:%02d", exploded.hour, exploded.minute,
+                            exploded.second);
 }
 
 std::string TimeWithMillieconds(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(time, "HH:mm:ss.SSS");
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+  return base::StringPrintf("%02d:%02d:%02d.%03d", exploded.hour,
+                            exploded.minute, exploded.second,
+                            exploded.millisecond);
 }
 
 #if BUILDFLAG(IS_POSIX)
 std::string UnixTime(const base::Time& time) {
-  return base::UnlocalizedTimeFormatWithPattern(
-      time, "yyyy-MM-dd'T'HH:mm:ss.SSSSSSxxx");
+  return base::TimeFormatUnix(time);
 }
 #endif
 

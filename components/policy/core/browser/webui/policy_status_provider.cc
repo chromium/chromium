@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -310,9 +311,12 @@ void PolicyStatusProvider::UpdateLastReportTimestamp(
   if (prefs->HasPrefPath(report_timestamp_pref_path)) {
     base::Time last_report_timestamp =
         prefs->GetTime(report_timestamp_pref_path);
+    base::Time::Exploded exploded;
+    last_report_timestamp.LocalExplode(&exploded);
     status.Set("lastCloudReportSentTimestamp",
-               base::UnlocalizedTimeFormatWithPattern(last_report_timestamp,
-                                                      "yyyy-LL-dd HH:mm zzz"));
+               base::StringPrintf("%04d-%02d-%02d %02d:%02d", exploded.year,
+                                  exploded.month, exploded.day_of_month,
+                                  exploded.hour, exploded.minute));
     status.Set("timeSinceLastCloudReportSent",
                GetTimeSinceLastActionString(last_report_timestamp));
   }
@@ -326,9 +330,12 @@ void PolicyStatusProvider::UpdateLastReportTimestamp(
   if (prefs->HasPrefPath(report_timestamp_pref_path)) {
     base::Time last_report_timestamp =
         prefs->GetTime(report_timestamp_pref_path);
+    base::Time::Exploded exploded;
+    last_report_timestamp.LocalExplode(&exploded);
     status->last_cloud_report_sent_timestamp =
-        base::UnlocalizedTimeFormatWithPattern(last_report_timestamp,
-                                               "yyyy-LL-dd HH:mm zzz");
+        base::StringPrintf("%04d-%02d-%02d %02d:%02d", exploded.year,
+                           exploded.month, exploded.day_of_month, exploded.hour,
+                           exploded.minute);
     status->time_since_last_cloud_report_sent =
         base::UTF16ToUTF8(GetTimeSinceLastActionString(last_report_timestamp));
   }

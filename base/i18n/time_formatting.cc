@@ -246,6 +246,30 @@ std::string TimeFormatAsIso8601(const Time& time) {
                       exploded.minute, exploded.second, exploded.millisecond);
 }
 
+std::string TimeFormatUnix(const Time& time) {
+  base::Time::Exploded exploded;
+  time.LocalExplode(&exploded);
+
+  base::i18n::TimeZone local_tz = base::i18n::TimeZone::Default();
+  base::TimeDelta raw_offset;
+  base::TimeDelta dst_offset;
+  local_tz.GetOffset(time, true, raw_offset, dst_offset);
+  base::TimeDelta total_offset = raw_offset + dst_offset;
+
+  int total_minutes = total_offset.InMinutes();
+  char sign = total_minutes >= 0 ? '+' : '-';
+  total_minutes = std::abs(total_minutes);
+  int hours = total_minutes / 60;
+  int minutes = total_minutes % 60;
+
+  int64_t micros = time.ToDeltaSinceWindowsEpoch().InMicroseconds() % 1000000;
+
+  return base::StringPrintf(
+      "%04d-%02d-%02dT%02d:%02d:%02d.%06lld%c%02d:%02d", exploded.year,
+      exploded.month, exploded.day_of_month, exploded.hour, exploded.minute,
+      exploded.second, static_cast<long long>(micros), sign, hours, minutes);
+}
+
 std::string TimeFormatHTTP(const Time& time) {
   // Get the weekday and month names as unlocalized English (RFC 7231 fixes them
   // to English) in GMT (to match the `UTCExplode()` below). `Format()` would

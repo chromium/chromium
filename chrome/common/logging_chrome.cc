@@ -39,8 +39,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "base/i18n/time_formatting.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -602,9 +602,11 @@ bool DialogsAreSuppressed() {
 #if BUILDFLAG(IS_CHROMEOS)
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
-  return base_path.InsertBeforeExtensionASCII(
-      base::UnlocalizedTimeFormatWithPattern(timestamp, "_yyMMdd-HHmmss",
-                                             icu::TimeZone::getGMT()));
+  base::Time::Exploded exploded;
+  timestamp.UTCExplode(&exploded);
+  return base_path.InsertBeforeExtensionASCII(base::StringPrintf(
+      "_%02d%02d%02d-%02d%02d%02d", exploded.year % 100, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

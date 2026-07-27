@@ -4,9 +4,9 @@
 
 #include "components/offline_pages/core/offline_event_logger.h"
 
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_clock.h"
 
@@ -40,8 +40,11 @@ void OfflineEventLogger::RecordActivity(const std::string& activity) {
     return;
   }
 
-  std::string date_string = base::UnlocalizedTimeFormatWithPattern(
-      OfflineTimeNow(), "y MM dd HH:mm:ss: ");
+  base::Time::Exploded exploded;
+  OfflineTimeNow().LocalExplode(&exploded);
+  std::string date_string = base::StringPrintf(
+      "%04d %02d %02d %02d:%02d:%02d: ", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
 
   if (client_) {
     client_->CustomLog(activity);
