@@ -690,6 +690,10 @@ GURL WorkerScriptFetcher::DetermineFinalResponseUrl(
     blink::mojom::WorkerMainScriptLoadParams* main_script_load_params) {
   DCHECK(main_script_load_params);
 
+  if (initial_request_url.SchemeIsLocal()) {
+    return initial_request_url;
+  }
+
   network::mojom::URLResponseHead* url_response_head =
       main_script_load_params->response_head.get();
 

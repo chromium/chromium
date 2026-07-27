@@ -74,6 +74,12 @@ TEST(WorkerScriptFetcherTest, DetermineFinalResponseUrl) {
           {GURL("https://redirect_1.com"), GURL("https://redirect_2.com")},
           GURL("https://url_list_2.com"),
       },
+      {
+          GURL("blob:https://initial.com/uuid"),
+          {GURL("https://url_list_1.com"), GURL("https://url_list_2.com")},
+          {GURL("https://redirect_1.com"), GURL("https://redirect_2.com")},
+          GURL("blob:https://initial.com/uuid"),
+      },
   };
 
   for (const auto& test_case : kTestCases) {

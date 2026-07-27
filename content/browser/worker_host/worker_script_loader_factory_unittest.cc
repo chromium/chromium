@@ -15,11 +15,14 @@
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -226,6 +229,66 @@ TEST_F(WorkerScriptLoaderFactoryTest, RedirectFromBlobUrl) {
   EXPECT_FALSE(client.has_received_redirect());
   ASSERT_TRUE(client.has_received_completion());
   EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, client.completion_status().error_code);
+}
+
+// Tests that response headers received while loading a blob: URL are sanitized.
+// Loading a blob URL never produces service worker interception or network
+// address space metadata, so any unexpected fields must be reset before they
+// are forwarded to the client.
+TEST_F(WorkerScriptLoaderFactoryTest, ResponseFromBlobUrl) {
+  GURL url("blob:https://www.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+
+  // Defer the mock network load so we can inject a response on the in-flight
+  // load.
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  // Create the factory.
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  // Start loading the script.
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+  // Simulate receiving a response from the blob load with unexpected fields.
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->was_fetched_via_service_worker = true;
+  response_head->url_list_via_service_worker = {
+      GURL("https://other.example.com/worker.js")};
+  response_head->client_address_space =
+      network::mojom::IPAddressSpace::kLoopback;
+  response_head->response_address_space =
+      network::mojom::IPAddressSpace::kLoopback;
+  response_head->remote_endpoint =
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 8080);
+  response_head->was_fetched_via_cache = true;
+  response_head->is_validated = true;
+
+  factory->GetScriptLoader()->OnReceiveResponse(
+      std::move(response_head), mojo::ScopedDataPipeConsumerHandle(),
+      std::nullopt);
+  client.RunUntilResponseReceived();
+
+  // Verify that the unexpected fields were sanitized.
+  ASSERT_TRUE(client.has_received_response());
+  EXPECT_FALSE(client.response_head()->was_fetched_via_service_worker);
+  EXPECT_TRUE(client.response_head()->url_list_via_service_worker.empty());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            client.response_head()->client_address_space);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            client.response_head()->response_address_space);
+  EXPECT_EQ(net::IPEndPoint(), client.response_head()->remote_endpoint);
+  factory->GetScriptLoader()->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
 }
 
 // Tests that a redirect to an unsafe target scheme is rejected.
