@@ -842,8 +842,8 @@ void Canvas2DRecorderContext::ResetInternal() {
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     int width = Width();  // Keeping results to avoid repetitive virtual calls.
     int height = Height();
-    WillDraw(gfx::Rect(width, height),
-             CanvasPerformanceMonitor::DrawType::kOther);
+    WillDrawWithProvider(gfx::Rect(width, height),
+                         CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, width, height), GetClearFlags());
   }
 
