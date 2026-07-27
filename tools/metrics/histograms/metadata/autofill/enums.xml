@@ -2536,6 +2536,34 @@ Called by update_autofill_enums.py.-->
       label="ADDRESS_HOME_ZIP_AND_CITY: False Negative (Unknown)"/>
   <int value="13065"
       label="ADDRESS_HOME_ZIP_AND_CITY: False Negative (Mismatch)"/>
+  <int value="13312" label="ADDRESS_HOME_ZIP_PREFIX: True Positive"/>
+  <int value="13313"
+      label="ADDRESS_HOME_ZIP_PREFIX: True Negative (Ambiguous)"/>
+  <int value="13314" label="ADDRESS_HOME_ZIP_PREFIX: True Negative (Unknown)"/>
+  <int value="13315" label="ADDRESS_HOME_ZIP_PREFIX: True Negative (Empty)"/>
+  <int value="13316"
+      label="ADDRESS_HOME_ZIP_PREFIX: False Positive (Mismatch)"/>
+  <int value="13317"
+      label="ADDRESS_HOME_ZIP_PREFIX: False Positive (Ambiguous)"/>
+  <int value="13318" label="ADDRESS_HOME_ZIP_PREFIX: False Positive (Unknown)"/>
+  <int value="13319" label="ADDRESS_HOME_ZIP_PREFIX: False Positive (Empty)"/>
+  <int value="13320" label="ADDRESS_HOME_ZIP_PREFIX: False Negative (Unknown)"/>
+  <int value="13321"
+      label="ADDRESS_HOME_ZIP_PREFIX: False Negative (Mismatch)"/>
+  <int value="13568" label="ADDRESS_HOME_ZIP_SUFFIX: True Positive"/>
+  <int value="13569"
+      label="ADDRESS_HOME_ZIP_SUFFIX: True Negative (Ambiguous)"/>
+  <int value="13570" label="ADDRESS_HOME_ZIP_SUFFIX: True Negative (Unknown)"/>
+  <int value="13571" label="ADDRESS_HOME_ZIP_SUFFIX: True Negative (Empty)"/>
+  <int value="13572"
+      label="ADDRESS_HOME_ZIP_SUFFIX: False Positive (Mismatch)"/>
+  <int value="13573"
+      label="ADDRESS_HOME_ZIP_SUFFIX: False Positive (Ambiguous)"/>
+  <int value="13574" label="ADDRESS_HOME_ZIP_SUFFIX: False Positive (Unknown)"/>
+  <int value="13575" label="ADDRESS_HOME_ZIP_SUFFIX: False Positive (Empty)"/>
+  <int value="13576" label="ADDRESS_HOME_ZIP_SUFFIX: False Negative (Unknown)"/>
+  <int value="13577"
+      label="ADDRESS_HOME_ZIP_SUFFIX: False Negative (Mismatch)"/>
 </enum>
 
 <enum name="AutofillFieldType">
