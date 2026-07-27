@@ -3153,6 +3153,12 @@ void RasterDecoderImpl::DoFlushTileRasterGraphiteCommandsCHROMIUM() {
   // the tile raster commands will naturally be submitted together with the
   // compositor's commands in the latter's Context::submit(), so GPU
   // execution order is still guaranteed.
+#if BUILDFLAG(IS_WIN)
+  if (features::SkiaGraphiteFlushD3D11TileRasterCommandsToDriver()) {
+    graphite_context->submitAndFlushBackend();
+    return;
+  }
+#endif
   graphite_context->submit();
 }
 
