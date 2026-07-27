@@ -4238,7 +4238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.ScrollActionToIndex" units="index"
-    expires_after="2026-09-07">
+    expires_after="2027-09-07">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
