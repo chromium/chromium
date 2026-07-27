@@ -5574,8 +5574,6 @@ crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.h
 
 # Sheriff 2021-03-19
 crbug.com/40173961 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
-# Temporarily disable to land https://crrev.com/c/8126360
-http/tests/devtools/a11y-axe-core/sources/dom-breakpoints-pane-a11y-test.js [ Failure Pass ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
 
 # Sheriff 2021-03-31
