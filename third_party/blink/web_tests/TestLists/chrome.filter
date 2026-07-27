@@ -97,3 +97,5 @@ virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-payment-manifest-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-payment-manifest-redirect-allowed.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-payment-manifest-redirect-blocked.https.window.html
+virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-sw-registration-allowed.https.window.html
+virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-sw-registration-blocked.https.window.html
