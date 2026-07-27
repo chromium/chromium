@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/site_cookie_provider/site_cookie_provider_service.h"
+#include "components/site_token_provider/site_token_provider_service.h"
 
 #include "base/logging.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/site_cookie_provider/site_cookie_provider.h"
+#include "components/site_token_provider/site_token_provider.h"
 
-namespace site_cookie_provider {
+namespace site_token_provider {
 
-SiteCookieProviderService::SiteCookieProviderService(
+SiteTokenProviderService::SiteTokenProviderService(
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<SiteCookieProvider> provider)
+    std::unique_ptr<SiteTokenProvider> provider)
     : provider_(std::move(provider)), identity_manager_(identity_manager) {
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
@@ -25,22 +25,22 @@ SiteCookieProviderService::SiteCookieProviderService(
   }
 }
 
-SiteCookieProviderService::~SiteCookieProviderService() = default;
+SiteTokenProviderService::~SiteTokenProviderService() = default;
 
-void SiteCookieProviderService::Shutdown() {
+void SiteTokenProviderService::Shutdown() {
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
   }
 }
 
-void SiteCookieProviderService::UpdateState() {
+void SiteTokenProviderService::UpdateState() {
   if (provider_) {
     provider_->UpdateState();
   }
 }
 
-void SiteCookieProviderService::OnPrimaryAccountChanged(
+void SiteTokenProviderService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
@@ -54,4 +54,4 @@ void SiteCookieProviderService::OnPrimaryAccountChanged(
   }
 }
 
-}  // namespace site_cookie_provider
+}  // namespace site_token_provider

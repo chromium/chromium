@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SITE_COOKIE_PROVIDER_SITE_COOKIE_PROVIDER_H_
-#define COMPONENTS_SITE_COOKIE_PROVIDER_SITE_COOKIE_PROVIDER_H_
+#ifndef COMPONENTS_SITE_TOKEN_PROVIDER_SITE_TOKEN_PROVIDER_H_
+#define COMPONENTS_SITE_TOKEN_PROVIDER_SITE_TOKEN_PROVIDER_H_
 
 #include <memory>
 #include <string>
@@ -20,22 +20,22 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace site_cookie_provider {
+namespace site_token_provider {
 
-// Interface for the core logic of managing site-specific cookies.
-class SiteCookieProvider {
+// Interface for the core logic of managing site-specific tokens.
+class SiteTokenProvider {
  public:
-  static std::unique_ptr<SiteCookieProvider> Create(
+  static std::unique_ptr<SiteTokenProvider> Create(
       signin::IdentityManager* identity_manager,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  virtual ~SiteCookieProvider();
+  virtual ~SiteTokenProvider();
 
   // Triggers local state synchronization updates.
   virtual void UpdateState() = 0;
 };
 
-}  // namespace site_cookie_provider
+}  // namespace site_token_provider
 
-#endif  // COMPONENTS_SITE_COOKIE_PROVIDER_SITE_COOKIE_PROVIDER_H_
+#endif  // COMPONENTS_SITE_TOKEN_PROVIDER_SITE_TOKEN_PROVIDER_H_

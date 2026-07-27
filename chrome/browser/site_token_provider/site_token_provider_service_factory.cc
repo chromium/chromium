@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/site_cookie_provider/site_cookie_provider_service_factory.h"
+#include "chrome/browser/site_token_provider/site_token_provider_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/site_cookie_provider/features.h"
-#include "components/site_cookie_provider/site_cookie_provider.h"
-#include "components/site_cookie_provider/site_cookie_provider_service.h"
+#include "components/site_token_provider/features.h"
+#include "components/site_token_provider/site_token_provider.h"
+#include "components/site_token_provider/site_token_provider_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace site_cookie_provider {
+namespace site_token_provider {
 
 // static
-SiteCookieProviderService* SiteCookieProviderServiceFactory::GetForProfile(
+SiteTokenProviderService* SiteTokenProviderServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<SiteCookieProviderService*>(
+  return static_cast<SiteTokenProviderService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
-SiteCookieProviderServiceFactory*
-SiteCookieProviderServiceFactory::GetInstance() {
-  static base::NoDestructor<SiteCookieProviderServiceFactory> instance;
+SiteTokenProviderServiceFactory*
+SiteTokenProviderServiceFactory::GetInstance() {
+  static base::NoDestructor<SiteTokenProviderServiceFactory> instance;
   return instance.get();
 }
 
-SiteCookieProviderServiceFactory::SiteCookieProviderServiceFactory()
+SiteTokenProviderServiceFactory::SiteTokenProviderServiceFactory()
     : ProfileKeyedServiceFactory(
-          "SiteCookieProviderService",
+          "SiteTokenProviderService",
           ProfileSelections::Builder()
               // Create the service for regular profiles, but explicitly
               // disable it for off-the-record (incognito) profiles.
@@ -43,12 +43,12 @@ SiteCookieProviderServiceFactory::SiteCookieProviderServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-SiteCookieProviderServiceFactory::~SiteCookieProviderServiceFactory() = default;
+SiteTokenProviderServiceFactory::~SiteTokenProviderServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-SiteCookieProviderServiceFactory::BuildServiceInstanceForBrowserContext(
+SiteTokenProviderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kSiteCookieProviderEnabled)) {
+  if (!base::FeatureList::IsEnabled(features::kSiteTokenProviderEnabled)) {
     return nullptr;
   }
 
@@ -60,17 +60,17 @@ SiteCookieProviderServiceFactory::BuildServiceInstanceForBrowserContext(
   storage_partition->GetNetworkContext()->GetCookieManager(
       cookie_manager.InitWithNewPipeAndPassReceiver());
 
-  auto provider = SiteCookieProvider::Create(
+  auto provider = SiteTokenProvider::Create(
       IdentityManagerFactory::GetForProfile(profile), std::move(cookie_manager),
       storage_partition->GetURLLoaderFactoryForBrowserProcess());
 
-  return std::make_unique<SiteCookieProviderService>(
+  return std::make_unique<SiteTokenProviderService>(
       IdentityManagerFactory::GetForProfile(profile), std::move(provider));
 }
 
-bool SiteCookieProviderServiceFactory::ServiceIsCreatedWithBrowserContext()
+bool SiteTokenProviderServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
 
-}  // namespace site_cookie_provider
+}  // namespace site_token_provider

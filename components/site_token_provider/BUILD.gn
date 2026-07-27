@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("site_cookie_provider") {
+source_set("site_token_provider") {
   sources = [
     "features.cc",
     "features.h",
-    "site_cookie_provider.cc",
-    "site_cookie_provider.h",
-    "site_cookie_provider_service.cc",
-    "site_cookie_provider_service.h",
+    "site_token_provider.cc",
+    "site_token_provider.h",
+    "site_token_provider_service.cc",
+    "site_token_provider_service.h",
   ]
   deps = [
     "//base",
@@ -24,9 +24,9 @@ source_set("site_cookie_provider") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "site_cookie_provider_unittest.cc" ]
+  sources = [ "site_token_provider_unittest.cc" ]
   deps = [
-    ":site_cookie_provider",
+    ":site_token_provider",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",

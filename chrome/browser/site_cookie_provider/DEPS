@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/site_cookie_provider",
-]
