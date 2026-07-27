@@ -1,13 +1,13 @@
 Name: Headers for DirectX APIs.
 Short Name: DirectX-Headers
 URL: https://github.com/microsoft/directx-headers
-Version: v1.613.1
-Revision: aafb798404373bec7875e6a36a8d9635642587c1
+Version: N/A
+Revision: 07b94cba474be6cdfd934febdbd0b21ca0524187
 Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
-Security Critical: Yes
-Shipped: Yes
+Security Critical: yes
+Shipped: yes
 
 Description:
 DirectX-Headers hosts the official Direct3D 12 and DirectML headers. These
