@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OMNIBOX_AUTOFILL_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OMNIBOX_AUTOFILL_PAGE_ACTION_CONTROLLER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -41,7 +42,7 @@ class OmniboxAutofillPageActionController final
       const page_actions::PageActionState& page_action) override;
 
   // Shows the expanded omnibox autofill page action chip with icon and label.
-  void ShowExpandedChip();
+  void ShowExpandedChip(base::OnceClosure on_chip_shown);
 
   // Shows the collapsed omnibox autofill page action chip with icon only.
   void ShowCollapsedChip();
@@ -53,6 +54,8 @@ class OmniboxAutofillPageActionController final
   const raw_ref<tabs::TabInterface> tab_interface_;
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
+
+  base::OnceClosure on_chip_shown_;
 
   ui::ScopedUnownedUserData<OmniboxAutofillPageActionController>
       scoped_unowned_user_data_;

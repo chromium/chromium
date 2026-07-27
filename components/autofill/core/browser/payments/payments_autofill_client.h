@@ -823,6 +823,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // the given suggestions and callbacks.
   virtual void ShowExpandedOmniboxAutofillChip(
       std::vector<Suggestion> suggestions,
+      base::OnceClosure on_chip_shown,
       base::RepeatingCallback<void(base::span<const Suggestion>)>
           on_suggestions_shown,
       base::RepeatingCallback<void(SuggestionHidingReason)>

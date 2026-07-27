@@ -637,6 +637,7 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
+      /*on_chip_shown=*/base::DoNothing(),
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
@@ -720,6 +721,7 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
+      /*on_chip_shown=*/base::DoNothing(),
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
@@ -827,8 +829,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnFieldBecameVisible_LogsMetrics) {
 
   delegate->OnFieldBecameVisible();
 
-  // Verify that suggestions count, secure form, and chip shown are logged.
-  // `SetUp()` adds 1 credit card, so count should be 1.
+  // Verify metrics logging. `SetUp()` adds 1 credit card, so count should be 1.
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard", 1,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.QueriedCreditCardFormIsSecure",
@@ -836,6 +837,20 @@ TEST_F(OmniboxAutofillDelegateTest, OnFieldBecameVisible_LogsMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart2",
       OmniboxAutofillShowChipDecisionPart2::kSuccess, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, OnChipShown_LogsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnChipShown();
+
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kChipShown, 1);
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",

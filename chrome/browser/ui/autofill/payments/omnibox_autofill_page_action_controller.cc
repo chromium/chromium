@@ -46,20 +46,28 @@ void OmniboxAutofillPageActionController::OnPageActionChipShown(
           feature_engagement::kIPHAutofillOmniboxPaymentChipFeature);
     }
   }
+  // Run `on_chip_shown_` at most once per `ShowExpandedChip()` request.
+  if (on_chip_shown_) {
+    std::move(on_chip_shown_).Run();
+  }
 }
 
-void OmniboxAutofillPageActionController::ShowExpandedChip() {
+void OmniboxAutofillPageActionController::ShowExpandedChip(
+    base::OnceClosure on_chip_shown) {
+  on_chip_shown_ = std::move(on_chip_shown);
   page_action_controller_->Show(kActionAutofillPayment);
   page_action_controller_->ShowSuggestionChip(kActionAutofillPayment,
                                               {.should_animate = true});
 }
 
 void OmniboxAutofillPageActionController::ShowCollapsedChip() {
+  on_chip_shown_.Reset();
   page_action_controller_->Show(kActionAutofillPayment);
   page_action_controller_->HideSuggestionChip(kActionAutofillPayment);
 }
 
 void OmniboxAutofillPageActionController::HideChip() {
+  on_chip_shown_.Reset();
   page_action_controller_->HideSuggestionChip(kActionAutofillPayment);
   page_action_controller_->Hide(kActionAutofillPayment);
 }

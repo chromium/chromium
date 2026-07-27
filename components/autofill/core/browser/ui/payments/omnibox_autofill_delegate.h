@@ -70,6 +70,9 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // mojom::AutofillVisibilityObserver:
   void OnFieldBecameVisible() override;
 
+  // Called when the omnibox chip is actually shown to the user.
+  void OnChipShown();
+
  private:
   // Returns `true` if `manager`'s AutofillDriver is active, has no parent, and
   // is not embedded. Returns `false` otherwise. Most OmniboxAutofillDelegate

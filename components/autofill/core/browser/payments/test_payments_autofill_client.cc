@@ -489,6 +489,7 @@ TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
 
 void TestPaymentsAutofillClient::ShowExpandedOmniboxAutofillChip(
     std::vector<Suggestion> suggestions,
+    base::OnceClosure on_chip_shown,
     base::RepeatingCallback<void(base::span<const Suggestion>)>
         on_suggestions_shown,
     base::RepeatingCallback<void(SuggestionHidingReason)> on_suggestions_hidden,
@@ -500,6 +501,9 @@ void TestPaymentsAutofillClient::ShowExpandedOmniboxAutofillChip(
         did_accept_suggestion) {
   omnibox_autofill_chip_shown_ = true;
   omnibox_autofill_chip_hidden_ = false;
+  if (on_chip_shown) {
+    std::move(on_chip_shown).Run();
+  }
 }
 
 void TestPaymentsAutofillClient::HideOmniboxAutofillChip() {

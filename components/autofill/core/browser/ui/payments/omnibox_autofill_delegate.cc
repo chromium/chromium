@@ -453,9 +453,11 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
   // similar to standard Autofill suggestions generation.
   AutofillMetrics::LogIsQueriedCreditCardFormSecure(client_->IsContextSecure());
 
-  // Shows the "Autofill payment" chip and initializes the bubble.
+  // Requests to show the "Autofill payment" chip and initializes the bubble.
   client_->GetPaymentsAutofillClient()->ShowExpandedOmniboxAutofillChip(
       std::move(suggestions),
+      base::BindOnce(&OmniboxAutofillDelegate::OnChipShown,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<OmniboxAutofillDelegate> delegate,
              base::span<const Suggestion> suggestions) {
@@ -478,7 +480,14 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidAcceptSuggestion,
                           weak_ptr_factory_.GetWeakPtr()));
+}
 
+void OmniboxAutofillDelegate::OnChipShown() {
+  auto* manager =
+      static_cast<BrowserAutofillManager*>(trigger_autofill_manager_.get());
+  if (!manager) {
+    return;
+  }
   manager->GetCreditCardFormEventLogger().OnOmniboxAutofillChipShown();
 }
 

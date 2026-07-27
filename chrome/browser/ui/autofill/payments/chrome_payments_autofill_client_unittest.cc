@@ -1059,6 +1059,7 @@ TEST_F(ChromePaymentsAutofillClientOmniboxTest,
 
   chrome_payments_client()->ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
+      /*on_chip_shown=*/base::DoNothing(),
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
       /*did_select_suggestion=*/base::DoNothing(),
