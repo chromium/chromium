@@ -423,7 +423,7 @@ or not.
 #### Add a LICENSE file and run related checks
 
 You need a LICENSE file. Example:
-[//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE). Dependencies
+[//third_party/libpng/LICENSE](../third_party/libpng/LICENSE). Dependencies
 should not be added without a license file and license type, even if they are
 not shipped in a final product. Existing dependencies without a license file or
 license type are currently being cleaned up as part of the metadata uplift
@@ -562,7 +562,7 @@ right credit and attributions for all of the third_party code we use.
 To view this in chrome, you can open chrome://credits.
 
 That page displays a resource embedded in the browser as part of the
-[//components/resources/components_resources.grd](../components/resources/components_resource.grd)
+[//components/resources/components_resources.grd](../components/resources/components_resources.grd)
 GRIT file; the actual HTML text is generated in the
 [//components/resources:about_credits](../components/resources/BUILD.gn)
 build target using a template from the output of the
