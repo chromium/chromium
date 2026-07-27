@@ -2147,6 +2147,43 @@ TEST_P(GLES3DecoderTest, DrawNoProgram) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+// Regression test for crbug.com/514508415.
+TEST_P(GLES3DecoderWithShaderTest,
+       DrawArraysUniformBlockSharedBindingTooSmall) {
+  SetupTexture();
+
+  // The default ES3 program has two uniform blocks: index 0 (data size 32)
+  // bound at binding 0 and index 1 (data size 16) bound at binding 1. Move
+  // index 1 to binding 0 so that both blocks share the same binding point.
+  EXPECT_CALL(*gl_, UniformBlockBinding(kServiceProgramId, 1, 0))
+      .Times(1)
+      .RetiresOnSaturation();
+  cmds::UniformBlockBinding ubb_cmd;
+  ubb_cmd.Init(client_program_id_, 1, 0);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(ubb_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  // Back the shared binding with a buffer that is large enough for the
+  // smaller block but not for the larger one.
+  DoBindBuffer(GL_UNIFORM_BUFFER, client_element_buffer_id_,
+               kServiceElementBufferId);
+  DoBufferData(GL_UNIFORM_BUFFER, 16);
+  EXPECT_CALL(*gl_,
+              BindBufferBase(GL_UNIFORM_BUFFER, 0, kServiceElementBufferId))
+      .Times(1)
+      .RetiresOnSaturation();
+  cmds::BindBufferBase bbb_cmd;
+  bbb_cmd.Init(GL_UNIFORM_BUFFER, 0, client_element_buffer_id_);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(bbb_cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
+  cmds::DrawArrays cmd;
+  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
 TEST_P(GLES2DecoderTest, ClearInvalidValue) {
   EXPECT_CALL(*gl_, Clear(_)).Times(0);
   cmds::Clear cmd;

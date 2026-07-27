@@ -8758,7 +8758,8 @@ bool GLES2DecoderImpl::ValidateUniformBlockBackings(const char* func_name) {
     uniform_block_sizes[ii] = 0;
   for (auto info : state_.current_program->uniform_block_size_info()) {
     uint32_t index = info.binding;
-    uniform_block_sizes[index] = static_cast<GLsizeiptr>(info.data_size);
+    uniform_block_sizes[index] = std::max(
+        uniform_block_sizes[index], static_cast<GLsizeiptr>(info.data_size));
   }
   return buffer_manager()->RequestBuffersAccess(
       error_state_.get(), state_.indexed_uniform_buffer_bindings.get(),
