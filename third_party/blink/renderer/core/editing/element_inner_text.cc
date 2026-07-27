@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -79,16 +78,12 @@ class ElementInnerTextCollector final {
   static bool IsDisplayBlockLevel(const Node&);
   static bool ShouldEmitNewlineForTableRow(const LayoutTableRow& table_row);
 
-  const OffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
   void ProcessChildren(const Node& node);
   void ProcessChildrenWithRequiredLineBreaks(
       const Node& node,
       wtf_size_t required_line_break_count);
   void ProcessLayoutText(const LayoutText& layout_text,
-                         const Text& text_node,
                          const unsigned start_offset);
-  void ProcessTextFromOffsetMapping(const LayoutText& layout_text,
-                                    const Text& text_node);
   unsigned ProcessFirstLineAndGetOffset(const LayoutText& layout_text);
   void ProcessNode(const Node& node);
   void ProcessOptionElement(const HTMLOptionElement& element);
@@ -206,17 +201,6 @@ bool ElementInnerTextCollector::ShouldEmitNewlineForTableRow(
   return false;
 }
 
-const OffsetMapping* ElementInnerTextCollector::GetOffsetMapping(
-    const LayoutText& layout_text) {
-  // TODO(editing-dev): We should handle "text-transform" in "::first-line".
-  // In legacy layout, |InlineTextBox| holds original text and text box
-  // paint does text transform.
-  LayoutBlockFlow* const block_flow =
-      OffsetMapping::GetInlineFormattingContextOf(layout_text);
-  DCHECK(block_flow) << layout_text;
-  return InlineNode::GetOffsetMapping(block_flow);
-}
-
 void ElementInnerTextCollector::ProcessChildren(const Node& container) {
   for (const Node& node : NodeTraversal::ChildrenOf(container)) {
     if (visitor_) {
@@ -237,7 +221,6 @@ void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
 }
 
 void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
-                                                  const Text& text_node,
                                                   const unsigned start_offset) {
   if (layout_text.HasEmptyText()) {
     return;
@@ -250,47 +233,22 @@ void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
 
   // LayoutText::PlainText() gives the rendered text after the application
   // of white-space processing and text-transform rules
-  if (RuntimeEnabledFeatures::ElementInnerTextHandleFirstLineStyleEnabled()) {
-    const ComputedStyle& block_style = layout_text.StyleRef();
-    const ComputedStyle& first_line_style = layout_text.FirstLineStyleRef();
+  const ComputedStyle& block_style = layout_text.StyleRef();
+  const ComputedStyle& first_line_style = layout_text.FirstLineStyleRef();
 
-    // first_line_offset is the first character of the text that is not part of
-    // ::first_line
-    unsigned first_line_offset = 0;
-    if (block_style.TextTransform() != first_line_style.TextTransform()) {
-      first_line_offset = ProcessFirstLineAndGetOffset(layout_text);
-    }
-    const unsigned adjusted_offset =
-        first_line_offset ? first_line_offset : start_offset;
-    const String plain_text = layout_text.PlainText();
-    const unsigned text_length = plain_text.length();
-    if (adjusted_offset < text_length) {
-      result_.EmitText(StringView(plain_text, adjusted_offset,
-                                  text_length - adjusted_offset));
-    }
-  } else {
-    ProcessTextFromOffsetMapping(layout_text, text_node);
+  // first_line_offset is the first character of the text that is not part of
+  // ::first_line
+  unsigned first_line_offset = 0;
+  if (block_style.TextTransform() != first_line_style.TextTransform()) {
+    first_line_offset = ProcessFirstLineAndGetOffset(layout_text);
   }
-}
-
-void ElementInnerTextCollector::ProcessTextFromOffsetMapping(
-    const LayoutText& layout_text,
-    const Text& text_node) {
-  const OffsetMapping* const mapping = GetOffsetMapping(layout_text);
-  if (!mapping) {
-    // TODO(crbug.com/967995): There are certain cases where we fail to
-    // compute |OffsetMapping| due to failures in layout. As the root cause is
-    // hard to fix at the moment, we work around it here so that the
-    // production build doesn't crash.
-    DUMP_WILL_BE_NOTREACHED() << layout_text;
-    return;
-  }
-
-  for (const OffsetMappingUnit& unit :
-       mapping->GetMappingUnitsForNode(text_node)) {
+  const unsigned adjusted_offset =
+      first_line_offset ? first_line_offset : start_offset;
+  const String plain_text = layout_text.PlainText();
+  const unsigned text_length = plain_text.length();
+  if (adjusted_offset < text_length) {
     result_.EmitText(
-        StringView(mapping->GetText(), unit.TextContentStart(),
-                   unit.TextContentEnd() - unit.TextContentStart()));
+        StringView(plain_text, adjusted_offset, text_length - adjusted_offset));
   }
 }
 
@@ -481,13 +439,13 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
         OffsetMapping::GetInlineFormattingContextOf(layout_text) !=
             OffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
       // "::first-letter" with "float" reach here.
-      ProcessLayoutText(*first_letter_part, node, 0);
+      ProcessLayoutText(*first_letter_part, 0);
       unsigned first_letter_length = first_letter_part->PlainText().length();
-      ProcessLayoutText(layout_text, node, first_letter_length);
+      ProcessLayoutText(layout_text, first_letter_length);
       return;
     }
   }
-  ProcessLayoutText(layout_text, node, 0);
+  ProcessLayoutText(layout_text, 0);
 }
 
 // ----

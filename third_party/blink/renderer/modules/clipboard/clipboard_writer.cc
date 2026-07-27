@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -304,7 +303,6 @@ void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
         this, std::move(file_reading_task_runner_));
     file_reader_->Start(clipboard_item_data->GetAsBlob()->GetBlobDataHandle());
   } else if (clipboard_item_data->IsString()) {
-    DCHECK(RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled());
     WriteString(clipboard_item_data->GetAsString());
   } else {
     NOTREACHED();

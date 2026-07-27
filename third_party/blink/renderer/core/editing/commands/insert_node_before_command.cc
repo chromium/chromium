@@ -67,15 +67,9 @@ void InsertNodeBeforeCommand::DoApply(EditingState* editing_state) {
 
 void InsertNodeBeforeCommand::DoUnapply() {
   GetDocument().UpdateStyleAndLayoutTree();
-  if (RuntimeEnabledFeatures::PreventUndoIfNotEditableEnabled()) {
-    ContainerNode* parent = ref_child_->parentNode();
-    if (!parent || !IsEditable(*parent)) {
-      return;
-    }
-  } else {
-    if (!IsEditable(*insert_child_)) {
-      return;
-    }
+  ContainerNode* parent = ref_child_->parentNode();
+  if (!parent || !IsEditable(*parent)) {
+    return;
   }
   insert_child_->remove(IGNORE_EXCEPTION_FOR_TESTING);
 }

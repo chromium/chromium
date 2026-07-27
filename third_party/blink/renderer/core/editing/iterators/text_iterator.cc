@@ -466,12 +466,10 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
               node_ ? node_->GetLayoutObject() : nullptr;
           LayoutObject* parent_node_layout =
               parent_node ? parent_node->GetLayoutObject() : nullptr;
-          bool should_exit_node = have_layout_object ||
-              (RuntimeEnabledFeatures::
-                   CallExitNodeWithoutLayoutObjectEnabled() &&
-               node_layout && parent_node_layout &&
-               node_layout->IsLayoutBlock() &&
-               !parent_node_layout->IsInline());
+          bool should_exit_node =
+              have_layout_object ||
+              (node_layout && parent_node_layout &&
+               node_layout->IsLayoutBlock() && !parent_node_layout->IsInline());
           if (should_exit_node) {
             ExitNode();
           }

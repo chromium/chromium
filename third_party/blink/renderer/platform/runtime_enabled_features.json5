@@ -1021,10 +1021,6 @@
       status: "stable",
     },
     {
-      name: "CallExitNodeWithoutLayoutObject",
-      status: "stable",
-    },
-    {
       // Enables the <camera> and <microphone> HTML elements, allowing sites to
       // embed camera and microphone permission request controls directly in the page.
       // https://chromestatus.com/feature/5153829504024576
@@ -1217,25 +1213,12 @@
       name: "ClickFocusDoesntPersistStatusBubble",
       status: "stable",
     },
-    // This ensures that clipboard event fires on a target node which is
-    // focused in case no visible selection is present.
-    // crbug.com/40735783
-    {
-      name: "ClipboardEventTargetCanBeFocusedElement",
-      status: "stable",
-    },
     {
       // Uses ComputeContainerNode() instead of AnchorNode() for clipboard event
       // targeting so that kBeforeAnchor/kAfterAnchor selections correctly target
       // the containing parent element rather than the element itself.
       // See https://crbug.com/40684204
       name: "ClipboardEventTargetUsesContainerNode",
-      status: "stable",
-    },
-    {
-      // Support ClipboardItemData of Promise<DOMString> type according to spec
-      // https://w3c.github.io/clipboard-apis/#typedefdef-clipboarditemdata
-      name: "ClipboardItemWithDOMStringSupport",
       status: "stable",
     },
     {
@@ -2664,10 +2647,6 @@
       public: true,
       name: "ElementCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},
-    },
-    {
-      name: "ElementInnerTextHandleFirstLineStyle",
-      status: "stable",
     },
     {
       // ElementInternals.behaviors allows web authors to attach
@@ -4910,12 +4889,6 @@
       // See https://crbug.com/41340914
       name: "PreventTextSelectionJump",
       status: "stable",
-    },
-    {
-      // When enabled, prevents undo to be applied if the enclosing block
-      // is not editable
-      name: "PreventUndoIfNotEditable",
-      status: "stable"
     },
     {
       // Controls the aggregate error reporting feature, which allows for

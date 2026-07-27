@@ -183,12 +183,9 @@ Element* ClipboardCommands::FindEventTargetForClipboardEvent(
   //   or the body element if no node has focus."
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       frame.Selection().IsHidden()) {
-    if (RuntimeEnabledFeatures::
-            ClipboardEventTargetCanBeFocusedElementEnabled()) {
-      Element* focusedElement = frame.GetDocument()->FocusedElement();
-      if (focusedElement && !IsEditable(*focusedElement)) {
-        return focusedElement;
-      }
+    Element* focusedElement = frame.GetDocument()->FocusedElement();
+    if (focusedElement && !IsEditable(*focusedElement)) {
+      return focusedElement;
     }
     return frame.Selection().GetDocument().body();
   }
