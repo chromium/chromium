@@ -273,6 +273,8 @@ const char TabStatsTracker::UmaStatsReportingDelegate::
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kPinnedTabCountHistogramName[] =
         "Tabs.PinnedTabCount";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kTabSearchIsPinnedHistogramName[] = "Tabs.TabSearch.IsPinned";
 
 // Daily discard/reload histograms.
 const char TabStatsTracker::UmaStatsReportingDelegate::
@@ -908,7 +910,6 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
       tab_stats.tab_reload_counts[frozen_with_growing_memory_index]);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Record the keyboard tab switch mode for each profile.
   std::set<const Profile*> profiles;
   TabStripInterface::ForEach([&profiles](const TabStripInterface& tab_strip) {
     profiles.insert(tab_strip.GetProfile());
@@ -918,11 +919,18 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
     if (profile->IsOffTheRecord()) {
       continue;
     }
+    // Record the keyboard tab switch mode for each profile.
     bool mru_enabled = profile->GetPrefs()->GetBoolean(prefs::kCtrlTabMru);
     base::UmaHistogramEnumeration(kKeyboardTabSwitchModeHistogramName,
                                   mru_enabled
                                       ? KeyboardTabSwitchMode::kMRU
                                       : KeyboardTabSwitchMode::kStandard);
+
+    // Record tab search pinned state for each profile.
+    bool is_tab_search_pinned =
+        profile->GetPrefs()->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
+    base::UmaHistogramBoolean(kTabSearchIsPinnedHistogramName,
+                              is_tab_search_pinned);
   }
 #endif
 }

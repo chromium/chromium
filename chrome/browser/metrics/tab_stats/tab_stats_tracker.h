@@ -144,6 +144,10 @@ class TabStatsTracker :
     // tab strip.
     static const char kPinnedTabCountHistogramName[];
 
+    // The name of the histogram that records if the tab search button is pinned
+    // in the tab strip.
+    static const char kTabSearchIsPinnedHistogramName[];
+
     // The names of the histograms that record daily discard/reload counts
     // caused for each discard reason.
     static const char kDailyDiscardsExternalHistogramName[];
