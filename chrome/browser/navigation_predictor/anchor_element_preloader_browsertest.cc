@@ -530,8 +530,6 @@ class AnchorElementPreloaderConnectionAllowlistBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled =
         AnchorElementPreloaderBrowserTest::GetEnabledFeatures();
     enabled.push_back({network::features::kConnectionAllowlists, {}});
-    enabled.push_back(
-        {blink::features::kOverrideConnectionAllowlistOriginTrial, {}});
     return enabled;
   }
 };

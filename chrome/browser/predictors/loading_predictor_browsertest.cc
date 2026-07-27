@@ -3092,9 +3092,7 @@ class ConnectionAllowlistLoadingPredictorBrowserTest
  public:
   ConnectionAllowlistLoadingPredictorBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kConnectionAllowlists,
-                              blink::features::
-                                  kOverrideConnectionAllowlistOriginTrial},
+        /*enabled_features=*/{network::features::kConnectionAllowlists},
         /*disabled_features=*/{});
   }
 

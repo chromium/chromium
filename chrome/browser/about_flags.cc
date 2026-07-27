@@ -4499,9 +4499,9 @@ const FeatureEntry::FeatureVariation kSigninPromoOnAvatarPillVariation[] = {
 const FeatureEntry::Choice kConnectionAllowlistsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "ConnectionAllowlists,OverrideConnectionAllowlistOriginTrial"},
+     "ConnectionAllowlists"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
-     "ConnectionAllowlists,OverrideConnectionAllowlistOriginTrial"},
+     "ConnectionAllowlists"},
 };
 
 #if BUILDFLAG(ENABLE_SYMPHONIA)

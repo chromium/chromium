@@ -2673,7 +2673,7 @@ test("content_unittests") {
     "../browser/idle/idle_manager_unittest.cc",
     "../browser/image_capture/image_capture_impl_unittest.cc",
     "../browser/installedapp/installed_app_provider_impl_unittest.cc",
-    "../browser/loader/connection_allowlist_origin_trial_unittest.cc",
+    "../browser/loader/connection_allowlist_unittest.cc",
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
     "../browser/loader/file_url_loader_factory_unittest.cc",
     "../browser/loader/keep_alive_url_loader_service_unittest.cc",

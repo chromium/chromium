@@ -180,9 +180,7 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
             base::BindRepeating(&ConnectionAllowlistTest::GetWebContents,
                                 base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kConnectionAllowlists,
-                              blink::features::
-                                  kOverrideConnectionAllowlistOriginTrial},
+        /*enabled_features=*/{network::features::kConnectionAllowlists},
         /*disabled_features=*/{});
   }
   ~ConnectionAllowlistTest() override { content_browser_client_.reset(); }

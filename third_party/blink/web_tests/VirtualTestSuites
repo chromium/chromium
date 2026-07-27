@@ -369,20 +369,6 @@
       "http/tests/inspector-protocol/issues/connection-allowlists"
     ],
     "exclusive_tests": "ALL",
-    "args": [ "--enable-features=ConnectionAllowlists:ConnectionAllowlistsEarlyHints/true,OverrideConnectionAllowlistOriginTrial" ],
-    "expires": "Dec 1, 2026"
-  },
-  {
-    "prefix": "connection-allowlist-origin-trial",
-    "owners": [
-      "mkwst@chromium.org",
-      "shivanisha@chromium.org"
-    ],
-    "platforms": [ "Linux" ],
-    "bases": [
-      "wpt_internal/connection-allowlist"
-    ],
-    "exclusive_tests": "ALL",
     "args": [ "--enable-features=ConnectionAllowlists" ],
     "expires": "Dec 1, 2026"
   },

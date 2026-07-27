@@ -20,7 +20,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 
 namespace prerender {
 
@@ -82,11 +81,6 @@ class MockNoStatePrefetchProcessorImplDelegate final
 
 class NoStatePrefetchProcessorImplTest
     : public content::RenderViewHostTestHarness {
- private:
-  // Allows committing a Connection-Allowlist via response headers without a
-  // real origin trial token (paired with
-  // blink::features::kOverrideConnectionAllowlistOriginTrial in tests).
-  blink::ScopedTestOriginTrialPolicy scoped_test_origin_trial_policy_;
 };
 
 TEST_F(NoStatePrefetchProcessorImplTest, StartCancelAbandon) {
@@ -293,9 +287,7 @@ TEST_F(NoStatePrefetchProcessorImplTest,
        StartBlockedByEnforcedConnectionAllowlist) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kConnectionAllowlists,
-                            blink::features::
-                                kOverrideConnectionAllowlistOriginTrial},
+      /*enabled_features=*/{network::features::kConnectionAllowlists},
       /*disabled_features=*/{});
 
   // Commit a navigation whose response enforces a Connection-Allowlist.
@@ -333,9 +325,7 @@ TEST_F(NoStatePrefetchProcessorImplTest,
        StartNotBlockedByReportOnlyConnectionAllowlist) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{network::features::kConnectionAllowlists,
-                            blink::features::
-                                kOverrideConnectionAllowlistOriginTrial},
+      /*enabled_features=*/{network::features::kConnectionAllowlists},
       /*disabled_features=*/{});
 
   // Commit a navigation whose response sets only a report-only allowlist.

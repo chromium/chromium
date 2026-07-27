@@ -132,7 +132,6 @@ class PaymentRequestConnectionAllowlistBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kConnectionAllowlists,
-         blink::features::kOverrideConnectionAllowlistOriginTrial,
          features::kAllowJITInstallationWhenAppIconIsMissing},
         /*disabled_features=*/{});
   }

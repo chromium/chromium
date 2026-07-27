@@ -151,10 +151,6 @@ BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kConnectionAllowlists);
 
-// Should connection allowlists in Early Hints responses be enforced?
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE_PARAM(bool, kConnectionAllowlistsEarlyHints);
-
 // To actually use the prefetch results, it's also necessary to enable
 // kNetworkContextPrefetchUseCache, below.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)

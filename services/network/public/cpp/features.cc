@@ -353,14 +353,6 @@ BASE_FEATURE(kDocumentIsolationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConnectionAllowlists, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/526636731): Enable this by default when connection allowlist
-// ships.
-BASE_FEATURE_PARAM(bool,
-                   kConnectionAllowlistsEarlyHints,
-                   &kConnectionAllowlists,
-                   /*name=*/"ConnectionAllowlistsEarlyHints",
-                   /*default_value=*/false);
-
 // This feature enables the Prefetch() method on the NetworkContext, and makes
 // the PrefetchMatchingURLLoaderFactory check the match quality.
 BASE_FEATURE(kNetworkContextPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);

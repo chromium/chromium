@@ -393,9 +393,7 @@ NavigationEarlyHintsManager::NavigationEarlyHintsManager(
       frame_tree_node_id_(frame_tree_node_id),
       loader_factory_(std::move(params.loader_factory)),
       origin_(params.origin),
-      isolation_info_(std::move(params.isolation_info)),
-      is_connection_allowlist_enabled_(
-          IsConnectionAllowlistsInEarlyHintsEnabled()) {
+      isolation_info_(std::move(params.isolation_info)) {
   shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           loader_factory_.get());
@@ -421,7 +419,6 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
 
   bool need_to_check_connection_allowlist =
-      is_connection_allowlist_enabled_ &&
       early_hints->headers->connection_allowlists.enforced.has_value();
 
   for (const auto& link : early_hints->headers->link_headers) {

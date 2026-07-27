@@ -2079,9 +2079,7 @@ class WebAuthConnectionAllowlistTest : public WebAuthCrossDomainTest {
  public:
   WebAuthConnectionAllowlistTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{network::features::kConnectionAllowlists,
-                              blink::features::
-                                  kOverrideConnectionAllowlistOriginTrial},
+        /*enabled_features=*/{network::features::kConnectionAllowlists},
         /*disabled_features=*/{});
   }
 

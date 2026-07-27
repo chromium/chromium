@@ -7729,8 +7729,7 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
 
   // `initiator_frame_token_` not being set implies this is not a
   // renderer-initiated navigation, which is out of the scope of connection
-  // allowlist anyway, even though at this point the origin trial status has not
-  // been checked yet.
+  // allowlist.
   if (!initiator_frame_token_) {
     return true;
   }
@@ -11206,18 +11205,12 @@ void NavigationRequest::ComputePoliciesToCommit() {
   }
 
   if (ResponseContainsConnectionAllowlist(response_head_.get()) &&
-      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) &&
-      ResponseEnablesConnectionAllowlistsOriginTrial(
-          common_params_->url, response_head_->headers.get())) {
+      base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     // Connection allowlist needs to be enforced once the allowlist response
-    // header is received. The origin trial token for this feature is received
-    // within the same response. The token is parsed here to query the trial
-    // status, instead of waiting for the response sent to renderer process,
-    // where the trial status is first available for most other web platform
-    // features. See https://wicg.github.io/connection-allowlists/.
+    // header is received.
     //
-    // The allowlist is stored in the policy container only if both origin trial
-    // and base::Feature are enabled.
+    // The allowlist is stored in the policy container if the base::Feature is
+    // enabled.
     policy_container_builder_->SetConnectionAllowlists(
         std::move(response_head_->parsed_headers->connection_allowlists));
   }

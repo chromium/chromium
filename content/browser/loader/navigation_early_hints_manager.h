@@ -213,13 +213,6 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   raw_ptr<network::mojom::NetworkContext, DanglingUntriaged>
       network_context_for_testing_ = nullptr;
-
-  // Whether the connection allowlist in early hints response feature is
-  // enabled. If enabled, the URL of the preconnect, preload and module preload
-  // requests by the Link header is checked against the connection allowlist.
-  //
-  // About connection allowlist: https://github.com/WICG/connection-allowlists.
-  const bool is_connection_allowlist_enabled_;
 };
 
 }  // namespace content

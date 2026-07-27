@@ -17,18 +17,10 @@ namespace content {
 
 struct PolicyContainerPolicies;
 
-// Returns true if the connection allowlist in Early Hints feature is enabled.
-bool IsConnectionAllowlistsInEarlyHintsEnabled();
-
 // Returns true if the parsed response headers contains a valid
 // "Connection-Allowlist" or "Connection-Allowlist-Report-Only" header.
 bool ResponseContainsConnectionAllowlist(
     const network::mojom::URLResponseHead* response_head);
-
-// Returns true if the response enables connection allowlist origin trial.
-bool ResponseEnablesConnectionAllowlistsOriginTrial(
-    const GURL& request_url,
-    const net::HttpResponseHeaders* response_headers);
 
 // Returns true if the initiator policies enforce connection allowlist.
 bool EnforcesConnectionAllowlist(
