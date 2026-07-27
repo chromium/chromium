@@ -2154,6 +2154,44 @@ TEST_F(WillComputeSiteForNavigationTest,
   EXPECT_FALSE(IsOriginIsolatedByUser(url));
 }
 
+class IsJitDisabledForSiteTest : public ChromeContentBrowserClientTest {
+ protected:
+  bool IsJitDisabledForSite(const GURL& site_url) {
+    return browser_client_.IsJitDisabledForSite(&profile_, site_url);
+  }
+
+  ChromeContentBrowserClient browser_client_;
+};
+
+TEST_F(IsJitDisabledForSiteTest, DefaultContentSettingAppliesToWebSafeSchemes) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_JIT,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  EXPECT_TRUE(IsJitDisabledForSite(GURL()));
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("http://example.test")));
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("https://example.test")));
+
+  // The default content setting also covers web-safe schemes other than
+  // http(s), since those can host web-controlled script as well.
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("blob:https://example.test/guid")));
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("blob:null/guid")));
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("filesystem:http://example.test/f")));
+  EXPECT_TRUE(IsJitDisabledForSite(GURL("data:text/html,hello")));
+
+  // Schemes that are not web safe, such as WebUI schemes, are unaffected.
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("chrome://settings")));
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("chrome-untrusted://foo")));
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("file:///tmp/foo.html")));
+}
+
+TEST_F(IsJitDisabledForSiteTest, AllowedByDefault) {
+  EXPECT_FALSE(IsJitDisabledForSite(GURL()));
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("https://example.test")));
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("blob:null/guid")));
+  EXPECT_FALSE(IsJitDisabledForSite(GURL("chrome://settings")));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 class ChromeContentBrowserClientPreferredColorSchemeAndroidTest

@@ -8134,8 +8134,10 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
                                          nullptr) == CONTENT_SETTING_BLOCK;
   }
 
-  // Only disable JIT for web schemes.
-  if (!site_url.SchemeIsHTTPOrHTTPS()) {
+  // Only disable JIT for schemes that might actually load web content. This
+  // enables JIT for schemes such as chrome:// and chrome-untrusted://.
+  auto* policy = ChildProcessSecurityPolicy::GetInstance();
+  if (!policy->IsWebSafeScheme(site_url.GetScheme())) {
     return false;
   }
 
