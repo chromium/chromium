@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
@@ -152,6 +153,9 @@ public interface TabModel extends TabList {
      * getTabAt(index())}.
      */
     NullableObservableSupplier<Tab> getCurrentTabSupplier();
+
+    /** Returns the supplier of the next tab policy. */
+    NextTabPolicySupplier getNextTabPolicySupplier();
 
     /**
      * Selects a tab by its index.

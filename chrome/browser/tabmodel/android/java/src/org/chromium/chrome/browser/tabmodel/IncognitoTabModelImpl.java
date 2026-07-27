@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Iterator;
@@ -280,6 +281,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
+    }
+
+    @Override
+    public NextTabPolicySupplier getNextTabPolicySupplier() {
+        return mDelegateModel.getNextTabPolicySupplier();
     }
 
     @Override

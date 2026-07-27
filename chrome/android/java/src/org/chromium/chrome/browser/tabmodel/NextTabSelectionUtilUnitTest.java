@@ -56,7 +56,12 @@ public class NextTabSelectionUtilUnitTest {
         lenient().when(mTabModelDelegate.getModel(true)).thenReturn(mOtherTabModel);
 
         lenient().when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        lenient().when(mTabModel.getNextTabPolicySupplier()).thenReturn(mNextTabPolicySupplier);
+
         lenient().when(mOtherTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        lenient()
+                .when(mOtherTabModel.getNextTabPolicySupplier())
+                .thenReturn(mNextTabPolicySupplier);
 
         mNextTabId = 0;
     }
@@ -107,12 +112,7 @@ public class NextTabSelectionUtilUnitTest {
             boolean uponExit,
             @TabCloseType int tabCloseType) {
         return NextTabSelectionUtil.getNextTabIfClosed(
-                model,
-                mTabModelDelegate,
-                mNextTabPolicySupplier,
-                closingTabs,
-                uponExit,
-                tabCloseType);
+                model, mTabModelDelegate, closingTabs, uponExit, tabCloseType);
     }
 
     @Test

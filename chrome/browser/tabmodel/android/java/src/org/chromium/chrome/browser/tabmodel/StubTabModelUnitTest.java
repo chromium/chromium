@@ -85,6 +85,7 @@ public class StubTabModelUnitTest {
                             "addTabGroupObserver",
                             "removeTabGroupObserver",
                             "getCurrentTabSupplier",
+                            "getNextTabPolicySupplier",
                             "getTabCountSupplier",
                             "getTabByIdChecked",
                             "getNextTabIfClosed",

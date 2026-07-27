@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
@@ -160,6 +161,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
         return ObservableSuppliers.alwaysNull();
+    }
+
+    @Override
+    public NextTabPolicySupplier getNextTabPolicySupplier() {
+        return () -> NextTabPolicy.HIERARCHICAL;
     }
 
     @Override

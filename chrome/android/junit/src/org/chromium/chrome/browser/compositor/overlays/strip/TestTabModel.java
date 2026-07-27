@@ -9,9 +9,14 @@ import static org.mockito.Mockito.when;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
+import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.NextTabSelectionUtil;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -73,16 +78,47 @@ public class TestTabModel extends EmptyTabModel {
     }
 
     @Override
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
+        return ObservableSuppliers.createNullable(getTabAt(mIndex));
+    }
+
+    @Override
+    public NextTabPolicySupplier getNextTabPolicySupplier() {
+        return () -> NextTabPolicy.HIERARCHICAL;
+    }
+
+    @Override
     public boolean closeTabs(TabClosureParams params) {
         if (params.isAllTabs) {
             mMockTabs.clear();
             mMaxId = -1;
             mIndex = 0;
-        } else {
-            for (Tab tab : params.tabs) {
-                mMockTabs.remove(tab.getId());
-            }
+            return true;
         }
+
+        List<Tab> tabsToRemove = params.tabs;
+        if (tabsToRemove == null || tabsToRemove.isEmpty()) return true;
+
+        Tab recommendedNextTab = params.recommendedNextTab;
+        if (recommendedNextTab != null && tabsToRemove.contains(recommendedNextTab)) {
+            recommendedNextTab = null;
+        }
+        Tab nextTab =
+                recommendedNextTab != null
+                        ? recommendedNextTab
+                        : NextTabSelectionUtil.getNextTabIfClosed(
+                                this, /* modelDelegate= */ null, tabsToRemove, params.uponExit);
+
+        for (Tab tab : tabsToRemove) {
+            mMockTabs.remove(tab);
+        }
+
+        if (nextTab != null) {
+            setIndex(indexOf(nextTab), TabSelectionType.FROM_CLOSE);
+        } else if (mIndex >= mMockTabs.size()) {
+            mIndex = Math.max(0, mMockTabs.size() - 1);
+        }
+
         return true;
     }
 

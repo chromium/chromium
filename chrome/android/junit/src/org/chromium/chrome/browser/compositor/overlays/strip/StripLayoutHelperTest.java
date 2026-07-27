@@ -4422,19 +4422,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
-    public void testSelectedTabClose_AutoSelect() {
-        // Initialize and select the tab at index 2.
-        initializeTest(2);
-
-        // Fake a close button click on the tab at index 2
-        closeTabAt(/* index= */ 2);
-
-        // Verify the tab to the left was selected.
-        verify(mModel).setIndex(eq(1), anyInt());
-    }
-
-    @Test
     public void testSelectedTabClose_AutoSelectOnCloseChange() {
         // Initialize and select the tab at index 2.
         initializeTest(2);
@@ -5081,6 +5068,7 @@ public class StripLayoutHelperTest {
             when(mModel.isTabInTabGroup(eq(tab))).thenReturn(true);
             when(mModel.getIndexOfTabInGroup(tab)).thenReturn(i - startIndex);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
+            when(mModel.getRelatedTabList(tab.getId())).thenReturn(relatedTabs);
             relatedTabs.add(tab);
         }
         when(mModel.tabGroupExists(tabGroupId)).thenReturn(true);
@@ -7715,10 +7703,6 @@ public class StripLayoutHelperTest {
         @Override
         public void forceCloseTabs(TabClosureParams tabClosureParams) {
             mModel.closeTabs(tabClosureParams);
-            Tab recommendedNextTab = tabClosureParams.recommendedNextTab;
-            if (recommendedNextTab != null) {
-                mModel.setIndex(mModel.indexOf(recommendedNextTab), TabSelectionType.FROM_CLOSE);
-            }
             mLastParamsForForceCloseTabs = tabClosureParams;
         }
 

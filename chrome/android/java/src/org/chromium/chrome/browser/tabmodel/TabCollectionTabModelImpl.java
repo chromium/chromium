@@ -531,7 +531,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         return NextTabSelectionUtil.getNextTabIfClosed(
                 this,
                 mModelDelegate,
-                mNextTabPolicySupplier,
                 Collections.singletonList(tab),
                 uponExit,
                 TabCloseType.SINGLE);
@@ -631,6 +630,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
+    }
+
+    @Override
+    public NextTabPolicySupplier getNextTabPolicySupplier() {
+        return mNextTabPolicySupplier;
     }
 
     @Override
@@ -2120,7 +2124,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                         : NextTabSelectionUtil.getNextTabIfClosed(
                                 this,
                                 mModelDelegate,
-                                mNextTabPolicySupplier,
                                 tabsToRemove,
                                 /* uponExit= */ false,
                                 closeType);

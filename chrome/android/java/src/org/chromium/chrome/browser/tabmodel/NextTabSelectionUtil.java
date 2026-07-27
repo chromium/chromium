@@ -8,7 +8,6 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -29,15 +28,41 @@ public class NextTabSelectionUtil {
     /**
      * Returns the next tab to select after closing the given tabs.
      *
-     * <p>Selection order heuristics: 1. If closing a tab in a non-active model, return current tab
-     * of active model. 2. If the current tab is not closing, stay on the current tab. 3. If closing
-     * upon exit, return the most recent active tab. 4. If hierarchical next tab policy is active,
-     * prefer the parent tab (if expanded). 5. Fall back to finding the nearest expanded non-closing
-     * tab (or collapsed if no expanded tab exists).
+     * @param model The {@link TabModel} to act on.
+     * @param modelDelegate The {@link TabModelDelegate} to check other models, or null.
+     * @param closingTabs The list of tabs that are closing.
+     * @param uponExit Whether the app is closing as a result of this tab closure.
+     * @return The next tab to select after closing the given tabs or null if no tab could be found.
+     */
+    public static @Nullable Tab getNextTabIfClosed(
+            TabModel model,
+            @Nullable TabModelDelegate modelDelegate,
+            List<Tab> closingTabs,
+            boolean uponExit) {
+        return getNextTabIfClosed(
+                model,
+                modelDelegate,
+                closingTabs,
+                uponExit,
+                closingTabs.size() == 1 ? TabCloseType.SINGLE : TabCloseType.MULTIPLE);
+    }
+
+    /**
+     * Returns the next tab to select after closing the given tabs.
+     *
+     * <p>Selection order heuristics:
+     *
+     * <ol>
+     *   <li>If closing a tab in a non-active model, return current tab of active model.
+     *   <li>If the current tab is not closing, stay on the current tab.
+     *   <li>If closing upon exit, return the most recent active tab.
+     *   <li>If hierarchical next tab policy is active, prefer the parent tab (if expanded).
+     *   <li>Fall back to finding the nearest expanded non-closing tab (or collapsed if no expanded
+     *       tab exists).
+     * </ol>
      *
      * @param model The {@link TabModel} to act on.
      * @param modelDelegate The {@link TabModelDelegate} to check other models, or null.
-     * @param nextTabPolicySupplier The {@link NextTabPolicySupplier} to get the next tab policy.
      * @param closingTabs The list of tabs that are closing.
      * @param uponExit Whether the app is closing as a result of this tab closure.
      * @param tabCloseType The type of tab closure.
@@ -46,7 +71,6 @@ public class NextTabSelectionUtil {
     public static @Nullable Tab getNextTabIfClosed(
             TabModel model,
             @Nullable TabModelDelegate modelDelegate,
-            NextTabPolicySupplier nextTabPolicySupplier,
             List<Tab> closingTabs,
             boolean uponExit,
             @TabCloseType int tabCloseType) {
@@ -71,7 +95,8 @@ public class NextTabSelectionUtil {
         }
 
         // Select the parent tab if it exists and is expanded.
-        if (closingTabs.size() == 1 && NextTabPolicy.HIERARCHICAL == nextTabPolicySupplier.get()) {
+        if (closingTabs.size() == 1
+                && NextTabPolicy.HIERARCHICAL == model.getNextTabPolicySupplier().get()) {
             Tab parentTab =
                     findTabInAllTabModels(model, modelDelegate, closingTabs.get(0).getParentId());
             if (parentTab != null
