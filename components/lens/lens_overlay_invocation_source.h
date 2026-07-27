@@ -90,7 +90,10 @@ enum class LensOverlayInvocationSource {
   // Action chips shown on the new tab page.
   kNtpActionChips = 21,
 
-  kMaxValue = kNtpActionChips
+  // The AIM button on the App Bar in Chrome iOS.
+  kAppBarAimButton = 22,
+
+  kMaxValue = kAppBarAimButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

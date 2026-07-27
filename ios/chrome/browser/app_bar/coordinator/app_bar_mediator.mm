@@ -22,6 +22,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/aim/model/aim_util.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -615,8 +616,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       break;
     }
     case AppBarAssistantButtonState::kAIM: {
-      // TODO(crbug.com/532071605): Route to AIM SRP in current tab instead of
-      // calling showAssistant.
+      OpenAppBarAimInCurrentTab(_templateURLService, _URLLoader,
+                                _incognitoState.incognitoContentVisible);
       break;
     }
     case AppBarAssistantButtonState::kLens: {
@@ -942,6 +943,9 @@ inline LayoutStateAssistantPassKey PassKey() {
       avatar = [self avatarForPrimaryIdentity];
       break;
     case AppBarAssistantButtonState::kAIM:
+      if (_tabGridState.tabGridVisible) {
+        enabled = NO;
+      }
       break;
     case AppBarAssistantButtonState::kLens:
       if (_tabGridState.tabGridVisible) {
@@ -971,9 +975,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   AppBarAssistantButtonState state = AppBarAssistantButtonState::kAccount;
   if ([self isGeminiEligible]) {
     state = AppBarAssistantButtonState::kAsk;
+  } else if ([self isAimEligible]) {
+    state = AppBarAssistantButtonState::kAIM;
   } else if ([self isLensEligible]) {
-    // TODO(crbug.com/532071605): Re-enable AIM check to show the AIM button
-    // once AIM SRP routing is implemented.
     state = AppBarAssistantButtonState::kLens;
   }
 

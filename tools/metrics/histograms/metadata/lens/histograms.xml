@@ -41,6 +41,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="InvocationSources">
   <variant name="AIHub"/>
+  <variant name="AppBarAimButton"/>
   <variant name="AppMenu"/>
   <variant name="CobrowsePinnedToolbarButton"/>
   <variant name="CobrowseToolbarButton"/>

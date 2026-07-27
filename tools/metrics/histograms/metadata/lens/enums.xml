@@ -155,6 +155,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Cobrowse Toolbar Button"/>
   <int value="20" label="Cobrowse Pinned Toolbar Button"/>
   <int value="21" label="NTP Action Chips"/>
+  <int value="22" label="App Bar AIM Button"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->

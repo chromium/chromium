@@ -2,5 +2,7 @@ include_rules = [
   # keep-sorted start
     "+components/contextual_tasks/public/features.h",
     "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+    "+ios/chrome/browser/url_loading/model",
+    "+third_party/omnibox_proto",
   # keep-sorted end
 ]

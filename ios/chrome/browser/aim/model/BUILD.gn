@@ -86,3 +86,18 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
 }
+
+source_set("util") {
+  sources = [
+    "aim_util.h",
+    "aim_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/lens:lens_url_utils",
+    "//components/search_engines",
+    "//ios/chrome/browser/url_loading/model",
+    "//third_party/omnibox_proto",
+    "//url",
+  ]
+}
