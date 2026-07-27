@@ -191,6 +191,9 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
       task_attribution_tracker_(
           scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
   CHECK(window->document());
+  PaintTimingDetector::From(*window->document())
+      .GetPaintTiming()
+      .AddClient(this);
   TextPaintTimingDetector* detector =
       &PaintTimingDetector::From(*window->document())
            .GetTextPaintTimingDetector();
@@ -242,6 +245,11 @@ void SoftNavigationHeuristics::Shutdown() {
   interaction_effects_monitors_.clear();
 
   interaction_id_to_context_.clear();
+
+  CHECK(window_->document());
+  PaintTimingDetector::From(*window_->document())
+      .GetPaintTiming()
+      .RemoveClient(this);
 }
 
 SoftNavigationContext*
@@ -469,26 +477,28 @@ void SoftNavigationHeuristics::EmitSoftNavigation(
   UpdateSoftLcpMetricsForContext(context);
 }
 
-void SoftNavigationHeuristics::InitializePaintTracking(ImageRecord* record) {
-  // TODO(crbug.com/454082771): This should also update the underlying LCP
-  // calculator's "largest pending image" like we do for hard navs.
-  MaybeSetContextOnFirstPaint(record);
+void SoftNavigationHeuristics::OnElementLastContentfulPaint(
+    ImageRecord* record) {
+  OnContentfulPaintImpl(record);
 }
 
-void SoftNavigationHeuristics::InitializePaintTracking(TextRecord* record) {
-  MaybeSetContextOnFirstPaint(record);
+void SoftNavigationHeuristics::OnElementLastContentfulPaint(
+    TextRecord* record,
+    ElementPaintStatus) {
+  OnContentfulPaintImpl(record);
 }
 
 template <IsDerivedFromPaintTimingRecord T>
-void SoftNavigationHeuristics::MaybeSetContextOnFirstPaint(T* record) const {
+void SoftNavigationHeuristics::OnContentfulPaintImpl(T* record) const {
   Node* node = record->GetNode();
   CHECK(node);
   SoftNavigationContext* context =
       paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
-  if (context && context->IsRecordingLargestContentfulPaint() &&
-      context->ShouldTrackForPaintTiming(*record)) {
-    record->SetSoftNavigationContext(context);
+  if (!context || !context->ShouldTrackForPaintTiming(*record)) {
+    return;
   }
+  record->SetSoftNavigationContext(context);
+  context->AddPaintedArea(record);
 }
 
 void SoftNavigationHeuristics::OnPaintFinished() {

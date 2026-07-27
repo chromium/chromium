@@ -84,6 +84,14 @@ class CORE_EXPORT PaintTimingRecord
     is_needed_for_lcp_ = value;
   }
 
+  // Returns true iff this record is needed for Element Timing.
+  virtual bool IsNeededForElementTiming() const { return false; }
+
+  bool IsNeededForPaintTiming() const {
+    return IsNeededForLargestContentfulPaint() || IsNeededForElementTiming() ||
+           IsNeededForInteractionContentfulPaint();
+  }
+
   // Returns whether or not the corresponding image or text was removed from the
   // DOM after the record was created. Used to ensure we get paint timing for
   // such records without reporting them as LCP candidates.
@@ -123,7 +131,7 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
     return effective_visual_size_;
   }
 
-  bool IsNeededForElementTiming() const {
+  bool IsNeededForElementTiming() const override {
     return is_needed_for_element_timing_;
   }
   void SetIsNeededForElementTiming(bool value) {

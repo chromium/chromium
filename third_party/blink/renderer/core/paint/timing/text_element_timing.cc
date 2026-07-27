@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -52,11 +53,12 @@ bool TextElementTiming::CanReportElements() {
 }
 
 void TextElementTiming::OnFramePresented(
-    const HeapVector<Member<TextRecord>>& records) {
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
   if (!CanReportElements()) {
     return;
   }
-  for (auto& record : records) {
+  for (auto& record : text_records) {
     if (record->IsNeededForElementTiming()) {
       OnTextNodePresented(*record.Get());
     }
@@ -100,6 +102,23 @@ void TextElementTiming::OnTextNodePresented(const TextRecord& record) {
   if (CanReportToContainerTiming()) {
     container_timing_->OnElementPainted(record.PaintTimingInfo(), element,
                                         record.ElementTimingRect());
+  }
+}
+
+void TextElementTiming::OnElementLastContentfulPaint(
+    TextRecord* record,
+    ElementPaintStatus status) {
+  CHECK(!record->IsNeededForElementTiming());
+  if (status == ElementPaintStatus::kRepaint) {
+    return;
+  }
+  Node* node = record->GetNode();
+  CHECK(node);
+  auto* element = DynamicTo<Element>(node);
+  if (!node->IsInShadowTree() && element &&
+      (element->FastHasAttribute(html_names::kElementtimingAttr) ||
+       element->SelfOrAncestorHasContainerTiming())) {
+    record->SetIsNeededForElementTiming(true);
   }
 }
 
