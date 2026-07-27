@@ -11,7 +11,8 @@
 
 - (void)closeAllButtonTapped:(id)sender;
 - (void)closeOtherTabsButtonTapped:(id)sender;
-- (void)doneButtonTapped:(id)sender;
+- (void)exitTabGridButtonTapped:(id)sender;
+- (void)exitSelectionButtonTapped:(id)sender;
 - (void)newTabButtonTapped:(id)sender;
 - (void)selectAllButtonTapped:(id)sender;
 - (void)searchButtonTapped:(id)sender;

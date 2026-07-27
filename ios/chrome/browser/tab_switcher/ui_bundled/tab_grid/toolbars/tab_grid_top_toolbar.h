@@ -64,8 +64,8 @@
 - (void)setSelectAllButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the close other tabs action.
 - (void)setCloseOtherTabsEnabled:(BOOL)enabled;
-// Sets `enabled` on the done button.
-- (void)setDoneButtonEnabled:(BOOL)enabled;
+// Sets `enabled` on the Exit Tab Grid button.
+- (void)setExitTabGridButtonEnabled:(BOOL)enabled;
 // Sets `enabled` on the page action menu entry point.
 - (void)setPageActionMenuButtonEnabled:(BOOL)enabled;
 // Sets `visible` on the page action menu entry point.

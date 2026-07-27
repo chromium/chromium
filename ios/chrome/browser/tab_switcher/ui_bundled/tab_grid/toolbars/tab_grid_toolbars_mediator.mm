@@ -90,8 +90,10 @@
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
 
-  [self.topToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
-  [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
+  [self.topToolbarConsumer
+      setExitTabGridButtonEnabled:_configuration.exitTabGridButton];
+  [self.bottomToolbarConsumer
+      setDoneButtonEnabled:_configuration.exitTabGridButton];
 
   [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
 

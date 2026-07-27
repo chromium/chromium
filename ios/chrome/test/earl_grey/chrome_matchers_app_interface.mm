@@ -1505,15 +1505,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                    UIUserInterfaceSizeClassRegular;
 
       if (isRegularXRegular) {
-        id<GREYMatcher> tabGridDoneMatcher =
-            grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
-                       grey_sufficientlyVisible(), nil);
+        id<GREYMatcher> tabGridDoneMatcher = grey_allOf(
+            grey_accessibilityID(kTabGridExitTabGridButtonIdentifier),
+            grey_sufficientlyVisible(), nil);
         return [tabGridDoneMatcher matches:element];
       }
       return [[ChromeMatchersAppInterface showTabsButton] matches:element];
     } else {
       id<GREYMatcher> doneButtonMatcher =
-          grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
+          grey_allOf(grey_accessibilityID(kTabGridExitTabGridButtonIdentifier),
                      grey_sufficientlyVisible(), nil);
       return [doneButtonMatcher matches:element];
     }

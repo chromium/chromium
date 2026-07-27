@@ -519,7 +519,7 @@ TEST_P(BaseGridMediatorTest, TestToolbarsNormalModeWithWebstates) {
   // Force the toolbar configuration by setting the view as currently selected.
   [mediator_ currentlySelectedGrid:YES];
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeAllButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.exitTabGridButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectTabsButton);
@@ -539,7 +539,6 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithoutSelection) {
   [mediator_ selectTabsButtonTapped:nil];
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
   EXPECT_EQ(0u, fake_toolbars_mediator_.configuration.selectedItemsCount);
 
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
@@ -565,7 +564,6 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
                                                       ->GetWebStateAt(1)]];
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
   EXPECT_EQ(1u, fake_toolbars_mediator_.configuration.selectedItemsCount);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.shareButton);
@@ -586,7 +584,6 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
   [mediator_ selectTabsButtonTapped:nil];
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
 
@@ -599,7 +596,6 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
 
   // No update on the configuration as the mediator is no longer selected.
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
-  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
 }
@@ -622,7 +618,6 @@ TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
   EXPECT_EQ(1u, configuration.selectedItemsCount);
   EXPECT_TRUE(configuration.closeSelectedTabsButton);
   EXPECT_TRUE(configuration.addToButton);
@@ -678,7 +673,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
   EXPECT_EQ(1u, configuration.selectedItemsCount);
   EXPECT_TRUE(configuration.closeSelectedTabsButton);
   EXPECT_TRUE(configuration.addToButton);
@@ -736,7 +730,7 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   EXPECT_TRUE(configuration.searchButton);
 
   EXPECT_FALSE(configuration.selectAllButton);
-  EXPECT_FALSE(configuration.doneButton);
+  EXPECT_FALSE(configuration.exitTabGridButton);
   EXPECT_EQ(0u, configuration.selectedItemsCount);
   EXPECT_FALSE(configuration.closeSelectedTabsButton);
   EXPECT_FALSE(configuration.addToButton);
@@ -753,7 +747,7 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
 
   configuration = fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.closeAllButton);
-  EXPECT_TRUE(configuration.doneButton);
+  EXPECT_TRUE(configuration.exitTabGridButton);
   EXPECT_TRUE(configuration.newTabButton);
   EXPECT_TRUE(configuration.searchButton);
   EXPECT_TRUE(configuration.selectTabsButton);
@@ -788,7 +782,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
   EXPECT_EQ(2u, configuration.selectedItemsCount);
   EXPECT_TRUE(configuration.closeSelectedTabsButton);
   EXPECT_TRUE(configuration.addToButton);

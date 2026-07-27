@@ -1125,7 +1125,11 @@ UIButton* TopToolbarButton(Symbol symbol,
   NOTREACHED() << "Should not be called in a tab group.";
 }
 
-- (void)doneButtonTapped:(id)sende {
+- (void)exitTabGridButtonTapped:(id)sende {
+  NOTREACHED();
+}
+
+- (void)exitSelectionButtonTapped:(id)sende {
   NOTREACHED();
 }
 

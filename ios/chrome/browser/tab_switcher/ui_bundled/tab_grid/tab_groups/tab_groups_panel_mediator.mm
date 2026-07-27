@@ -316,9 +316,13 @@ NSString* CreationText(base::Time creation_date) {
   NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
-- (void)doneButtonTapped:(id)sender {
+- (void)exitTabGridButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
   [self.tabGridHandler exitTabGrid];
+}
+
+- (void)exitSelectionButtonTapped:(id)sender {
+  NOTREACHED();
 }
 
 - (void)newTabButtonTapped:(id)sender {
@@ -556,7 +560,7 @@ NSString* CreationText(base::Time creation_date) {
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageTabGroups];
   // Done button is enabled if there is at least one Regular tab.
-  toolbarsConfiguration.doneButton =
+  toolbarsConfiguration.exitTabGridButton =
       _regularWebStateList && !_regularWebStateList->empty();
 
   toolbarsConfiguration.newTabButton = YES;

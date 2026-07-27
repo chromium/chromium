@@ -301,7 +301,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 
   configuration.selectAllButton = !allItemsSelected;
   configuration.deselectAllButton = allItemsSelected;
-  configuration.doneButton = YES;
+  configuration.exitTabGridButton = YES;
   configuration.closeSelectedTabsButton = selectedItemsCount > 0;
   configuration.shareButton = selectedShareableItemsCount > 0;
   configuration.addToButton = selectedItemsCount > 0;
@@ -1847,17 +1847,20 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 
-- (void)doneButtonTapped:(id)sender {
+- (void)exitTabGridButtonTapped:(id)sender {
+  CHECK_EQ(_modeHolder.mode, TabGridMode::kNormal, base::NotFatalUntil::M155);
+  base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+  [self.tabGridHandler exitTabGrid];
+}
+
+- (void)exitSelectionButtonTapped:(id)sender {
+  CHECK_EQ(_modeHolder.mode, TabGridMode::kSelection,
+           base::NotFatalUntil::M155);
   // Tapping Done when in selection mode, should only return back to the normal
   // mode.
-  if (_modeHolder.mode == TabGridMode::kSelection) {
-    _modeHolder.mode = TabGridMode::kNormal;
-    // Records action when user exit the selection mode.
-    base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
-    [self.tabGridHandler exitTabGrid];
-  }
+  _modeHolder.mode = TabGridMode::kNormal;
+  // Records action when user exit the selection mode.
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
 }
 
 - (void)newTabButtonTapped:(id)sender {
