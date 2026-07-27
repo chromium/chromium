@@ -8,10 +8,10 @@
 #include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
@@ -39,7 +39,7 @@ static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "
               "than 16 bytes.");
 
-constexpr inline size_t kAlignmentIndex = base::bits::CountrZero(kAlignment);
+constexpr inline size_t kAlignmentIndex = std::countr_zero(kAlignment);
 static_assert(kAlignment == (1 << kAlignmentIndex));
 
 static constexpr size_t kBitsPerSizeT = std::numeric_limits<size_t>::digits;

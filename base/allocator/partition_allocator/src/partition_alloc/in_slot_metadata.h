@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_IN_SLOT_METADATA_H_
 
 #include <atomic>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -23,6 +24,10 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
+
+#if PA_BUILDFLAG(IS_APPLE)
+#include "partition_alloc/partition_alloc_base/bits.h"
+#endif
 
 namespace partition_alloc::internal {
 
@@ -157,9 +162,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
                 std::numeric_limits<CountType>::max());
 
   static constexpr auto kPtrInc =
-      SafeShift<CountType>(1, base::bits::CountrZero(kPtrCountMask));
+      SafeShift<CountType>(1, std::countr_zero(kPtrCountMask));
   static constexpr auto kUnprotectedPtrInc =
-      SafeShift<CountType>(1, base::bits::CountrZero(kUnprotectedPtrCountMask));
+      SafeShift<CountType>(1, std::countr_zero(kUnprotectedPtrCountMask));
 
   PA_ALWAYS_INLINE InSlotMetadata();
 

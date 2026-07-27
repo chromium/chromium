@@ -59,11 +59,6 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // returns {sizeof(T) * 8}.
 // Example: 00100010 -> 2
 //
-// CountrZero(value) returns the number of zero bits preceding the
-// least significant 1 bit in |value| if |value| is non-zero, otherwise it
-// returns {sizeof(T) * 8}.
-// Example: 00100010 -> 1
-//
 // C does not have an operator to do this, but fortunately the various
 // compilers have built-ins that map to fast underlying processor instructions.
 // __builtin_clz has undefined behaviour for an input of 0, even though there's
@@ -88,31 +83,6 @@ PA_ALWAYS_INLINE constexpr
     return bits == 64
                ? __builtin_clzll(static_cast<uint64_t>(value))
                : __builtin_clz(static_cast<uint32_t>(value)) - (32 - bits);
-#endif
-  }
-  return bits;
-}
-
-// Backport of C++20 std::countr_zero in <bit>.
-//
-// Returns the number of consecutive 0 bits, starting from the least significant
-// one.
-template <typename T, int bits = sizeof(T) * 8>
-PA_ALWAYS_INLINE constexpr
-    typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
-    CountrZero(T value) {
-  if (value) [[likely]] {
-#if PA_BUILDFLAG(PA_COMPILER_MSVC) && !defined(__clang__)
-    // We would prefer to use the _BitScanForward(64) intrinsics, but they
-    // aren't constexpr and thus unusable here.
-    int trailing_zeros = 0;
-    constexpr T kLeastSignificantBitMask = 1ull;
-    for (; !(value & kLeastSignificantBitMask); value >>= 1, ++trailing_zeros) {
-    }
-    return trailing_zeros;
-#else
-    return bits == 64 ? __builtin_ctzll(static_cast<uint64_t>(value))
-                      : __builtin_ctz(static_cast<uint32_t>(value));
 #endif
   }
   return bits;

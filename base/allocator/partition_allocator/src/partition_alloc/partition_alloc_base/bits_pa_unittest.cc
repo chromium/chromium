@@ -126,33 +126,6 @@ TEST(BitsTestPA, CountlZero32) {
   EXPECT_EQ(4, CountlZero(uint32_t{0x0f0f0f0f}));
 }
 
-TEST(BitsTestPA, CountrZero8) {
-  EXPECT_EQ(8, CountrZero(uint8_t{0}));
-  EXPECT_EQ(7, CountrZero(uint8_t{128}));
-  for (int shift = 0; shift <= 7; ++shift) {
-    EXPECT_EQ(shift, CountrZero(static_cast<uint8_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountrZero(uint8_t{0xf0}));
-}
-
-TEST(BitsTestPA, CountrZero16) {
-  EXPECT_EQ(16, CountrZero(uint16_t{0}));
-  EXPECT_EQ(15, CountrZero(uint16_t{32768}));
-  for (int shift = 0; shift <= 15; ++shift) {
-    EXPECT_EQ(shift, CountrZero(static_cast<uint16_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountrZero(uint16_t{0xf0f0}));
-}
-
-TEST(BitsTestPA, CountrZero32) {
-  EXPECT_EQ(32, CountrZero(uint32_t{0}));
-  EXPECT_EQ(31, CountrZero(uint32_t{1} << 31));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(shift, CountrZero(uint32_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountrZero(uint32_t{0xf0f0f0f0}));
-}
-
 TEST(BitsTestPA, CountlZero64) {
   EXPECT_EQ(64, CountlZero(uint64_t{0}));
   EXPECT_EQ(63, CountlZero(uint64_t{1}));
@@ -160,15 +133,6 @@ TEST(BitsTestPA, CountlZero64) {
     EXPECT_EQ(63 - shift, CountlZero(uint64_t{1} << shift));
   }
   EXPECT_EQ(4, CountlZero(uint64_t{0x0f0f0f0f0f0f0f0f}));
-}
-
-TEST(BitsTestPA, CountrZero64) {
-  EXPECT_EQ(64, CountrZero(uint64_t{0}));
-  EXPECT_EQ(63, CountrZero(uint64_t{1} << 63));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(shift, CountrZero(uint64_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountrZero(uint64_t{0xf0f0f0f0f0f0f0f0}));
 }
 
 TEST(BitsTestPA, CountlZeroSizeT) {
@@ -183,21 +147,6 @@ TEST(BitsTestPA, CountlZeroSizeT) {
   EXPECT_EQ(31, CountlZero(size_t{1}));
   EXPECT_EQ(1, CountlZero(size_t{1} << 30));
   EXPECT_EQ(0, CountlZero(size_t{1} << 31));
-#endif
-}
-
-TEST(BitsTestPA, CountrZeroSizeT) {
-#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
-  EXPECT_EQ(64, CountrZero(size_t{0}));
-  EXPECT_EQ(63, CountrZero(size_t{1} << 63));
-  EXPECT_EQ(31, CountrZero(size_t{1} << 31));
-  EXPECT_EQ(1, CountrZero(size_t{2}));
-  EXPECT_EQ(0, CountrZero(size_t{1}));
-#else
-  EXPECT_EQ(32, CountrZero(size_t{0}));
-  EXPECT_EQ(31, CountrZero(size_t{1} << 31));
-  EXPECT_EQ(1, CountrZero(size_t{2}));
-  EXPECT_EQ(0, CountrZero(size_t{1}));
 #endif
 }
 
