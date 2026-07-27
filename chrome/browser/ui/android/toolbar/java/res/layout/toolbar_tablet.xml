@@ -121,8 +121,8 @@ found in the LICENSE file.
 
         <View
             android:id="@+id/glic_divider"
-            android:layout_width="1dp"
-            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_width="@dimen/glic_divider_width"
+            android:layout_height="@dimen/glic_divider_height"
             android:layout_gravity="center_vertical"
             android:background="@drawable/divider_line_bg"
             android:importantForAccessibility="no"

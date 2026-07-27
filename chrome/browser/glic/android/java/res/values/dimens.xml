@@ -27,6 +27,10 @@ found in the LICENSE file.
     <dimen name="glic_extra_info_row_top_margin">8dp</dimen>
     <dimen name="glic_extra_info_margin">24dp</dimen>
 
+    <!-- Glic divider dimensions on toolbar -->
+    <dimen name="glic_divider_height">20dp</dimen>
+    <dimen name="glic_divider_width">2dp</dimen>
+
     <!-- Glic task menu dimensions -->
     <dimen name="glic_task_menu_max_width">300dp</dimen>
     <dimen name="glic_task_menu_max_width_desktop">360dp</dimen>
