@@ -1718,6 +1718,13 @@ void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
   }
 }
 
+void ViewAccessibility::OnViewParentChanged() {
+  CHECK(view_);
+  if (view_->parent()) {
+    OnViewHasNewAncestor(view_->parent());
+  }
+}
+
 void ViewAccessibility::SetRootViewURL(const std::string& url) {
   CHECK(view_);
   CHECK(!view_->parent())

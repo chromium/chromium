@@ -3291,7 +3291,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // events from being fired until accessibility is fully initialized, and if we
   // need to update the accessible focusable state before the cache is fully
   // initialized. If so, let's merge these two functions.
-  view->GetViewAccessibility().OnViewHasNewAncestor(this);
+  view->GetViewAccessibility().OnViewParentChanged();
 
   // Fire the live region event if needed on the parent of the added view, not
   // the view itself, so the right live region container is notified of the
@@ -3387,6 +3387,8 @@ void View::DoRemoveChildView(View* view,
   }
 
   view->parent_ = nullptr;
+  view->GetViewAccessibility().OnViewParentChanged();
+
   // Make sure the sub-tree of this view detaches from widget the same moment
   // they're removed from previous view hierarchy.
   if (is_removed_from_widget) {

@@ -517,6 +517,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Called when `view_` gets added as a child of another View.
   void OnViewHasNewAncestor(const View* new_ancestor);
 
+  // Called when `view_`'s parent changes, including when `view_` is removed
+  // from its parent.
+  void OnViewParentChanged();
+
   // This should only ever be called on the RootView.
   void SetRootViewIsReadyToNotifyEvents();
 
