@@ -359,6 +359,116 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
                                       false, 1);
 }
 
+// Tests that query latency metric is logged for a single result category.
+TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategorySingleType) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                       std::nullopt);
+  metrics.OnQuerySubmitted(u"query");
+  task_environment_.FastForwardBy(base::Seconds(3));
+  metrics.OnQueryResponseReceived(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                          {MemorySearchResult(MemoryDataType::kPassportNumber,
+                                              u"Passport", u"A1234567")}));
+
+  histogram_tester_.ExpectUniqueTimeSample("Autofill.AtMemory.Latency.Query",
+                                           base::Seconds(3), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.Query.Passport", base::Seconds(3), 1);
+}
+
+// Tests that query latency metric is logged under "Empty" when results are
+// empty.
+TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategoryEmpty) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                       std::nullopt);
+  metrics.OnQuerySubmitted(u"query");
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics.OnQueryResponseReceived(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess, {}));
+
+  histogram_tester_.ExpectUniqueTimeSample("Autofill.AtMemory.Latency.Query",
+                                           base::Seconds(1), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.Query.Empty", base::Seconds(1), 1);
+}
+
+// Tests that query latency metric is logged under "MultipleTypes" when results
+// span multiple categories.
+TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategoryMultipleTypes) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                       std::nullopt);
+  metrics.OnQuerySubmitted(u"query");
+  task_environment_.FastForwardBy(base::Seconds(2));
+  metrics.OnQueryResponseReceived(MemorySearchResults(
+      MemorySearchStatus::kFinalResponseSuccess,
+      {MemorySearchResult(MemoryDataType::kAddressFull, u"Address", u"Main St"),
+       MemorySearchResult(MemoryDataType::kPassportNumber, u"Passport",
+                          u"A1234567")}));
+
+  histogram_tester_.ExpectUniqueTimeSample("Autofill.AtMemory.Latency.Query",
+                                           base::Seconds(2), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.Query.MultipleTypes", base::Seconds(2), 1);
+}
+
+// Tests that query latency metric is logged under "Unknown" for unknown data
+// types.
+TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategoryUnknown) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+                       std::nullopt);
+  metrics.OnQuerySubmitted(u"query");
+  task_environment_.FastForwardBy(base::Seconds(4));
+  metrics.OnQueryResponseReceived(MemorySearchResults(
+      MemorySearchStatus::kFinalResponseSuccess,
+      {MemorySearchResult(MemoryDataType::kUnknown, u"Unknown", u"Value")}));
+
+  histogram_tester_.ExpectUniqueTimeSample("Autofill.AtMemory.Latency.Query",
+                                           base::Seconds(4), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.Query.Unknown", base::Seconds(4), 1);
+}
+
+// Tests that Autofill-sourced results are excluded when logging query latency.
+TEST_F(AtMemoryMetricsRecorderTest,
+       QueryLatency_CategoryExcludesAutofillSourced) {
+  AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                  GURL(), std::u16string(), FieldGlobalId(),
+                                  FormSignature(0), FieldSignature(0));
+  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                       std::nullopt);
+  metrics.OnQuerySubmitted(u"query");
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  MemorySearchResult autofill_entry(MemoryDataType::kAddressFull, u"Address",
+                                    u"123 Main St");
+  autofill_entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+
+  MemorySearchResult passport_entry(MemoryDataType::kPassportNumber,
+                                    u"Passport", u"A1234567");
+  passport_entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
+
+  metrics.OnQueryResponseReceived(MemorySearchResults(
+      MemorySearchStatus::kFinalResponseSuccess,
+      {std::move(autofill_entry), std::move(passport_entry)}));
+
+  histogram_tester_.ExpectUniqueTimeSample("Autofill.AtMemory.Latency.Query",
+                                           base::Seconds(5), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.Query.Passport", base::Seconds(5), 1);
+}
+
 struct FetchPiiLatencyTestCase {
   AtMemoryMetricsRecorder::FetchPiiSource source;
   std::string_view histogram_name;

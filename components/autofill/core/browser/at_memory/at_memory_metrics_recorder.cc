@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -59,6 +60,136 @@ std::string_view FetchPiiSourceToString(
       return "PersonalContext";
   }
   NOTREACHED();
+}
+
+std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
+  switch (type) {
+    case MemoryDataType::kUnknown:
+      return "Unknown";
+
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+      return "Address";
+
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return "CreditCard";
+
+    case MemoryDataType::kDriversLicenseFull:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+      return "DriversLicense";
+
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+      return "FlightReservation";
+
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+      return "Iban";
+
+    case MemoryDataType::kKnownTravelerNumberFull:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+      return "KnownTravelerNumber";
+
+    case MemoryDataType::kNationalIdCardFull:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+      return "NationalIdCard";
+
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+      return "Order";
+
+    case MemoryDataType::kPassportFull:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+      return "Passport";
+
+    case MemoryDataType::kRedressNumberFull:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+      return "RedressNumber";
+
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+      return "Shipment";
+
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+      return "Vehicle";
+  }
+  NOTREACHED();
+}
+
+// Returns the category string used for histogram metric logging based on the
+// types of non-Autofill data present in `result`. Returns "Empty" if there are
+// no non-Autofill entries, "MultipleTypes" if entries span multiple categories,
+// or the category name if all non-Autofill entries share the same category.
+std::string_view GetQueryDatatypeCategory(const MemorySearchResults& result) {
+  std::optional<std::string_view> category;
+  for (const MemorySearchResult& entry : result.entries) {
+    if (std::ranges::contains(entry.sources, MemoryEntrySourceType::kAutofill,
+                              &MemoryEntrySource::type)) {
+      continue;
+    }
+    const std::string_view entry_category =
+        MemoryDataTypeToCategoryString(entry.type);
+    if (!category.has_value()) {
+      category = entry_category;
+    } else if (*category != entry_category) {
+      return "MultipleTypes";
+    }
+  }
+  return category.value_or("Empty");
 }
 
 }  // namespace
@@ -292,6 +423,9 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
   base::TimeDelta time_since_query_submitted =
       query_to_suggestions_shown_timer_->Elapsed();
   base::UmaHistogramTimes("Autofill.AtMemory.Latency.Query",
+                          time_since_query_submitted);
+  base::UmaHistogramTimes(base::StrCat({"Autofill.AtMemory.Latency.Query.",
+                                        GetQueryDatatypeCategory(result)}),
                           time_since_query_submitted);
   if (ukm_search_query_builder_) {
     ukm_search_query_builder_->SetQueryLatencyMs(
