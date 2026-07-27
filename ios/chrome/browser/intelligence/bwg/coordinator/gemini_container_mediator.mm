@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -76,6 +77,26 @@
                                          startupState:startupState];
 }
 
+- (BOOL)shouldShowSuggestionChipsForEntryPoint:
+    (gemini::EntryPoint)entryPoint {
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    return NO;
+  }
+
+  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  if (!geminiTabHelper) {
+    return NO;
+  }
+
+  bool shouldShow = geminiTabHelper->ShouldShowSuggestionChips();
+  if (IsAppSwitcherAISummarizationEnabled() &&
+      entryPoint == gemini::EntryPoint::AppSwitcherAISummarization) {
+    shouldShow = false;
+  }
+  return shouldShow;
+}
+
 - (void)disconnect {
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(_profile);
@@ -129,7 +150,7 @@
   config.lastInteractionURLDifferent =
       geminiTabHelper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
-      geminiTabHelper->ShouldShowSuggestionChips();
+      [self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint];
   config.contextualCueChipLabel = startupState.prepopulatedPrompt;
   config.entryPoint = startupState.entryPoint;
   config.imageRemixIPHShouldShow =

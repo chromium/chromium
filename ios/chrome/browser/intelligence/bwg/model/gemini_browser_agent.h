@@ -528,9 +528,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // The entry point that triggered the current Gemini flow.
   gemini::EntryPoint entry_point_ = gemini::EntryPoint::Unknown;
 
-  // Weak pointer factory.
   // Observers for GeminiBrowserAgent.
   base::ObserverList<Observer> observers_;
+
+  // Weak pointer factory.
   base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};
 };
 

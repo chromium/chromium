@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+namespace gemini {
+enum class EntryPoint;
+}  // namespace gemini
+
 class ProfileIOS;
 class WebStateList;
 @class GeminiConfiguration;
@@ -30,6 +34,10 @@ class WebStateList;
 // Creates and returns the GeminiConfiguration for the active web state.
 - (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
     (GeminiStartupState*)startupState;
+
+// Returns whether suggestion chips should be shown for the given entry point.
+- (BOOL)shouldShowSuggestionChipsForEntryPoint:
+    (gemini::EntryPoint)entryPoint;
 
 // Disconnects the mediator and performs necessary cleanup.
 - (void)disconnect;

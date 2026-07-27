@@ -175,3 +175,38 @@ TEST_F(GeminiContainerMediatorTest,
 
   [mediator_ disconnect];
 }
+
+// Tests that suggestion chips are hidden when coming from
+// AppSwitcherAISummarization.
+TEST_F(GeminiContainerMediatorTest,
+       TestShouldShowSuggestionChipsForAppSwitcherAISummarization) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  AppendActiveWebState();
+
+  GeminiStartupState* app_switcher_startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+
+  GeminiConfiguration* config = [mediator_
+      createGeminiConfigurationForActiveWebState:app_switcher_startup_state];
+  EXPECT_FALSE(config.shouldShowSuggestionChips);
+}
+
+// Tests that shouldShowSuggestionChipsForEntryPoint returns false for
+// AppSwitcherAISummarization.
+TEST_F(GeminiContainerMediatorTest,
+       TestShouldShowSuggestionChipsForEntryPointAppSwitcher) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  AppendActiveWebState();
+
+  EXPECT_FALSE([mediator_
+      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::
+                                                  AppSwitcherAISummarization]);
+  EXPECT_TRUE([mediator_
+      shouldShowSuggestionChipsForEntryPoint:gemini::EntryPoint::Promo]);
+}

@@ -1166,6 +1166,10 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     if (prepopulated_prompt) {
       ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
     }
+    CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
+    bool should_show_suggestion_chips = [gemini_container_mediator_
+        shouldShowSuggestionChipsForEntryPoint:entry_point];
+    ios::provider::SetShouldShowSuggestionChips(should_show_suggestion_chips);
     if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
       [HandlerForProtocol(browser_->GetCommandDispatcher(), FullscreenCommands)
           exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
