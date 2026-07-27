@@ -387,6 +387,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java:UidType)-->
 
+<!-- LINT.IfChange(AndroidVerticalTabsDragDropResult) -->
+
+<enum name="AndroidVerticalTabsDragDropResult">
+  <int value="0" label="Reordered"/>
+  <int value="1" label="Grouped"/>
+  <int value="2" label="Ungrouped"/>
+  <int value="3" label="Aborted (No Change)"/>
+  <int value="4" label="Dragged Out"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListItemTouchHelperCallback.java:AndroidVerticalTabsDragDropResult) -->
+
 <enum name="AndroidWebViewCrashCollectionState">
   <int value="0" label="ENABLED_BY_COMMANDLINE">
     Enabled by commandline. This doesn't check later cases (ex. user consent).

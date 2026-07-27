@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -47,7 +46,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.UserActionTester;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -128,6 +127,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         mViewHolder = spy(new SimpleRecyclerViewAdapter.ViewHolder(mItemView, /* binder= */ null));
         mViewHolder.model = mPropertyModel;
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
 
         // Set up the mocked property model for the target drop view holder.
         mTargetPropertyModel =
@@ -140,6 +140,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mTargetViewHolder =
                 spy(new SimpleRecyclerViewAdapter.ViewHolder(mTargetItemView, /* binder= */ null));
         mTargetViewHolder.model = mTargetPropertyModel;
+        when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
         mModel = new TabListModel();
         mModel.add(new ListItem(TabProperties.UiType.TAB, mPropertyModel));
@@ -265,10 +266,10 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTab1.getIsPinned()).thenReturn(false);
         when(mTab2.getIsPinned()).thenReturn(false);
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
-        doReturn(List.of(mTab1)).when(mTabModel).getRelatedTabList(1);
-        doReturn(List.of(mTab2)).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -290,21 +291,18 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mTargetPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, destGroupId); // It's a header.
         when(mTargetViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         // distance > 0 -> dragging downward.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
-        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         List.of(mTab1), mTab2, 0, TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-        assertTrue(userActionTester.getActions().contains("Android.VerticalTabs.TabAddedToGroup"));
-        userActionTester.tearDown();
     }
 
     @Test
@@ -320,24 +318,21 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTargetViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
 
         when(mTab2.getId()).thenReturn(2);
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         // Mock target as lowest tab.
-        doReturn(List.of(mTab3, mTab2)).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab3, mTab2));
 
         // distance < 0 -> dragging upward.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(2);
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
-        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         List.of(mTab1), mTab2, null, TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-        assertTrue(userActionTester.getActions().contains("Android.VerticalTabs.TabAddedToGroup"));
-        userActionTester.tearDown();
     }
 
     @Test
@@ -356,10 +351,10 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Set a group ID to make it a child tab.
         when(mTab1.getTabGroupId()).thenReturn(groupId);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
-        doReturn(List.of(mTab1)).when(mTabModel).getRelatedTabList(1);
-        doReturn(List.of(mTab2)).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -389,13 +384,13 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTab3.getTabGroupId()).thenReturn(groupId);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         // Both tabs share the same related tabs (they are in the same group).
         List<Tab> relatedTabs = List.of(mTab1, mTab2, mTab3);
-        doReturn(relatedTabs).when(mTabModel).getRelatedTabList(1);
-        doReturn(relatedTabs).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(relatedTabs);
+        when(mTabModel.getRelatedTabList(2)).thenReturn(relatedTabs);
 
         // Set up the indices: tab1 at 4, tab2 at 5, tab3 at 6.
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
@@ -425,21 +420,16 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mTargetPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId2);
         when(mTargetViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(groupId1);
 
         // distance > 0 -> dragging downward.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
-        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), true, false);
-        assertTrue(
-                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
-        userActionTester.tearDown();
     }
 
     @Test
@@ -460,7 +450,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Dragging highlights the selected card and activates it.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -479,7 +469,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Setup initial drag state.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -500,7 +490,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Setup initial drag state.
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -509,9 +499,9 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Move to a new position.
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
         when(mTab2.getIsPinned()).thenReturn(false);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
-        doReturn(List.of(mTab1)).when(mTabModel).getRelatedTabList(1);
-        doReturn(List.of(mTab2)).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
 
@@ -537,7 +527,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mRecyclerView.findChildViewUnder(10f, 10f)).thenReturn(mChildView);
         when(mRecyclerView.getChildViewHolder(mChildView)).thenReturn(mViewHolder);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -564,7 +554,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mRecyclerView.getChildViewHolder(mChildView)).thenReturn(mViewHolder);
 
         // Stub tab model to avoid NPE during selection in ACTION_DOWN.
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -695,7 +685,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mRecyclerView.findChildViewUnder(10f, 10f)).thenReturn(mChildView);
         when(mRecyclerView.getChildViewHolder(mChildView)).thenReturn(mViewHolder);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.index()).thenReturn(1);
 
@@ -745,11 +735,11 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTab3.getIsPinned()).thenReturn(false);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        doReturn(destinationGroup).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getRelatedTabList(2)).thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.indexOf(mTab3)).thenReturn(6);
@@ -775,11 +765,11 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTab3.getIsPinned()).thenReturn(false);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(mTab2).when(mTabModel).getTabById(2);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        doReturn(destinationGroup).when(mTabModel).getRelatedTabList(2);
+        when(mTabModel.getRelatedTabList(2)).thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(0);
         when(mTabModel.indexOf(mTab3)).thenReturn(1);
@@ -813,8 +803,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(List.of(mTab1, mTab2)).when(mTabModel).getRelatedTabList(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -1175,12 +1165,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Threshold is top - height/2 = 200 - 50 = 150.
         // y < 150 -> return true.
-        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 140, 0, -10));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), false, false);
-        assertTrue(
-                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
-        userActionTester.tearDown();
     }
 
     @Test
@@ -1225,12 +1211,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Threshold is top + height/4 = 200 + 25 = 225.
         // y > 225 -> return true.
-        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 230, 0, 10));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), true, false);
-        assertTrue(
-                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
-        userActionTester.tearDown();
     }
 
     @Test
@@ -1491,8 +1473,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        doReturn(mTab1).when(mTabModel).getTabById(1);
-        doReturn(List.of(mTab1, mTab2)).when(mTabModel).getRelatedTabList(1);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -1540,5 +1522,115 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                         /* source= */ InputDevice.SOURCE_MOUSE,
                         /* flags= */ 0);
         return event;
+    }
+
+    @Test
+    @SmallTest
+    public void testDragDropResult_Aborted() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.ABORTED_NO_CHANGE);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testDragDropResult_Reordered() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.REORDERED);
+
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+        when(mTab1.getIsPinned()).thenReturn(false);
+        when(mTab2.getIsPinned()).thenReturn(false);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getRelatedTabList(2)).thenReturn(List.of(mTab2));
+        when(mTabModel.indexOf(mTab2)).thenReturn(5);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testDragDropResult_Grouped() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.GROUPED);
+
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        mPropertyModel.set(TabProperties.TAB_GROUP_ID, null);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+        Token destGroupId = new Token(1L, 2L);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, destGroupId);
+        when(mTargetViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB_GROUP);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getTabById(2)).thenReturn(mTab2);
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
+        when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testDragDropResult_Ungrouped() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.UNGROUPED);
+
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+        Token groupId = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId);
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab2.getId()).thenReturn(2);
+        when(mTab1.getTabGroupId()).thenReturn(groupId);
+        when(mTab2.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.getRelatedTabList(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mViewHolder.itemView.getHeight()).thenReturn(100);
+        when(mViewHolder.itemView.getTop()).thenReturn(200);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertTrue(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 140, 0, -10));
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testDragDropResult_DraggedOut() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.DragDropResult",
+                        VerticalTabListItemTouchHelperCallback.DragDropResult.DRAGGED_OUT);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(RecyclerView.NO_POSITION);
+        mCallback.clearView(mRecyclerView, mViewHolder);
+
+        histogramWatcher.assertExpected();
     }
 }

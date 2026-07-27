@@ -6930,6 +6930,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.DragDropResult"
+    enum="AndroidVerticalTabsDragDropResult" expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>kije@chromium.org</owner>
+  <summary>
+    Tracks the outcome of a drag-and-drop interaction session in Vertical Tabs.
+    Recorded when the drag interaction ends (finger is lifted).
+  </summary>
+</histogram>
+
 <histogram name="Android.VerticalTabs.DurationEnabled" units="ms"
     expires_after="2027-07-22">
   <owner>agazal@google.com</owner>
