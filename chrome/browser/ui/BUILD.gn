@@ -4458,7 +4458,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/media_router:impl",
       "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/views/omnibox:impl",
-      "//chrome/browser/ui/views/optimization_guide",
       "//chrome/browser/ui/views/overlay",
       "//chrome/browser/ui/views/overlay:impl",
       "//chrome/browser/ui/views/page_action",

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
-#include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
@@ -54,27 +53,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   browser_ = params.browser;
   icon_container_ = icon_container;
 
-  auto add_page_action_icon = [&params, this](PageActionIconType type,
-                                              auto icon) {
-    icon->SetVisible(false);
-    views::InkDrop::Get(icon.get())
-        ->SetVisibleOpacity(params.page_action_icon_delegate
-                                ->GetPageActionInkDropVisibleOpacity());
-    if (params.icon_color) {
-      icon->SetIconColor(*params.icon_color);
-    }
-    if (params.font_list) {
-      icon->SetFontList(*params.font_list);
-    }
-    icon->AddPageIconViewObserver(this);
-    auto* icon_ptr = icon.get();
-    if (params.button_observer) {
-      params.button_observer->ObserveButton(icon_ptr);
-    }
-    this->icon_container_->AddPageActionIcon(std::move(icon));
-    this->page_action_icon_views_.emplace(type, icon_ptr);
-    return icon_ptr;
-  };
 
   for (PageActionIconType type : params.types_enabled) {
     // When the page action migration is enabled, the new
@@ -84,11 +62,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
     }
     switch (type) {
       case PageActionIconType::kOptimizationGuide:
-        add_page_action_icon(
-            type, std::make_unique<OptimizationGuideIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
       case PageActionIconType::kFind:
       case PageActionIconType::kFederation:
         // Do nothing as these actions were added after the migration, or

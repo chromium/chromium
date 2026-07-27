@@ -51,6 +51,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kFilledCardInformation:
     case PageActionIconType::kVirtualCardEnroll:
     case PageActionIconType::kIntentPicker:
+    case PageActionIconType::kOptimizationGuide:
       return true;
     default:
       break;
