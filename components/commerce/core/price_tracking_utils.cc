@@ -520,7 +520,7 @@ std::optional<std::u16string> GetBookmarkParentName(
 const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
     bookmarks::BookmarkModel* model,
     bool create_if_needed) {
-  if (!model) {
+  if (!model || !model->loaded()) {
     return nullptr;
   }
 
