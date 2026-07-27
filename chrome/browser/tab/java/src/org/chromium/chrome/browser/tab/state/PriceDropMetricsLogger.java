@@ -6,7 +6,12 @@ package org.chromium.chrome.browser.tab.state;
 
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -22,21 +27,26 @@ public class PriceDropMetricsLogger {
 
     private ShoppingPersistedTabData mShoppingPersistedTabData;
 
+    @IntDef({TabUsageStatus.ABANDONED, TabUsageStatus.STALE, TabUsageStatus.ACTIVE})
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
-    protected enum TabUsageStatus {
-        ABANDONED("AbandonedTab"),
-        STALE("StaleTab"),
-        ACTIVE("ActiveTab");
+    protected @interface TabUsageStatus {
+        int ABANDONED = 0;
+        int STALE = 1;
+        int ACTIVE = 2;
+    }
 
-        private final String mTabUsageStatus;
-
-        TabUsageStatus(String tabUsageStatus) {
-            mTabUsageStatus = tabUsageStatus;
-        }
-
-        @Override
-        public String toString() {
-            return mTabUsageStatus;
+    private static String getTabUsageStatusString(@TabUsageStatus int status) {
+        switch (status) {
+            case TabUsageStatus.ABANDONED:
+                return "AbandonedTab";
+            case TabUsageStatus.STALE:
+                return "StaleTab";
+            case TabUsageStatus.ACTIVE:
+                return "ActiveTab";
+            default:
+                assert false : "Unexpected TabUsageStatus: " + status;
+                return "";
         }
     }
 
@@ -56,7 +66,7 @@ public class PriceDropMetricsLogger {
      * @param timeSinceTabLastOpenedMs time since the tab was last opened in milliseconds.
      */
     public void logPriceDropMetrics(String locationIdentifier, long timeSinceTabLastOpenedMs) {
-        TabUsageStatus tabUsageStatus = getTabUsageStatus(timeSinceTabLastOpenedMs);
+        @TabUsageStatus int tabUsageStatus = getTabUsageStatus(timeSinceTabLastOpenedMs);
         // Tabs greater than 90 days old are not included in price drops, so the following shouldn't
         // happen but is included as a safeguard.
         if (tabUsageStatus == TabUsageStatus.ABANDONED) {
@@ -67,21 +77,21 @@ public class PriceDropMetricsLogger {
                 String.format(
                         Locale.US,
                         "Commerce.PriceDrops.%s%s.IsProductDetailPage",
-                        tabUsageStatus,
+                        getTabUsageStatusString(tabUsageStatus),
                         locationIdentifier),
                 metrics.isProductDetailPage);
         RecordHistogram.recordBooleanHistogram(
                 String.format(
                         Locale.US,
                         "Commerce.PriceDrops.%s%s.ContainsPrice",
-                        tabUsageStatus,
+                        getTabUsageStatusString(tabUsageStatus),
                         locationIdentifier),
                 metrics.containsPrice);
         RecordHistogram.recordBooleanHistogram(
                 String.format(
                         Locale.US,
                         "Commerce.PriceDrops.%s%s.ContainsPriceDrop",
-                        tabUsageStatus,
+                        getTabUsageStatusString(tabUsageStatus),
                         locationIdentifier),
                 metrics.containsPriceDrop);
     }
@@ -99,7 +109,7 @@ public class PriceDropMetricsLogger {
     }
 
     @VisibleForTesting
-    protected static TabUsageStatus getTabUsageStatus(long timeSinceTabLastOpenedMs) {
+    protected static @TabUsageStatus int getTabUsageStatus(long timeSinceTabLastOpenedMs) {
         if (timeSinceTabLastOpenedMs >= NINETY_DAYS_MS) {
             return TabUsageStatus.ABANDONED;
         }
