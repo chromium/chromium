@@ -13,6 +13,11 @@ namespace sync_preferences::features {
 // the specially tagged preferences will be cleared upon sign out.
 BASE_DECLARE_FEATURE(kAccountScopedPrefs);
 
+// If enabled, optimizes DualLayerUserPrefStore::MaybeMerge by caching merged
+// preference values in `merged_prefs_` and returning cached values when
+// available.
+BASE_DECLARE_FEATURE(kOptimizeDualLayerUserPrefStoreMaybeMerge);
+
 // Enables the CrossDevicePrefTracker, a KeyedService for tracking select
 // non-syncing Prefs across a user's devices.
 BASE_DECLARE_FEATURE(kEnableCrossDevicePrefTracker);

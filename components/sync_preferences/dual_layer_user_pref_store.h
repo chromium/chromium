@@ -197,6 +197,10 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
                           base::Value& local_value,
                           base::Value& account_value);
 
+  // Updates the merged pref cache for `key` if it is mergeable and exists in
+  // both stores. Returns true if the merged value changed.
+  bool UpdateMergedPrefCacheIfMergeable(std::string_view key) const;
+
   // Unmerges `value` and returns the new local value and the account value (in
   // that order).
   std::pair<base::Value, base::Value> UnmergeValue(std::string_view pref_name,

@@ -8,6 +8,9 @@ namespace sync_preferences::features {
 
 BASE_FEATURE(kAccountScopedPrefs, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOptimizeDualLayerUserPrefStoreMaybeMerge,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableCrossDevicePrefTracker,
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
