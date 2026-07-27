@@ -63,6 +63,9 @@ class MediaTranscriptObserver
 // for a set of meta tags.
 class PageContentMetadataObserver : public content::WebContentsObserver {
  public:
+  // Callback invoked when page metadata changes. A null value implies that the
+  // current page metadata state is unknown (e.g. during navigation or before
+  // initial metadata from the primary main frame is received).
   using OnPageMetadataChangedCallback =
       base::RepeatingCallback<void(blink::mojom::PageMetadataPtr)>;
 
@@ -74,15 +77,18 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   PageContentMetadataObserver& operator=(const PageContentMetadataObserver&) =
       delete;
 
-  // Delivers the current metadata to the callback.  Clients may use this to
-  // prompt sending the most recent metadata.
-  void DispatchMetadata();
+  // Returns the current metadata for the page, or null if the initial
+  // metadata from the primary main frame has not yet been received.
+  blink::mojom::PageMetadataPtr GetCurrentMetadata() const;
 
   // Called when transcription begins for a frame.
   // Marked virtual for testing.
   virtual void OnTranscriptionBegin(content::RenderFrameHost* rfh);
 
  private:
+  // Delivers the current metadata (`GetCurrentMetadata()`) to the callback if
+  // ready.
+  void DispatchMetadata();
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -122,6 +128,7 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
 
     std::unique_ptr<FrameMetaTagsObserver> observer;
     blink::mojom::FrameMetadataPtr metadata;
+    bool received_initial_metadata = false;
   };
 
   bool UpdateMediaTranscriptsFlag(

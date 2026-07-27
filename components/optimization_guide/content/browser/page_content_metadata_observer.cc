@@ -210,7 +210,17 @@ void PageContentMetadataObserver::OnTranscriptionBegin(
   DispatchMetadata();
 }
 
-void PageContentMetadataObserver::DispatchMetadata() {
+blink::mojom::PageMetadataPtr PageContentMetadataObserver::GetCurrentMetadata()
+    const {
+  auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
+  if (!primary_main_frame) {
+    return nullptr;
+  }
+  auto it = frame_data_.find(primary_main_frame);
+  if (it == frame_data_.end() || !it->second.received_initial_metadata) {
+    return nullptr;
+  }
+
   auto page_metadata = blink::mojom::PageMetadata::New();
   for (const auto& [render_frame_host, frame_data] : frame_data_) {
     if (frame_data.metadata) {
@@ -227,7 +237,11 @@ void PageContentMetadataObserver::DispatchMetadata() {
       page_metadata->frame_metadata.push_back(std::move(frame_metadata));
     }
   }
-  callback_.Run(std::move(page_metadata));
+  return page_metadata;
+}
+
+void PageContentMetadataObserver::DispatchMetadata() {
+  callback_.Run(GetCurrentMetadata());
 }
 
 void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
@@ -239,6 +253,7 @@ void PageContentMetadataObserver::OnMetaTagsChangedForFrame(
     DCHECK(render_frame_host->GetPage().IsPrimary());
     auto it = frame_data_.find(render_frame_host);
     if (it != frame_data_.end()) {
+      it->second.received_initial_metadata = true;
       if (!UpdateMediaTranscriptsFlag(it->second, render_frame_host,
                                       meta_tags)) {
         if (meta_tags.empty()) {

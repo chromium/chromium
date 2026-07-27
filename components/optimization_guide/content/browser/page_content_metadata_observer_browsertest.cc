@@ -77,6 +77,7 @@ class PageContentMetadataObserverBrowserTest
   }
 
   void OnMetaTagsChanged(blink::mojom::PageMetadataPtr page_metadata) {
+    received_metadata_null_history_.push_back(!page_metadata);
     page_metadata_ = std::move(page_metadata);
     // This may be called multiple times in some tests. Only signal the waiter
     // if it is not already ready to avoid crashing the TestFuture. The test
@@ -107,6 +108,9 @@ class PageContentMetadataObserverBrowserTest
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
   blink::mojom::PageMetadataPtr& page_metadata() { return page_metadata_; }
+  std::vector<bool>& received_metadata_null_history() {
+    return received_metadata_null_history_;
+  }
 
   std::unique_ptr<PageContentMetadataObserver> observer_;
   base::test::TestFuture<bool> callback_waiter_;
@@ -115,6 +119,7 @@ class PageContentMetadataObserverBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   blink::mojom::PageMetadataPtr page_metadata_;
+  std::vector<bool> received_metadata_null_history_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
@@ -128,6 +133,56 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   EXPECT_EQ(metadata->frame_metadata[0]->meta_tags.size(), 1u);
   EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->name, "author");
   EXPECT_EQ(metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+
+  observer_.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       GetCurrentMetadata) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+  CreateObserver();
+
+  // Wait until initial metadata is received from the primary main frame.
+  ASSERT_TRUE(callback_waiter_.Wait());
+
+  blink::mojom::PageMetadataPtr current_metadata =
+      observer_->GetCurrentMetadata();
+  ASSERT_TRUE(current_metadata);
+  EXPECT_EQ(current_metadata->frame_metadata.size(), 1u);
+  EXPECT_EQ(current_metadata->frame_metadata[0]->meta_tags.size(), 1u);
+  EXPECT_EQ(current_metadata->frame_metadata[0]->meta_tags[0]->name, "author");
+  EXPECT_EQ(current_metadata->frame_metadata[0]->meta_tags[0]->content, "Gary");
+
+  observer_.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
+                       NullptrDispatchedOnPrimaryPageChanged) {
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/meta_tags.html")));
+  CreateObserver();
+  ASSERT_TRUE(callback_waiter_.Wait());
+  EXPECT_TRUE(page_metadata());
+
+  received_metadata_null_history().clear();
+  ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
+
+  // Upon navigation (PrimaryPageChanged), the first callback must be nullptr
+  // indicating the unknown metadata state.
+  ASSERT_GE(received_metadata_null_history().size(), 1u);
+  EXPECT_TRUE(received_metadata_null_history().front());
+
+  // Depending on IPC scheduling during `NavigateToURL`, the initial metadata
+  // update for `/simple.html` may or may not have arrived yet. If it hasn't,
+  // wait for it now.
+  if (received_metadata_null_history().size() < 2u) {
+    callback_waiter_.Clear();
+    ASSERT_TRUE(callback_waiter_.Wait());
+  }
+
+  // Verify that after the initial nullptr dispatch, the second callback
+  // delivered the new page's non-null metadata once its IPC arrived.
+  ASSERT_EQ(received_metadata_null_history().size(), 2u);
+  EXPECT_FALSE(received_metadata_null_history().back());
 
   observer_.reset();
 }
@@ -424,6 +479,9 @@ IN_PROC_BROWSER_TEST_F(
           &PageContentMetadataObserverBrowserTest::OnMetaTagsChanged,
           base::Unretained(this)));
 
+  ASSERT_TRUE(callback_waiter_.Wait());
+  callback_waiter_.Clear();
+
   content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
   auto* frame_observer = MediaTranscriptObserver::GetForCurrentDocument(rfh);
   ASSERT_TRUE(frame_observer);
@@ -432,6 +490,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(callback_waiter_.Wait());
 
   blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->frame_metadata.size(), 1u);
   EXPECT_TRUE(metadata->frame_metadata.back()->has_media_transcripts);
 
@@ -453,6 +512,9 @@ IN_PROC_BROWSER_TEST_F(
           &PageContentMetadataObserverBrowserTest::OnMetaTagsChanged,
           base::Unretained(this)));
 
+  ASSERT_TRUE(callback_waiter_.Wait());
+  callback_waiter_.Clear();
+
   content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
   auto* frame_observer = MediaTranscriptObserver::GetForCurrentDocument(rfh);
   ASSERT_TRUE(frame_observer);
@@ -461,6 +523,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(callback_waiter_.Wait());
 
   blink::mojom::PageMetadataPtr& metadata = page_metadata();
+  ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->frame_metadata.size(), 2u);
 
   GURL main_url = https_server()->GetURL("a.com", "/iframe.html");

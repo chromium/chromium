@@ -87,7 +87,7 @@ void PageMetadataManager::SubscribeToPageMetadata(
   }
 
   auto on_page_metadata_changed =
-      base::BindRepeating(&PageMetadataManager::NotifyPageMetadataChanged,
+      base::BindRepeating(&PageMetadataManager::OnPageContentMetadataChanged,
                           base::Unretained(this), tab_id);
 
   auto observer =
@@ -129,7 +129,7 @@ void PageMetadataManager::OnTabWillDiscardContents(
   }
 
   auto on_page_metadata_changed =
-      base::BindRepeating(&PageMetadataManager::NotifyPageMetadataChanged,
+      base::BindRepeating(&PageMetadataManager::OnPageContentMetadataChanged,
                           base::Unretained(this), tab_id);
 
   auto observer =
@@ -148,6 +148,20 @@ void PageMetadataManager::OnTabWillDetach(
   const int32_t tab_id = tab->GetHandle().raw_value();
   NotifyPageMetadataChanged(tab_id, nullptr);
   tab_id_to_page_metadata_subscriptions_.erase(tab_id);
+}
+
+void PageMetadataManager::OnPageContentMetadataChanged(
+    int32_t tab_id,
+    blink::mojom::PageMetadataPtr page_metadata) {
+  // `PageContentMetadataObserver` dispatches null when the current page
+  // metadata state is unknown (e.g. mid-navigation). We do not forward null
+  // across Mojo because `glic_api_client.ts` interprets null as tab
+  // destruction (`observable.complete()`). We wait until the new page's
+  // initial metadata arrives from the renderer before updating the JS client.
+  if (!page_metadata) {
+    return;
+  }
+  NotifyPageMetadataChanged(tab_id, std::move(page_metadata));
 }
 
 void PageMetadataManager::NotifyPageMetadataChanged(

@@ -56,6 +56,9 @@ class PageMetadataManager {
                                 content::WebContents* new_contents);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
+  void OnPageContentMetadataChanged(
+      int32_t tab_id,
+      blink::mojom::PageMetadataPtr page_metadata);
   void NotifyPageMetadataChanged(int32_t tab_id,
                                  blink::mojom::PageMetadataPtr page_metadata);
 
