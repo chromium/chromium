@@ -1391,7 +1391,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1997616988432401742">Meine Zertifikate</translation>
 <translation id="1998715278591719161">Dürfen deine Handbewegungen verfolgen</translation>
 <translation id="1999115740519098545">Beim Start</translation>
-<translation id="1999763610967697511">Drag-and-drop</translation>
+<translation id="1999763610967697511">Drag and Drop</translation>
 <translation id="2002109485265116295">Echtzeit</translation>
 <translation id="2003130567827682533">Damit du "<ph name="NAME" />"-Daten aktivieren kannst, musst du zuerst eine Verbindung zu einem WLAN herstellen</translation>
 <translation id="2003596238737586336">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
@@ -11242,7 +11242,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9172270007201309670">Schriftgröße wurde erhöht</translation>
 <translation id="9173063514323762371">&amp;Lesezeichenleiste ausblenden</translation>
 <translation id="917350715406657904">Du hast das Zeitlimit erreicht, das deine Eltern für <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
-<translation id="9174854240439014335">Drag-and-drop für geteilte Ansicht am linken oder rechten Fensterrand zulassen</translation>
+<translation id="9174854240439014335">Drag and Drop für geteilte Ansicht am linken oder rechten Fensterrand zulassen</translation>
 <translation id="9174870712400134574">Nur auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-Gerät verbunden</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Lies die <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieser Website.</translation>

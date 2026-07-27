@@ -944,7 +944,7 @@
 <translation id="1679068421605151609">ابزار برنامه‌نویس</translation>
 <translation id="1679810534535368772">مطمئنید می‌خواهید خارج شوید؟</translation>
 <translation id="167997285881077031">تنظیمات صدای نوشتار به گفتار</translation>
-<translation id="1682195225331129001">اکنون امتحان کردن</translation>
+<translation id="1682195225331129001">امتحان کنید</translation>
 <translation id="1682548588986054654">پنجره جدید ناشناس</translation>
 <translation id="1682696837763999627">مکان‌نمای موشواره بزرگ</translation>
 <translation id="1682867089915960590">«مرور با هشتک» روشن شود؟</translation>
@@ -4469,7 +4469,7 @@
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
 <translation id="4201546031411513170">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در تنظیمات انتخاب کنید.</translation>
-<translation id="4202536110335087135">اکنون امتحان کردن</translation>
+<translation id="4202536110335087135">امتحان کنید</translation>
 <translation id="4203065553461038553">نام یا محل فایل بیش‌ازحد طولانی است</translation>
 <translation id="4203769790323223880">دوربین مجاز نیست</translation>
 <translation id="4204415812590935863">درحال‌حاضر نمی‌توان زمینه ایجاد کرد.</translation>
@@ -5594,7 +5594,7 @@
 <translation id="5024992827689317672">داده‌ها حذف شد</translation>
 <translation id="5026492829171796515">‏برای افزودن حساب Google، به سیستم وارد شوید</translation>
 <translation id="5026806129670917316">‏روشن کردن Wi-Fi</translation>
-<translation id="5026874946691314267">این مورد دیگر نشان داده نشود.</translation>
+<translation id="5026874946691314267">دوباره نشان ندادن</translation>
 <translation id="5027550639139316293">گواهی ایمیل</translation>
 <translation id="5027562294707732951">افزودن افزونه</translation>
 <translation id="502811790397568978">لطفاً قفل <ph name="TOKEN_NAME" /> را باز کنید تا بتوانید گواهینامه کارخواه را از <ph name="HOST_NAME" /> وارد کنید.</translation>
@@ -6003,7 +6003,7 @@
 <translation id="5331568967879689647">‏برنامه سیستم ChromeOS</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="5333896723098573627">‏برای حذف برنامه‌ها به «تنظیمات &gt; برنامه‌ها &gt; فروشگاه Google Play &gt; مدیریت اولویت‌های Android &gt; برنامه‌ها یا مدیر برنامه» بروید. سپس روی برنامه‌ای که می‌خواهید حذف نصب شود تک‌ضرب بزنید (ممکن است برای پیدا کردن برنامه لازم باشد صفحه را تند به راست یا چپ بکشید). سپس روی «حذف نصب» یا «غیرفعال کردن» تک‌ضرب بزنید.</translation>
-<translation id="5334113802138581043">دسترسی به میکروفون</translation>
+<translation id="5334113802138581043">دسترسی میکروفون</translation>
 <translation id="5334142896108694079">حافظه نهان اسکریپت</translation>
 <translation id="5335370353987155592">‏از Gemini با دقت و <ph name="BEGIN_LINK1" />به‌طور ایمن<ph name="LINK_END1" /> استفاده کنید. مسئولیت کنش‌های Gemini درطول انجام تکلیف، ازجمله اشتباهات و <ph name="BEGIN_LINK2" />نتایج غیرمنتظره<ph name="LINK_END2" /> مثل خریدها، برعهده شما است.</translation>
 <translation id="5336688142483283574">این صفحه از سابقه و فعالیت <ph name="SEARCH_ENGINE" /> شما هم حذف خواهد شد.</translation>
@@ -8949,7 +8949,7 @@
 <translation id="7517959947270534934">‏عضو خانواده‌تان فعلاً نمی‌تواند گذرواژه‌ها را دریافت کند. از او بخواهید Chrome را به‌روزرسانی و گذرواژه‌هایش را همگام‌سازی کند.</translation>
 <translation id="7518079994230200553">این گزینه فعلاً دردسترس نیست.</translation>
 <translation id="7520766081042531487">درگاه ناشناس: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">نمایش میان‌برها</translation>
+<translation id="752098910262610337">نشان دادن میان‌برها</translation>
 <translation id="7521430434164837205">‏فایل‌های Microsoft 365</translation>
 <translation id="7521805955117875767">نوار نشانک‌ها پنهان شد زیرا اخیراً از آن استفاده نکرده‌اید</translation>
 <translation id="7523117833414447032">هنگام خواندن حروف بزرگ</translation>
@@ -9276,7 +9276,7 @@
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">باز کردن گروه در پنجره جدید</translation>
 <translation id="7764909446494215916">‏مدیریت «حساب Google»</translation>
-<translation id="7765158879357617694">انتقال</translation>
+<translation id="7765158879357617694">حرکت دادن</translation>
 <translation id="7765507180157272835">‏بلوتوث و Wi-Fi لازم است</translation>
 <translation id="7766082757934713382">با متوقف کردن موقت به‌روزرسانی‌های خودکار سیستم و برنامه‌ها، مصرف داده شبکه را کاهش دهید</translation>
 <translation id="7766838926148951335">پذیرفتن اجازه‌ها</translation>

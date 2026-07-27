@@ -76,7 +76,7 @@
 <translation id="1047431265488717055">ਕਾਪੀ ਲਿੰਕ ਲਿ&amp;ਖਤ</translation>
 <translation id="1048986595386481879">ਗਤੀਸ਼ੀਲ ਢੰਗ ਨਾਲ ਨਿਰਧਾਰਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ}one{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ}other{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ}}</translation>
-<translation id="1049743911850919806">ਗੁਮਨਾਮ</translation>
+<translation id="1049743911850919806">ਇਨਕੋਗਨਿਟੋ</translation>
 <translation id="1049795001945932310">&amp;ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1050693411695664090">ਘਟੀਆ</translation>
 <translation id="1053226848101751430">ਇੰਦਰਾਜ ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
@@ -8689,7 +8689,7 @@
 <translation id="7339052793671338107">ਸਾਈਡ ਪੈਨਲ ਆਕਾਰ ਬਦਲਣ ਵਾਲਾ ਹੈਂਡਲ (ਘਸੀਟਣਯੋਗ)</translation>
 <translation id="7339763383339757376">PKCS #7, ਸਿੰਗਲ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="7339785458027436441">ਟਾਈਪਿੰਗ ਕਰਦੇ ਸਮੇਂ ਸਪੈਲਿੰਗ ਜਾਂਚੋ</translation>
-<translation id="7339898014177206373">ਨਵੀਂ window</translation>
+<translation id="7339898014177206373">ਨਵੀਂ ਵਿੰਡੋ</translation>
 <translation id="7340179705876485790">1 ਤੋਂ ਜ਼ਿਆਦਾ ਪੰਨੇ ਪਿੱਛੇ ਜਾਣ ਲਈ, 'ਪਿੱਛੇ ਜਾਓ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਦਬਾਈ ਰੱਖੋ।</translation>
 <translation id="7340650977506865820">ਸਾਈਟ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="734088800888587319">ਨੈੱਟਵਰਕ ਮਾਪਕ</translation>
