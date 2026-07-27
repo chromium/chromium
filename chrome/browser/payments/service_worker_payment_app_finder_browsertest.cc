@@ -40,6 +40,9 @@
 
 namespace payments {
 namespace {
+
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 static const char kDefaultScope[] = "/app1/";
 
 void GetAllInstalledPaymentAppsCallback(
@@ -129,11 +132,14 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // back via domAutomationController.
   void InstallPaymentAppInScopeForMethod(const std::string& scope,
                                          const std::string& method_name) {
-    ASSERT_TRUE(
-        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-            *browser()->tab_strip_model()->GetActiveWebContents(),
-            alicepay_.GetURL("alicepay.test", scope + "app.js"), method_name,
-            PaymentAppInstallUtil::IconInstall::kWithIcon));
+    ASSERT_TRUE(test::PaymentAppInstallUtil::
+                    InstallPaymentAppForPaymentMethodIdentifier(
+                        *browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetPrimaryMainFrame(),
+                        alicepay_.GetURL("alicepay.test", scope + "app.js"),
+                        method_name, IconInstall::kWithIcon));
   }
 
   // Retrieves all valid payment apps that can handle the methods in
@@ -913,11 +919,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
                        PaymentAppUpdatesWhenIconChanges) {
   // Start by installing the KylePay app directly, with an initial icon.
   ASSERT_TRUE(
-      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-          *browser()->tab_strip_model()->GetActiveWebContents(),
+      test::PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()
+               ->tab_strip_model()
+               ->GetActiveWebContents()
+               ->GetPrimaryMainFrame(),
           kylepay_.GetURL("kylepay.test", "/app.js"),
-          "https://kylepay.test/webpay",
-          PaymentAppInstallUtil::IconInstall::kWithIcon));
+          "https://kylepay.test/webpay", IconInstall::kWithIcon));
 
   content::InstalledPaymentAppsFinder::PaymentApps original_apps =
       GetInstalledPaymentApps();
@@ -950,11 +958,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
                        FailedIconFetchDoesNotOverrideOldIcon) {
   // Start by installing the KylePay app directly, with an initial icon.
   ASSERT_TRUE(
-      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-          *browser()->tab_strip_model()->GetActiveWebContents(),
+      test::PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()
+               ->tab_strip_model()
+               ->GetActiveWebContents()
+               ->GetPrimaryMainFrame(),
           kylepay_.GetURL("kylepay.test", "/app.js"),
-          "https://kylepay.test/webpay",
-          PaymentAppInstallUtil::IconInstall::kWithIcon));
+          "https://kylepay.test/webpay", IconInstall::kWithIcon));
 
   content::InstalledPaymentAppsFinder::PaymentApps original_apps =
       GetInstalledPaymentApps();
@@ -984,11 +994,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderMetadataRefreshBrowserTest,
   // Start by installing the KylePay app directly, without any supported
   // delegations.
   ASSERT_TRUE(
-      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-          *browser()->tab_strip_model()->GetActiveWebContents(),
+      test::PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *browser()
+               ->tab_strip_model()
+               ->GetActiveWebContents()
+               ->GetPrimaryMainFrame(),
           kylepay_.GetURL("kylepay.test", "/app.js"),
-          "https://kylepay.test/webpay",
-          PaymentAppInstallUtil::IconInstall::kWithIcon));
+          "https://kylepay.test/webpay", IconInstall::kWithIcon));
 
   content::InstalledPaymentAppsFinder::PaymentApps original_apps =
       GetInstalledPaymentApps();

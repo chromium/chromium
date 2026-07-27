@@ -79,6 +79,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       const GURL& sw_js_url,
       const GURL& sw_scope,
       const std::string& method,
+      GlobalRenderFrameHostId requesting_frame_id,
       base::OnceCallback<void(bool success)> callback) override;
 
  private:

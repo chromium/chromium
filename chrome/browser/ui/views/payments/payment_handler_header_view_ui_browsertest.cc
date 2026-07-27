@@ -18,6 +18,8 @@
 namespace payments {
 namespace {
 
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
  public:
   PaymentHandlerHeaderViewUITest() = default;
@@ -217,10 +219,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
   // Install a payment app with a large icon that will be sized down at render.
-  std::string method_name = PaymentAppInstallUtil::InstallPaymentApp(
-      *GetActiveWebContents(), *https_server(), "a.com",
-      "/payment_handler_sw.js",
-      PaymentAppInstallUtil::IconInstall::kWithLargeIcon);
+  std::string method_name = test::PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents()->GetPrimaryMainFrame(), *https_server(), "a.com",
+      "/payment_handler_sw.js", IconInstall::kWithLargeIcon);
 
   // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
   // web-contents that has set a title.

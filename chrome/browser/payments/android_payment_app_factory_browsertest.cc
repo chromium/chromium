@@ -17,6 +17,8 @@
 namespace payments {
 namespace {
 
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 struct [[maybe_unused]] ScopedTestSupport {
 #if BUILDFLAG(IS_CHROMEOS)
   // Invoking Play Billing on Chrome OS requires initializing the overlay
@@ -52,11 +54,11 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
   GURL service_worker_javascript_file_url =
       https_server()->GetURL("a.com", "/alicepay.test/app1/app.js");
   ASSERT_TRUE(
-      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-          *GetActiveWebContents(),
+      test::PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *GetActiveWebContents()->GetPrimaryMainFrame(),
           service_worker_javascript_file_url,
           /*payment_method_identifier=*/"https://play.google.com/billing",
-          PaymentAppInstallUtil::IconInstall::kWithIcon));
+          IconInstall::kWithIcon));
 
   NavigateTo("b.com", "/can_make_payment_checker.html");
   ASSERT_EQ("false", content::EvalJs(

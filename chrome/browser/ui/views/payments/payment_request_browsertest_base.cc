@@ -60,6 +60,8 @@ namespace payments {
 
 namespace {
 
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 // This is preferred to SelectValue, since only SetSelectedRow fires the events
 // as if done by a user.
 void SelectComboboxRowForValue(views::Combobox* combobox,
@@ -336,9 +338,9 @@ void PaymentRequestBrowserTestBase::InstallPaymentApp(
     const std::string& hostname,
     const std::string& service_worker_filename,
     std::string* url_method_output) {
-  *url_method_output = PaymentAppInstallUtil::InstallPaymentApp(
-      *GetActiveWebContents(), *https_server(), hostname,
-      service_worker_filename, PaymentAppInstallUtil::IconInstall::kWithIcon);
+  *url_method_output = test::PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents()->GetPrimaryMainFrame(), *https_server(), hostname,
+      service_worker_filename, IconInstall::kWithIcon);
   ASSERT_FALSE(url_method_output->empty()) << "Failed to install payment app";
 }
 
@@ -346,10 +348,9 @@ void PaymentRequestBrowserTestBase::InstallPaymentAppWithoutIcon(
     const std::string& hostname,
     const std::string& service_worker_filename,
     std::string* url_method_output) {
-  *url_method_output = PaymentAppInstallUtil::InstallPaymentApp(
-      *GetActiveWebContents(), *https_server(), hostname,
-      service_worker_filename,
-      PaymentAppInstallUtil::IconInstall::kWithoutIcon);
+  *url_method_output = test::PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents()->GetPrimaryMainFrame(), *https_server(), hostname,
+      service_worker_filename, IconInstall::kWithoutIcon);
   ASSERT_FALSE(url_method_output->empty()) << "Failed to install payment app";
 }
 

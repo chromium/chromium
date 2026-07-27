@@ -110,6 +110,7 @@ class CONTENT_EXPORT PaymentAppProvider {
       const GURL& service_worker_javascript_file_url,
       const GURL& service_worker_scope,
       const std::string& payment_method_identifier,
+      GlobalRenderFrameHostId requesting_frame_id,
       base::OnceCallback<void(bool success)> callback) = 0;
 
  protected:

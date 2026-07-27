@@ -125,6 +125,7 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
             /*service_worker_scope=*/
             service_worker_javascript_file_url.GetWithoutFilename(),
             /*payment_method_identifier=*/"https://bobpay.com",
+            shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
             base::BindOnce(&OnPaymentAppInstall, run_loop.QuitClosure(),
                            &success));
     run_loop.Run();

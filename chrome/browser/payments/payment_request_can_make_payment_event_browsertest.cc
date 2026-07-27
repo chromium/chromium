@@ -11,6 +11,8 @@
 
 namespace payments {
 
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 using PaymentRequestCanMakePaymentEventTest =
     PaymentRequestPlatformBrowserTestBase;
 
@@ -32,11 +34,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentEventTest, OneUrl) {
 // payment method.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentEventTest, OneStandard) {
   ASSERT_TRUE(
-      PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-          *GetActiveWebContents(),
+      test::PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
+          *GetActiveWebContents()->GetPrimaryMainFrame(),
           https_server()->GetURL("a.com",
                                  "/can_make_payment_true_responder.js"),
-          "interledger", PaymentAppInstallUtil::IconInstall::kWithIcon));
+          "interledger", IconInstall::kWithIcon));
 
   NavigateTo("b.com", "/has_enrolled_instrument_checker.html");
   EXPECT_EQ("false", content::EvalJs(GetActiveWebContents(),

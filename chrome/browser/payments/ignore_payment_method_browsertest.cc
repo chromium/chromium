@@ -15,6 +15,8 @@
 namespace payments {
 namespace {
 
+using IconInstall = test::PaymentAppInstallUtil::IconInstall;
+
 class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
  protected:
   void SetUpOnMainThread() override {
@@ -25,10 +27,11 @@ class IgnorePaymentMethodTest : public PaymentRequestPlatformBrowserTestBase {
   }
 
   void InstallTestPaymentHandler(const std::string& file_name) {
-    ASSERT_TRUE(
-        PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
-            *GetActiveWebContents(), https_server()->GetURL("a.com", file_name),
-            method_name_, PaymentAppInstallUtil::IconInstall::kWithIcon));
+    ASSERT_TRUE(test::PaymentAppInstallUtil::
+                    InstallPaymentAppForPaymentMethodIdentifier(
+                        *GetActiveWebContents()->GetPrimaryMainFrame(),
+                        https_server()->GetURL("a.com", file_name),
+                        method_name_, IconInstall::kWithIcon));
   }
 
   void VerifyFunctionOutput(const std::string& expected_return_value,

@@ -318,14 +318,14 @@ void PaymentAppProviderImpl::InstallPaymentAppForTesting(
     const GURL& service_worker_javascript_file_url,
     const GURL& service_worker_scope,
     const std::string& payment_method_identifier,
+    GlobalRenderFrameHostId requesting_frame_id,
     base::OnceCallback<void(bool success)> callback) {
   CHECK(service_worker_javascript_file_url.is_valid());
   CHECK(service_worker_scope.is_valid());
   CHECK(!payment_method_identifier.empty());
 
   PaymentAppInstaller::Install(
-      payment_request_web_contents_,
-      payment_request_web_contents_->GetPrimaryMainFrame()->GetGlobalId(),
+      payment_request_web_contents_, requesting_frame_id,
       /*app_name=*/"Test App Name", EncodeIcon(app_icon),
       service_worker_javascript_file_url, service_worker_scope,
       /*use_cache=*/false, payment_method_identifier,

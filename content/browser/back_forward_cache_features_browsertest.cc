@@ -1647,6 +1647,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           service_worker_javascript_file_url.GetWithoutFilename(),
           /*payment_method_identifier=*/
           url::Origin::Create(service_worker_javascript_file_url).Serialize(),
+          shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
           base::BindOnce(&OnInstallPaymentApp, run_loop.QuitClosure(),
                          &success));
   run_loop.Run();
