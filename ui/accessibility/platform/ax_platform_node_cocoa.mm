@@ -1076,7 +1076,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 - (NSString*)getAXValueAsString {
   id value = [self AXValue];
-  return [value isKindOfClass:[NSString class]] ? value : nil;
+  return base::apple::ObjCCast<NSString>(value);
 }
 
 - (ax::mojom::Role)internalRole {
@@ -2703,8 +2703,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
-  if (![parameter isKindOfClass:[NSValue class]])
+  NSValue* value = base::apple::ObjCCast<NSValue>(parameter);
+  if (!value) {
     return nil;
+  }
+  NSRange range = value.rangeValue;
 
   // TODO(crbug.com/41456329): Finish implementation.
   // Currently, we only decorate the attributed string with misspelling
@@ -2713,7 +2716,6 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // decorations, and BridgedContentView has a conversion function that creates
   // an NSAttributedString. Refactor things so they can be used here.
 
-  NSRange range = [(NSValue*)parameter rangeValue];
   std::u16string textContent;
   if (ui::IsNameExposedInAXValueForRole(_node->GetRole())) {
     textContent = base::SysNSStringToUTF16([self getAXValueAsString]);
@@ -2721,8 +2723,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     textContent = _node->GetTextContentUTF16();
   }
 
-  if (NSMaxRange(range) > textContent.length())
+  if (NSMaxRange(range) > textContent.length()) {
     return nil;
+  }
 
   // We potentially need to add text attributes to the whole text content
   // because a spelling mistake might start or end outside the given range.
@@ -2977,13 +2980,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   data.action = _node->GetRole() == ax::mojom::Role::kTab
                     ? ax::mojom::Action::kSetSelection
                     : ax::mojom::Action::kSetValue;
-  if ([value isKindOfClass:[NSString class]]) {
-    data.value = base::SysNSStringToUTF8(value);
-  } else if ([value isKindOfClass:[NSValue class]]) {
+  if (NSString* stringValue = base::apple::ObjCCast<NSString>(value)) {
+    data.value = base::SysNSStringToUTF8(stringValue);
+  } else if (NSValue* valueValue = base::apple::ObjCCast<NSValue>(value)) {
     // TODO(crbug.com/41115917): Is this case actually needed? The
     // NSObject accessibility implementation supported this, but can it actually
     // occur?
-    NSRange range = [value rangeValue];
+    NSRange range = valueValue.rangeValue;
     data.anchor_offset = range.location;
     data.focus_offset = NSMaxRange(range);
   }

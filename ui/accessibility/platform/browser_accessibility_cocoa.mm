@@ -6,7 +6,7 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <Availability.h>
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #include <execinfo.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -297,36 +297,36 @@ AccessibilityMatchPredicate PredicateForSearchKey(NSString* searchKey) {
 // AXUIElementsForSearchPredicate. Return true on success.
 bool InitializeAccessibilityTreeSearch(OneShotAccessibilityTreeSearch* search,
                                        id parameter) {
-  if (![parameter isKindOfClass:[NSDictionary class]])
+  NSDictionary* dictionary = base::apple::ObjCCast<NSDictionary>(parameter);
+  if (!dictionary) {
     return false;
-  NSDictionary* dictionary = parameter;
+  }
 
-  id startElementParameter =
-      [dictionary objectForKey:NSAccessibilitySearchCurrentElementKey];
-  if ([startElementParameter isKindOfClass:[BrowserAccessibilityCocoa class]]) {
-    BrowserAccessibilityCocoa* startNodeCocoa =
-        (BrowserAccessibilityCocoa*)startElementParameter;
-    search->SetStartNode([startNodeCocoa owner]);
+  BrowserAccessibilityCocoa* startElementParameter =
+      base::apple::ObjCCast<BrowserAccessibilityCocoa>(
+          dictionary[NSAccessibilitySearchCurrentElementKey]);
+  if (startElementParameter) {
+    search->SetStartNode([startElementParameter owner]);
   }
 
   bool immediateDescendantsOnly = false;
-  NSNumber* immediateDescendantsOnlyParameter =
-      [dictionary objectForKey:@"AXImmediateDescendantsOnly"];
-  if ([immediateDescendantsOnlyParameter isKindOfClass:[NSNumber class]])
-    immediateDescendantsOnly = [immediateDescendantsOnlyParameter boolValue];
+  if (NSNumber* immediateDescendantsOnlyParameter =
+          base::apple::ObjCCast<NSNumber>(
+              dictionary[@"AXImmediateDescendantsOnly"])) {
+    immediateDescendantsOnly = immediateDescendantsOnlyParameter.boolValue;
+  }
 
   bool onscreenOnly = false;
   // AXVisibleOnly actually means onscreen objects only -- nothing scrolled off.
-  NSNumber* onscreenOnlyParameter = [dictionary objectForKey:@"AXVisibleOnly"];
-  if ([onscreenOnlyParameter isKindOfClass:[NSNumber class]]) {
-    onscreenOnly = [onscreenOnlyParameter boolValue];
+  if (NSNumber* onscreenOnlyParameter =
+          base::apple::ObjCCast<NSNumber>(dictionary[@"AXVisibleOnly"])) {
+    onscreenOnly = onscreenOnlyParameter.boolValue;
   }
 
   ui::OneShotAccessibilityTreeSearch::Direction direction =
       ui::OneShotAccessibilityTreeSearch::FORWARDS;
-  NSString* directionParameter =
-      [dictionary objectForKey:NSAccessibilitySearchDirectionKey];
-  if ([directionParameter isKindOfClass:[NSString class]]) {
+  if (NSString* directionParameter = base::apple::ObjCCast<NSString>(
+          dictionary[NSAccessibilitySearchDirectionKey])) {
     if ([directionParameter
             isEqualToString:NSAccessibilitySearchDirectionNext]) {
       direction = ui::OneShotAccessibilityTreeSearch::FORWARDS;
@@ -337,16 +337,14 @@ bool InitializeAccessibilityTreeSearch(OneShotAccessibilityTreeSearch* search,
   }
 
   int resultsLimit = kAXResultsLimitNoLimit;
-  NSNumber* resultsLimitParameter =
-      [dictionary objectForKey:NSAccessibilitySearchResultsLimitKey];
-  if ([resultsLimitParameter isKindOfClass:[NSNumber class]]) {
-    resultsLimit = [resultsLimitParameter intValue];
+  if (NSNumber* resultsLimitParameter = base::apple::ObjCCast<NSNumber>(
+          dictionary[NSAccessibilitySearchResultsLimitKey])) {
+    resultsLimit = resultsLimitParameter.intValue;
   }
 
   std::string searchText;
-  NSString* searchTextParameter =
-      [dictionary objectForKey:NSAccessibilitySearchTextKey];
-  if ([searchTextParameter isKindOfClass:[NSString class]]) {
+  if (NSString* searchTextParameter = base::apple::ObjCCast<NSString>(
+          dictionary[NSAccessibilitySearchTextKey])) {
     searchText = base::SysNSStringToUTF8(searchTextParameter);
   }
 
@@ -358,24 +356,27 @@ bool InitializeAccessibilityTreeSearch(OneShotAccessibilityTreeSearch* search,
   // Mac uses resultsLimit == -1 for unlimited, that that's
   // the default for OneShotAccessibilityTreeSearch already.
   // Only set the results limit if it's nonnegative.
-  if (resultsLimit >= 0)
+  if (resultsLimit >= 0) {
     search->SetResultLimit(resultsLimit);
+  }
 
   id searchKey = [dictionary objectForKey:NSAccessibilitySearchIdentifiersKey];
-  if ([searchKey isKindOfClass:[NSString class]]) {
+  if (NSString* searchKeyString = base::apple::ObjCCast<NSString>(searchKey)) {
     AccessibilityMatchPredicate predicate =
-        PredicateForSearchKey((NSString*)searchKey);
-    if (predicate)
+        PredicateForSearchKey(searchKeyString);
+    if (predicate) {
       search->AddPredicate(predicate);
-  } else if ([searchKey isKindOfClass:[NSArray class]]) {
-    size_t searchKeyCount = static_cast<size_t>([searchKey count]);
-    for (size_t i = 0; i < searchKeyCount; ++i) {
-      id key = [searchKey objectAtIndex:i];
-      if ([key isKindOfClass:[NSString class]]) {
+    }
+  } else if (NSArray* searchKeyArray =
+                 base::apple::ObjCCast<NSArray>(searchKey)) {
+    for (id searchItem in searchKeyArray) {
+      if (NSString* searchItemString =
+              base::apple::ObjCCast<NSString>(searchItem)) {
         AccessibilityMatchPredicate predicate =
-            PredicateForSearchKey((NSString*)key);
-        if (predicate)
+            PredicateForSearchKey(searchItemString);
+        if (predicate) {
           search->AddPredicate(predicate);
+        }
       }
     }
   }
@@ -1368,12 +1369,13 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   }
 
   // Check direct children for menu items.
-  for (id child in [self accessibilityChildren]) {
-    if (![child isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+  for (id child in self.accessibilityChildren) {
+    BrowserAccessibilityCocoa* childCocoa =
+        base::apple::ObjCCast<BrowserAccessibilityCocoa>(child);
+    if (!childCocoa) {
       continue;
     }
 
-    BrowserAccessibilityCocoa* childCocoa = (BrowserAccessibilityCocoa*)child;
     ax::mojom::Role childRole = [childCocoa internalRole];
     // Check if child is a menu item.
     if (ui::IsMenuItem(childRole)) {
@@ -1387,13 +1389,13 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     }
 
     // Check grandchildren in groups for menu items.
-    for (id grandchild in [childCocoa accessibilityChildren]) {
-      if (![grandchild isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+    for (id grandchild in childCocoa.accessibilityChildren) {
+      BrowserAccessibilityCocoa* grandchildCocoa =
+          base::apple::ObjCCast<BrowserAccessibilityCocoa>(grandchild);
+      if (!grandchildCocoa) {
         continue;
       }
 
-      BrowserAccessibilityCocoa* grandchildCocoa =
-          (BrowserAccessibilityCocoa*)grandchild;
       if (ui::IsMenuItem([grandchildCocoa internalRole])) {
         return YES;
       }
@@ -2105,17 +2107,18 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
           isEqualToString:
               CFToNSPtrCast(
                   kAXTextMarkerRangeForUIElementParameterizedAttribute)]) {
-    if (![parameter isKindOfClass:[AXPlatformNodeCocoa class]]) {
+    BrowserAccessibilityCocoa* parameterCocoa =
+        base::apple::ObjCCast<BrowserAccessibilityCocoa>(parameter);
+    if (!parameterCocoa) {
       return nil;
     }
 
-    BrowserAccessibility* parameter_owner =
-        [(BrowserAccessibilityCocoa*)parameter owner];
-    if (!parameter_owner) {
+    BrowserAccessibility* parameterOwner = [parameterCocoa owner];
+    if (!parameterOwner) {
       return nil;
     }
 
-    AXPosition startPosition = parameter_owner->CreateTextPositionAt(0);
+    AXPosition startPosition = parameterOwner->CreateTextPositionAt(0);
     AXPosition endPosition = startPosition->CreatePositionAtEndOfAnchor();
     AXRange range = AXRange(std::move(startPosition), std::move(endPosition));
     return AXRangeToAXTextMarkerRange(std::move(range));
@@ -2612,19 +2615,22 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if ([attribute
           isEqualToString:
               NSAccessibilityIndexForChildUIElementParameterizedAttribute]) {
-    if (![parameter isKindOfClass:[AXPlatformNodeCocoa class]])
+    BrowserAccessibilityCocoa* parameterCocoa =
+        base::apple::ObjCCast<BrowserAccessibilityCocoa>(parameter);
+    if (!parameterCocoa) {
       return nil;
+    }
 
-    BrowserAccessibilityCocoa* childCocoaObj =
-        (BrowserAccessibilityCocoa*)parameter;
-    BrowserAccessibility* child = [childCocoaObj owner];
-    if (!child)
+    BrowserAccessibility* parameterOwner = [parameterCocoa owner];
+    if (!parameterOwner) {
       return nil;
+    }
 
-    if (child->PlatformGetParent() != _owner)
+    if (parameterOwner->PlatformGetParent() != _owner) {
       return nil;
+    }
 
-    return @(child->GetIndexInParent().value());
+    return @(parameterOwner->GetIndexInParent().value());
   }
 
   if (features::IsMacAccessibilityTextOperationEnabled()) {
@@ -2638,18 +2644,20 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 }
 
 - (NSArray<NSString*>*)handleTextOperation:(id)parameter {
-  if (![parameter isKindOfClass:[NSDictionary class]]) {
+  NSDictionary* dict = base::apple::ObjCCast<NSDictionary>(parameter);
+  if (!dict) {
     return nil;
   }
 
-  NSDictionary* dict = parameter;
-  NSString* operationType = dict[@"AXTextOperationType"];
-  if (![operationType isKindOfClass:[NSString class]]) {
+  NSString* operationType =
+      base::apple::ObjCCast<NSString>(dict[@"AXTextOperationType"]);
+  if (!operationType) {
     return nil;
   }
 
-  NSArray* ranges = dict[@"AXTextOperationMarkerRanges"];
-  if (![ranges isKindOfClass:[NSArray class]] || !ranges.count) {
+  NSArray* ranges =
+      base::apple::ObjCCast<NSArray>(dict[@"AXTextOperationMarkerRanges"]);
+  if (!ranges.count) {
     return nil;
   }
 
@@ -2658,8 +2666,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
   if ([operationType isEqualToString:@"TextOperationReplace"] ||
       [operationType isEqualToString:@"TextOperationReplacePreserveCase"]) {
-    replacementStrings = dict[@"AXTextOperationIndividualReplacementStrings"];
-    if ([replacementStrings isKindOfClass:[NSArray class]]) {
+    replacementStrings = base::apple::ObjCCast<NSArray>(
+        dict[@"AXTextOperationIndividualReplacementStrings"]);
+    if (replacementStrings) {
       // The count of individual replacement strings must match the count of the
       // provided ranges for a valid text operation request.
       if (replacementStrings.count != count) {
@@ -2675,8 +2684,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
       // When individual replacement strings aren't provided, we check for a
       // single replacement string that is applied to all of the ranges. This
       // matches WebKit's behavior at the time of writing.
-      NSString* replacementString = dict[@"AXTextOperationReplacementString"];
-      if (![replacementString isKindOfClass:[NSString class]]) {
+      NSString* replacementString = base::apple::ObjCCast<NSString>(
+          dict[@"AXTextOperationReplacementString"]);
+      if (!replacementString) {
         return nil;
       }
 
