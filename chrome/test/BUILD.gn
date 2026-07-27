@@ -1785,6 +1785,7 @@ if (is_android) {
         "//components/webxr/android:xr_java",
         "//device/vr",
         "//device/vr:openxr_data",
+        "//device/vr:openxr_test_helper",
         "//device/vr:vr_test_hook",
         "//device/vr/buildflags",
         "//device/vr/orientation",

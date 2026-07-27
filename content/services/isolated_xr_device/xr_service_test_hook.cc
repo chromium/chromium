@@ -11,7 +11,8 @@
 
 #if BUILDFLAG(ENABLE_OPENXR)
 #include "device/vr/openxr/openxr_api_wrapper.h"
-#endif  // BUIDLFLAG(ENABLE_OPENXR)
+#include "device/vr/test/test_hook.h"
+#endif  // BUILDFLAG(ENABLE_OPENXR)
 
 namespace {
 
@@ -36,6 +37,9 @@ void XRServiceTestHook::SetTestHook(
            : nullptr;
 
 #if BUILDFLAG(ENABLE_OPENXR)
+  if (wrapper) {
+    device::ServiceTestHook::MaybeInitializeOpenXrMockTrampoline();
+  }
   OpenXrApiWrapper::SetTestHook(wrapper.get());
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 

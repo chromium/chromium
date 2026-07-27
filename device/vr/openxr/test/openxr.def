@@ -4,3 +4,4 @@
 
 EXPORTS
   xrNegotiateLoaderRuntimeInterface
+  SetMockOpenXrDispatchTable

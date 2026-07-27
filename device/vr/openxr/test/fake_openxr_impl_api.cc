@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/vr/openxr/test/fake_openxr_impl_api.h"
+
 #include <algorithm>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/test/openxr_mock_helper.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <wrl.h>
 #endif
+
+namespace openxr_mock {
 
 namespace {
 // Global test helper that communicates with the test and contains the mock
@@ -1404,3 +1409,9 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
 }
 
 #undef TRY_LOAD_METHOD
+
+}  // namespace openxr_mock
+
+PFN_xrGetInstanceProcAddr GetMockXrGetInstanceProcAddr() {
+  return &openxr_mock::xrGetInstanceProcAddr;
+}

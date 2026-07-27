@@ -45,9 +45,14 @@ class VRTestHook {
   virtual void DetachCurrentThread() = 0;
 };
 
-class ServiceTestHook {
+class COMPONENT_EXPORT(VR_TEST_HOOK) ServiceTestHook {
  public:
   virtual void SetTestHook(VRTestHook*) = 0;
+
+  typedef bool (*InitializeOpenXrMockTrampolineFn)();
+  static void RegisterInitializeOpenXrMockTrampolineFn(
+      InitializeOpenXrMockTrampolineFn fn);
+  static void MaybeInitializeOpenXrMockTrampoline();
 };
 
 }  // namespace device
