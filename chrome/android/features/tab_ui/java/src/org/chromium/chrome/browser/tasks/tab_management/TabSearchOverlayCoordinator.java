@@ -15,6 +15,7 @@ import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
@@ -81,6 +83,10 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final @Nullable EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final BackPressManager mBackPressManager;
+    private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    // Recursion guard to prevent event dispatch loops when forwarding scrim scroll/drag events
+    // to the underlying compositor view hierarchy.
+    private boolean mIsForwardingScroll;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final PropertyModel mModel;
@@ -119,7 +125,8 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
-            BackPressManager backPressManager) {
+            BackPressManager backPressManager,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mParentContainer = parentContainer;
         mWindowAndroid = windowAndroid;
@@ -130,6 +137,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
         mBackPressManager = backPressManager;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
 
         mModel = TabSearchOverlayProperties.createDefaultModel();
@@ -193,6 +201,24 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         panelView.setOnHoverListener(this::consumeMotionEvent);
         panelView.setOnGenericMotionListener(this::consumeMotionEvent);
         panelView.setOnContextClickListener(this::consumeContextClick);
+
+        // Set up listeners on the scrim view to forward scroll and drag events to the
+        // underlying web contents page, which is managed by the compositor view.
+        View scrimView = panelContainer.findViewById(R.id.tab_search_overlay_scrim);
+        float touchSlop = ViewConfiguration.get(mActivity).getScaledTouchSlop();
+        // Forward standard touch screen gestures (e.g. scroll/drag) to the compositor.
+        scrimView.setOnTouchListener(new ScrimTouchForwarder(touchSlop));
+        // Forward mouse scroll wheel and trackpad scroll gestures to the compositor.
+        scrimView.setOnGenericMotionListener(
+                (v, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_SCROLL) {
+                        if (mIsForwardingScroll) {
+                            return false;
+                        }
+                        return forwardEvent(v, event, false);
+                    }
+                    return false;
+                });
 
         if (mSearchUiCoordinator == null) {
             mSearchUiCoordinator = new SearchUiCoordinator(mActivity, mSearchBoxDataProvider);
@@ -407,6 +433,173 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
     @Override
     public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
+    }
+
+    /**
+     * Translates coordinates and forwards a MotionEvent to the underlying CompositorViewHolder.
+     *
+     * @param v The view that received the event (scrim).
+     * @param event The original MotionEvent.
+     * @param isTouchEvent True if this is a standard touch event, false if generic motion (scroll).
+     * @return True if the event was handled by the compositor, false otherwise.
+     */
+    private boolean forwardEvent(View v, MotionEvent event, boolean isTouchEvent) {
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (compositorViewHolder == null) {
+            return false;
+        }
+
+        // Get window locations of both the scrim and the compositor views to compute coordinate
+        // translation offset.
+        int[] scrimLocation = new int[2];
+        v.getLocationInWindow(scrimLocation);
+        int[] targetLocation = new int[2];
+        compositorViewHolder.getLocationInWindow(targetLocation);
+
+        // Copy and offset the event coordinates to match the CompositorViewHolder's coordinate
+        // space.
+        MotionEvent offsetEvent = MotionEvent.obtain(event);
+        offsetEvent.offsetLocation(
+                scrimLocation[0] - targetLocation[0], scrimLocation[1] - targetLocation[1]);
+
+        // Dispatch the translated event using a recursion guard to prevent dispatch loops.
+        mIsForwardingScroll = true;
+        boolean handled =
+                isTouchEvent
+                        ? compositorViewHolder.dispatchTouchEvent(offsetEvent)
+                        : compositorViewHolder.dispatchGenericMotionEvent(offsetEvent);
+        mIsForwardingScroll = false;
+        offsetEvent.recycle();
+        return handled;
+    }
+
+    /**
+     * Touch listener for the overlay scrim that forwards drag/scroll events to the underlying
+     * compositor webpage view, while preserving standard tap-to-dismiss clicks on the scrim. This
+     * listener primarily handles touchscreen gestures (finger dragging and tapping).
+     */
+    private class ScrimTouchForwarder implements View.OnTouchListener {
+        private final float mTouchSlop;
+        private float mTouchDownX;
+        private float mTouchDownY;
+        private boolean mIsDragging;
+        // Stores a copy of the ACTION_DOWN event. Deferring the dispatch of ACTION_DOWN to the
+        // background view avoids clearing search box focus while the tap gesture is in-flight. If
+        // focus is cleared immediately (on touch down), the suggestions list hides or the keyboard
+        // is dismissed, triggering a layout pass or window resize layout shift. This layout shift
+        // causes Android to send an ACTION_CANCEL to the scrim, swallowing the subsequent ACTION_UP
+        // and preventing the scrim click (panel dismissal) from triggering. If the gesture is
+        // confirmed as a drag, we replay this saved event before forwarding MOVE events so the
+        // background compositor receives a complete gesture stream.
+        private @Nullable MotionEvent mPendingDownEvent;
+
+        /**
+         * Constructs a new ScrimTouchForwarder.
+         *
+         * @param touchSlop The minimum distance a touch gesture must travel to be considered drag.
+         */
+        public ScrimTouchForwarder(float touchSlop) {
+            mTouchSlop = touchSlop;
+        }
+
+        /**
+         * Intercepts and processes touchscreen motion events on the scrim view.
+         *
+         * @param v The view that received the event (scrim).
+         * @param event The touch event being processed.
+         * @return True if the event was handled (consumed), false otherwise.
+         */
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            // Recursion guard to ignore events dispatched back from the compositor hierarchy.
+            if (mIsForwardingScroll) {
+                return false;
+            }
+
+            int action = event.getActionMasked();
+
+            // Start of gesture: record initial down location and save a copy of the down event.
+            // Defer forwarding to prevent focus loss and layout shifts (e.g. from hiding
+            // suggestions or keyboard) from cancelling the click gesture on simple taps.
+            if (action == MotionEvent.ACTION_DOWN) {
+                mTouchDownX = event.getX();
+                mTouchDownY = event.getY();
+                mIsDragging = false;
+                clearPendingDownEvent();
+                mPendingDownEvent = MotionEvent.obtain(event);
+                return true;
+            }
+
+            // Gesture movement: check if distance traveled exceeds the touch-slop threshold.
+            // If it does, classify the gesture as a drag and forward the move events.
+            if (action == MotionEvent.ACTION_MOVE) {
+                if (!mIsDragging) {
+                    float dx = event.getX() - mTouchDownX;
+                    float dy = event.getY() - mTouchDownY;
+                    if (Math.hypot(dx, dy) > mTouchSlop) {
+                        mIsDragging = true;
+                        // Drag confirmed: replay the saved DOWN event first so the compositor view
+                        // starts the touch gesture correctly before receiving movement.
+                        if (mPendingDownEvent != null) {
+                            forwardEvent(v, mPendingDownEvent, true);
+                            clearPendingDownEvent();
+                        }
+                    }
+                }
+                if (mIsDragging) {
+                    forwardEvent(v, event, true);
+                }
+                return true;
+            }
+
+            // End of gesture:
+            if (action == MotionEvent.ACTION_UP) {
+                if (mIsDragging) {
+                    // If dragging/scrolling, forward the final UP event to finish the scroll.
+                    forwardEvent(v, event, true);
+                } else {
+                    // Tap detected: Since we never forwarded the DOWN event, we do not need to send
+                    // a CANCEL event to the compositor. Recycle the pending event.
+                    clearPendingDownEvent();
+
+                    // Call performClick to natively invoke the registered onClickListener (which
+                    // dismisses/hides the overlay) and notify accessibility services of the tap.
+                    v.performClick();
+                }
+                mIsDragging = false;
+                return true;
+            }
+
+            // Cancel event: Forward cancel events directly to keep background view state in
+            // sync if we were already dragging, otherwise discard the pending down event.
+            if (action == MotionEvent.ACTION_CANCEL) {
+                if (mIsDragging) {
+                    forwardEvent(v, event, true);
+                }
+                clearPendingDownEvent();
+                mIsDragging = false;
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Recycles the cached {@link #mPendingDownEvent} and clears the reference.
+         *
+         * <p>MotionEvents in Android are pooled by the system. If we copy an event using {@link
+         * MotionEvent#obtain(MotionEvent)}, we must release it back to the pool by calling {@link
+         * MotionEvent#recycle()} when done to prevent memory leaks. This helper ensures the cached
+         * event is safely recycled and nullified when the gesture ends (via UP or CANCEL), when a
+         * new touch sequence begins (via DOWN), or when the deferred DOWN event is successfully
+         * forwarded.
+         */
+        private void clearPendingDownEvent() {
+            if (mPendingDownEvent != null) {
+                mPendingDownEvent.recycle();
+                mPendingDownEvent = null;
+            }
+        }
     }
 
     // Testing methods.

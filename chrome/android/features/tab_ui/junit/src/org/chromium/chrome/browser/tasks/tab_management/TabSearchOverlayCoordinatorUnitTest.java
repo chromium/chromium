@@ -12,6 +12,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -68,6 +72,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabSearchOverlayCoordinator}. */
@@ -94,6 +99,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private BackPressManager mBackPressManager;
+    @Mock private CompositorViewHolder mCompositorViewHolder;
+
     private final SettableNonNullObservableSupplier<Boolean> mSuggestionsListNonEmptySupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -101,6 +108,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
+
     @Captor private ArgumentCaptor<OverrideUrlLoadingDelegate> mOverrideUrlLoadingDelegateCaptor;
     @Captor private ArgumentCaptor<Callback<String>> mBringTabGroupToFrontCallbackCaptor;
 
@@ -134,7 +142,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
                         /* edgeToEdgeSystemBarColorHelper= */ null,
-                        mBackPressManager);
+                        mBackPressManager,
+                        ObservableSuppliers.createNonNull(mCompositorViewHolder));
         mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
 
         // Inflate the overlay and initialize member views.
@@ -412,5 +421,165 @@ public class TabSearchOverlayCoordinatorUnitTest {
                 mCoordinator
                         .getModelForTesting()
                         .get(TabSearchOverlayProperties.EMPTY_STATE_VISIBLE));
+    }
+
+    @Test
+    public void testScrimScrollForwardedToCompositorViewHolder() {
+        showOverlay();
+        MotionEvent scrollEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 100f, 150f, 0);
+        mScrim.dispatchGenericMotionEvent(scrollEvent);
+
+        ArgumentCaptor<MotionEvent> eventCaptor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mCompositorViewHolder).dispatchGenericMotionEvent(eventCaptor.capture());
+
+        MotionEvent forwardedEvent = eventCaptor.getValue();
+        assertEquals(100f, forwardedEvent.getX(), 0.01f);
+        assertEquals(150f, forwardedEvent.getY(), 0.01f);
+        scrollEvent.recycle();
+    }
+
+    @Test
+    public void testScrimScrollForwarding_RecursionGuard() {
+        showOverlay();
+
+        // Configure mock CompositorViewHolder to dispatch back to the scrim
+        // when receiving the event. This simulates the ViewGroup hierarchy
+        // traversing and trying to dispatch the transformed event to its child (scrim).
+        doAnswer(
+                        invocation -> {
+                            MotionEvent event = invocation.getArgument(0);
+                            return mScrim.dispatchGenericMotionEvent(event);
+                        })
+                .when(mCompositorViewHolder)
+                .dispatchGenericMotionEvent(any(MotionEvent.class));
+
+        MotionEvent scrollEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_SCROLL, 100f, 150f, 0);
+
+        // This call should terminate successfully (no StackOverflowError)
+        // and return false since the recursion was blocked and the target view (mock)
+        // returned false to the recursive dispatch.
+        assertFalse(mScrim.dispatchGenericMotionEvent(scrollEvent));
+
+        scrollEvent.recycle();
+    }
+
+    @Test
+    public void testScrimTouchForwardedToCompositorViewHolder_Drag() {
+        showOverlay();
+
+        // 1. Send ACTION_DOWN (touch start) - should be deferred and NOT forwarded yet.
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(downEvent);
+
+        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+
+        // 2. Send ACTION_MOVE beyond touch slop (e.g., dx = 100f) to trigger drag.
+        // This should trigger forwarding both the saved ACTION_DOWN and current ACTION_MOVE.
+        MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 200f, 150f, 0);
+        mScrim.dispatchTouchEvent(moveEvent);
+
+        ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mCompositorViewHolder, times(2)).dispatchTouchEvent(touchCaptor.capture());
+        List<MotionEvent> forwardedEvents = touchCaptor.getAllValues();
+        assertEquals(MotionEvent.ACTION_DOWN, forwardedEvents.get(0).getActionMasked());
+        assertEquals(100f, forwardedEvents.get(0).getX(), 0.01f);
+        assertEquals(150f, forwardedEvents.get(0).getY(), 0.01f);
+        assertEquals(MotionEvent.ACTION_MOVE, forwardedEvents.get(1).getActionMasked());
+        assertEquals(200f, forwardedEvents.get(1).getX(), 0.01f);
+        assertEquals(150f, forwardedEvents.get(1).getY(), 0.01f);
+        clearInvocations(mCompositorViewHolder);
+
+        // 3. Send ACTION_UP (drag end) - should be forwarded directly.
+        MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 200f, 150f, 0);
+        mScrim.dispatchTouchEvent(upEvent);
+
+        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
+        assertEquals(MotionEvent.ACTION_UP, touchCaptor.getValue().getActionMasked());
+
+        downEvent.recycle();
+        moveEvent.recycle();
+        upEvent.recycle();
+    }
+
+    @Test
+    public void testScrimTouchForwardedToCompositorViewHolder_Tap() {
+        showOverlay();
+
+        // Register a click listener on the scrim/model to check for dismissal
+        class ClickTracker {
+            boolean mClicked;
+        }
+        ClickTracker tracker = new ClickTracker();
+        mCoordinator
+                .getModelForTesting()
+                .set(TabSearchOverlayProperties.ON_SCRIM_CLICK, v -> tracker.mClicked = true);
+
+        // 1. Send ACTION_DOWN - should be deferred and NOT forwarded yet.
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(downEvent);
+
+        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+
+        // 2. Send ACTION_UP without exceeding touch slop (same coordinate)
+        MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(upEvent);
+
+        // Verify that NO events (neither DOWN, UP, nor CANCEL) were sent to the compositor view,
+        // since the touch sequence was a simple tap.
+        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+
+        // Verify that the scrim click action was triggered to dismiss overlay
+        assertTrue(tracker.mClicked);
+
+        downEvent.recycle();
+        upEvent.recycle();
+    }
+
+    @Test
+    public void testScrimTouchForwardedToCompositorViewHolder_CancelDuringDrag() {
+        showOverlay();
+
+        // 1. Send ACTION_DOWN (deferred)
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(downEvent);
+
+        // 2. Send ACTION_MOVE beyond slop to start dragging
+        MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 200f, 150f, 0);
+        mScrim.dispatchTouchEvent(moveEvent);
+        clearInvocations(mCompositorViewHolder);
+
+        // 3. Send ACTION_CANCEL - should be forwarded directly since we are dragging.
+        MotionEvent cancelEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 200f, 150f, 0);
+        mScrim.dispatchTouchEvent(cancelEvent);
+
+        ArgumentCaptor<MotionEvent> touchCaptor = ArgumentCaptor.forClass(MotionEvent.class);
+        verify(mCompositorViewHolder).dispatchTouchEvent(touchCaptor.capture());
+        assertEquals(MotionEvent.ACTION_CANCEL, touchCaptor.getValue().getActionMasked());
+
+        downEvent.recycle();
+        moveEvent.recycle();
+        cancelEvent.recycle();
+    }
+
+    @Test
+    public void testScrimTouchForwardedToCompositorViewHolder_CancelBeforeDrag() {
+        showOverlay();
+
+        // 1. Send ACTION_DOWN (deferred)
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(downEvent);
+
+        // 2. Send ACTION_CANCEL - should NOT be forwarded because drag never started.
+        MotionEvent cancelEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 100f, 150f, 0);
+        mScrim.dispatchTouchEvent(cancelEvent);
+
+        verify(mCompositorViewHolder, never()).dispatchTouchEvent(any(MotionEvent.class));
+
+        downEvent.recycle();
+        cancelEvent.recycle();
     }
 }
