@@ -684,6 +684,7 @@ static_library("model_execution_test_support") {
       "//components/update_client",
       "//services/on_device_model/public/cpp:types",
       "//services/on_device_model/public/cpp/test_support",
+      "//third_party/dawn/src/dawn:proc",
     ]
     if (is_android) {
       sources += [

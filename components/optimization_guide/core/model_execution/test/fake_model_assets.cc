@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 
 #include "base/files/file_path.h"
+#include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -79,8 +80,15 @@ void FakeBaseModelAsset::Write(Content&& content) {
                           base::NumberToString(content.adapter_cache_weight)));
   }
   if (content.shader_cache_data) {
-    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kProgramCacheFile),
+    base::FilePath program_cache_path =
+        temp_dir_.GetPath().Append(kProgramCacheFile);
+    CHECK(base::WriteFile(program_cache_path,
                           std::string(content.shader_cache_data)));
+    std::string current_version(
+        reinterpret_cast<const char*>(dawnProcGetVersion()), 20);
+    CHECK(base::WriteFile(
+        program_cache_path.AddExtension(FILE_PATH_LITERAL(".dawn_version")),
+        current_version));
   }
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),

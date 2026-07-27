@@ -34,4 +34,7 @@ specific_include_rules = {
     "+third_party/zlib/google/zip.h",
     "+ui/base",
   ],
+  "fake_model_assets\.cc": [
+    "+third_party/dawn/include/dawn/dawn_proc.h",
+  ],
 };
