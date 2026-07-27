@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>drawFocusIfNeeded() uses the dark-scheme focus-ring color</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  .dark { color-scheme: dark; }
+</style>
+<div class="dark">
+  <canvas id="canvas" width="200" height="200">
+    <button id="btn">test</button>
+  </canvas>
+</div>
+<script>
+test(function() {
+    const btn = document.getElementById("btn");
+    btn.focus();
+    const ctx = document.getElementById("canvas").getContext("2d");
+
+    // Chromium's dark-scheme focus-ring color is off-white, so drawing it on
+    // white canvas content should change the pixels.
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, 200, 200);
+    const refImage = ctx.getImageData(0, 0, 200, 200);
+
+    ctx.beginPath();
+    ctx.rect(50, 50, 100, 100);
+    ctx.drawFocusIfNeeded(btn);
+
+    const ringImage = ctx.getImageData(0, 0, 200, 200);
+
+    assert_false(
+        ringImage.data.every((value, i) => value === refImage.data[i]),
+        "The dark-scheme focus-ring color should differ from white");
+}, 'drawFocusIfNeeded uses the dark-scheme focus-ring color.');
+</script>
