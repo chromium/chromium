@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
   AimDebuggerItemPolicy,
   AimDebuggerItemDSE,
   AimDebuggerItemServer,
+  AimDebuggerItemCobrowse,
   AimDebuggerItemFusebox,
   AimDebuggerItemSource,
   AimDebuggerItemResponse,
@@ -180,6 +181,20 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
     serverItem.iconTintColor = serverEligible ? [UIColor colorNamed:kGreenColor]
                                               : [UIColor colorNamed:kRedColor];
 
+    TableViewDetailIconItem* cobrowseItem =
+        [[TableViewDetailIconItem alloc] initWithType:AimDebuggerItemCobrowse];
+    cobrowseItem.text = @"Co-Browse Eligible";
+    BOOL cobrowseEligible =
+        _eligibilityStatus.Has(AimEligibilityCheck::kIsCobrowseEligible);
+    cobrowseItem.detailText = cobrowseEligible ? @"Eligible" : @"Not Eligible";
+    cobrowseItem.iconImage =
+        cobrowseEligible
+            ? DefaultSymbolTemplateWithPointSize(kCheckmarkSymbol, 18)
+            : DefaultSymbolTemplateWithPointSize(kXMarkSymbol, 18);
+    cobrowseItem.iconTintColor = cobrowseEligible
+                                     ? [UIColor colorNamed:kGreenColor]
+                                     : [UIColor colorNamed:kRedColor];
+
     TableViewDetailIconItem* fuseboxItem =
         [[TableViewDetailIconItem alloc] initWithType:AimDebuggerItemFusebox];
     fuseboxItem.text = @"Fusebox Eligibility";
@@ -194,7 +209,7 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
                                     : [UIColor colorNamed:kRedColor];
 
     [snapshot appendItemsWithIdentifiers:@[
-      policyItem, dseItem, serverItem, fuseboxItem
+      policyItem, dseItem, serverItem, cobrowseItem, fuseboxItem
     ]
                intoSectionWithIdentifier:@(AimDebuggerSectionStatus)];
   }
@@ -268,6 +283,7 @@ typedef NS_ENUM(NSUInteger, AimDebuggerItemType) {
     case AimDebuggerItemPolicy:
     case AimDebuggerItemDSE:
     case AimDebuggerItemServer:
+    case AimDebuggerItemCobrowse:
     case AimDebuggerItemFusebox:
     case AimDebuggerItemSource:
     default: {

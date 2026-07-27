@@ -16,6 +16,7 @@ enum class AimEligibilityCheck {
   kIsEligibleByDse,
   kIsEligibleByServer,
   kIsServerEligibilityEnabled,
+  kIsCobrowseEligible,
   kIsFuseboxEligible,
   kMinValue = kIsEligible,
   kMaxValue = kIsFuseboxEligible,
