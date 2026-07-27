@@ -527,6 +527,9 @@ NSMenuItem* BuildTabMenu(NSApplication* nsapp,
               Item(is_rtl ? IDS_TAB_CXMENU_NEWTABTOLEFT
                           : IDS_TAB_CXMENU_NEWTABTORIGHT)
                   .command_id(IDC_NEW_TAB_TO_RIGHT),
+              Item(IDS_TAB_CXMENU_NEWTABBELOW)
+                  .command_id(IDC_NEW_TAB_TO_RIGHT)
+                  .set_hidden(true),
               Item(IDS_NEXT_TAB_MAC)
                   .command_id(IDC_CYCLE_TO_NEXT_TAB),
               Item(IDS_PREV_TAB_MAC)
@@ -560,6 +563,9 @@ NSMenuItem* BuildTabMenu(NSApplication* nsapp,
               Item(is_rtl ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
                           : IDS_TAB_CXMENU_CLOSETABSTORIGHT)
                   .command_id(IDC_WINDOW_CLOSE_TABS_TO_RIGHT),
+              Item(IDS_TAB_CXMENU_CLOSETABSBELOW)
+                  .command_id(IDC_WINDOW_CLOSE_TABS_TO_RIGHT)
+                  .set_hidden(true),
               Item(IDS_MOVE_TAB_TO_NEW_WINDOW)
                   .command_id(IDC_MOVE_TAB_TO_NEW_WINDOW),
               Item(IDS_SEARCH_TABS)
