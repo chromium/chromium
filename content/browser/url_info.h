@@ -163,6 +163,12 @@ struct CONTENT_EXPORT UrlInfo {
   EmbedderIsolationInfo embedder_isolation_info =
       EmbedderIsolationInfo::CreateNone();
 
+  // Indicates that the URL was flagged by the subresource filterlist as
+  // matching a known ad URL.
+  // TODO(crbug.com/40259221): This should eventually only include filters that
+  // match a domain (host), and not include partial matches.
+  bool matches_ad_filter_with_host = false;
+
   // The CrossOriginIsolationKey to use for the navigation. This represents the
   // isolation requested by the page itself through the use of COOP, COEP and
   // DIP. Right now, this is only set when DocumentIsolationPolicy is enabled,
@@ -209,6 +215,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithWebExposedIsolationInfo(
       std::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithEmbedderIsolationInfo(EmbedderIsolationInfo info);
+  UrlInfoInit& WithMatchesAdFilterWithHost(bool matches_ad_filter_with_host);
   UrlInfoInit& WithCrossOriginIsolationKey(
       const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
           cross_origin_isolation_key);
@@ -233,6 +240,7 @@ class CONTENT_EXPORT UrlInfoInit {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   EmbedderIsolationInfo embedder_isolation_info_ =
       EmbedderIsolationInfo::CreateNone();
+  bool matches_ad_filter_with_host_ = false;
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key_;
   std::optional<base::SafeRef<ProcessSelectionUserData>>

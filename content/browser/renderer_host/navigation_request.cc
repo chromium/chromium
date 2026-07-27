@@ -4158,15 +4158,38 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
         OriginAgentClusterIsolationState::CreateNonIsolatedByHeader();
   }
 
+  if (!oac_isolation_state.has_value() && response() && is_ad_tagged() &&
+      SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+          isolation_context.browser_context()) &&
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          isolation_context.browser_context()) &&
+      base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
+    // If it's an ad frame, OAC is on by default, and we know that there isn't
+    // an OAC response header, force the eventual process to be site-keyed for
+    // process isolation for this BrowsingInstance, bypassing the default
+    // origin-keyed behavior. Note that we leave the origin agent cluster
+    // logically origin-keyed to avoid web-visible changes to the OAC state.
+    oac_isolation_state =
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            /*had_oac_request=*/false,
+            /*requires_origin_keyed_process=*/false);
+  }
+
   if (!oac_isolation_state.has_value()) {
     return;
   }
 
-  // We never register isolation state here unless it's explicitly requested.
-  CHECK(oac_isolation_state->logical_oac_status() ==
-            AgentClusterKey::OACStatus::kSiteKeyedByHeader ||
-        oac_isolation_state->logical_oac_status() ==
-            AgentClusterKey::OACStatus::kOriginKeyedByHeader);
+  // We never register isolation state for default states, only for states
+  // explicitly requested by the document or decided by browser policy (e.g. for
+  // ad frames).
+  CHECK(
+      oac_isolation_state->logical_oac_status() ==
+          AgentClusterKey::OACStatus::kSiteKeyedByHeader ||
+      oac_isolation_state->logical_oac_status() ==
+          AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
+      (base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation) &&
+       oac_isolation_state->logical_oac_status() ==
+           AgentClusterKey::OACStatus::kOriginKeyedByDefault));
 
   // Note: we don't handle IsIsolationImplied() cases here, since those only
   // occur when OAC-by-default is enabled, and in that case we only proactively
@@ -4569,7 +4592,8 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   url_info_init.WithOACHeaderRequest(oac_header_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-      .WithEmbedderIsolationInfo(embedder_isolation_info_);
+      .WithEmbedderIsolationInfo(embedder_isolation_info_)
+      .WithMatchesAdFilterWithHost(response() && is_ad_tagged());
 
   // Compute the CrossOriginIsolationKey for the navigation.
   std::optional<AgentClusterKey::CrossOriginIsolationKey>

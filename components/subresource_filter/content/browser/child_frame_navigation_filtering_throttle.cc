@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -154,6 +155,10 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   load_policy_ = MoreRestrictiveLoadPolicy(policy, load_policy_);
   pending_load_policy_calculations_ -= 1;
 
+  if (pending_load_policy_calculations_ == 0) {
+    OnCalculatedLoadPolicyFinished();
+  }
+
   // Callback is not responsible for handling navigation if we are not deferred.
   if (defer_stage_ == DeferStage::kNotDeferring) {
     return;
@@ -176,7 +181,6 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     return;
   }
 
-  OnReadyToResumeNavigationWithLoadPolicy();
   ResumeNavigation();
 }
 

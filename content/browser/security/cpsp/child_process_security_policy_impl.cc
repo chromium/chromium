@@ -3684,11 +3684,6 @@ void ChildProcessSecurityPolicyImpl::
   // TODO(crbug.com/482216433): Support this check on the Rust side.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/482216433): Support this lookup on the Rust side.
-  bool is_oac_enabled_by_default =
-      SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
-          isolation_context.browser_context());
-
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::
           add_origin_agent_cluster_state_for_browsing_instance(
@@ -3696,10 +3691,11 @@ void ChildProcessSecurityPolicyImpl::
               // Make a copy of the origin for Rust to own.
               std::make_unique<url::Origin>(origin),
               ToRustOriginAgentClusterIsolationState(oac_isolation_state),
-              is_oac_enabled_by_default),
+              ToRustOriginAgentClusterIsolationState(
+                  isolation_context.default_isolation_state())),
       AddOriginAgentClusterStateForBrowsingInstance_Cpp(
           isolation_context.browsing_instance_id(), origin, oac_isolation_state,
-          is_oac_enabled_by_default));
+          isolation_context.default_isolation_state()));
 }
 
 void ChildProcessSecurityPolicyImpl::
@@ -3707,15 +3703,11 @@ void ChildProcessSecurityPolicyImpl::
         const BrowsingInstanceId& browsing_instance_id,
         const url::Origin& origin,
         const OriginAgentClusterIsolationState& oac_isolation_state,
-        bool is_oac_enabled_by_default) {
-  // We should only explicitly record states from OAC header requests, either
-  // opt-ins or opt-outs. Opt-outs only make sense if OAC is enabled by
-  // default.
-  DCHECK(oac_isolation_state.logical_oac_status() ==
-             AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
-         (oac_isolation_state.logical_oac_status() ==
-              AgentClusterKey::OACStatus::kSiteKeyedByHeader &&
-          is_oac_enabled_by_default));
+        const OriginAgentClusterIsolationState& default_isolation_state) {
+  // We should only be registering an isolation state if it deviates from the
+  // default isolation state (e.g., if it's explicitly requested by a header or
+  // if an ad frame's process isolation is being bypassed).
+  DCHECK(oac_isolation_state != default_isolation_state);
 
   // We ought to have validated the origin prior to getting here.  If the
   // origin isn't valid at this point, something has gone wrong.

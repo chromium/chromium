@@ -72,9 +72,8 @@ class ChildFrameNavigationFilteringThrottle
   // for some computation to complete.
   virtual bool ShouldDeferNavigation() const = 0;
 
-  // Defines any necessary custom logic to execute after a LoadPolicy has been
-  // computed for navigations that will *not* be cancelled.
-  virtual void OnReadyToResumeNavigationWithLoadPolicy() = 0;
+  // Called after the final LoadPolicy has been computed for a redirect stage.
+  virtual void OnCalculatedLoadPolicyFinished() = 0;
 
   // Notifies the appropriate observer that the
   // ChildFrameNavigationFilteringThrottle has finished processing a request.

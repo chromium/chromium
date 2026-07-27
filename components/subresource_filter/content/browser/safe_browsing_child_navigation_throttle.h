@@ -51,7 +51,7 @@ class SafeBrowsingChildNavigationThrottle
 
  private:
   bool ShouldDeferNavigation() const override;
-  void OnReadyToResumeNavigationWithLoadPolicy() override;
+  void OnCalculatedLoadPolicyFinished() override;
   void NotifyLoadPolicy() const override;
 
   std::optional<blink::FrameAdEvidence> ad_evidence_;

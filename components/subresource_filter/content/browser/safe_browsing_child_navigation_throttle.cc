@@ -95,12 +95,9 @@ bool SafeBrowsingChildNavigationThrottle::ShouldDeferNavigation() const {
   return false;
 }
 
-void SafeBrowsingChildNavigationThrottle::
-    OnReadyToResumeNavigationWithLoadPolicy() {
-  if (defer_stage_ == DeferStage::kWillStartOrRedirectRequest &&
-      ad_evidence_.has_value()) {
-    // Tag the navigation handle based on the current load policy + evidence
-    // before the request starts.
+void SafeBrowsingChildNavigationThrottle::OnCalculatedLoadPolicyFinished() {
+  if (ad_evidence_.has_value()) {
+    // Tag the navigation handle based on the current load policy + evidence.
     ad_evidence_->UpdateFilterListResult(
         InterpretLoadPolicyAsEvidence(load_policy_));
     if (ad_evidence_->IndicatesAdFrame()) {

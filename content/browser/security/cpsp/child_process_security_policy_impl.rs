@@ -103,7 +103,7 @@ mod ffi {
             browsing_instance_id: BrowsingInstanceId,
             origin: UniquePtr<Origin>,
             oac_state: OriginAgentClusterIsolationState,
-            is_oac_enabled_by_default: bool,
+            default_oac_state: OriginAgentClusterIsolationState,
         );
         fn record_default_origin_agent_cluster_origin_if_new(
             browsing_instance_id: BrowsingInstanceId,
@@ -353,17 +353,16 @@ fn add_origin_agent_cluster_state_for_browsing_instance(
     browsing_instance_id: BrowsingInstanceId,
     origin: UniquePtr<ffi::Origin>,
     oac_state: ffi::OriginAgentClusterIsolationState,
-    is_oac_enabled_by_default: bool,
+    default_oac_state: ffi::OriginAgentClusterIsolationState,
 ) {
-    // We should only explicitly record states from OAC header requests, either
-    // opt-ins or opt-outs. Opt-outs only make sense if OAC is enabled by
-    // default.
+    // We should only be registering an isolation state if it deviates from the
+    // default isolation state (e.g., if it's explicitly requested by a header or
+    // if an ad frame's process isolation is being bypassed).
     assert!(
-        oac_state.is_origin_keyed_agent_cluster_by_header()
-            || (oac_state == ffi::OriginAgentClusterIsolationState::SiteKeyedByHeader
-                && is_oac_enabled_by_default),
-        "Trying to add invalid OAC state: {:?}",
-        oac_state
+        oac_state != default_oac_state,
+        "Trying to add invalid OAC state: {:?} (default: {:?})",
+        oac_state,
+        default_oac_state
     );
 
     let is_valid_opt_in = oac_state.is_origin_keyed_agent_cluster_by_header()

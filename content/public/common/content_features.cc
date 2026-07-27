@@ -843,6 +843,11 @@ BASE_FEATURE(kProcessSelectionDeferringConditions,
 // require origin-agent-clusters.
 BASE_FEATURE(kOriginKeyedProcessesByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ads will not be eligible for origin-keyed processes by default.
+// Ads can still opt into origin-keyed processes by using the
+// Origin-Agent-Cluster: ?1 header.
+BASE_FEATURE(kExcludeAdsFromOriginIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fires the `pushsubscriptionchange` event defined here:
 // https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
 // for subscription refreshes, revoked permissions or subscription losses

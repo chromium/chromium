@@ -371,7 +371,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& origin,
       const OriginAgentClusterIsolationState& oac_isolation_state,
-      bool is_oac_enabled_by_default);
+      const OriginAgentClusterIsolationState& default_isolation_state);
 
   // Adds `origin` to the IsolatedOrigins list for only the BrowsingInstance of
   // `isolation_context`, without isolating all subdomains. For use when the

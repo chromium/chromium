@@ -60,7 +60,7 @@ class TestChildFrameNavigationFilteringThrottle
            mojom::ActivationLevel::kEnabled;
   }
 
-  void OnReadyToResumeNavigationWithLoadPolicy() override {
+  void OnCalculatedLoadPolicyFinished() override {
     // Nothing custom here.
     return;
   }
