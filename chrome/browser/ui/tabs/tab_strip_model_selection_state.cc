@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
 
@@ -19,10 +22,12 @@ TabStripModelSelectionState::TabStripModelSelectionState(TabStripModel* model)
 TabStripModelSelectionState::TabStripModelSelectionState(
     std::unordered_set<raw_ptr<TabInterface>> selected_tabs,
     raw_ptr<TabInterface> active_tab,
-    raw_ptr<TabInterface> anchor_tab)
+    raw_ptr<TabInterface> anchor_tab,
+    std::optional<tab_groups::TabGroupId> focused_group)
     : selected_tabs_(std::move(selected_tabs)),
       active_tab_(active_tab),
-      anchor_tab_(anchor_tab) {}
+      anchor_tab_(anchor_tab),
+      focused_group_(focused_group) {}
 
 TabStripModelSelectionState::~TabStripModelSelectionState() = default;
 TabStripModelSelectionState::TabStripModelSelectionState(
@@ -33,7 +38,8 @@ TabStripModelSelectionState& TabStripModelSelectionState::operator=(
 bool TabStripModelSelectionState::operator==(
     const TabStripModelSelectionState& other) const {
   return selected_tabs_ == other.selected_tabs_ &&
-         active_tab_ == other.active_tab_ && anchor_tab_ == other.anchor_tab_;
+         active_tab_ == other.active_tab_ && anchor_tab_ == other.anchor_tab_ &&
+         focused_group_ == other.focused_group_;
 }
 
 void TabStripModelSelectionState::Clear() {
@@ -41,10 +47,27 @@ void TabStripModelSelectionState::Clear() {
   selected_tabs_.clear();
   active_tab_ = nullptr;
   anchor_tab_ = nullptr;
+  focused_group_ = std::nullopt;
 }
 
 bool TabStripModelSelectionState::IsSelected(TabInterface* tab) const {
   return selected_tabs_.contains(tab);
+}
+
+void TabStripModelSelectionState::UpdateFocusGroupValidity() {
+  if (!focused_group_.has_value()) {
+    return;
+  }
+  if (selected_tabs_.empty()) {
+    focused_group_ = std::nullopt;
+    return;
+  }
+  for (TabInterface* tab : selected_tabs_) {
+    if (!tab || tab->GetGroup() != focused_group_) {
+      focused_group_ = std::nullopt;
+      return;
+    }
+  }
 }
 
 void TabStripModelSelectionState::AddTabToSelection(TabInterface* tab) {
@@ -120,14 +143,26 @@ void TabStripModelSelectionState::SetSelectedTabs(
   } else {
     anchor_tab_ = selected_tabs_.empty() ? nullptr : *selected_tabs_.begin();
   }
+  UpdateFocusGroupValidity();
   CHECK(Valid());
 }
 
 bool TabStripModelSelectionState::Valid() const {
   if (selected_tabs_.empty()) {
-    return active_tab_ == nullptr && anchor_tab_ == nullptr;
+    return active_tab_ == nullptr && anchor_tab_ == nullptr &&
+           !focused_group_.has_value();
   }
-  return active_tab_ && anchor_tab_;
+  if (!active_tab_ || !anchor_tab_) {
+    return false;
+  }
+  if (focused_group_.has_value()) {
+    for (TabInterface* tab : selected_tabs_) {
+      if (!tab || tab->GetGroup() != focused_group_) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 const ui::ListSelectionModel&

@@ -159,6 +159,44 @@ TEST_F(TabStripModelSelectionStateTest, InvalidStates) {
   // Non-empty selection with null anchor tab is invalid.
   EXPECT_FALSE(
       TabStripModelSelectionState({tab1_.get()}, tab1_.get(), nullptr).Valid());
+
+  // Focused group with empty selection is invalid.
+  TabStripModelSelectionState empty_focused;
+  empty_focused.set_focused_group(tab_groups::TabGroupId::GenerateNew());
+  EXPECT_FALSE(empty_focused.Valid());
+}
+
+TEST_F(TabStripModelSelectionStateTest, FocusedGroupAccessorsAndEquality) {
+  const tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  TabStripModelSelectionState state1({tab1_.get()}, tab1_.get(), tab1_.get(),
+                                     group);
+  EXPECT_EQ(group, state1.focused_group());
+
+  TabStripModelSelectionState state2({tab1_.get()}, tab1_.get(), tab1_.get(),
+                                     group);
+  EXPECT_EQ(state1, state2);
+
+  state2.set_focused_group(std::nullopt);
+  EXPECT_EQ(std::nullopt, state2.focused_group());
+  EXPECT_NE(state1, state2);
+}
+
+TEST_F(TabStripModelSelectionStateTest, FocusedGroupValidity) {
+  const tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  const tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*tab1_, GetGroup()).WillRepeatedly(testing::Return(group1));
+  EXPECT_CALL(*tab2_, GetGroup()).WillRepeatedly(testing::Return(group2));
+
+  // State with all tabs in group1 should be valid when focused on group1.
+  TabStripModelSelectionState state1({tab1_.get()}, tab1_.get(), tab1_.get(),
+                                     group1);
+  EXPECT_TRUE(state1.Valid());
+
+  // State with tab2 (in group2) when focused_group is group1 should be invalid.
+  TabStripModelSelectionState state2({tab1_.get(), tab2_.get()}, tab1_.get(),
+                                     tab1_.get(), group1);
+  EXPECT_FALSE(state2.Valid());
 }
 
 }  // namespace tabs

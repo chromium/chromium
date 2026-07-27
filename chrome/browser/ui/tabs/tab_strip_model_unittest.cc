@@ -2353,6 +2353,57 @@ TEST_F(TabStripModelTest, DetachingFocusedGroupUnsetsFocus) {
   EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
 }
 
+TEST_F(TabStripModelTest, ReorderingTabsInFocusedGroupPreservesFocus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Reorder tabs inside the focused group using SetSelectionFromModel.
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(2);
+  tabstrip()->SetSelectionFromModel(selection);
+
+  // Focus should be preserved because tab 2 is within the focused group.
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest, SelectingTabOutsideFocusedGroupUnsetsFocus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Select tab 3 which is outside the focused group.
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(3);
+  tabstrip()->SetSelectionFromModel(selection);
+
+  // Focus should be unset because selection is outside the focused group.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Close index 1, which is the only tab in the focused group.
+  tabstrip()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {
