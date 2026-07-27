@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -24,7 +25,9 @@ public class OmniboxLensOverlayAction extends OmniboxAction {
                 nativeInstance,
                 hint,
                 accessibilityHint,
-                new ActionIcon(R.drawable.ic_suggestion_magnifier, /* tintWithTextColor= */ true),
+                new ActionIcon(
+                        LensController.getInstance().getLensIconResourceId(),
+                        /* tintWithTextColor= */ true),
                 R.style.TextAppearance_ChipText,
                 ActionPresentationMode.CHIP,
                 WindowOpenDisposition.CURRENT_TAB);

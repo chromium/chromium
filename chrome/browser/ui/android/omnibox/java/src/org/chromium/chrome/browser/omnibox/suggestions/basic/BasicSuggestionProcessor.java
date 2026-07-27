@@ -12,6 +12,7 @@ import android.text.style.ForegroundColorSpan;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.text.BidiFormatter;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,6 +43,8 @@ import java.util.Set;
 /** A class that handles model and view creation for the basic omnibox suggestions. */
 @NullMarked
 public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
+    private static final String TAKEOVER_SEPARATOR = " - ";
+
     /** Bookmarked state of a URL */
     public interface BookmarkState {
         /**
@@ -160,6 +163,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             } else if (starterPackId == StarterPackId.GEMINI) {
                 icon = R.drawable.ic_spark_4c_16dp;
             }
+        } else if (suggestion.getTakeoverAction() != null) {
+            var action = suggestion.getTakeoverAction();
+            icon = action.icon.chipIconRes;
+            allowTint = action.icon.tintWithTextColor;
         }
 
         if (icon == 0 && suggestion.isSearchSuggestion()) {
@@ -312,6 +319,19 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         return null;
     }
 
+    private SuggestionSpannable getTakeoverActionSuggestedQuery(AutocompleteMatch suggestion) {
+        String contents = BidiFormatter.getInstance().unicodeWrap(suggestion.getDisplayText());
+        String description = suggestion.getDescription();
+        if (TextUtils.isEmpty(description)) return new SuggestionSpannable(contents);
+
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        boolean shouldSwap = suggestion.shouldSwapContentsAndDescription();
+        builder.append(shouldSwap ? description : contents);
+        builder.append(TAKEOVER_SEPARATOR);
+        builder.append(shouldSwap ? contents : description);
+        return new SuggestionSpannable(builder);
+    }
+
     /**
      * Get the first line for a text based omnibox suggestion.
      *
@@ -325,6 +345,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             AutocompleteMatch suggestion,
             boolean showDescriptionIfPresent,
             boolean shouldHighlight) {
+        if (suggestion.getTakeoverAction() != null) {
+            return getTakeoverActionSuggestedQuery(suggestion);
+        }
+
         String suggestedQuery = null;
         List<AutocompleteMatch.MatchClassification> classifications;
         if (showDescriptionIfPresent

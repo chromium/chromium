@@ -1017,6 +1017,10 @@ void AutocompleteResult::AttachPedalsToMatches(
 }
 
 void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
+#if !BUILDFLAG(IS_ANDROID)
+  // ContextualSearchFulfillmentAction is a Desktop-specific legacy action that
+  // lacks an Android JNI counterpart. Skip since Android currently only has
+  // minimal contextual search supports (e.g., Lens Overlay entry point).
   for (AutocompleteMatch& match : matches_) {
     if (match.IsContextualSearchSuggestion() && !match.HasLensSearchAction()) {
       match.takeover_action =
@@ -1025,6 +1029,7 @@ void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
               match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
     }
   }
+#endif
 }
 
 void AutocompleteResult::AttachContextualSearchOpenLensActionToMatches() {

@@ -194,7 +194,8 @@ public class AutocompleteMatch {
                         && mType != OmniboxSuggestionType.OPEN_TAB
                         && mType != OmniboxSuggestionType.TILE_SUGGESTION
                         && !mSubtypes.contains(
-                                SuggestSubtype.SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT_VALUE);
+                                SuggestSubtype.SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT_VALUE)
+                        && mTakeoverAction == null;
         if (serializedSuggestTemplate != null) {
             try {
                 mSuggestTemplate = SuggestTemplateInfo.parseFrom(serializedSuggestTemplate);
