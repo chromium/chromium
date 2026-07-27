@@ -724,8 +724,8 @@ void Canvas2DRecorderContext::endLayer(ExceptionState& exception_state) {
   cc::PaintCanvas& parent_canvas = recorder->getRecordingCanvas();
   SkIRect clip_bounds;
   if (parent_canvas.getDeviceClipBounds(&clip_bounds)) {
-    WillDraw(gfx::SkIRectToRect(clip_bounds),
-             CanvasPerformanceMonitor::DrawType::kOther);
+    WillDrawWithProvider(gfx::SkIRectToRect(clip_bounds),
+                         CanvasPerformanceMonitor::DrawType::kOther);
   }
 
   ValidateStateStack();
