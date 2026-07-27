@@ -1,0 +1,8 @@
+Check that the WebAuthn signature counter can be set with devtools
+Stored credential signCount: -1
+Assertion 1 signCount: 0
+Assertion 2 signCount: 0
+Stored credential signCount after update to 10: 10
+Assertion after update (expected 11): 11
+Assertion after removing counter (expected 0): 0
+

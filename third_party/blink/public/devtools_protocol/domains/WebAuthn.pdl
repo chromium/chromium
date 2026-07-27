@@ -98,10 +98,11 @@ experimental domain WebAuthn
       # An opaque byte sequence with a maximum size of 64 bytes mapping the
       # credential to a specific user.
       optional binary userHandle
-      # Signature counter. This is incremented by one for each successful
-      # assertion.
+      # Signature counter. Must be equal to or greater than -1.
+      # If -1, the credential won't have an associated signature counter, and
+      # every assertion operation will report a value of 0.
       # See https://w3c.github.io/webauthn/#signature-counter
-      integer signCount
+      optional integer signCount
       # The large blob associated with the credential.
       # See https://w3c.github.io/webauthn/#sctn-large-blob-extension
       optional binary largeBlob
@@ -224,6 +225,11 @@ experimental domain WebAuthn
       optional boolean backupState
       optional integer activeCmtgKeyIndex
       optional boolean generateCmtgKeyOnNextOperation
+      # Must be equal to or greater than -1.
+      # If -1, the signature counter is removed from the credential, and every
+      # assertion operation will report a value of 0.
+      # See https://w3c.github.io/webauthn/#signature-counter
+      optional integer signCount
 
   # Triggered when a credential is added to an authenticator.
   event credentialAdded
