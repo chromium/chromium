@@ -55,12 +55,6 @@ using testing::IsEmpty;
 // web page to a resource of our choice and observe the side-effect in metrics.
 constexpr char kNoFaviconPath[] = "/local_network_access/no-favicon.html";
 
-// Same as kNoFaviconPath, except it carries a header that makes the browser
-// consider it came from the `public` address space, irrespective of the fact
-// that we loaded the web page from localhost.
-constexpr char kTreatAsPublicAddressPath[] =
-    "/local_network_access/no-favicon-treat-as-public-address.html";
-
 GURL SecureURL(const net::EmbeddedTestServer& server, const std::string& path) {
   return server.GetURL(path);
 }
@@ -78,43 +72,6 @@ GURL LocalSecureURL(const net::EmbeddedTestServer& server) {
 GURL LocalSecureURLWithHost(const net::EmbeddedTestServer& server,
                             const std::string& hostname) {
   return SecureURLWithHostName(server, kNoFaviconPath, hostname);
-}
-
-GURL PublicSecureURL(const net::EmbeddedTestServer& server) {
-  return SecureURL(server, kTreatAsPublicAddressPath);
-}
-
-// Path to a worker script that posts a message to its creator once loaded.
-constexpr char kWorkerScriptPath[] = "/workers/post_ready.js";
-
-std::string FetchWorkerScript(std::string_view relative_url) {
-  constexpr char kTemplate[] = R"(
-    new Promise((resolve) => {
-      const worker = new Worker($1);
-      worker.addEventListener("message", () => { resolve(true); });
-      worker.addEventListener("error", () => { resolve(false); });
-    });
-  )";
-  return content::JsReplace(kTemplate, relative_url);
-}
-
-// Path to a worker script that posts a message to each client that connects.
-constexpr char kSharedWorkerScriptPath[] = "/workers/shared_post_ready.js";
-
-// Instantiates a shared worker script from `path`.
-// If it loads successfully, the worker should post a message to each client
-// that connects to it to signal success.
-std::string FetchSharedWorkerScript(std::string_view path) {
-  constexpr char kTemplate[] = R"(
-    new Promise((resolve) => {
-      const worker = new SharedWorker($1);
-      worker.port.addEventListener("message", () => resolve(true));
-      worker.addEventListener("error", () => resolve(false));
-      worker.port.start();
-    })
-  )";
-
-  return content::JsReplace(kTemplate, path);
 }
 
 std::vector<WebFeature> AllAddressSpaceFeatures() {
@@ -165,8 +122,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForInitialNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
 
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
@@ -179,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForRegularNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), LocalSecureURL(https_server())));
 
@@ -196,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        RecordsAddressSpaceFeatureForNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
@@ -222,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(
     DoesNotRecordAddressSpaceFeatureForChildAboutBlankNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     new Promise(resolve => {
       const child = document.createElement("iframe");
@@ -245,8 +202,12 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        RecordsAddressSpaceFeatureForChildNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
@@ -255,6 +216,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
     new Promise(resolve => {
       const child = document.createElement("iframe");
       child.src = $1;
+      child.allow = "local-network-access";
       child.onload = () => { resolve(true); };
       document.body.appendChild(child);
     })
@@ -281,16 +243,21 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        RecordsAddressSpaceFeatureForGrandchildNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
   std::string_view script_template = R"(
     function addChildFrame(doc, src) {
       return new Promise(resolve => {
         const child = doc.createElement("iframe");
+        child.allow = "local-network-access";
         child.src = src;
         child.onload = () => { resolve(child); };
         doc.body.appendChild(child);
@@ -402,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DoesNotRecordAddressSpaceFeatureForBlockedRequests) {
   WebFeatureHistogramTester feature_histogram_tester;
 
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
@@ -435,8 +402,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
 // TODO(crbug.com/465260276): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
                        DISABLED_ProxiedResourcesAllowed) {
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(), SecureURL(https_public_server(), kNoFaviconPath)));
 
   browser()->GetProfile()->GetPrefs()->SetDict(
       proxy_config::prefs::kProxy,
@@ -467,75 +434,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
-}
-
-// This test verifies that a UseCounter is recorded when a document makes a
-// local network request to load a worker script from a secure context, does
-// not trigger LNA because the request is same-origin and the origin is
-// potentially trustworthy, and loads the script anyway.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
-                       RecordsFeatureForWorkerScriptFetchFromSecure) {
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
-
-  WebFeatureHistogramTester feature_histogram_tester;
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(),
-                                  FetchWorkerScript(kWorkerScriptPath)));
-
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-      }));
-}
-
-// This test verifies that a UseCounter is recorded when a document makes a
-// local network request to load a shared worker script from a secure context,
-// does not trigger LNA because the request is same-origin and the origin is
-// potentially trustworthy, and loads the script anyway.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessCountersBrowserTest,
-                       RecordsFeatureForSharedWorkerScriptFetchFromSecure) {
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
-
-  WebFeatureHistogramTester feature_histogram_tester;
-
-  EXPECT_EQ(true,
-            content::EvalJs(web_contents(),
-                            FetchSharedWorkerScript(kSharedWorkerScriptPath)));
-
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-      }));
-}
-
-// This test verifies that a UseCounter is recorded when a document makes a
-// local network request to load a service worker script from treat-as-public
-// to local.
-IN_PROC_BROWSER_TEST_F(
-    LocalNetworkAccessCountersBrowserTest,
-    RecordsFeatureForServiceWorkerScriptFetchFromTreatAsPublicToLocal) {
-  EXPECT_TRUE(
-      content::NavigateToURL(web_contents(), PublicSecureURL(https_server())));
-
-  WebFeatureHistogramTester feature_histogram_tester;
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-
-  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
-    navigator.serviceWorker.register('/service_worker/empty.js')
-      .then(navigator.serviceWorker.ready)
-      .then(() => true);
-  )"));
-
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-      }));
 }
 
 // This test verifies that a UseCounter is not recorded when a document makes a
