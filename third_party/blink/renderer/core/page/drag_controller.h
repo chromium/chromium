@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
+#include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -49,7 +51,6 @@ namespace blink {
 class DataTransfer;
 class Document;
 class DragData;
-class DragImage;
 class DragState;
 class LocalFrame;
 class FrameSelection;
@@ -57,6 +58,15 @@ class HTMLInputElement;
 class Node;
 class Page;
 class WebMouseEvent;
+
+// Helper struct to store the bitmap and the position and size relative to
+// the mouse required to create the overlay that users see during a drag.
+// Different styles of drags have different offsets to provide better
+// visual feedback to users.
+struct DragOverlay {
+  std::unique_ptr<DragImage> drag_image;
+  gfx::Rect overlay_rect;
+};
 
 class CORE_EXPORT DragController final
     : public GarbageCollected<DragController>,
@@ -99,12 +109,16 @@ class CORE_EXPORT DragController final
                       DragSourceAction&) const;
   void DragEnded();
 
+  // `drag_origin` is the point where the initial mouse down happened and
+  // `mouse_dragged_point` is the position of the mouse move that triggered the
+  // drag.
   bool PopulateDragDataTransfer(LocalFrame* src,
                                 const DragState&,
-                                const gfx::Point& drag_origin);
+                                const gfx::Point& drag_origin,
+                                const gfx::Point& mouse_dragged_point);
 
   // The parameter `drag_event` is the event that triggered the drag operation,
-  // and `drag_initiation_location` is the where the drag originated.  The
+  // and `drag_initiation_location` is the where the drag originated. The
   // event's location does NOT match the initiation location for a mouse-drag:
   // the drag is triggered by a mouse-move event but the initiation location is
   // that of a mouse-down event.
@@ -150,9 +164,7 @@ class CORE_EXPORT DragController final
 
   void MouseMovedIntoDocument(Document*);
 
-  void DoSystemDrag(DragImage*,
-                    const gfx::Rect& drag_obj_rect,
-                    const gfx::Point& drag_initiation_location,
+  void DoSystemDrag(const gfx::Point& drag_initiation_location,
                     DataTransfer*,
                     LocalFrame*);
 
@@ -173,6 +185,15 @@ class CORE_EXPORT DragController final
   // Used to set the correct pointer id to synthetic events. Principally added
   // to track touch drag and drop when `TouchDragEndContextMenu` is enabled.
   std::optional<PointerId> drag_pointer_id_;
+
+  // Stores the DragImage and the size and offset relative to the pointer that
+  // is passed to the O.S. to give visual feedback to users about their dragged
+  // item.
+  DragOverlay drag_overlay_;
+  // Populated before "dragstart" is fired in order to preserve the original
+  // target of a drag in case the element is removed or the layout is shifted
+  // during "dragstart".
+  HitTestResult drag_origin_hit_test_result_;
 };
 
 }  // namespace blink

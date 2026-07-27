@@ -1033,8 +1033,11 @@ bool MouseEventManager::TryStartDrag(
   GetDragState().drag_data_transfer_ = CreateDraggingDataTransfer();
 
   DragController& drag_controller = frame_->GetPage()->GetDragController();
-  if (!drag_controller.PopulateDragDataTransfer(frame_, GetDragState(),
-                                                mouse_down_pos_)) {
+  if (!frame_->View() ||
+      !drag_controller.PopulateDragDataTransfer(
+          frame_, GetDragState(), mouse_down_pos_,
+          frame_->View()->ConvertFromRootFrame(
+              gfx::ToFlooredPoint(event.Event().PositionInRootFrame())))) {
     return false;
   }
 
