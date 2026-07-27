@@ -2647,7 +2647,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   SidePanelEntry* extension_entry =
       GetCurrentTabRegistry()->GetEntryForKey(GetKey(extension->id()));
   ASSERT_TRUE(extension_entry);
+
+  extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
   ShowContextualEntryAndWait(GetKey(extension->id()));
+  host_helper.WaitForHostCompletedFirstLoad();
 
   // Close the active tab, which has the panel. This action should trigger the
   // onClosed event in the extension.
