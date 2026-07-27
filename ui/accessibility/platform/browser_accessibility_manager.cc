@@ -1966,6 +1966,14 @@ BrowserAccessibilityManager::GetDelegateFromRootManager() const {
   return nullptr;
 }
 
+AXPlatformTreeManagerDelegate*
+BrowserAccessibilityManager::GetDelegateForNativeView() const {
+  if (delegate_ && !delegate_->AccessibilityIsWebContentSource()) {
+    return delegate_.get();
+  }
+  return GetDelegateFromRootManager();
+}
+
 bool BrowserAccessibilityManager::IsRootFrameManager() const {
   // delegate_ can be null in unit tests.
   if (!delegate_)

@@ -464,6 +464,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // yet.
   AXPlatformTreeManagerDelegate* GetDelegateFromRootManager() const;
 
+  // Returns the delegate that owns the native view backing this tree: the root
+  // frame for web content, whose native view is shared by its frames, or this
+  // manager's own delegate for any other source.
+  AXPlatformTreeManagerDelegate* GetDelegateForNativeView() const;
+
   // Returns whether this is the root frame.
   bool IsRootFrameManager() const;
 

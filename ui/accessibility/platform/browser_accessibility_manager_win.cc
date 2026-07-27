@@ -142,22 +142,11 @@ AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
 }
 
 HWND BrowserAccessibilityManagerWin::GetParentHWND() const {
-  if (!delegate()) {
+  AXPlatformTreeManagerDelegate* delegate = GetDelegateForNativeView();
+  if (!delegate) {
     return nullptr;
   }
-
-  // For non-web-content sources (e.g., Views), the delegate directly provides
-  // the HWND. For web content, we must walk up to the root frame manager to
-  // find the HWND, because child frames (iframes) share the top-level HWND.
-  if (!delegate()->AccessibilityIsWebContentSource()) {
-    return delegate()->AccessibilityGetAcceleratedWidget();
-  }
-
-  AXPlatformTreeManagerDelegate* root_delegate = GetDelegateFromRootManager();
-  if (!root_delegate) {
-    return nullptr;
-  }
-  return root_delegate->AccessibilityGetAcceleratedWidget();
+  return delegate->AccessibilityGetAcceleratedWidget();
 }
 
 void BrowserAccessibilityManagerWin::UserIsReloading() {
@@ -1034,12 +1023,8 @@ bool BrowserAccessibilityManagerWin::CanFireEvents() const {
     return false;
   }
 
-  if (delegate()->AccessibilityIsWebContentSource()) {
-    return GetDelegateFromRootManager() &&
-           GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
-  }
-
-  return delegate()->AccessibilityGetAcceleratedWidget();
+  AXPlatformTreeManagerDelegate* delegate = GetDelegateForNativeView();
+  return delegate && delegate->AccessibilityGetAcceleratedWidget();
 }
 
 void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(AXTree* tree,
