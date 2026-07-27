@@ -427,6 +427,14 @@ class MergeToAugmented : public MergeToEffective {
       const base::DictValue* shared_settings,
       const base::DictValue* active_settings) {
     signature_ = &signature;
+    // |active_settings| is produced from Shill state and may contain nested
+    // dictionaries that only exist in the derived "with state" signature (e.g.
+    // Cellular.LastGoodAPN). Track that signature in parallel so credential
+    // fields inside such dictionaries can still be identified and masked.
+    active_signature_ =
+        (&signature == &chromeos::onc::kNetworkConfigurationSignature)
+            ? &chromeos::onc::kNetworkWithStateSignature
+            : &signature;
     return MergeToEffective::MergeDictionaries(user_policy, device_policy,
                                                user_settings, shared_settings,
                                                active_settings);
@@ -446,6 +454,10 @@ class MergeToAugmented : public MergeToEffective {
       // controlled by policy. Return the plain active value instead of an
       // augmented dictionary.
       if (values.active_setting) {
+        if (active_signature_ &&
+            chromeos::onc::FieldIsCredential(*active_signature_, key)) {
+          return base::Value(policy_util::kFakeCredential);
+        }
         return values.active_setting->Clone();
       }
       return base::Value();
@@ -557,27 +569,42 @@ class MergeToAugmented : public MergeToEffective {
   }
 
   // MergeListOfDictionaries override.
+  // Temporarily updates the tracked |signature_| and |active_signature_| to
+  // match the inner signatures of the nested dictionary being processed.
+  // Delegates the recursive merge to the base class, and then restores the
+  // original enclosing signatures once the recursion completes
   base::DictValue MergeNestedDictionaries(const std::string& key,
                                           const DictPointers& dicts) override {
-    if (signature_) {
-      const chromeos::onc::OncValueSignature* enclosing_signature = signature_;
-      signature_ = nullptr;
-
-      const chromeos::onc::OncFieldSignature* field =
-          chromeos::onc::GetFieldSignature(*enclosing_signature, key);
-      if (field) {
-        signature_ = field->value_signature;
-      }
-      base::DictValue result =
-          MergeToEffective::MergeNestedDictionaries(key, dicts);
-      signature_ = enclosing_signature;
-      return result;
-    }
-    return MergeToEffective::MergeNestedDictionaries(key, dicts);
+    const chromeos::onc::OncValueSignature* enclosing_signature = signature_;
+    const chromeos::onc::OncValueSignature* enclosing_active_signature =
+        active_signature_;
+    signature_ = ResolveInnerSignature(enclosing_signature, key);
+    active_signature_ = ResolveInnerSignature(enclosing_active_signature, key);
+    base::DictValue result =
+        MergeToEffective::MergeNestedDictionaries(key, dicts);
+    signature_ = enclosing_signature;
+    active_signature_ = enclosing_active_signature;
+    return result;
   }
 
  private:
+  // Looks up the signature for the field named |key| within the
+  // |enclosing_signature|. Returns the inner value signature if found,
+  // or nullptr if |enclosing_signature| is null or the field is not
+  // part of that signature.
+  const chromeos::onc::OncValueSignature* ResolveInnerSignature(
+      const chromeos::onc::OncValueSignature* enclosing_signature,
+      const std::string& key) {
+    if (!enclosing_signature) {
+      return nullptr;
+    }
+    const chromeos::onc::OncFieldSignature* field =
+        chromeos::onc::GetFieldSignature(*enclosing_signature, key);
+    return field ? field->value_signature : nullptr;
+  }
+
   raw_ptr<const chromeos::onc::OncValueSignature> signature_;
+  raw_ptr<const chromeos::onc::OncValueSignature> active_signature_;
 };
 
 }  // namespace

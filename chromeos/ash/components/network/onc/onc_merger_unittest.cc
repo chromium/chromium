@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "components/onc/onc_constants.h"
@@ -171,6 +172,57 @@ TEST_F(ONCMergerTest, MergeToAugmentedCellularApnList) {
       chromeos::onc::kNetworkConfigurationSignature, nullptr, &policy, nullptr,
       nullptr, nullptr);
   EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
+}
+
+TEST_F(ONCMergerTest, MergeToAugmentedCellularApnCredentials) {
+  // The active settings contain both the configurable APN and the read-only
+  // state APN dictionaries (LastGoodAPN, LastConnected*ApnProperty). All of
+  // them carry an APN Password which must be replaced with the fake
+  // credential placeholder in the augmented result.
+  auto make_apn = [] {
+    base::DictValue apn;
+    apn.Set(::onc::cellular_apn::kAccessPointName, "internet");
+    apn.Set(::onc::cellular_apn::kUsername, "user");
+    apn.Set(::onc::cellular_apn::kPassword, "apn-password");
+    return apn;
+  };
+
+  base::DictValue cellular;
+  cellular.Set(::onc::cellular::kAPN, make_apn());
+  cellular.Set(::onc::cellular::kLastGoodAPN, make_apn());
+  cellular.Set(::onc::cellular::kLastConnectedAttachApnProperty, make_apn());
+  cellular.Set(::onc::cellular::kLastConnectedDefaultApnProperty, make_apn());
+
+  base::DictValue active;
+  active.Set(::onc::network_config::kGUID, "cellular-guid");
+  active.Set(::onc::network_config::kType, ::onc::network_type::kCellular);
+  active.Set(::onc::network_config::kCellular, std::move(cellular));
+
+  base::DictValue merged = MergeSettingsAndPoliciesToAugmented(
+      chromeos::onc::kNetworkConfigurationSignature, /*user_policy=*/nullptr,
+      /*device_policy=*/nullptr, /*user_settings=*/nullptr,
+      /*shared_settings=*/nullptr, &active);
+
+  // Cellular.APN is part of the configuration signature so its fields are
+  // augmented and the password is masked.
+  EXPECT_EQ(policy_util::kFakeCredential,
+            *merged.FindStringByDottedPath("Cellular.APN.Password.Active"));
+
+  // The state-only APN dictionaries are returned as plain values; their
+  // passwords must still be masked while non-credential fields are preserved.
+  for (const char* key : {::onc::cellular::kLastGoodAPN,
+                          ::onc::cellular::kLastConnectedAttachApnProperty,
+                          ::onc::cellular::kLastConnectedDefaultApnProperty}) {
+    const base::DictValue* apn =
+        merged.FindDict(::onc::network_config::kCellular)->FindDict(key);
+    ASSERT_TRUE(apn) << key;
+    EXPECT_EQ("internet",
+              *apn->FindString(::onc::cellular_apn::kAccessPointName))
+        << key;
+    EXPECT_EQ(policy_util::kFakeCredential,
+              *apn->FindString(::onc::cellular_apn::kPassword))
+        << key;
+  }
 }
 
 }  // namespace merger
