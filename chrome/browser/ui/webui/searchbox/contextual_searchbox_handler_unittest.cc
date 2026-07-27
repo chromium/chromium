@@ -78,6 +78,7 @@
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -3471,6 +3472,47 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
     EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
   }
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_IncludesUnloadedTab) {
+  auto* loaded_tab = AddTab(GURL("https://www.google.com"));
+  auto unloaded_mock_tab = std::make_unique<tabs::MockTabInterface>();
+  tabs::TabInterface* unloaded_tab = unloaded_mock_tab.get();
+
+  ui::UnownedUserDataHost unloaded_user_data_host;
+  ON_CALL(*unloaded_mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unloaded_user_data_host));
+  ON_CALL(testing::Const(*unloaded_mock_tab), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unloaded_user_data_host));
+  ON_CALL(*unloaded_mock_tab, GetTabFeatures())
+      .WillByDefault(testing::Return(nullptr));
+  ON_CALL(testing::Const(*unloaded_mock_tab), GetTabFeatures())
+      .WillByDefault(testing::Return(nullptr));
+  ON_CALL(*unloaded_mock_tab, GetContents)
+      .WillByDefault(testing::Return(nullptr));
+  ON_CALL(*unloaded_mock_tab, GetURL)
+      .WillByDefault(testing::Return(GURL("https://www.unloaded.com")));
+  ON_CALL(*unloaded_mock_tab, GetTitle)
+      .WillByDefault(testing::Return(u"Unloaded Tab"));
+  ON_CALL(*unloaded_mock_tab, GetLastActiveTime)
+      .WillByDefault(testing::Return(base::Time::Now() - base::Days(10)));
+  ON_CALL(*unloaded_mock_tab, GetTabHandle).WillByDefault(testing::Return(999));
+
+  all_tabs_.push_back(unloaded_tab);
+  ON_CALL(*tab_list(), GetAllTabs()).WillByDefault(testing::Return(all_tabs_));
+
+  base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+  handler().GetRecentTabs(future.GetCallback());
+  auto tabs = future.Take();
+
+  ASSERT_EQ(tabs.size(), 2u);
+  EXPECT_EQ(tabs[0]->tab_id, loaded_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->tab_id, unloaded_tab->GetHandle().raw_value());
+  EXPECT_EQ(tabs[1]->url, GURL("https://www.unloaded.com"));
+  EXPECT_EQ(tabs[1]->title, "Unloaded Tab");
+
+  all_tabs_.pop_back();
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
