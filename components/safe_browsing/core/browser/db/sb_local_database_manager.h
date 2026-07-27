@@ -304,6 +304,19 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
       SBThreatType* most_severe_threat_type,
       ThreatMetadata* metadata);
 
+  // Helper method for shared v4 + v5 code to find the iterator for the pending
+  // check if relevant. Also logs a histogram.
+  // TODO(crbug.com/372395685): Collapse into OnFullHashResponseV5 on deprecate.
+  PendingChecks::const_iterator GetPendingCheckForFullHashResponse(
+      PendingCheck* check);
+
+  // Helper method for shared v4 + v5 code to remove the pending check and
+  // respond to the client. Also logs a histogram.
+  // TODO(crbug.com/372395685): Collapse into OnFullHashResponseV5 on deprecate.
+  void FinishFullHashResponse(std::unique_ptr<PendingCheck> check,
+                              PendingChecks::const_iterator it,
+                              base::TimeTicks start_processing);
+
   // Returns the SBThreatType for a given ListIdentifier.
   SBThreatType GetSBThreatTypeForList(const ListIdentifier& list_id);
 
@@ -343,9 +356,21 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Called when the |v4_get_hash_protocol_manager_| has the full hash response
   // available for the URL that we requested. It determines the severest
   // threat type and responds to the |client| with that information.
-  virtual void OnFullHashResponse(
+  // TODO(crbug.com/372395685): Deprecate with v4.
+  virtual void OnFullHashResponseV4(
       std::unique_ptr<PendingCheck> pending_check,
       const std::vector<FullHashInfo>& full_hash_infos);
+
+  // Called when the V5GetHashProtocolManager has the full hash response
+  // available for the URL that we requested. Responds to the client with that
+  // information.
+  //   - `pending_check`: The in-progress check awaiting response.
+  //   - `threat_type`: The most severe threat type identified.
+  //   - `metadata`: Metadata associated with the identified threat.
+  // TODO(crbug.com/372395685): Rename to OnFullHashResponse on v4 deprecation.
+  void OnFullHashResponseV5(std::unique_ptr<PendingCheck> pending_check,
+                            SBThreatType threat_type,
+                            const ThreatMetadata& metadata);
 
   // Performs the full hash checking of the URL in |check|.
   virtual void PerformFullHashCheck(std::unique_ptr<PendingCheck> check);

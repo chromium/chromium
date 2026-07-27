@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -31,6 +32,7 @@
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v5_update_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -39,6 +41,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // TODO(crbug.com/362791941): Handle v4 references
+// TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
 // TODO(crbug.com/362791941): Convert |comments| to `comments`
 // TODO(crbug.com/362791941): Change DCHECKs to CHECKs
 namespace safe_browsing {
@@ -268,6 +271,7 @@ SBLocalDatabaseManager::PendingCheck::PendingCheck(
       urls(urls),
       needs_full_hash_check_after_local_match(
           needs_full_hash_check_after_local_match) {
+  CHECK(client || client_callback_type == ClientCallbackType::CHECK_OTHER);
   for (const auto& url : urls) {
     SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   }
@@ -287,6 +291,7 @@ SBLocalDatabaseManager::PendingCheck::PendingCheck(
       stores_to_check(stores_to_check),
       needs_full_hash_check_after_local_match(
           needs_full_hash_check_after_local_match) {
+  CHECK(client || client_callback_type == ClientCallbackType::CHECK_OTHER);
   full_hashes.assign(full_hashes_set.begin(), full_hashes_set.end());
   DCHECK(full_hashes.size());
   full_hash_threat_types.assign(full_hashes.size(),
@@ -327,6 +332,7 @@ void SBLocalDatabaseManager::CollectDatabaseManagerInfo(
     sb_database_->CollectDatabaseInfo(
         database_manager_info->mutable_database_info());
   }
+  // TODO(crbug.com/362791941): update chrome://safe-browsing for v5
   if (v4_get_hash_protocol_manager_) {
     v4_get_hash_protocol_manager_->CollectFullHashCacheInfo(
         full_hash_cache_info);
@@ -373,6 +379,7 @@ void SBLocalDatabaseManager::CancelCheck(Client* client) {
     return;
   }
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
   // We can't use IsDatabaseReady() here because there's several expected cases
   // where a client could cancel while the request is still queued (e.g.
   // timeouts, tab being closed).
@@ -402,6 +409,7 @@ bool SBLocalDatabaseManager::CheckBrowseUrl(
     Client* client,
     CheckBrowseUrlType check_type) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
   DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
@@ -429,6 +437,7 @@ bool SBLocalDatabaseManager::CheckDownloadUrl(
     const std::vector<GURL>& url_chain,
     Client* client) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
 
   // We use `enabled_` here because `HandleCheck` queues checks that come in
   // before the database is ready.
@@ -449,6 +458,7 @@ bool SBLocalDatabaseManager::CheckExtensionIDs(
     const std::set<FullHashStr>& extension_ids,
     Client* client) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
 
   // We use `enabled_` here because `HandleCheck` queues checks that come in
   // before the database is ready.
@@ -519,6 +529,7 @@ void SBLocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 bool SBLocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
                                                           Client* client) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
 
   StoresToCheck stores_to_check(
       {GetUrlSocEngId(), GetUrlSubresourceFilterId()});
@@ -538,6 +549,7 @@ bool SBLocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
 AsyncMatch SBLocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
                                                         Client* client) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(client);
 
   StoresToCheck stores_to_check({GetUrlCsdAllowlistId()});
   // If any artificial matches are present, consider the allowlist as ready.
@@ -986,7 +998,7 @@ void SBLocalDatabaseManager::ScheduleFullHashCheck(
     }
 
     ui_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponse,
+        FROM_HERE, base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV4,
                                   weak_factory_.GetWeakPtr(), std::move(check),
                                   full_hash_infos));
   } else {
@@ -1013,17 +1025,86 @@ void SBLocalDatabaseManager::HandleUrl(
                    base::BindOnce(&HandleUrlCallback, std::move(callback)));
 }
 
-void SBLocalDatabaseManager::OnFullHashResponse(
-    std::unique_ptr<PendingCheck> check,
-    const std::vector<FullHashInfo>& full_hash_infos) {
+SBLocalDatabaseManager::PendingChecks::const_iterator
+SBLocalDatabaseManager::GetPendingCheckForFullHashResponse(
+    PendingCheck* check) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!check->get_full_hash_request_start_time.is_null()) {
+    // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
     base::UmaHistogramTimes(
         "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration",
         now - check->get_full_hash_request_start_time);
   }
+  CHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+
+  if (!IsDatabaseReady()) {
+    CHECK(pending_checks_.empty());
+    return pending_checks_.end();
+  }
+
+  const auto it = pending_checks_.find(check);
+  if (it == pending_checks_.end()) {
+    // The check has since been cancelled.
+    return pending_checks_.end();
+  }
+
+  return it;
+}
+
+void SBLocalDatabaseManager::OnFullHashResponseV4(
+    std::unique_ptr<PendingCheck> check,
+    const std::vector<FullHashInfo>& full_hash_infos) {
+  auto it = GetPendingCheckForFullHashResponse(check.get());
+  if (it == pending_checks_.end()) {
+    return;
+  }
+
+  base::TimeTicks start_processing = base::TimeTicks::Now();
+  // Find out the most severe threat, if any, to report to the client.
+  GetSeverestThreatTypeAndMetadata(
+      full_hash_infos, check->full_hashes, &check->full_hash_threat_types,
+      &check->most_severe_threat_type, &check->url_metadata);
+
+  FinishFullHashResponse(std::move(check), it, start_processing);
+}
+
+void SBLocalDatabaseManager::FinishFullHashResponse(
+    std::unique_ptr<PendingCheck> check,
+    PendingChecks::const_iterator it,
+    base::TimeTicks start_processing) {
+  // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
+  base::UmaHistogramTimes(
+      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration",
+      base::TimeTicks::Now() - start_processing);
+
+  RemovePendingCheck(it);
+  RespondToClient(std::move(check));
+}
+
+void SBLocalDatabaseManager::OnFullHashResponseV5(
+    std::unique_ptr<PendingCheck> check,
+    SBThreatType threat_type,
+    const ThreatMetadata& metadata) {
+  auto it = GetPendingCheckForFullHashResponse(check.get());
+  if (it == pending_checks_.end()) {
+    return;
+  }
+
+  base::TimeTicks start_processing = base::TimeTicks::Now();
+  check->most_severe_threat_type = threat_type;
+  check->url_metadata = metadata;
+
+  FinishFullHashResponse(std::move(check), it, start_processing);
+}
+
+void SBLocalDatabaseManager::PerformFullHashCheck(
+    std::unique_ptr<PendingCheck> check) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
+  DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
+
+  // If the database isn't ready, the service has been turned off, so silently
+  // drop the check.
   if (!IsDatabaseReady()) {
     DCHECK(pending_checks_.empty());
     return;
@@ -1035,43 +1116,56 @@ void SBLocalDatabaseManager::OnFullHashResponse(
     return;
   }
 
-  base::TimeTicks start_processing = base::TimeTicks::Now();
-  // Find out the most severe threat, if any, to report to the client.
-  GetSeverestThreatTypeAndMetadata(
-      full_hash_infos, check->full_hashes, &check->full_hash_threat_types,
-      &check->most_severe_threat_type, &check->url_metadata);
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration",
-      base::TimeTicks::Now() - start_processing);
-
-  RemovePendingCheck(it);
-  RespondToClient(std::move(check));
-}
-
-void SBLocalDatabaseManager::PerformFullHashCheck(
-    std::unique_ptr<PendingCheck> check) {
-  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
-
-  // If the database isn't ready, the service has been turned off, so silently
-  // drop the check.
-  if (IsDatabaseReady()) {
-    if (!check->get_full_hash_queue_start_time.is_null()) {
-      base::UmaHistogramTimes(
-          "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay",
-          base::TimeTicks::Now() - check->get_full_hash_queue_start_time);
-    }
-    check->get_full_hash_request_start_time = base::TimeTicks::Now();
-    FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
-        check->full_hash_to_store_and_hash_prefixes;
-    v4_get_hash_protocol_manager_->GetFullHashes(
-        full_hash_to_store_and_hash_prefixes, list_client_states_,
-        base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponse,
-                       weak_factory_.GetWeakPtr(), std::move(check)));
-  } else {
-    DCHECK(pending_checks_.empty());
+  if (!check->get_full_hash_queue_start_time.is_null()) {
+    // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
+    base::UmaHistogramTimes(
+        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay",
+        base::TimeTicks::Now() - check->get_full_hash_queue_start_time);
   }
+  check->get_full_hash_request_start_time = base::TimeTicks::Now();
+
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    CHECK(check->client);
+    base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager =
+        check->client->GetV5GetHashProtocolManager();
+
+    if (!v5_get_hash_protocol_manager) {
+      OnFullHashResponseV5(std::move(check),
+                           /*threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
+                           /*metadata=*/ThreatMetadata());
+      return;
+    }
+
+    // TODO(crbug.com/362791941): Can we eliminate copies?
+    std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+    for (const auto& [full_hash, store_and_prefixes] :
+         check->full_hash_to_store_and_hash_prefixes) {
+      full_hash_to_threat_types[full_hash] = base::ToVector(
+          store_and_prefixes, [this](const auto& store_and_prefix) {
+            return GetSBThreatTypeForList(store_and_prefix.list_id);
+          });
+    }
+    v5_get_hash_protocol_manager->GetFullHashes(
+        full_hash_to_threat_types,
+        // Wrap with WrapCallbackWithDefaultInvokeIfNotRun to ensure
+        // OnFullHashResponseV5 runs if V5GetHashProtocolManager is destroyed,
+        // which ensure the caller gets a response and removes the check from
+        // pending_checks_.
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV5,
+                           weak_factory_.GetWeakPtr(), std::move(check)),
+            /*threat_type=*/SBThreatType::SB_THREAT_TYPE_SAFE,
+            /*metadata=*/ThreatMetadata()));
+    return;
+  }
+
+  CHECK(v4_get_hash_protocol_manager_);
+  FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
+      check->full_hash_to_store_and_hash_prefixes;
+  v4_get_hash_protocol_manager_->GetFullHashes(
+      full_hash_to_store_and_hash_prefixes, list_client_states_,
+      base::BindOnce(&SBLocalDatabaseManager::OnFullHashResponseV4,
+                     weak_factory_.GetWeakPtr(), std::move(check)));
 }
 
 void SBLocalDatabaseManager::ProcessQueuedChecks() {

@@ -482,6 +482,7 @@ class SBProtocolManagerUtil {
 
   // Stores the client state values for each of the lists in |store_state_map|
   // into |list_client_states|.
+  // TODO(crbug.com/372395685): Deprecate with v4.
   static void GetListClientStatesFromStoreStateMap(
       const std::unique_ptr<StoreStateMap>& store_state_map,
       std::vector<std::string>* list_client_states);
