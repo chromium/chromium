@@ -362,6 +362,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
   web::WebState* lastKnownWebState = webStateList->GetWebStateAt(index);
   if (IsUrlNtp(lastKnownWebState->GetVisibleURL())) {
+    lastKnownWebState->ForceRealized();
     NewTabPageTabHelper::FromWebState(lastKnownWebState)
         ->SetShowStartSurface(true);
     webStateList->ActivateWebStateAt(index);
