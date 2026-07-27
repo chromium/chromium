@@ -194,33 +194,7 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  // Create DisplayLinkMacMojo only after FrameSinkManager and display::Screen
-  // are available. FrameSinkManager is established in
-  // ConnectHostFrameSinkManager(), but display::Screen is not available in that
-  // function in Content Shell. (Note: display::Screen is available and not an
-  // issue there when running on Chrome.)
-  // CADisplayLink is not used in headless mode
-  // (use_external_begin_frame_control()).
-  if (!compositor->use_external_begin_frame_control() &&
-      !vsync_thread_task_posted_ && !display_link_mac_mojo_ &&
-      ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
-    vsync_thread_task_posted_ = true;
-    // Delay the creation of DisplayLinkMacMojo (which starts the dedicated
-    // browser-side VSyncThread) to prevent desktop startup performance
-    // regressions.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<VizProcessTransportFactory> weak_this) {
-              if (weak_this && !weak_this->display_link_mac_mojo_) {
-                weak_this->display_link_mac_mojo_ =
-                    std::make_unique<ui::DisplayLinkMacMojo>(
-                        weak_this->GetHostFrameSinkManager());
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(60));
-  }
+  CreateDisplayLinkMacMojoIfNeeded(compositor);
 #endif
 
   gpu_channel_establish_factory_->EstablishGpuChannel(
@@ -586,6 +560,51 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
 
   return gpu::ContextResult::kSuccess;
 }
+
+#if BUILDFLAG(IS_MAC)
+void VizProcessTransportFactory::CreateDisplayLinkMacMojoIfNeeded(
+    base::WeakPtr<ui::Compositor> compositor) {
+  // Headless mode (use_external_begin_frame_control()) does not use
+  // CADisplayLink.
+  if (compositor->use_external_begin_frame_control() ||
+      !ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return;
+  }
+
+  // Create only one CADisplayLinkMojo/VSyncThread.
+  if (vsync_thread_task_posted_ || display_link_mac_mojo_) {
+    return;
+  }
+
+  // Create DisplayLinkMacMojo only after FrameSinkManager and display::Screen
+  // are available. FrameSinkManager is established in
+  // ConnectHostFrameSinkManager(), but display::Screen is not available in that
+  // function in Content Shell. (Note: display::Screen is available and not an
+  // issue there when running on Chrome.)
+  if (ui::NoDelayForVSyncThread()) {
+    display_link_mac_mojo_ =
+        std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
+  } else {
+    vsync_thread_task_posted_ = true;
+
+    // Delay the creation of DisplayLinkMacMojo (which starts the dedicated
+    // browser-side VSyncThread) to prevent desktop startup performance
+    // regressions.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<VizProcessTransportFactory> weak_this) {
+              if (weak_this && !weak_this->display_link_mac_mojo_) {
+                weak_this->display_link_mac_mojo_ =
+                    std::make_unique<ui::DisplayLinkMacMojo>(
+                        weak_this->GetHostFrameSinkManager());
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(60));
+  }
+}
+#endif
 
 VizProcessTransportFactory::CompositorData::CompositorData() = default;
 VizProcessTransportFactory::CompositorData::CompositorData(

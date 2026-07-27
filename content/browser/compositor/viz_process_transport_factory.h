@@ -119,6 +119,9 @@ class VizProcessTransportFactory : public ui::ContextFactory,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
 #if BUILDFLAG(IS_MAC)
+  void CreateDisplayLinkMacMojoIfNeeded(
+      base::WeakPtr<ui::Compositor> compositor);
+
   // Whether a delayedTask that creates DisplayLinkMacMojo and launches
   // VSyncThread has been posted.
   bool vsync_thread_task_posted_ = false;
