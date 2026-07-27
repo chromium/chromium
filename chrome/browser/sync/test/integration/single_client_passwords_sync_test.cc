@@ -41,7 +41,6 @@ namespace {
 
 using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetAccountPasswordStoreInterface;
-using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
@@ -139,58 +138,26 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-class SingleClientPasswordsSyncTestWithVerifier
-    : public SingleClientPasswordsSyncTest {
- public:
-  SingleClientPasswordsSyncTestWithVerifier() = default;
-  ~SingleClientPasswordsSyncTestWithVerifier() override = default;
-
-  PasswordStoreInterface* GetVerifierPasswordStoreInterface() {
-    return passwords_helper::GetVerifierPasswordStoreInterface(GetStoreType());
-  }
-
-  int GetVerifierPasswordCount() const {
-    return passwords_helper::GetVerifierPasswordCount(GetStoreType());
-  }
-
-  bool UseVerifier() override {
-    // TODO(crbug.com/40152785): rewrite tests to not use verifier.
-    return true;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientPasswordsSyncTestWithVerifier,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier, Sanity) {
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
 
   PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
-  GetVerifierPasswordStoreInterface()->AddLogin(
-      password_manager::FromPasswordForm(form));
-  ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(ProfileContainsSamePasswordFormsAsVerifier(0, GetStoreType()));
-  ASSERT_EQ(1, GetPasswordCount());
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
+  EXPECT_EQ(1, GetPasswordCount());
 }
 
 // Verifies that committed passwords contain the appropriate proto fields, and
 // in particular lack some others that could potentially contain unencrypted
 // data. In this test, custom passphrase is NOT set.
-IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
                        CommitWithoutCustomPassphrase) {
   ASSERT_TRUE(SetupSync());
 
   PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
-  GetVerifierPasswordStoreInterface()->AddLogin(
-      password_manager::FromPasswordForm(form));
-  ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
@@ -215,15 +182,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
 
 // Same as above but with custom passphrase set, which requires to prune commit
 // data even further.
-IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
                        CommitWithCustomPassphrase) {
   ASSERT_TRUE(SetupSync());
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
 
   PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
-  GetVerifierPasswordStoreInterface()->AddLogin(
-      password_manager::FromPasswordForm(form));
-  ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());
@@ -241,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
 
 // Tests the scenario when a syncing user enables a custom passphrase. PASSWORDS
 // should be recommitted with the new encryption key.
-IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
+IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
                        ReencryptsDataWhenPassphraseIsSet) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
@@ -249,9 +213,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTestWithVerifier,
           .Wait());
 
   PasswordForm form = CreateTestPasswordForm(0, GetStoreType());
-  GetVerifierPasswordStoreInterface()->AddLogin(
-      password_manager::FromPasswordForm(form));
-  ASSERT_EQ(1, GetVerifierPasswordCount());
   GetPasswordStoreInterface()->AddLogin(
       password_manager::FromPasswordForm(form));
   ASSERT_EQ(1, GetPasswordCount());

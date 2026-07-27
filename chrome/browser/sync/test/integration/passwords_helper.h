@@ -48,32 +48,13 @@ void RemoveLogins(password_manager::PasswordStoreInterface* store);
 password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
     int index);
 
-// Gets the profile password store of the verifier profile.
-password_manager::PasswordStoreInterface*
-GetVerifierProfilePasswordStoreInterface();
-
 // Gets the account-scoped password store of the profile with index |index|.
 password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
     int index);
 
-// Gets the account password store of the verifier profile.
-password_manager::PasswordStoreInterface*
-GetVerifierAccountPasswordStoreInterface();
-
 // Gets either the profile-scoped or the account-scoped password store of the
 // profile with index |index|.
 password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
-    int index,
-    password_manager::PasswordForm::Store store);
-
-// Gets either the profile-scoped or the account-scoped password store of the
-// verifier profile.
-password_manager::PasswordStoreInterface* GetVerifierPasswordStoreInterface(
-    password_manager::PasswordForm::Store store);
-
-// Returns true iff the profile with index |index| contains the same password
-// forms as the verifier profile.
-bool ProfileContainsSamePasswordFormsAsVerifier(
     int index,
     password_manager::PasswordForm::Store store);
 
@@ -84,11 +65,6 @@ bool ProfilesContainSamePasswordForms(
     int index_b,
     password_manager::PasswordForm::Store store);
 
-// Returns true iff all profiles contain the same password forms as the
-// verifier profile.
-bool AllProfilesContainSamePasswordFormsAsVerifier(
-    password_manager::PasswordForm::Store store);
-
 // Returns true iff all profiles contain the same password forms.
 bool AllProfilesContainSamePasswordForms(
     password_manager::PasswordForm::Store store);
@@ -96,9 +72,6 @@ bool AllProfilesContainSamePasswordForms(
 // Returns the number of forms in the password store of the profile with index
 // |index|.
 int GetPasswordCount(int index, password_manager::PasswordForm::Store store);
-
-// Returns the number of forms in the password store of the verifier profile.
-int GetVerifierPasswordCount(password_manager::PasswordForm::Store store);
 
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
@@ -164,25 +137,6 @@ class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const password_manager::PasswordForm::Store store_;
-  bool in_progress_ = false;
-  bool needs_recheck_ = false;
-};
-
-// Checker to block until specified profile contains the same password forms as
-// the verifier.
-class SamePasswordFormsAsVerifierChecker
-    : public SingleClientStatusChangeChecker {
- public:
-  explicit SamePasswordFormsAsVerifierChecker(
-      int index,
-      password_manager::PasswordForm::Store store);
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
- private:
-  const int index_;
   const password_manager::PasswordForm::Store store_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;
