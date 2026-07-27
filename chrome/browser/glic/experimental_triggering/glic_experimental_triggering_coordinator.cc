@@ -589,21 +589,24 @@ class ExperimentalTriggeringUpdatesHandler
         screenshot_req.public_key, screenshot_req.auth_secret,
         base::BindOnce(
             [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> handler,
+               std::vector<uint8_t> request_token,
                const std::optional<std::string>& file_token) {
               if (!handler) {
                 return;
               }
               if (file_token.has_value()) {
                 handler->SendScreenshotResult(
-                    ScreenshotResult::Status::kSuccess, *file_token);
+                    ScreenshotResult::Status::kSuccess, *file_token,
+                    /*error_message=*/{}, std::move(request_token));
               } else {
                 handler->SendScreenshotResult(
                     ScreenshotResult::Status::kErrorCapture,
                     /*file_token=*/std::string_view(),
-                    "Failed to capture or upload screenshot.");
+                    "Failed to capture or upload screenshot.",
+                    std::move(request_token));
               }
             },
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetWeakPtr(), screenshot_req.request_token));
 
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
@@ -773,7 +776,8 @@ class ExperimentalTriggeringUpdatesHandler
 
   void SendScreenshotResult(ScreenshotResult::Status status,
                             std::string_view file_token = {},
-                            std::string_view error_message = {}) {
+                            std::string_view error_message = {},
+                            std::vector<uint8_t> request_token = {}) {
     if (update_callback_) {
       ExperimentalTriggeringResponse response =
           CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
@@ -785,6 +789,9 @@ class ExperimentalTriggeringUpdatesHandler
       }
       if (!error_message.empty()) {
         result.error_message = std::string(error_message);
+      }
+      if (!request_token.empty()) {
+        result.request_token = std::move(request_token);
       }
       response.screenshot_result = std::move(result);
       update_callback_.Run(std::move(response));

@@ -155,6 +155,11 @@ ExperimentalTriggeringRequest ProtoToRequest(
           screenshot_req.auth_secret = {screenshot_proto.auth_secret().begin(),
                                         screenshot_proto.auth_secret().end()};
         }
+        if (screenshot_proto.has_request_token()) {
+          screenshot_req.request_token = {
+              screenshot_proto.request_token().begin(),
+              screenshot_proto.request_token().end()};
+        }
         request.payload = std::move(screenshot_req);
         break;
       }
@@ -270,6 +275,11 @@ components_sharing_message::SharingMessage ResponseToProto(
     if (!response.screenshot_result->error_message.empty()) {
       proto_screenshot->set_error_message(
           response.screenshot_result->error_message);
+    }
+    if (!response.screenshot_result->request_token.empty()) {
+      proto_screenshot->set_request_token(
+          response.screenshot_result->request_token.data(),
+          response.screenshot_result->request_token.size());
     }
   }
 

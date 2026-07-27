@@ -1439,6 +1439,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
           ->mutable_get_screenshot_request();
   screenshot_req->set_public_key(public_key_str);
   screenshot_req->set_auth_secret(auth_secret_str);
+  screenshot_req->set_request_token("test_request_token");
 
   base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
                          components_sharing_message::SharingMessage>
@@ -1476,6 +1477,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                 ExperimentalTriggeringResponse::ScreenshotResult::SUCCESS);
   EXPECT_EQ(result.file_token(), "mock_file_token_from_client");
   EXPECT_TRUE(result.error_message().empty());
+  EXPECT_EQ(result.request_token(), "test_request_token");
 }
 
 class GlicExperimentalTriggeringOpenWindowTest

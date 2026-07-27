@@ -100,6 +100,7 @@ struct RequestPayloadNotSet {};
 struct GetScreenshotRequest {
   std::vector<uint8_t> public_key;
   std::vector<uint8_t> auth_secret;
+  std::vector<uint8_t> request_token;
 };
 
 // Incoming request payload container for experimental triggering.
@@ -131,6 +132,7 @@ struct ScreenshotResult {
   Status status = Status::kUnspecified;
   std::string file_token;
   std::string error_message;
+  std::vector<uint8_t> request_token;
 };
 
 // Outgoing response container for experimental triggering.

@@ -72,6 +72,9 @@ message GlicExperimentalTriggering {
 
       // Ephemeral auth secret.
       optional bytes auth_secret = 2;
+
+      // Opaque identifier to correlate this request with its response.
+      optional bytes request_token = 3;
     }
 
     oneof payload {
@@ -147,6 +150,8 @@ message GlicExperimentalTriggering {
       optional string file_token = 2;
       // Detailed error message.
       optional string error_message = 3;
+      // Opaque identifier to correlate this response with its request.
+      optional bytes request_token = 4;
     }
 
     oneof payload {
