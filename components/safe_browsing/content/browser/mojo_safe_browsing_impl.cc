@@ -146,7 +146,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*hash_realtime_selection=*/
       hash_realtime_utils::HashRealTimeSelection::kNone,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+      /*tab_id=*/SessionID::InvalidValue(),
+      /*referring_app_info=*/std::nullopt,
+      /*v5_get_hash_protocol_manager=*/nullptr);
   auto weak_impl = checker_impl->WeakPtr();
 
   checker_impl->CheckUrl(url, method,

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
@@ -43,6 +45,33 @@ namespace safe_browsing {
 namespace {
 
 constexpr char kAllowlistedUrl[] = "https://allowlisted.url/";
+
+class V5TestingDatabaseManager : public TestSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager()
+      : TestSafeBrowsingDatabaseManager(
+            base::SequencedTaskRunner::GetCurrentDefault()) {}
+
+  bool CheckBrowseUrl(const GURL& gurl,
+                      const SBThreatTypeSet& threat_types,
+                      Client* client,
+                      CheckBrowseUrlType check_type) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+    }
+    return TestSafeBrowsingDatabaseManager::CheckBrowseUrl(gurl, threat_types,
+                                                           client, check_type);
+  }
+
+  base::WeakPtr<V5GetHashProtocolManager> v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ private:
+  ~V5TestingDatabaseManager() override = default;
+
+  base::WeakPtr<V5GetHashProtocolManager> v5_manager_from_client_;
+};
 
 // A matcher for threat source in UnsafeResource.
 MATCHER_P(IsSameThreatSource, threatSource, "") {
@@ -448,6 +477,9 @@ struct CreateSafeBrowsingUrlCheckerOptionalArgs {
   std::string url_lookup_service_metric_suffix = ".Enterprise";
   bool check_allowlist_before_hash_database = false;
   std::optional<int64_t> navigation_id = std::nullopt;
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager =
+      nullptr;
+  scoped_refptr<UrlCheckerDelegate> url_checker_delegate = nullptr;
 };
 
 // Has same API as
@@ -503,7 +535,9 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         mock_web_contents_getter;
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
-        /*has_user_gesture=*/false, url_checker_delegate_,
+        /*has_user_gesture=*/false,
+        optional_args.url_checker_delegate ? optional_args.url_checker_delegate
+                                           : url_checker_delegate_,
         mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
         UnsafeResource::kNoRenderProcessId, std::nullopt,
         UnsafeResource::kNoFrameTreeNodeId, optional_args.navigation_id,
@@ -518,7 +552,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         hash_real_time_selection,
         /*is_async_check=*/false,
         optional_args.check_allowlist_before_hash_database,
-        SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
+        SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
+        optional_args.v5_get_hash_protocol_manager);
   }
 
  protected:
@@ -2396,6 +2431,38 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_AllowlistCheckLoggingDetails) {
       }
     }
   }
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, GetV5GetHashProtocolManager) {
+  scoped_refptr<V5TestingDatabaseManager> v5_db_manager =
+      base::MakeRefCounted<V5TestingDatabaseManager>();
+  scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate =
+      base::MakeRefCounted<MockUrlCheckerDelegate>(v5_db_manager.get());
+
+  V5GetHashProtocolManager v5_protocol_manager(
+      /*url_loader_factory=*/nullptr,
+      V4ProtocolConfig("test", false, "key", "1.0"),
+      /*cache=*/nullptr);
+
+  auto checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      {.v5_get_hash_protocol_manager = v5_protocol_manager.GetWeakPtr(),
+       .url_checker_delegate = url_checker_delegate});
+
+  base::RunLoop run_loop;
+  checker->CheckUrl(
+      GURL("https://example.com/"), "GET",
+      base::BindLambdaForTesting(
+          [&](bool proceed, bool showed_interstitial, bool did_match_allowlist,
+              SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+  EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
+            &v5_protocol_manager);
 }
 
 }  // namespace safe_browsing

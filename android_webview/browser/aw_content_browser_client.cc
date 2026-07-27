@@ -807,15 +807,16 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
           },
           base::Unretained(this)),
       wc_getter, frame_tree_node_id, navigation_id,
-      // TODO(crbug.com/40663467): rt_lookup_service is
+      // TODO(crbug.com/40663467): url_lookup_service is
       // used to perform real time URL check, which is gated by UKM opted-in.
       // Since AW currently doesn't support UKM, this feature is not enabled.
-      /* rt_lookup_service */ nullptr,
-      /* hash_realtime_service */ nullptr,
-      /* hash_realtime_selection */
+      /*url_lookup_service=*/nullptr,
+      /*hash_realtime_service=*/nullptr,
+      /*hash_realtime_selection=*/
       hash_real_time_selection,
-      /* async_check_tracker */ async_check_tracker,
-      /*referring_app_info=*/std::nullopt));
+      /*async_check_tracker=*/async_check_tracker,
+      /*referring_app_info=*/std::nullopt,
+      /*v5_get_hash_protocol_manager=*/nullptr));
 
   if (browser_context &&
       base::FeatureList::IsEnabled(

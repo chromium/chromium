@@ -13,6 +13,8 @@
 
 namespace safe_browsing {
 
+class V5GetHashProtocolManager;
+
 // This performs Safe Browsing checks using the database manager.
 class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
                                  public SafeBrowsingDatabaseManager::Client {
@@ -22,7 +24,8 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       CheckBrowseUrlType check_type,
-      bool check_allowlist);
+      bool check_allowlist,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
 
   DatabaseManagerMechanism(const DatabaseManagerMechanism&) = delete;
   DatabaseManagerMechanism& operator=(const DatabaseManagerMechanism&) = delete;
@@ -52,6 +55,8 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
   // SafeBrowsingDatabaseManager::Client implementation:
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type) override;
+  base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
+      override;
 
   ThreatSource GetThreatSource() const;
 
@@ -72,6 +77,9 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
   // The type of check that is passed into |CheckBrowseUrl| on the
   // database manager.
   CheckBrowseUrlType check_type_;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
 
   base::WeakPtrFactory<DatabaseManagerMechanism> weak_factory_{this};
 };

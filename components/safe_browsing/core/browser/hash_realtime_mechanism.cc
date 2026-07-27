@@ -9,6 +9,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/common/utils.h"
 
@@ -19,10 +20,13 @@ HashRealTimeMechanism::HashRealTimeMechanism(
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<HashRealTimeService> lookup_service_on_ui)
+    base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager)
     : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       ui_task_runner_(ui_task_runner),
-      lookup_service_on_ui_(lookup_service_on_ui) {}
+      lookup_service_on_ui_(lookup_service_on_ui),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {}
 
 HashRealTimeMechanism::~HashRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,8 +131,9 @@ void HashRealTimeMechanism::PerformHashBasedCheck(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
-      url, threat_types_, database_manager_, CheckBrowseUrlType::kHashDatabase,
-      /*check_allowlist=*/false);
+      url, threat_types_, database_manager_,
+      /*check_type=*/CheckBrowseUrlType::kHashDatabase,
+      /*check_allowlist=*/false, v5_get_hash_protocol_manager_);
   auto result = hash_database_mechanism_->StartCheck(
       base::BindOnce(&HashRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
                      weak_factory_.GetWeakPtr(), fallback_trigger));

@@ -24,6 +24,7 @@
 namespace safe_browsing {
 
 class RealTimeUrlLookupServiceBase;
+class V5GetHashProtocolManager;
 
 // This performs the real-time URL Safe Browsing check.
 class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
@@ -43,7 +44,8 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
       SessionID tab_id,
       std::unique_ptr<SafeBrowsingLookupMechanism>
           hash_realtime_lookup_mechanism,
-      std::optional<internal::ReferringAppInfo> referring_app_info);
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
   UrlRealTimeMechanism(const UrlRealTimeMechanism&) = delete;
   UrlRealTimeMechanism& operator=(const UrlRealTimeMechanism&) = delete;
   ~UrlRealTimeMechanism() override;
@@ -185,6 +187,9 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // The Android app that launched a Chrome activity.
   std::optional<internal::ReferringAppInfo> referring_app_info_;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
 
   base::OnceCallback<void(std::unique_ptr<ClientSafeBrowsingReportRequest>)>
       save_report_info_for_testing_;

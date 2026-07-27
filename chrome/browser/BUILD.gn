@@ -1197,6 +1197,7 @@ source_set("core") {
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referring_app_info",
+    "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
     "//components/safe_browsing/core/browser/realtime:policy_engine",

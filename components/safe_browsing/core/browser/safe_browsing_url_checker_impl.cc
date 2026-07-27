@@ -155,7 +155,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool is_async_check,
     bool check_allowlist_before_hash_database,
     SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info)
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager)
     : headers_(headers),
       load_flags_(load_flags),
       has_user_gesture_(has_user_gesture),
@@ -179,7 +180,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       check_allowlist_before_hash_database_(
           check_allowlist_before_hash_database),
       tab_id_(tab_id),
-      referring_app_info_(referring_app_info) {
+      referring_app_info_(referring_app_info),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 }
 
@@ -459,12 +461,13 @@ SafeBrowsingUrlCheckerImpl::GetHashRealTimeLookupMechanism(
   if (can_use_hash_real_time_service) {
     return std::make_unique<HashRealTimeMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        ui_task_runner_, hash_realtime_service_on_ui_);
+        ui_task_runner_, hash_realtime_service_on_ui_,
+        v5_get_hash_protocol_manager_);
   }
   return std::make_unique<DatabaseManagerMechanism>(
       url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-      CheckBrowseUrlType::kHashRealTime,
-      /*check_allowlist=*/false);
+      /*check_type=*/CheckBrowseUrlType::kHashRealTime,
+      /*check_allowlist=*/false, v5_get_hash_protocol_manager_);
 }
 
 SafeBrowsingUrlCheckerImpl::KickOffLookupMechanismResult
@@ -510,7 +513,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
                   url, can_use_hash_real_time_service_background_only,
                   can_use_hash_real_time_db_manager_background_only)
             : nullptr,
-        referring_app_info_);
+        referring_app_info_, v5_get_hash_protocol_manager_);
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
         SafeBrowsingLookupMechanism::StartCheckResult(
@@ -525,8 +528,9 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
     performed_check = PerformedCheck::kHashDatabaseCheck;
     lookup_mechanism = std::make_unique<DatabaseManagerMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        CheckBrowseUrlType::kHashDatabase,
-        /*check_allowlist=*/check_allowlist_before_hash_database_);
+        /*check_type=*/CheckBrowseUrlType::kHashDatabase,
+        /*check_allowlist=*/check_allowlist_before_hash_database_,
+        v5_get_hash_protocol_manager_);
   }
   DCHECK(performed_check != PerformedCheck::kUnknown);
   lookup_mechanism_runner_ =

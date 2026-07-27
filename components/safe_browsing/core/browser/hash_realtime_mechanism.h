@@ -15,6 +15,8 @@
 
 namespace safe_browsing {
 
+class V5GetHashProtocolManager;
+
 // This performs the hash-prefix real-time Safe Browsing check.
 class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
  public:
@@ -23,7 +25,8 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::WeakPtr<HashRealTimeService> lookup_service_on_ui);
+      base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
   HashRealTimeMechanism(const HashRealTimeMechanism&) = delete;
   HashRealTimeMechanism& operator=(const HashRealTimeMechanism&) = delete;
   ~HashRealTimeMechanism() override;
@@ -85,6 +88,9 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // This will be created in cases where the hash-prefix real-time check decides
   // to fall back to the hash-based database checks.
   std::unique_ptr<DatabaseManagerMechanism> hash_database_mechanism_ = nullptr;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
 
   base::WeakPtrFactory<HashRealTimeMechanism> weak_factory_{this};
 };

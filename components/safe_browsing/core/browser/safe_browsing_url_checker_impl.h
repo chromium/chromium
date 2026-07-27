@@ -32,6 +32,7 @@ class WebContents;
 namespace safe_browsing {
 
 class RealTimeUrlLookupServiceBase;
+class V5GetHashProtocolManager;
 
 // A SafeBrowsingUrlCheckerImpl instance is used to perform SafeBrowsing check
 // for a URL and its redirect URLs. It implements Mojo interface so that it can
@@ -83,7 +84,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // any. These two must be computed in advance, since this class only exists
   // on the IO thread.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
-  // object.
+  // object. |v5_get_hash_protocol_manager| is the protocol manager used for
+  // Safe Browsing v5 lookups.
   // TODO(crbug.com/40704516): Add an iOS-specific WebUIDelegate implementation
   // and pass it here to log URT requests/responses on open
   // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
@@ -113,7 +115,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       bool is_async_check,
       bool check_allowlist_before_hash_database,
       SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info);
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
   SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =
@@ -354,6 +357,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // The Android app that launched Chrome.
   std::optional<internal::ReferringAppInfo> referring_app_info_;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

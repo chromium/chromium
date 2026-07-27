@@ -190,7 +190,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
             is_async_check,
             /*check_allowlist_before_hash_database=*/false,
             SessionID::InvalidValue(),
-            /*referring_app_info=*/std::nullopt) {}
+            /*referring_app_info=*/std::nullopt,
+            /*v5_get_hash_protocol_manager=*/nullptr) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -308,7 +309,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             ? hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService
             : hash_realtime_utils::HashRealTimeSelection::kNone,
         async_check_tracker_ ? async_check_tracker_->GetWeakPtr() : nullptr,
-        /*referring_app_info=*/std::nullopt);
+        /*referring_app_info=*/std::nullopt,
+        /*v5_get_hash_protocol_manager=*/nullptr);
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();

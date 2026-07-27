@@ -15,6 +15,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -110,13 +111,15 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
     base::WeakPtr<AsyncCheckTracker> async_check_tracker,
-    std::optional<internal::ReferringAppInfo> referring_app_info) {
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager) {
   return base::WrapUnique<BrowserURLLoaderThrottle>(
       new BrowserURLLoaderThrottle(
           std::move(delegate_getter), web_contents_getter, frame_tree_node_id,
           navigation_id, url_lookup_service, hash_realtime_service,
           hash_realtime_selection, async_check_tracker,
-          std::move(referring_app_info)));
+          std::move(referring_app_info), v5_get_hash_protocol_manager));
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
@@ -128,7 +131,9 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
     base::WeakPtr<AsyncCheckTracker> async_check_tracker,
-    std::optional<internal::ReferringAppInfo> referring_app_info)
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager)
     : async_check_tracker_(async_check_tracker),
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
@@ -137,7 +142,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       navigation_id_(navigation_id),
       delegate_getter_(delegate_getter),
       web_contents_getter_(web_contents_getter),
-      referring_app_info_(referring_app_info) {
+      referring_app_info_(referring_app_info),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
@@ -241,7 +247,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*is_async_check=*/false,
         /*check_allowlist_before_hash_database=*/
         async_check_tracker_->should_sync_checker_check_allowlist(),
-        SessionID::InvalidValue(), referring_app_info_);
+        /*tab_id=*/SessionID::InvalidValue(), referring_app_info_,
+        v5_get_hash_protocol_manager_);
     async_sb_checker_ = std::make_unique<UrlCheckerHolder>(
         delegate_getter_, frame_tree_node_id_, navigation_id_,
         web_contents_getter_,
@@ -252,7 +259,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
-        tab_id_, referring_app_info_);
+        tab_id_, referring_app_info_, v5_get_hash_protocol_manager_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }
@@ -271,7 +278,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         /*is_async_check=*/false,
         /*check_allowlist_before_hash_database=*/false, tab_id_,
-        referring_app_info_);
+        referring_app_info_, v5_get_hash_protocol_manager_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }

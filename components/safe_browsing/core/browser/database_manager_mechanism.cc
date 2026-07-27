@@ -7,6 +7,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 
 namespace safe_browsing {
@@ -16,11 +17,14 @@ DatabaseManagerMechanism::DatabaseManagerMechanism(
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     CheckBrowseUrlType check_type,
-    bool check_allowlist)
+    bool check_allowlist,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager)
     : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       SafeBrowsingDatabaseManager::Client(GetPassKey()),
       check_allowlist_(check_allowlist),
-      check_type_(check_type) {}
+      check_type_(check_type),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {}
 
 DatabaseManagerMechanism::~DatabaseManagerMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -111,6 +115,11 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+DatabaseManagerMechanism::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }
 
 }  // namespace safe_browsing

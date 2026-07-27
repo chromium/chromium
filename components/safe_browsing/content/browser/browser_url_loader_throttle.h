@@ -79,7 +79,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker,
-      std::optional<internal::ReferringAppInfo> referring_app_info);
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -117,7 +118,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker,
-      std::optional<internal::ReferringAppInfo> referring_app_info);
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager);
 
   void OnSkipCheckCompleteOnOriginalUrl(
       const net::HttpRequestHeaders& headers,
@@ -223,6 +225,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // The Android app that launched Chrome.
   std::optional<internal::ReferringAppInfo> referring_app_info_;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager_;
 
   base::OnceClosure on_sync_sb_checker_created_callback_for_testing_;
   base::OnceClosure on_async_sb_checker_created_callback_for_testing_;
