@@ -31,16 +31,16 @@
 #import "ui/strings/grit/ui_strings.h"
 
 namespace {
-enum SectionIdentifier {
-  SectionIdentifierToggle = kSectionIdentifierEnumZero,
-  SectionIdentifierDriversLicenses,
-  SectionIdentifierNationalIdCards,
-  SectionIdentifierPassports,
+enum class SectionIdentifier {
+  kToggleSection = kSectionIdentifierEnumZero,
+  kDriversLicensesSection,
+  kNationalIdCardsSection,
+  kPassportsSection,
 };
 
-enum ItemType {
-  ItemTypeToggle = kAutofillAIBaseItemTypeEntity + 1,
-  ItemTypeFooter,
+enum class ItemType {
+  kToggleItem = kAutofillAIBaseItemTypeEntity + 1,
+  kFooterItem,
 };
 
 }  // namespace
@@ -93,10 +93,11 @@ enum ItemType {
 
   TableViewModel* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:SectionIdentifierToggle];
+  [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (_identityDocsToggleManaged) {
-    TableViewInfoButtonItem* managedItem =
-        [[TableViewInfoButtonItem alloc] initWithType:ItemTypeToggle];
+    TableViewInfoButtonItem* managedItem = [[TableViewInfoButtonItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     managedItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL);
     managedItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -104,64 +105,84 @@ enum ItemType {
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
     managedItem.target = self;
     managedItem.selector = @selector(didTapManagedUIInfoButton:);
-    [model addItem:managedItem toSectionWithIdentifier:SectionIdentifierToggle];
+    [model addItem:managedItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   } else {
-    TableViewSwitchItem* toggleItem =
-        [[TableViewSwitchItem alloc] initWithType:ItemTypeToggle];
+    TableViewSwitchItem* toggleItem = [[TableViewSwitchItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     toggleItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL);
     toggleItem.on = _identityDocsToggleEnabled && _identityDocsEnabled;
     toggleItem.enabled = _identityDocsToggleEnabled;
     toggleItem.target = self;
     toggleItem.selector = @selector(identityDocsToggleChanged:);
-    [model addItem:toggleItem toSectionWithIdentifier:SectionIdentifierToggle];
+    [model addItem:toggleItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   }
 
-  TableViewLinkHeaderFooterItem* footer =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:static_cast<NSInteger>(ItemType::kFooterItem)];
   footer.text = l10n_util::GetNSString(
       IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_SUB_LABEL);
-  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierToggle];
+  [model setFooter:footer
+      forSectionWithIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
 
   if (_driversLicenses.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierDriversLicenses];
+    [model
+        addSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kDriversLicensesSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text =
         l10n_util::GetNSString(IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierDriversLicenses];
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kDriversLicensesSection)];
     for (TableViewItem* item in _driversLicenses) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierDriversLicenses];
+          toSectionWithIdentifier:
+              static_cast<NSInteger>(
+                  SectionIdentifier::kDriversLicensesSection)];
     }
   }
 
   if (_nationalIdCards.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierNationalIdCards];
+    [model
+        addSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kNationalIdCardsSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierNationalIdCards];
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kNationalIdCardsSection)];
     for (TableViewItem* item in _nationalIdCards) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierNationalIdCards];
+          toSectionWithIdentifier:
+              static_cast<NSInteger>(
+                  SectionIdentifier::kNationalIdCardsSection)];
     }
   }
 
   if (_passports.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierPassports];
+    [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                        SectionIdentifier::kPassportsSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_PASSPORTS_TITLE);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierPassports];
+        forSectionWithIdentifier:static_cast<NSInteger>(
+                                     SectionIdentifier::kPassportsSection)];
     for (TableViewItem* item in _passports) {
-      [model addItem:item toSectionWithIdentifier:SectionIdentifierPassports];
+      [model addItem:item
+          toSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kPassportsSection)];
     }
   }
 }
@@ -203,9 +224,10 @@ enum ItemType {
       [self reloadData];
     } else {
       TableViewModel* model = self.tableViewModel;
-      NSIndexPath* togglePath =
-          [model indexPathForItemType:ItemTypeToggle
-                    sectionIdentifier:SectionIdentifierToggle];
+      NSIndexPath* togglePath = [model
+          indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+             sectionIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
       if (togglePath) {
         if (managed) {
           TableViewInfoButtonItem* managedItem =
@@ -232,8 +254,9 @@ enum ItemType {
 
   TableViewModel* model = self.tableViewModel;
   NSIndexPath* switchPath =
-      [model indexPathForItemType:ItemTypeToggle
-                sectionIdentifier:SectionIdentifierToggle];
+      [model indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+                sectionIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (switchPath) {
     TableViewSwitchItem* switchItem =
         base::apple::ObjCCastStrict<TableViewSwitchItem>(

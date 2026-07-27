@@ -23,16 +23,16 @@
 namespace {
 
 // Section identifiers in the "Shopping" page table view.
-enum SectionIdentifier {
+enum class SectionIdentifier {
   kToggleSection = kSectionIdentifierEnumZero,
   kOrderSection,
   kShipmentSection,
 };
 
 // Item types in the "Shopping" page.
-enum ItemType {
-  ItemTypeToggle = kAutofillAIBaseItemTypeEntity + 1,
-  ItemTypeFooter,
+enum class ItemType {
+  kToggleItem = kAutofillAIBaseItemTypeEntity + 1,
+  kFooterItem,
 };
 
 }  // namespace
@@ -75,10 +75,11 @@ enum ItemType {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:kToggleSection];
+  [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (_shoppingToggleManaged) {
-    TableViewInfoButtonItem* managedItem =
-        [[TableViewInfoButtonItem alloc] initWithType:ItemTypeToggle];
+    TableViewInfoButtonItem* managedItem = [[TableViewInfoButtonItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     managedItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL);
     // The status can only be off when the pref is managed.
@@ -87,46 +88,62 @@ enum ItemType {
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
     managedItem.target = self;
     managedItem.selector = @selector(didTapManagedUIInfoButton:);
-    [model addItem:managedItem toSectionWithIdentifier:kToggleSection];
+    [model addItem:managedItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   } else {
-    TableViewSwitchItem* toggleItem =
-        [[TableViewSwitchItem alloc] initWithType:ItemTypeToggle];
+    TableViewSwitchItem* toggleItem = [[TableViewSwitchItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     toggleItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL);
     toggleItem.on = _shoppingToggleEnabled && _shoppingEnabled;
     toggleItem.enabled = _shoppingToggleEnabled;
     toggleItem.target = self;
     toggleItem.selector = @selector(shoppingToggleChanged:);
-    [model addItem:toggleItem toSectionWithIdentifier:kToggleSection];
+    [model addItem:toggleItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   }
 
-  TableViewTextHeaderFooterItem* footer =
-      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  TableViewTextHeaderFooterItem* footer = [[TableViewTextHeaderFooterItem alloc]
+      initWithType:static_cast<NSInteger>(ItemType::kFooterItem)];
   footer.subtitle =
       l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_SUB_LABEL);
-  [model setFooter:footer forSectionWithIdentifier:kToggleSection];
+  [model setFooter:footer
+      forSectionWithIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
 
   if (_orders.count > 0) {
-    [model addSectionWithIdentifier:kOrderSection];
+    [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                        SectionIdentifier::kOrderSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_ORDERS_TITLE);
-    [model setHeader:header forSectionWithIdentifier:kOrderSection];
+    [model setHeader:header
+        forSectionWithIdentifier:static_cast<NSInteger>(
+                                     SectionIdentifier::kOrderSection)];
     for (TableViewItem* item in _orders) {
-      [model addItem:item toSectionWithIdentifier:kOrderSection];
+      [model addItem:item
+          toSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kOrderSection)];
     }
   }
 
   if (_shipments.count > 0) {
-    [model addSectionWithIdentifier:kShipmentSection];
+    [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                        SectionIdentifier::kShipmentSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_SHIPMENTS_TITLE);
-    [model setHeader:header forSectionWithIdentifier:kShipmentSection];
+    [model setHeader:header
+        forSectionWithIdentifier:static_cast<NSInteger>(
+                                     SectionIdentifier::kShipmentSection)];
     for (TableViewItem* item in _shipments) {
-      [model addItem:item toSectionWithIdentifier:kShipmentSection];
+      [model addItem:item
+          toSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kShipmentSection)];
     }
   }
 }
@@ -161,8 +178,10 @@ enum ItemType {
       [self reloadData];
     } else {
       TableViewModel* model = self.tableViewModel;
-      NSIndexPath* togglePath = [model indexPathForItemType:ItemTypeToggle
-                                          sectionIdentifier:kToggleSection];
+      NSIndexPath* togglePath = [model
+          indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+             sectionIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
       if (togglePath) {
         if (managed) {
           TableViewInfoButtonItem* managedItem =
@@ -187,8 +206,10 @@ enum ItemType {
   _shoppingEnabled = switchOn;
 
   TableViewModel* model = self.tableViewModel;
-  NSIndexPath* switchPath = [model indexPathForItemType:ItemTypeToggle
-                                      sectionIdentifier:kToggleSection];
+  NSIndexPath* switchPath =
+      [model indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+                sectionIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (switchPath) {
     TableViewSwitchItem* switchItem =
         base::apple::ObjCCastStrict<TableViewSwitchItem>(

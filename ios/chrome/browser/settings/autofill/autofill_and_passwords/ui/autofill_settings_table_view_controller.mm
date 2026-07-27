@@ -20,24 +20,24 @@
 
 namespace {
 
-enum SectionIdentifier {
-  SectionIdentifierBasics = kSectionIdentifierEnumZero,
-  SectionIdentifierSwitches,
-  SectionIdentifierWhenOn,
-  SectionIdentifierThingsToConsider,
-  SectionIdentifierVerificationSwitch,
-  SectionIdentifierWalletPromo,
+enum class SectionIdentifier {
+  kBasicsSection = kSectionIdentifierEnumZero,
+  kSwitchesSection,
+  kWhenOnSection,
+  kThingsToConsiderSection,
+  kVerificationSwitchSection,
+  kWalletPromoSection,
 };
 
-enum ItemType {
-  ItemTypeEnhancedAutofillSwitch = kItemTypeEnumZero,
-  ItemTypeVerificationSwitch,
-  ItemTypeVerificationFooter,
-  ItemTypeFooter,
-  ItemTypeHeader,
-  ItemTypeLabel,
-  ItemTypeWalletPromoInfo,
-  ItemTypeWalletPromoButton,
+enum class ItemType {
+  kEnhancedAutofillSwitchItem = kItemTypeEnumZero,
+  kVerificationSwitchItem,
+  kVerificationFooterItem,
+  kFooterItem,
+  kHeaderItem,
+  kLabelItem,
+  kWalletPromoInfoItem,
+  kWalletPromoButtonItem,
 };
 
 }  // namespace
@@ -73,57 +73,87 @@ enum ItemType {
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:SectionIdentifierSwitches];
+  [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kSwitchesSection)];
   [model addItem:EnhancedAutofillSwitchItem(
-                     ItemTypeEnhancedAutofillSwitch, _enhancedAutofillEnabled,
-                     self, @selector(enhancedAutofillSwitchChanged:))
-      toSectionWithIdentifier:SectionIdentifierSwitches];
-  [model setFooter:EnhancedAutofillSwitchFooter(ItemTypeFooter)
-      forSectionWithIdentifier:SectionIdentifierSwitches];
+                     static_cast<NSInteger>(
+                         ItemType::kEnhancedAutofillSwitchItem),
+                     _enhancedAutofillEnabled, self,
+                     @selector(enhancedAutofillSwitchChanged:))
+      toSectionWithIdentifier:static_cast<NSInteger>(
+                                  SectionIdentifier::kSwitchesSection)];
+  [model setFooter:EnhancedAutofillSwitchFooter(
+                       static_cast<NSInteger>(ItemType::kFooterItem))
+      forSectionWithIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kSwitchesSection)];
 
-  [model addSectionWithIdentifier:SectionIdentifierWhenOn];
-  [model setHeader:EnhancedAutofillWhenOnSectionHeader(ItemTypeHeader)
-      forSectionWithIdentifier:SectionIdentifierWhenOn];
-  [model addItem:EnhancedAutofillCanFillDifficultFieldsItem(ItemTypeLabel)
-      toSectionWithIdentifier:SectionIdentifierWhenOn];
+  [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kWhenOnSection)];
+  [model setHeader:EnhancedAutofillWhenOnSectionHeader(
+                       static_cast<NSInteger>(ItemType::kHeaderItem))
+      forSectionWithIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kWhenOnSection)];
+  [model addItem:EnhancedAutofillCanFillDifficultFieldsItem(
+                     static_cast<NSInteger>(ItemType::kLabelItem))
+      toSectionWithIdentifier:static_cast<NSInteger>(
+                                  SectionIdentifier::kWhenOnSection)];
 
-  [model addSectionWithIdentifier:SectionIdentifierThingsToConsider];
-  [model setHeader:EnhancedAutofillThingsToConsiderSectionHeader(ItemTypeHeader)
-      forSectionWithIdentifier:SectionIdentifierThingsToConsider];
-  [model addItem:EnhancedAutofillDataUsageItem(ItemTypeLabel)
-      toSectionWithIdentifier:SectionIdentifierThingsToConsider];
+  [model
+      addSectionWithIdentifier:
+          static_cast<NSInteger>(SectionIdentifier::kThingsToConsiderSection)];
+  [model setHeader:EnhancedAutofillThingsToConsiderSectionHeader(
+                       static_cast<NSInteger>(ItemType::kHeaderItem))
+      forSectionWithIdentifier:
+          static_cast<NSInteger>(SectionIdentifier::kThingsToConsiderSection)];
+  [model addItem:EnhancedAutofillDataUsageItem(
+                     static_cast<NSInteger>(ItemType::kLabelItem))
+      toSectionWithIdentifier:static_cast<NSInteger>(
+                                  SectionIdentifier::kThingsToConsiderSection)];
 
   if (!_autofillAIAllowedByPolicy) {
     [model addItem:EnhancedAutofillEnterpriseManagedLoggingDisabledItem(
-                       ItemTypeLabel)
-        toSectionWithIdentifier:SectionIdentifierThingsToConsider];
+                       static_cast<NSInteger>(ItemType::kLabelItem))
+        toSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kThingsToConsiderSection)];
   }
 
   if (_userVerificationSettingVisible) {
-    [model addSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+    [model addSectionWithIdentifier:
+               static_cast<NSInteger>(
+                   SectionIdentifier::kVerificationSwitchSection)];
     [model addItem:AutofillVerificationSwitchItem(
-                       ItemTypeVerificationSwitch,
+                       static_cast<NSInteger>(
+                           ItemType::kVerificationSwitchItem),
                        _userVerificationSwitchEnabled, _userVerificationEnabled,
                        self, @selector(verificationSwitchChanged:))
-        toSectionWithIdentifier:SectionIdentifierVerificationSwitch];
-    [model setFooter:AutofillVerificationSwitchFooter(
-                         ItemTypeVerificationFooter)
-        forSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+        toSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kVerificationSwitchSection)];
+    [model setFooter:AutofillVerificationSwitchFooter(static_cast<NSInteger>(
+                         ItemType::kVerificationFooterItem))
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kVerificationSwitchSection)];
   }
 
   if (_shouldShowWalletPromo) {
-    [model addSectionWithIdentifier:SectionIdentifierWalletPromo];
+    [model
+        addSectionWithIdentifier:static_cast<NSInteger>(
+                                     SectionIdentifier::kWalletPromoSection)];
     [model addItem:[self walletPromoInfoItem]
-        toSectionWithIdentifier:SectionIdentifierWalletPromo];
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kWalletPromoSection)];
     [model addItem:[self walletPromoButtonItem]
-        toSectionWithIdentifier:SectionIdentifierWalletPromo];
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kWalletPromoSection)];
   }
 }
 
 // Returns the Google Wallet promo info item.
 - (TableViewItem*)walletPromoInfoItem {
-  TableViewDetailTextItem* item =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypeWalletPromoInfo];
+  TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
+      initWithType:static_cast<NSInteger>(ItemType::kWalletPromoInfoItem)];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_TITLE);
   item.detailText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_DETAIL_TEXT);
@@ -133,8 +163,8 @@ enum ItemType {
 
 // Returns the Google Wallet promo button item.
 - (TableViewItem*)walletPromoButtonItem {
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeWalletPromoButton];
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:static_cast<NSInteger>(ItemType::kWalletPromoButtonItem)];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_LINK_TEXT);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -151,8 +181,8 @@ enum ItemType {
   _enhancedAutofillEnabled = enabled;
   if (self.isViewLoaded) {
     [self setSwitchItemOn:enabled
-                 itemType:ItemTypeEnhancedAutofillSwitch
-        sectionIdentifier:SectionIdentifierSwitches];
+                 itemType:ItemType::kEnhancedAutofillSwitchItem
+        sectionIdentifier:SectionIdentifier::kSwitchesSection];
   }
 }
 
@@ -170,8 +200,8 @@ enum ItemType {
   _userVerificationEnabled = enabled;
   if (self.isViewLoaded) {
     [self setSwitchItemOn:enabled
-                 itemType:ItemTypeVerificationSwitch
-        sectionIdentifier:SectionIdentifierVerificationSwitch];
+                 itemType:ItemType::kVerificationSwitchItem
+        sectionIdentifier:SectionIdentifier::kVerificationSwitchSection];
   }
 }
 
@@ -220,13 +250,14 @@ enum ItemType {
 - (void)setSwitchItemOn:(BOOL)on
                itemType:(ItemType)switchItemType
       sectionIdentifier:(SectionIdentifier)sectionIdentifier {
-  if (![self.tableViewModel hasItemForItemType:switchItemType
-                             sectionIdentifier:sectionIdentifier]) {
+  if (![self.tableViewModel
+          hasItemForItemType:static_cast<NSInteger>(switchItemType)
+           sectionIdentifier:static_cast<NSInteger>(sectionIdentifier)]) {
     return;
   }
-  NSIndexPath* switchPath =
-      [self.tableViewModel indexPathForItemType:switchItemType
-                              sectionIdentifier:sectionIdentifier];
+  NSIndexPath* switchPath = [self.tableViewModel
+      indexPathForItemType:static_cast<NSInteger>(switchItemType)
+         sectionIdentifier:static_cast<NSInteger>(sectionIdentifier)];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
@@ -236,13 +267,18 @@ enum ItemType {
 
 - (void)updateVerificationSwitchEnabledState {
   if (![self.tableViewModel
-          hasItemForItemType:ItemTypeVerificationSwitch
-           sectionIdentifier:SectionIdentifierVerificationSwitch]) {
+          hasItemForItemType:static_cast<NSInteger>(
+                                 ItemType::kVerificationSwitchItem)
+           sectionIdentifier:
+               static_cast<NSInteger>(
+                   SectionIdentifier::kVerificationSwitchSection)]) {
     return;
   }
   NSIndexPath* switchPath = [self.tableViewModel
-      indexPathForItemType:ItemTypeVerificationSwitch
-         sectionIdentifier:SectionIdentifierVerificationSwitch];
+      indexPathForItemType:static_cast<NSInteger>(
+                               ItemType::kVerificationSwitchItem)
+         sectionIdentifier:static_cast<NSInteger>(
+                               SectionIdentifier::kVerificationSwitchSection)];
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
@@ -260,7 +296,7 @@ enum ItemType {
   }
 
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  if (itemType == ItemTypeWalletPromoButton) {
+  if (itemType == static_cast<NSInteger>(ItemType::kWalletPromoButtonItem)) {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self.delegate
         autofillSettingsTableViewControllerDidTapWalletPromoCard:self];

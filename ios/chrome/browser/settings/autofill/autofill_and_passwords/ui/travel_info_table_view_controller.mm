@@ -30,17 +30,17 @@
 #import "ui/strings/grit/ui_strings.h"
 
 namespace {
-enum SectionIdentifier {
-  SectionIdentifierToggle = kSectionIdentifierEnumZero,
-  SectionIdentifierFlightReservations,
-  SectionIdentifierKnownTravelerNumbers,
-  SectionIdentifierRedressNumbers,
-  SectionIdentifierVehicles,
+enum class SectionIdentifier {
+  kToggleSection = kSectionIdentifierEnumZero,
+  kFlightReservationsSection,
+  kKnownTravelerNumbersSection,
+  kRedressNumbersSection,
+  kVehiclesSection,
 };
 
-enum ItemType {
-  ItemTypeToggle = kAutofillAIBaseItemTypeEntity + 1,
-  ItemTypeFooter,
+enum class ItemType {
+  kToggleItem = kAutofillAIBaseItemTypeEntity + 1,
+  kFooterItem,
 };
 }  // namespace
 
@@ -92,10 +92,11 @@ enum ItemType {
 
   TableViewModel* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:SectionIdentifierToggle];
+  [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (_travelInfoToggleManaged) {
-    TableViewInfoButtonItem* managedItem =
-        [[TableViewInfoButtonItem alloc] initWithType:ItemTypeToggle];
+    TableViewInfoButtonItem* managedItem = [[TableViewInfoButtonItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     managedItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL);
     managedItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
@@ -103,79 +104,107 @@ enum ItemType {
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
     managedItem.target = self;
     managedItem.selector = @selector(didTapManagedUIInfoButton:);
-    [model addItem:managedItem toSectionWithIdentifier:SectionIdentifierToggle];
+    [model addItem:managedItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   } else {
-    TableViewSwitchItem* toggleItem =
-        [[TableViewSwitchItem alloc] initWithType:ItemTypeToggle];
+    TableViewSwitchItem* toggleItem = [[TableViewSwitchItem alloc]
+        initWithType:static_cast<NSInteger>(ItemType::kToggleItem)];
     toggleItem.text =
         l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL);
     toggleItem.on = _travelInfoToggleEnabled && _travelInfoEnabled;
     toggleItem.enabled = _travelInfoToggleEnabled;
     toggleItem.target = self;
     toggleItem.selector = @selector(travelInfoToggleChanged:);
-    [model addItem:toggleItem toSectionWithIdentifier:SectionIdentifierToggle];
+    [model addItem:toggleItem
+        toSectionWithIdentifier:static_cast<NSInteger>(
+                                    SectionIdentifier::kToggleSection)];
   }
 
-  TableViewLinkHeaderFooterItem* footer =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:static_cast<NSInteger>(ItemType::kFooterItem)];
   footer.text =
       l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL);
-  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierToggle];
+  [model setFooter:footer
+      forSectionWithIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
 
   if (_flightReservations.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierFlightReservations];
+    [model addSectionWithIdentifier:
+               static_cast<NSInteger>(
+                   SectionIdentifier::kFlightReservationsSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text =
         l10n_util::GetNSString(IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierFlightReservations];
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kFlightReservationsSection)];
     for (TableViewItem* item in _flightReservations) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierFlightReservations];
+          toSectionWithIdentifier:
+              static_cast<NSInteger>(
+                  SectionIdentifier::kFlightReservationsSection)];
     }
   }
 
   if (_knownTravelerNumbers.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+    [model addSectionWithIdentifier:
+               static_cast<NSInteger>(
+                   SectionIdentifier::kKnownTravelerNumbersSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(
         IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kKnownTravelerNumbersSection)];
     for (TableViewItem* item in _knownTravelerNumbers) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+          toSectionWithIdentifier:
+              static_cast<NSInteger>(
+                  SectionIdentifier::kKnownTravelerNumbersSection)];
     }
   }
 
   if (_redressNumbers.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierRedressNumbers];
+    [model
+        addSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kRedressNumbersSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text =
         l10n_util::GetNSString(IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME);
     [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierRedressNumbers];
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(SectionIdentifier::kRedressNumbersSection)];
     for (TableViewItem* item in _redressNumbers) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierRedressNumbers];
+          toSectionWithIdentifier:
+              static_cast<NSInteger>(
+                  SectionIdentifier::kRedressNumbersSection)];
     }
   }
 
   if (_vehicles.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierVehicles];
+    [model addSectionWithIdentifier:static_cast<NSInteger>(
+                                        SectionIdentifier::kVehiclesSection)];
     TableViewTextHeaderFooterItem* header =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:kAutofillAIBaseItemTypeHeader];
     header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_VEHICLES_TITLE);
-    [model setHeader:header forSectionWithIdentifier:SectionIdentifierVehicles];
+    [model setHeader:header
+        forSectionWithIdentifier:static_cast<NSInteger>(
+                                     SectionIdentifier::kVehiclesSection)];
     for (TableViewItem* item in _vehicles) {
-      [model addItem:item toSectionWithIdentifier:SectionIdentifierVehicles];
+      [model addItem:item
+          toSectionWithIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kVehiclesSection)];
     }
   }
 }
@@ -221,9 +250,10 @@ enum ItemType {
       [self reloadData];
     } else {
       TableViewModel* model = self.tableViewModel;
-      NSIndexPath* togglePath =
-          [model indexPathForItemType:ItemTypeToggle
-                    sectionIdentifier:SectionIdentifierToggle];
+      NSIndexPath* togglePath = [model
+          indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+             sectionIdentifier:static_cast<NSInteger>(
+                                   SectionIdentifier::kToggleSection)];
       if (togglePath) {
         if (managed) {
           TableViewInfoButtonItem* managedItem =
@@ -250,8 +280,9 @@ enum ItemType {
 
   TableViewModel* model = self.tableViewModel;
   NSIndexPath* switchPath =
-      [model indexPathForItemType:ItemTypeToggle
-                sectionIdentifier:SectionIdentifierToggle];
+      [model indexPathForItemType:static_cast<NSInteger>(ItemType::kToggleItem)
+                sectionIdentifier:static_cast<NSInteger>(
+                                      SectionIdentifier::kToggleSection)];
   if (switchPath) {
     TableViewSwitchItem* switchItem =
         base::apple::ObjCCastStrict<TableViewSwitchItem>(
