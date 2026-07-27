@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
@@ -56,7 +57,9 @@ class ContextHubPageHandlerTest : public testing::Test {
  public:
   ContextHubPageHandlerTest() {
     feature_list_.InitWithFeatures(
-        {features::kContextHub, features::kMemoryBanks}, {});
+        {features::kContextHub, features::kMemoryBanks,
+         browser::context_hub::mojom::kAutoTabGroups},
+        {});
   }
 
   void SetUp() override {
@@ -464,7 +467,155 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
   EXPECT_EQ(total_tabs, 5u);
   EXPECT_FALSE(llm_response);
 }
+
+TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_WithGroups) {
+  std::vector<std::unique_ptr<content::WebContents>> test_tabs;
+  std::vector<content::WebContents*> raw_test_tabs;
+  std::vector<int32_t> tab_ids;
+  for (int i = 0; i < 3; ++i) {
+    auto tab =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    sessions::SessionTabHelper::CreateForWebContents(
+        tab.get(), sessions::SessionTabHelper::DelegateLookup());
+    tab_ids.push_back(sessions::SessionTabHelper::IdForTab(tab.get()).id());
+    raw_test_tabs.push_back(tab.get());
+    test_tabs.push_back(std::move(tab));
+  }
+
+  // 1. Group tabs so that service stores tab groups.
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(raw_test_tabs));
+
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([tab_ids](
+                    optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::GroupResponse* group_response =
+            response.mutable_group_response();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
+        group1->set_label("Existing Group");
+        group1->add_tab_ids(tab_ids[0]);
+        group1->add_tab_ids(tab_ids[1]);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                         browser::context_hub::mojom::ChatMessagePtr>
+      group_future;
+  handler_->RetrieveAndGroupTabs(
+      "",
+      group_future
+          .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                       std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                       browser::context_hub::mojom::ChatMessagePtr>());
+  EXPECT_TRUE(group_future.Wait());
+
+  // 2. Add chat history turn.
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  service->AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "Hello");
+
+  // 3. Call GetExistingTabGroupsAndChats and verify output.
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(raw_test_tabs));
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TabGroupPtr>,
+      std::vector<browser::context_hub::mojom::TabInfoPtr>,
+      std::vector<browser::context_hub::mojom::ChatMessagePtr>>
+      existing_future;
+  handler_->GetExistingTabGroupsAndChats(
+      existing_future.GetCallback<
+          std::vector<browser::context_hub::mojom::TabGroupPtr>,
+          std::vector<browser::context_hub::mojom::TabInfoPtr>,
+          std::vector<browser::context_hub::mojom::ChatMessagePtr>>());
+
+  auto [groups, ungrouped_tabs, chat_history] = existing_future.Take();
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_EQ(groups[0]->label, "Existing Group");
+  EXPECT_EQ(groups[0]->tabs.size(), 2u);
+
+  ASSERT_EQ(ungrouped_tabs.size(), 1u);
+  EXPECT_EQ(ungrouped_tabs[0]->id, tab_ids[2]);
+
+  ASSERT_EQ(chat_history.size(), 1u);
+  EXPECT_EQ(chat_history[0]->content, "Hello");
+  EXPECT_EQ(chat_history[0]->role,
+            browser::context_hub::mojom::ChatRole::kUser);
+}
+
+TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_NoGroups) {
+  EXPECT_CALL(*mock_tab_provider_, GetTabs(_))
+      .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
+
+  base::test::TestFuture<
+      std::vector<browser::context_hub::mojom::TabGroupPtr>,
+      std::vector<browser::context_hub::mojom::TabInfoPtr>,
+      std::vector<browser::context_hub::mojom::ChatMessagePtr>>
+      future;
+  handler_->GetExistingTabGroupsAndChats(
+      future.GetCallback<
+          std::vector<browser::context_hub::mojom::TabGroupPtr>,
+          std::vector<browser::context_hub::mojom::TabInfoPtr>,
+          std::vector<browser::context_hub::mojom::ChatMessagePtr>>());
+
+  auto [groups, ungrouped_tabs, chat_history] = future.Take();
+  EXPECT_TRUE(groups.empty());
+  EXPECT_TRUE(ungrouped_tabs.empty());
+  EXPECT_TRUE(chat_history.empty());
+}
 #endif
+
+TEST_F(ContextHubPageHandlerTest, ClearTabGroupChatHistory) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  service->AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, "Message");
+  EXPECT_EQ(service->GetTabGroupChatHistory().size(), 1u);
+
+  base::test::TestFuture<void> future;
+  handler_->ClearTabGroupChatHistory(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_TRUE(service->GetTabGroupChatHistory().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, ClearTabGroups) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<void> future;
+  handler_->ClearTabGroups(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service->GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_TRUE(stored_groups_future.Get().empty());
+}
 
 }  // namespace
 }  // namespace context_hub

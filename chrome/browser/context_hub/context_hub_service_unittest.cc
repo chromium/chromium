@@ -359,5 +359,59 @@ TEST_F(ContextHubServiceTest, ChatHistory_Clear) {
   EXPECT_TRUE(service_.GetTabGroupChatHistory().empty());
 }
 
+TEST_F(ContextHubServiceTest, DeleteAllTabGroups) {
+  std::vector<TabData> input_tabs = {
+      {1, "Tab 1", GURL("https://example1.com")},
+      {2, "Tab 2", GURL("https://example2.com")}};
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([](optimization_guide::ModelBasedCapabilityKey feature,
+                   const google::protobuf::MessageLite& request_metadata,
+                   const optimization_guide::ModelExecutionOptions& options,
+                   optimization_guide::
+                       OptimizationGuideModelExecutionResultCallback callback) {
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::GroupResponse* group_response =
+            response.mutable_group_response();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
+        group1->set_label("Group 1");
+        group1->add_tab_ids(1);
+        group1->add_tab_ids(2);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>>
+      future;
+  service_.GroupTabs(
+      std::move(input_tabs), "",
+      future.GetCallback<std::vector<TabGroupEntry>, std::vector<TabData>>());
+  EXPECT_TRUE(future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service_.GetTabGroups(stored_groups_future.GetCallback());
+  EXPECT_FALSE(stored_groups_future.Get().empty());
+
+  base::test::TestFuture<void> delete_future;
+  service_.DeleteAllTabGroups(delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future2;
+  service_.GetTabGroups(stored_groups_future2.GetCallback());
+  EXPECT_TRUE(stored_groups_future2.Get().empty());
+}
+
 }  // namespace
 }  // namespace context_hub

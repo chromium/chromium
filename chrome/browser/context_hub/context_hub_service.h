@@ -101,6 +101,8 @@ class ContextHubService : public KeyedService {
       base::OnceCallback<void(std::vector<TabGroupEntry>)>;
   // Returns all stored tab groups.
   void GetTabGroups(GetTabGroupsCallback callback) const;
+  // Deletes all stored tab groups.
+  void DeleteAllTabGroups(base::OnceClosure callback);
 
   base::WeakPtr<ContextHubService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

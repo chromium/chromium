@@ -74,6 +74,46 @@ export class TabGroupsElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.fetchExistingTabGroupsAndChats_();
+  }
+
+  private async fetchExistingTabGroupsAndChats_() {
+    if (!this.autoTabGroupsEnabled_) {
+      return;
+    }
+    try {
+      const {groups, ungroupedTabs, history} =
+          await browserProxyFactory.getInstance()
+              .handler.getExistingTabGroupsAndChats();
+
+      if (groups && groups.length > 0) {
+        this.groups_ = groups.map(group => ({
+                                    label: group.label,
+                                    tabs: group.tabs,
+                                    expanded: false,
+                                  }));
+        this.ungroupedTabs_ = ungroupedTabs;
+        this.isGrouped_ = true;
+      } else {
+        await this.fetchTabs_();
+      }
+
+      if (history && history.length > 0) {
+        let processedHistory = history;
+        const lastMsg = processedHistory[processedHistory.length - 1];
+        if (lastMsg &&
+            (lastMsg.role === ChatRole.kUser || !lastMsg.content.trim())) {
+          processedHistory = [
+            ...processedHistory,
+            {role: ChatRole.kAssistant, content: 'Grouped tabs.'},
+          ];
+        }
+        this.chatHistory_ = this.trimChatHistory_(processedHistory);
+        this.scrollToBottom_();
+      }
+    } catch (e) {
+      await this.fetchTabs_();
+    }
   }
 
   private async fetchTabs_() {

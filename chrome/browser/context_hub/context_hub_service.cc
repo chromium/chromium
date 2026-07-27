@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -149,6 +150,14 @@ void ContextHubService::GetTabGroups(GetTabGroupsCallback callback) const {
   }
 }
 
+void ContextHubService::DeleteAllTabGroups(base::OnceClosure callback) {
+  if (tab_group_store_) {
+    tab_group_store_->DeleteAllGroups(std::move(callback));
+  } else {
+    std::move(callback).Run();
+  }
+}
+
 // TODO(crbug.com/531938478): Update to handle APC ingestion.
 void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
                                           const std::string& user_command,
@@ -165,8 +174,16 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
     tab_proto->set_url(tab.url.spec());
   }
 
-  if (!user_command.empty()) {
-    request.set_user_command(user_command);
+  std::string_view trimmed_command =
+      base::TrimWhitespaceASCII(user_command, base::TRIM_ALL);
+  if (!trimmed_command.empty()) {
+    request.set_user_command(std::string(trimmed_command));
+    AddTabGroupChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, trimmed_command);
+  }
+
+  for (const auto& turn : GetTabGroupChatHistory()) {
+    *request.add_chat_history() = turn;
   }
 
   optimization_guide_remote_model_executor_->ExecuteModel(
