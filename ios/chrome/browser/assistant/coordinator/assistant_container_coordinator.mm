@@ -66,6 +66,8 @@ enum class TransitionState {
   std::vector<AssistantContainerDetent> _detents;
   // The height for the minimized detent.
   NSInteger _minimizedDetentHeight;
+  // Whether the grabber button is hidden.
+  BOOL _grabberHidden;
   // The tab grid state being observed.
   TabGridState* _tabGridState;
 }
@@ -116,6 +118,7 @@ enum class TransitionState {
       initWithViewController:_contentViewController];
   _containerViewController.delegate = _delegate;
   _containerViewController.minimizedDetentHeight = _minimizedDetentHeight;
+  [_containerViewController setGrabberHidden:_grabberHidden animated:NO];
   if (!_detents.empty()) {
     _containerViewController.detents = _detents;
   }
@@ -246,6 +249,12 @@ enum class TransitionState {
   }
 }
 
+- (void)setAssistantContainerGrabberHidden:(BOOL)hidden
+                                  animated:(BOOL)animated {
+  _grabberHidden = hidden;
+  [_containerViewController setGrabberHidden:hidden animated:animated];
+}
+
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
                                completion:(ProceduralBlock)completion {
   if (!_containerViewController) {
@@ -359,6 +368,7 @@ enum class TransitionState {
   _contentViewController = nil;
   _delegate = nil;
   _detents.clear();
+  _grabberHidden = NO;
 
   if (_dismissalCompletion) {
     ProceduralBlock completion = _dismissalCompletion;

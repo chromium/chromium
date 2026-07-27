@@ -44,6 +44,7 @@ const NSTimeInterval kAssistantSheetSpringDuration = 0.3;
 
 const NSTimeInterval kAssistantSidePanelInsetAnimationDuration = 0.2;
 const NSTimeInterval kAssistantBottomSheetAnimationDuration = 0.4;
+const NSTimeInterval kAssistantGrabberVisibilityAnimationDuration = 0.2;
 const CGFloat kAssistantSheetSpringDamping = 0.85;
 
 const CGFloat kAssistantSheetMomentumProjectionSeconds = 0.2;

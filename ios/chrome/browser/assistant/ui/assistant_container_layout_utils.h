@@ -40,6 +40,8 @@ extern const NSTimeInterval kAssistantSidePanelInsetAnimationDuration;
 // The duration of the assistant container bottom sheet presentation and
 // dismissal animations.
 extern const NSTimeInterval kAssistantBottomSheetAnimationDuration;
+// The duration of the assistant grabber button fade-in and fade-out animations.
+extern const NSTimeInterval kAssistantGrabberVisibilityAnimationDuration;
 // Spring damping ratio.
 extern const CGFloat kAssistantSheetSpringDamping;
 // Momentum projection time.

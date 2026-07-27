@@ -42,6 +42,10 @@ enum class AssistantContainerDetent : NSInteger;
 // Sets the minimized detent height of the Assistant Container.
 - (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height;
 
+// Sets whether the grabber on the Assistant Container is hidden with optional
+// animation.
+- (void)setAssistantContainerGrabberHidden:(BOOL)hidden animated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_COORDINATOR_ASSISTANT_CONTAINER_COMMANDS_H_

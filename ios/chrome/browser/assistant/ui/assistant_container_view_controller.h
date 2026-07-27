@@ -49,6 +49,9 @@ enum class AssistantContainerDetent : NSInteger;
 // instead of moving VoiceOver focus to it.
 @property(nonatomic, assign) BOOL announceArrivalOnly;
 
+// Sets whether the grabber button is hidden with optional animation.
+- (void)setGrabberHidden:(BOOL)hidden animated:(BOOL)animated;
+
 // Returns the height of a given detent, or kInvalidDetentHeight if the detent
 // is invalid or height is not yet calculated.
 - (NSInteger)heightForDetent:(AssistantContainerDetent)detent;

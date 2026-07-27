@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
+#import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
@@ -25,6 +28,7 @@
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture;
 - (void)handleDimmingViewTap:(UITapGestureRecognizer*)gesture;
 - (void)handleGrabberButtonTapped:(UIButton*)sender;
+- (BOOL)isGrabberHidden;
 @end
 
 // Expose accessors for private properties.
@@ -32,6 +36,7 @@
 @property(nonatomic, readonly) NSLayoutConstraint* heightConstraint;
 @property(nonatomic, readonly) UIPanGestureRecognizer* headerPanGesture;
 @property(nonatomic, readonly) NSLayoutConstraint* outerBottomConstraint;
+@property(nonatomic, readonly) UIButton* grabberButton;
 @property(nonatomic, assign) BOOL isAnimating;
 @end
 
@@ -45,6 +50,10 @@
 }
 - (NSLayoutConstraint*)outerBottomConstraint {
   return [self valueForKey:@"_outerBottomConstraint"];
+}
+- (UIButton*)grabberButton {
+  return [[self valueForKey:@"_assistantContainerView"]
+      valueForKey:@"_grabberButton"];
 }
 @end
 
@@ -494,6 +503,61 @@ TEST_F(AssistantContainerViewControllerTest, AnchorsToLayoutGuide) {
   ASSERT_NE(nil, outer_bottom_constraint);
   EXPECT_TRUE(outer_bottom_constraint.active);
   EXPECT_EQ(outer_bottom_constraint.secondAnchor, anchor_view.topAnchor);
+}
+
+// Tests that setting grabberHidden dynamically hides the grabber button and
+// disables header pan resizing.
+TEST_F(AssistantContainerViewControllerTest,
+       GrabberHiddenDisablesInteractions) {
+  EXPECT_FALSE([view_controller_ isGrabberHidden]);
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.hidden);
+
+  [view_controller_ setGrabberHidden:YES animated:NO];
+  EXPECT_TRUE([view_controller_ isGrabberHidden]);
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_TRUE(view_controller_.grabberButton.hidden);
+
+  [view_controller_ setGrabberHidden:NO animated:NO];
+  EXPECT_FALSE([view_controller_ isGrabberHidden]);
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.hidden);
+}
+
+// Tests that setting grabberHidden dynamically with animation hides the grabber
+// button and disables header pan resizing after the animation completes.
+TEST_F(AssistantContainerViewControllerTest,
+       GrabberHiddenDisablesInteractionsAnimated) {
+  EXPECT_FALSE([view_controller_ isGrabberHidden]);
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.hidden);
+
+  [view_controller_ setGrabberHidden:YES animated:YES];
+  EXPECT_TRUE([view_controller_ isGrabberHidden]);
+  // During animation, interactions are disabled immediately.
+  EXPECT_FALSE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.enabled);
+
+  // Wait for the animation to complete.
+  constexpr double kAnimationDelayDelta = 0.1;
+  const base::TimeDelta delay = base::Seconds(
+      kAssistantGrabberVisibilityAnimationDuration + kAnimationDelayDelta);
+  base::test::ios::SpinRunLoopWithMinDelay(delay);
+
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_TRUE(view_controller_.grabberButton.hidden);
+
+  [view_controller_ setGrabberHidden:NO animated:YES];
+  EXPECT_FALSE([view_controller_ isGrabberHidden]);
+  // During animation, interactions are disabled immediately.
+  EXPECT_FALSE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.enabled);
+
+  // Wait for the animation to complete.
+  base::test::ios::SpinRunLoopWithMinDelay(delay);
+
+  EXPECT_TRUE(view_controller_.headerPanGesture.enabled);
+  EXPECT_FALSE(view_controller_.grabberButton.hidden);
 }
 
 }  // namespace

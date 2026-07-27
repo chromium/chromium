@@ -123,6 +123,8 @@ inline LayoutStateAssistantPassKey PassKey() {
   CGFloat _bottomCornerRadius;
   // The current bottom margin.
   CGFloat _bottomMargin;
+  // Whether the grabber button is hidden.
+  BOOL _grabberHidden;
 }
 
 @synthesize isAnimating = _isAnimating;
@@ -205,6 +207,8 @@ inline LayoutStateAssistantPassKey PassKey() {
     [_assistantContainerView.widthAnchor
         constraintLessThanOrEqualToConstant:kAssistantSheetMaxWidth]
   ];
+
+  [self updateGrabberVisibilityAnimated:NO];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -250,7 +254,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   _hasAppeared = YES;
 
   // Focus or announce the grabber button on entry.
-  if (_assistantContainerView.grabberButton) {
+  if (_assistantContainerView.grabberButton && !_grabberHidden) {
     if (self.announceArrivalOnly) {
       NSString* message = l10n_util::GetNSString(
           IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL);
@@ -336,6 +340,24 @@ inline LayoutStateAssistantPassKey PassKey() {
                                               passKey:PassKey()];
   [self.layoutState setAppBarLockedInFullscreen:isSheetPresented
                                         passKey:PassKey()];
+}
+
+- (BOOL)isGrabberHidden {
+  return _grabberHidden;
+}
+
+- (void)setGrabberHidden:(BOOL)grabberHidden animated:(BOOL)animated {
+  // Cannot modify the grabber hidden state for side panel presentation.
+  if (_presentationContext != AssistantPresentationContext::kSheet) {
+    return;
+  }
+
+  if (_grabberHidden == grabberHidden) {
+    return;
+  }
+
+  _grabberHidden = grabberHidden;
+  [self updateGrabberVisibilityAnimated:animated];
 }
 
 #pragma mark - Properties
@@ -654,11 +676,13 @@ inline LayoutStateAssistantPassKey PassKey() {
         updateAccessibilityPropertiesWithCurrentDetent:newDetent
                                       availableDetents:self.detents];
 
-    // Announce the new state without losing VoiceOver focus.
-    NSString* valueString =
-        _assistantContainerView.grabberButton.accessibilityValue;
-    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                    valueString);
+    if (!_grabberHidden) {
+      // Announce the new state without losing VoiceOver focus.
+      NSString* valueString =
+          _assistantContainerView.grabberButton.accessibilityValue;
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                      valueString);
+    }
   }
 }
 
@@ -714,7 +738,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 
   _headerPanGesture.enabled = YES;
-  _assistantContainerView.grabberButton.enabled = YES;
+  _assistantContainerView.grabberButton.enabled = !_grabberHidden;
 }
 
 // Handles the tap on the grabber button to cycle through detents.
@@ -761,6 +785,12 @@ inline LayoutStateAssistantPassKey PassKey() {
 
   UIView* superview = self.view.superview;
   if (!superview) {
+    return;
+  }
+
+  // If the grabber is hidden, allow only `handlePanGestureBegan` (e.g. to
+  // dismiss the keyboard) and ignore subsequent events to prevent resizing.
+  if (_grabberHidden && gesture.state != UIGestureRecognizerStateBegan) {
     return;
   }
 
@@ -1118,6 +1148,39 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 }
 
+// Updates the grabber button visibility with optional fade animation.
+- (void)updateGrabberVisibilityAnimated:(BOOL)animated {
+  if (!_assistantContainerView) {
+    return;
+  }
+
+  if (!animated || !self.view.window) {
+    _assistantContainerView.grabberButton.hidden = _grabberHidden;
+    _assistantContainerView.grabberButton.alpha = _grabberHidden ? 0.0 : 1.0;
+    [self updateInteractionEnabledState];
+    return;
+  }
+
+  self.isAnimating = YES;
+
+  // Set hidden to NO to support fade out.
+  _assistantContainerView.grabberButton.hidden = NO;
+
+  __weak __typeof(self) weakSelf = self;
+  __weak AssistantContainerView* weakContainerView = _assistantContainerView;
+  [UIView animateWithDuration:kAssistantGrabberVisibilityAnimationDuration
+      animations:^{
+        weakContainerView.grabberButton.alpha =
+            [weakSelf isGrabberHidden] ? 0.0 : 1.0;
+      }
+      completion:^(BOOL finished) {
+        if (finished && weakContainerView) {
+          weakContainerView.grabberButton.hidden = [weakSelf isGrabberHidden];
+        }
+        weakSelf.isAnimating = NO;
+      }];
+}
+
 #pragma mark - LayoutStateObserver
 
 - (void)layoutState:(LayoutState*)layoutState
@@ -1154,9 +1217,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
   [NSLayoutConstraint activateConstraints:_sidePanelConstraints];
 
-  _headerPanGesture.enabled = NO;
+  _grabberHidden = YES;
   _dimmingView.hidden = YES;
-  _assistantContainerView.grabberButton.hidden = YES;
+  _assistantContainerView.grabberButton.hidden = _grabberHidden;
   _assistantContainerView.accessibilityViewIsModal = NO;
 }
 
@@ -1180,10 +1243,11 @@ inline LayoutStateAssistantPassKey PassKey() {
     _outerBottomConstraint, _innerBottomConstraint, _heightConstraint
   ]];
 
-  _headerPanGesture.enabled = YES;
   _dimmingView.hidden = NO;
-  _assistantContainerView.grabberButton.hidden = NO;
+  _assistantContainerView.grabberButton.hidden = _grabberHidden;
+  _assistantContainerView.grabberButton.alpha = _grabberHidden ? 0.0 : 1.0;
   _assistantContainerView.accessibilityViewIsModal = YES;
+  [self updateInteractionEnabledState];
 
   if (IsRegularXRegularSizeClass(self.traitCollection) ||
       IsIPhoneLandscapeLayout(self.traitCollection)) {
