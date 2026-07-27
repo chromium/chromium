@@ -2584,6 +2584,10 @@ SqlPersistentStore::Backend::OpenNextEntryInternal(
     int32_t check_sum = statement.ColumnInt(3);
     result.key = CacheEntryKey(statement.ColumnString(4));
     base::span<const uint8_t> blob_span = statement.ColumnBlob(5);
+    if (shared_cache_enabled_) {
+      entry_info.shared_cache_resource_id =
+          GetSharedCacheResourceIdFromStatement(statement, 6, 7);
+    }
     if (CalculateCheckSum(blob_span, result.key.hash()) != check_sum ||
         blob_span.size() > std::numeric_limits<int>::max()) {
       // If OpenNextEntry encounters invalid data, it records it in a histogram

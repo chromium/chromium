@@ -7099,6 +7099,16 @@ TEST_P(SqlPersistentStoreSharedCacheTest, MoveBlobsToSharedCache) {
             kSharedResourceId.db_id);
   EXPECT_EQ((*open_result)->shared_cache_resource_id->row_id,
             kSharedResourceId.row_id);
+
+  // Verify OpenNextEntry returns the entry with shared_cache_resource_id
+  // populated.
+  auto next_result = OpenNextEntry(SqlPersistentStore::EntryIterator());
+  ASSERT_TRUE(next_result.has_value());
+  EXPECT_TRUE(next_result->info.shared_cache_resource_id.has_value());
+  EXPECT_EQ(next_result->info.shared_cache_resource_id->db_id,
+            kSharedResourceId.db_id);
+  EXPECT_EQ(next_result->info.shared_cache_resource_id->row_id,
+            kSharedResourceId.row_id);
 }
 
 }  // namespace disk_cache

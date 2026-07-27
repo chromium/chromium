@@ -556,8 +556,9 @@ inline constexpr const char
         "doomed=0";
 // clang-format on
 
-inline constexpr const char kOpenNextEntry_SelectLiveResources[] =
-    // clang-format off
+inline constexpr const char
+    kOpenNextEntry_SelectLiveResources_SharedCacheDisabled[] =
+        // clang-format off
     "SELECT "
         "res_id,"      // 0
         "last_used,"   // 1
@@ -565,6 +566,25 @@ inline constexpr const char kOpenNextEntry_SelectLiveResources[] =
         "check_sum,"   // 3
         "cache_key,"   // 4
         "head "        // 5
+    "FROM resources "
+    "WHERE "
+        "res_id<? AND "  // 0
+        "doomed=0 "
+    "ORDER BY res_id DESC";
+// clang-format on
+
+inline constexpr const char
+    kOpenNextEntry_SelectLiveResources_SharedCacheEnabled[] =
+        // clang-format off
+    "SELECT "
+        "res_id,"              // 0
+        "last_used,"           // 1
+        "body_end,"            // 2
+        "check_sum,"           // 3
+        "cache_key,"           // 4
+        "head,"                // 5
+        "shared_cache_db_id,"  // 6
+        "shared_cache_row_id " // 7
     "FROM resources "
     "WHERE "
         "res_id<? AND "  // 0
@@ -757,7 +777,10 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
     case Query::kCalculateSizeOfEntriesBetween_SelectLiveResources:
       return internal::kCalculateSizeOfEntriesBetween_SelectLiveResources;
     case Query::kOpenNextEntry_SelectLiveResources:
-      return internal::kOpenNextEntry_SelectLiveResources;
+      if (shared_cache_enabled) {
+        return internal::kOpenNextEntry_SelectLiveResources_SharedCacheEnabled;
+      }
+      return internal::kOpenNextEntry_SelectLiveResources_SharedCacheDisabled;
     case Query::kStartEviction_SelectLiveResources:
       return internal::kStartEviction_SelectLiveResources;
     case Query::kCalculateResourceEntryCount_SelectCountFromLiveResources:
