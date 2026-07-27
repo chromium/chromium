@@ -5,16 +5,16 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import '../settings_shared.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {getTemplate} from './startup_url_dialog.html.js';
+import {getHtml} from './startup_url_dialog.html.js';
 import type {StartupPageInfo, StartupUrlsPageBrowserProxy} from './startup_urls_page_browser_proxy.js';
 import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
@@ -42,82 +42,79 @@ export interface SettingsStartupUrlDialogElement {
   };
 }
 
-export class SettingsStartupUrlDialogElement extends PolymerElement {
+export class SettingsStartupUrlDialogElement extends CrLitElement {
   static get is() {
     return 'settings-startup-url-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [getSettingsSharedCss()];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      error_: {
-        type: Number,
-        value: UrlInputError.NONE,
-      },
-
-      url_: String,
-
-      urlLimit_: {
-        readOnly: true,
-        type: Number,
-        value: 100 * 1024,  // 100 KB.
-      },
-
-      /**
-       * If specified the dialog acts as an "Edit page" dialog, otherwise as an
-       * "Add new page" dialog.
-       */
-      model: Object,
-
-      dialogTitle_: String,
-
-      actionButtonText_: String,
-
+      error_: {type: Number},
+      url_: {type: String},
+      urlLimit_: {type: Number},
+      model: {type: Object},
+      dialogTitle_: {type: String},
+      actionButtonText_: {type: String},
     };
   }
 
-  declare private error_: UrlInputError;
-  declare private url_: string;
-  declare private urlLimit_: number;
-  declare model: StartupPageInfo|null;
-  declare private dialogTitle_: string;
-  declare private actionButtonText_: string;
+  protected accessor error_: UrlInputError = UrlInputError.NONE;
+  protected accessor url_: string = '';
+  protected accessor urlLimit_: number = 100 * 1024;  // 100 KB.
+  accessor model: StartupPageInfo|null = null;
+  protected accessor dialogTitle_: string = '';
+  protected accessor actionButtonText_: string = '';
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
-    super.connectedCallback();
-
     if (this.model) {
       this.dialogTitle_ = loadTimeData.getString('onStartupEditPage');
       this.actionButtonText_ = loadTimeData.getString('save');
-      this.$.actionButton.disabled = false;
       // Pre-populate the input field.
       this.url_ = this.model.url;
     } else {
       this.dialogTitle_ = loadTimeData.getString('onStartupAddNewPage');
       this.actionButtonText_ = loadTimeData.getString('add');
-      this.$.actionButton.disabled = true;
     }
+
+    super.connectedCallback();
+    this.$.actionButton.disabled = !this.model;
     this.$.dialog.showModal();
   }
 
-  private hasError_(): boolean {
+  protected onUrlValueChanged_(e: CustomEvent<{value: string}>) {
+    this.url_ = e.detail.value;
+  }
+
+  protected hasError_(): boolean {
     return this.error_ !== UrlInputError.NONE;
   }
 
-  private errorMessage_(invalidUrl: string, tooLong: string): string {
-    return ['', invalidUrl, tooLong][this.error_];
+  protected getErrorMessage_(): string {
+    switch (this.error_) {
+      case UrlInputError.INVALID_URL:
+        return loadTimeData.getString('onStartupInvalidUrl');
+      case UrlInputError.TOO_LONG:
+        return loadTimeData.getString('onStartupUrlTooLong');
+      default:
+        return '';
+    }
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onActionButtonClick_() {
+  protected onActionButtonClick_() {
     const whenDone = this.model ?
         this.browserProxy_.editStartupPage(this.model.modelIndex, this.url_) :
         this.browserProxy_.addStartupPage(this.url_);
@@ -131,7 +128,7 @@ export class SettingsStartupUrlDialogElement extends PolymerElement {
     });
   }
 
-  private validate_() {
+  protected onInput_() {
     if (this.url_.length === 0) {
       this.$.actionButton.disabled = true;
       this.error_ = UrlInputError.NONE;

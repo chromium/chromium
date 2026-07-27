@@ -90,10 +90,10 @@ suite('OnStartupPage', function() {
   function getSelectedOptionLabel(): string {
     return Array
         .from(
-            testElement.shadowRoot!.querySelectorAll('controlled-radio-button'))
+            testElement.shadowRoot.querySelectorAll('controlled-radio-button'))
         .find(
             el => el.name ===
-                testElement.shadowRoot!.querySelector('settings-radio-group')!
+                testElement.shadowRoot.querySelector('settings-radio-group')!
                     .selected)!.label;
   }
 
@@ -135,7 +135,7 @@ suite('OnStartupPage', function() {
   });
 
   function extensionControlledIndicatorExists() {
-    return !!testElement.shadowRoot!.querySelector(
+    return !!testElement.shadowRoot.querySelector(
         'extension-controlled-indicator');
   }
 
@@ -187,7 +187,7 @@ suite('OnStartupPage', function() {
 
   // <if expr="is_win">
   function getForegroundLaunchToggle(): SettingsToggleButtonElement|null {
-    return testElement.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+    return testElement.shadowRoot.querySelector<SettingsToggleButtonElement>(
         '#foregroundLaunchOnStartup');
   }
 

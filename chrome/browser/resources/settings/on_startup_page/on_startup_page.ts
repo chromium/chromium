@@ -6,33 +6,32 @@
  * @fileoverview
  * 'settings-on-startup-page' is a settings page.
  */
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_radio_group.js';
 import '../i18n_setup.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 import './startup_urls_page.js';
 // <if expr="is_win">
 import '../controls/settings_toggle_button.js';
 
 // </if>
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {getCss as getCrSharedStyle} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 // <if expr="is_win">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
+import {getCss as getSettingsSharedLit} from '../settings_shared_lit.css.js';
 
 import type {NtpExtension} from './on_startup_browser_proxy.js';
 import {OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
-import {getTemplate} from './on_startup_page.html.js';
+import {getHtml} from './on_startup_page.html.js';
 
 
 /** Enum values for the 'session.restore_on_startup' preference. */
@@ -44,7 +43,7 @@ export enum PrefValues {
 }
 
 const SettingsOnStartupPageElementBase =
-    PrefServiceObserverMixin(WebUiListenerMixin(PolymerElement));
+    PrefServiceObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class SettingsOnStartupPageElement extends
     SettingsOnStartupPageElementBase implements SettingsPlugin {
@@ -52,34 +51,33 @@ export class SettingsOnStartupPageElement extends
     return 'settings-on-startup-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [getCrSharedStyle(), getSettingsSharedLit()];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      restoreOnStartupPref_: Object,
+      restoreOnStartupPref_: {type: Object},
 
       // <if expr="is_win">
-      isForegroundLaunchFeatureEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isForegroundLaunchFeatureEnabled'),
-      },
+      isForegroundLaunchFeatureEnabled_: {type: Boolean},
       // </if>
 
-      ntpExtension_: Object,
-
-      prefValuesEnum_: {readOnly: true, type: Object, value: PrefValues},
+      ntpExtension_: {type: Object},
     };
   }
 
-  declare private restoreOnStartupPref_:
+  protected accessor restoreOnStartupPref_:
       chrome.settingsPrivate.PrefObject<PrefValues>|undefined;
   // <if expr="is_win">
-  declare private isForegroundLaunchFeatureEnabled_: boolean;
+  protected accessor isForegroundLaunchFeatureEnabled_: boolean =
+      loadTimeData.getBoolean('isForegroundLaunchFeatureEnabled');
   // </if>
-  declare private ntpExtension_: NtpExtension|null;
+  protected accessor ntpExtension_: NtpExtension|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -95,17 +93,15 @@ export class SettingsOnStartupPageElement extends
     this.addWebUiListener('update-ntp-extension', updateNtpExtension);
   }
 
-  private getName_(value: number): string {
-    return value.toString();
-  }
-
   /**
    * Determine whether to show the user defined startup pages.
    * @return Whether the "open specific pages" or "continue and open specific
    *     pages" is selected.
    */
-  private showStartupUrls_(): boolean {
-    assert(this.restoreOnStartupPref_);
+  protected showStartupUrls_(): boolean {
+    if (!this.restoreOnStartupPref_) {
+      return false;
+    }
     const value = this.restoreOnStartupPref_.value;
     return value === PrefValues.OPEN_SPECIFIC ||
         value === PrefValues.CONTINUE_AND_OPEN_SPECIFIC;
@@ -116,8 +112,10 @@ export class SettingsOnStartupPageElement extends
    * @return Whether the restoreOnStartup pref is recommended or enforced by
    *     policy.
    */
-  private showContinueAndOpenSpecific_(): boolean {
-    assert(this.restoreOnStartupPref_);
+  protected showContinueAndOpenSpecific_(): boolean {
+    if (!this.restoreOnStartupPref_) {
+      return false;
+    }
     return this.restoreOnStartupPref_.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED ||
         this.restoreOnStartupPref_.enforcement ===

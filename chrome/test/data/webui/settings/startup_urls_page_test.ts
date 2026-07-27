@@ -130,11 +130,12 @@ suite('StartupUrlDialog', function() {
     const expectedUrl = 'dummy-foo.com';
     inputElement.value = expectedUrl;
     browserProxy.setUrlValidity(false);
-    await inputElement.updateComplete;
+    await microtasksFinished();
     pressSpace(inputElement);
 
     const url = await browserProxy.whenCalled('validateStartupPage');
     assertEquals(expectedUrl, url);
+    await microtasksFinished();
     assertTrue(actionButton.disabled);
     assertTrue(inputElement.invalid);
 
@@ -143,6 +144,7 @@ suite('StartupUrlDialog', function() {
     pressSpace(inputElement);
 
     await browserProxy.whenCalled('validateStartupPage');
+    await microtasksFinished();
     assertFalse(actionButton.disabled);
     assertFalse(inputElement.invalid);
   });
