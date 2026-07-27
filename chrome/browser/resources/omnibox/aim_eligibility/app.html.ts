@@ -140,6 +140,14 @@ export function getHtml(this: AimEligibilityAppElement) {
           </span>
         </div>
 
+        <div class="check-label">Disclaimer Feature Flag (kComposeboxDriveContextMenuOptionDisclaimer):</div>
+        <div class="check-item">
+          <span class="check-value ${
+              this.getCheckClass_(this.eligibilityState_.driveStatus.isDisclaimerFlagEnabled)}">
+            ${this.getDisclaimerFlagText_()}
+          </span>
+        </div>
+
         <div class="check-label">Search Content Sharing Policy:</div>
         <div class="check-item">
           <span class="check-value ${
