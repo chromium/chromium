@@ -43,7 +43,9 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -68,8 +70,8 @@ TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
 // Returns the list of URLs that are open in `tab_strip_model`.
 std::vector<GURL> GetURLsIfApplicable(TabStripModel& tab_strip_model) {
   std::vector<GURL> urls;
-  for (int i = 0; i < tab_strip_model.count(); ++i) {
-    urls.push_back(tab_strip_model.GetWebContentsAt(i)->GetLastCommittedURL());
+  for (tabs::TabInterface* tab : tab_strip_model) {
+    urls.push_back(tab->GetContents()->GetLastCommittedURL());
   }
   return urls;
 }
