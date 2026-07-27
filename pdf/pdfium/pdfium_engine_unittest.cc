@@ -1395,8 +1395,7 @@ TEST_P(PDFiumEngineSelectionTest, SelectActualTextRtl) {
   ASSERT_TRUE(engine);
 
   engine->SelectAll();
-  // TODO(crbug.com/525087036): `kExpectedText` is wrong. RTL text is backwards.
-  constexpr char kExpectedText[] = "Hello is םולש\nWater is water םימ";
+  constexpr char kExpectedText[] = "Hello is שלום\nWater is water מים";
   EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
             engine->GetSelectedText());
 }
