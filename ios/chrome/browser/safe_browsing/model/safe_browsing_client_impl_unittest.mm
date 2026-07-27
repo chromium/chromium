@@ -31,6 +31,7 @@ class SafeBrowsingClientImplTest : public PlatformTest,
     client_ = std::make_unique<SafeBrowsingClientImpl>(
         /*pref_service=*/profile_->GetPrefs(),
         /*hash_real_time_service=*/nullptr,
+        /*v5_get_hash_protocol_manager=*/nullptr,
         /*url_lookup_service_factory=*/
         base::BindRepeating(
             []() -> safe_browsing::RealTimeUrlLookupServiceBase* {

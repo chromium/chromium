@@ -35,6 +35,11 @@ FakeSafeBrowsingClient::GetHashRealTimeService() {
   return hash_real_time_service_;
 }
 
+safe_browsing::V5GetHashProtocolManager*
+FakeSafeBrowsingClient::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
+}
+
 variations::VariationsService* FakeSafeBrowsingClient::GetVariationsService() {
   return nullptr;
 }

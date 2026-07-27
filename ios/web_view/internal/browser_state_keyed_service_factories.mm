@@ -21,6 +21,8 @@
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_helper_factory.h"
+#import "ios/web_view/internal/safe_browsing/web_view_v5_get_hash_protocol_manager_factory.h"
+#import "ios/web_view/internal/safe_browsing/web_view_v5_search_hashes_cache_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/signin/web_view_signin_client_factory.h"
 #import "ios/web_view/internal/sync/web_view_data_type_store_service_factory.h"
@@ -58,6 +60,8 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   WebViewProfilePasswordStoreFactory::GetInstance();
   WebViewSafeBrowsingClientFactory::GetInstance();
   WebViewSafeBrowsingHelperFactory::GetInstance();
+  WebViewV5GetHashProtocolManagerFactory::GetInstance();
+  WebViewV5SearchHashesCacheFactory::GetInstance();
   WebViewSigninClientFactory::GetInstance();
   WebViewStrikeDatabaseFactory::GetInstance();
   WebViewSyncInvalidationsServiceFactory::GetInstance();

@@ -92,6 +92,8 @@ source_set("unittests") {
     "../internal/passwords/cwv_weak_check_utils_unittest.mm",
     "../internal/passwords/web_view_password_manager_client_unittest.mm",
     "../internal/safe_browsing/cwv_unsafe_url_handler_unittest.mm",
+    "../internal/safe_browsing/web_view_v5_get_hash_protocol_manager_factory_unittest.mm",
+    "../internal/safe_browsing/web_view_v5_search_hashes_cache_factory_unittest.mm",
     "../internal/signin/account_capabilities_fetcher_ios_web_view_unittest.mm",
     "../internal/signin/cwv_identity_unittest.mm",
     "../internal/signin/web_view_device_accounts_provider_impl_unittest.mm",

@@ -11,6 +11,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client.h"
+#import "ios/web_view/internal/safe_browsing/web_view_v5_get_hash_protocol_manager_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
@@ -32,14 +33,19 @@ WebViewSafeBrowsingClientFactory::GetInstance() {
 WebViewSafeBrowsingClientFactory::WebViewSafeBrowsingClientFactory()
     : BrowserStateKeyedServiceFactory(
           "WebViewSafeBrowsingClient",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(WebViewV5GetHashProtocolManagerFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 WebViewSafeBrowsingClientFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
-  return std::make_unique<WebViewSafeBrowsingClient>(browser_state->GetPrefs());
+  return std::make_unique<WebViewSafeBrowsingClient>(
+      browser_state->GetPrefs(),
+      WebViewV5GetHashProtocolManagerFactory::GetForBrowserState(
+          browser_state));
 }
 
 web::BrowserState* WebViewSafeBrowsingClientFactory::GetBrowserStateToUse(

@@ -11,6 +11,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
+#import "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -192,6 +193,9 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       can_perform_full_url_lookup ? url_lookup_service->GetMetricSuffix()
                                   : safe_browsing::kNoRealTimeURLLookupService;
 
+  safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager =
+      client ? client->GetV5GetHashProtocolManager() : nullptr;
+
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
       /*has_user_gesture=*/false, url_checker_delegate,
@@ -211,7 +215,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       hash_real_time_selection,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
-      /*v5_get_hash_protocol_manager=*/nullptr);
+      v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
+                                   : nullptr);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -253,6 +258,9 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       can_perform_full_url_lookup ? url_lookup_service->GetMetricSuffix()
                                   : safe_browsing::kNoRealTimeURLLookupService;
 
+  safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager =
+      client ? client->GetV5GetHashProtocolManager() : nullptr;
+
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
       /*has_user_gesture=*/false, url_checker_delegate,
@@ -272,7 +280,8 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       hash_real_time_selection,
       /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
-      /*v5_get_hash_protocol_manager=*/nullptr);
+      v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
+                                   : nullptr);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -283,6 +292,9 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
                                                    client->AsWeakPtr());
+
+  safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager =
+      client ? client->GetV5GetHashProtocolManager() : nullptr;
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
@@ -304,7 +316,8 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
-      /*v5_get_hash_protocol_manager=*/nullptr);
+      v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
+                                   : nullptr);
 }
 
 // Checks if async check should be created.

@@ -13,6 +13,7 @@ class PrefService;
 namespace safe_browsing {
 class HashRealTimeService;
 class RealTimeUrlLookupServiceBase;
+class V5GetHashProtocolManager;
 }  // namespace safe_browsing
 
 namespace security_interstitials {
@@ -44,6 +45,9 @@ class SafeBrowsingClient : public KeyedService {
   GetRealTimeUrlLookupService() = 0;
   // Gets the hash-real-time service factory. Client may return nullptr.
   virtual safe_browsing::HashRealTimeService* GetHashRealTimeService() = 0;
+  // Gets the V5 get hash protocol manager. Clients may return nullptr.
+  virtual safe_browsing::V5GetHashProtocolManager*
+  GetV5GetHashProtocolManager() = 0;
   // Gets the variations service. Clients may return nullptr.
   virtual variations::VariationsService* GetVariationsService() = 0;
   // Returns whether or not `resource` should be blocked from loading.

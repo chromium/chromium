@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_helper_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/v5_get_hash_protocol_manager_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
@@ -68,6 +69,7 @@ SafeBrowsingClientFactory::SafeBrowsingClientFactory()
     : ProfileKeyedServiceFactoryIOS("SafeBrowsingClient",
                                     ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(HashRealTimeServiceFactory::GetInstance());
+  DependsOn(V5GetHashProtocolManagerFactory::GetInstance());
   DependsOn(ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance());
   DependsOn(RealTimeUrlLookupServiceFactory::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
@@ -81,6 +83,7 @@ SafeBrowsingClientFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   }
   return std::make_unique<SafeBrowsingClientImpl>(
       profile->GetPrefs(), hash_real_time_service,
+      V5GetHashProtocolManagerFactory::GetForProfile(profile),
       // base::Unretained is safe because the RealTimeUrlLookupServiceBase will
       // be destroyed before the profile it is attached to.
       base::BindRepeating(&GetUrlLookupService, base::Unretained(profile)),

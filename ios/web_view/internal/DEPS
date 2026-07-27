@@ -32,6 +32,7 @@ include_rules = [
   "+components/prefs",
   "+components/profile_metrics",
   "+components/proxy_config",
+  "+components/safe_browsing/core/browser/db",
   "+components/safe_browsing/core/common",
   "+components/safe_browsing/ios",
   "+components/security_interstitials/core",

@@ -24,10 +24,12 @@
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
     PrefService* pref_service,
     safe_browsing::HashRealTimeService* hash_real_time_service,
+    safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager,
     UrlLookupServiceFactory url_lookup_service_factory,
     enterprise_connectors::ConnectorsService* connectors_service)
     : pref_service_(pref_service),
       hash_real_time_service_(hash_real_time_service),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
       url_lookup_service_factory_(url_lookup_service_factory),
       connectors_service_(connectors_service) {
   CHECK(connectors_service_);
@@ -55,6 +57,11 @@ SafeBrowsingClientImpl::GetRealTimeUrlLookupService() {
 safe_browsing::HashRealTimeService*
 SafeBrowsingClientImpl::GetHashRealTimeService() {
   return hash_real_time_service_;
+}
+
+safe_browsing::V5GetHashProtocolManager*
+SafeBrowsingClientImpl::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }
 
 variations::VariationsService* SafeBrowsingClientImpl::GetVariationsService() {

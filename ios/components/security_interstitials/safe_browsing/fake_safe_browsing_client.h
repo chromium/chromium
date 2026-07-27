@@ -25,6 +25,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   safe_browsing::RealTimeUrlLookupServiceBase* GetRealTimeUrlLookupService()
       override;
   safe_browsing::HashRealTimeService* GetHashRealTimeService() override;
+  safe_browsing::V5GetHashProtocolManager* GetV5GetHashProtocolManager()
+      override;
   variations::VariationsService* GetVariationsService() override;
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
@@ -50,6 +52,12 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   void set_hash_real_time_service(
       safe_browsing::HashRealTimeService* hash_real_time_service) {
     hash_real_time_service_ = hash_real_time_service;
+  }
+
+  // Controls the return value of `GetV5GetHashProtocolManager`.
+  void set_v5_get_hash_protocol_manager(
+      safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager) {
+    v5_get_hash_protocol_manager_ = v5_get_hash_protocol_manager;
   }
 
   // Controls the return value of `ShouldForceSyncRealTimeUrlChecks`.
@@ -107,6 +115,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_;
   raw_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_ = nullptr;
+  raw_ptr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager_ = nullptr;
 
   bool should_block_unsafe_resource_ = false;
   bool main_frame_cancellation_decided_called_ = false;
