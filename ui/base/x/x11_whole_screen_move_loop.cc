@@ -223,7 +223,11 @@ void X11WholeScreenMoveLoop::EndMoveLoop() {
 
   // Restore the previous dispatcher.
   nested_dispatcher_.reset();
+  base::WeakPtr<X11WholeScreenMoveLoop> alive(weak_factory_.GetWeakPtr());
   delegate_->OnMoveLoopEnded();
+  if (!alive) {
+    return;
+  }
   grab_input_window_events_.Reset();
   connection->DestroyWindow({grab_input_window_});
   grab_input_window_ = x11::Window::None;
