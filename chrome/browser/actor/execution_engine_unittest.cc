@@ -33,6 +33,7 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -71,8 +72,10 @@ namespace actor {
 
 using ::optimization_guide::proto::Actions;
 using testing::_;
+using testing::Conditional;
 using testing::Eq;
 using testing::Field;
+using testing::Not;
 using testing::Property;
 using testing::VariantWith;
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
@@ -1168,6 +1171,16 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
         ->MaybeUpdateHintsComponent(
             {base::Version("123"),
              temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
+
+    ON_CALL(mock_actor_task_delegate_, RequestToShowUserConfirmationDialog)
+        .WillByDefault([](TaskId, const url::Origin&, bool,
+                          ActorTaskDelegate::UserConfirmationDialogCallback
+                              callback) {
+          std::move(callback).Run(
+              webui::mojom::UserConfirmationDialogResponse::New(
+                  webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                      false)));
+        });
   }
 
   void TearDown() override {
@@ -1202,27 +1215,34 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
             result, optimization_guide::OptimizationMetadata{}));
   }
 
+  ActorTask& GetTask() {
+    GetExecutionEngine();
+    CHECK(task_);
+    return *task_;
+  }
+
   void CheckUrl(const GURL& url,
                 bool expected_allowed,
                 EnterprisePolicyChecker::UrlBlockReason enterprise_reason) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
 
-    tabs::MockTabInterface tab;
-    ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents()));
+    TestTabState tab_state(web_contents());
 
-    auto* actor_service = ActorKeyedService::Get(profile());
-    // The enterprise-policy check runs inside the OriginGatingChecker, which
-    // reads the task's policy checker via the delegate. Configure that checker
-    // rather than passing one to MayActOnTab.
     task_policy_checker_.set_reason(enterprise_reason);
-    base::test::TestFuture<MayActOnUrlBlockReason> allowed;
-    GetExecutionEngine().MayActOnTab(tab, actor_service->GetJournal(), TaskId(),
-                                     allowed.GetCallback());
+
+    WaitTool::SetNoDelayForTesting();
+    std::unique_ptr<ToolRequest> tool_request = MakeWaitRequest(&tab_state.tab);
+    ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+    ActResultFuture result;
+    GetTask().Act(ToRequestList(tool_request), result.GetCallback());
+
     // The result should not be provided synchronously.
-    EXPECT_FALSE(allowed.IsReady());
-    EXPECT_EQ(expected_allowed,
-              allowed.Get() == MayActOnUrlBlockReason::kAllowed);
+    EXPECT_FALSE(result.IsReady());
+    ASSERT_EQ(result.Get().size(), 1u);
+    EXPECT_THAT(result.Get()[0].result->code,
+                Conditional(expected_allowed, mojom::ActionResultCode::kOk,
+                            Not(mojom::ActionResultCode::kOk)));
   }
 
   void CheckUrl(const GURL& url, bool expected_allowed) {
@@ -1241,6 +1261,23 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
           ui::NewMockUiEventDispatcher();
       std::unique_ptr<ui::UiEventDispatcher> task_dispatcher =
           ui::NewMockUiEventDispatcher();
+      for (auto* mock :
+           {static_cast<ui::MockUiEventDispatcher*>(engine_dispatcher.get()),
+            static_cast<ui::MockUiEventDispatcher*>(task_dispatcher.get())}) {
+        ON_CALL(*mock, OnPreTool)
+            .WillByDefault(
+                UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                    MakeOkResult, /*requires_page_stabilization=*/true)));
+        ON_CALL(*mock, OnPostTool)
+            .WillByDefault(
+                UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                    MakeOkResult, /*requires_page_stabilization=*/true)));
+        ON_CALL(*mock, OnActorTaskAsyncChange)
+            .WillByDefault(UiEventDispatcherCallback<
+                           ui::UiEventDispatcher::ActorTaskAsyncChange>(
+                base::BindRepeating(MakeOkResult,
+                                    /*requires_page_stabilization=*/true)));
+      }
       ScopedExecutionEngineFactory scoped_factory(base::BindLambdaForTesting(
           [&](ActorTask& task) -> std::unique_ptr<ExecutionEngine> {
             return ExecutionEngine::CreateForTesting(
@@ -1490,7 +1527,7 @@ TEST_F(ExecutionEngineUrlGatingTest, MayActOnUrl_FailsOpen) {
   EXPECT_EQ(allowed.Get(), MayActOnUrlBlockReason::kAllowed);
 }
 
-TEST_F(ExecutionEngineUrlGatingTest, MayActOnTab_AllowedByCache) {
+TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
   const GURL url("https://c.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;

@@ -971,23 +971,6 @@ void ExecutionEngine::OnNoVerdict(
                                     std::move(callback));
 }
 
-// TODO(mcnee): Add UMA for the outcomes.
-void ExecutionEngine::MayActOnTab(const tabs::TabInterface& tab,
-                                  AggregatedJournal& journal,
-                                  TaskId task_id,
-                                  DecisionCallbackWithReason callback) {
-  content::WebContents& web_contents = *tab.GetContents();
-  const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
-  auto decision_wrapper = std::make_unique<DecisionWrapper>(
-      journal, url, task_id, "MayActOnTab", std::move(callback));
-  auto event = GateableEvent::kPageAction;
-  origin_gating_checker_.ComputeGatingDecision(
-      std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
-      event, /*source=*/GURL(), url,
-      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url,
-                     &journal, task_id, event));
-}
-
 void ExecutionEngine::HandleNavigationToNewOrigin(
     const url::Origin& destination,
     ukm::SourceId ukm_source_id,
@@ -1318,16 +1301,28 @@ void ExecutionEngine::SafetyChecksForNextAction() {
     return;
   }
 
-  // Asynchronously check if we can act on the tab. NOTE that the MayActOnTab
-  // check uses `GetLastCommittedURL()` from the tab. For opaque origins, this
-  // means that we'll get the precursor URL. For this reason, we previously
-  // added the precursor to `origin_gating_cache()` to ensure the optimization
-  // guide sensitive origin check would be skipped as expected.
-  MayActOnTab(
-      *tab, *journal_, task_->id(),
-      base::BindOnce(
-          &ExecutionEngine::OnMayActOnTabDecision, GetActionSequenceWeakPtr(),
-          tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  // Asynchronously check if we can act on the tab. NOTE that the check uses
+  // `GetLastCommittedURL()` from the tab. For opaque origins, this means that
+  // we'll get the precursor URL. For this reason, we previously added the
+  // precursor to `origin_gating_cache()` to ensure the optimization guide
+  // sensitive origin check would be skipped as expected.
+
+  // TODO(mcnee): Add UMA for the outcomes.
+  content::WebContents& web_contents = *(tab->GetContents());
+  const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
+  auto event = GateableEvent::kPageAction;
+  origin_gating_checker_.ComputeGatingDecision(
+      std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
+      event, /*source=*/GURL(), url,
+      base::BindOnce(&ResolveGatingDecision,
+                     std::make_unique<DecisionWrapper>(
+                         *journal_, url, task_->id(), "MayActOnTab",
+                         base::BindOnce(&ExecutionEngine::OnMayActOnTabDecision,
+                                        GetActionSequenceWeakPtr(),
+                                        tab->GetContents()
+                                            ->GetPrimaryMainFrame()
+                                            ->GetLastCommittedOrigin())),
+                     url, &*journal_, task_->id(), event));
 }
 
 void ExecutionEngine::OnMayActOnTabDecision(

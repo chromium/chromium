@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
@@ -109,6 +110,8 @@
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::ClickAction;
 using ::testing::_;
+using ::testing::Conditional;
+using ::testing::Not;
 
 namespace actor {
 
@@ -1219,19 +1222,23 @@ class ExecutionEngineUrlGatingBrowserTest : public InProcessBrowserTest {
   void CheckUrl(const GURL& url, bool expected_allowed) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
     TaskId task_id =
         actor_service->CreateTask(TestTaskSourceInfo(), &policy_checker_);
     ActorTask* task = actor_service->GetTask(task_id);
     ASSERT_TRUE(task);
-    task->GetExecutionEngine().MayActOnTab(
-        *browser()->tab_strip_model()->GetActiveTab(),
-        actor_service->GetJournal(), task_id, allowed.GetCallback());
+    WaitTool::SetNoDelayForTesting();
+    std::unique_ptr<ToolRequest> tool_request =
+        MakeWaitRequest(browser()->tab_strip_model()->GetActiveTab());
+    ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+    ActResultFuture result;
+    task->Act(ToRequestList(tool_request), result.GetCallback());
     // The result should not be provided synchronously.
-    EXPECT_FALSE(allowed.IsReady());
-    EXPECT_EQ(expected_allowed,
-              allowed.Get() == MayActOnUrlBlockReason::kAllowed);
+    EXPECT_FALSE(result.IsReady());
+    ASSERT_EQ(result.Get().size(), 1u);
+    EXPECT_THAT(result.Get()[0].result->code,
+                Conditional(expected_allowed, mojom::ActionResultCode::kOk,
+                            Not(mojom::ActionResultCode::kOk)));
   }
 
  private:
@@ -1310,16 +1317,18 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineUrlGatingMissingBlocklistBrowserTest,
       embedded_https_test_server().GetURL("bar.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  base::test::TestFuture<MayActOnUrlBlockReason> allowed;
   auto* actor_service = ActorKeyedService::Get(browser()->GetProfile());
   TaskId task_id =
       actor_service->CreateTask(TestTaskSourceInfo(), &policy_checker_);
   ActorTask* task = actor_service->GetTask(task_id);
   ASSERT_TRUE(task);
-  task->GetExecutionEngine().MayActOnTab(
-      *browser()->tab_strip_model()->GetActiveTab(),
-      actor_service->GetJournal(), task_id, allowed.GetCallback());
-  EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
+  WaitTool::SetNoDelayForTesting();
+  std::unique_ptr<ToolRequest> tool_request =
+      MakeWaitRequest(browser()->tab_strip_model()->GetActiveTab());
+  ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+  ActResultFuture result;
+  task->Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectOkResult(result);
 }
 
 class ExecutionEngineUrlGatingSafeBrowsingBrowserTest

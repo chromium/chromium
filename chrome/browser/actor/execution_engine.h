@@ -312,12 +312,6 @@ class ExecutionEngine : public ToolDelegate,
     return origin_gating_checker_;
   }
 
-  // Evaluates whether the actor may act on `tab`.
-  void MayActOnTab(const tabs::TabInterface& tab,
-                   AggregatedJournal& journal,
-                   TaskId task_id,
-                   DecisionCallbackWithReason callback);
-
   // Currently, navigations are generally forced to happen in the same tab (see
   // https://crbug.com/420669167 ). In some cases we need to drop this
   // restriction for certain tools to function.
