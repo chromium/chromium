@@ -138,6 +138,11 @@ which _are_ valid. As a rule:
       [Chromium > UI > Settings >
       Privacy](https://issues.chromium.org/components/1457044/edit).
     * You are now done triaging this bug, congratulations!
+* If the bug is a test bug which you don't want or need to act on but want out of your queue:
+    * Add it to [hotlist 8731053](https://issues.chromium.org/hotlists/8731053)
+    * Do not ever do this for a "real" bug - this hotlist is _only_ for test
+      bugs. It does not exempt bugs from SLO monitoring or do anything other
+      than hide them from your queue!
 
 Now, before reproducing or deeply understanding the issue, move on to...
 
