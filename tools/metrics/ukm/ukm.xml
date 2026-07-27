@@ -15363,6 +15363,76 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MultistepFilter.ApplicationSession">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Recorded when a Multistep Filter suggestion application session is
+    concluded. The session starts when a suggestion is accepted. If the
+    application is unsuccessful, the session ends immediately. If successful,
+    the session continues to track post-application user engagement, ending when
+    the user navigates away or closes the tab. This event records the final
+    application outcome (AllApplied, NotAllApplied, or Abandoned) and any
+    post-application engagement metrics.
+  </summary>
+  <metric name="ApplicationOutcome" enum="MultistepFilterApplicationOutcome">
+    <summary>
+      The overall technical filter application outcome after a user accepts a
+      Multistep Filter suggestion.
+    </summary>
+  </metric>
+  <metric name="NumOfFilterFacetsAppliedSuccessfully">
+    <summary>
+      The number of filter facets successfully applied (clamped to
+      multistep_filter::kMultistepFilterMaxFacetsShownUkmClampingLimit). Logged
+      only if outcome is AllApplied.
+    </summary>
+  </metric>
+  <metric name="PostApplicationUserEngagement"
+      enum="MultistepFilterPostSuggestionApplicationUserEngagement">
+    <summary>
+      The user's engagement after the filters were applied (e.g. further
+      navigation, tab close, omnibox navigation) distinguished by whether it
+      happened within the
+      multistep_filter::kMultistepFilterPostApplicationSessionDuration window.
+    </summary>
+  </metric>
+  <metric name="RetentionState" enum="MultistepFilterRetentionState">
+    <summary>
+      The user's retention history state at the time the suggestion was shown
+      (must match the UI session).
+    </summary>
+  </metric>
+  <metric name="SessionId">
+    <summary>
+      A transient, randomly generated identifier used to correlate the UI
+      session event (MultistepFilter.UiSession) with the subsequent landing page
+      application session event (MultistepFilter.ApplicationSession).
+    </summary>
+  </metric>
+  <metric name="SuggestedFilterFacetTypes">
+    <summary>
+      A bitmask representing the types of filter facets in the accepted
+      suggestion. Each bit N corresponds to a filter facet type with enum value
+      N defined in MultistepFilterFacetType enum (e.g. Bit 1 is kAgeChild (1),
+      Bit 11 is kDateCheckin (11), Bit 0 is unused). This must match the UI
+      session.
+    </summary>
+  </metric>
+  <metric name="SuggestionAcceptedToAppliedTimeInMs">
+    <summary>
+      Time from the user accepting the suggestion to when the filters are
+      successfully applied on the landing page (in milliseconds, exponentially
+      bucketed). Logged only if outcome is AllApplied.
+    </summary>
+  </metric>
+  <metric name="TaskType" enum="MultistepFilterTaskType">
+    <summary>
+      The task type of the applied suggestion (must match the UI session).
+    </summary>
+  </metric>
+</event>
+
 <event name="MultistepFilter.UiSession">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>

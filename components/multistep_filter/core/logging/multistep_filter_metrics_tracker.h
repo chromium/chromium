@@ -111,7 +111,8 @@ class MultistepFilterMetricsTracker {
     bool is_error_page = false;
     base::TimeTicks application_navigation_finish_time;
     base::TimeDelta suggestion_accepted_to_applied_latency;
-    MultistepFilterApplicationOutcome outcome;
+    MultistepFilterApplicationOutcome outcome =
+        MultistepFilterApplicationOutcome::kAbandonedBeforeVerification;
     // True if the suggestion was successfully applied and we are now tracking
     // post-application user engagement.
     bool is_applied = false;

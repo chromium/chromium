@@ -28,6 +28,13 @@ namespace multistep_filter {
 
 namespace {
 
+using SuggestionUiSession = MultistepFilterMetricsTracker::SuggestionUiSession;
+using SuggestionApplicationSession = MultistepFilterMetricsTracker::SuggestionApplicationSession;
+using SuggestionApplicationSessionFlushTrigger =
+    MultistepFilterMetricsTracker::SuggestionApplicationSessionFlushTrigger;
+using enum SuggestionApplicationSessionFlushTrigger;
+using enum MultistepFilterPostSuggestionApplicationUserEngagement;
+
 static_assert(static_cast<int>(MultistepFilterFacetType::kMaxValue) < 64,
               "MultistepFilterFacetType::kMaxValue must be less than 64 to fit "
               "in a 64-bit bitmask.");
@@ -76,7 +83,7 @@ void LogAcceptanceHistogram(std::string_view base_histogram,
 // - There was a mismatch in the keys or values of the filters (e.g. a
 //   different brand or price range was applied than what was suggested).
 void LogApplicationOutcome(
-    MultistepFilterMetricsTracker::SuggestionApplicationSession& session) {
+    SuggestionApplicationSession& session) {
   if (session.outcome_logged) {
     return;
   }
@@ -131,32 +138,31 @@ void LogApplicationOutcome(
 }
 
 void LogApplicationOutcomeWhenSessionIsFlushed(
-    MultistepFilterMetricsTracker::SuggestionApplicationSession& session,
-    MultistepFilterMetricsTracker::SuggestionApplicationSessionFlushTrigger
-        trigger) {
+    SuggestionApplicationSession& session,
+    SuggestionApplicationSessionFlushTrigger trigger) {
   if (session.outcome_logged) {
     return;
   }
-  using enum MultistepFilterMetricsTracker::
-      SuggestionApplicationSessionFlushTrigger;
-  using enum MultistepFilterApplicationOutcome;
+
   switch (trigger) {
     case kApplicationFailure:
-      session.outcome = kNotAllFiltersApplied;
-      break;
+      session.outcome = MultistepFilterApplicationOutcome::kNotAllFiltersApplied;
+      LogApplicationOutcome(session);
+      return;
     case kTabClosed:
     case kSessionOverride:
     case kNavigationBack:
     case kNavigationFromBrowserContext:
     case kNavigationFromPageContext:
-      session.outcome = kAbandonedBeforeVerification;
-      break;
+      session.outcome = MultistepFilterApplicationOutcome::kAbandonedBeforeVerification;
+      LogApplicationOutcome(session);
+      return;
   }
-  LogApplicationOutcome(session);
+  NOTREACHED();
 }
 
 void LogSuggestionUiShown(
-    const MultistepFilterMetricsTracker::SuggestionUiSession& ui_session) {
+    const SuggestionUiSession& ui_session) {
   size_t count = ui_session.suggestion.attribute_ui_labels.size();
   std::string_view task_type = ui_session.suggestion.task_type;
   if (count > 0) {
@@ -233,14 +239,18 @@ bool ShouldIgnoreNavigationForEngagementMetrics(
   return false;
 }
 
-void LogPostApplicationUserEngagement(
-    const MultistepFilterMetricsTracker::SuggestionApplicationSession& session,
-    MultistepFilterMetricsTracker::SuggestionApplicationSessionFlushTrigger
-        trigger,
+
+// Returns the post-application user engagement metric for a session.
+// `trigger` must not be `kApplicationFailure` because post-application
+// engagement is only tracked for successful applications.
+MultistepFilterPostSuggestionApplicationUserEngagement
+GetPostApplicationUserEngagement(
+    const SuggestionApplicationSession& session,
+    SuggestionApplicationSessionFlushTrigger trigger,
     base::TimeTicks event_time) {
-  using enum MultistepFilterMetricsTracker::
-      SuggestionApplicationSessionFlushTrigger;
-  using enum MultistepFilterPostSuggestionApplicationUserEngagement;
+
+
+  CHECK_NE(trigger, kApplicationFailure);
 
   const base::TimeDelta time_since_suggestion_application_finish =
       GetClampedDifference(event_time,
@@ -249,44 +259,42 @@ void LogPostApplicationUserEngagement(
       time_since_suggestion_application_finish <
       kMultistepFilterPostApplicationSessionDuration.Get();
 
-  MultistepFilterPostSuggestionApplicationUserEngagement user_engagement_action;
   switch (trigger) {
     case kApplicationFailure:
-      return;
+      NOTREACHED();
     case kNavigationFromPageContext:
-      user_engagement_action =
-          within_window ? kEngagedWithFurtherNavigationWithinSessionWindow
-                        : kEngagedWithFurtherNavigationAfterSessionWindow;
-      break;
+      return within_window ? kEngagedWithFurtherNavigationWithinSessionWindow
+                           : kEngagedWithFurtherNavigationAfterSessionWindow;
     case kTabClosed:
-      user_engagement_action = within_window
-                                   ? kAbandonedWithinSessionWindowTabClosed
-                                   : kAbandonedAfterSessionWindowTabClosed;
-      break;
+      return within_window ? kAbandonedWithinSessionWindowTabClosed
+                           : kAbandonedAfterSessionWindowTabClosed;
     case kNavigationFromBrowserContext:
-      user_engagement_action =
-          within_window ? kAbandonedWithinSessionWindowOmniboxOrBookmark
-                        : kAbandonedAfterSessionWindowOmniboxOrBookmark;
-      break;
+      return within_window ? kAbandonedWithinSessionWindowOmniboxOrBookmark
+                           : kAbandonedAfterSessionWindowOmniboxOrBookmark;
     case kNavigationBack:
-      user_engagement_action = within_window
-                                   ? kAbandonedWithinSessionWindowBackNavigation
-                                   : kAbandonedAfterSessionWindowBackNavigation;
-      break;
+      return within_window ? kAbandonedWithinSessionWindowBackNavigation
+                           : kAbandonedAfterSessionWindowBackNavigation;
     case kSessionOverride:
-      user_engagement_action =
-          within_window ? kAbandonedWithinSessionWindowSessionOverride
-                        : kAbandonedAfterSessionWindowSessionOverride;
-      break;
+      return within_window ? kAbandonedWithinSessionWindowSessionOverride
+                           : kAbandonedAfterSessionWindowSessionOverride;
   }
+  NOTREACHED();
+}
 
+void LogPostApplicationUserEngagement(
+    const SuggestionApplicationSession& session,
+    SuggestionApplicationSessionFlushTrigger trigger,
+    base::TimeTicks event_time) {
+  if (trigger == kApplicationFailure) {
+    return;
+  }
   base::UmaHistogramEnumeration(
       kMultistepFilterPostSuggestionApplicationUserEngagementHistogram,
-      user_engagement_action);
+      GetPostApplicationUserEngagement(session, trigger, event_time));
 }
 
 void LogSuggestionUiSessionUkm(
-    const MultistepFilterMetricsTracker::SuggestionUiSession& ui_session,
+    const SuggestionUiSession& ui_session,
     SuggestionUserDecision final_decision) {
   if (ui_session.ukm_source_id == ukm::kInvalidSourceId) {
     return;
@@ -332,6 +340,45 @@ void LogSuggestionUiSessionUkm(
         ukm::GetSemanticBucketMinForDurationTiming(
             ui_session.suggestion_shown_to_accepted_time_delta
                 .InMilliseconds()));
+  }
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void LogSuggestionApplicationSessionUkm(
+    const SuggestionApplicationSession& session,
+    SuggestionApplicationSessionFlushTrigger trigger,
+    base::TimeTicks event_time) {
+  if (session.ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::MultistepFilter_ApplicationSession builder(
+      session.ukm_source_id);
+
+  builder.SetSessionId(session.session_id)
+      .SetTaskType(
+          std::to_underlying(MapStringToTaskType(session.suggestion.task_type)))
+      .SetRetentionState(
+          std::to_underlying(GetRetentionState(session.retention_snapshot)))
+      .SetApplicationOutcome(std::to_underlying(session.outcome));
+
+  if (session.outcome == MultistepFilterApplicationOutcome::kAllFiltersApplied) {
+    builder.SetNumOfFilterFacetsAppliedSuccessfully(std::min<int64_t>(
+        session.suggestion.attribute_ui_labels.size(),
+        kMultistepFilterMaxFacetsShownUkmClampingLimit.Get()));
+
+    builder.SetSuggestionAcceptedToAppliedTimeInMs(
+        ukm::GetSemanticBucketMinForDurationTiming(
+            session.suggestion_accepted_to_applied_latency.InMilliseconds()));
+
+    builder.SetSuggestedFilterFacetTypes(
+        GetAppliedFacetTypesBitmask(session.suggestion));
+  }
+
+  if (trigger != kApplicationFailure) {
+    builder.SetPostApplicationUserEngagement(std::to_underlying(
+        GetPostApplicationUserEngagement(session, trigger, event_time)));
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -536,6 +583,8 @@ void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
 
   LogPostApplicationUserEngagement(*current_application_session_, trigger,
                                    event_time);
+  LogSuggestionApplicationSessionUkm(*current_application_session_, trigger,
+                                     event_time);
   current_application_session_ = std::nullopt;
 }
 
@@ -544,7 +593,6 @@ void MultistepFilterMetricsTracker::MaybeFlushSessionOnNavigation(
   if (!current_application_session_.has_value()) {
     return;
   }
-  using enum SuggestionApplicationSessionFlushTrigger;
 
   // If this navigation is applying a new suggestion, it overrides the active
   // one.
