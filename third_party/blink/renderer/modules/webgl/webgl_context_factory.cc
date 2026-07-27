@@ -93,8 +93,7 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
 
       host->HostDispatchEvent(WebGLContextEvent::Create(
           event_type_names::kWebglcontextcreationerror,
-          UNSAFE_TODO(
-              String::Format("Failed to create %s.", GetContextName()))));
+          StrCat({"Failed to create ", GetContextName(), "."})));
       return nullptr;
     }
 
@@ -144,8 +143,7 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternalWebGPU(
   if (!context->Initialize(execution_context, &init_error)) {
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
-        UNSAFE_TODO(String::Format("Failed to create %s: ", GetContextName())) +
-            init_error));
+        StrCat({"Failed to create ", GetContextName(), ": ", init_error})));
     return nullptr;
   }
 
