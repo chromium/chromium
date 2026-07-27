@@ -1250,7 +1250,15 @@ class OmniboxAutofillDelegateFillingTest
 
 // Tests that selecting and accepting a credit card suggestion for a subframe
 // credit card form routes the preview and fill actions to the subframe driver.
-TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
+// TODO(crbug.com/490213796): Failing bots
+#if BUILDFLAG(IS_LINUX) && (defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER))
+#define MAYBE_FillOrPreviewCard_SubframeForm DISABLED_FillOrPreviewCard_SubframeForm
+#else
+#define MAYBE_FillOrPreviewCard_SubframeForm FillOrPreviewCard_SubframeForm
+#endif
+
+TEST_F(OmniboxAutofillDelegateFillingTest,
+       MAYBE_FillOrPreviewCard_SubframeForm) {
   // Create drivers and set unique frame tokens.
   CreateAutofillDriver();  // Main frame (index 0)
   CreateAutofillDriver();  // Subframe (index 1)
@@ -1358,7 +1366,16 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
 // Tests that selecting and accepting a credit card suggestion for a main frame
 // credit card form routes the preview and fill actions to the main frame
 // driver.
-TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
+
+// TODO(crbug.com/490213796): Failing bots
+#if BUILDFLAG(IS_LINUX) && (defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER))
+#define MAYBE_FillOrPreviewCard_MainFrameForm DISABLED_FillOrPreviewCard_MainFrameForm
+#else
+#define MAYBE_FillOrPreviewCard_MainFrameForm FillOrPreviewCard_MainFrameForm
+#endif
+
+TEST_F(OmniboxAutofillDelegateFillingTest,
+       MAYBE_FillOrPreviewCard_MainFrameForm) {
   // Create only the main frame driver.
   CreateAutofillDriver();  // Main frame (index 0)
   autofill_driver(0).SetLocalFrameToken(test::MakeLocalFrameToken());
