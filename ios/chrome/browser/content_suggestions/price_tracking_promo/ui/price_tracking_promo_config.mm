@@ -49,7 +49,7 @@ constexpr CGFloat kFallbackSymbolSize = 10;
 }
 
 - (UIImage*)fallbackSymbolImage {
-  return CustomSymbolWithPointSize(kDownTrendSymbol, kFallbackSymbolSize);
+  return SymbolWithPointSize(SymbolDownTrend, kFallbackSymbolSize);
 }
 
 - (NSString*)titleText {
