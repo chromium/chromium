@@ -99,6 +99,24 @@ class V5StoreTest : public PlatformTest {
 
   int64_t GetFileSize(const V5Store& store) { return store.file_size_; }
 
+  void CreateAndInitializeV5StoreWithPrefixes(V5Store& store,
+                                              const std::string& prefixes) {
+    V5StoreFileFormat file_format;
+    file_format.set_magic_number(0x600D71FE);
+    file_format.set_file_version(10);
+    ListDetails* list_details = file_format.mutable_list_details();
+    list_details->set_version("v1");
+    V5HashFile* hash_file = list_details->mutable_hash_file();
+    hash_file->set_extension("foo");
+    hash_file->set_file_size(prefixes.size());
+
+    base::WriteFile(store_path_, file_format.SerializeAsString());
+    base::WriteFile(store_path_.AddExtensionASCII("foo"), prefixes);
+
+    store.Initialize();
+    ASSERT_TRUE(store.HasValidData());
+  }
+
   std::string GetExpectedChecksum(const V5Store& store) {
     return store.expected_checksum_;
   }
@@ -1727,6 +1745,18 @@ TEST_F(V5StoreTest, ApplyUpdateWithAdditions) {
 
   V5Store* v5_updated_store = static_cast<V5Store*>(updated_store.get());
   EXPECT_EQ(expected_data, GetHashPrefixList(*v5_updated_store).view().at(4));
+
+  // Verify GetMatchingHashPrefix returns the prefix for matching full hashes
+  // and an empty string for non-matching ones.
+  FullHashStr matching_full_hash =
+      std::string("\x11\x22\x33\x44", 4) + std::string(28, 'a');
+  EXPECT_EQ(std::string("\x11\x22\x33\x44", 4),
+            v5_updated_store->GetMatchingHashPrefix(matching_full_hash));
+
+  FullHashStr non_matching_full_hash =
+      std::string("\x99\x99\x99\x99", 4) + std::string(28, 'b');
+  EXPECT_TRUE(
+      v5_updated_store->GetMatchingHashPrefix(non_matching_full_hash).empty());
   VerifyStoreReadBack(
       /*expected_version=*/"new_version_with_entries",
       /*expected_data=*/expected_data,
@@ -2534,6 +2564,105 @@ TEST_F(V5StoreTest, TestRecordAndReturnFileSize) {
     histogram_tester.ExpectUniqueSample(
         "SafeBrowsing.V5Database.SizeLinear.ChromeExtMalware_v5", 5, 1);
   }
+}
+
+TEST_F(V5StoreTest, TestGetMatchingHashPrefix16Bytes) {
+  V5Store store(task_runner(), store_path_, 16, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/true);
+  std::string prefix_16 = std::string(16, 'x');
+  CreateAndInitializeV5StoreWithPrefixes(store, prefix_16);
+
+  FullHashStr matching_full_hash_16 = prefix_16;
+  EXPECT_EQ(prefix_16, store.GetMatchingHashPrefix(matching_full_hash_16));
+
+  FullHashStr non_matching_full_hash_16 = std::string(16, 'y');
+  EXPECT_TRUE(store.GetMatchingHashPrefix(non_matching_full_hash_16).empty());
+}
+
+TEST_F(V5StoreTest, TestGetMatchingHashPrefix32Bytes) {
+  V5Store store(task_runner(), store_path_, 32, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  std::string prefix_32 = std::string(32, 'a');
+  CreateAndInitializeV5StoreWithPrefixes(store, prefix_32);
+
+  FullHashStr matching_full_hash_32 = prefix_32;
+  EXPECT_EQ(prefix_32, store.GetMatchingHashPrefix(matching_full_hash_32));
+
+  FullHashStr non_matching_full_hash_32 = std::string(32, 'b');
+  EXPECT_TRUE(store.GetMatchingHashPrefix(non_matching_full_hash_32).empty());
+}
+
+TEST_F(V5StoreTest, TestGetMatchingHashPrefixUninitialized) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  FullHashStr full_hash(32, 'a');
+  EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
+}
+
+TEST_F(V5StoreTest, TestHashPrefixExistsAtTheBeginning) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "111122223333");
+  FullHashStr full_hash = std::string("1111") + std::string(28, 'a');
+  EXPECT_EQ("1111", store.GetMatchingHashPrefix(full_hash));
+}
+
+TEST_F(V5StoreTest, TestHashPrefixExistsInTheMiddle) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "111122223333");
+  FullHashStr full_hash = std::string("2222") + std::string(28, 'a');
+  EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
+}
+
+TEST_F(V5StoreTest, TestHashPrefixExistsAtTheEnd) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "111122223333");
+  FullHashStr full_hash = std::string("3333") + std::string(28, 'a');
+  EXPECT_EQ("3333", store.GetMatchingHashPrefix(full_hash));
+}
+
+TEST_F(V5StoreTest, TestHashPrefixExistsAtTheBeginningOfEven) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "11112222");
+  FullHashStr full_hash = std::string("1111") + std::string(28, 'a');
+  EXPECT_EQ("1111", store.GetMatchingHashPrefix(full_hash));
+}
+
+TEST_F(V5StoreTest, TestHashPrefixExistsAtTheEndOfEven) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "11112222");
+  FullHashStr full_hash = std::string("2222") + std::string(28, 'a');
+  EXPECT_EQ("2222", store.GetMatchingHashPrefix(full_hash));
+}
+
+TEST_F(V5StoreTest, TestHashPrefixDoesNotExistInConcatenatedList) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "11113333");
+  FullHashStr full_hash = std::string("2222") + std::string(28, 'a');
+  EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
+}
+
+TEST_F(V5StoreTest, TestHashPrefixDoesNotMatchOverlappingBoundary) {
+  V5Store store(task_runner(), store_path_, 4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  CreateAndInitializeV5StoreWithPrefixes(store, "111122223333");
+  FullHashStr full_hash = std::string("1122") + std::string(28, 'a');
+  EXPECT_TRUE(store.GetMatchingHashPrefix(full_hash).empty());
 }
 
 }  // namespace safe_browsing

@@ -556,8 +556,9 @@ void V5Store::CollectStoreInfo(
 }
 
 HashPrefixStr V5Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
-  // TODO(crbug.com/362791941): implement
-  NOTREACHED();
+  CHECK(full_hash.size() == 32u || full_hash.size() == 16u);
+  CHECK_GE(full_hash.size(), prefix_size_);
+  return hash_prefix_list_->GetMatchingHashPrefix(full_hash);
 }
 
 void V5Store::ApplyUpdate(

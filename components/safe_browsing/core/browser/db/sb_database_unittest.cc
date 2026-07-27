@@ -490,16 +490,16 @@ TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithInvalidUpdate) {
   VerifyExpectedStoresState(false);
 }
 
-// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that all stores match a given full hash.
-TEST_F(SBDatabaseTest, TestAllStoresMatchFullHash) {
+TEST_P(SBDatabaseTest_V4V5, TestAllStoresMatchFullHash) {
   bool hash_prefix_matches = true;
   RegisterFactory(hash_prefix_matches);
 
   WaitForSBDatabaseReady(CreateTaskRunner(),
                          /*simple_task_runners_to_wait_for=*/{});
 
-  StoresToCheck stores_to_check({linux_malware_id_, win_malware_id_});
+  StoresToCheck stores_to_check(
+      {expected_identifiers_[0], expected_identifiers_[1]});
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash({"anything"}, stores_to_check,
                                           results.GetCallback());
@@ -513,9 +513,8 @@ TEST_F(SBDatabaseTest, TestAllStoresMatchFullHash) {
   EXPECT_EQ(stores_to_check, stores_found);
 }
 
-// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that no stores match a given full hash.
-TEST_F(SBDatabaseTest, TestNoStoreMatchesFullHash) {
+TEST_P(SBDatabaseTest_V4V5, TestNoStoreMatchesFullHash) {
   bool hash_prefix_matches = false;
   RegisterFactory(hash_prefix_matches);
 
@@ -524,16 +523,16 @@ TEST_F(SBDatabaseTest, TestNoStoreMatchesFullHash) {
 
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash(
-      {"anything"}, StoresToCheck({linux_malware_id_, win_malware_id_}),
+      {"anything"},
+      StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]}),
       results.GetCallback());
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_TRUE(store_and_hash_prefixes.empty());
 }
 
-// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that some stores match a given full hash.
-TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHash) {
+TEST_P(SBDatabaseTest_V4V5, TestSomeStoresMatchFullHash) {
   // Setup stores to not match the full hash.
   bool hash_prefix_matches = false;
   RegisterFactory(hash_prefix_matches);
@@ -541,26 +540,34 @@ TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHash) {
   WaitForSBDatabaseReady(CreateTaskRunner(),
                          /*simple_task_runners_to_wait_for=*/{});
 
-  // Set the store corresponding to linux_malware_id_ to match the full hash.
-  FakeV4Store* store = static_cast<FakeV4Store*>(
-      sb_database_->store_map_->at(win_malware_id_).get());
-  store->set_hash_prefix_matches(true);
+  // Set the store corresponding to expected_identifiers_[0] to match the full
+  // hash.
+  const ListIdentifier& matched_id = expected_identifiers_[0];
+  if (IsV5Enabled()) {
+    FakeV5Store* store =
+        static_cast<FakeV5Store*>(GetStoreMap()->at(matched_id).get());
+    store->set_hash_prefix_matches(true);
+  } else {
+    FakeV4Store* store =
+        static_cast<FakeV4Store*>(GetStoreMap()->at(matched_id).get());
+    store->set_hash_prefix_matches(true);
+  }
 
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash(
-      {"anything"}, StoresToCheck({linux_malware_id_, win_malware_id_}),
+      {"anything"},
+      StoresToCheck({expected_identifiers_[0], expected_identifiers_[1]}),
       results.GetCallback());
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
-  EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, win_malware_id_);
+  EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, matched_id);
   EXPECT_FALSE(store_and_hash_prefixes.begin()->hash_prefix.empty());
 }
 
-// TODO(crbug.com/362791941): Parameterize test once checks are implemented.
 // Test to ensure the case that only some stores are reported to match a given
 // full hash because of StoresToCheck.
-TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
+TEST_P(SBDatabaseTest_V4V5, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
   // Setup all stores to match the full hash.
   bool hash_prefix_matches = true;
   RegisterFactory(hash_prefix_matches);
@@ -568,14 +575,15 @@ TEST_F(SBDatabaseTest, TestSomeStoresMatchFullHashBecauseOfStoresToMatch) {
   WaitForSBDatabaseReady(CreateTaskRunner(),
                          /*simple_task_runners_to_wait_for=*/{});
 
-  // Don't add win_malware_id_ to the StoresToCheck.
+  // Don't add expected_identifiers_[0] to the StoresToCheck.
   base::test::TestFuture<DbLookupResult> results;
   sb_database_->GetStoresMatchingFullHash(
-      {"anything"}, StoresToCheck({linux_malware_id_}), results.GetCallback());
+      {"anything"}, StoresToCheck({expected_identifiers_[1]}),
+      results.GetCallback());
   FullHashToStoreAndHashPrefixesMap map = results.Get().results;
   StoreAndHashPrefixes store_and_hash_prefixes = map["anything"];
   EXPECT_EQ(1u, store_and_hash_prefixes.size());
-  EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, linux_malware_id_);
+  EXPECT_EQ(store_and_hash_prefixes.begin()->list_id, expected_identifiers_[1]);
   EXPECT_FALSE(store_and_hash_prefixes.begin()->hash_prefix.empty());
 }
 
