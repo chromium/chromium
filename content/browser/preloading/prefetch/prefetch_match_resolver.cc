@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -297,8 +298,10 @@ void PrefetchMatchResolver::FindPrefetchInternal2(
   {
     // Dropped before `Unblock*()`, as it contains raw pointers.
     PrefetchCandidateCollectHelper<PrefetchContainer> helper;
-    prefetch_service.CollectMatchCandidates(helper, navigated_key_,
-                                            is_nav_prerender_);
+    CollectMatchCandidatesGeneric(helper,
+                                  prefetch_service.owned_prefetches(
+                                      base::PassKey<PrefetchMatchResolver>()),
+                                  navigated_key_, is_nav_prerender_);
 
     servable_states = helper.GetServableStates();
 

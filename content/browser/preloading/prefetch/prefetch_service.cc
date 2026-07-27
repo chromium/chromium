@@ -1956,14 +1956,6 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 #endif  // DCHECK_IS_ON()
 }
 
-void PrefetchService::CollectMatchCandidates(
-    PrefetchCandidateCollectHelper<PrefetchContainer>& helper,
-    const PrefetchKey& key,
-    bool is_nav_prerender) {
-  CollectMatchCandidatesGeneric(helper, owned_prefetches(), key,
-                                is_nav_prerender);
-}
-
 PrefetchContainer* PrefetchService::FindPrefetchAheadOfPrerenderForMetrics(
     const PreloadPipelineInfo& pipeline_info) {
   for (const auto& it : owned_prefetches()) {

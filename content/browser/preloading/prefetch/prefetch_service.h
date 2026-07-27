@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -38,8 +39,6 @@ namespace content {
 
 class BrowserContext;
 class PrefetchDocumentManager;
-template <typename T>
-class PrefetchCandidateCollectHelper;
 class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
@@ -206,22 +205,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
       const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
       PrefetchStatus prefetch_status_on_destruction);
 
-  // Returns candidate `PrefetchContainer`s and servable states for matching
-  // process. Corresponds to 3.4. of
-  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
-  //
-  // Note that `PrefetchContainer::GetMatchResolverAction().ToServableState()`
-  // depends on `base::TimeTicks::now()` and can expire (can change from
-  // `kServable` to `kNotServable`) in the minute between two calls. Deciding
-  // something with multiple
-  // ``PrefetchContainer::GetMatchResolverAction().ToServableState()` calls can
-  // lead inconsistent state. To avoid that, we record
-  // `PrefetchServableState` in the `flat_map` at the beginning of
-  // matching process and refer to it.
-  void CollectMatchCandidates(
-      PrefetchCandidateCollectHelper<PrefetchContainer>& helper,
-      const PrefetchKey& key,
-      bool is_nav_prerender);
+  const std::map<PrefetchKey, std::unique_ptr<PrefetchContainer>>&
+  owned_prefetches(base::PassKey<PrefetchMatchResolver>) const {
+    return owned_prefetches_;
+  }
   PrefetchContainer* FindPrefetchAheadOfPrerenderForMetrics(
       const PreloadPipelineInfo& pipeline_info);
 

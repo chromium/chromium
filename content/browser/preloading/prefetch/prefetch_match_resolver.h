@@ -530,7 +530,25 @@ PrefetchPotentialCandidateCollectResult JudgeCandidateCollectResult(
   return PrefetchPotentialCandidateCollectResult::kAvailable;
 }
 
-// Collects `PrefetchContainer`s that are expected to match to `navigated_key`.
+// Collects initial data for matching process.
+//
+// Corresponds to 5.1.1 and 5.1.3 of
+// https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
+//
+// The main purpose is getting `PrefetchContainer`s that are expected to match
+// to `navigated_key`, but it also collects data for not-matched ones for, e.g.
+// metrics. This just collects data into `PrefetchCandidateCollectHelper, and
+// actual filtering is done by
+// `PrefetchCandidateCollectHelper::GetCandidates()/GetMatchedCandidates()`.
+//
+// Note that `PrefetchContainer::GetMatchResolverAction().ToServableState()`
+// depends on `base::TimeTicks::now()` and can expire (can change from
+// `kServable` to `kNotServable`) in the minute between two calls. Deciding
+// something with multiple
+// ``PrefetchContainer::GetMatchResolverAction().ToServableState()` calls can
+// lead inconsistent state. To avoid that, we record
+// `PrefetchServableState` to `CandidateDetails.servable_state` at the beginning
+// of matching process and refer to it.
 //
 // This is defined with the template for testing the first phase of
 // `PrefetchMatchResolver::FindPrefetch()` with mock `PrefetchContainer`.
