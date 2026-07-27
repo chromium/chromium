@@ -70,6 +70,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1378,19 +1379,9 @@ void AutofillExternalDelegate::AutofillForm(
     }
     return;
   }
-  CHECK(std::holds_alternative<Suggestion::Guid>(payload));
-  if (const CreditCard* credit_card =
-          pdm.payments_data_manager().GetCreditCardByGUID(
-              std::get<Suggestion::Guid>(payload).value())) {
-    const CreditCard& card_to_fill =
-        !is_preview && type == SuggestionType::kVirtualCreditCardEntry
-            ? CreditCard::CreateVirtualCard(*credit_card)
-            : *credit_card;
-    manager_->FillOrPreviewForm(action_persistence, last_query_.form_id,
-                                last_query_.field_id, &card_to_fill,
-                                trigger_source,
-                                /*blocked_fields=*/{});
-  }
+  payments::FillOrPreviewCard(action_persistence, type, payload, *manager_,
+                              last_query_.form_id, last_query_.field_id,
+                              trigger_source);
 }
 
 void AutofillExternalDelegate::InsertDataListValues(
