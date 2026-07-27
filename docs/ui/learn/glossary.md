@@ -90,13 +90,6 @@ outward from a single point (generally the cursor position). The base
 [`InkDrop`](/ui/views/animation/ink_drop.h) class can also manage instant on/off
 "hover highlight" effects and contains a variety of hooks for different uses.
 
-### LaCrOS
-
-An abbreviation for "Linux And Chrome OS". An architecture project to decouple
-the Chrome browser on Chrome OS from the operating system stack; historically
-these were tightly coupled and updated simultaneously.
-[More general background on LaCrOS](/docs/lacros.md)
-
 ### Layer
 
 A node in a tree of objects used by the compositor to manage textures. Calling
