@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
-#include <algorithm>
-
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
@@ -277,17 +275,12 @@ PathBuilder& PathBuilder::AddContouredRect(
   if (target_rect.Rect().Contains(origin_rect.Rect())) {
     auto miter = [&](const Corner& corner, const gfx::LineF& edge,
                      const gfx::PointF& ref_point) {
-      const gfx::PointF intersection =
-          edge.IntersectionWith(gfx::LineF(corner.IsEmpty()
-                                               ? (ref_point + edge.Normal())
-                                               : corner.QuadraticControlPoint(),
-                                           ref_point))
-              .value_or(ref_point);
-      return gfx::PointF(
-          std::clamp(intersection.x(), std::min(edge.p1.x(), edge.p2.x()),
-                     std::max(edge.p1.x(), edge.p2.x())),
-          std::clamp(intersection.y(), std::min(edge.p1.y(), edge.p2.y()),
-                     std::max(edge.p1.y(), edge.p2.y())));
+      return edge
+          .IntersectionWith(gfx::LineF(corner.IsEmpty()
+                                           ? (ref_point + edge.Normal())
+                                           : corner.QuadraticControlPoint(),
+                                       ref_point))
+          .value_or(ref_point);
     };
 
     auto miter_start = [&](const Corner& corner, const gfx::LineF& edge) {
