@@ -153,13 +153,14 @@ promise_test(async t => {
 promise_test(async t => {
   const div = createDiv(t);
   getComputedStyle(div).marginLeft;
+
+  const eventWatcher = new EventWatcher(t, div, 'transitionstart');
   div.style = 'transition: margin-left 100s; margin-left: 100px;';
   const anim = div.getAnimations()[0];
 
   let receivedEvents = [];
   anim.oncancel = event => receivedEvents.push(event);
 
-  const eventWatcher = new EventWatcher(t, div, 'transitionstart');
   await eventWatcher.wait_for('transitionstart');
 
   const timeInEventCallback = document.timeline.currentTime;

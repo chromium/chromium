@@ -2496,6 +2496,11 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
             new_transition->reversing_adjusted_start_value,
             new_transition->reversing_shortening_factor);
     transitions_.Set(property, running_transition);
+
+    if (RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled()) {
+      event_delegate->OnEventCondition(*transition_effect,
+                                       transition_effect->GetPhase());
+    }
   }
 
   if (pending_update_.NeedsNamedTriggerUpdate()) {
