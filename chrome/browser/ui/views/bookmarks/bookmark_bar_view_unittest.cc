@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,6 +36,7 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/page_navigator.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -54,6 +54,19 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
+
+class DummyPageNavigator : public content::PageNavigator {
+ public:
+  DummyPageNavigator() = default;
+  ~DummyPageNavigator() override = default;
+
+  content::WebContents* OpenURL(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    return nullptr;
+  }
+};
 
 class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
  public:
@@ -204,9 +217,8 @@ class BookmarkBarViewTest : public BookmarkBarViewBaseTest {
   }
 
   void TearDown() override {
-    BookmarkBarViewBaseTest::TearDown();
-
     bookmark_bar_view_.reset();
+    BookmarkBarViewBaseTest::TearDown();
   }
 
   BookmarkBarView* bookmark_bar_view() override {
@@ -255,22 +267,22 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
 // Verify that in instant extended mode the visibility of the apps shortcut
 // button properly follows the pref value.
 TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 
   // Try to make the Apps shortcut visible. Its visibility depends on whether
   // the Apps shortcut is enabled.
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, true);
-  if (chrome::IsAppsShortcutEnabled(browser()->GetProfile())) {
+  if (chrome::IsAppsShortcutEnabled(profile())) {
     EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
   } else {
     EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
   }
 
   // Make sure we can also properly transition from true to false.
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 }
@@ -280,12 +292,12 @@ TEST_F(BookmarkBarViewTest, TabGroupsBarVisibility) {
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
 
   // Pref not to show hides tab group bar.
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->saved_tab_group_bar()->GetVisible());
 
   // Pref to show displays tab group bar.
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
+  profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
 }
@@ -682,7 +694,8 @@ TEST_F(BookmarkBarViewTest, MAYBE_PageNavigatorSet) {
   // Expect SavedTabGroupBar to have a page navigator when BookmarkBarView
   // does.
   EXPECT_FALSE(test_helper_->saved_tab_group_bar()->page_navigator());
-  bookmark_bar_view()->SetPageNavigator(browser());
+  DummyPageNavigator dummy_navigator;
+  bookmark_bar_view()->SetPageNavigator(&dummy_navigator);
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
 
   // Reset both page navigators.
@@ -690,7 +703,7 @@ TEST_F(BookmarkBarViewTest, MAYBE_PageNavigatorSet) {
 
   // Expect we can set the SaveTabGroupBar's page navigator without affecting
   // BookmarkBarView.
-  test_helper_->saved_tab_group_bar()->SetPageNavigator(browser());
+  test_helper_->saved_tab_group_bar()->SetPageNavigator(&dummy_navigator);
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->page_navigator());
 }
 
@@ -879,6 +892,11 @@ class BookmarkBarViewWithCounterTest : public BookmarkBarViewBaseTest {
     WaitForBookmarkModelToLoad();
     bookmark_bar_view_with_counter_ =
         std::make_unique<BookmarkBarViewWithCounter>(browser());
+  }
+
+  void TearDown() override {
+    bookmark_bar_view_with_counter_.reset();
+    BookmarkBarViewBaseTest::TearDown();
   }
 
   BookmarkBarView* bookmark_bar_view() override {
