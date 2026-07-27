@@ -82,6 +82,10 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<MultistepFilterService>(std::move(params));
 }
 
+bool MultistepFilterServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return base::FeatureList::IsEnabled(kMultistepFilter);
+}
+
 void MultistepFilterServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   RegisterRetentionProfilePrefs(registry);
