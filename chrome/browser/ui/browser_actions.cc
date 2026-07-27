@@ -250,6 +250,14 @@
 
 namespace {
 
+ui::Accelerator GetAcceleratorForCommandId(int command_id) {
+  ui::Accelerator accelerator;
+  if (::GetAcceleratorForCommandId(command_id, &accelerator)) {
+    return accelerator;
+  }
+  return ui::Accelerator();
+}
+
 actions::ActionItem::ActionItemBuilder ChromeMenuAction(
     actions::ActionItem::InvokeActionCallback callback,
     actions::ActionId action_id,
@@ -870,11 +878,14 @@ void BrowserActions::InitializePageActionIconActions() {
               },
               bwi))
           .SetActionId(kActionFind)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_FIND_AND_EDIT_MENU)))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
                   ? omnibox::kFindInPageIcon
                   : omnibox::kFindInPageChromeRefreshOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_FIND))
           .Build());
 
   root_action_item_->AddChild(
@@ -1224,6 +1235,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               bwi),
           kActionPrint, IDS_PRINT, IDS_PRINT,
           features::IsRoundedIconsEnabled() ? kPrintIcon : kPrintMenuOldIcon)
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_PRINT))
           .SetEnabled(chrome::CanPrint(bwi))
           .Build());
 
@@ -4409,6 +4421,16 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowHistory)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_HISTORY_MENU)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_HISTORY_MENU)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kHistoryIcon
+                  : vector_icons::kHistoryChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_HISTORY))
           .Build());
 
   root_action_item_->AddChild(
@@ -4455,6 +4477,16 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionManageExtensions)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kChromeExtensionIcon
+                  : vector_icons::kExtensionChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_MANAGE_EXTENSIONS))
           .Build());
 
   root_action_item_->AddChild(
