@@ -222,7 +222,15 @@ public class ContextMenuUtils {
         selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId);
     }
 
-    private static void selectOpenContextMenuItem(
+    /**
+     * Selects an item from an already open context menu.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param activity The activity to assert for gaining focus after click or null.
+     * @param menuCoordinator The menu coordinator which manages the context menu.
+     * @param itemId The context menu item ID to select.
+     */
+    public static void selectOpenContextMenuItem(
             Instrumentation instrumentation,
             final Activity activity,
             final ContextMenuCoordinator menuCoordinator,
@@ -230,7 +238,18 @@ public class ContextMenuUtils {
         selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId, null);
     }
 
-    private static void selectOpenContextMenuItem(
+    /**
+     * Selects an item from an already open context menu asserting that an intent will be sent with
+     * a specific package name.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param menuCoordinator The menu coordinator which manages the context menu.
+     * @param itemId The context menu item ID to select.
+     * @param expectedIntentPackage If firing an external intent the expected package name of the
+     *     target.
+     */
+    public static void selectOpenContextMenuItem(
             Instrumentation instrumentation,
             final Activity expectedActivity,
             final ContextMenuCoordinator menuCoordinator,
