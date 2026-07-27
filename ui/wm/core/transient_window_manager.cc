@@ -238,6 +238,9 @@ void TransientWindowManager::OnWindowVisibilityChanged(Window* window,
   if (window_ != window)
     return;
 
+  // Hiding transient children may delete parent as well.
+  base::WeakPtr<TransientWindowManager> weak_this = weak_factory_.GetWeakPtr();
+
   // If the window has transient children, updates the transient children's
   // visiblity as well.
   // WindowTracker is used because child window
@@ -245,6 +248,10 @@ void TransientWindowManager::OnWindowVisibilityChanged(Window* window,
   aura::WindowTracker tracker(transient_children_);
   while (!tracker.windows().empty())
     GetOrCreate(tracker.Pop())->UpdateTransientChildVisibility(visible);
+
+  if (!weak_this) {
+    return;
+  }
 
   // Remember the show request in |show_on_parent_visible_| and hide it again
   // if the following conditions are met
