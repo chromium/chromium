@@ -147,6 +147,27 @@ line:
 avifenc -r f -d 8 -y 420 -s 0 --nclx 1/11/1 red.png red-unsupported-transfer.avif
 ```
 
+### red-icc-version-zero.avif
+The 'colr' prof box in this file contains a nonstandard 564-byte ICC profile
+whose header declares an invalid profile version of 0.0 (bytes 8-11 are
+zeroed, as are the CMM type and creator fields). This profile ("sRGB
+IEC61966-2-1 black scaled", creator text "Dropbox, Inc.") is common in the
+wild in images derived from Dropbox export pipelines. The 'colr' nclx box has
+unspecified (2) color primaries and transfer characteristics.
+
+This is generated from red.png with the appropriate avifenc command line:
+```
+avifenc -r f -d 8 -y 444 -s 0 --icc dropbox-srgb-black-scaled.icc red.png \
+  red-icc-version-zero.avif
+```
+where dropbox-srgb-black-scaled.icc is the profile described above. It can be
+extracted from this file with:
+```
+python3 -c "d = open('red-icc-version-zero.avif', 'rb').read(); \
+  i = d.find(b'colrprof'); \
+  open('dropbox-srgb-black-scaled.icc', 'wb').write(d[i+8:i+8+564])"
+```
+
 ### blue-and-magenta-crop.avif
 This image uses a 'clap' (clean aperture) image property to crop the image to
 contain the blue rectangle only (with a magenta rectangle inside).
