@@ -34,11 +34,21 @@ final class SigninButtonView extends FrameLayout {
         mSigninTextButton = findViewById(R.id.signin_text_button);
     }
 
-    // TODO(crbug.com/501318669): Remove after investigating further to understand the crashes.
+    // TODO(crbug.com/501318669): Remove once the underlying Android layout bug is fixed.
     @Override
     public void dispatchProvideStructure(ViewStructure structure) {
         try {
             super.dispatchProvideStructure(structure);
+        } catch (IndexOutOfBoundsException e) {
+            // Absorb the layout bug caused by traversal after platform translation (b/394874193).
+        }
+    }
+
+    // TODO(crbug.com/501318669): Remove once the underlying Android layout bug is fixed.
+    @Override
+    public void dispatchProvideAutofillStructure(ViewStructure structure, int flags) {
+        try {
+            super.dispatchProvideAutofillStructure(structure, flags);
         } catch (IndexOutOfBoundsException e) {
             // Absorb the layout bug caused by traversal after platform translation (b/394874193).
         }
