@@ -68,14 +68,14 @@ CGFloat GetPixelLength(UITraitCollection* traitCollection) {
 // Creates the google photos branded title view for the navigation.
 BrandedNavigationItemTitleView* CreateGooglePhotosImageView(
     NSString* title,
-    NSString* brandedSymbolName) {
+    Symbol brandedSymbol) {
   BrandedNavigationItemTitleView* title_view =
       [[BrandedNavigationItemTitleView alloc]
           initWithFont:ios::provider::GetBrandedProductRegularFont(
                            UIFont.labelFontSize)];
   title_view.title = title;
-  title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      brandedSymbolName, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+  title_view.imageLogo = MakeSymbolMulticolor(SymbolWithPointSize(
+      brandedSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
   title_view.titleLogoSpacing = kTitleLogoSpacing;
   return title_view;
 }
@@ -208,9 +208,9 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   // Set the navigation title in the left bar button item to have left
   // alignment.
   if (_configuration.useBrandedTitle) {
-    if (_configuration.brandedSymbolName) {
+    if (_configuration.brandedSymbol.has_value()) {
       self.navigationItem.titleView = CreateGooglePhotosImageView(
-          _configuration.titleText, _configuration.brandedSymbolName);
+          _configuration.titleText, _configuration.brandedSymbol.value());
     } else {
       self.navigationItem.titleView =
           CreateGooglePhotosTitleLabel(_configuration.titleText);

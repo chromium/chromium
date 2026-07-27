@@ -7,14 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 // Configuration for the AccountPickerCoordinator.
 @interface AccountPickerConfiguration : NSObject
 
 // If yes, the title view will be display a branded title.
 @property(nonatomic, assign) BOOL useBrandedTitle;
 
-// The branded symbol name that will be displayed in the title view.
-@property(nonatomic, copy) NSString* brandedSymbolName;
+// The branded symbol that will be displayed in the title view.
+@property(nonatomic, assign) std::optional<Symbol> brandedSymbol;
 
 // Title of the account picker confirmation screen.
 @property(nonatomic, copy) NSString* titleText;

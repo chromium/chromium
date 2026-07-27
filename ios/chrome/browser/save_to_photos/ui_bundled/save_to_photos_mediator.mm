@@ -369,7 +369,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
       [[AccountPickerConfiguration alloc] init];
   configuration.useBrandedTitle = YES;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  configuration.brandedSymbolName = kGoogleFullSymbol;
+  configuration.brandedSymbol = SymbolGoogleFull;
   configuration.titleText = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE);
 #else

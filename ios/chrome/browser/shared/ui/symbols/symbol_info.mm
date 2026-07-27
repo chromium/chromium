@@ -4,9 +4,16 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbol_info.h"
 
+#import "base/not_fatal_until.h"
+#import "base/notreached.h"
+
 SymbolInfo InfoForSymbol(Symbol symbol) {
   switch (symbol) {
-    // Branded symbols.
+    case SymbolNone:
+      NOTREACHED(base::NotFatalUntil::M160);
+      return {nil, SymbolType::kSystem};
+
+      // Branded symbols.
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     case SymbolGeminiBrandedLogo:
       return {@"gemini_logo", SymbolType::kCustom};

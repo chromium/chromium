@@ -14,6 +14,10 @@
 // both the "custom" symbols (both branded and non-branded) and the "system"
 // symbols. They are separated and kept alphabetically ordered in the enum.
 typedef NS_ENUM(NSInteger, Symbol) {
+  // This is not a symbol, this is the default value for any symbol that is not
+  // set.
+  SymbolNone = 0,
+
 // Branded symbols
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   SymbolGeminiBrandedLogo,

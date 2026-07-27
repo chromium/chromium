@@ -51,6 +51,7 @@ source_set("account_picker_configuration") {
     "account_picker_configuration.h",
     "account_picker_configuration.mm",
   ]
+  deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
 }
 
 source_set("account_picker_layout") {
