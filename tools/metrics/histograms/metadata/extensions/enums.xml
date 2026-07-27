@@ -96,6 +96,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Other MainFrame Redirects"/>
 </enum>
 
+<enum name="DefaultPinnedExtensionState">
+  <int value="0" label="Pinned"/>
+  <int value="1" label="Unpinned"/>
+</enum>
+
 <enum name="ExtensionActionInvocationSource">
   <int value="0" label="Keyboard Shortcut"/>
   <int value="1" label="Toolbar Button"/>

@@ -46,6 +46,18 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif
 
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DefaultPinnedExtensionState {
+  kPinned = 0,
+  kUnpinned = 1,
+  kMaxValue = kUnpinned,
+};
+
+}  // namespace
+
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
     extensions::ExtensionPrefs* extension_prefs)
@@ -145,6 +157,9 @@ void ToolbarActionsModel::OnExtensionInstalled(
 
   if (is_pinned_by_policy || is_pinned_by_feature) {
     SetActionVisibility(extension->id(), true);
+    if (pin_mode == extensions::ManagedToolbarPinMode::kNotSet) {
+      extension_prefs_->SetWasPinnedByDefault(extension->id(), true);
+    }
   }
 
   if (pin_mode == extensions::ManagedToolbarPinMode::kNotSet) {
@@ -549,6 +564,12 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
 }
 
+void ToolbarActionsModel::ReinitializeForTesting() {
+  action_ids_.clear();
+  pinned_action_ids_.clear();
+  InitializeActionList();
+}
+
 // Combine the currently enabled extensions that have browser actions (which
 // we get from the ExtensionRegistry) with the ordering we get from the pref
 // service. For robustness we use a somewhat inefficient process:
@@ -590,6 +611,20 @@ void ToolbarActionsModel::InitializeActionList() {
       base::UmaHistogramPercentageObsoleteDoNotUse(
           "Extensions.Toolbar.PinnedExtensionPercentage3",
           base::ClampRound(percentage_double));
+    }
+
+    if (!base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault)) {
+      return;
+    }
+    for (const auto& action_id : action_ids_) {
+      if (extension_prefs_->WasPinnedByDefault(action_id) != true) {
+        continue;
+      }
+      bool is_pinned = IsActionPinned(action_id);
+      base::UmaHistogramEnumeration(
+          "Extensions.Startup.DefaultPinnedExtensionState",
+          is_pinned ? DefaultPinnedExtensionState::kPinned
+                    : DefaultPinnedExtensionState::kUnpinned);
     }
   }
 }

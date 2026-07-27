@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
@@ -555,6 +556,54 @@ TEST_F(ToolbarActionsModelUnitTest, NewExtensionsAreUnpinnedWhenNoAction) {
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       4 /* kNotPinnedNoAction */, 1);
+}
+
+// Test that Extensions.Startup.DefaultPinnedExtensionState histogram is
+// emitted on initialization for extensions that were default-pinned on
+// install.
+TEST_F(ToolbarActionsModelUnitTest, DefaultPinnedExtensionStateHistogram) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kExtensionsPinnedByDefault);
+
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
+  InitToolbarModelAndObserver();
+
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault, true);
+
+  // Install extension 1 (pinned by default).
+  extensions::TestExtensionDir test_dir1;
+  const extensions::Extension* extension1 =
+      InstallExtensionWithAction(test_dir1, "test_extension_1");
+  ASSERT_TRUE(extension1);
+
+  // Install extension 2 (pinned by default), then manually unpin it.
+  extensions::TestExtensionDir test_dir2;
+  const extensions::Extension* extension2 =
+      InstallExtensionWithAction(test_dir2, "test_extension_2");
+  ASSERT_TRUE(extension2);
+  toolbar_model()->SetActionVisibility(extension2->id(), false);
+
+  EXPECT_EQ(2u, num_actions());
+  EXPECT_EQ(std::make_optional(true),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension1->id()));
+  EXPECT_EQ(std::make_optional(true),
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension2->id()));
+
+  // Re-initialize model to simulate profile startup initialization.
+  base::HistogramTester histogram_tester;
+  toolbar_model()->ReinitializeForTesting();
+  EXPECT_EQ(2u, num_actions());
+
+  // Should emit Pinned (0) for extension1 and Unpinned (1) for extension2.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Startup.DefaultPinnedExtensionState", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Startup.DefaultPinnedExtensionState", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Startup.DefaultPinnedExtensionState", 2);
 }
 
 // Test that the model contains all types of extensions, except those which
@@ -1315,8 +1364,9 @@ TEST_F(ToolbarActionsModelUnitTest, DefaultPinnedByPolicy) {
   EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
   EXPECT_THAT(toolbar_model()->pinned_action_ids(),
               ::testing::ElementsAre(extension->id()));
-  EXPECT_FALSE(extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
-      extension->id()));
+  EXPECT_EQ(std::nullopt,
+            extensions::ExtensionPrefs::Get(profile())->WasPinnedByDefault(
+                extension->id()));
 
   histogram_tester.ExpectUniqueSample("Extensions.Install.PinReason",
                                       3 /* kOverriddenByPolicy */, 1);

@@ -149,6 +149,9 @@ class ToolbarActionsModel
     return pinned_action_ids_;
   }
 
+  // Re-initializes the action list and re-emits startup histograms for testing.
+  void ReinitializeForTesting();
+
  private:
   // Callback when actions are ready.
   void OnReady();
