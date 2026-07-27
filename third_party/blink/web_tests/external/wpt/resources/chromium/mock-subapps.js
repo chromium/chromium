@@ -25,31 +25,37 @@ self.SubAppsServiceTest = (() => {
     }
 
     add(install_urls) {
-      if (testInternal.serviceResultCode === -1) {
-        return Promise.resolve(testInternal.addCallReturnValue);
-      }
-      throw testInternal.serviceResultCode;
+      return Promise.resolve({
+        resultList: {
+          resultCode: testInternal.serviceResultCode,
+          results: testInternal.addCallReturnValue,
+        }
+      });
     }
 
     list() {
-      if (testInternal.serviceResultCode === -1) {
-        return Promise.resolve(testInternal.listCallReturnValue);
-      }
-      throw testInternal.serviceResultCode;
+      return Promise.resolve({
+        result: {
+          resultCode: testInternal.serviceResultCode,
+          subAppsList: testInternal.listCallReturnValue,
+        }
+      });
     }
 
     remove(manifest_ids) {
-      if (testInternal.serviceResultCode === -1) {
-        return Promise.resolve(testInternal.removeCallReturnValue);
-      }
-      throw testInternal.serviceResultCode;
+      return Promise.resolve({
+        resultList: {
+          resultCode: testInternal.serviceResultCode,
+          results: testInternal.removeCallReturnValue,
+        }
+      });
     }
   }
 
   let testInternal = {
     initialized: false,
     mockSubAppsService: null,
-    serviceResultCode: -1,
+    serviceResultCode: 0,
     addCallReturnValue: [],
     listCallReturnValue: [],
     removeCallReturnValue: [],
@@ -73,25 +79,13 @@ self.SubAppsServiceTest = (() => {
       };
     }
 
-    setAddCallReturnValue(value) {
-      testInternal.addCallReturnValue = value;
-    }
-
-    setListCallReturnValue(value) {
-      testInternal.listCallReturnValue = value;
-    }
-
-    setRemoveCallReturnValue(value) {
-      testInternal.removeCallReturnValue = value;
-    }
-
     async reset() {
       if (testInternal.initialized) {
         testInternal.mockSubAppsService.reset();
         testInternal = {
           mockSubAppsService: null,
           initialized: false,
-          serviceResultCode: -1,
+          serviceResultCode: 0,
           addCallReturnValue: [],
           listCallReturnValue: [],
           removeCallReturnValue: [],

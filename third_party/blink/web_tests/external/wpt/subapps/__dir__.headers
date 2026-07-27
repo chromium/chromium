@@ -1,4 +1,0 @@
-Cross-Origin-Opener-Policy: same-origin
-Cross-Origin-Embedder-Policy: require-corp
-Permissions-Policy: cross-origin-isolated=(self), sub-apps=(self)
-Origin-Agent-Cluster: ?0
