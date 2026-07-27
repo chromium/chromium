@@ -1621,7 +1621,7 @@
     "args": [
       "--enable-features=DiskCacheBackendExperiment:backend/default"
     ],
-    "expires": "Jul 25, 2026",
+    "expires": "Jul 25, 2027",
     "owners": [
       "horo@chromium.org"
     ]
@@ -1640,7 +1640,7 @@
     "args": [
       "--enable-features=DiskCacheBackendExperiment:backend/sql"
     ],
-    "expires": "Jul 25, 2026",
+    "expires": "Jul 25, 2027",
     "owners": [
       "horo@chromium.org"
     ]
