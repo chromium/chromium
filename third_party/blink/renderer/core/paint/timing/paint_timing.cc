@@ -93,7 +93,7 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
 
     if (auto* frame = paint_timing_->GetFrame()) {
       if (auto* document = frame->GetDocument()) {
-        document->RequestAnimationFrame(this);
+        document->RequestAnimationFrame(this, FrameCallbackType::kInternal);
       }
     }
   }
@@ -772,7 +772,8 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
   // Cancel if there is already a registered callback.
   if (raf_after_bfcache_restore_measurement_callback_id_) {
     document->CancelAnimationFrame(
-        raf_after_bfcache_restore_measurement_callback_id_);
+        raf_after_bfcache_restore_measurement_callback_id_,
+        FrameCallbackType::kInternal);
     raf_after_bfcache_restore_measurement_callback_id_ = 0;
   }
 
@@ -780,7 +781,8 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
       document->RequestAnimationFrame(
           MakeGarbageCollected<
               RecodingTimeAfterBackForwardCacheRestoreFrameCallback>(this,
-                                                                     index));
+                                                                     index),
+          FrameCallbackType::kInternal);
 }
 
 void PaintTiming::NotifyPaintFinished() {

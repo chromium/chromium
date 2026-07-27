@@ -98,18 +98,20 @@ void ScriptedAnimationController::ScheduleVideoFrameCallbacksExecution(
 }
 
 ScriptedAnimationController::CallbackId
-ScriptedAnimationController::RegisterFrameCallback(FrameCallback* callback) {
+ScriptedAnimationController::RegisterFrameCallback(FrameCallback* callback,
+                                                   FrameCallbackType type) {
   // If we no longer have a context, there is no need to register the callback.
   if (!GetExecutionContext()) {
     return 0;
   }
-  CallbackId id = callback_collection_.RegisterFrameCallback(callback);
+  CallbackId id = callback_collection_.RegisterFrameCallback(callback, type);
   ScheduleAnimationIfNeeded(cc::BeginMainFrameReason::kRAF);
   return id;
 }
 
-void ScriptedAnimationController::CancelFrameCallback(CallbackId id) {
-  callback_collection_.CancelFrameCallback(id);
+void ScriptedAnimationController::CancelFrameCallback(CallbackId id,
+                                                      FrameCallbackType type) {
+  callback_collection_.CancelFrameCallback(id, type);
 }
 
 bool ScriptedAnimationController::HasFrameCallback() const {

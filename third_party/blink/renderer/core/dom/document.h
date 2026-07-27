@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -1660,8 +1661,8 @@ class CORE_EXPORT Document : public ContainerNode,
            IsInOutermostMainFrame();
   }
 
-  int RequestAnimationFrame(FrameCallback*);
-  void CancelAnimationFrame(int id);
+  int RequestAnimationFrame(FrameCallback*, FrameCallbackType type);
+  void CancelAnimationFrame(int id, FrameCallbackType type);
 
   ScriptedAnimationController& GetScriptedAnimationController();
 

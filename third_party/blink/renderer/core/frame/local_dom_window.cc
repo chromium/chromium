@@ -197,7 +197,8 @@ int RequestAnimationFrame(Document* document,
 
   auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
   frame_callback->SetUseLegacyTimeBase(legacy);
-  return document->RequestAnimationFrame(frame_callback);
+  return document->RequestAnimationFrame(frame_callback,
+                                         FrameCallbackType::kWebExposed);
 }
 
 }  // namespace
@@ -2217,7 +2218,7 @@ int LocalDOMWindow::webkitRequestAnimationFrame(
 }
 
 void LocalDOMWindow::cancelAnimationFrame(int id) {
-  document()->CancelAnimationFrame(id);
+  document()->CancelAnimationFrame(id, FrameCallbackType::kWebExposed);
 }
 
 bool LocalDOMWindow::originAgentCluster() const {

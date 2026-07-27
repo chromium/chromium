@@ -307,7 +307,8 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
 
   // Calls |OnNonImmersiveVSync|
   window->document()->RequestAnimationFrame(
-      MakeGarbageCollected<XRFrameProviderRequestCallback>(this));
+      MakeGarbageCollected<XRFrameProviderRequestCallback>(this),
+      FrameCallbackType::kInternal);
 }
 
 void XRFrameProvider::OnImmersiveFrameData(
@@ -469,7 +470,8 @@ void XRFrameProvider::OnNonImmersiveFrameData(
     DVLOG(1) << __func__ << ": NO FRAME DATA!";
     request->value = nullptr;
     window->document()->RequestAnimationFrame(
-        MakeGarbageCollected<XRFrameProviderRequestCallback>(this));
+        MakeGarbageCollected<XRFrameProviderRequestCallback>(this),
+        FrameCallbackType::kInternal);
   }
 }
 

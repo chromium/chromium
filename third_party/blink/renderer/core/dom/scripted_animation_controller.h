@@ -71,8 +71,8 @@ class CORE_EXPORT ScriptedAnimationController
 
   // Animation frame callbacks are used for requestAnimationFrame().
   typedef int CallbackId;
-  CallbackId RegisterFrameCallback(FrameCallback*);
-  void CancelFrameCallback(CallbackId);
+  CallbackId RegisterFrameCallback(FrameCallback*, FrameCallbackType type);
+  void CancelFrameCallback(CallbackId, FrameCallbackType type);
   // Returns true if any callback is currently registered.
   bool HasFrameCallback() const;
 

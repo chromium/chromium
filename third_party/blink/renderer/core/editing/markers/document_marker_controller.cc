@@ -1464,7 +1464,7 @@ void DocumentMarkerController::StartGlicMarkerAnimationIfNeeded() {
   glic_marker_animation_start_ = std::nullopt;
   glic_animation_state_ = GlicAnimationState::kRunning;
   auto* callback = MakeGarbageCollected<RequestAnimationFrameCallback>(this);
-  document_->RequestAnimationFrame(callback);
+  document_->RequestAnimationFrame(callback, FrameCallbackType::kInternal);
 }
 
 void DocumentMarkerController::ContinueGlicMarkerAnimation(
@@ -1495,7 +1495,7 @@ void DocumentMarkerController::ContinueGlicMarkerAnimation(
   }
 
   auto* callback = MakeGarbageCollected<RequestAnimationFrameCallback>(this);
-  document_->RequestAnimationFrame(callback);
+  document_->RequestAnimationFrame(callback, FrameCallbackType::kInternal);
 }
 
 bool DocumentMarkerController::UpdateGlicMarkerOpacity(

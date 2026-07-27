@@ -195,12 +195,14 @@ void HTMLMarqueeElement::start() {
 
   RequestAnimationFrameCallback* callback =
       MakeGarbageCollected<RequestAnimationFrameCallback>(this);
-  continue_callback_request_id_ = GetDocument().RequestAnimationFrame(callback);
+  continue_callback_request_id_ = GetDocument().RequestAnimationFrame(
+      callback, FrameCallbackType::kInternal);
 }
 
 void HTMLMarqueeElement::stop() {
   if (continue_callback_request_id_) {
-    GetDocument().CancelAnimationFrame(continue_callback_request_id_);
+    GetDocument().CancelAnimationFrame(continue_callback_request_id_,
+                                       FrameCallbackType::kInternal);
     continue_callback_request_id_ = 0;
     return;
   }
