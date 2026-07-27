@@ -726,11 +726,6 @@ class BookmarkBarMediator
                         ListMenuItemProperties.TOUCH_LISTENER,
                         (v, event) -> handlePopupItemTouch(bookmarkItem, v, event))
                 .with(
-                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                        isIncognito
-                                ? R.color.default_icon_color_light
-                                : R.color.default_icon_color_tint_list)
-                .with(
                         ListMenuItemProperties.TEXT_APPEARANCE_ID,
                         isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light : 0);
     }
@@ -762,6 +757,8 @@ class BookmarkBarMediator
         View.OnClickListener clickListener =
                 (v) -> BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
 
+        final Profile profile = mProfileSupplier.get();
+        final boolean isIncognito = profile != null && profile.isOffTheRecord();
         final PropertyModel model =
                 createBasePopupMenuItemBuilder(ListMenuSubmenuItemProperties.ALL_KEYS, bookmarkItem)
                         .with(
@@ -772,6 +769,11 @@ class BookmarkBarMediator
                         .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, mFolderIconBitmap)
                         .with(ListMenuItemProperties.CLICK_LISTENER, clickListener)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                isIncognito
+                                        ? R.color.default_icon_color_light
+                                        : R.color.default_icon_color_tint_list)
                         .build();
 
         ListItem listItem = new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
@@ -793,6 +795,9 @@ class BookmarkBarMediator
         PropertyModel model =
                 createBasePopupMenuItemBuilder(ListMenuItemProperties.ALL_KEYS, bookmarkItem)
                         .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, true)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                Resources.ID_NULL)
                         .with(
                                 ListMenuItemProperties.CLICK_LISTENER,
                                 (v) -> {

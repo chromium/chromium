@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -197,11 +198,17 @@ public class BookmarkBarMediatorTest {
         ListItem l1ListItem = modelList.get(0);
         assertEquals(ListItemType.MENU_ITEM, l1ListItem.type);
         assertEquals("L1", l1ListItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                Resources.ID_NULL,
+                l1ListItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
 
         // Verify the second item (F2), which should be a submenu.
         ListItem f2ListItem = modelList.get(1);
         assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, f2ListItem.type);
         assertEquals("F2", f2ListItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                R.color.default_icon_color_tint_list,
+                f2ListItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
 
         // Verify the structure of the submenu.
         List<ListItem> submenuItems =
