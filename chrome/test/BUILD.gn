@@ -304,10 +304,6 @@ static_library("test_support") {
     sources += [
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.cc",
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.h",
-      "../browser/ui/web_applications/test/ssl_test_utils.cc",
-      "../browser/ui/web_applications/test/ssl_test_utils.h",
-      "../browser/ui/web_applications/test/test_server_redirect_handle.cc",
-      "../browser/ui/web_applications/test/test_server_redirect_handle.h",
       "../browser/ui/web_applications/test/web_app_browsertest_util.cc",
       "../browser/ui/web_applications/test/web_app_browsertest_util.h",
       "../browser/ui/web_applications/web_app_browsertest_base.cc",
@@ -341,6 +337,7 @@ static_library("test_support") {
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/task_manager:test_support",
       "//chrome/browser/ui/autofill:test_support",
+      "//chrome/browser/ui/web_applications/test:test_support",
       "//chrome/common/extensions/api",
       "//extensions:test_support",
       "//extensions/browser:test_support",

@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "ssl_test_utils.cc",
+    "ssl_test_utils.h",
+    "test_server_redirect_handle.cc",
+    "test_server_redirect_handle.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ssl:test_support",
+    "//net",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/security_state/core",
+    "//net:test_support",
+    "//url",
+  ]
+}
