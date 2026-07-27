@@ -274,9 +274,11 @@ SkColor TabStyle::GetTabBackgroundColor(
     case TabStyle::TabSelectionState::kActive:
       return color;
     case TabStyle::TabSelectionState::kSelected: {
-      const float alpha =
-          hovered ? 1.0f : kAlphaForUnhoveredTransparentTabBackground;
-      return SkColorSetA(color, SK_AlphaOPAQUE * alpha);
+      if (hovered) {
+        return color;
+      }
+      return SkColorSetA(color, SkColorGetA(color) *
+                                    kAlphaForUnhoveredTransparentTabBackground);
     }
     case TabStyle::TabSelectionState::kInactive: {
       // When the frame is transparent, using the unhovered color
@@ -284,8 +286,10 @@ SkColor TabStyle::GetTabBackgroundColor(
       // hovered color.
       SkColor inactive_color = GetTabBackgroundColor(
           state, /*hovered=*/true, frame_active, color_provider);
-      const float alpha = hovered ? 1.0f : 0;
-      return SkColorSetA(inactive_color, SK_AlphaOPAQUE * alpha);
+      if (hovered) {
+        return inactive_color;
+      }
+      return SkColorSetA(inactive_color, 0);
     }
     default:
       NOTREACHED();
