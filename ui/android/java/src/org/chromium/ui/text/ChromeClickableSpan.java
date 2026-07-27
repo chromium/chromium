@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.util.AttrUtils;
 
@@ -21,6 +22,7 @@ import org.chromium.ui.util.AttrUtils;
 public class ChromeClickableSpan extends ClickableSpan {
     private final int mColor;
     private final Callback<View> mOnClick;
+    private final @Nullable String mContentDescription;
     private boolean mFocused;
 
     /**
@@ -28,11 +30,22 @@ public class ChromeClickableSpan extends ClickableSpan {
      * @param onClickCallback The callback notified when the span is clicked.
      */
     public ChromeClickableSpan(Context context, Callback<View> onClickCallback) {
+        this(context, onClickCallback, null);
+    }
+
+    /**
+     * @param context The {@link Context} used for accessing colors.
+     * @param onClickCallback The callback notified when the span is clicked.
+     * @param contentDescription The content description for this clickable span.
+     */
+    public ChromeClickableSpan(
+            Context context, Callback<View> onClickCallback, @Nullable String contentDescription) {
         int defaultColor = context.getColor(R.color.default_text_color_link_baseline);
         mColor =
                 AttrUtils.resolveColor(
                         context.getTheme(), R.attr.globalClickableSpanColor, defaultColor);
         mOnClick = onClickCallback;
+        mContentDescription = contentDescription;
     }
 
     /**
@@ -42,11 +55,20 @@ public class ChromeClickableSpan extends ClickableSpan {
     public ChromeClickableSpan(@ColorInt int color, Callback<View> onClickCallback) {
         mColor = color;
         mOnClick = onClickCallback;
+        mContentDescription = null;
     }
 
     @Override
     public final void onClick(View view) {
         mOnClick.onResult(view);
+    }
+
+    /**
+     * Returns the content description for this clickable span, or null if a custom content
+     * description has not been set.
+     */
+    public @Nullable String getContentDescription() {
+        return mContentDescription;
     }
 
     // Enable underline on the link text.

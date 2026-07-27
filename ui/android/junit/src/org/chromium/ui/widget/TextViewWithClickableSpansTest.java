@@ -6,6 +6,7 @@ package org.chromium.ui.widget;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -16,6 +17,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.KeyEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -198,7 +200,44 @@ public class TextViewWithClickableSpansTest {
                 "Focused span index should be reset.", -1, mView.getFocusedSpanIndexForTesting());
     }
 
-    private void addText(int numSpans) {
+    @Test
+    public void testOnInitializeAccessibilityNodeInfo_NoSpans() {
+        addText(0);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mView.onInitializeAccessibilityNodeInfo(info);
+        assertNull(info.getContentDescription());
+    }
+
+    @Test
+    public void testOnInitializeAccessibilityNodeInfo_ClickableSpanWithoutDescription() {
+        addText(1);
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mView.onInitializeAccessibilityNodeInfo(info);
+        assertNull(info.getContentDescription());
+    }
+
+    @Test
+    public void testOnInitializeAccessibilityNodeInfo_ClickableSpanWithDescription() {
+        addText(2, "first link contentDescription.");
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mView.onInitializeAccessibilityNodeInfo(info);
+        assertEquals(
+                "This text is not clickable. first link contentDescription. This is clickable"
+                        + " text1.",
+                info.getContentDescription().toString());
+    }
+
+    @Test
+    public void testOnInitializeAccessibilityNodeInfo_ViewAlreadyHasContentDescription() {
+        mView.setContentDescription("Explicit view description");
+        addText(2, "first link contentDescription.");
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        mView.onInitializeAccessibilityNodeInfo(info);
+        // When content description is set, info is unmodified.
+        assertNull(info.getContentDescription());
+    }
+
+    private void addText(int numSpans, String... contentDescriptions) {
         String plainText = "This text is not clickable.";
         if (numSpans == 0) {
             mView.setText(plainText);
@@ -213,7 +252,10 @@ public class TextViewWithClickableSpansTest {
             text.append(clickableText);
             var clickCallback = new CallbackHelper();
             mSpanClickCallbacks[i] = clickCallback;
-            var span = new ChromeClickableSpan(mContext, (view) -> clickCallback.notifyCalled());
+            var contentDesc = i < contentDescriptions.length ? contentDescriptions[i] : null;
+            var span =
+                    new ChromeClickableSpan(
+                            mContext, (view) -> clickCallback.notifyCalled(), contentDesc);
             text.setSpan(span, spanStart, text.length(), /* flags= */ 0);
         }
         mView.setText(text);

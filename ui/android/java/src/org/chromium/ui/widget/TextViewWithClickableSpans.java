@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Layout;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
@@ -232,6 +233,35 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         // Ensure that no one changes the long click listener to anything but this view.
         assert listener == this || listener == null;
         super.setOnLongClickListener(listener);
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+
+        if (getContentDescription() != null) return;
+        if (!(getText() instanceof Spanned text)) return;
+        ClickableSpan[] spans = getClickableSpans();
+        if (spans == null) return;
+
+        SpannableStringBuilder builder = new SpannableStringBuilder(text);
+        boolean changed = false;
+        for (ClickableSpan span : spans) {
+            if (!(span instanceof ChromeClickableSpan chromeSpan)) continue;
+            String description = chromeSpan.getContentDescription();
+            if (description == null) continue;
+
+            int start = builder.getSpanStart(span);
+            int end = builder.getSpanEnd(span);
+            if (start != -1 && end != -1) {
+                builder.replace(start, end, description);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            info.setContentDescription(builder);
+        }
     }
 
     @Override
