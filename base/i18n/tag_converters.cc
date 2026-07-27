@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace base::i18n {
@@ -45,6 +44,7 @@ i18n_internal::ImmutableString ImmutableStringFromIcu4xLocale(
 
   // We must keep the temporary strings alive until ImmutableString has
   // copied them.
+
   rust::Vec<rust::String> variants = locale.variants();
   rust::Vec<rust::String> extensions = locale.extensions_as_strings();
   rust::Str script = locale.script();
@@ -79,7 +79,7 @@ i18n_internal::ImmutableString ImmutableStringFromIcu4xLocale(
 
 class LanguageTagConverter::Impl {
  public:
-  explicit Impl() : canonicalizer_(create_icu_canonicalizer()) {}
+  Impl() : canonicalizer_(create_icu_canonicalizer()) {}
   ~Impl() = default;
 
   std::optional<LanguageTag> FromString(std::string_view tag) const;
@@ -161,22 +161,6 @@ std::optional<LanguageTag> LanguageTagConverter::FromString(
 
 std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag) {
   return LanguageTagConverter::GetInstance().FromString(tag);
-}
-
-base::Value LanguageTagToValue(const LanguageTag& tag) {
-  return base::Value(tag.tag_string());
-}
-
-std::optional<LanguageTag> ValueToLanguageTag(const base::Value* value) {
-  return value ? ValueToLanguageTag(*value) : std::nullopt;
-}
-
-std::optional<LanguageTag> ValueToLanguageTag(const base::Value& value) {
-  const std::string* str = value.GetIfString();
-  if (!str) {
-    return std::nullopt;
-  }
-  return LanguageTagConverter::GetInstance().FromString(*str);
 }
 
 IcuLocaleConverter::IcuLocaleConverter() {
