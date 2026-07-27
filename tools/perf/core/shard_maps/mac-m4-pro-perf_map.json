@@ -206,9 +206,7 @@
             },
             "blink-ai.crossbench": {
                 "crossbench_name": "blink-ai",
-                "arguments": [
-                    "None"
-                ]
+                "arguments": []
             }
         },
         "benchmarks": {}

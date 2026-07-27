@@ -87,9 +87,7 @@
         "crossbench": {
             "blink-ai.crossbench": {
                 "crossbench_name": "blink-ai",
-                "arguments": [
-                    "None"
-                ]
+                "arguments": []
             },
             "devtools_frontend.crossbench": {
                 "crossbench_name": "devtools_frontend",
