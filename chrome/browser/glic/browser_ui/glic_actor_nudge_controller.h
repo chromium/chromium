@@ -16,6 +16,7 @@ class BrowserWindowInterface;
 
 namespace glic {
 
+class GlicSplitButtonController;
 class GlicSplitButtonDelegate;
 
 // Controller that handles Glic Actor notification/nudge handling.
@@ -23,7 +24,9 @@ class GlicSplitButtonDelegate;
 // controller in order to coordinate nudge behavior between Glic and Glic Actor.
 class GlicActorNudgeController {
  public:
-  explicit GlicActorNudgeController(BrowserWindowInterface* browser);
+  explicit GlicActorNudgeController(
+      BrowserWindowInterface* browser,
+      GlicSplitButtonController* split_button_controller);
 
   GlicActorNudgeController(const GlicActorNudgeController&) = delete;
   GlicActorNudgeController& operator=(const GlicActorNudgeController& other) =
@@ -70,13 +73,9 @@ class GlicActorNudgeController {
 
   void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
 
-  bool IsDelegateActive(GlicSplitButtonDelegate* delegate) const;
-  GlicSplitButtonDelegate* GetActiveDelegate() const;
-
-  const raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
-  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonController> split_button_controller_;
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;

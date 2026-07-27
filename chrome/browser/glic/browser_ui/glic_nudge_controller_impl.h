@@ -18,13 +18,15 @@ class ScopedCallToActionLock;
 
 namespace glic {
 
+class GlicSplitButtonController;
 class GlicSplitButtonDelegate;
 
 class GlicNudgeControllerImpl : public GlicNudgeController,
                                 public TabListInterfaceObserver {
  public:
   explicit GlicNudgeControllerImpl(
-      BrowserWindowInterface* browser_window_interface);
+      BrowserWindowInterface* browser_window_interface,
+      GlicSplitButtonController* split_button_controller);
   GlicNudgeControllerImpl(const GlicNudgeControllerImpl&) = delete;
   GlicNudgeControllerImpl& operator=(const GlicNudgeControllerImpl&) = delete;
   ~GlicNudgeControllerImpl() override;
@@ -42,6 +44,8 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
                           tabs::TabInterface* tab) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
+  // TODO(crbug.com/511309088): Remove and have callers do this directly on the
+  // split button controller.
   void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
   void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate) override;
 
@@ -53,14 +57,11 @@ class GlicNudgeControllerImpl : public GlicNudgeController,
   base::WeakPtr<GlicNudgeController> GetWeakPtr() override;
 
  private:
-  GlicSplitButtonDelegate* GetActiveDelegate();
   TabListInterface* GetTabList();
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
-
+  const raw_ptr<GlicSplitButtonController> split_button_controller_;
   tabs::TabHandle nudged_tab_handle_;
-  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
-  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
 
   std::optional<std::string> prompt_suggestion_;
   GlicNudgeActivityCallback nudge_activity_callback_;
