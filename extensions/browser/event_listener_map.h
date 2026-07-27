@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
@@ -217,6 +218,14 @@ class EventListenerMap {
 
   // Returns true if there are any listeners on the event named `event_name`.
   bool HasListenerForEvent(const std::string& event_name) const;
+
+  // Returns `true` if there are any listeners of `event_name` that are not
+  // associated with `process_id`. `process_id` must be valid
+  // (`!process_id.is_null()`).
+  bool HasListenerForEventOutsideProcess(
+      content::BrowserContext* browser_context,
+      const std::string& event_name,
+      content::ChildProcessId process_id) const;
 
   // Returns true if there are any listeners on `event_name` from
   // `extension_id`.

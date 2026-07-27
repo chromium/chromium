@@ -1112,6 +1112,21 @@ bool EventRouter::HasEventListener(const std::string& event_name) const {
   return listeners_.HasListenerForEvent(event_name);
 }
 
+bool EventRouter::HasEventListenerOutsideProcess(
+    const std::string& event_name,
+    content::ChildProcessId process_id) const {
+  return listeners_.HasListenerForEventOutsideProcess(browser_context_,
+                                                      event_name, process_id);
+}
+
+void EventRouter::AddEventListenerForTesting(  // IN-TEST
+    const std::string& event_name,
+    content::RenderProcessHost* process,
+    const ExtensionId& extension_id) {
+  ObserveProcess(process);
+  AddEventListener(event_name, process, extension_id);
+}
+
 bool EventRouter::ExtensionHasEventListener(
     const ExtensionId& extension_id,
     const std::string& event_name) const {
@@ -1220,6 +1235,9 @@ const base::DictValue* EventRouter::GetFilteredEvents(
 }
 
 void EventRouter::BroadcastEvent(std::unique_ptr<Event> event) {
+  for (TestObserver& observer : test_observers_) {
+    observer.OnWillBroadcastEvent(*event);
+  }
   DispatchEventImpl(std::string(), GURL(), std::move(event));
 }
 

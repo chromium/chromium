@@ -9,10 +9,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -300,6 +302,49 @@ bool EventListenerMap::HasListenerForEvent(
     const std::string& event_name) const {
   auto it = listeners_.find(event_name);
   return it != listeners_.end() && !it->second.empty();
+}
+
+bool EventListenerMap::HasListenerForEventOutsideProcess(
+    content::BrowserContext* browser_context,
+    const std::string& event_name,
+    content::ChildProcessId process_id) const {
+  // Ensure the caller provided a valid process ID to compare against.
+  CHECK(!process_id.is_null());
+
+  // Early return `false` if there are no registered listeners for `event_name`.
+  auto listener_event_iter = listeners_.find(event_name);
+  if (listener_event_iter == listeners_.end()) {
+    return false;
+  }
+
+  ProcessMap* process_map =
+      browser_context ? ProcessMap::Get(browser_context) : nullptr;
+
+  // Iterate through all listeners registered for `event_name` to determine if
+  // any listener belongs to a process other than `process_id`.
+  for (const auto& listener_to_search : listener_event_iter->second) {
+    // For lazy listeners, check whether they are not running in `process_id`.
+    // If so, this listener is outside the given `process_id`.
+    if (listener_to_search->IsLazy()) {
+      // Unit tests may have null `process_map`.
+      if (process_map && !process_map->Contains(
+                             listener_to_search->extension_id(), process_id)) {
+        return true;
+      }
+      continue;
+    }
+
+    // For active listeners, check whether the listener process ID differs from
+    // `process_id`. If so, the listener is outside the given `process_id`.
+    // `!listener_to_search->IsLazy()` implies non-null
+    // `listener_to_search->process()`.
+    if (listener_to_search->process()->GetID() != process_id) {
+      return true;
+    }
+  }
+
+  // All existing matching listeners belong to `process_id`.
+  return false;
 }
 
 bool EventListenerMap::HasListenerForExtension(

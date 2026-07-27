@@ -135,6 +135,7 @@ class EventRouter : public KeyedService,
     virtual void OnDidDispatchEventToProcess(const Event& event,
                                              int process_id) = 0;
     virtual void OnNonExtensionEventDispatched(const std::string& event_name) {}
+    virtual void OnWillBroadcastEvent(const Event& event) {}
   };
 
   // Gets the EventRouter for `browser_context`.
@@ -274,6 +275,9 @@ class EventRouter : public KeyedService,
   // Adds/removes test observers.
   void AddObserverForTesting(TestObserver* observer);
   void RemoveObserverForTesting(TestObserver* observer);
+  void AddEventListenerForTesting(const std::string& event_name,
+                                  content::RenderProcessHost* process,
+                                  const ExtensionId& extension_id);
 
   // If `add_lazy_listener` is true also add the lazy version of this listener.
   void AddFilteredEventListener(
@@ -296,6 +300,11 @@ class EventRouter : public KeyedService,
 
   // Returns true if there is at least one listener for the given event.
   bool HasEventListener(const std::string& event_name) const;
+
+  // Returns `true` if there is at least one listener for the given event
+  // outside `process_id`. `process_id` must be valid (`!process_id.is_null()`).
+  bool HasEventListenerOutsideProcess(const std::string& event_name,
+                                      content::ChildProcessId process_id) const;
 
   // Returns true if the extension is listening to the given event.
   // (virtual for testing only.)
@@ -360,6 +369,9 @@ class EventRouter : public KeyedService,
   // filter matches `filter`.
   bool HasLazyEventListenerWithFilterForTesting(const std::string& event_name,
                                                 const base::DictValue& filter);
+
+  // Flushes all pending `mojom::EventRouter` IPC messages across all receivers.
+  void FlushForTesting() { receivers_.FlushForTesting(); }
 
   void BindServiceWorkerEventDispatcher(
       int render_process_id,

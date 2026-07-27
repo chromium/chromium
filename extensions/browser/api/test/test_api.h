@@ -5,8 +5,15 @@
 #ifndef EXTENSIONS_BROWSER_API_TEST_TEST_API_H_
 #define EXTENSIONS_BROWSER_API_TEST_TEST_API_H_
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "content/public/common/child_process_id.h"
+#include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
 
 namespace base {
@@ -15,6 +22,10 @@ template <typename T>
 struct DefaultSingletonTraits;
 
 }  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 
@@ -107,6 +118,76 @@ class TestSendScriptResultFunction : public TestExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 };
+
+void BroadcastOrQueueTestNotificationForTesting(
+    content::BrowserContext* browser_context,
+    const std::string& event_name,
+    base::ListValue event_details,
+    content::ChildProcessId source_process_id);
+
+// Queues `chrome.test.onTestStarted` and `chrome.test.onTestFinished` events
+// when no event listener is currently registered (in a different process from
+// the originating process).
+class TestStartedAndFinishedEventQueue : public BrowserContextKeyedAPI,
+                                         public EventRouter::Observer {
+ public:
+  static TestStartedAndFinishedEventQueue* Get(
+      content::BrowserContext* browser_context);
+  static BrowserContextKeyedAPIFactory<TestStartedAndFinishedEventQueue>*
+  GetFactoryInstance();
+
+  explicit TestStartedAndFinishedEventQueue(
+      content::BrowserContext* browser_context);
+  TestStartedAndFinishedEventQueue(const TestStartedAndFinishedEventQueue&) =
+      delete;
+  TestStartedAndFinishedEventQueue& operator=(
+      const TestStartedAndFinishedEventQueue&) = delete;
+  ~TestStartedAndFinishedEventQueue() override;
+
+  // Enqueues an event for `event_name` from `source_process_id`.
+  void EnqueueEvent(const std::string& event_name,
+                    base::ListValue event_args,
+                    content::ChildProcessId source_process_id);
+
+  // KeyedService:
+  void Shutdown() override;
+
+  // EventRouter::Observer:
+  void OnListenerAdded(const EventListenerInfo& details) override;
+
+  size_t GetPendingEventsCountForTesting(const std::string& event_name) const;
+  bool IsQueueEmptyForTesting() const;
+
+ private:
+  friend class BrowserContextKeyedAPIFactory<TestStartedAndFinishedEventQueue>;
+
+  struct QueuedEvent {
+    QueuedEvent(base::ListValue args,
+                content::ChildProcessId source_process_id);
+    QueuedEvent(QueuedEvent&&);
+    QueuedEvent& operator=(QueuedEvent&&);
+    ~QueuedEvent();
+
+    base::ListValue event_args;
+    content::ChildProcessId source_process_id;
+  };
+
+  // BrowserContextKeyedAPI implementation.
+  static const bool kServiceRedirectedInIncognito = true;
+  static const bool kServiceIsCreatedWithBrowserContext = false;
+  static const char* service_name() {
+    return "TestStartedAndFinishedEventQueue";
+  }
+
+  raw_ptr<content::BrowserContext> browser_context_;
+  // Map from event name (`chrome.test.onTestStarted` or
+  // `chrome.test.onTestFinished`) to an ordered list of queued events.
+  std::map<std::string, std::vector<QueuedEvent>> pending_events_;
+};
+
+template <>
+void BrowserContextKeyedAPIFactory<
+    TestStartedAndFinishedEventQueue>::DeclareFactoryDependencies();
 
 class TestNotifyTestStartedFunction : public TestExtensionFunction {
  public:

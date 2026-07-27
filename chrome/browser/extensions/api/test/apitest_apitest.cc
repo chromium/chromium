@@ -6,8 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1614,6 +1616,241 @@ IN_PROC_BROWSER_TEST_F(TestHarnessEventsBrowserTest, CrossContextEvents) {
   EXPECT_TRUE(web_listener_test_started_failure.WaitUntilSatisfied());
   EXPECT_TRUE(web_listener_test_finished_success.WaitUntilSatisfied());
   EXPECT_TRUE(web_listener_test_finished_failure.WaitUntilSatisfied());
+}
+
+// Browser test harness verifying test start and finish event queueing
+// behavior across process boundaries.
+using ExtensionTestNotificationQueueBrowserTest = TestHarnessEventsBrowserTest;
+
+// Verifies that test start and finish events emitted (before any event
+// listeners are attached) are buffered in a browser process queue. When an
+// observer subsequently registers in another renderer process, these queued
+// events are dispatched in FIFO order.
+IN_PROC_BROWSER_TEST_F(ExtensionTestNotificationQueueBrowserTest,
+                       LateRegistration) {
+  ResultCatcher result_catcher;
+
+  // Start the embedded test server and navigate to a non-extension web page
+  // before loading the extension or attaching any test start and finish
+  // listeners.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL web_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), web_url));
+
+  // Load and run the extension test suite without any test start and finish
+  // listeners attached on the web page. The test start and finish events
+  // should be queued inside the browser process event queue.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("queued_test_extension"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Set up waiters that will listen for the `onTestStarted` and
+  // `onTestFinished` events to fire.
+  ExtensionTestMessageListener test_started_event("Test started:myQueuedTest");
+  ExtensionTestMessageListener test_finished_event(
+      "Test finished:myQueuedTest");
+
+  // Register one test start and one test finish listener on the web page after
+  // the extension test has finished running.
+  constexpr char kLateListenerJs[] = R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`Test started:${info.testName}`);
+    });
+    chrome.test.onTestFinished.addListener((info) => {
+      if (info.result === true) {
+        chrome.test.sendMessage(`Test finished:${info.testName}`);
+      }
+    });
+  )";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), kLateListenerJs));
+
+  // Verify that when the browser process sees the listener additions, both
+  // listeners receive the queued events.
+  EXPECT_TRUE(test_started_event.WaitUntilSatisfied());
+  EXPECT_TRUE(test_finished_event.WaitUntilSatisfied());
+}
+
+// Verifies that when multiple event listeners for test start events are
+// attached right after one another in the same synchronous block on
+// an observing web page after extension tests have completed, both listeners
+// receive all queued events from the browser process queue. This is because
+// both enter the renderer process local event listener map before the listener
+// registration is sent to the browser process.
+IN_PROC_BROWSER_TEST_F(ExtensionTestNotificationQueueBrowserTest,
+                       ConsecutiveSynchronousListeners) {
+  ResultCatcher result_catcher;
+
+  // Start the embedded test server and navigate to the web page.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL web_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), web_url));
+
+  // Load and execute the extension before any event listeners are attached.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("queued_test_extension"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Set up waiters that will listen for the two `onTestStarted` events to
+  // fire.
+  ExtensionTestMessageListener test_started_listener_1(
+      "listener1:myQueuedTest");
+  ExtensionTestMessageListener test_started_listener_2(
+      "listener2:myQueuedTest");
+
+  // Register two test start listeners synchronously on the web page right
+  // after one another.
+  constexpr char kSyncListenersJs[] = R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`listener1:${info.testName}`);
+    });
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`listener2:${info.testName}`);
+    });
+  )";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), kSyncListenersJs));
+
+  // Verify that both listener callbacks successfully receive the queued event
+  // when the browser process dispatches the event queue.
+  EXPECT_TRUE(test_started_listener_1.WaitUntilSatisfied());
+  EXPECT_TRUE(test_started_listener_2.WaitUntilSatisfied());
+}
+
+// Verifies that when a second test start event listener is attached
+// asynchronously after the first listener on an observing web page after
+// extension tests have completed, only the first listener receives the queued
+// event. When the first listener registers with the browser process, the
+// pending queue is completely drained and cleared; therefore, the second
+// asynchronously registered listener receives zero queued events.
+IN_PROC_BROWSER_TEST_F(ExtensionTestNotificationQueueBrowserTest,
+                       ConsecutiveAsynchronousListeners) {
+  ResultCatcher result_catcher;
+
+  // Start the embedded test server and navigate to the web page.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL web_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), web_url));
+
+  // Load and execute the extension before any event listeners are attached.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("queued_test_extension"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Attach the first listener and wait until the browser process dispatches the
+  // pending queue to the first listener.
+  ExtensionTestMessageListener test_started_listener_1(
+      "listener1:myQueuedTest");
+  constexpr char kFirstListenerJs[] = R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`listener1:${info.testName}`);
+    });
+  )";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), kFirstListenerJs));
+  ASSERT_TRUE(test_started_listener_1.WaitUntilSatisfied());
+
+  // Now that the first listener has received the event, attach the second
+  // listener and wait to confirm that the second listener does not receive an
+  // event. We do this by waiting for an async message to be sent after the
+  // second listener registers, and then explicitly flushing all pending
+  // `EventRouter` IPC messages.
+  ExtensionTestMessageListener test_started_listener_2(
+      "listener2:myQueuedTest");
+  ExtensionTestMessageListener async_check_done("async_check_done");
+  constexpr char kSecondListenerJs[] = R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`listener2:${info.testName}`);
+    });
+    chrome.test.sendMessage('async_check_done');
+  )";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), kSecondListenerJs));
+  ASSERT_TRUE(async_check_done.WaitUntilSatisfied());
+  EventRouter::Get(profile())->FlushForTesting();
+  EXPECT_FALSE(test_started_listener_2.was_satisfied());
+}
+
+// Verifies that when a test event listener for `chrome.test.onTestStarted` is
+// registered inside the extension's own process before the test starts, the
+// test start event is still enqueued because no listeners exist outside that
+// source process. When an observing web page in another renderer process
+// subsequently attaches a listener, it successfully receives the queued event.
+IN_PROC_BROWSER_TEST_F(ExtensionTestNotificationQueueBrowserTest,
+                       PreExistingSameProcessListenerQueuing) {
+  ResultCatcher result_catcher;
+
+  // Start the embedded test server.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Set up message listeners for the extension page and same-process listener.
+  ExtensionTestMessageListener page_ready("page_ready");
+  ExtensionTestMessageListener same_process_listener(
+      "same_process_listener:sameProcessTest");
+
+  // Load and run an extension that contains an extension page (`page.html`)
+  // and a background service worker. The extension page registers an
+  // `onTestStarted` listener inside the extension process without invoking
+  // `chrome.test.runTests()`.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                     "<script src=\"page.js\"></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`same_process_listener:${info.testName}`);
+    });
+    chrome.test.sendMessage('page_ready');
+  )");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.test.sendMessage('bg_ready', () => {
+      chrome.test.runTests([function sameProcessTest() {
+        chrome.test.succeed();
+      }]);
+    });
+  )");
+
+  ExtensionTestMessageListener bg_ready("bg_ready", ReplyBehavior::kWillReply);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(bg_ready.WaitUntilSatisfied());
+
+  // Navigate to `page.html` in the active web contents so that the extension
+  // page attaches an `onTestStarted` listener in the extension process.
+  GURL ext_page_url = extension->GetResourceURL("page.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), ext_page_url));
+  EXPECT_TRUE(page_ready.WaitUntilSatisfied());
+
+  // Now trigger the extension tests in `background.js`.
+  bg_ready.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Flush pending IPC events in `EventRouter` and verify that the same-process
+  // listener in `page.html` did not receive the test start event via IPC.
+  EventRouter::Get(profile())->FlushForTesting();
+  EXPECT_FALSE(same_process_listener.was_satisfied());
+
+  // Set up a listener for any messages sent by the observing web page's
+  // `onTestStarted` listener.
+  ExtensionTestMessageListener test_started_event(
+      "Test started:sameProcessTest");
+
+  // Navigate to a non-extension web page in a different renderer process.
+  GURL web_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), web_url));
+
+  // Register a test start listener on the observing web page after the
+  // extension test has finished running.
+  constexpr char kLateListenerJs[] = R"(
+    chrome.test.onTestStarted.addListener((info) => {
+      chrome.test.sendMessage(`Test started:${info.testName}`);
+    });
+  )";
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), kLateListenerJs));
+
+  // Verify that the observing web page receives the queued event, while the
+  // same-process listener remains unsatisfied.
+  EXPECT_TRUE(test_started_event.WaitUntilSatisfied());
+  EXPECT_FALSE(same_process_listener.was_satisfied());
 }
 
 }  // namespace extensions
