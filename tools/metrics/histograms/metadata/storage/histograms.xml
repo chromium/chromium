@@ -1073,7 +1073,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Time (in ms) to load HTML5 LocalStorage into the renderer-side cache using
-    Mojo implementation. This was expired from 2026-03-29 to 2026-06-08, so data
+    Mojo implementation. This was expired from 2026-05-31 to 2026-06-08, so data
     may be missing.
   </summary>
 </histogram>
@@ -1114,14 +1114,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2026-03-08">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2027-07-08">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The renderer side cache hit rate metrics for new HTML5 LocalStorage DB
     opened.
 
-    Warning: this histogram was expired from M78 to M92; data may be missing.
+    Warning: this histogram was expired from M78 to M92 and from 2026-03-08 to
+    2026-07-24; data may be missing.
   </summary>
 </histogram>
 
