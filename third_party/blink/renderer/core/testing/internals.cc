@@ -1319,18 +1319,19 @@ void Internals::setMarker(Document* document,
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The marker type provided ('" + marker_type + "') is invalid.");
+        StrCat({"The marker type provided ('", marker_type, "') is invalid."}));
     return;
   }
 
   if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar &&
       type != DocumentMarker::kGlic) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "internals.setMarker() currently only "
-                                      "supports spelling, grammar and glic "
-                                      " markers; attempted to add marker of "
-                                      " type '" +
-                                          marker_type + "'.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"internals.setMarker() currently only "
+                "supports spelling, grammar and glic "
+                " markers; attempted to add marker of "
+                " type '",
+                marker_type, "'."}));
     return;
   }
 
@@ -1363,16 +1364,17 @@ void Internals::removeMarker(Document* document,
   if (!type) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The marker type provided ('" + marker_type + "') is invalid.");
+        StrCat({"The marker type provided ('", marker_type, "') is invalid."}));
     return;
   }
 
   if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "internals.setMarker() currently only "
-                                      "supports spelling and grammar markers; "
-                                      "attempted to add marker of type '" +
-                                          marker_type + "'.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"internals.setMarker() currently only "
+                "supports spelling and grammar markers; "
+                "attempted to add marker of type '",
+                marker_type, "'."}));
     return;
   }
 
@@ -1395,7 +1397,7 @@ unsigned Internals::markerCountForNode(Text* text,
   if (!marker_types) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The marker type provided ('" + marker_type + "') is invalid.");
+        StrCat({"The marker type provided ('", marker_type, "') is invalid."}));
     return 0;
   }
 
@@ -1431,7 +1433,7 @@ DocumentMarker* Internals::MarkerAt(Text* text,
   if (!marker_types) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The marker type provided ('" + marker_type + "') is invalid.");
+        StrCat({"The marker type provided ('", marker_type, "') is invalid."}));
     return nullptr;
   }
 
@@ -1510,9 +1512,9 @@ void Internals::addTextMatchMarker(const Range* range,
   std::optional<TextMatchMarker::MatchStatus> match_status_enum =
       MatchStatusFrom(match_status);
   if (!match_status_enum) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "The match status provided ('" + match_status + "') is invalid.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      StrCat({"The match status provided ('",
+                                              match_status, "') is invalid."}));
     return;
   }
 
@@ -1594,17 +1596,18 @@ void AddStyleableMarkerHelper(const Range* range,
   if (!thickness) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The thickness provided ('" + thickness_value + "') is invalid.");
+        StrCat(
+            {"The thickness provided ('", thickness_value, "') is invalid."}));
     return;
   }
 
   std::optional<ImeTextSpanUnderlineStyle> underline_style =
       UnderlineStyleFrom(underline_style_value);
   if (!underline_style_value) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "The underline style provided ('" +
-                                          underline_style_value +
-                                          "') is invalid.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"The underline style provided ('", underline_style_value,
+                "') is invalid."}));
     return;
   }
 
@@ -3723,7 +3726,8 @@ String Internals::getAgentId(DOMWindow* window) {
   // This serializes a pointer as a decimal number, which is a bit ugly, but
   // it works. Is there any utility to dump a number in a hexadecimal form?
   // I couldn't find one in WTF.
-  return String::Number(process_id) + ":" + String::Number(agent_address);
+  return StrCat(
+      {String::Number(process_id), ":", String::Number(agent_address)});
 }
 
 void Internals::useMockOverlayScrollbars() {
