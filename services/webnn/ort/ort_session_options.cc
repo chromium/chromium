@@ -52,7 +52,7 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
   CHECK(context_options)
       << "CreateContextOptions must be provided in state parameter";
   OrtHardwareDeviceType device_type =
-      ort::WebnnToOrtDeviceType(context_options->device);
+      WebnnToOrtDeviceType(context_options->device);
 
   // SAFETY: ORT guarantees that `ep_devices` is valid and contains
   // `num_devices` elements.
@@ -235,8 +235,7 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
       env->GetRegisteredEpDevices();
   std::vector<const OrtEpDevice*> selected_ep_devices =
       Environment::SelectEpDevices(
-          registered_ep_devices,
-          ort::WebnnToOrtDeviceType(context_options->device));
+          registered_ep_devices, WebnnToOrtDeviceType(context_options->device));
   if (selected_ep_devices.empty()) {
     return base::unexpected("No execution provider device available.");
   }
