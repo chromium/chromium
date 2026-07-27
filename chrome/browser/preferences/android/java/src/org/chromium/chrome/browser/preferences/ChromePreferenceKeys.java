@@ -691,6 +691,10 @@ public final class ChromePreferenceKeys {
     public static final String TAB_PERSISTENCE_STORE_MANAGER_VERSION =
             "Chrome.TabPersistence.StoreManagerVersion";
 
+    /** KeyPrefix for tab store metrics stored in SharedPreferences. */
+    public static final KeyPrefix TAB_STORE_METRICS =
+            new KeyPrefix("Chrome.TabModel.TabStoreMetrics.*");
+
     /**
      * Indicates whether or not there is any persistent (i.e. non-transient) content in chrome that
      * can be viewed offline.
@@ -1366,6 +1370,7 @@ public final class ChromePreferenceKeys {
                 TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE.pattern(),
                 TAB_PERSISTENCE_SHADOW_WRITTEN_STORE.pattern(),
                 TAB_PERSISTENCE_STORE_MANAGER_VERSION,
+                TAB_STORE_METRICS.pattern(),
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT,
                 TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,

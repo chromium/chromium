@@ -103,7 +103,7 @@ public class TabStoreMetricsServiceUnitTest {
                 TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
 
         List<TabCreationData> authFrozen = new ArrayList<>();
-        authFrozen.add(new TabCreationData(1, "http://url1.com", 1000));
+        authFrozen.add(new TabCreationData(1, "http://url1.com", 1000, false, null));
         List<TabCreationData> authNew = new ArrayList<>();
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();
@@ -147,7 +147,7 @@ public class TabStoreMetricsServiceUnitTest {
                 TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
 
         List<TabCreationData> authFrozen = new ArrayList<>();
-        authFrozen.add(new TabCreationData(1, "http://url-auth.com", 2000));
+        authFrozen.add(new TabCreationData(1, "http://url-auth.com", 2000, false, null));
         List<TabCreationData> authNew = new ArrayList<>();
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();

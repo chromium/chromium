@@ -10,6 +10,8 @@ import android.util.SparseArray;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
@@ -27,6 +29,15 @@ import java.util.Objects;
  */
 @NullMarked
 public class TabStoreMetricsService {
+    /** SharedPreferences key suffix for recording stored tab count. */
+    public static final String TAB_COUNT_KEY_SUFFIX = "TabCount";
+
+    /** SharedPreferences key suffix for recording stored tab group count. */
+    public static final String GROUP_COUNT_KEY_SUFFIX = "GroupCount";
+
+    /** SharedPreferences key suffix for recording stored pinned tab count. */
+    public static final String PINNED_TAB_COUNT_KEY_SUFFIX = "PinnedTabCount";
+
     /** A bucket of metrics for a specific profile, window tag, and orchestrator type. */
     public static class MetricsBucket {
         public MetricsBucket(Profile profile, String windowTag, String orchestratorTag) {
@@ -38,6 +49,12 @@ public class TabStoreMetricsService {
         public Profile profile;
         public String windowTag;
         public String orchestratorTag;
+
+        /** Returns a tag combining profile, window tag, and orchestrator tag for key generation. */
+        public String getTag() {
+            String profileTag = profile.isOffTheRecord() ? "Incognito" : "Regular";
+            return profileTag + "." + windowTag + "." + orchestratorTag;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -83,7 +100,7 @@ public class TabStoreMetricsService {
     private WindowMetricsTracker getTracker(MetricsBucket bucket) {
         WindowMetricsTracker tracker = mTrackers.get(bucket);
         if (tracker == null) {
-            tracker = new WindowMetricsTracker(bucket.orchestratorTag);
+            tracker = new WindowMetricsTracker(bucket);
             mTrackers.put(bucket, tracker);
         }
         return tracker;
@@ -91,10 +108,90 @@ public class TabStoreMetricsService {
 
     /** Tracks metrics for a single window instance. */
     public static class WindowMetricsTracker {
-        private final String mSuffix;
+        private final String mOrchestratorTagSuffix;
+        private final String mBucketTag;
 
-        private WindowMetricsTracker(String orchestratorTag) {
-            mSuffix = "." + orchestratorTag;
+        private WindowMetricsTracker(MetricsBucket bucket) {
+            mOrchestratorTagSuffix = "." + bucket.orchestratorTag;
+            mBucketTag = bucket.getTag();
+        }
+
+        private String getMetricKey(String metricName) {
+            return ChromePreferenceKeys.TAB_STORE_METRICS.createKey(mBucketTag + "." + metricName);
+        }
+
+        /**
+         * Helper method to store an integer count metric in SharedPreferences.
+         *
+         * @param metricName The metric name (e.g. TabCount) to append to the key.
+         * @param count The count value to persist.
+         */
+        private void recordCountPref(String metricName, int count) {
+            ChromeSharedPreferences.getInstance().writeInt(getMetricKey(metricName), count);
+        }
+
+        /**
+         * Helper method to read an integer count metric from SharedPreferences.
+         *
+         * @param metricName The metric name (e.g. TabCount) to read from the key.
+         * @return The persisted count value, or 0 if not present.
+         */
+        private int getCountPref(String metricName) {
+            return ChromeSharedPreferences.getInstance().readInt(getMetricKey(metricName), 0);
+        }
+
+        /**
+         * Persists the current total tab count to SharedPreferences.
+         *
+         * @param count The total number of tabs.
+         */
+        public void recordTabCount(int count) {
+            recordCountPref(TAB_COUNT_KEY_SUFFIX, count);
+        }
+
+        /**
+         * Persists the current total tab group count to SharedPreferences.
+         *
+         * @param count The total number of tab groups.
+         */
+        public void recordGroupCount(int count) {
+            recordCountPref(GROUP_COUNT_KEY_SUFFIX, count);
+        }
+
+        /**
+         * Persists the current total pinned tab count to SharedPreferences.
+         *
+         * @param count The total number of pinned tabs.
+         */
+        public void recordPinnedTabCount(int count) {
+            recordCountPref(PINNED_TAB_COUNT_KEY_SUFFIX, count);
+        }
+
+        /**
+         * Retrieves the persisted total tab count from SharedPreferences.
+         *
+         * @return The stored tab count.
+         */
+        public int getTabCount() {
+            return getCountPref(TAB_COUNT_KEY_SUFFIX);
+        }
+
+        /**
+         * Retrieves the persisted total tab group count from SharedPreferences.
+         *
+         * @return The stored tab group count.
+         */
+        public int getGroupCount() {
+            return getCountPref(GROUP_COUNT_KEY_SUFFIX);
+        }
+
+        /**
+         * Retrieves the persisted total pinned tab count from SharedPreferences.
+         *
+         * @return The stored pinned tab count.
+         */
+        public int getPinnedTabCount() {
+            return getCountPref(PINNED_TAB_COUNT_KEY_SUFFIX);
         }
 
         /**
@@ -122,15 +219,17 @@ public class TabStoreMetricsService {
 
             if (tabCountDelta > 0) {
                 RecordHistogram.recordCount1000Histogram(
-                        "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher" + mSuffix,
+                        "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher"
+                                + mOrchestratorTagSuffix,
                         tabCountDelta);
 
             } else if (tabCountDelta < 0) {
                 RecordHistogram.recordCount1000Histogram(
-                        "Tabs.TabStateStore.TabCountDelta.ShadowHigher" + mSuffix, -tabCountDelta);
+                        "Tabs.TabStateStore.TabCountDelta.ShadowHigher" + mOrchestratorTagSuffix,
+                        -tabCountDelta);
             } else {
                 RecordHistogram.recordBooleanHistogram(
-                        "Tabs.TabStateStore.TabCountDelta.Equal" + mSuffix, true);
+                        "Tabs.TabStateStore.TabCountDelta.Equal" + mOrchestratorTagSuffix, true);
             }
 
             RecordHistogram.recordCount1000Histogram(
@@ -164,11 +263,14 @@ public class TabStoreMetricsService {
             long timeDelta = authData.timestampMillis - shadowArgs.state.timestampMillis;
             if (timeDelta > 0) {
                 RecordHistogram.recordTimesHistogram(
-                        "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer" + mSuffix,
+                        "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer"
+                                + mOrchestratorTagSuffix,
                         timeDelta);
             } else if (timeDelta < 0) {
                 RecordHistogram.recordTimesHistogram(
-                        "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer" + mSuffix, -timeDelta);
+                        "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer"
+                                + mOrchestratorTagSuffix,
+                        -timeDelta);
             }
         }
     }

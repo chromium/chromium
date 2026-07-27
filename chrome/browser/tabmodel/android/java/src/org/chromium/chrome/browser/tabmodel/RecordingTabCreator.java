@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,16 +32,27 @@ public class RecordingTabCreator implements TabCreator {
         public final int id;
         public final @Nullable String url;
         public final long timestampMillis;
+        public final boolean isPinned;
+        public final @Nullable Token tabGroupId;
 
         /**
          * @param id The ID of the tab (if frozen, otherwise Tab.INVALID_TAB_ID).
          * @param url The URL spec of the tab.
          * @param timestampMillis The timestamp of the tab in milliseconds (if frozen, otherwise 0).
+         * @param isPinned Whether the tab is pinned.
+         * @param tabGroupId The group ID of the tab if in a group.
          */
-        public TabCreationData(int id, @Nullable String url, long timestampMillis) {
+        public TabCreationData(
+                int id,
+                @Nullable String url,
+                long timestampMillis,
+                boolean isPinned,
+                @Nullable Token tabGroupId) {
             this.id = id;
             this.url = url;
             this.timestampMillis = timestampMillis;
+            this.isPinned = isPinned;
+            this.tabGroupId = tabGroupId;
         }
     }
 
@@ -87,7 +99,9 @@ public class RecordingTabCreator implements TabCreator {
         if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
             String urlSpec = state.url != null ? state.url.getSpec() : null;
-            mFrozenTabCreationData.add(new TabCreationData(id, urlSpec, state.timestampMillis));
+            mFrozenTabCreationData.add(
+                    new TabCreationData(
+                            id, urlSpec, state.timestampMillis, state.isPinned, state.tabGroupId));
         }
         return mDelegate.createFrozenTab(state, id, index);
     }
@@ -162,7 +176,12 @@ public class RecordingTabCreator implements TabCreator {
         if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
             mNewTabCreationData.add(
-                    new TabCreationData(Tab.INVALID_TAB_ID, urlSpec, /* timestampMillis= */ 0));
+                    new TabCreationData(
+                            Tab.INVALID_TAB_ID,
+                            urlSpec,
+                            /* timestampMillis= */ 0,
+                            /* isPinned= */ false,
+                            /* tabGroupId= */ null));
         }
     }
 }
