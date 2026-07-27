@@ -62,6 +62,8 @@ chrome.test.runTests([
     await microtasksFinished();
     await startNewAnnotationAndVerifyMessage(expectedAnnotation, true);
     mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 0);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 0);
 
     // --- (1) Re-activate and edit the text of the existing annotation ---
     reactivateBox(textbox, viewport, expectedAnnotation);
@@ -79,7 +81,10 @@ chrome.test.runTests([
     // Commit it by starting a new annotation and verify.
     await startNewAnnotationAndVerifyMessage(
         expectedAnnotationEditedText, true);
+    // The edit shows up in the metrics.
     mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 0);
 
     // --- (2) Re-activate and apply Move/Resize Edit ---
     reactivateBox(textbox, viewport, expectedAnnotationEditedText);
@@ -100,6 +105,10 @@ chrome.test.runTests([
       height: 50,
     };
     await startNewAnnotationAndVerifyMessage(expectedAnnotationAfterMove, true);
+    // The move/resize counts as another edit.
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 2);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 0);
 
     // --- (3) Re-activate and apply Font Change Edit ---
     reactivateBox(textbox, viewport, expectedAnnotationAfterMove);
@@ -113,6 +122,10 @@ chrome.test.runTests([
         structuredClone(expectedAnnotationAfterMove);
     expectedAnnotationWithFont.textAttributes.typeface = TextTypeface.MONOSPACE;
     await startNewAnnotationAndVerifyMessage(expectedAnnotationWithFont, true);
+    // The font change also counts as another edit.
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 3);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 0);
 
     // --- (4) Re-activate and apply Text Cleared Edit ---
     reactivateBox(textbox, viewport, expectedAnnotationWithFont);
@@ -129,6 +142,15 @@ chrome.test.runTests([
     expectedAnnotationTextCleared.text = '';
     await startNewAnnotationAndVerifyMessage(
         expectedAnnotationTextCleared, true);
+    // Clearing the text effectively deletes the annotation.
+    mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 3);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(
+        UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED, 0);
+    mockMetricsPrivate.assertCount(
+        UserAction.EDIT_INK2_TEXT_ANNOTATION_ABORTED, 0);
+
     chrome.test.succeed();
   },
 
@@ -158,8 +180,12 @@ chrome.test.runTests([
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('finishTextAnnotation'));
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
-    // No edits also does not count as an add event in the metrics.
+    // No edits counts as an aborted add operation in the metrics.
+    mockMetricsPrivate.assertCount(
+        UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED, 1);
     mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 0);
+    mockMetricsPrivate.assertCount(
+        UserAction.EDIT_INK2_TEXT_ANNOTATION_ABORTED, 0);
 
     // When text is edited, commitTextAnnotation() will trigger a plugin
     // message.
@@ -186,7 +212,13 @@ chrome.test.runTests([
         [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
         textBoxStates);
     verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, true);
+    // Now a text annotation has actually been added and that shows in the
+    // metrics.
     mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(
+        UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED, 1);
+    mockMetricsPrivate.assertCount(
+        UserAction.EDIT_INK2_TEXT_ANNOTATION_ABORTED, 0);
     mockPlugin.clearMessages();
 
     // When existing text is not edited, commitTextAnnotation() will trigger a
@@ -204,9 +236,14 @@ chrome.test.runTests([
     // The annotation has not changed.
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
     verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, false);
-    // No edits also does not count as an add event in the metrics. So the count
-    // stays at 1 here.
+    // No edits counts as an aborted edit operation in the metrics.
     mockMetricsPrivate.assertCount(UserAction.ADD_INK2_TEXT_ANNOTATION, 1);
+    mockMetricsPrivate.assertCount(
+        UserAction.ADD_INK2_TEXT_ANNOTATION_ABORTED, 1);
+    mockMetricsPrivate.assertCount(
+        UserAction.EDIT_INK2_TEXT_ANNOTATION_ABORTED, 1);
+    mockMetricsPrivate.assertCount(UserAction.EDIT_INK2_TEXT_ANNOTATION, 0);
+    mockMetricsPrivate.assertCount(UserAction.DELETE_INK2_TEXT_ANNOTATION, 0);
     mockPlugin.clearMessages();
 
     chrome.test.succeed();
