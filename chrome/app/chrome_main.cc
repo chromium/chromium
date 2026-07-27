@@ -84,9 +84,7 @@ DLLEXPORT int __cdecl ChromeRendererMain(HINSTANCE instance,
 
 }  // extern "C"
 
-#if BUILDFLAG(IS_POSIX)
-// TODO(crbug.com/534570563): Do not define `main` once this becomes a
-// shared_library on macOS.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 int main(int argc, const char** argv) {
   return ChromeRendererMain(argc, argv);
 }

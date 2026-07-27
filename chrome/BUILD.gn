@@ -776,6 +776,9 @@ if (is_win) {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       defines = [ "HELPER_EXECUTABLE" ]
+      if (defined(invoker.defines)) {
+        defines += invoker.defines
+      }
 
       deps = [
         "//base:compiler_specific",
@@ -787,6 +790,10 @@ if (is_win) {
 
       if (defined(invoker.deps)) {
         deps += invoker.deps
+      }
+
+      if (defined(invoker.data_deps)) {
+        data_deps = invoker.data_deps
       }
 
       ldflags = []
@@ -854,6 +861,12 @@ if (is_win) {
     chrome_helper_app("chrome_helper_app_${helper_params[0]}") {
       helper_name_suffix = helper_params[2]
       helper_bundle_id_suffix = helper_params[1]
+      if (enable_separate_renderer_binary && helper_params[0] == "renderer") {
+        # TODO(crbug.com/534570563): Accommodate Apéritif in a follow-up CL to
+        # update chrome_exe_main_mac.c and link librenderer.dylib directly.
+        defines = [ "RENDERER_HELPER_EXECUTABLE" ]
+        data_deps = [ ":chrome_renderer" ]
+      }
     }
   }
 
@@ -1101,6 +1114,14 @@ if (is_win) {
     }
   }
 
+  if (enable_separate_renderer_binary) {
+    bundle_data("chrome_renderer_library") {
+      sources = [ "$root_out_dir/librenderer.dylib" ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+      public_deps = [ ":chrome_renderer" ]
+    }
+  }
+
   tweak_info_plist("chrome_framework_plist") {
     info_plist = "app/framework-Info.plist"
     args = [
@@ -1246,6 +1267,10 @@ if (is_win) {
     }
 
     bundle_deps += [ ":vulkan_loader_binaries" ]
+
+    if (enable_separate_renderer_binary) {
+      bundle_deps += [ ":chrome_renderer_library" ]
+    }
 
     configs += [ ":chrome_dll_symbol_order" ]
     if (!is_component_build && !using_sanitizer) {
@@ -1877,15 +1902,16 @@ if (_cros_generate_embed_section_target) {
 }
 
 if (enable_separate_renderer_binary) {
-  if (is_win) {
+  if (is_win || is_mac) {
     shared_library("chrome_renderer") {
+      if (is_mac) {
+        output_name = "renderer"
+      }
       sources = [ "app/chrome_main.cc" ]
       defines = [ "BUILDING_CHROME_RENDERER" ]
       deps = [ "//base" ]
     }
   } else {
-    # TODO(crbug.com/534570563): Support macOS helper app approach where the
-    # renderer helper links to a shared library.
     executable("chrome_renderer") {
       sources = [ "app/chrome_main.cc" ]
       defines = [ "BUILDING_CHROME_RENDERER" ]

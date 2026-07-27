@@ -40,8 +40,6 @@ void abort_report_np(const char* fmt, ...);
 
 namespace {
 
-typedef int (*ChromeMainPtr)(int, char**);
-
 #if !defined(HELPER_EXECUTABLE) && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(ARCH_CPU_X86_64)
 // This is for https://crbug.com/40216333, and more generally,
@@ -170,15 +168,24 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
       FatalError("Failed to initialize sandbox.");
     }
   }
+#endif
 
+#if defined(RENDERER_HELPER_EXECUTABLE)
+  static constexpr char entry_symbol[] = "ChromeRendererMain";
+  static constexpr char rel_path[] = "../../../../Libraries/librenderer.dylib";
+#elif defined(HELPER_EXECUTABLE)  // defined(HELPER_EXECUTABLE)
   // The helper lives within the versioned framework directory, so simply
   // go up to find the main dylib.
-  const char rel_path[] = "../../../../" PRODUCT_FULLNAME_STRING " Framework";
-#else
-  const char rel_path[] = "../Frameworks/" PRODUCT_FULLNAME_STRING
-                          " Framework.framework/Versions/" CHROME_VERSION_STRING
-                          "/" PRODUCT_FULLNAME_STRING " Framework";
-#endif  // defined(HELPER_EXECUTABLE)
+  static constexpr char entry_symbol[] = "ChromeMain";
+  static constexpr char rel_path[] =
+      "../../../../" PRODUCT_FULLNAME_STRING " Framework";
+#else                             // defined(HELPER_EXECUTABLE)
+  static constexpr char entry_symbol[] = "ChromeMain";
+  static constexpr char rel_path[] =
+      "../Frameworks/" PRODUCT_FULLNAME_STRING
+      " Framework.framework/Versions/" CHROME_VERSION_STRING
+      "/" PRODUCT_FULLNAME_STRING " Framework";
+#endif                            // defined(RENDERER_HELPER_EXECUTABLE)
 
   // Slice off the last part of the main executable path, and append the
   // version framework information.
@@ -201,12 +208,13 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
     FatalError("dlopen %s: %s.", framework_path.get(), dlerror());
   }
 
+  using ChromeMainPtr = int (*)(int, const char**);
   const ChromeMainPtr chrome_main =
-      reinterpret_cast<ChromeMainPtr>(dlsym(library, "ChromeMain"));
+      reinterpret_cast<ChromeMainPtr>(dlsym(library, entry_symbol));
   if (!chrome_main) {
-    FatalError("dlsym ChromeMain: %s.", dlerror());
+    FatalError("dlsym %s: %s.", entry_symbol, dlerror());
   }
-  rv = chrome_main(argc, argv);
+  rv = chrome_main(argc, const_cast<const char**>(argv));
 
   // exit, don't return from main, to avoid the apparent removal of main from
   // stack backtraces under tail call optimization.
