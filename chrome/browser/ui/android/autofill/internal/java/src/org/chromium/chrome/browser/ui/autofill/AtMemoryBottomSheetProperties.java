@@ -58,17 +58,25 @@ class AtMemoryBottomSheetProperties {
 
         static final PropertyKey[] ALL_KEYS = {IS_LOADING, SEARCH_BAR_DELEGATE, SHEET_ITEMS};
 
-        @IntDef({ItemType.SUGGESTION, ItemType.ZERO_STATE, ItemType.NOTICE})
+        @IntDef({
+            ItemType.SUGGESTION,
+            ItemType.SUGGESTION_WITH_NO_BACKGROUND,
+            ItemType.ZERO_STATE,
+            ItemType.NOTICE
+        })
         @Retention(RetentionPolicy.SOURCE)
         @interface ItemType {
             /** A section containing suggestions. */
             int SUGGESTION = 0;
 
+            /** A section containing suggestions with no background card. */
+            int SUGGESTION_WITH_NO_BACKGROUND = 1;
+
             /** A section containing no results. */
-            int ZERO_STATE = 1;
+            int ZERO_STATE = 2;
 
             /** A section containing onboarding notice. */
-            int NOTICE = 2;
+            int NOTICE = 3;
         }
 
         /** Delegate to request search UI actions (e.g. hiding keyboard or clearing focus). */

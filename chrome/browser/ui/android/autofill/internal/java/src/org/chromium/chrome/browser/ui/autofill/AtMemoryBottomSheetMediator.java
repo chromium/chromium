@@ -137,6 +137,11 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             recordNoticeShown();
             return new ListItem(HomeProperties.ItemType.NOTICE, createNoticeModel(position));
         }
+        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_SEARCH_AFFORDANCE) {
+            return new ListItem(
+                    HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND,
+                    createSuggestionModel(suggestion, position));
+        }
         return new ListItem(
                 HomeProperties.ItemType.SUGGESTION, createSuggestionModel(suggestion, position));
     }

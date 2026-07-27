@@ -331,7 +331,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         mMediator.show(List.of(createSearchAffordance("flight")));
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND, mModelList.get(0).type);
         assertEquals("flight", mModelList.get(0).model.get(TITLE));
 
         mModelList.get(0).model.get(ON_SUGGESTION_CLICKED).run();
@@ -364,7 +364,7 @@ public class AtMemoryBottomSheetMediatorTest {
     public void testOnQueryTextChanged_resumeTypingAfterEmptyQuery() {
         mMediator.show(List.of(createSearchAffordance("f")));
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND, mModelList.get(0).type);
 
         mMediator.show(List.of());
         assertEquals(1, mModelList.size());
@@ -372,7 +372,7 @@ public class AtMemoryBottomSheetMediatorTest {
 
         mMediator.show(List.of(createSearchAffordance("a")));
         assertEquals(1, mModelList.size());
-        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND, mModelList.get(0).type);
         assertEquals("a", mModelList.get(0).model.get(TITLE));
     }
 
@@ -552,7 +552,7 @@ public class AtMemoryBottomSheetMediatorTest {
         mMediator.show(List.of(searchAffordance, separator, noticeSuggestion));
 
         assertEquals(2, mModelList.size());
-        assertEquals(HomeProperties.ItemType.SUGGESTION, mModelList.get(0).type);
+        assertEquals(HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND, mModelList.get(0).type);
         assertEquals(HomeProperties.ItemType.NOTICE, mModelList.get(1).type);
 
         Runnable okClickListener =

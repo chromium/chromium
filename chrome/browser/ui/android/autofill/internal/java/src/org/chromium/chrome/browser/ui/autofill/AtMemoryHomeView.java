@@ -50,6 +50,11 @@ public class AtMemoryHomeView extends LinearLayout {
                 AtMemoryBottomSheetViewBinder::bindSuggestionItemView);
 
         adapter.registerType(
+                ItemType.SUGGESTION_WITH_NO_BACKGROUND,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_suggestion_item),
+                AtMemoryBottomSheetViewBinder::bindSuggestionItemView);
+
+        adapter.registerType(
                 ItemType.ZERO_STATE,
                 new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_zero_state_item),
                 (model, view, propertyKey) -> {});
@@ -97,6 +102,7 @@ public class AtMemoryHomeView extends LinearLayout {
             switch (type) {
                 case ItemType.ZERO_STATE:
                 case ItemType.NOTICE:
+                case ItemType.SUGGESTION_WITH_NO_BACKGROUND:
                     return true;
                 case ItemType.SUGGESTION:
                     return false;

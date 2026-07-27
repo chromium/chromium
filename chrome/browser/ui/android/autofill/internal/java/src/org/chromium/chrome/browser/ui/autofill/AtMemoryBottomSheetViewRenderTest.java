@@ -268,7 +268,9 @@ public class AtMemoryBottomSheetViewRenderTest {
                                     R.drawable.ic_spark_24dp,
                                     /* isFlyoutVisible= */ false);
                     modelList.add(
-                            new ListItem(HomeProperties.ItemType.SUGGESTION, searchTileModel));
+                            new ListItem(
+                                    HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND,
+                                    searchTileModel));
 
                     mView.getHomeView().setUpSheetItems(modelList);
 
