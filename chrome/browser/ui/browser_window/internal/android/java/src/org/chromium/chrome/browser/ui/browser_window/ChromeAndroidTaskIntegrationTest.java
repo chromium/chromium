@@ -1058,6 +1058,57 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    public void createPendingTask_clearsPendingIdExtraAfterActivityLaunch() {
+        // Arrange.
+        mFreshCtaTransitTestRule.startOnBlankPage();
+        Profile profile = mFreshCtaTransitTestRule.getProfile(/* incognito= */ false);
+        AndroidBrowserWindowCreateParams createParams =
+                AndroidBrowserWindowCreateParamsImpl.create(
+                        BrowserWindowType.NORMAL,
+                        profile,
+                        /* leftBound= */ 0,
+                        /* topBound= */ 0,
+                        /* rightBound= */ 0,
+                        /* bottomBound= */ 0,
+                        /* initialShowState= */ WindowShowState.DEFAULT,
+                        /* webContents= */ null);
+
+        // Act.
+        ChromeAndroidTaskImpl newTask =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var chromeAndroidTaskTracker =
+                                    ChromeAndroidTaskTrackerFactory.getInstance();
+                            return (ChromeAndroidTaskImpl)
+                                    chromeAndroidTaskTracker.createPendingTask(
+                                            createParams, /* callback= */ null);
+                        });
+        CriteriaHelper.pollUiThread(
+                () -> newTask.getState() == ChromeAndroidTaskImpl.State.IDLE,
+                /* maxTimeoutMs= */ 10_000L,
+                /* checkIntervalMs= */ 1000L);
+
+        // Assert.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var activityWindowAndroid = newTask.getTopActivityWindowAndroid();
+                    assertNotNull(activityWindowAndroid);
+
+                    var activity = activityWindowAndroid.getActivity().get();
+                    assertNotNull(activity);
+
+                    assertFalse(
+                            IntentUtils.safeHasExtra(
+                                    activity.getIntent(),
+                                    ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+                });
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(newTask::close);
+    }
+
+    @Test
+    @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM /* test needs freeform windows */)
     public void createPendingTask_requestShowInactive_deactivateNewTask() {
         // Arrange.

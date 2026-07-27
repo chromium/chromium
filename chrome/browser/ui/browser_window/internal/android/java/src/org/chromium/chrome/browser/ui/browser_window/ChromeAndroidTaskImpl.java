@@ -29,6 +29,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -608,25 +609,48 @@ final class ChromeAndroidTaskImpl
         addActivityScopedObjectsInternal(activityScopedObjects);
     }
 
+    /**
+     * Transitions from {@link State#PENDING_CREATE} to {@link State#IDLE}, if the current state is
+     * {@code PENDING_CREATE}. Otherwise, this method is a no-op.
+     */
     private void completePendingCreate() {
         var topActivityScopedObjects = TopActivityScopedObjects.obtain(this);
         if (mPendingTaskInfo == null || topActivityScopedObjects == null) {
             return;
         }
 
-        // Transition from PENDING_CREATE to IDLE.
         assert mState == State.PENDING_CREATE;
         assert mId == null;
 
+        // (1) Remove EXTRA_PENDING_BROWSER_WINDOW_TASK_ID from the launch Intent.
+        //
+        // Intent extras survive Activity recreation. If EXTRA_PENDING_BROWSER_WINDOW_TASK_ID isn't
+        // removed and ChromeActivity is recreated, the recreated Activity will try finding a
+        // pending ChromeAndroidTask, and cause a crash, because there is no pending
+        // ChromeAndroidTask for the recreated Activity.
+        IntentUtils.safeRemoveExtra(
+                topActivityScopedObjects.mActivity.getIntent(),
+                ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID);
+
+        // (2) Make WindowStateManager up-to-date.
         mWindowStateManager.update(
                 topActivityScopedObjects.mActivity,
                 topActivityScopedObjects.mActivityWindowAndroid.getDisplay());
+
+        // (3) Mark the ChromeAndroidTask as IDLE.
+        //
+        // Note that this should be done before dispatching pending actions (windowing requests
+        // received during the PENDING_CREATE state) since the actions should be performed in the
+        // IDLE state (when we have a real Task and an Activity).
         mId = getTaskId(topActivityScopedObjects.mActivity);
+        mState = State.IDLE;
+
+        // (4) Dispatch pending actions.
         @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
         @Nullable Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
-        mState = State.IDLE;
         dispatchPendingActions(topActivityScopedObjects, futureBounds, futureRestoredBounds);
 
+        // (5) Invoke the JNI callback for the native CreateBrowserWindow() function.
         JniOnceCallback<Long> taskCreationCallbackForNative =
                 mPendingTaskInfo.mTaskCreationCallbackForNative;
         if (taskCreationCallbackForNative != null) {
