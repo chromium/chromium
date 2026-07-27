@@ -1060,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SiteIsolation.BrowsingInstance.MaxCountPerProcess"
     units="units" expires_after="2026-11-17">
-  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
     The maximum number of BrowsingInstances seen in a RenderProcessHost over its
@@ -1107,8 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2026-12-16">
-  <owner>wjmaclean@chromium.org</owner>
+    expires_after="2027-07-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -1126,8 +1125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2026-12-16">
-  <owner>wjmaclean@chromium.org</owner>
+    units="processes" expires_after="2027-07-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -1141,8 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2026-07-26">
-  <owner>wjmaclean@chromium.org</owner>
+    units="processes" expires_after="2027-07-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -1154,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsPasswordFormSubmittedInDedicatedProcess"
-    enum="SiteIsolationIsDedicatedProcess" expires_after="2026-05-24">
+    enum="SiteIsolationIsDedicatedProcess" expires_after="2027-05-24">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -1325,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedOAuthSites.Size" units="origins"
-    expires_after="2026-07-28">
+    expires_after="2027-07-28">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1337,7 +1334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2026-10-25">
+    units="origins" expires_after="2027-07-28">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1350,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2025-12-07">
+    units="origins" expires_after="2027-07-28">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
