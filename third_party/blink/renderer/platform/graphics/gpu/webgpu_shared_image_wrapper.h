@@ -59,15 +59,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
       const gfx::HDRMetadata& hdr_metadata);
   ~WebGpuSharedImageWrapper();
 
-  gfx::Size Size() const { return shared_image_->size(); }
-  viz::SharedImageFormat GetSharedImageFormat() const {
-    return shared_image_->format();
-  }
-  const gfx::ColorSpace& GetColorSpace() const {
-    return shared_image_->color_space();
-  }
-  SkAlphaType GetAlphaType() const { return shared_image_->alpha_type(); }
-
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const;
   gpu::SyncToken GetSyncToken() const;
 
