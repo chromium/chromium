@@ -4,11 +4,27 @@
 
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 
+#include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+namespace {
+
+const SanitizerNameSet BuildNonReplaceableElements() {
+  // https://html.spec.whatwg.org/#built-in-non-replaceable-elements-list
+  return SanitizerNameSet{
+      html_names::kHTMLTag,
+      svg_names::kSVGTag,
+      mathml_names::kMathTag,
+  };
+}
+
+}  // anonymous namespace
 
 const Sanitizer* SanitizerBuiltins::GetDefaultUnsafe() {
   DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_unsafe_,
@@ -28,6 +44,12 @@ const Sanitizer* SanitizerBuiltins::GetBaseline() {
       Persistent<Sanitizer>, baseline_,
       (blink::sanitizer_generated_builtins::BuildBaselineConfig()));
   return baseline_.Get();
+}
+
+const SanitizerNameSet* SanitizerBuiltins::GetNonReplaceableElements() {
+  DEFINE_STATIC_LOCAL(SanitizerNameSet, non_replaceable_elements_,
+                      (BuildNonReplaceableElements()));
+  return &non_replaceable_elements_;
 }
 
 }  // namespace blink

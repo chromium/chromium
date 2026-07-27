@@ -587,11 +587,14 @@ bool Sanitizer::ReplaceElement(const QualifiedName& name) {
   DCHECK(isValid());
   // Step 3: Set element to the result of canonicalize a sanitizer element
   // with element. (Done by caller.)
-  // https://github.com/WICG/sanitizer-api/issues/365:
-  // If name is "html", return false.
-  if (html_names::kHTMLTag.Matches(name)) {
+  // Step 4: If the built-in non-replaceable elements list contains element,
+  // return false.
+  if (SanitizerBuiltins::GetNonReplaceableElements()->Contains(name)) {
     return false;
   }
+
+  // Implementation from previous spec version. Is functionally identical to
+  // current version:
   // Step 4: If configuration["replaceWithChildrenElements"] contains element:
   // Step 4.1: Return false.
   bool contains_name = replace_elements_ && replace_elements_->Contains(name);
@@ -973,7 +976,8 @@ Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
       if (replace_elements_ &&
           replace_elements_->Contains(element->TagQName())) {
         // See: crbug.com/476333990.
-        CHECK_NE(element->TagQName(), html_names::kHTMLTag);
+        CHECK(!SanitizerBuiltins::GetNonReplaceableElements()->Contains(
+            element->TagQName()));
         CHECK(!element->IsInDocumentTree() ||
               !element->parentNode()->IsDocumentNode());
         // Step 5.2: If [...configuration["replaceWithChildrenElements"]...]
@@ -1365,8 +1369,12 @@ bool Sanitizer::isValid() const {
 
   // Step 7: Assert. (Not meaningful here, since we use QNames.)
   // Step 8-14: No duplicates. Not meaningful here, because we use sets.
-  // Step 15.1: non-replaceable elements.
-  if (replace_elements_ && replace_elements_->Contains(html_names::kHTMLTag)) {
+  // Step 15.1: For each element of config["replaceWithChildrenElements"]:
+  //         If the built-in non-replaceable elements list contains element,
+  //         then return false.
+  if (replace_elements_ &&
+      Intersect(replace_elements_,
+                *SanitizerBuiltins::GetNonReplaceableElements())) {
     return false;
   }
   // Step 15.2: Intersection elements + replace elements

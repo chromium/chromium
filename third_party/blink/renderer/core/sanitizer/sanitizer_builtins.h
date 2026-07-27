@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
 
 namespace blink {
 
@@ -19,6 +20,9 @@ class CORE_EXPORT SanitizerBuiltins {
   static const Sanitizer* GetDefaultUnsafe();
   // "Baseline" config, for use with Sanitizer.removeUnsafe.
   static const Sanitizer* GetBaseline();
+  // Non-replaceable Element List.
+  // https://html.spec.whatwg.org/#built-in-non-replaceable-elements-list
+  static const SanitizerNameSet* GetNonReplaceableElements();
 };
 
 // The builtin configs are generated. The methods below may do non-trivial work.
