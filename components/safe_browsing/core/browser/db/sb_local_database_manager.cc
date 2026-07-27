@@ -470,7 +470,8 @@ bool SBLocalDatabaseManager::CheckExtensionIDs(
       client, ClientCallbackType::CHECK_EXTENSION_IDS,
       StoresToCheck({GetChromeExtMalwareId()}), extension_ids,
       /*needs_full_hash_check_after_local_match=*/
-      !base::FeatureList::IsEnabled(kExtensionBlocklistSkipNetworkQuery));
+      !base::FeatureList::IsEnabled(kExtensionBlocklistSkipNetworkQuery) &&
+          !base::FeatureList::IsEnabled(kLocalListsUseSBv5));
 
   HandleCheck(std::move(check));
   return false;

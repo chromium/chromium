@@ -1835,10 +1835,12 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestSubresourceFilterCallback) {
 
 TEST_F(SBLocalDatabaseManagerTest,
        TestCheckExtensionIDsNothingBlocklisted_WithNetworkCheck) {
-  // Explicitly disable the network bypass feature.
+  // Explicitly disable the features allowing network bypass.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kExtensionBlocklistSkipNetworkQuery);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
+                             kLocalListsUseSBv5});
 
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
@@ -1866,12 +1868,37 @@ TEST_F(SBLocalDatabaseManagerTest,
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest,
-       TestCheckExtensionIDsNothingBlocklisted_WithoutNetworkCheck) {
-  // Explicitly enable the network bypass feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kExtensionBlocklistSkipNetworkQuery);
+struct ExtensionSkipNetworkQueryTestCase {
+  bool enable_skip_network_query;
+  bool enable_v5;
+};
 
+class SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery
+    : public SBLocalDatabaseManagerTest,
+      public ::testing::WithParamInterface<ExtensionSkipNetworkQueryTestCase> {
+ public:
+  SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().enable_skip_network_query) {
+      enabled_features.push_back(kExtensionBlocklistSkipNetworkQuery);
+    } else {
+      disabled_features.push_back(kExtensionBlocklistSkipNetworkQuery);
+    }
+    if (GetParam().enable_v5) {
+      enabled_features.push_back(kLocalListsUseSBv5);
+    } else {
+      disabled_features.push_back(kLocalListsUseSBv5);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
+       TestCheckExtensionIDsNothingBlocklisted_WithoutNetworkCheck) {
   // Reset the database manager.
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
@@ -1896,10 +1923,12 @@ TEST_F(SBLocalDatabaseManagerTest,
 
 TEST_F(SBLocalDatabaseManagerTest,
        TestCheckExtensionIDsOneIsBlocklisted_WithNetworkCheck) {
-  // Explicitly disable the network bypass feature.
+  // Explicitly disable the features allowing network bypass.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kExtensionBlocklistSkipNetworkQuery);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
+                             kLocalListsUseSBv5});
 
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
@@ -1930,19 +1959,15 @@ TEST_F(SBLocalDatabaseManagerTest,
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest,
+TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
        TestCheckExtensionIDsOneIsBlocklisted_WithoutNetworkCheck) {
-  // Explicitly enable the network bypass feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kExtensionBlocklistSkipNetworkQuery);
+  // Reset the database manager.
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
 
   // bad_extension_id is in the local DB.
   const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
       good_extension_id("ddddccccbbbbaaaa");
-
-  // Reset the database manager.
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
 
   // Put a match in the db.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -1967,10 +1992,12 @@ TEST_F(SBLocalDatabaseManagerTest,
 TEST_F(
     SBLocalDatabaseManagerTest,
     TestCheckExtensionIDsOneIsBlocklisted_RealProtocolManager_WithNetworkCheck) {
-  // Explicitly disable the network bypass feature.
+  // Explicitly disable the features allowing network bypass.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kExtensionBlocklistSkipNetworkQuery);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
+                             kLocalListsUseSBv5});
 
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
@@ -2013,17 +2040,9 @@ TEST_F(
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(
-    SBLocalDatabaseManagerTest,
+TEST_P(
+    SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
     TestCheckExtensionIDsOneIsBlocklisted_RealProtocolManager_WithoutNetworkCheck) {
-  // Explicitly enable the network bypass feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kExtensionBlocklistSkipNetworkQuery);
-
-  // bad_extension_id is in the local DB.
-  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
-      good_extension_id("ddddccccbbbbaaaa");
-
   auto test_url_loader_factory =
       std::make_unique<network::TestURLLoaderFactory>();
   ASSERT_EQ(test_url_loader_factory->NumPending(), 0);
@@ -2033,6 +2052,10 @@ TEST_F(
   // Reset the database manager.
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
+
+  // bad_extension_id is in the local DB.
+  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
+      good_extension_id("ddddccccbbbbaaaa");
 
   // Put a match in the db.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -2054,6 +2077,27 @@ TEST_F(
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
+    ::testing::Values(
+        ExtensionSkipNetworkQueryTestCase{/*enable_skip_network_query=*/true,
+                                          /*enable_v5=*/false},
+        ExtensionSkipNetworkQueryTestCase{/*enable_skip_network_query=*/false,
+                                          /*enable_v5=*/true},
+        ExtensionSkipNetworkQueryTestCase{/*enable_skip_network_query=*/true,
+                                          /*enable_v5=*/true}),
+    [](const ::testing::TestParamInfo<ExtensionSkipNetworkQueryTestCase>&
+           info) {
+      std::string name;
+      name += info.param.enable_skip_network_query
+                  ? "SkipNetworkQueryFeatureOn"
+                  : "SkipNetworkQueryFeatureOff";
+      name += "_";
+      name += info.param.enable_v5 ? "V5FeatureOn" : "V5FeatureOff";
+      return name;
+    });
 
 TEST_P(SBLocalDatabaseManagerTest_V4V5,
        TestCheckDownloadUrlNothingBlocklisted) {
