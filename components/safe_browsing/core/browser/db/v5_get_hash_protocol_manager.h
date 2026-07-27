@@ -103,6 +103,11 @@ class V5GetHashProtocolManager : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // Returns a WeakPtr to this instance.
+  base::WeakPtr<V5GetHashProtocolManager> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Determines the most severe threat type and metadata from a list of matches.
   // `matches` is the list of full hash matches returned by the server or cache.
