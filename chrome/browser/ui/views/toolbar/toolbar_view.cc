@@ -765,46 +765,8 @@ std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
 }
 
 void ToolbarView::OnGlicButtonClicked() {
-  CHECK(glic_split_button_controller_);
-
-  // Indicate that the glic button was pressed so that we can either close the
-  // IPH promo (if present) or note that it has already been used to prevent
-  // unnecessarily displaying the promo.
-  BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHGlicPromoFeature,
-      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-
-  std::optional<std::string> prompt_suggestion;
-  glic::GlicNudgeController* nudge_controller =
-      glic_split_button_controller_->nudge_controller();
-  CHECK(nudge_controller);
-  prompt_suggestion = nudge_controller->GetPromptSuggestion();
-  nudge_controller->ClearPromptSuggestion();
-
-  glic::mojom::InvocationSource source;
-  glic::GlicButtonController* button_controller =
-      glic_split_button_controller_->button_controller();
-  CHECK(button_controller);
-  source = button_controller->GetInvocationSource(
-      glic_button_->GetIsShowingNudge(), /*is_toolbar=*/true);
-
-  auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser_view_->GetProfile());
-  const bool is_panel_showing =
-      glic_service->IsPanelShowingForBrowser(*browser_view_->browser());
-  if (!is_panel_showing && prompt_suggestion.has_value() &&
-      !prompt_suggestion->empty()) {
-    glic::GlicInvokeOptions options(glic::Target(browser()), source);
-    options.prompts.push_back(std::move(*prompt_suggestion));
-    glic_service->Invoke(std::move(options));
-  } else {
-    glic_service->ToggleUI(browser_view_->browser(),
-                           /*prevent_close=*/false, source);
-  }
-
-  if (glic_button_->GetIsShowingNudge()) {
-    nudge_controller->OnNudgeActivity(glic::GlicNudgeActivity::kNudgeClicked);
-  }
+  glic::GlicSplitButtonController::From(browser_view_->browser())
+      ->OnGlicButtonClicked();
 
   ExecuteHideToolbarNudge(glic_button_);
   // Reset state manually since there wont be a mouse up event as the
