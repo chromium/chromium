@@ -183,7 +183,7 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar, activity, /* show= */ true, /* isMultiColumn= */ true);
 
-        verify(mToolbar).setNavigationIcon(R.mipmap.app_icon);
+        verify(mToolbar).setNavigationIcon(R.drawable.app_icon_32dp);
         verify(mToolbar).setNavigationOnClickListener(null);
     }
 

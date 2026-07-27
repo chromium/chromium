@@ -153,8 +153,8 @@ public class SettingsMenuHelper {
             Toolbar toolbar, Activity activity, boolean show, boolean isMultiColumn) {
         if (show) {
             if (isMultiColumn) {
-                // Show the Chrome logo without tinting.
-                toolbar.setNavigationIcon(R.mipmap.app_icon);
+                // Show the Chrome logo at 32x32 dp without tinting.
+                toolbar.setNavigationIcon(R.drawable.app_icon_32dp);
                 if (toolbar instanceof MaterialToolbar materialToolbar) {
                     materialToolbar.clearNavigationIconTint();
                 }
