@@ -2580,7 +2580,9 @@ class TabImpl implements Tab, TabInternal {
 
             View compositorView =
                     assumeNonNull(getActivity()).getCompositorViewHolderSupplier().get();
-            setWebContentsSize(webContents, compositorView);
+            if (compositorView != null) {
+                webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
+            }
             mWebContentsState.destroy();
             mWebContentsState = null;
             initWebContents(webContents);
@@ -2592,17 +2594,6 @@ class TabImpl implements Tab, TabInternal {
             TraceEvent.end("Tab.unfreezeContents");
         }
         return restored;
-    }
-
-    private void setWebContentsSize(WebContents webContents, @Nullable View compositorView) {
-        if (ChromeFeatureList.sCctTabResumption.isEnabled()) {
-            if (compositorView != null) {
-                webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
-            }
-        } else {
-            assumeNonNull(compositorView);
-            webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
-        }
     }
 
     /**
