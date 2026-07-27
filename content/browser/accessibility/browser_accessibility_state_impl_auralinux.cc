@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/browser_accessibility_state_impl_auralinux.h"
+
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -18,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace content {
 
@@ -31,16 +32,28 @@ void CloseDir(DIR* dir) {
   }
 }
 
-bool CheckCmdlineForOrca(const std::string& cmdline_all) {
+}  // namespace
+
+namespace internal {
+
+bool IsOrcaProcess(std::string_view cmdline_all, std::string_view comm) {
   std::string cmdline;
-  std::stringstream ss(cmdline_all);
+  std::stringstream ss{std::string(cmdline_all)};
   while (std::getline(ss, cmdline, '\0')) {
     if (cmdline == "orca") {
       return true;  // Orca was found
     }
   }
-  return false;  // Orca was not found
+
+  // When python-setproctitle is unavailable, Orca uses ctypes to call prctl()
+  // with PR_SET_NAME (defined as 15 in <sys/prctl.h>). PR_SET_NAME updates
+  // /proc/<pid>/comm, but not /proc/<pid>/cmdline.
+  return comm == "orca";
 }
+
+}  // namespace internal
+
+namespace {
 
 // Returns true if Orca is active.
 bool DiscoverOrca() {
@@ -57,25 +70,34 @@ bool DiscoverOrca() {
   raw_ptr<dirent> entry;
   while (!is_orca_active && (entry = readdir(proc_dir.get())) != nullptr) {
     if (isdigit(entry->d_name[0])) {
-      std::string pidStr(entry->d_name);
+      std::string pid_str(entry->d_name);
 
       struct stat stat_buf;
-      std::string stat_path = "/proc/" + pidStr;
+      std::string stat_path = "/proc/" + pid_str;
       if (stat(stat_path.c_str(), &stat_buf) == 0) {
         if (stat_buf.st_uid == getuid()) {
-          std::ifstream cmdline_file("/proc/" + pidStr + "/cmdline");
+          std::string cmdline_all;
+          std::ifstream cmdline_file("/proc/" + pid_str + "/cmdline");
           if (cmdline_file.is_open()) {
             std::stringstream buffer;
             buffer << cmdline_file.rdbuf();
-            std::string cmdline_all = buffer.str();
-            is_orca_active = CheckCmdlineForOrca(cmdline_all);
-            cmdline_file.close();
+            cmdline_all = buffer.str();
           } else {
-            DVLOG(1) << "Error opening cmdline for pid: " << pidStr;
+            DVLOG(1) << "Error opening cmdline for pid: " << pid_str;
           }
+
+          std::string comm;
+          std::ifstream comm_file("/proc/" + pid_str + "/comm");
+          if (comm_file.is_open()) {
+            std::getline(comm_file, comm);
+          } else {
+            DVLOG(1) << "Error opening comm for pid: " << pid_str;
+          }
+
+          is_orca_active = internal::IsOrcaProcess(cmdline_all, comm);
         }
       } else {
-        DVLOG(1) << "Error with stat for pid: " << pidStr;
+        DVLOG(1) << "Error with stat for pid: " << pid_str;
       }
     }
   }

@@ -3178,6 +3178,10 @@ test("content_unittests") {
     sources += [ "../child/sandboxed_process_thread_type_handler_unittest.cc" ]
   }
 
+  if (is_linux) {
+    sources += [ "../browser/accessibility/browser_accessibility_state_impl_auralinux_unittest.cc" ]
+  }
+
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     data = [
       "$root_out_dir/content_shell.pak",

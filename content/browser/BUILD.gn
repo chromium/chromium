@@ -2842,7 +2842,10 @@ source_set("browser") {
   }
 
   if (is_linux) {
-    sources += [ "accessibility/browser_accessibility_state_impl_auralinux.cc" ]
+    sources += [
+      "accessibility/browser_accessibility_state_impl_auralinux.cc",
+      "accessibility/browser_accessibility_state_impl_auralinux.h",
+    ]
   }
 
   if (is_chromeos) {
