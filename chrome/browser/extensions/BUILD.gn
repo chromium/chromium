@@ -1770,6 +1770,7 @@ static_library("test_support") {
         "//chrome/browser/ash/printing:test_support",
         "//chrome/browser/ash/printing/history:print_job_info_proto",
         "//chrome/browser/printing",
+        "//chrome/browser/printing:browser_printing_context_factory_for_test",
       ]
     }  # enable_printing && use_cups
   }  # is_chromeos

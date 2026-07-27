@@ -383,6 +383,25 @@ if (enable_printing) {
 }
 
 if (enable_print_preview) {
+  source_set("browser_printing_context_factory_for_test") {
+    testonly = true
+
+    sources = [
+      "browser_printing_context_factory_for_test.cc",
+      "browser_printing_context_factory_for_test.h",
+    ]
+
+    public_deps = [
+      "//printing",
+      "//printing:test_support",
+      "//printing/buildflags",
+    ]
+
+    deps = [ ":print_test_utils" ]
+  }
+}
+
+if (enable_print_preview) {
   source_set("test_support") {
     testonly = true
 

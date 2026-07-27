@@ -585,12 +585,9 @@ static_library("test_support") {
   }
 
   if (enable_print_preview) {
-    sources += [
-      "../browser/printing/browser_printing_context_factory_for_test.cc",
-      "../browser/printing/browser_printing_context_factory_for_test.h",
+    public_deps += [
+      "//chrome/browser/printing:browser_printing_context_factory_for_test",
     ]
-
-    public_deps += [ "//printing:test_support" ]
   }
 
   if (is_linux) {
