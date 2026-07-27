@@ -44,6 +44,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 
@@ -417,6 +418,38 @@ public class WebViewResizingHelperUnitTest {
 
         // Ending animation unpauses and updates bounds
         listener.onEnd(null);
+        verify(mMockThinWebView).resizeWebContents(100, 200);
+    }
+
+    @Test
+    public void testActivityResumed_ForcesResizeAfterInactive() {
+        ArgumentCaptor<ActivityStateObserver> observerCaptor =
+                ArgumentCaptor.forClass(ActivityStateObserver.class);
+        verify(mMockWindowAndroid).addActivityStateObserver(observerCaptor.capture());
+        ActivityStateObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
+
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        // 1. Simulate activity becoming inactive.
+        when(mMockWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+
+        // Layout happens while inactive, updateBounds should return early and not resize.
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
+        clearInvocations(mMockThinWebView);
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(200, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 100, 200);
+        verify(mMockThinWebView, never()).resizeWebContents(anyInt(), anyInt());
+
+        // 2. Simulate activity resuming. Even though dimensions match mWebContents,
+        // it should force a resize because ignoreCache is true.
+        when(mMockWindowAndroid.getActivityState()).thenReturn(ActivityState.RESUMED);
+        observer.onActivityResumed();
+
         verify(mMockThinWebView).resizeWebContents(100, 200);
     }
 }

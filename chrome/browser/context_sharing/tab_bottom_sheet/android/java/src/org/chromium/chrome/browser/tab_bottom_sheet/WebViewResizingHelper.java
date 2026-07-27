@@ -32,6 +32,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.util.CommonOnLayoutChangeListeners;
@@ -50,6 +51,7 @@ public class WebViewResizingHelper {
     private static final int RESIZING_ANIMATION_DURATION_MS = 150;
 
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
+
     private final WindowInsetsAnimationListener mInsetAnimationListener =
             new WindowInsetsAnimationListener() {
                 @Override
@@ -73,11 +75,17 @@ public class WebViewResizingHelper {
                 }
             };
 
+    private final ActivityStateObserver mActivityStateObserver =
+            new ActivityStateObserver() {
+                @Override
+                public void onActivityResumed() {
+                    updateBounds(/* ignoreCache= */ true);
+                }
+            };
+
     private final Context mContext;
     private final FrameLayout mResizingContainer;
     private final View mResizingPlaceholder;
-    private @Nullable ThinWebView mThinWebView;
-    private @Nullable WebContents mWebContents;
     private final View mExpandedContentGroup;
     private final WindowAndroid mWindowAndroid;
     private final @Nullable InsetObserver mInsetObserver;
@@ -86,6 +94,8 @@ public class WebViewResizingHelper {
     private final @Px int mResizingFadeOffset;
     private final @Px int mMinHeight;
 
+    private @Nullable ThinWebView mThinWebView;
+    private @Nullable WebContents mWebContents;
     private boolean mIsViewportSizeFixed;
     private boolean mPauseInsetUpdates;
 
@@ -140,6 +150,7 @@ public class WebViewResizingHelper {
         if (mInsetObserver != null) {
             mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
         }
+        mWindowAndroid.addActivityStateObserver(mActivityStateObserver);
     }
 
     /**
@@ -178,6 +189,7 @@ public class WebViewResizingHelper {
         if (mInsetObserver != null) {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
         }
+        mWindowAndroid.removeActivityStateObserver(mActivityStateObserver);
     }
 
     /** Resets the helper to its initial state without resetting the WebContents. */
@@ -317,6 +329,10 @@ public class WebViewResizingHelper {
     }
 
     private void updateBounds() {
+        updateBounds(/* ignoreCache= */ false);
+    }
+
+    private void updateBounds(boolean ignoreCache) {
         if (mPauseInsetUpdates || isActivityInactive(mWindowAndroid)) {
             return;
         }
@@ -356,7 +372,8 @@ public class WebViewResizingHelper {
             return;
         }
 
-        if (resizingContainerWidth == webContentsWidth
+        if (!ignoreCache
+                && resizingContainerWidth == webContentsWidth
                 && resizingContainerHeight == webContentsHeight) {
             return;
         }
