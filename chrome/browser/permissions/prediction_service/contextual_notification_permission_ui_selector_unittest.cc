@@ -25,6 +25,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,9 +99,13 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
         fake_database_manager_.get());
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
+
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(testing_profile_.get()));
   }
 
   void TearDown() override {
+    web_contents_.reset();
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
     testing::Test::TearDown();
   }
@@ -213,7 +218,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
     Decision actual_decison = Decision::UseNormalUiAndShowNoWarning();
     EXPECT_CALL(mock_callback, Run)
         .WillRepeatedly(testing::SaveArg<0>(&actual_decison));
-    contextual_selector_.SelectUiToUse(/*web_contents=*/nullptr, &mock_request,
+    contextual_selector_.SelectUiToUse(web_contents_.get(), &mock_request,
                                        mock_callback.Get());
     task_environment_.RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&mock_callback);
@@ -223,6 +228,7 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   testing::ScopedCrowdDenyPreloadDataOverride testing_preload_data_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;

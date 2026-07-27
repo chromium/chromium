@@ -17,6 +17,10 @@ class PermissionRequest;
 enum class RequestType;
 }
 
+namespace safe_browsing {
+class V5GetHashProtocolManager;
+}
+
 namespace url {
 class Origin;
 }
@@ -52,14 +56,21 @@ class ContextualNotificationPermissionUiSelector
   ContextualNotificationPermissionUiSelector& operator=(
       const ContextualNotificationPermissionUiSelector&) = delete;
 
-  void EvaluatePerSiteTriggers(const url::Origin& origin);
+  void EvaluatePerSiteTriggers(
+      const url::Origin& origin,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager);
+
   void OnSafeBrowsingVerdictReceived(
       Decision candidate_decision,
       CrowdDenySafeBrowsingRequest::Verdict verdict);
+
   void Notify(const Decision& decision);
 
   void OnSiteReputationReady(
       const url::Origin& origin,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager,
       const CrowdDenyPreloadData::SiteReputation* reputation);
 
   std::optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;

@@ -24,6 +24,7 @@ class Origin;
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
+class V5GetHashProtocolManager;
 }
 
 // Represents a single request to the Safe Browsing service to fetch the crowd
@@ -44,15 +45,19 @@ class CrowdDenySafeBrowsingRequest {
 
   using VerdictCallback = base::OnceCallback<void(Verdict)>;
 
-  // Constructs a request that fetches the verdict for |origin| by consulting
-  // the |database_manager|, and invokes |callback| when done. The |clock| is
-  // used for measuring how long the request takes, and should outlive |this|.
+  // Constructs a request that fetches the verdict for `origin` by consulting
+  // the `database_manager`, and invokes `callback` when done. The `clock` is
+  // used for measuring how long the request takes, and should outlive `this`.
+  // `v5_get_hash_protocol_manager` is the protocol manager used for Safe
+  // Browsing v5 requests.
   //
-  // It is guaranteed that |callback| will never be invoked synchronously, and
-  // it will not be invoked after |this| goes out of scope.
+  // It is guaranteed that `callback` will never be invoked synchronously, and
+  // it will not be invoked after `this` goes out of scope.
   CrowdDenySafeBrowsingRequest(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager,
       const base::Clock* clock,
       const url::Origin& origin,
       VerdictCallback callback);

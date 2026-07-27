@@ -23,7 +23,9 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -229,8 +231,12 @@ void PermissionRevocationRequest::OnSiteReputationReady(
     DCHECK(g_browser_process->safe_browsing_service());
     if (should_revoke_permission &&
         g_browser_process->safe_browsing_service()) {
+      safe_browsing::V5GetHashProtocolManager* v5_manager =
+          safe_browsing::V5GetHashProtocolManagerFactory::GetForProfile(
+              profile_);
       safe_browsing_request_.emplace(
           g_browser_process->safe_browsing_service()->database_manager(),
+          v5_manager ? v5_manager->GetWeakPtr() : nullptr,
           base::DefaultClock::GetInstance(), url::Origin::Create(origin_),
           base::BindOnce(
               &PermissionRevocationRequest::OnSafeBrowsingVerdictReceived,

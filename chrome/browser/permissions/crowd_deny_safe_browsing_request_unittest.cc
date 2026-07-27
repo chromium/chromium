@@ -5,10 +5,13 @@
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -18,6 +21,31 @@ namespace {
 
 constexpr char kTestOriginFoo[] = "https://foo.com";
 constexpr char kTestOriginBar[] = "https://bar.com";
+
+class V5TestingDatabaseManager
+    : public CrowdDenyFakeSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager() = default;
+
+  bool CheckNotificationAbuseUrl(const GURL& url, Client* client) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+      client->OnCheckNotificationAbuseUrlResult(/*is_abusive=*/false);
+    }
+    return false;
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ private:
+  ~V5TestingDatabaseManager() override = default;
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_manager_from_client_;
+};
 
 }  // namespace
 
@@ -51,8 +79,9 @@ class CrowdDenySafeBrowsingRequestTest : public testing::Test {
                                              Verdict expected_verdict) {
     base::HistogramTester histogram_tester;
     base::MockOnceCallback<void(Verdict)> mock_callback_receiver;
-    CrowdDenySafeBrowsingRequest request(fake_database_manager(), test_clock(),
-                                         origin, mock_callback_receiver.Get());
+    CrowdDenySafeBrowsingRequest request(
+        fake_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+        test_clock(), origin, mock_callback_receiver.Get());
     EXPECT_CALL(mock_callback_receiver, Run(expected_verdict));
     task_environment()->RunUntilIdle();
 
@@ -108,8 +137,9 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, Timeout) {
   base::HistogramTester histogram_tester;
   base::MockOnceCallback<void(Verdict)> mock_callback_receiver;
   CrowdDenySafeBrowsingRequest request(
-      fake_database_manager(), test_clock(),
-      url::Origin::Create(GURL(kTestOriginFoo)), mock_callback_receiver.Get());
+      fake_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+      test_clock(), url::Origin::Create(GURL(kTestOriginFoo)),
+      mock_callback_receiver.Get());
 
   // Verify the request doesn't time out unreasonably fast.
   EXPECT_CALL(mock_callback_receiver, Run(testing::_)).Times(0);
@@ -136,8 +166,8 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, AbandonedImmediately) {
 
   {
     CrowdDenySafeBrowsingRequest request(
-        fake_database_manager(), test_clock(),
-        url::Origin::Create(GURL(kTestOriginFoo)),
+        fake_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+        test_clock(), url::Origin::Create(GURL(kTestOriginFoo)),
         mock_callback_receiver.Get());
   }
 
@@ -154,10 +184,36 @@ TEST_F(CrowdDenySafeBrowsingRequestTest, AbandonedWhileCheckPending) {
   EXPECT_CALL(mock_callback_receiver, Run(testing::_)).Times(0);
 
   CrowdDenySafeBrowsingRequest request(
-      fake_database_manager(), test_clock(),
-      url::Origin::Create(GURL(kTestOriginFoo)), mock_callback_receiver.Get());
+      fake_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+      test_clock(), url::Origin::Create(GURL(kTestOriginFoo)),
+      mock_callback_receiver.Get());
 
   task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Permissions."),
               testing::IsEmpty());
+}
+
+TEST_F(CrowdDenySafeBrowsingRequestTest, GetV5GetHashProtocolManager) {
+  scoped_refptr<V5TestingDatabaseManager> v5_db_manager =
+      base::MakeRefCounted<V5TestingDatabaseManager>();
+
+  safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
+      /*url_loader_factory=*/nullptr,
+      safe_browsing::V4ProtocolConfig(/*client_name=*/"test",
+                                      /*disable_auto_update=*/false,
+                                      /*key_param=*/"key", /*version=*/"1.0"),
+      /*cache=*/nullptr);
+
+  base::RunLoop run_loop;
+  CrowdDenySafeBrowsingRequest request(
+      v5_db_manager, v5_protocol_manager.GetWeakPtr(), test_clock(),
+      url::Origin::Create(GURL(kTestOriginFoo)),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, Verdict verdict) { run_loop->Quit(); },
+          &run_loop));
+
+  EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
+            &v5_protocol_manager);
+
+  run_loop.Run();
 }

@@ -17,10 +17,13 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -143,11 +146,20 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     return;
   }
 
+  safe_browsing::V5GetHashProtocolManager* v5_manager =
+      web_contents ? safe_browsing::V5GetHashProtocolManagerFactory::
+                         GetForBrowserContext(web_contents->GetBrowserContext())
+                   : nullptr;
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager =
+          v5_manager ? v5_manager->GetWeakPtr() : nullptr;
+
   // Even if the quiet UI is enabled on all sites, the crowd deny, abuse and
   // disruption trigger conditions must be evaluated first, so that the
   // corresponding, less prominent UI and the strings are shown on blocklisted
   // origins.
-  EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
+  EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()),
+                          v5_get_hash_protocol_manager);
 }
 
 void ContextualNotificationPermissionUiSelector::Cancel() {
@@ -165,16 +177,20 @@ ContextualNotificationPermissionUiSelector::
     ~ContextualNotificationPermissionUiSelector() = default;
 
 void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager) {
   CrowdDenyPreloadData::GetInstance()->GetReputationDataForSiteAsync(
       origin,
       base::BindOnce(
           &ContextualNotificationPermissionUiSelector::OnSiteReputationReady,
-          weak_factory_.GetWeakPtr(), origin));
+          weak_factory_.GetWeakPtr(), origin, v5_get_hash_protocol_manager));
 }
 
 void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
     const url::Origin& origin,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager,
     const CrowdDenyPreloadData::SiteReputation* reputation) {
   std::optional<Decision> decision =
       GetDecisionBasedOnSiteReputation(reputation);
@@ -193,7 +209,7 @@ void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
   // guarantees not to fire the callback after its destruction.
   safe_browsing_request_.emplace(
       g_browser_process->safe_browsing_service()->database_manager(),
-      base::DefaultClock::GetInstance(), origin,
+      v5_get_hash_protocol_manager, base::DefaultClock::GetInstance(), origin,
       base::BindOnce(&ContextualNotificationPermissionUiSelector::
                          OnSafeBrowsingVerdictReceived,
                      base::Unretained(this), *decision));
