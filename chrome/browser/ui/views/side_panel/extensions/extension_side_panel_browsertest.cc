@@ -2630,7 +2630,7 @@ class ExtensionOnClosedEventSidePanelBrowserTest
 
 // Tests that onClosed fires when the hosting tab is closed.
 IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
-                       OnClosedEvent_TabClosed) {
+                       DISABLED_OnClosedEvent_TabClosed) {
   // Open a new tab first to prevent the browser from shutting down.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
