@@ -1374,6 +1374,61 @@ TEST_F(H264DecoderTest, InvalidCropRectResetsToPicSize) {
   EXPECT_EQ(gfx::Rect(320, 192), decoder_->GetVisibleRect());
 }
 
+TEST_F(H264DecoderTest, OverflowPicOrderCntDoesNotCrash) {
+  H26xAnnexBBitstreamBuilder builder;
+  H264SPS sps = {};
+  sps.profile_idc = 66;
+  sps.level_idc = 10;
+  sps.pic_width_in_mbs_minus1 = 19;
+  sps.pic_height_in_map_units_minus1 = 11;
+  sps.frame_mbs_only_flag = true;
+  sps.chroma_format_idc = 1;
+  sps.log2_max_frame_num_minus4 = 0;
+  sps.pic_order_cnt_type = 2;
+  sps.max_num_ref_frames = 1;
+  BuildPackedH264SPS(builder, sps);
+
+  H264PPS pps = {};
+  pps.pic_parameter_set_id = 0;
+  pps.seq_parameter_set_id = 0;
+  BuildPackedH264PPS(builder, sps, pps);
+
+  builder.AppendBits(32, 0x00000001);
+  builder.Flush();
+  builder.AppendBits(1, 0);                    // forbidden_zero_bit
+  builder.AppendBits(2, 3);                    // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(7);  // slice_type = I (7)
+  builder.AppendUE(0);  // pic_parameter_set_id (PPS 0)
+  builder.AppendBits(sps.log2_max_frame_num_minus4 + 4, 0);  // frame_num
+  builder.AppendUE(0);                                       // idr_pic_id
+
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag
+  builder.AppendBool(false);  // long_term_reference_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH264Picture()).WillRepeatedly([]() {
+    auto pic = base::MakeRefCounted<H264Picture>();
+    pic->frame_num_offset = 1195704462;
+    return pic;
+  });
+
+  decoder_->SetStream(1, buffer);
+
+  // The decoder should gracefully reject the invalid picture order count
+  // arithmetic.
+  EXPECT_NE(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
+}
+
 TEST_F(H264DecoderTest, DecRefPicMarkingBitSize) {
   const uint8_t kStream[] = {
       0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x0a, 0xda, 0x71, 0x00,

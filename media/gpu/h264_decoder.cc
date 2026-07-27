@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "media/base/agtm.h"
 #include "media/base/media_switches.h"
 #include "media/parsers/h264_level_limits.h"
@@ -328,33 +329,46 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (prev_has_memmgmnt5_)
         prev_frame_num_offset_ = 0;
 
+      base::CheckedNumeric<int> frame_num_offset = prev_frame_num_offset_;
       if (pic->idr)
-        pic->frame_num_offset = 0;
+        frame_num_offset = 0;
       else if (prev_frame_num_ > pic->frame_num)
-        pic->frame_num_offset = prev_frame_num_offset_ + max_frame_num_;
-      else
-        pic->frame_num_offset = prev_frame_num_offset_;
+        frame_num_offset += max_frame_num_;
 
-      int abs_frame_num = 0;
+      if (!frame_num_offset.IsValid()) {
+        DVLOG(1) << "Invalid frame_num_offset.";
+        return false;
+      }
+
+      pic->frame_num_offset = frame_num_offset.ValueOrDie();
+
+      base::CheckedNumeric<int> abs_frame_num = 0;
       if (sps->num_ref_frames_in_pic_order_cnt_cycle != 0)
-        abs_frame_num = pic->frame_num_offset + pic->frame_num;
-      else
-        abs_frame_num = 0;
+        abs_frame_num = frame_num_offset + pic->frame_num;
 
-      if (pic->nal_ref_idc == 0 && abs_frame_num > 0)
-        --abs_frame_num;
+      if (!abs_frame_num.IsValid()) {
+        DVLOG(1) << "Invalid abs_frame_num.";
+        return false;
+      }
+
+      int abs_frame_num_val = abs_frame_num.ValueOrDie();
+      if (pic->nal_ref_idc == 0 && abs_frame_num_val > 0) {
+        --abs_frame_num_val;
+      }
 
       base::CheckedNumeric<int> expected_pic_order_cnt = 0;
-      if (abs_frame_num > 0) {
+      if (abs_frame_num_val > 0) {
         if (sps->num_ref_frames_in_pic_order_cnt_cycle == 0) {
           DVLOG(1) << "Invalid num_ref_frames_in_pic_order_cnt_cycle.";
           return false;
         }
 
         int pic_order_cnt_cycle_cnt =
-            (abs_frame_num - 1) / sps->num_ref_frames_in_pic_order_cnt_cycle;
+            (abs_frame_num_val - 1) /
+            sps->num_ref_frames_in_pic_order_cnt_cycle;
         int frame_num_in_pic_order_cnt_cycle =
-            (abs_frame_num - 1) % sps->num_ref_frames_in_pic_order_cnt_cycle;
+            (abs_frame_num_val - 1) %
+            sps->num_ref_frames_in_pic_order_cnt_cycle;
 
         expected_pic_order_cnt =
             base::CheckedNumeric<int>(pic_order_cnt_cycle_cnt) *
@@ -394,24 +408,35 @@ bool H264Decoder::CalculatePicOrderCounts(scoped_refptr<H264Picture> pic) {
       if (prev_has_memmgmnt5_)
         prev_frame_num_offset_ = 0;
 
+      base::CheckedNumeric<int> frame_num_offset = prev_frame_num_offset_;
       if (pic->idr)
-        pic->frame_num_offset = 0;
+        frame_num_offset = 0;
       else if (prev_frame_num_ > pic->frame_num)
-        pic->frame_num_offset = prev_frame_num_offset_ + max_frame_num_;
-      else
-        pic->frame_num_offset = prev_frame_num_offset_;
+        frame_num_offset += max_frame_num_;
 
-      int temp_pic_order_cnt;
+      if (!frame_num_offset.IsValid()) {
+        DVLOG(1) << "Invalid frame_num_offset.";
+        return false;
+      }
+
+      pic->frame_num_offset = frame_num_offset.ValueOrDie();
+
+      base::CheckedNumeric<int> temp_pic_order_cnt;
       if (pic->idr) {
         temp_pic_order_cnt = 0;
       } else if (!pic->nal_ref_idc) {
-        temp_pic_order_cnt = 2 * (pic->frame_num_offset + pic->frame_num) - 1;
+        temp_pic_order_cnt = 2 * (frame_num_offset + pic->frame_num) - 1;
       } else {
-        temp_pic_order_cnt = 2 * (pic->frame_num_offset + pic->frame_num);
+        temp_pic_order_cnt = 2 * (frame_num_offset + pic->frame_num);
       }
 
-      pic->top_field_order_cnt = temp_pic_order_cnt;
-      pic->bottom_field_order_cnt = temp_pic_order_cnt;
+      if (!temp_pic_order_cnt.IsValid()) {
+        DVLOG(1) << "Invalid temp_pic_order_cnt.";
+        return false;
+      }
+
+      pic->top_field_order_cnt = temp_pic_order_cnt.ValueOrDie();
+      pic->bottom_field_order_cnt = temp_pic_order_cnt.ValueOrDie();
 
       break;
     }
