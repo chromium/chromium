@@ -29,11 +29,10 @@ action_with_pydeps("parse_mojom") {
   ]
 }
 
-action_with_pydeps("check_generator_types") {
+node("check_generator_types") {
   script = "run_tsc.py"
   inputs = [
              "tsconfig.json",
-             "//third_party/node/node.py",
              "//third_party/node/node_modules/typescript/lib/tsc.js",
            ] + generator_ts_sources
   outputs = [ "$target_gen_dir/check_generator_types.stamp" ]
