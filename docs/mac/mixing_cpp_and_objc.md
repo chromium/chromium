@@ -61,7 +61,7 @@ a secondary allocation and indirection on use.
 
 It is, unfortunately, a common pattern in Chromium code to use macros and
 typedefs to declare a platform-neutral name for a core platform UI type (e.g.
-`ui/gfx/native_widget_types.h`’s `ui::NativeView`,
+`ui/gfx/native_ui_types.h`’s `gfx::NativeView`,
 `ui/events/platform_event.h`’s `ui::PlatformEvent`) and then for pure C++ code
 to pass those types around. For those cases, where the previous two approaches
 can’t be used, the wrappers in `/base/apple/owned_objc.h` can be used.
@@ -70,7 +70,7 @@ can’t be used, the wrappers in `/base/apple/owned_objc.h` can be used.
 
 If none of the previous techniques will work, a double-declaration can be used.
 An example can be seen in
-[native_widget_types.h](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/native_widget_types.h):
+[native_ui_types.h](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/native_ui_types.h):
 
 ```objectivec
 #ifdef __OBJC__

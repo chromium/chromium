@@ -77,7 +77,7 @@ Windows-specific. An opaque handle to a system-native window. Ultimately
 [type-aliased to a `void*`](https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types),
 but you should never dereference this or examine the actual value; it is only
 used to pass to various Windows native APIs. Used as the type for
-[`AcceleratedWidget`](/ui/gfx/native_widget_types.h) on Windows.
+[`AcceleratedWidget`](/ui/gfx/native_ui_types.h) on Windows.
 
 ### Ink drop
 
