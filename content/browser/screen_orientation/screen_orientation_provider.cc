@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
 namespace content {
 
@@ -43,6 +46,18 @@ bool ScreenOrientationProvider::IsOrientationLockSupported() const {
 void ScreenOrientationProvider::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation,
     LockOrientationCallback callback) {
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(&receivers_.CurrentTargetFrame());
+  if (rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrientationLock)) {
+    bad_message::ReceivedBadMessage(
+        rfh->GetProcess(),
+        bad_message::RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME);
+    std::move(callback).Run(
+        ScreenOrientationLockResult::
+            SCREEN_ORIENTATION_LOCK_RESULT_ERROR_NOT_AVAILABLE);
+    return;
+  }
+
   // Cancel any pending lock request.
   NotifyLockResult(ScreenOrientationLockResult::
                        SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED);
@@ -225,6 +240,11 @@ void ScreenOrientationProvider::SetDevToolsEmulationEnabled(bool enabled) {
 void ScreenOrientationProvider::SetOrientationLockChangedCallback(
     OrientationLockChangedCallback callback) {
   lock_changed_callback_ = std::move(callback);
+}
+
+void ScreenOrientationProvider::SetCurrentTargetFrameForTesting(  // IN-TEST
+    RenderFrameHost* render_frame_host) {
+  receivers_.SetCurrentTargetFrameForTesting(render_frame_host);  // IN-TEST
 }
 
 void ScreenOrientationProvider::NotifyOrientationLockChanged(

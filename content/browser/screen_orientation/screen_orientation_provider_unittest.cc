@@ -123,6 +123,9 @@ class ScreenOrientationProviderTest : public RenderViewHostImplTestHarness {
   void CallLockAndGetResult(
       device::mojom::ScreenOrientationLockType orientation,
       std::optional<ScreenOrientationLockResult>* out_result) {
+    contents()
+        ->GetScreenOrientationProviderForTesting()
+        ->SetCurrentTargetFrameForTesting(main_test_rfh());
     contents()->GetScreenOrientationProviderForTesting()->LockOrientation(
         orientation, base::BindOnce(&LockResultCallback, out_result));
 

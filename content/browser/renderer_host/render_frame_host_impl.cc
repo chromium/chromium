@@ -139,6 +139,7 @@
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/initiator_navigation_state_impl.h"
 #include "content/browser/renderer_host/input/input_injector_impl.h"
 #include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/local_network_access_util.h"
@@ -152,6 +153,7 @@
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/randomized_confidence_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_owner.h"
@@ -11527,6 +11529,13 @@ void RenderFrameHostImpl::BeginNavigation(
                                  initiator_process_id)) {
     return;
   }
+  // TODO(crbug.com/510258191): Ensure that we always have an initiator
+  // navigation state when a renderer is behaving properly, and reject any
+  // attempt to start a navigation without such a state.
+  scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
+      GetInitiatorNavigationStateFromFrameToken(
+          base::OptionalToPtr(begin_params->initiator_frame_token),
+          initiator_process_id.GetUnsafeValue(), GetBrowserContext());
 
   // Container-initiated navigations must come from the same process as the
   // parent.
@@ -11537,6 +11546,25 @@ void RenderFrameHostImpl::BeginNavigation(
           "container initiated navigation from non-parent process");
       return;
     }
+  }
+
+  bool is_initiator_sandboxed_with_forms = false;
+  if (initiator_navigation_state) {
+    auto* initiator_navigation_state_impl =
+        static_cast<InitiatorNavigationStateImpl*>(
+            initiator_navigation_state.get());
+    is_initiator_sandboxed_with_forms =
+        (initiator_navigation_state_impl->policy_container_policies()
+             .sandbox_flags &
+         network::mojom::WebSandboxFlags::kForms) !=
+        network::mojom::WebSandboxFlags::kNone;
+  }
+  if ((begin_params->is_form_submission ||
+       validated_common_params->post_data) &&
+      is_initiator_sandboxed_with_forms) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME);
+    return;
   }
 
   // If the request is bearing Private State Tokens parameters:
@@ -11617,14 +11645,6 @@ void RenderFrameHostImpl::BeginNavigation(
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
         GetStoragePartition(), validated_common_params->url);
   }
-
-  // TODO(crbug.com/510258191): Ensure that we always have an initiator
-  // navigation state when a renderer is behaving properly, and reject any
-  // attempt to start a navigation without such a state.
-  scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
-      GetInitiatorNavigationStateFromFrameToken(
-          base::OptionalToPtr(begin_params->initiator_frame_token),
-          GetProcess()->GetDeprecatedID(), GetBrowserContext());
 
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(

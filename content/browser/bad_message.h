@@ -387,6 +387,9 @@ enum BadMessageReason {
   RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY = 359,
   RFHI_WEBMCP_OPAQUE_TARGET_ORIGIN = 360,
   RFH_ERROR_PAGE_URL_MISMATCH = 361,
+  RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME = 362,
+  RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 363,
+  RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 364,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

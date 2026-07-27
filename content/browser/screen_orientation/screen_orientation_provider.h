@@ -79,6 +79,8 @@ class CONTENT_EXPORT ScreenOrientationProvider
       bool locked,
       std::optional<device::mojom::ScreenOrientationLockType> orientation);
 
+  void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host);
+
   // WebContentsObserver
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;

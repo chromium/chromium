@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/ipc_utils.h"
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -849,6 +850,35 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     }
   }
 
+  blink::LocalFrameToken* initiator_frame_token =
+      base::OptionalToPtr(params->initiator_frame_token);
+  // TODO(crbug.com/510258191): Ensure that a well behaving renderer always has
+  // an associated |initiator_navigation_state|, and terminate renderer
+  // processes whose |initiator_navigation_state| we cannot find.
+  scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
+      RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
+          initiator_frame_token, GetProcess()->GetDeprecatedID(),
+          current_rfh->GetBrowserContext());
+
+  bool is_initiator_sandboxed_with_forms = false;
+  if (initiator_navigation_state) {
+    auto* initiator_navigation_state_impl =
+        static_cast<InitiatorNavigationStateImpl*>(
+            initiator_navigation_state.get());
+    is_initiator_sandboxed_with_forms =
+        (initiator_navigation_state_impl->policy_container_policies()
+             .sandbox_flags &
+         network::mojom::WebSandboxFlags::kForms) !=
+        network::mojom::WebSandboxFlags::kNone;
+  }
+
+  if ((params->is_form_submission || params->post_body) &&
+      is_initiator_sandboxed_with_forms) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME);
+    return;
+  }
+
   // Since this navigation targeted a specific RenderFrameProxy, it should stay
   // in the current tab.
   CHECK_EQ(WindowOpenDisposition::CURRENT_TAB, params->disposition,
@@ -872,15 +902,6 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // the navigation start will be updated when the BeforeUnload ack is received.
   const auto navigation_start_time = base::TimeTicks::Now();
 
-  blink::LocalFrameToken* initiator_frame_token =
-      base::OptionalToPtr(params->initiator_frame_token);
-  // TODO(crbug.com/510258191): Ensure that a well behaving renderer always has
-  // an associated |initiator_navigation_state|, and terminate renderer
-  // processes whose |initiator_navigation_state| we cannot find.
-  scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
-      RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
-          initiator_frame_token, GetProcess()->GetDeprecatedID(),
-          current_rfh->GetBrowserContext());
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from
   // RequestTransferURL method once both RenderFrameProxyHost and
   // RenderFrameHostImpl call RequestOpenURL from their OnOpenURL handlers.

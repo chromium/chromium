@@ -536,6 +536,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="359" label="RFPH_POST_MESSAGE_INVALID_DELEGATED_CAPABILITY"/>
   <int value="360" label="RFHI_WEBMCP_OPAQUE_TARGET_ORIGIN"/>
   <int value="361" label="RFH_ERROR_PAGE_URL_MISMATCH"/>
+  <int value="362" label="RFH_ORIENTATION_LOCK_FROM_SANDBOXED_FRAME"/>
+  <int value="363" label="RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME"/>
+  <int value="364" label="RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
