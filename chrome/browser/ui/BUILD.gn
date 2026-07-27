@@ -1062,6 +1062,7 @@ static_library("ui") {
       "//chrome/browser/ui/infobars",
       "//chrome/browser/ui/views/relaunch_notification",
       "//chrome/browser/ui/views/relaunch_notification:impl",
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
     ]
   }
 
@@ -1098,6 +1099,10 @@ static_library("ui") {
       # bookmarks includes headers from //chrome/browser/ui (e.g. browser.h,
       # browser_window_interface.h) that can't be split out yet.
       "//chrome/browser/ui/webui/bookmarks",
+
+      # chrome_web_contents_handler includes headers from //chrome/browser/ui
+      # (e.g. browser.h, browser_window.h) that can't be split out yet.
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
 
       # TODO(crbug.com/504627103): Remove this circular dependency.
       "//chrome/browser/new_tab_page:impl",
@@ -1554,8 +1559,6 @@ static_library("ui") {
       "views/search_engine_choice/search_engine_choice_dialog_view.h",
       "views/search_engines/dse_reset_dialog.cc",
       "views/search_engines/dse_reset_dialog.h",
-      "webui/chrome_web_contents_handler.cc",
-      "webui/chrome_web_contents_handler.h",
     ]
 
     if (enable_dice_support) {

@@ -655,6 +655,20 @@ if (!is_android) {
     ]
   }
 
+  source_set("chrome_web_contents_handler") {
+    sources = [ "chrome_web_contents_handler.cc" ]
+    public = [ "chrome_web_contents_handler.h" ]
+    public_deps = [ "//ui/web_dialogs" ]
+    deps = [
+      "//chrome/browser:file_select_helper",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//content/public/browser",
+    ]
+  }
+
   source_set("extension_control_handler") {
     sources = [ "extension_control_handler.cc" ]
     public = [ "extension_control_handler.h" ]

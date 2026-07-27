@@ -360,6 +360,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
       "//chrome/credential_provider/common:common_constants",
     ]
   }

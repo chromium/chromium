@@ -129,6 +129,7 @@ static_library("login") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/webui:chrome_web_contents_handler",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/feedback",

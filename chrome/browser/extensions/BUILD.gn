@@ -2869,6 +2869,7 @@ source_set("browser_tests") {
       ]
       deps += [
         "//chrome/browser/enterprise/connectors/test:test_support",
+        "//chrome/browser/ui/webui:chrome_web_contents_handler",
         "//components/enterprise/buildflags",
         "//components/enterprise/connectors/core",
       ]
