@@ -4,6 +4,9 @@
 
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_tracker.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -17,11 +20,28 @@
 #include "components/multistep_filter/core/logging/multistep_filter_metrics_util.h"
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace multistep_filter {
 
 namespace {
 
+static_assert(static_cast<int>(MultistepFilterFacetType::kMaxValue) < 64,
+              "MultistepFilterFacetType::kMaxValue must be less than 64 to fit "
+              "in a 64-bit bitmask.");
+
+uint64_t GetAppliedFacetTypesBitmask(const UrlFilterSuggestion& suggestion) {
+  uint64_t bitmask = 0;
+  for (const FilterAttributeUiLabel& label : suggestion.attribute_ui_labels) {
+    MultistepFilterFacetType facet_type = MapStringToFacetType(label.key);
+    if (facet_type != MultistepFilterFacetType::kUnknown) {
+      bitmask |= 1ULL << std::to_underlying(facet_type);
+    }
+  }
+  return bitmask;
+}
 
 void LogAcceptanceHistogram(std::string_view base_histogram,
                             std::string_view task_type,
@@ -265,6 +285,58 @@ void LogPostApplicationUserEngagement(
       user_engagement_action);
 }
 
+void LogSuggestionUiSessionUkm(
+    const MultistepFilterMetricsTracker::SuggestionUiSession& ui_session,
+    SuggestionUserDecision final_decision) {
+  if (ui_session.ukm_source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::MultistepFilter_UiSession builder(ui_session.ukm_source_id);
+
+  int max_session_duration_minutes =
+      kMultistepFilterSessionDuration.Get().InMinutes();
+
+  builder.SetSessionId(ui_session.session_id)
+      .SetTaskType(std::to_underlying(
+          MapStringToTaskType(ui_session.suggestion.task_type)))
+      .SetUserDecision(std::to_underlying(final_decision))
+      .SetRetentionState(
+          std::to_underlying(GetRetentionState(ui_session.retention_snapshot)))
+      .SetShownAgeInMinutes(std::min<int64_t>(
+          ui_session.extraction_to_suggestion_shown_time_delta.InMinutes(),
+          max_session_duration_minutes))
+      .SetNumOfFilterFacetsShown(std::min<int64_t>(
+          ui_session.suggestion.attribute_ui_labels.size(),
+          kMultistepFilterMaxFacetsShownUkmClampingLimit.Get()))
+      .SetReopenedCueShown(ui_session.reopened_cue_shown)
+      .SetIsSameDomain(ui_session.is_same_domain)
+      .SetSuggestedFilterFacetTypes(
+          GetAppliedFacetTypesBitmask(ui_session.suggestion));
+
+  builder.SetNavigationToSuggestionShownTimeInMs(
+      ukm::GetSemanticBucketMinForDurationTiming(
+          ui_session.navigation_to_suggestion_shown_latency.InMilliseconds()));
+
+  if (final_decision == SuggestionUserDecision::kAccepted) {
+    builder.SetAcceptedAgeInMinutes(std::min<int64_t>(
+        ui_session.extraction_to_suggestion_accepted_time_delta.InMinutes(),
+        max_session_duration_minutes));
+
+    builder.SetNavigationToSuggestionAcceptedTimeInMs(
+        ukm::GetSemanticBucketMinForDurationTiming(
+            ui_session.navigation_to_suggestion_accepted_time_delta
+                .InMilliseconds()));
+
+    builder.SetSuggestionShownToAcceptedTimeInMs(
+        ukm::GetSemanticBucketMinForDurationTiming(
+            ui_session.suggestion_shown_to_accepted_time_delta
+                .InMilliseconds()));
+  }
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 }  // namespace
 
 MultistepFilterMetricsTracker::MultistepFilterMetricsTracker() = default;
@@ -451,6 +523,7 @@ void MultistepFilterMetricsTracker::FlushSuggestionUiSession(
   if (final_decision == SuggestionUserDecision::kAccepted) {
     LogSuggestionAcceptanceLatencyAndAgeMetrics(*current_ui_session_);
   }
+  LogSuggestionUiSessionUkm(*current_ui_session_, final_decision);
   current_ui_session_ = std::nullopt;
 }
 

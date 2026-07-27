@@ -78,6 +78,7 @@ enum class MultistepFilterPostSuggestionApplicationUserEngagement {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationUserEngagement)
 
+// LINT.IfChange(MultistepFilterRetentionState)
 // If you add a new retention state here, also update `GetRetentionState` and
 // `ForEachActiveRetentionSlice` in `multistep_filter_metrics_util.h/cc`.
 enum class MultistepFilterRetentionState {
@@ -87,7 +88,9 @@ enum class MultistepFilterRetentionState {
   kRejectedLastTime_NeverAccepted = 3,
   kMaxValue = kRejectedLastTime_NeverAccepted,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterRetentionState)
 
+// LINT.IfChange(MultistepFilterTaskType)
 // If you add a new task type here, also update `MapStringToTaskType` in
 // `multistep_filter_metrics_util.h/cc`.
 enum class MultistepFilterTaskType {
@@ -96,6 +99,7 @@ enum class MultistepFilterTaskType {
   kSearchAccommodations = 2,
   kMaxValue = kSearchAccommodations,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterTaskType)
 
 // =============================================================================
 // HISTOGRAM NAMES & PREFIXES

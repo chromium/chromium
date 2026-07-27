@@ -24,6 +24,12 @@ BASE_FEATURE_PARAM(size_t,
                    "suggestion_max_candidates",
                    10u);
 
+BASE_FEATURE_PARAM(size_t,
+                   kMultistepFilterMaxFacetsShownUkmClampingLimit,
+                   &kMultistepFilter,
+                   "max_facets_shown_ukm_clamping_limit",
+                   10u);
+
 // The duration for which filter annotations are considered valid.
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kMultistepFilterSessionDuration,

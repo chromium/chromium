@@ -15363,6 +15363,101 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MultistepFilter.UiSession">
+  <owner>adigupt@google.com</owner>
+  <owner>chrome-multistep-filter-eng@google.com</owner>
+  <summary>
+    Recorded when a Multistep Filter suggestion UI session is flushed
+    (concluded). This event captures the full lifecycle of the UI session,
+    including whether the suggestion was accepted, dismissed, or ignored, and
+    the associated latencies and age of the suggestion.
+  </summary>
+  <metric name="AcceptedAgeInMinutes">
+    <summary>
+      Measures the time elapsed (in minutes, clamped to
+      multistep_filter::kMultistepFilterSessionDuration) from when the potential
+      suggestion was extracted to when the user accepted it. Logged only if the
+      suggestion was accepted.
+    </summary>
+  </metric>
+  <metric name="IsSameDomain" enum="Boolean">
+    <summary>
+      True if the suggestion was shown on the same eTLD+1 as the page from which
+      it was extracted.
+    </summary>
+  </metric>
+  <metric name="NavigationToSuggestionAcceptedTimeInMs">
+    <summary>
+      Time from the end of the navigation that triggered the suggestion
+      generation to when the user accepted it (in milliseconds, exponentially
+      bucketed). Logged only if accepted.
+    </summary>
+  </metric>
+  <metric name="NavigationToSuggestionShownTimeInMs">
+    <summary>
+      Time from the end of the navigation that triggered the suggestion
+      generation to when it was first shown (in milliseconds, exponentially
+      bucketed).
+    </summary>
+  </metric>
+  <metric name="NumOfFilterFacetsShown">
+    <summary>
+      The number of filter facets which were part of the suggestion which was
+      shown (clamped to
+      multistep_filter::kMultistepFilterMaxFacetsShownUkmClampingLimit).
+    </summary>
+  </metric>
+  <metric name="ReopenedCueShown" enum="Boolean">
+    <summary>
+      True if the suggestion cue was reopened from the Omnibox.
+    </summary>
+  </metric>
+  <metric name="RetentionState" enum="MultistepFilterRetentionState">
+    <summary>
+      The user's retention history state at the time the suggestion was shown.
+    </summary>
+  </metric>
+  <metric name="SessionId">
+    <summary>
+      A transient, randomly generated identifier used to correlate the UI
+      session event (MultistepFilter.UiSession) with the subsequent landing page
+      application session event (MultistepFilter.ApplicationSession).
+    </summary>
+  </metric>
+  <metric name="ShownAgeInMinutes">
+    <summary>
+      Measures the time elapsed (in minutes, clamped to
+      multistep_filter::kMultistepFilterSessionDuration) from when the potential
+      suggestion was extracted to when it was first shown to the user.
+    </summary>
+  </metric>
+  <metric name="SuggestedFilterFacetTypes">
+    <summary>
+      A bitmask representing the types of filter facets in the suggestion shown
+      to the user. Each bit N corresponds to a filter facet type with enum value
+      N defined in MultistepFilterFacetType enum (e.g. Bit 1 is kAgeChild (1),
+      Bit 11 is kDateCheckin (11), Bit 0 is unused).
+    </summary>
+  </metric>
+  <metric name="SuggestionShownToAcceptedTimeInMs">
+    <summary>
+      Time from when the suggestion was first shown to when the user accepted it
+      (in milliseconds, exponentially bucketed). Logged only if accepted.
+    </summary>
+  </metric>
+  <metric name="TaskType" enum="MultistepFilterTaskType">
+    <summary>
+      The task type of the suggestion (e.g. Flight, Accommodation, etc).
+    </summary>
+  </metric>
+  <metric name="UserDecision" enum="SuggestionUserDecision">
+    <summary>
+      The user's final decision on the suggestion (Accepted, Dismissed, Settings
+      Opened, Ignored).
+    </summary>
+  </metric>
+</event>
+
 <event name="Navigation.DuplicateNavigationsIgnored">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>

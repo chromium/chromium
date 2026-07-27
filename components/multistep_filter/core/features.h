@@ -18,6 +18,9 @@ BASE_DECLARE_FEATURE(kMultistepFilter);
 
 BASE_DECLARE_FEATURE_PARAM(size_t, kMultistepFilterSuggestionMaxCandidates);
 
+BASE_DECLARE_FEATURE_PARAM(size_t,
+                           kMultistepFilterMaxFacetsShownUkmClampingLimit);
+
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMultistepFilterSessionDuration);
 
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,

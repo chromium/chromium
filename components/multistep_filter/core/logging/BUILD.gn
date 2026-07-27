@@ -43,6 +43,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/multistep_filter/core/data_models",
     "//components/multistep_filter/core/prefs",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
   ]
