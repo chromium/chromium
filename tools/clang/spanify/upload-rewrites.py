@@ -112,7 +112,7 @@ def find_build_root(start_dir, out_name="out/linux"):
 def get_target(project):
     """Returns the ninja target to compile for the given project."""
     if project == "dawn":
-        return "all"
+        return ""
     return project
 
 
@@ -320,7 +320,7 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
         if model != "":
             jetski_cmd += ["--model", model]
 
-        jetski_cmd += ["-p", f"@{prompt_file_path}"]
+        jetski_cmd += ["--print-timeout", "15m", "-p", f"@{prompt_file_path}"]
 
         llm_output = ""
         try:
@@ -331,14 +331,53 @@ def call_jetski_cli(prompt_file_path, working_dir, model, abs_working_dir):
                                      cwd=working_dir,
                                      check=True)
             llm_output = llm_res.stdout
+        except subprocess.CalledProcessError as e:
+            print(e.stdout)
         finally:
             if os.path.exists(prompt_file_path):
                 os.remove(prompt_file_path)
         return llm_output
 
 
-def compile_branch(platform, target, submodule):
-    """Compiles the branch and returns the result."""
+def strip_ansi(text):
+    """Strips ANSI escape codes from text."""
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    return ansi_escape.sub('', text)
+
+
+def analyze_error(stdout, stderr):
+    """Analyzes compiler output to extract a clean, readable error message."""
+    stdout_clean = strip_ansi(stdout or "")
+    stderr_clean = strip_ansi(stderr or "")
+
+    # Errors format: <file>:<line>:<column>: [fatal] error: <error_msg>
+    error_regex = re.compile(r"([^:]+:\d+(?::\d+)?: (?:fatal )?error: .*)")
+    for line in stdout_clean.split("\n") + stderr_clean.split("\n"):
+        match = error_regex.search(line)
+        if match:
+            return match.group(1).strip()
+
+    # Fallback to Siso/Ninja FAILED line
+    failed_regex = re.compile(r"FAILED: .*")
+    for line in stdout_clean.split("\n") + stderr_clean.split("\n"):
+        match = failed_regex.search(line)
+        if match:
+            return match.group(0).strip()
+
+    # Generic fallback: grab the first non-empty, non-utility line of output
+    for line in (stderr_clean + "\n" + stdout_clean).split("\n"):
+        line_clean = line.strip()
+        if (line_clean
+                and not line_clean.startswith("ninja: Entering directory")
+                and not line_clean.startswith("shutdown cloud logging")):
+            return line_clean
+
+    return "Unknown compilation error"
+
+
+def compile_branch(platform, target, submodule, index=None):
+    """Compiles the branch, saves stdout and stderr to a file,
+    and returns the result."""
     print(f"Compiling the branch to verify Jetski fixes... in {submodule}")
     out_dir = f"out/{platform}"
 
@@ -349,8 +388,40 @@ def compile_branch(platform, target, submodule):
                                  cwd=submodule)
     compile_success = (compile_res.returncode == 0)
     compile_result = "SUCCESS" if compile_success else "ERROR"
+    result_status = "success" if compile_success else "failure"
     print(f"Compilation status: {compile_result}")
-    return [compile_result, compile_res.stderr]
+
+    stdout_str = compile_res.stdout or ""
+    stderr_str = compile_res.stderr or ""
+    if stdout_str and stderr_str and not stdout_str.endswith("\n"):
+        full_output = stdout_str + "\n" + stderr_str
+    else:
+        full_output = stdout_str + stderr_str
+
+    if index is not None:
+        out_file = scratch_dir() / f"compilation_{index}.{result_status}.txt"
+        opp_status = "failure" if compile_success else "success"
+        opp_file = scratch_dir() / f"compilation_{index}.{opp_status}.txt"
+        if opp_file.exists():
+            try:
+                opp_file.unlink()
+            except Exception:
+                pass
+        try:
+            with open(out_file, "w", encoding="utf-8") as f:
+                f.write(full_output)
+            print(f"Saved compilation output to {out_file}")
+        except Exception as e:
+            print(
+                f"Warning: Failed to save compilation output to {out_file}: {e}"
+            )
+
+    if compile_success:
+        compilation_errors = ""
+    else:
+        compilation_errors = analyze_error(stdout_str, stderr_str)
+
+    return [compile_result, compilation_errors]
 
 
 def commit_if_changes(submodule):
@@ -663,7 +734,8 @@ Then refined with jetski-cli and at last manually refined"""
         commit_if_changes(submodule)
 
         [compile_result,
-         compilation_errors] = compile_branch(platform, target, submodule)
+         compilation_errors] = compile_branch(platform, target, submodule,
+                                              index)
 
         [plus_delta, minus_delta, total_delta, num_files,
          first_file] = compute_diff_stats(submodule, sub_main, branch)

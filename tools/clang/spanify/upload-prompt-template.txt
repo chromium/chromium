@@ -20,15 +20,32 @@ Constraints & Pragmatism:
 * Only edit the modified target files to fix compilation, spanification,
   or modernization issues.
 * Do not commit any changes or upload them.
-* CRITICAL: if target files are inside third_party/dawn use `std::span` and
-  `#include <span>` otherwise always use `base::span` instead of `std::span`
-  and `#include "base/containers/span.h"` instead of `#include <span>`.
+* CRITICAL: The changes in this diff are part of an ongoing effort to 'spanify'
+  the codebase (converting raw pointers and arrays to safe spans). Your goal is
+  to fix any compilation errors while strictly preserving the spanification.
+  To resolve build failures, you must adapt the surrounding code (e.g., updating
+  call sites, adjusting function signatures, or using appropriate span methods
+  like .data() or .subspan()). Do NOT revert spanified variables or parameters
+  back to raw pointers or C-style arrays as a shortcut to make the code compile.
+* CRITICAL: if target files are inside third_party/dawn use `dawn::Span` and
+  `#include "src/utils/span.h"` otherwise always use `base::span` instead of
+  `std::span`
+* CRITICAL: Check if the modified code really requires or not the UNSAFE_TODO
+  macros and add it only if that's the case.
+* CRITICAL: if target files are inside third_party/dawn use DAWN_UNSAFE_TODO
+  instead of UNSAFE_TODO.
+* CRITICAL: don't add non-existent functions or headers for the library (e.g.,
+  don't add `#indluce "base/compiler_specific.h"` or other headers that doesn't
+  exist on dawn library).
+* CRITICAL: when creating spans, make sure the constructor for the type of
+  span used in the library exists (e.g. dawn::Span constructor from vector
+  doesn't exist).
+* CRITICAL: if refactoring a function signature, update all the possible callsites.
 * CRITICAL: Always use `base::ToVector` rather than iterator-based
   constructors 'Container(ptr, ptr + size)' if they use raw pointers. Use
   'base::ToVector(span)' instead.
 * CRITICAL: Use Compiler Feedback. Do not guess fixes. You have access to
-  'gn' and 'autoninja'. Use 'gn outputs' to locate specific object files for
-  fast compilation (e.g., obj/path/to/file.o) and run 'autoninja' to
+  'gn' and 'autoninja'. Run 'autoninja -C out/linux' (for dawn library) to
   iteratively catch and fix exact compiler errors/warnings until clean.
 * CRITICAL: Allowed Commands Only. You are in a headless environment with
   strict command permissions. You MUST ONLY run the following allowed commands
@@ -64,8 +81,8 @@ process:
 * Limits of Abstraction: Do not hide unsafe operations behind safe-looking
   helper functions. Default to UNSAFE_TODO unless you know and can provide a
   detailed '// SAFETY' comment then keep unsafety explicit at the call site
-  using 'UNSAFE_BUFFERS()' accompanied by a detailed '// SAFETY:' comment
-  explaining the runtime invariants.
+  using 'UNSAFE_BUFFERS()' (or DAWN_UNSAFE_BUFFERS) accompanied by a detailed
+ '// SAFETY:' comment explaining the runtime invariants.
 * Signature Updates: If you modify a function signature to accept
   'base::span', ensure you locate and update all its call sites.
 
