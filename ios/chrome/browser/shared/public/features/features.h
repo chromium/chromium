@@ -759,6 +759,12 @@ BASE_DECLARE_FEATURE(kOmniboxCrashFixKillSwitch);
 // Returns true if the OmniboxCrashFixKillSwitch feature is enabled.
 bool IsOmniboxCrashFixKillSwitchEnabled();
 
+// Enables the AlertCrashFixKillSwitch feature.
+BASE_DECLARE_FEATURE(kAlertCrashFixKillSwitch);
+
+// Returns true if the AlertCrashFixKillSwitch feature is enabled.
+bool IsAlertCrashFixKillSwitchEnabled();
+
 // Enables the AIMEligibilityServiceStartWithProfile feature.
 BASE_DECLARE_FEATURE(kAIMEligibilityServiceStartWithProfile);
 
