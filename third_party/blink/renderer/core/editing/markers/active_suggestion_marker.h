@@ -15,8 +15,8 @@ namespace blink {
 // menu pertains to.
 class CORE_EXPORT ActiveSuggestionMarker final : public StyleableMarker {
  public:
-  ActiveSuggestionMarker(unsigned start_offset,
-                         unsigned end_offset,
+  ActiveSuggestionMarker(wtf_size_t start_offset,
+                         wtf_size_t end_offset,
                          Color underline_color,
                          ui::mojom::ImeTextSpanThickness,
                          ui::mojom::ImeTextSpanUnderlineStyle underline_style,

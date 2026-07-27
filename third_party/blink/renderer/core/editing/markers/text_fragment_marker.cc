@@ -8,8 +8,8 @@
 
 namespace blink {
 
-TextFragmentMarker::TextFragmentMarker(unsigned start_offset,
-                                       unsigned end_offset)
+TextFragmentMarker::TextFragmentMarker(wtf_size_t start_offset,
+                                       wtf_size_t end_offset)
     : HighlightPseudoMarker(start_offset, end_offset) {}
 
 DocumentMarker::MarkerType TextFragmentMarker::GetType() const {

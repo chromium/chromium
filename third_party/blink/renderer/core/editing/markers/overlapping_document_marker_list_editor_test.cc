@@ -20,7 +20,7 @@ class OverlappingDocumentMarkerListEditorTest : public testing::Test {
       : marker_list_(MakeGarbageCollected<Holder>()) {}
 
  protected:
-  DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
+  DocumentMarker* CreateMarker(wtf_size_t start_offset, wtf_size_t end_offset) {
     return MakeGarbageCollected<SuggestionMarker>(start_offset, end_offset,
                                                   SuggestionMarkerProperties());
   }

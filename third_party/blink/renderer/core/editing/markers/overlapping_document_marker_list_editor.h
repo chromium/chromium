@@ -26,25 +26,29 @@ class CORE_EXPORT OverlappingDocumentMarkerListEditor final {
 
   // Returns true if a marker was moved, false otherwise.
   static bool MoveMarkers(MarkerList* src_list,
-                          int length,
+                          wtf_size_t length,
                           DocumentMarkerList* dst_list);
 
   // Returns true if a marker was removed, false otherwise.
-  static bool RemoveMarkers(MarkerList*, unsigned start_offset, int length);
+  static bool RemoveMarkers(MarkerList*,
+                            wtf_size_t start_offset,
+                            wtf_size_t length);
 
   // Returns true if a marker was shifted or removed, false otherwise.
   // If the text marked by a marker is changed by the edit, this method attempts
   // to keep the marker tracking the marked region rather than removing the
   // marker.
-  static bool ShiftMarkers(MarkerList*, unsigned offset,
-                            unsigned old_length, unsigned new_length);
+  static bool ShiftMarkers(MarkerList*,
+                           wtf_size_t offset,
+                           wtf_size_t old_length,
+                           wtf_size_t new_length);
 
   // Returns all markers in the specified MarkerList whose interior overlaps
   // with the range [start_offset, end_offset].
   static HeapVector<Member<DocumentMarker>> MarkersIntersectingRange(
       const MarkerList&,
-      unsigned start_offset,
-      unsigned end_offset);
+      wtf_size_t start_offset,
+      wtf_size_t end_offset);
 };
 
 }  // namespace blink

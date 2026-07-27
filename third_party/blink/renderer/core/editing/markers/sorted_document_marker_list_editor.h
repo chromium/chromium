@@ -21,11 +21,13 @@ class CORE_EXPORT SortedDocumentMarkerListEditor final {
 
   // Returns true if a marker was moved, false otherwise.
   static bool MoveMarkers(MarkerList* src_list,
-                          int length,
+                          wtf_size_t length,
                           DocumentMarkerList* dst_list);
 
   // Returns true if a marker was removed, false otherwise.
-  static bool RemoveMarkers(MarkerList*, unsigned start_offset, int length);
+  static bool RemoveMarkers(MarkerList*,
+                            wtf_size_t start_offset,
+                            wtf_size_t length);
 
   // The following two methods both update the position of a list's
   // DocumentMarkers in response to editing operations. The difference is that
@@ -37,27 +39,27 @@ class CORE_EXPORT SortedDocumentMarkerListEditor final {
 
   // Returns true if a marker was shifted or removed, false otherwise.
   static bool ShiftMarkersContentDependent(MarkerList*,
-                                           unsigned offset,
-                                           unsigned old_length,
-                                           unsigned new_length);
+                                           wtf_size_t offset,
+                                           wtf_size_t old_length,
+                                           wtf_size_t new_length);
 
   // Returns true if a marker was shifted or removed, false otherwise.
   static bool ShiftMarkersContentIndependent(MarkerList*,
-                                             unsigned offset,
-                                             unsigned old_length,
-                                             unsigned new_length);
+                                             wtf_size_t offset,
+                                             wtf_size_t old_length,
+                                             wtf_size_t new_length);
 
   // Returns the first marker in the specified MarkerList whose interior
   // overlaps overlap with the range [start_offset, end_offset], or null if
   // there is no such marker.
   static DocumentMarker* FirstMarkerIntersectingRange(const MarkerList&,
-                                                      unsigned start_offset,
-                                                      unsigned end_offset);
+                                                      wtf_size_t start_offset,
+                                                      wtf_size_t end_offset);
 
   static HeapVector<Member<DocumentMarker>> MarkersIntersectingRange(
       const MarkerList&,
-      unsigned start_offset,
-      unsigned end_offset);
+      wtf_size_t start_offset,
+      wtf_size_t end_offset);
 };
 
 }  // namespace blink

@@ -14,7 +14,7 @@ namespace blink {
 
 class CORE_EXPORT GlicMarker final : public DocumentMarker {
  public:
-  GlicMarker(unsigned start_offset, unsigned end_offset);
+  GlicMarker(wtf_size_t start_offset, wtf_size_t end_offset);
   GlicMarker(const GlicMarker&) = delete;
   GlicMarker& operator=(const GlicMarker&) = delete;
 

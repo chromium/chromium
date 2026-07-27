@@ -19,7 +19,7 @@ class SpellingMarkerListImplTest : public testing::Test {
   SpellingMarkerListImplTest()
       : marker_list_(MakeGarbageCollected<SpellingMarkerListImpl>()) {}
 
-  DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
+  DocumentMarker* CreateMarker(wtf_size_t start_offset, wtf_size_t end_offset) {
     return MakeGarbageCollected<SpellingMarker>(start_offset, end_offset,
                                                 g_empty_string);
   }

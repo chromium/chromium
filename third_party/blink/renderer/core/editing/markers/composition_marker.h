@@ -17,8 +17,8 @@ namespace blink {
 // transparent).
 class CORE_EXPORT CompositionMarker final : public StyleableMarker {
  public:
-  CompositionMarker(unsigned start_offset,
-                    unsigned end_offset,
+  CompositionMarker(wtf_size_t start_offset,
+                    wtf_size_t end_offset,
                     Color underline_color,
                     ui::mojom::ImeTextSpanThickness,
                     ui::mojom::ImeTextSpanUnderlineStyle,

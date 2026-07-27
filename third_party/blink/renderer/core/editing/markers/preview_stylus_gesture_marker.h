@@ -15,8 +15,8 @@ namespace blink {
 // the Select and Delete handwriting gestures.
 class CORE_EXPORT PreviewStylusGestureMarker final : public StyleableMarker {
  public:
-  PreviewStylusGestureMarker(unsigned start_offset,
-                             unsigned end_offset,
+  PreviewStylusGestureMarker(wtf_size_t start_offset,
+                             wtf_size_t end_offset,
                              Color background_color);
   PreviewStylusGestureMarker(const PreviewStylusGestureMarker&) = delete;
   PreviewStylusGestureMarker& operator=(const PreviewStylusGestureMarker&) =

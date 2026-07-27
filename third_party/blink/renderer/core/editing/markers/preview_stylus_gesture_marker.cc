@@ -9,8 +9,8 @@
 
 namespace blink {
 
-PreviewStylusGestureMarker::PreviewStylusGestureMarker(unsigned start_offset,
-                                                       unsigned end_offset,
+PreviewStylusGestureMarker::PreviewStylusGestureMarker(wtf_size_t start_offset,
+                                                       wtf_size_t end_offset,
                                                        Color background_color)
     : StyleableMarker(start_offset,
                       end_offset,

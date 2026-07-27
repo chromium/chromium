@@ -15,9 +15,9 @@ using MarkerOffsets = DocumentMarker::MarkerOffsets;
 
 class DocumentMarkerTest : public testing::Test {
  protected:
-  DocumentMarker* CreateMarker(unsigned startOffset, unsigned endOffset) {
+  DocumentMarker* CreateMarker(wtf_size_t start_offset, wtf_size_t end_offset) {
     return MakeGarbageCollected<TextMatchMarker>(
-        startOffset, endOffset, TextMatchMarker::MatchStatus::kInactive);
+        start_offset, end_offset, TextMatchMarker::MatchStatus::kInactive);
   }
 };
 

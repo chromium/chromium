@@ -45,7 +45,7 @@ class CORE_EXPORT TextMatchMarker final : public DocumentMarker {
  public:
   enum class MatchStatus { kInactive, kActive };
 
-  TextMatchMarker(unsigned start_offset, unsigned end_offset, MatchStatus);
+  TextMatchMarker(wtf_size_t start_offset, wtf_size_t end_offset, MatchStatus);
   TextMatchMarker(const TextMatchMarker&) = delete;
   TextMatchMarker& operator=(const TextMatchMarker&) = delete;
 

@@ -6,8 +6,8 @@
 
 namespace blink {
 
-HighlightPseudoMarker::HighlightPseudoMarker(unsigned start_offset,
-                                             unsigned end_offset)
+HighlightPseudoMarker::HighlightPseudoMarker(wtf_size_t start_offset,
+                                             wtf_size_t end_offset)
     : DocumentMarker(start_offset, end_offset) {}
 
 }  // namespace blink

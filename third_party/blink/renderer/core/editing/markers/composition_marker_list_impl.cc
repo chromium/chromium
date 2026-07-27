@@ -32,35 +32,36 @@ CompositionMarkerListImpl::GetMarkers() const {
 }
 
 DocumentMarker* CompositionMarkerListImpl::FirstMarkerIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
 HeapVector<Member<DocumentMarker>>
-CompositionMarkerListImpl::MarkersIntersectingRange(unsigned start_offset,
-                                                    unsigned end_offset) const {
+CompositionMarkerListImpl::MarkersIntersectingRange(
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return OverlappingDocumentMarkerListEditor::MarkersIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
-bool CompositionMarkerListImpl::MoveMarkers(int length,
+bool CompositionMarkerListImpl::MoveMarkers(wtf_size_t length,
                                             DocumentMarkerList* dst_markers_) {
   return OverlappingDocumentMarkerListEditor::MoveMarkers(&markers_, length,
                                                           dst_markers_);
 }
 
-bool CompositionMarkerListImpl::RemoveMarkers(unsigned start_offset,
-                                              int length) {
+bool CompositionMarkerListImpl::RemoveMarkers(wtf_size_t start_offset,
+                                              wtf_size_t length) {
   return OverlappingDocumentMarkerListEditor::RemoveMarkers(
       &markers_, start_offset, length);
 }
 
 bool CompositionMarkerListImpl::ShiftMarkers(const String&,
-                                             unsigned offset,
-                                             unsigned old_length,
-                                             unsigned new_length) {
+                                             wtf_size_t offset,
+                                             wtf_size_t old_length,
+                                             wtf_size_t new_length) {
   return OverlappingDocumentMarkerListEditor::ShiftMarkers(
       &markers_, offset, old_length, new_length);
 }

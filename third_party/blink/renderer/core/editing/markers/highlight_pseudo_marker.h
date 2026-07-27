@@ -18,7 +18,7 @@ namespace blink {
 // * https://drafts.csswg.org/css-highlight-api/#custom-highlight-pseudo
 class CORE_EXPORT HighlightPseudoMarker : public DocumentMarker {
  public:
-  HighlightPseudoMarker(unsigned start_offset, unsigned end_offset);
+  HighlightPseudoMarker(wtf_size_t start_offset, wtf_size_t end_offset);
   HighlightPseudoMarker(const HighlightPseudoMarker&) = delete;
   HighlightPseudoMarker& operator=(const HighlightPseudoMarker&) = delete;
 

@@ -8,8 +8,8 @@
 
 namespace blink {
 
-CustomHighlightMarker::CustomHighlightMarker(unsigned start_offset,
-                                             unsigned end_offset,
+CustomHighlightMarker::CustomHighlightMarker(wtf_size_t start_offset,
+                                             wtf_size_t end_offset,
                                              const String& highlight_name,
                                              const Member<Highlight> highlight)
     : HighlightPseudoMarker(start_offset, end_offset),

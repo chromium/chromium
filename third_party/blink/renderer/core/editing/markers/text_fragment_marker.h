@@ -15,7 +15,7 @@ namespace blink {
 // the page. See blink/renderer/core/page/scrolling/text_fragment_anchor.h.
 class CORE_EXPORT TextFragmentMarker final : public HighlightPseudoMarker {
  public:
-  TextFragmentMarker(unsigned start_offset, unsigned end_offset);
+  TextFragmentMarker(wtf_size_t start_offset, wtf_size_t end_offset);
   TextFragmentMarker(const TextFragmentMarker&) = delete;
   TextFragmentMarker& operator=(const TextFragmentMarker&) = delete;
 

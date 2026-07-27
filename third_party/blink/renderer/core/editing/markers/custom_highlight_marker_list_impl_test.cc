@@ -16,8 +16,8 @@ class CustomHighlightMarkerListImplTest : public testing::Test {
   CustomHighlightMarkerListImplTest()
       : marker_list_(MakeGarbageCollected<CustomHighlightMarkerListImpl>()) {}
 
-  CustomHighlightMarker* CreateMarker(unsigned start_offset,
-                                      unsigned end_offset,
+  CustomHighlightMarker* CreateMarker(wtf_size_t start_offset,
+                                      wtf_size_t end_offset,
                                       const AtomicString& name) {
     HeapVector<Member<AbstractRange>> dummy_ranges;
     return MakeGarbageCollected<CustomHighlightMarker>(

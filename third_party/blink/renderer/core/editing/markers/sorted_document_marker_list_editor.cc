@@ -38,11 +38,11 @@ void SortedDocumentMarkerListEditor::AddMarkerWithoutMergingOverlapping(
 }
 
 bool SortedDocumentMarkerListEditor::MoveMarkers(MarkerList* src_list,
-                                                 int length,
+                                                 wtf_size_t length,
                                                  DocumentMarkerList* dst_list) {
-  DCHECK_GT(length, 0);
-  unsigned num_moved = 0;
-  unsigned end_offset = length - 1;
+  DCHECK_GT(length, 0u);
+  wtf_size_t num_moved = 0;
+  wtf_size_t end_offset = length - 1;
 
   for (auto marker : *src_list) {
     if (marker->StartOffset() > end_offset) {
@@ -65,9 +65,9 @@ bool SortedDocumentMarkerListEditor::MoveMarkers(MarkerList* src_list,
 }
 
 bool SortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
-                                                   unsigned start_offset,
-                                                   int length) {
-  const unsigned end_offset = start_offset + length;
+                                                   wtf_size_t start_offset,
+                                                   wtf_size_t length) {
+  const wtf_size_t end_offset = start_offset + length;
   MarkerList::iterator start_pos = std::upper_bound(
       list->begin(), list->end(), start_offset,
       [](size_t start_offset, const Member<DocumentMarker>& marker) {
@@ -80,16 +80,16 @@ bool SortedDocumentMarkerListEditor::RemoveMarkers(MarkerList* list,
         return marker->StartOffset() < end_offset;
       });
 
-  list->EraseAt(base::checked_cast<wtf_size_t>(start_pos - list->begin()),
-                base::checked_cast<wtf_size_t>(end_pos - start_pos));
+  list->EraseAt(CheckedDistance(list->begin(), start_pos),
+                CheckedDistance(start_pos, end_pos));
   return start_pos != end_pos;
 }
 
 bool SortedDocumentMarkerListEditor::ShiftMarkersContentDependent(
     MarkerList* list,
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
+    wtf_size_t offset,
+    wtf_size_t old_length,
+    wtf_size_t new_length) {
   // Find first marker that ends after the start of the region being edited.
   // Markers before this one can be left untouched. This saves us some time over
   // scanning the entire list linearly if the edit region is near the end of the
@@ -103,8 +103,7 @@ bool SortedDocumentMarkerListEditor::ShiftMarkersContentDependent(
   wtf_size_t num_removed = 0;
   bool did_shift_marker = false;
 
-  auto begin_offset =
-      base::checked_cast<wtf_size_t>(shift_range_begin - list->begin());
+  auto begin_offset = CheckedDistance(list->begin(), shift_range_begin);
   auto num_after_begin = list->size() - begin_offset;
   auto sub_span = base::span(*list).subspan(begin_offset, num_after_begin);
   for (auto marker : sub_span) {
@@ -129,9 +128,9 @@ bool SortedDocumentMarkerListEditor::ShiftMarkersContentDependent(
 
 bool SortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
     MarkerList* list,
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
+    wtf_size_t offset,
+    wtf_size_t old_length,
+    wtf_size_t new_length) {
   // Find first marker that ends after the start of the region being edited.
   // Markers before this one can be left untouched. This saves us some time over
   // scanning the entire list linearly if the edit region is near the end of the
@@ -142,8 +141,7 @@ bool SortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
                          return offset < marker->EndOffset();
                        });
 
-  auto position =
-      base::checked_cast<wtf_size_t>(shift_range_begin - list->begin());
+  auto position = CheckedDistance(list->begin(), shift_range_begin);
   auto num_to_adjust = list->size() - position;
   auto sub_span = base::span(*list).subspan(position, num_to_adjust);
 
@@ -179,15 +177,15 @@ bool SortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
 
 DocumentMarker* SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
     const MarkerList& list,
-    unsigned start_offset,
-    unsigned end_offset) {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
-  auto const marker_it =
-      std::lower_bound(list.begin(), list.end(), start_offset,
-                       [](const DocumentMarker* marker, unsigned start_offset) {
-                         return marker->EndOffset() <= start_offset;
-                       });
+  auto const marker_it = std::lower_bound(
+      list.begin(), list.end(), start_offset,
+      [](const DocumentMarker* marker, wtf_size_t start_offset) {
+        return marker->EndOffset() <= start_offset;
+      });
   if (marker_it == list.end())
     return nullptr;
 
@@ -198,19 +196,20 @@ DocumentMarker* SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
 }
 
 HeapVector<Member<DocumentMarker>>
-SortedDocumentMarkerListEditor::MarkersIntersectingRange(const MarkerList& list,
-                                                         unsigned start_offset,
-                                                         unsigned end_offset) {
+SortedDocumentMarkerListEditor::MarkersIntersectingRange(
+    const MarkerList& list,
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
-  auto const start_it =
-      std::lower_bound(list.begin(), list.end(), start_offset,
-                       [](const DocumentMarker* marker, unsigned start_offset) {
-                         return marker->EndOffset() <= start_offset;
-                       });
+  auto const start_it = std::lower_bound(
+      list.begin(), list.end(), start_offset,
+      [](const DocumentMarker* marker, wtf_size_t start_offset) {
+        return marker->EndOffset() <= start_offset;
+      });
   auto const end_it =
       std::upper_bound(list.begin(), list.end(), end_offset,
-                       [](unsigned end_offset, const DocumentMarker* marker) {
+                       [](wtf_size_t end_offset, const DocumentMarker* marker) {
                          return end_offset <= marker->StartOffset();
                        });
 

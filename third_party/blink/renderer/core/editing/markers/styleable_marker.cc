@@ -9,8 +9,8 @@ using ui::mojom::ImeTextSpanUnderlineStyle;
 
 namespace blink {
 
-StyleableMarker::StyleableMarker(unsigned start_offset,
-                                 unsigned end_offset,
+StyleableMarker::StyleableMarker(wtf_size_t start_offset,
+                                 wtf_size_t end_offset,
                                  Color underline_color,
                                  ImeTextSpanThickness thickness,
                                  ImeTextSpanUnderlineStyle underline_style,

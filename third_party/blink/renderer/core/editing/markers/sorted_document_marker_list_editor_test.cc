@@ -11,7 +11,7 @@ namespace blink {
 
 class SortedDocumentMarkerListEditorTest : public testing::Test {
  protected:
-  DocumentMarker* CreateMarker(unsigned startOffset, unsigned endOffset) {
+  DocumentMarker* CreateMarker(wtf_size_t startOffset, wtf_size_t endOffset) {
     return MakeGarbageCollected<TextMatchMarker>(
         startOffset, endOffset, TextMatchMarker::MatchStatus::kInactive);
   }

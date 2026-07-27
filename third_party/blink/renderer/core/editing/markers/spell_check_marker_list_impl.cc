@@ -76,35 +76,36 @@ const HeapVector<Member<DocumentMarker>>& SpellCheckMarkerListImpl::GetMarkers()
 }
 
 DocumentMarker* SpellCheckMarkerListImpl::FirstMarkerIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
 HeapVector<Member<DocumentMarker>>
-SpellCheckMarkerListImpl::MarkersIntersectingRange(unsigned start_offset,
-                                                   unsigned end_offset) const {
+SpellCheckMarkerListImpl::MarkersIntersectingRange(
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::MarkersIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
-bool SpellCheckMarkerListImpl::MoveMarkers(int length,
+bool SpellCheckMarkerListImpl::MoveMarkers(wtf_size_t length,
                                            DocumentMarkerList* dst_list) {
   return SortedDocumentMarkerListEditor::MoveMarkers(&markers_, length,
                                                      dst_list);
 }
 
-bool SpellCheckMarkerListImpl::RemoveMarkers(unsigned start_offset,
-                                             int length) {
+bool SpellCheckMarkerListImpl::RemoveMarkers(wtf_size_t start_offset,
+                                             wtf_size_t length) {
   return SortedDocumentMarkerListEditor::RemoveMarkers(&markers_, start_offset,
                                                        length);
 }
 
 bool SpellCheckMarkerListImpl::ShiftMarkers(const String&,
-                                            unsigned offset,
-                                            unsigned old_length,
-                                            unsigned new_length) {
+                                            wtf_size_t offset,
+                                            wtf_size_t old_length,
+                                            wtf_size_t new_length) {
   return SortedDocumentMarkerListEditor::ShiftMarkersContentDependent(
       &markers_, offset, old_length, new_length);
 }
@@ -120,8 +121,8 @@ bool SpellCheckMarkerListImpl::RemoveMarkersUnderWords(
   bool removed_markers = false;
   for (wtf_size_t j = markers_.size(); j > 0; --j) {
     const DocumentMarker& marker = *markers_[j - 1];
-    const unsigned start = marker.StartOffset();
-    const unsigned length = marker.EndOffset() - marker.StartOffset();
+    const wtf_size_t start = marker.StartOffset();
+    const wtf_size_t length = marker.EndOffset() - marker.StartOffset();
     const String& marker_text = node_text.DeprecatedSubstring(start, length);
     if (words.Contains(marker_text)) {
       markers_.EraseAt(j - 1);

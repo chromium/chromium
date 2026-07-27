@@ -6,8 +6,8 @@
 
 namespace blink {
 
-SpellCheckMarker::SpellCheckMarker(unsigned start_offset,
-                                   unsigned end_offset,
+SpellCheckMarker::SpellCheckMarker(wtf_size_t start_offset,
+                                   wtf_size_t end_offset,
                                    const String& description,
                                    bool should_hide_suggestion_menu)
     : DocumentMarker(start_offset, end_offset),

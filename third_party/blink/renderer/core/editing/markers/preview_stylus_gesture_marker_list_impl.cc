@@ -11,8 +11,8 @@ namespace {
 
 bool IsIntersecting(
     const blink::HeapVector<blink::Member<blink::DocumentMarker>>& markers,
-    unsigned start_offset,
-    unsigned end_offset) {
+    blink::wtf_size_t start_offset,
+    blink::wtf_size_t end_offset) {
   if (!markers.empty()) {  // Check if NOT empty
     return markers[0]->StartOffset() < end_offset &&
            markers[0]->EndOffset() > start_offset;
@@ -52,8 +52,8 @@ PreviewStylusGestureMarkerListImpl::GetMarkers() const {
 
 DocumentMarker*
 PreviewStylusGestureMarkerListImpl::FirstMarkerIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   if (IsIntersecting(markers_, start_offset, end_offset)) {
     return markers_[0].Get();
   } else {
@@ -63,8 +63,8 @@ PreviewStylusGestureMarkerListImpl::FirstMarkerIntersectingRange(
 
 HeapVector<Member<DocumentMarker>>
 PreviewStylusGestureMarkerListImpl::MarkersIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   if (IsIntersecting(markers_, start_offset, end_offset)) {
     return markers_;
   } else {
@@ -74,22 +74,22 @@ PreviewStylusGestureMarkerListImpl::MarkersIntersectingRange(
 }
 
 bool PreviewStylusGestureMarkerListImpl::MoveMarkers(
-    int length,
+    wtf_size_t length,
     DocumentMarkerList* dst_markers_) {
   return OverlappingDocumentMarkerListEditor::MoveMarkers(&markers_, length,
                                                           dst_markers_);
 }
 
-bool PreviewStylusGestureMarkerListImpl::RemoveMarkers(unsigned start_offset,
-                                                       int length) {
+bool PreviewStylusGestureMarkerListImpl::RemoveMarkers(wtf_size_t start_offset,
+                                                       wtf_size_t length) {
   return OverlappingDocumentMarkerListEditor::RemoveMarkers(
       &markers_, start_offset, length);
 }
 
 bool PreviewStylusGestureMarkerListImpl::ShiftMarkers(const String&,
-                                                      unsigned offset,
-                                                      unsigned old_length,
-                                                      unsigned new_length) {
+                                                      wtf_size_t offset,
+                                                      wtf_size_t old_length,
+                                                      wtf_size_t new_length) {
   return OverlappingDocumentMarkerListEditor::ShiftMarkers(
       &markers_, offset, old_length, new_length);
 }

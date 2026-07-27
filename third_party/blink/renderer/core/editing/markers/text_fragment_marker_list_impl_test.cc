@@ -14,7 +14,7 @@ class TextFragmentMarkerListImplTest : public testing::Test {
   TextFragmentMarkerListImplTest()
       : marker_list_(MakeGarbageCollected<TextFragmentMarkerListImpl>()) {}
 
-  DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
+  DocumentMarker* CreateMarker(wtf_size_t start_offset, wtf_size_t end_offset) {
     return MakeGarbageCollected<TextFragmentMarker>(start_offset, end_offset);
   }
 

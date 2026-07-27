@@ -124,8 +124,8 @@ class CORE_EXPORT DocumentMarkerController final
   // Returns true if markers within a range defined by a text node,
   // |start_offset| and |end_offset| are found.
   bool SetTextMatchMarkersActive(const Text&,
-                                 unsigned start_offset,
-                                 unsigned end_offset,
+                                 wtf_size_t start_offset,
+                                 wtf_size_t end_offset,
                                  bool);
 
   // TODO(rlanday): can these methods for retrieving markers be consolidated
@@ -157,8 +157,8 @@ class CORE_EXPORT DocumentMarkerController final
   // are provided as to which one). Otherwise, this method will return null.
   DocumentMarker* FirstMarkerIntersectingOffsetRange(
       const Text&,
-      unsigned start_offset,
-      unsigned end_offset,
+      wtf_size_t start_offset,
+      wtf_size_t end_offset,
       DocumentMarker::MarkerTypes);
   // Wrappers for FirstMarker functions that return the DocumentMarkerGroup for
   // the found DocumentMarker.
@@ -190,8 +190,8 @@ class CORE_EXPORT DocumentMarkerController final
       DocumentMarker::MarkerTypes = DocumentMarker::MarkerTypes::All()) const;
   DocumentMarkerVector MarkersFor(const Text&,
                                   DocumentMarker::MarkerType,
-                                  unsigned start_offset,
-                                  unsigned end_offset) const;
+                                  wtf_size_t start_offset,
+                                  wtf_size_t end_offset) const;
   DocumentMarkerVector Markers() const;
 
   // Apply a function to all the markers of a particular type. The
@@ -218,9 +218,9 @@ class CORE_EXPORT DocumentMarkerController final
 #endif
 
   void DidUpdateCharacterData(CharacterData*,
-                              unsigned offset,
-                              unsigned old_length,
-                              unsigned new_length);
+                              wtf_size_t offset,
+                              wtf_size_t old_length,
+                              wtf_size_t new_length);
 
   void StartGlicMarkerAnimationIfNeeded();
 
@@ -250,8 +250,8 @@ class CORE_EXPORT DocumentMarkerController final
   void RemoveMarkersFromList(MarkerMap::iterator, DocumentMarker::MarkerType);
   void RemoveMarkers(TextIterator&, DocumentMarker::MarkerTypes);
   void RemoveMarkersInternal(const Text&,
-                             unsigned start_offset,
-                             int length,
+                             wtf_size_t start_offset,
+                             wtf_size_t length,
                              DocumentMarker::MarkerType);
   // Searches marker_map for key. Returns the mapped value if it is present,
   // otherwise nullptr.

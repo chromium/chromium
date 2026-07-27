@@ -6,8 +6,8 @@
 
 namespace blink {
 
-SpellingMarker::SpellingMarker(unsigned start_offset,
-                               unsigned end_offset,
+SpellingMarker::SpellingMarker(wtf_size_t start_offset,
+                               wtf_size_t end_offset,
                                const String& description,
                                bool should_hide_suggestion_menu)
     : SpellCheckMarker(start_offset,

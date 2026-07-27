@@ -31,8 +31,8 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   enum class RemoveOnFinishComposing { kRemove, kDoNotRemove };
   enum class HideSuggestionMenu { kNo, kYes };
 
-  SuggestionMarker(unsigned start_offset,
-                   unsigned end_offset,
+  SuggestionMarker(wtf_size_t start_offset,
+                   wtf_size_t end_offset,
                    const SuggestionMarkerProperties&);
   SuggestionMarker(const SuggestionMarker&) = delete;
   SuggestionMarker& operator=(const SuggestionMarker&) = delete;
@@ -51,7 +51,7 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   bool ShouldHideSuggestionMenu() const;
 
   // Replace the suggestion at suggestion_index with new_suggestion.
-  void SetSuggestion(unsigned suggestion_index, const String& new_suggestion);
+  void SetSuggestion(wtf_size_t suggestion_index, const String& new_suggestion);
 
  private:
   static int32_t NextTag();

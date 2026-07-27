@@ -22,11 +22,11 @@ UChar32 GetCodePointAt(const String& text, wtf_size_t index) {
 std::optional<DocumentMarker::MarkerOffsets>
 ComputeOffsetsAfterNonSuggestionEditingOperating(const DocumentMarker& marker,
                                                  const String& node_text,
-                                                 unsigned offset,
-                                                 unsigned old_length,
-                                                 unsigned new_length) {
-  unsigned marker_start = marker.StartOffset();
-  unsigned marker_end = marker.EndOffset();
+                                                 wtf_size_t offset,
+                                                 wtf_size_t old_length,
+                                                 wtf_size_t new_length) {
+  wtf_size_t marker_start = marker.StartOffset();
+  wtf_size_t marker_end = marker.EndOffset();
 
   // Marked text was modified
   if (offset < marker_end && offset + old_length > marker_start)
@@ -80,35 +80,36 @@ const HeapVector<Member<DocumentMarker>>& SuggestionMarkerListImpl::GetMarkers()
 }
 
 DocumentMarker* SuggestionMarkerListImpl::FirstMarkerIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
 HeapVector<Member<DocumentMarker>>
-SuggestionMarkerListImpl::MarkersIntersectingRange(unsigned start_offset,
-                                                   unsigned end_offset) const {
+SuggestionMarkerListImpl::MarkersIntersectingRange(
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return OverlappingDocumentMarkerListEditor::MarkersIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
-bool SuggestionMarkerListImpl::MoveMarkers(int length,
+bool SuggestionMarkerListImpl::MoveMarkers(wtf_size_t length,
                                            DocumentMarkerList* dst_list) {
   return OverlappingDocumentMarkerListEditor::MoveMarkers(&markers_, length,
                                                           dst_list);
 }
 
-bool SuggestionMarkerListImpl::RemoveMarkers(unsigned start_offset,
-                                             int length) {
+bool SuggestionMarkerListImpl::RemoveMarkers(wtf_size_t start_offset,
+                                             wtf_size_t length) {
   return OverlappingDocumentMarkerListEditor::RemoveMarkers(
       &markers_, start_offset, length);
 }
 
 bool SuggestionMarkerListImpl::ShiftMarkers(const String& node_text,
-                                            unsigned offset,
-                                            unsigned old_length,
-                                            unsigned new_length) {
+                                            wtf_size_t offset,
+                                            wtf_size_t old_length,
+                                            wtf_size_t new_length) {
   if (SuggestionMarkerReplacementScope::CurrentlyInScope())
     return ShiftMarkersForSuggestionReplacement(offset, old_length, new_length);
 
@@ -117,14 +118,14 @@ bool SuggestionMarkerListImpl::ShiftMarkers(const String& node_text,
 }
 
 bool SuggestionMarkerListImpl::ShiftMarkersForSuggestionReplacement(
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
+    wtf_size_t offset,
+    wtf_size_t old_length,
+    wtf_size_t new_length) {
   // Since suggestion markers may overlap, the quickest way to perform
   // this operation is to build a new list with the markers not removed by the
   // shift.
   bool did_shift_marker = false;
-  unsigned end_offset = offset + old_length;
+  wtf_size_t end_offset = offset + old_length;
   HeapVector<Member<DocumentMarker>> unremoved_markers;
   for (const Member<DocumentMarker>& marker : markers_) {
     // Markers that intersect the replacement range, but do not fully contain
@@ -163,9 +164,9 @@ bool SuggestionMarkerListImpl::ShiftMarkersForSuggestionReplacement(
 
 bool SuggestionMarkerListImpl::ShiftMarkersForNonSuggestionEditingOperation(
     const String& node_text,
-    unsigned offset,
-    unsigned old_length,
-    unsigned new_length) {
+    wtf_size_t offset,
+    wtf_size_t old_length,
+    wtf_size_t new_length) {
   // Since suggestion markers may overlap, the quickest way to perform
   // this operation is to build a new list with the markers not removed by the
   // shift.

@@ -35,18 +35,19 @@ class CORE_EXPORT TextMatchMarkerListImpl final : public DocumentMarkerList {
   void Clear() final;
 
   const HeapVector<Member<DocumentMarker>>& GetMarkers() const final;
-  DocumentMarker* FirstMarkerIntersectingRange(unsigned start_offset,
-                                               unsigned end_offset) const final;
+  DocumentMarker* FirstMarkerIntersectingRange(
+      wtf_size_t start_offset,
+      wtf_size_t end_offset) const final;
   HeapVector<Member<DocumentMarker>> MarkersIntersectingRange(
-      unsigned start_offset,
-      unsigned end_offset) const final;
+      wtf_size_t start_offset,
+      wtf_size_t end_offset) const final;
 
-  bool MoveMarkers(int length, DocumentMarkerList* dst_list) final;
-  bool RemoveMarkers(unsigned start_offset, int length) final;
+  bool MoveMarkers(wtf_size_t length, DocumentMarkerList* dst_list) final;
+  bool RemoveMarkers(wtf_size_t start_offset, wtf_size_t length) final;
   bool ShiftMarkers(const String& node_text,
-                    unsigned offset,
-                    unsigned old_length,
-                    unsigned new_length) final;
+                    wtf_size_t offset,
+                    wtf_size_t old_length,
+                    wtf_size_t new_length) final;
 
   void MergeOverlappingMarkers() final {}
 
@@ -56,8 +57,8 @@ class CORE_EXPORT TextMatchMarkerListImpl final : public DocumentMarkerList {
   Vector<gfx::Rect> LayoutRects(const Node&) const;
   // Returns true if markers within a range defined by |startOffset| and
   // |endOffset| are found.
-  bool SetTextMatchMarkersActive(unsigned start_offset,
-                                 unsigned end_offset,
+  bool SetTextMatchMarkersActive(wtf_size_t start_offset,
+                                 wtf_size_t end_offset,
                                  bool);
 
  private:

@@ -17,8 +17,8 @@ namespace blink {
 // that should be renderable with customizable formatting.
 class CORE_EXPORT StyleableMarker : public DocumentMarker {
  public:
-  StyleableMarker(unsigned start_offset,
-                  unsigned end_offset,
+  StyleableMarker(wtf_size_t start_offset,
+                  wtf_size_t end_offset,
                   Color underline_color,
                   ui::mojom::ImeTextSpanThickness,
                   ui::mojom::ImeTextSpanUnderlineStyle,

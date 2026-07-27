@@ -20,7 +20,7 @@ float GetOpacity(float progress) {
   return opacity;
 }
 
-GlicMarker::GlicMarker(unsigned start_offset, unsigned end_offset)
+GlicMarker::GlicMarker(wtf_size_t start_offset, wtf_size_t end_offset)
     : DocumentMarker(start_offset, end_offset) {}
 
 DocumentMarker::MarkerType GlicMarker::GetType() const {

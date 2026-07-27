@@ -41,34 +41,35 @@ const HeapVector<Member<DocumentMarker>>& TextMatchMarkerListImpl::GetMarkers()
 }
 
 DocumentMarker* TextMatchMarkerListImpl::FirstMarkerIntersectingRange(
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
 HeapVector<Member<DocumentMarker>>
-TextMatchMarkerListImpl::MarkersIntersectingRange(unsigned start_offset,
-                                                  unsigned end_offset) const {
+TextMatchMarkerListImpl::MarkersIntersectingRange(wtf_size_t start_offset,
+                                                  wtf_size_t end_offset) const {
   return SortedDocumentMarkerListEditor::MarkersIntersectingRange(
       markers_, start_offset, end_offset);
 }
 
-bool TextMatchMarkerListImpl::MoveMarkers(int length,
+bool TextMatchMarkerListImpl::MoveMarkers(wtf_size_t length,
                                           DocumentMarkerList* dst_list) {
   return SortedDocumentMarkerListEditor::MoveMarkers(&markers_, length,
                                                      dst_list);
 }
 
-bool TextMatchMarkerListImpl::RemoveMarkers(unsigned start_offset, int length) {
+bool TextMatchMarkerListImpl::RemoveMarkers(wtf_size_t start_offset,
+                                            wtf_size_t length) {
   return SortedDocumentMarkerListEditor::RemoveMarkers(&markers_, start_offset,
                                                        length);
 }
 
 bool TextMatchMarkerListImpl::ShiftMarkers(const String&,
-                                           unsigned offset,
-                                           unsigned old_length,
-                                           unsigned new_length) {
+                                           wtf_size_t offset,
+                                           wtf_size_t old_length,
+                                           wtf_size_t new_length) {
   return SortedDocumentMarkerListEditor::ShiftMarkersContentDependent(
       &markers_, offset, old_length, new_length);
 }
@@ -124,8 +125,8 @@ Vector<gfx::Rect> TextMatchMarkerListImpl::LayoutRects(const Node& node) const {
   return result;
 }
 
-bool TextMatchMarkerListImpl::SetTextMatchMarkersActive(unsigned start_offset,
-                                                        unsigned end_offset,
+bool TextMatchMarkerListImpl::SetTextMatchMarkersActive(wtf_size_t start_offset,
+                                                        wtf_size_t end_offset,
                                                         bool active) {
   bool doc_dirty = false;
   auto const start = std::upper_bound(
@@ -133,8 +134,7 @@ bool TextMatchMarkerListImpl::SetTextMatchMarkersActive(unsigned start_offset,
       [](size_t start_offset, const Member<DocumentMarker>& marker) {
         return start_offset < marker->EndOffset();
       });
-  auto start_position =
-      base::checked_cast<wtf_size_t>(start - markers_.begin());
+  auto start_position = CheckedDistance(markers_.begin(), start);
   auto num_to_adjust = markers_.size() - start_position;
   auto sub_span = base::span(markers_).subspan(start_position, num_to_adjust);
   for (DocumentMarker* marker : sub_span) {

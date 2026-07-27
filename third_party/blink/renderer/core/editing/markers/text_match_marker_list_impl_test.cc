@@ -14,7 +14,7 @@ class TextMatchMarkerListImplTest : public EditingTestBase {
   TextMatchMarkerListImplTest()
       : marker_list_(MakeGarbageCollected<TextMatchMarkerListImpl>()) {}
 
-  DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
+  DocumentMarker* CreateMarker(wtf_size_t start_offset, wtf_size_t end_offset) {
     return MakeGarbageCollected<TextMatchMarker>(
         start_offset, end_offset, TextMatchMarker::MatchStatus::kInactive);
   }

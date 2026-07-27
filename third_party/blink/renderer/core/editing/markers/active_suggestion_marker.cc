@@ -7,8 +7,8 @@
 namespace blink {
 
 ActiveSuggestionMarker::ActiveSuggestionMarker(
-    unsigned start_offset,
-    unsigned end_offset,
+    wtf_size_t start_offset,
+    wtf_size_t end_offset,
     Color underline_color,
     ui::mojom::ImeTextSpanThickness thickness,
     ui::mojom::ImeTextSpanUnderlineStyle underline_style,

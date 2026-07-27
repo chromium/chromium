@@ -38,15 +38,15 @@ namespace blink {
 
 DocumentMarker::~DocumentMarker() = default;
 
-DocumentMarker::DocumentMarker(unsigned start_offset, unsigned end_offset)
+DocumentMarker::DocumentMarker(wtf_size_t start_offset, wtf_size_t end_offset)
     : start_offset_(start_offset), end_offset_(end_offset) {
   DCHECK_LT(start_offset_, end_offset_);
 }
 
 std::optional<DocumentMarker::MarkerOffsets>
-DocumentMarker::ComputeOffsetsAfterShift(unsigned offset,
-                                         unsigned old_length,
-                                         unsigned new_length) const {
+DocumentMarker::ComputeOffsetsAfterShift(wtf_size_t offset,
+                                         wtf_size_t old_length,
+                                         wtf_size_t new_length) const {
   MarkerOffsets result;
   result.start_offset = StartOffset();
   result.end_offset = EndOffset();
