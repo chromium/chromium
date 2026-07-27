@@ -14,8 +14,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -29,13 +27,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
-import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
-import org.chromium.components.browser_ui.util.SubscriptionTierBrandingDelegate;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -101,7 +97,6 @@ public class ProfileDataCache
     private final boolean mAiTierRingEnabled;
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
     private final @Px int mRingThicknessPx;
-    private final @Nullable SubscriptionTierBrandingDelegate mBrandingDelegate;
 
     @VisibleForTesting
     ProfileDataCache(
@@ -112,8 +107,7 @@ public class ProfileDataCache
             @Px int imageSize,
             @Px int ringThicknessPx,
             @Nullable BadgeConfig badgeConfig,
-            boolean aiTierRingEnabled,
-            @Nullable SubscriptionTierBrandingDelegate brandingDelegate) {
+            boolean aiTierRingEnabled) {
         assert identityManager != null;
         mContext = context;
         mAccountManagerFacade = accountManagerFacade;
@@ -129,7 +123,6 @@ public class ProfileDataCache
         mRingThicknessPx = ringThicknessPx;
         mDefaultBadgeConfig = badgeConfig;
         mAiTierRingEnabled = aiTierRingEnabled;
-        mBrandingDelegate = brandingDelegate;
         mSubscriptionEligibilityService = subscriptionEligibilityService;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
         updateCache();
@@ -161,8 +154,7 @@ public class ProfileDataCache
                 imageSize,
                 ringThicknessPx,
                 badgeConfig,
-                /* aiTierRingEnabled= */ true,
-                /* brandingDelegate= */ null);
+                /* aiTierRingEnabled= */ true);
     }
 
     /**
@@ -180,8 +172,7 @@ public class ProfileDataCache
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
                 /* ringThicknessPx= */ 0,
                 /* badgeConfig= */ null,
-                /* aiTierRingEnabled= */ false,
-                /* brandingDelegate= */ null);
+                /* aiTierRingEnabled= */ false);
     }
 
     /**
@@ -202,8 +193,7 @@ public class ProfileDataCache
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
                 /* ringThicknessPx= */ 0,
                 BadgeConfig.create(badgeResId).withDefaultSizeChildAccountConfig().build(context),
-                /* aiTierRingEnabled= */ false,
-                /* brandingDelegate= */ null);
+                /* aiTierRingEnabled= */ false);
     }
 
     /**
@@ -221,8 +211,7 @@ public class ProfileDataCache
                 context.getResources().getDimensionPixelSize(imageSizeResId),
                 /* ringThicknessPx= */ 0,
                 /* badgeConfig= */ null,
-                /* aiTierRingEnabled= */ false,
-                /* brandingDelegate= */ null);
+                /* aiTierRingEnabled= */ false);
     }
 
     /**
@@ -448,7 +437,9 @@ public class ProfileDataCache
         if (badgeConfig != null) {
             croppedAvatar = overlayBadgeOnUserPicture(badgeConfig, croppedAvatar);
         } else if (isEligibleForAiTierRing(accountInfo)) {
-            croppedAvatar = overlayAiRingOnAvatar(croppedAvatar);
+            croppedAvatar =
+                    AvatarGenerator.getAvatarWithAiTierRing(
+                            mContext, croppedAvatar, mRingThicknessPx);
             hasAiTierRing = true;
         }
 
@@ -574,57 +565,6 @@ public class ProfileDataCache
                 badgeConfig.getPosition().x + badgeSize,
                 badgeConfig.getPosition().y + badgeSize);
         badge.draw(canvas);
-        return new BitmapDrawable(mContext.getResources(), badgedPicture);
-    }
-
-    private Drawable overlayAiRingOnAvatar(Drawable userPicture) {
-        int ringSpacingPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.components.browser_ui.util.R.dimen
-                                        .ai_tier_ring_spacing);
-        int totalPadding = mRingThicknessPx + ringSpacingPx;
-
-        int badgedPictureWidth = mImageSize + 2 * totalPadding;
-        int badgedPictureHeight = mImageSize + 2 * totalPadding;
-
-        Bitmap badgedPicture =
-                Bitmap.createBitmap(
-                        badgedPictureWidth, badgedPictureHeight, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(badgedPicture);
-
-        Rect oldBounds = userPicture.getBounds();
-        userPicture.setBounds(
-                totalPadding,
-                totalPadding,
-                badgedPictureWidth - totalPadding,
-                badgedPictureHeight - totalPadding);
-        userPicture.draw(canvas);
-        userPicture.setBounds(oldBounds);
-
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(mRingThicknessPx);
-
-        RectF bounds = new RectF(0, 0, badgedPictureWidth, badgedPictureHeight);
-        float strokeInset = mRingThicknessPx / 2f;
-        bounds.inset(strokeInset, strokeInset);
-
-        SubscriptionTierBrandingDelegate brandingDelegate = mBrandingDelegate;
-        if (brandingDelegate == null) {
-            brandingDelegate =
-                    ServiceLoaderUtil.maybeCreate(SubscriptionTierBrandingDelegate.class);
-        }
-
-        if (brandingDelegate != null && !bounds.isEmpty()) {
-            paint.setShader(brandingDelegate.getRingShader(bounds));
-        } else {
-            // Fall back to the default solid blue color if no delegate or shader is provided.
-            paint.setColor(Color.BLUE);
-            paint.setShader(null);
-        }
-
-        canvas.drawOval(bounds, paint);
         return new BitmapDrawable(mContext.getResources(), badgedPicture);
     }
 
