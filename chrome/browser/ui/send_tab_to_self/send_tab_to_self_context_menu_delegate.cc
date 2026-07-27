@@ -69,14 +69,43 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
   }
 }
 
+// Returns `target_url` if valid; otherwise falls back to the last committed URL
+// of `web_contents`. Since `web_contents` is null if unavailable, subsequent
+// queries will fail anyway so falling back to `GURL()` is alright.
+GURL ResolveTargetUrl(const GURL& target_url,
+                      content::WebContents* web_contents) {
+  if (target_url.is_valid()) {
+    return target_url;
+  }
+  return web_contents ? web_contents->GetLastCommittedURL() : GURL();
+}
+
+// Returns `target_title` if non-empty; otherwise falls back to the active page
+// title of `web_contents`.
+// TODO(crbug.com/530097533): Investigate improved title handling when the user
+// interacts with the right-click flow on a hyperlink (e.g., avoiding parent
+// page title fallback when link anchor text is empty).
+std::string ResolveTargetTitle(const std::string& target_title,
+                               content::WebContents* web_contents) {
+  if (!target_title.empty()) {
+    return target_title;
+  }
+  return web_contents ? base::UTF16ToUTF8(web_contents->GetTitle())
+                      : std::string();
+}
+
 }  // namespace
 
 SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
     content::WebContents* web_contents,
-    ShareEntryPoint entry_point)
+    ShareEntryPoint entry_point,
+    const GURL& target_url,
+    const std::string& target_title)
     : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       devices_(GetDevicesForDisplay()),
-      entry_point_(entry_point) {}
+      entry_point_(entry_point),
+      target_url_(ResolveTargetUrl(target_url, web_contents)),
+      target_title_(ResolveTargetTitle(target_title, web_contents)) {}
 
 SendTabToSelfContextMenuDelegate::~SendTabToSelfContextMenuDelegate() = default;
 
@@ -167,12 +196,15 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
       return;
     }
 
-    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-        web_contents_->GetBrowserContext(),
-        base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)
+    const base::Feature& stts_feature =
+        (entry_point_ == ShareEntryPoint::kLinkMenu ||
+         base::FeatureList::IsEnabled(
+             send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2))
             ? send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2
-            : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
+            : send_tab_to_self::kSendTabToSelfEnhancedDesktopUI;
+
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        web_contents_->GetBrowserContext(), stts_feature);
 
     RecordEntryPointInvoked(entry_point_);
 
@@ -180,8 +212,7 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
         SendTabToSelfPageHandler::GetOrCreateForWebContents(
             web_contents_.get());
     handler->SendTabToDevice(
-        devices_[device_index].cache_guid, web_contents_->GetLastCommittedURL(),
-        base::UTF16ToUTF8(web_contents_->GetTitle()),
+        devices_[device_index].cache_guid, target_url_, target_title_,
         base::BindOnce(&OnSendTabToDeviceComplete, web_contents_,
                        devices_[device_index].device_name,
                        devices_[device_index].form_factor),

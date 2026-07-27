@@ -659,4 +659,25 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
   EXPECT_FALSE(specifics.page_context().has_scroll_position());
 }
 
+// Tests that after sync is set up, context menu display reason is valid
+// for HTTP/HTTPS URLs.
+IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
+                       ContextMenuDisplayReasonIsValidForHttpUrl) {
+  ASSERT_TRUE(SetupSync());
+
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  content::WebContents* web_contents =
+      chrome::AddAndReturnTabAt(GetBrowser(0), test_url, -1, true);
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // Verify that GetEntryPointDisplayReason() returns kInformNoTargetDevice
+  // (not nullopt) for HTTP/HTTPS URLs when Sync is enabled without target
+  // devices, allowing the context menu promo item to be shown.
+  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      send_tab_to_self::GetEntryPointDisplayReason(web_contents, test_url);
+  ASSERT_TRUE(reason.has_value());
+  EXPECT_EQ(*reason,
+            send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
+}
+
 }  // namespace

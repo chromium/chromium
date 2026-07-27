@@ -14,6 +14,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "ui/menus/simple_menu_model.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -30,8 +31,11 @@ inline constexpr int IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST =
 // Acts as the ui::SimpleMenuModel::Delegate for the submenu.
 class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
-  SendTabToSelfContextMenuDelegate(content::WebContents* web_contents,
-                                   ShareEntryPoint entry_point);
+  SendTabToSelfContextMenuDelegate(
+      content::WebContents* web_contents,
+      ShareEntryPoint entry_point,
+      const GURL& target_url = GURL(),
+      const std::string& target_title = std::string());
 
   SendTabToSelfContextMenuDelegate(const SendTabToSelfContextMenuDelegate&) =
       delete;
@@ -60,6 +64,8 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
   base::WeakPtr<content::WebContents> web_contents_;
   const std::vector<TargetDeviceInfo> devices_;
   const ShareEntryPoint entry_point_;
+  const GURL target_url_;
+  const std::string target_title_;
 };
 
 }  // namespace send_tab_to_self

@@ -130,6 +130,68 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
   EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kExampleTitle));
 }
 
+// Tests that ExecuteCommand uses the target URL and target title passed to the
+// constructor when sending to a device (e.g., when right-clicking a hyperlink).
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       ExecuteCommandSendsTargetUrlAndTitleWhenProvided) {
+  base::Time now = base::Time::Now();
+  std::vector<TargetDeviceInfo> devices;
+  devices.emplace_back("Device 0", "guid0",
+                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  model()->SetTargetDeviceInfoSortedList(devices);
+
+  const GURL kPageUrl("https://example.com/page");
+  const GURL kLinkUrl("https://example.com/link");
+  const std::string kLinkTitle = "Link Anchor Text";
+  NavigateAndCommit(kPageUrl);
+
+  SendTabToSelfContextMenuDelegate delegate(
+      web_contents(), ShareEntryPoint::kLinkMenu, kLinkUrl, kLinkTitle);
+  ui::SimpleMenuModel menu_model(&delegate);
+  delegate.PopulateSubmenu(&menu_model);
+
+  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+
+  std::vector<std::string> guids = model()->GetAllGuids();
+  ASSERT_EQ(guids.size(), 1u);
+  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  EXPECT_EQ(sent_entry->GetTargetDeviceSyncCacheGuid(), "guid0");
+  EXPECT_EQ(sent_entry->GetURL(), kLinkUrl);
+  EXPECT_EQ(sent_entry->GetTitle(), kLinkTitle);
+}
+
+// Tests that when target title is empty, the delegate falls back to the parent
+// web contents page title during ExecuteCommand.
+TEST_F(SendTabToSelfContextMenuDelegateTest,
+       ExecuteCommandSendsTitleFallbackWhenTitleEmpty) {
+  base::Time now = base::Time::Now();
+  std::vector<TargetDeviceInfo> devices;
+  devices.emplace_back("Device 0", "guid0",
+                       syncer::DeviceInfo::FormFactor::kDesktop, now);
+  model()->SetTargetDeviceInfoSortedList(devices);
+
+  const GURL kPageUrl("https://example.com/page");
+  const std::u16string kPageTitle = u"Page Title";
+  const GURL kLinkUrl("https://example.com/link");
+  NavigateAndCommit(kPageUrl);
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  web_contents()->UpdateTitleForEntry(entry, kPageTitle);
+
+  SendTabToSelfContextMenuDelegate delegate(
+      web_contents(), ShareEntryPoint::kLinkMenu, kLinkUrl);
+  ui::SimpleMenuModel menu_model(&delegate);
+  delegate.PopulateSubmenu(&menu_model);
+
+  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+
+  std::vector<std::string> guids = model()->GetAllGuids();
+  ASSERT_EQ(guids.size(), 1u);
+  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  EXPECT_EQ(sent_entry->GetURL(), kLinkUrl);
+  EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kPageTitle));
+}
+
 // Tests that PopulateSubmenu correctly adds the device items and the "Manage
 // Devices" item to the menu model.
 TEST_F(SendTabToSelfContextMenuDelegateTest,
