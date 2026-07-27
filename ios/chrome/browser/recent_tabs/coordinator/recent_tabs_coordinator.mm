@@ -185,7 +185,7 @@
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
   self.recentTabsTableViewController = nil;
-  [self.recentTabsNavigationController
+  [self.recentTabsNavigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:self.completion];
   [self stopReauthCoordinator];
