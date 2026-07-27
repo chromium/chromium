@@ -352,6 +352,7 @@ if (absl_build_tests) {
         "absl/status:status_builder_test",
         "absl/status:status_macros_test",
         "absl/status:status_matchers_test",
+        "absl/status:status_matchers_with_unqualified_macros_test",
         "absl/status:status_test",
         "absl/status:statusor_test",
         "absl/strings:append_and_overwrite_test",

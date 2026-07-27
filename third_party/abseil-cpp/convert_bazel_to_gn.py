@@ -32,10 +32,12 @@ def _ast_get_value(node):
 
 class _Converter:
 
-    def __init__(self, rel_path, old_gn_content=None):
+    def __init__(self, path, old_gn_content=None):
         self.bazel_targets = []
-        self.rel_path = rel_path
         self.year = str(datetime.datetime.now().year)
+        self.path = path
+        m = re.search(r'.*/absl/(.*)', path)
+        self.rel_path = m.group(1) if m else ''
         if old_gn_content:
             m = re.search(r'# Copyright (\d{4})', old_gn_content)
             if m:
@@ -75,6 +77,22 @@ class _Converter:
         if ':*' not in result and '//third_party/abseil-cpp/absl/*' not in result:
             result.append(':*')
         return result
+
+    # Targets that include string_view.h should depend on string_view target.
+    # For backward compatibility it is possible to depend just on 'strings', but it is
+    # better to depend on string_view directly.
+    def _need_to_add_string_view(self, bt):
+        if "//absl/strings" not in bt.get('deps', []):
+            # If target doesn't depend on 'strings', it either doesn't use string_view,
+            # or already directly depends on string_view. Skip reading source files.
+            return False
+
+        for s in bt.get('srcs', []) + bt.get('hdrs', []):
+            with open(os.path.join(self.path, s), 'r', encoding='utf-8') as f:
+                if re.search(r'#include "absl/strings/string_view.h"',
+                             f.read()):
+                    return True
+        return False
 
     def parse_bazel(self, content):
         tree = ast.parse(content)
@@ -160,6 +178,12 @@ class _Converter:
                 td = self._translate_dep(d)
                 if td:
                     gn_deps.append(td)
+                elif not is_test and d == '@googletest//:gtest':
+                    gn_deps.append("//third_party/googletest:gmock")
+                    gn_deps.append("//third_party/googletest:gtest")
+            if self._need_to_add_string_view(bt):
+                gn_deps.append(
+                    self._translate_dep('//absl/strings:string_view'))
             if gn_deps:
                 out.append('deps = [')
                 for d in sorted(gn_deps):
@@ -173,11 +197,9 @@ class _Converter:
 
 
 def convert_one(path):
-    m = re.search(r'.*/absl/(.*)', path)
-    rel_path = m.group(1) if m else ''
     bazel_path = os.path.join(path, 'BUILD.bazel')
     gn_path = os.path.join(path, 'BUILD.gn')
-    logging.info(f'Converting {rel_path}/BUILD.bazel')
+    logging.info(f'Converting {bazel_path}')
     old_gn = None
     if os.path.exists(gn_path):
         with open(gn_path, 'r', encoding='utf-8') as f:
@@ -186,7 +208,7 @@ def convert_one(path):
     with open(bazel_path, 'r', encoding='utf-8') as f:
         bazel_content = f.read()
 
-    converter = _Converter(rel_path, old_gn)
+    converter = _Converter(path, old_gn)
     converter.parse_bazel(bazel_content)
 
     if not converter.bazel_targets:
@@ -208,10 +230,12 @@ def convert_all(root_dir):
     # TODO: crbug.com/524565513: walk the root dir when script is fully ready to handle all edge cases.
     for folder in [
             'algorithm',
+            'crc',
             'functional',
             'memory',
             'meta',
             'numeric',
+            'status',
             'time',
             'types',
             'utility',
