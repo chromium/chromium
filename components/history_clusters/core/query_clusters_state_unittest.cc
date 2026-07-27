@@ -78,7 +78,6 @@ class QueryClustersStateTest : public testing::Test {
     OnGotClustersResult result;
     base::RunLoop loop;
     state->OnGotRawClusters(
-        base::TimeTicks(),
         base::BindLambdaForTesting(
             [&](const std::string& query,
                 std::vector<history::Cluster> cluster_batch, bool can_load_more,
@@ -96,7 +95,6 @@ class QueryClustersStateTest : public testing::Test {
       const std::vector<history::Cluster>& raw_clusters,
       QueryClustersContinuationParams continuation_params) {
     state->OnGotRawClusters(
-        base::TimeTicks(),
         base::BindLambdaForTesting(
             [&](const std::string& query,
                 std::vector<history::Cluster> cluster_batch, bool can_load_more,
@@ -180,7 +178,6 @@ TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
 
   histogram_tester.ExpectBucketCount(
       "History.Clusters.PercentClustersFilteredByQuery", 50, 1);
-  histogram_tester.ExpectTotalCount("History.Clusters.ServiceLatency", 1);
 }
 
 TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
@@ -436,8 +433,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
   // Verify that `QueryClustersState` makes an initial call to the
   // HistoryService that makes sense.
   {
-    state.GetUngroupedVisits(base::TimeTicks(),
-                             base::BindLambdaForTesting(result_callback), {},
+    state.GetUngroupedVisits(base::BindLambdaForTesting(result_callback), {},
                              fake_continuation_params);
     // Will quit the loop once GetAnnotatedVisits is run.
     get_ungrouped_visits_loop_1.Run();
@@ -449,8 +445,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
   // Verify that the ungrouped visits can be searched over and returned as part
   // of a special ungrouped cluster.
   {
-    state.OnGotUngroupedVisits(base::TimeTicks(),
-                               base::BindLambdaForTesting(result_callback), {},
+    state.OnGotUngroupedVisits(base::BindLambdaForTesting(result_callback), {},
                                fake_continuation_params,
                                /*ungrouped_visits*/ GetHardcodedTestVisits());
     result_loop.Run();
@@ -470,8 +465,7 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisits) {
         base::Time::FromUTCString("12 Feb 2021 10:00", &new_continuation_time));
     new_fake_continuation_params.continuation_time = new_continuation_time;
 
-    state.GetUngroupedVisits(base::TimeTicks(),
-                             base::BindLambdaForTesting(result_callback), {},
+    state.GetUngroupedVisits(base::BindLambdaForTesting(result_callback), {},
                              new_fake_continuation_params);
     // Will quit the loop once GetAnnotatedVisits is run.
     get_ungrouped_visits_loop_2.Run();
@@ -494,7 +488,6 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisitsDoesCrossBatchDeduplication) {
     std::vector<history::Cluster> final_result;
 
     state.OnGotUngroupedVisits(
-        base::TimeTicks(),
         base::BindLambdaForTesting(
             [&](const std::string& query,
                 std::vector<history::Cluster> cluster_batch, bool can_load_more,
@@ -521,7 +514,6 @@ TEST_F(QueryClustersStateTest, GetUngroupedVisitsDoesCrossBatchDeduplication) {
     continuation_params.exhausted_all_visits = true;
 
     state.OnGotUngroupedVisits(
-        base::TimeTicks(),
         base::BindLambdaForTesting(
             [&](const std::string& query,
                 std::vector<history::Cluster> cluster_batch, bool can_load_more,

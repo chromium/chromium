@@ -1125,34 +1125,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.ServiceLatency" units="ms"
-    expires_after="2025-07-13">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Records the time taken between the History Clusters UI requests a batch of
-    clusters, and when we get the post-processed clusters back.
-
-    This request occurs when the page is first loaded, when the page is
-    refreshed, when the user changes the History search terms, and when the user
-    scrolls to the bottom of the page and requests the next batch of clusters
-    from the service.
-
-    This metric doesn't distinguish between any of these cases. This metric is
-    recorded on all requests, whether or not it returns clusters.
-
-    This does not take into account the time spent in JavaScript, or updating
-    the DOM. It's recorded in QueryClustersState, which is meant to be shared
-    between multiple UIs.
-
-    Roughly, History.Clusters.ServiceLatency = (latency of fetching and
-    computing clusters for UI) + History.Clusters.ProcessClustersDuration.
-    Historically, the breakdown of fetching and computing latency was recorded
-    in History.Clusters.Backend.GetMostRecentClusters.* histograms.
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.UIActions.Cluster.{ClusterAction}"
     units="index" expires_after="2025-08-24">
   <owner>mahmadi@chromium.org</owner>

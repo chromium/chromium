@@ -130,16 +130,14 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
     query_clusters_callback = &QueryClustersState::GetUngroupedVisits;
   }
 
-  base::TimeTicks query_start_time = base::TimeTicks::Now();
   query_clusters_task_ = service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage, filter_params_, begin_time_,
       continuation_params_, recluster_,
       base::BindOnce(query_clusters_callback, weak_factory_.GetWeakPtr(),
-                     query_start_time, std::move(callback)));
+                     std::move(callback)));
 }
 
 void QueryClustersState::GetUngroupedVisits(
-    base::TimeTicks query_start_time,
     ResultCallback callback,
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams new_continuation_params) {
@@ -159,13 +157,12 @@ void QueryClustersState::GetUngroupedVisits(
       /*compute_redirect_chain_start_properties=*/false,
       /*get_unclustered_visits_only=*/true,
       base::BindOnce(&QueryClustersState::OnGotUngroupedVisits,
-                     weak_factory_.GetWeakPtr(), query_start_time,
-                     std::move(callback), clusters, new_continuation_params),
+                     weak_factory_.GetWeakPtr(), std::move(callback), clusters,
+                     new_continuation_params),
       &history_task_tracker_);
 }
 
 void QueryClustersState::OnGotUngroupedVisits(
-    base::TimeTicks query_start_time,
     ResultCallback callback,
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams new_continuation_params,
@@ -220,12 +217,11 @@ void QueryClustersState::OnGotUngroupedVisits(
     clusters.push_back(std::move(ungrouped_cluster));
   }
 
-  OnGotRawClusters(query_start_time, std::move(callback), std::move(clusters),
+  OnGotRawClusters(std::move(callback), std::move(clusters),
                    std::move(new_continuation_params));
 }
 
 void QueryClustersState::OnGotRawClusters(
-    base::TimeTicks query_start_time,
     ResultCallback callback,
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams new_continuation_params) {
@@ -241,13 +237,12 @@ void QueryClustersState::OnGotRawClusters(
       base::BindOnce(
           &QueryClustersState::OnGotClusters, weak_factory_.GetMutableWeakPtr(),
           std::move(post_processing_timer), clusters_from_backend_count,
-          query_start_time, std::move(callback), new_continuation_params));
+          std::move(callback), new_continuation_params));
 }
 
 void QueryClustersState::OnGotClusters(
     base::ElapsedTimer post_processing_timer,
     size_t clusters_from_backend_count,
-    base::TimeTicks query_start_time,
     ResultCallback callback,
     QueryClustersContinuationParams new_continuation_params,
     std::vector<history::Cluster> clusters) {
@@ -294,9 +289,6 @@ void QueryClustersState::OnGotClusters(
 
   number_clusters_sent_to_page_ += clusters_size;
 
-  // Log metrics after delivering the results to the page.
-  base::TimeDelta service_latency = base::TimeTicks::Now() - query_start_time;
-  base::UmaHistogramTimes("History.Clusters.ServiceLatency", service_latency);
 }
 
 void QueryClustersState::UpdateUniqueRawLabels(

@@ -89,12 +89,10 @@ class QueryClustersState {
 
   // Callback to `LoadNextBatchOfClusters()` if there's a search query.
   void GetUngroupedVisits(
-      base::TimeTicks query_start_time,
       ResultCallback callback,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams new_continuation_params);
   void OnGotUngroupedVisits(
-      base::TimeTicks query_start_time,
       ResultCallback callback,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams new_continuation_params,
@@ -102,7 +100,6 @@ class QueryClustersState {
 
   // Callback to `LoadNextBatchOfClusters()`.
   void OnGotRawClusters(
-      base::TimeTicks query_start_time,
       ResultCallback callback,
       std::vector<history::Cluster> clusters,
       QueryClustersContinuationParams new_continuation_params);
@@ -110,7 +107,6 @@ class QueryClustersState {
   // Callback to `PostProcessClusters()`.
   void OnGotClusters(base::ElapsedTimer post_processing_timer,
                      size_t clusters_from_backend_count,
-                     base::TimeTicks query_start_time,
                      ResultCallback callback,
                      QueryClustersContinuationParams new_continuation_params,
                      std::vector<history::Cluster> clusters);
