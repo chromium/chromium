@@ -520,7 +520,7 @@ third_party/libxslt/src/libxslt
 third_party/libxslt/src/m4
 third_party/libzip/src
 third_party/libzip/src/lib
-third_party/libzip/src/regress
+third_party/libzip/src/ossfuzz
 third_party/logdog/logdog
 third_party/logilab/logilab/astroid
 third_party/logilab/logilab/common
@@ -797,6 +797,8 @@ third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/N
 third_party/rust/chromium_crates_io/vendor/write-fonts-v0_50/src/tables/variations
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src
+third_party/rust/chromium_crates_io/vendor/zeroize_derive-v1
+third_party/rust/chromium_crates_io/vendor/zeroize-v1
 third_party/rust/chromium_crates_io/vendor/zip-v8
 third_party/rust/chromium_crates_io/vendor/zip-v8/src
 third_party/rust/chromium_crates_io/vendor/zmij-v1
@@ -804,6 +806,7 @@ third_party/rust/chromium_crates_io/vendor/zmij-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/zmij-v1/src
 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5
 third_party/rust/miniz_oxide/v0_8
+third_party/rust/zeroize_derive/v1
 third_party/screen-ai
 third_party/sentencepiece/src
 third_party/sentencepiece/src/src
