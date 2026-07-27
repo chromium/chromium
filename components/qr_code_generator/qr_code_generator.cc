@@ -65,10 +65,9 @@ base::expected<GeneratedCode, Error> GenerateCode(
 
   GeneratedCode code;
   code.qr_size = base::checked_cast<int>(rs_code.width());
-  std::ranges::transform(
-      rs::IteratorAdapter<qr_code::QrCodeIterator>(rs_code.iter()),
-      rs::IteratorEnd(), std::back_inserter(code.data),
-      [](bool b) -> uint8_t { return b ? 1 : 0; });
+  std::ranges::transform(rs::IteratorAdapter(rs_code.iter()), rs::IteratorEnd(),
+                         std::back_inserter(code.data),
+                         [](bool b) -> uint8_t { return b ? 1 : 0; });
   CHECK_EQ(code.data.size(), static_cast<size_t>(code.qr_size * code.qr_size));
   return code;
 }
