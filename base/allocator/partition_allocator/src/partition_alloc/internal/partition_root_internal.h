@@ -1605,10 +1605,8 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
       // PartitionAlloc only guarantees alignment for power-of-two sized
       // allocations. To make sure this applies here, round up the allocation
       // size.
-      raw_size =
-          static_cast<size_t>(1)
-          << (int{sizeof(size_t) * 8} -
-              partition_alloc::internal::base::bits::CountlZero(raw_size - 1));
+      raw_size = static_cast<size_t>(1)
+                 << (int{sizeof(size_t) * 8} - std::countl_zero(raw_size - 1));
     }
     PA_DCHECK(std::has_single_bit(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.

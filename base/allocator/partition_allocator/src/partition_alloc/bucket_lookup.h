@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_BUCKET_LOOKUP_H_
 
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
@@ -90,8 +91,7 @@ class ExponentialBucketMapping final {
     // This rotation allows to extract indices with compile-time constant
     // masks.
     const size_t order =
-        kBitsPerSizeT -
-        static_cast<size_t>(internal::base::bits::CountlZero(size));
+        kBitsPerSizeT - static_cast<size_t>(std::countl_zero(size));
     const size_t rot = internal::base::bits::RotR(
         size, order - kNumBucketsPerOrderBits + kBitsPerSizeT - 1);
 

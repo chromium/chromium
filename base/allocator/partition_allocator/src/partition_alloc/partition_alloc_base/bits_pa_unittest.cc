@@ -99,57 +99,6 @@ TEST(BitsTestPA, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
 }
 
-TEST(BitsTestPA, CountlZero8) {
-  EXPECT_EQ(8, CountlZero(uint8_t{0}));
-  EXPECT_EQ(7, CountlZero(uint8_t{1}));
-  for (int shift = 0; shift <= 7; ++shift) {
-    EXPECT_EQ(7 - shift, CountlZero(static_cast<uint8_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountlZero(uint8_t{0x0f}));
-}
-
-TEST(BitsTestPA, CountlZero16) {
-  EXPECT_EQ(16, CountlZero(uint16_t{0}));
-  EXPECT_EQ(15, CountlZero(uint16_t{1}));
-  for (int shift = 0; shift <= 15; ++shift) {
-    EXPECT_EQ(15 - shift, CountlZero(static_cast<uint16_t>(1 << shift)));
-  }
-  EXPECT_EQ(4, CountlZero(uint16_t{0x0f0f}));
-}
-
-TEST(BitsTestPA, CountlZero32) {
-  EXPECT_EQ(32, CountlZero(uint32_t{0}));
-  EXPECT_EQ(31, CountlZero(uint32_t{1}));
-  for (int shift = 0; shift <= 31; ++shift) {
-    EXPECT_EQ(31 - shift, CountlZero(uint32_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountlZero(uint32_t{0x0f0f0f0f}));
-}
-
-TEST(BitsTestPA, CountlZero64) {
-  EXPECT_EQ(64, CountlZero(uint64_t{0}));
-  EXPECT_EQ(63, CountlZero(uint64_t{1}));
-  for (int shift = 0; shift <= 63; ++shift) {
-    EXPECT_EQ(63 - shift, CountlZero(uint64_t{1} << shift));
-  }
-  EXPECT_EQ(4, CountlZero(uint64_t{0x0f0f0f0f0f0f0f0f}));
-}
-
-TEST(BitsTestPA, CountlZeroSizeT) {
-#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
-  EXPECT_EQ(64, CountlZero(size_t{0}));
-  EXPECT_EQ(63, CountlZero(size_t{1}));
-  EXPECT_EQ(32, CountlZero(size_t{1} << 31));
-  EXPECT_EQ(1, CountlZero(size_t{1} << 62));
-  EXPECT_EQ(0, CountlZero(size_t{1} << 63));
-#else
-  EXPECT_EQ(32, CountlZero(size_t{0}));
-  EXPECT_EQ(31, CountlZero(size_t{1}));
-  EXPECT_EQ(1, CountlZero(size_t{1} << 30));
-  EXPECT_EQ(0, CountlZero(size_t{1} << 31));
-#endif
-}
-
 TEST(BitsTestPA, RotR32) {
   EXPECT_EQ(RotR<uint32_t>(3696969696, 0), 3696969696u);
   EXPECT_EQ(RotR<uint32_t>(3696969696, 1), 1848484848u);
