@@ -8,6 +8,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_brush.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
@@ -103,6 +104,35 @@ enum class StrokeMetricPenColor {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(PDFInk2TextAnnotationColor)
+enum class TextAnnotationColor {
+  kBlack = 0,
+  kDarkGrey2 = 1,
+  kDarkGrey1 = 2,
+  kLightGrey = 3,
+  kWhite = 4,
+  kRed1 = 5,
+  kYellow1 = 6,
+  kGreen1 = 7,
+  kCyan1 = 8,
+  kBlue1 = 9,
+  kRed2 = 10,
+  kYellow2 = 11,
+  kGreen2 = 12,
+  kCyan2 = 13,
+  kBlue2 = 14,
+  kRed3 = 15,
+  kYellow3 = 16,
+  kGreen3 = 17,
+  kCyan3 = 18,
+  kBlue3 = 19,
+  kMaxValue = 19,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2TextAnnotationColor)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(PDFLoadedWithV2InkAnnotations)
 enum class PDFLoadedWithV2InkAnnotations {
   kUnknown = 0,
@@ -125,6 +155,8 @@ void ReportKeyboardTextHighlight(const ink::Brush& brush);
 
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
+
+void ReportTextAnnotationColor(SkColor color);
 
 }  // namespace chrome_pdf
 

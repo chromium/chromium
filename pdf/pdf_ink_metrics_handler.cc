@@ -87,6 +87,32 @@ constexpr auto kHighlighterColors =
     });
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:HighlighterColors)
 
+// LINT.IfChange(TextAnnotationColors)
+constexpr auto kTextAnnotationColors =
+    base::MakeFixedFlatMap<SkColor, TextAnnotationColor>({
+        {SK_ColorBLACK, TextAnnotationColor::kBlack},
+        {SkColorSetRGB(0x5F, 0x63, 0x68), TextAnnotationColor::kDarkGrey2},
+        {SkColorSetRGB(0x9A, 0xA0, 0xA6), TextAnnotationColor::kDarkGrey1},
+        {SkColorSetRGB(0xDA, 0xDC, 0xE0), TextAnnotationColor::kLightGrey},
+        {SK_ColorWHITE, TextAnnotationColor::kWhite},
+        {SkColorSetRGB(0xF2, 0x8B, 0x82), TextAnnotationColor::kRed1},
+        {SkColorSetRGB(0xFD, 0xD6, 0x63), TextAnnotationColor::kYellow1},
+        {SkColorSetRGB(0x81, 0xC9, 0x95), TextAnnotationColor::kGreen1},
+        {SkColorSetRGB(0x78, 0xD9, 0xEC), TextAnnotationColor::kCyan1},
+        {SkColorSetRGB(0x8A, 0xB4, 0xF8), TextAnnotationColor::kBlue1},
+        {SkColorSetRGB(0xE9, 0x42, 0x35), TextAnnotationColor::kRed2},
+        {SkColorSetRGB(0xFB, 0xBC, 0x04), TextAnnotationColor::kYellow2},
+        {SkColorSetRGB(0x34, 0xA8, 0x53), TextAnnotationColor::kGreen2},
+        {SkColorSetRGB(0x24, 0xC1, 0xE0), TextAnnotationColor::kCyan2},
+        {SkColorSetRGB(0x42, 0x85, 0xF4), TextAnnotationColor::kBlue2},
+        {SkColorSetRGB(0xC5, 0x22, 0x1F), TextAnnotationColor::kRed3},
+        {SkColorSetRGB(0xD5, 0x6E, 0x0C), TextAnnotationColor::kYellow3},
+        {SkColorSetRGB(0x18, 0x80, 0x38), TextAnnotationColor::kGreen3},
+        {SkColorSetRGB(0x12, 0xA4, 0xAF), TextAnnotationColor::kCyan3},
+        {SkColorSetRGB(0x19, 0x67, 0xD2), TextAnnotationColor::kBlue3},
+    });
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_annotation_text_mixin.ts:TextAnnotationColors)
+
 constexpr char kStrokeInputDeviceMetricName[] = "PDF.Ink2StrokeInputDeviceType";
 constexpr char kTextHighlightInputDeviceMetricName[] =
     "PDF.Ink2TextHighlightInputDeviceType";
@@ -185,6 +211,12 @@ void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations) {
   base::UmaHistogramEnumeration("PDF.LoadedWithV2InkAnnotations2",
                                 loaded_with_annotations);
+}
+
+void ReportTextAnnotationColor(SkColor color) {
+  auto it = kTextAnnotationColors.find(color);
+  CHECK(it != kTextAnnotationColors.end());
+  base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationColor", it->second);
 }
 
 }  // namespace chrome_pdf
