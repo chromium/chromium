@@ -361,9 +361,16 @@ std::vector<ProfileWithText> DeduplicatedProfilesForSuggestions(
     const AutofillProfile* profile_a = matched_profiles[a].profile;
     for (size_t b = 0; b < matched_profiles.size(); ++b) {
       const AutofillProfile* profile_b = matched_profiles[b].profile;
-      if (profile_a == profile_b ||
-          !AutofillProfileComparator::Compare(matched_profiles[a].text,
-                                              matched_profiles[b].text)) {
+      if (profile_a == profile_b) {
+        continue;
+      }
+      if (!AutofillProfileComparator::Compare(
+              matched_profiles[a].text, matched_profiles[b].text,
+              normalization::WhitespaceSpec::kDiscard)) {
+        // Skip obviously distinct profiles whose suggestion strings do not
+        // match even when ignoring whitespace and punctuation. This avoids
+        // checking all profile values via
+        // `AutofillProfile::IsSubsetOfForFieldSet()`.
         continue;
       }
       if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,

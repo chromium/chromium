@@ -612,7 +612,14 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
               app_locale)) {
         return false;
       }
-    } else if (!AutofillProfileComparator::Compare(value, other_value)) {
+    } else if (type == EMAIL_ADDRESS) {
+      if (!AutofillProfileComparator::Compare(
+              value, other_value, normalization::WhitespaceSpec::kRetain)) {
+        return false;
+      }
+    } else if (!AutofillProfileComparator::Compare(
+                   value, other_value,
+                   normalization::WhitespaceSpec::kDiscard)) {
       return false;
     }
   }
