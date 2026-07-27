@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "cc/trees/transform_node.h"
+
+#include <cmath>
+
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
@@ -18,6 +21,9 @@ TransformNode& TransformNode::operator=(const TransformNode&) = default;
 
 void TransformNode::SetScrollOffset(const gfx::PointF& offset,
                                     DamageReason damage_reason) {
+  if (!std::isfinite(offset.x()) || !std::isfinite(offset.y())) {
+    return;
+  }
   scroll_offset_ = offset;
   damage_reasons_.Put(damage_reason);
 }

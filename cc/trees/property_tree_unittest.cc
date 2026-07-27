@@ -4,6 +4,7 @@
 
 #include "cc/trees/property_tree.h"
 
+#include <cmath>
 #include <utility>
 
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -1001,6 +1002,95 @@ TEST(PropertyTreeTest, AnchorPositionAndStickyDataStaleIndex) {
   tree.EnsureStickyPositionData(node2.id);
   EXPECT_EQ(tree.sticky_position_data().size(), 1u);
   EXPECT_EQ(tree.Node(node2.id).sticky_position_constraint_id, 0);
+}
+
+TEST(PropertyTreeTest, ScrollOffsetValidation) {
+  PropertyTrees property_trees;
+  ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
+
+  // 1. Main thread SetScrollOffset
+  {
+    ElementId id(1);
+    property_trees.set_is_main_thread(true);
+    property_trees.set_is_active(false);
+
+    EXPECT_TRUE(scroll_tree.SetScrollOffset(id, gfx::PointF(10, 20)));
+    EXPECT_POINTF_EQ(gfx::PointF(10, 20),
+                     scroll_tree.current_scroll_offset(id));
+
+    EXPECT_FALSE(scroll_tree.SetScrollOffset(id, gfx::PointF(NAN, 20)));
+    EXPECT_POINTF_EQ(gfx::PointF(10, 20),
+                     scroll_tree.current_scroll_offset(id));
+
+    EXPECT_FALSE(scroll_tree.SetScrollOffset(id, gfx::PointF(10, INFINITY)));
+    EXPECT_POINTF_EQ(gfx::PointF(10, 20),
+                     scroll_tree.current_scroll_offset(id));
+  }
+
+  // 2. Impl thread (active tree) SetScrollOffset
+  {
+    ElementId id(2);
+    property_trees.set_is_main_thread(false);
+    property_trees.set_is_active(true);
+
+    scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(id);
+
+    EXPECT_TRUE(scroll_tree.SetScrollOffset(id, gfx::PointF(30, 40)));
+    EXPECT_POINTF_EQ(gfx::PointF(30, 40),
+                     scroll_tree.current_scroll_offset(id));
+
+    EXPECT_FALSE(scroll_tree.SetScrollOffset(id, gfx::PointF(NAN, 40)));
+    EXPECT_POINTF_EQ(gfx::PointF(30, 40),
+                     scroll_tree.current_scroll_offset(id));
+
+    EXPECT_FALSE(scroll_tree.SetScrollOffset(id, gfx::PointF(30, INFINITY)));
+    EXPECT_POINTF_EQ(gfx::PointF(30, 40),
+                     scroll_tree.current_scroll_offset(id));
+  }
+
+  // 3. SetBaseScrollOffset on main thread
+  {
+    ElementId id(3);
+    property_trees.set_is_main_thread(true);
+    property_trees.set_is_active(false);
+
+    scroll_tree.SetBaseScrollOffset(id, gfx::PointF(50, 60));
+    EXPECT_POINTF_EQ(gfx::PointF(50, 60),
+                     scroll_tree.current_scroll_offset(id));
+
+    scroll_tree.SetBaseScrollOffset(id, gfx::PointF(NAN, 60));
+    EXPECT_POINTF_EQ(gfx::PointF(50, 60),
+                     scroll_tree.current_scroll_offset(id));
+  }
+
+  // 4. SetBaseScrollOffset on impl thread (pending tree)
+  {
+    ElementId id(4);
+    property_trees.set_is_main_thread(false);
+    property_trees.set_is_active(false);
+
+    scroll_tree.GetOrCreateSyncedScrollOffsetForTesting(id);
+
+    scroll_tree.SetBaseScrollOffset(id, gfx::PointF(70, 80));
+    EXPECT_POINTF_EQ(gfx::PointF(70, 80),
+                     scroll_tree.current_scroll_offset(id));
+
+    scroll_tree.SetBaseScrollOffset(id, gfx::PointF(NAN, 80));
+    EXPECT_POINTF_EQ(gfx::PointF(70, 80),
+                     scroll_tree.current_scroll_offset(id));
+  }
+}
+
+TEST(PropertyTreeTest, TransformNodeScrollOffsetValidation) {
+  TransformNode node;
+  node.SetScrollOffset(gfx::PointF(10, 20), DamageReason::kUntracked);
+  EXPECT_POINTF_EQ(gfx::PointF(10, 20), node.scroll_offset());
+
+  node.SetScrollOffset(gfx::PointF(NAN, 20), DamageReason::kUntracked);
+  EXPECT_POINTF_EQ(gfx::PointF(10, 20), node.scroll_offset());
+
+  node.SetScrollOffset(gfx::PointF(10, INFINITY), DamageReason::kUntracked);
+  EXPECT_POINTF_EQ(gfx::PointF(10, 20), node.scroll_offset());
 }
 
 }  // namespace
