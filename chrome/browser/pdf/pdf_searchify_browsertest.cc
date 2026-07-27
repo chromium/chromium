@@ -147,19 +147,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 );
 
-// TODO(crbug.com/406839385): Re-enable this test on Mac and Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_HelloWorld DISABLED_HelloWorld
-#else
-#define MAYBE_HelloWorld HelloWorld
-#endif
-IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MAYBE_HelloWorld) {
+IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, HelloWorld) {
   base::HistogramTester histograms;
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
       "/pdf/accessibility/hello-world-in-image.pdf")));
 
   std::u16string page_text =
-      GetPageText(/*page_idex=*/0, /*repeat_until_has_text=*/
+      GetPageText(/*page_index=*/0, /*repeat_until_has_text=*/
                   IsSearchifyActive());
 
   EXPECT_EQ(page_text, IsSearchifyActive() ? u"Hello, world!" : u"");
@@ -174,9 +168,7 @@ IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MAYBE_HelloWorld) {
       IsScreenReaderEnabled(), IsSearchifyActive());
 }
 
-// TODO(crbug.com/406839385): Re-enable this test on Mac.
-// TODO(crbug.com/470431038): Test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, DISABLED_MultiPage) {
+IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MultiPage) {
   base::HistogramTester histograms;
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
       "/pdf/accessibility/inaccessible-text-in-three-page.pdf")));
