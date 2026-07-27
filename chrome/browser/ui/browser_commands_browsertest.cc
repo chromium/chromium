@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -724,6 +725,70 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CopyingUrlOpensToast) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   chrome::ExecuteCommand(browser(), IDC_COPY_URL);
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       CloseTabShowsToastWhenAllSelectedTabsArePinned) {
+  // Add 2 tabs so we have 3 tabs total (indices 0, 1, 2).
+  AddTabs(2);
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Pin the first two tabs.
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsPinned());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(1)->IsPinned());
+
+  // Select both tab 0 (pinned) and tab 1 (pinned).
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddSelectionFromAnchorTo(1);
+  EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(0));
+  EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
+  EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(2));
+
+  ToastController* const toast_controller =
+      browser()->GetFeatures().toast_controller();
+  ASSERT_TRUE(toast_controller);
+
+  // Attempting to close selected tabs when ALL are pinned triggers the toast
+  // rather than immediately closing the tabs.
+  chrome::CloseTab(browser());
+  EXPECT_EQ(ToastId::kClosePinnedTab, toast_controller->GetCurrentToastId());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Invoking CloseTab a second time while the toast is active closes the
+  // selected tabs.
+  chrome::CloseTab(browser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserCommandsTest,
+    CloseTabDoesNotShowToastWhenNotAllSelectedTabsArePinned) {
+  // Add 2 tabs so we have 3 tabs total (indices 0, 1, 2).
+  AddTabs(2);
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Pin the first tab (index 0) only.
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsPinned());
+
+  // Select tab 0 (pinned) and tab 1 (unpinned).
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddSelectionFromAnchorTo(1);
+  EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(0));
+  EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
+  EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(2));
+
+  ToastController* const toast_controller =
+      browser()->GetFeatures().toast_controller();
+  ASSERT_TRUE(toast_controller);
+
+  // Attempting to close selected tabs when NOT ALL selected tabs are pinned
+  // closes them immediately without showing the toast.
+  chrome::CloseTab(browser());
+  EXPECT_NE(ToastId::kClosePinnedTab, toast_controller->GetCurrentToastId());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 }  // namespace chrome

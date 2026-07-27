@@ -1372,10 +1372,19 @@ void CloseTab(BrowserWindowInterface* browser) {
     return;
   }
 
-  const bool single_pinned_tab_selected =
-      active_tab->IsPinned() &&
-      browser->GetTabStripModel()->selection_model().size() == 1;
-  if (single_pinned_tab_selected &&
+  const auto& selected_tabs =
+      browser->GetTabStripModel()->selection_model().selected_tabs();
+  bool all_selected_tabs_pinned = !selected_tabs.empty();
+  for (const tabs::TabInterface* tab : selected_tabs) {
+    if (!tab->IsPinned()) {
+      all_selected_tabs_pinned = false;
+      break;
+    }
+  }
+
+  // If all selected tabs are pinned, show a confirmation toast if one isn't
+  // already shown.
+  if (all_selected_tabs_pinned &&
       toast_controller->GetCurrentToastId() != ToastId::kClosePinnedTab) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     CHECK(browser_view);
@@ -1389,7 +1398,7 @@ void CloseTab(BrowserWindowInterface* browser) {
     toast_controller->MaybeShowToast(std::move(params));
   } else {
     CloseSelectedTabAndRecordTabCountMetric(browser);
-    if (single_pinned_tab_selected) {
+    if (all_selected_tabs_pinned) {
       base::RecordAction(
           UserMetricsAction("Tab.PinnedTabToastClosedAfterConfirmation"));
     }
