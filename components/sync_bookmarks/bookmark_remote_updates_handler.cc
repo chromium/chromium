@@ -178,32 +178,24 @@ base::Uuid GetParentUuidInUpdate(const syncer::EntityData& update_entity) {
   return parent_uuid;
 }
 
-void ApplyRemoteUpdate(
-    const syncer::UpdateResponseData& update,
-    SyncedBookmarkTrackerEntity* tracked_entity,
-    const SyncedBookmarkTrackerEntity* new_parent_tracked_entity,
-    BookmarkModelView* model,
-    SyncedBookmarkTracker* tracker,
-    favicon::FaviconService* favicon_service) {
+void ApplyRemoteUpdate(const syncer::UpdateResponseData& update,
+                       const bookmarks::BookmarkNode* node,
+                       const bookmarks::BookmarkNode* new_parent,
+                       BookmarkModelView* model,
+                       const SyncedBookmarkTracker* tracker,
+                       favicon::FaviconService* favicon_service) {
   const syncer::EntityData& update_entity = update.entity;
   DCHECK(!update_entity.is_deleted());
-  DCHECK(tracked_entity);
-  DCHECK(tracked_entity->bookmark_node());
-  DCHECK(new_parent_tracked_entity);
+  DCHECK(node);
+  DCHECK(new_parent);
   DCHECK(model);
   DCHECK(tracker);
   DCHECK(favicon_service);
-  DCHECK_EQ(
-      tracked_entity->bookmark_node()->uuid(),
-      base::Uuid::ParseLowercase(update_entity.specifics.bookmark().guid()));
+  DCHECK_EQ(node->uuid(), base::Uuid::ParseLowercase(
+                              update_entity.specifics.bookmark().guid()));
 
-  const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();
   const bookmarks::BookmarkNode* old_parent = node->parent();
-  const bookmarks::BookmarkNode* new_parent =
-      new_parent_tracked_entity->bookmark_node();
-
   DCHECK(old_parent);
-  DCHECK(new_parent);
   DCHECK(old_parent->is_folder());
   DCHECK(new_parent->is_folder());
 
@@ -221,7 +213,6 @@ void ApplyRemoteUpdate(
   const size_t new_index = ComputeChildNodeIndex(
       new_parent, update_entity.specifics.bookmark().unique_position(),
       tracker);
-  tracked_entity->RecordAcceptedRemoteUpdate(update);
 
   if (new_parent == old_parent &&
       (new_index == old_index || new_index == old_index + 1)) {
@@ -574,8 +565,12 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
     ReuploadEntityIfNeeded(update_entity, tracked_entity);
     return;
   }
-  ApplyRemoteUpdate(update, tracked_entity, new_parent_entity, bookmark_model_,
+  ApplyRemoteUpdate(update, node, new_parent, bookmark_model_,
                     bookmark_tracker_, favicon_service_);
+  // The tracker must be updated after ApplyRemoteUpdate() so that
+  // ApplyRemoteUpdate() can compute the child node index using the pre-update
+  // unique positions in the tracker.
+  tracked_entity->RecordAcceptedRemoteUpdate(update);
   ReuploadEntityIfNeeded(update_entity, tracked_entity);
 }
 
@@ -630,7 +625,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (update_entity.is_deleted()) {
     // Only remote has been deleted. Local wins. Record that we received the
     // update from the server but leave the pending commit intact.
-    tracked_entity->UpdateServerVersion(update.response_version);
+    tracked_entity->RecordIgnoredRemoteUpdate(update);
     syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
@@ -643,7 +638,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
       // Local deletion vs remote update which matches base data.
       // This means the remote update is a no-op (e.g. migration).
       // Local deletion wins.
-      tracked_entity->UpdateServerVersion(update.response_version);
+      tracked_entity->RecordIgnoredRemoteUpdate(update);
       syncer::RecordDataTypeEntityConflictResolution(
           syncer::BOOKMARKS,
           syncer::ConflictResolution::kIgnoreRemoteNoOpUpdate);
@@ -698,8 +693,7 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   // parent without any data change.
   if (tracked_entity->MatchesData(update_entity)) {
     DCHECK_EQ(new_parent, old_parent);
-    tracked_entity->AckSequenceNumber();
-    tracked_entity->RecordAcceptedRemoteUpdate(update);
+    tracked_entity->RecordForcedRemoteUpdate(update);
 
     // The changes are identical so there isn't a real conflict.
     syncer::RecordDataTypeEntityConflictResolution(
@@ -713,11 +707,14 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
   } else {
     // Conflict where data don't match and no remote deletion, and hence server
     // wins. Update the model from server data.
-    tracked_entity->AckSequenceNumber();
     syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
-    ApplyRemoteUpdate(update, tracked_entity, new_parent_entity,
-                      bookmark_model_, bookmark_tracker_, favicon_service_);
+    ApplyRemoteUpdate(update, node, new_parent, bookmark_model_,
+                      bookmark_tracker_, favicon_service_);
+    // The tracker must be updated after ApplyRemoteUpdate() so that
+    // ApplyRemoteUpdate() can compute the child node index using the pre-update
+    // unique positions in the tracker.
+    tracked_entity->RecordForcedRemoteUpdate(update);
   }
   ReuploadEntityIfNeeded(update_entity, tracked_entity);
   return tracked_entity;

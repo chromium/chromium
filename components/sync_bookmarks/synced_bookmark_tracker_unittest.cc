@@ -256,37 +256,6 @@ TEST(SyncedBookmarkTrackerTest,
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(true));
 }
 
-TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
-  std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
-
-  const std::string kSyncId = "SYNC_ID";
-  const int64_t kId = 1;
-  const int64_t kServerVersion = 1000;
-  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
-  const sync_pb::EntitySpecifics specifics =
-      GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
-  bookmarks::BookmarkNode node(kId, base::Uuid::GenerateRandomV4(), GURL());
-  SyncedBookmarkTrackerEntity* entity = tracker->AddRemote(
-      &node, kSyncId, kServerVersion, kModificationTime, specifics);
-
-  // Test simple scenario of ack'ing an incrememented sequence number.
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
-  entity->IncrementSequenceNumber();
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(true));
-  entity->AckSequenceNumber();
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
-
-  // Test ack'ing of a multiple times incremented sequence number.
-  entity->IncrementSequenceNumber();
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(true));
-  entity->IncrementSequenceNumber();
-  entity->IncrementSequenceNumber();
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(true));
-  entity->AckSequenceNumber();
-  EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
-}
-
 TEST(SyncedBookmarkTrackerTest,
      ShouldNotSetBaseSpecificsHashForLocalCreations) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =

@@ -98,6 +98,24 @@ void SyncedBookmarkTrackerEntity::RecordAcceptedRemoteUpdate(
   }
 }
 
+void SyncedBookmarkTrackerEntity::RecordForcedRemoteUpdate(
+    const syncer::UpdateResponseData& update) {
+  std::optional<sync_pb::UniquePosition> unique_position;
+  if (update.entity.specifics.bookmark().has_unique_position()) {
+    unique_position = update.entity.specifics.bookmark().unique_position();
+  }
+  metadata_.RecordForcedRemoteUpdate(
+      update, /*trimmed_specifics=*/sync_pb::EntitySpecifics(),
+      std::move(unique_position));
+
+  if (!update.entity.is_deleted()) {
+    metadata_.mutable_proto()->set_bookmark_favicon_hash(
+        base::PersistentHash(update.entity.specifics.bookmark().favicon()));
+  } else {
+    metadata_.mutable_proto()->clear_bookmark_favicon_hash();
+  }
+}
+
 void SyncedBookmarkTrackerEntity::RecordIgnoredRemoteUpdate(
     const syncer::UpdateResponseData& update) {
   metadata_.RecordIgnoredRemoteUpdate(update);
@@ -139,15 +157,6 @@ void SyncedBookmarkTrackerEntity::RecordLocalDeletion(
 
 void SyncedBookmarkTrackerEntity::IncrementSequenceNumber() {
   metadata_.IncrementSequenceNumber();
-}
-
-void SyncedBookmarkTrackerEntity::UpdateServerVersion(int64_t server_version) {
-  metadata_.mutable_proto()->set_server_version(server_version);
-}
-
-void SyncedBookmarkTrackerEntity::AckSequenceNumber() {
-  metadata_.mutable_proto()->set_acked_sequence_number(
-      metadata_.proto().sequence_number());
 }
 
 void SyncedBookmarkTrackerEntity::UndeleteTombstoneForBookmarkNode(

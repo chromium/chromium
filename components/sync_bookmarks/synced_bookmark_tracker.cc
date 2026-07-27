@@ -536,16 +536,8 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     const syncer::ClientTagHash client_tag_hash =
         GetClientTagHashFromUuid(node->uuid());
     if (client_tag_hash != metadata->GetClientTagHash()) {
-      if (node->is_permanent_node()) {
-        // For permanent nodes the client tag hash is irrelevant and subject to
-        // change if the constants in components/bookmarks change and adopt
-        // different UUID constants. To avoid treating such state as corrupt
-        // metadata, let's fix it automatically.
-        metadata->mutable_proto()->set_client_tag_hash(client_tag_hash.value());
-      } else {
-        DLOG(ERROR) << "Bookmark UUID does not match the client tag.";
-        return CorruptionReason::BOOKMARK_UUID_MISMATCH;
-      }
+      DLOG(ERROR) << "Bookmark UUID does not match the client tag.";
+      return CorruptionReason::BOOKMARK_UUID_MISMATCH;
     }
 
     // The code populates |bookmark_favicon_hash| for all new nodes, including

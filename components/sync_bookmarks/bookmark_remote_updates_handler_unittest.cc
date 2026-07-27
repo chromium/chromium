@@ -868,6 +868,48 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldPositionRemoteReorderTwoChildren) {
+  const base::Uuid kGuid0 = base::Uuid::GenerateRandomV4();
+  const base::Uuid kGuid1 = base::Uuid::GenerateRandomV4();
+
+  syncer::UniquePosition pos0 = syncer::UniquePosition::InitialPosition(
+      syncer::UniquePosition::RandomSuffix());
+  syncer::UniquePosition pos1 = syncer::UniquePosition::After(
+      pos0, syncer::UniquePosition::RandomSuffix());
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid0, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Google",
+      /*version=*/0, /*unique_position=*/pos0));
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid1, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Yahoo",
+      /*version=*/0, /*unique_position=*/pos1));
+
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
+  ASSERT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid0));
+  ASSERT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid1));
+
+  // Reorder node1 (Yahoo) to be before node0 (Google).
+  syncer::UniquePosition new_pos1 = syncer::UniquePosition::Before(
+      pos0, syncer::UniquePosition::RandomSuffix());
+  updates.clear();
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid1, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Yahoo",
+      /*version=*/1, /*unique_position=*/new_pos1));
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  // Model should have been updated so node1 (Yahoo) is first.
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
+  EXPECT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid1));
+  EXPECT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid0));
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldPositionRemoteReparenting) {
   // Start with structure:
   // bookmark_bar
@@ -1776,6 +1818,104 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
   EXPECT_THAT(bookmark_bar_node->children().front()->GetTitle(),
               Eq(ASCIIToUTF16(kNewRemoteTitle)));
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldPositionRemoteReorderTwoChildrenOnConflict) {
+  const base::Uuid kGuid0 = base::Uuid::GenerateRandomV4();
+  const base::Uuid kGuid1 = base::Uuid::GenerateRandomV4();
+
+  syncer::UniquePosition pos0 = syncer::UniquePosition::InitialPosition(
+      syncer::UniquePosition::RandomSuffix());
+  syncer::UniquePosition pos1 = syncer::UniquePosition::After(
+      pos0, syncer::UniquePosition::RandomSuffix());
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid0, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Google",
+      /*version=*/0, /*unique_position=*/pos0));
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid1, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Yahoo",
+      /*version=*/0, /*unique_position=*/pos1));
+
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
+  ASSERT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid0));
+  ASSERT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid1));
+
+  // Mark node1 (Yahoo) as modified locally to force conflict resolution.
+  SyncedBookmarkTrackerEntity* entity1 = tracker()->GetEntityForUuid(kGuid1);
+  ASSERT_THAT(entity1, NotNull());
+  entity1->IncrementSequenceNumber();
+  ASSERT_THAT(entity1->IsUnsynced(), Eq(true));
+
+  // Push remote update for node1 (Yahoo) with a new position before node0
+  // (Google) and a new title.
+  syncer::UniquePosition new_pos1 = syncer::UniquePosition::Before(
+      pos0, syncer::UniquePosition::RandomSuffix());
+  updates.clear();
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid1, /*parent_guid=*/kBookmarkBarGuid, /*title=*/"Yahoo!!",
+      /*version=*/1, /*unique_position=*/new_pos1));
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  // Server should win conflict resolution. Model should have been updated so
+  // node1 (Yahoo) is first and its unsynced status is cleared.
+  EXPECT_THAT(entity1->IsUnsynced(), Eq(false));
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(2u));
+  EXPECT_THAT(bookmark_bar_node->children()[0]->uuid(), Eq(kGuid1));
+  EXPECT_THAT(bookmark_bar_node->children()[1]->uuid(), Eq(kGuid0));
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldIgnoreRemoteUpdateOnConflictingTypes) {
+  const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
+  const std::string kTitle = "title";
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*guid=*/kGuid,
+      /*parent_guid=*/kBookmarkBarGuid,
+      /*title=*/kTitle,
+      /*version=*/0,
+      /*unique_position=*/RandomUniquePosition()));
+
+  BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
+                                               favicon_service(), tracker());
+  updates_handler.Process(updates, /*got_new_encryption_requirements=*/false);
+
+  SyncedBookmarkTrackerEntity* entity = tracker()->GetEntityForUuid(kGuid);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_FALSE(entity->IsUnsynced());
+
+  // Mark the entity as modified locally.
+  entity->IncrementSequenceNumber();
+  ASSERT_TRUE(entity->IsUnsynced());
+
+  // Push a remote update with a conflicting type (folder instead of URL).
+  updates.clear();
+  syncer::UpdateResponseData update = CreateUpdateResponseData(
+      /*guid=*/kGuid,
+      /*parent_guid=*/kBookmarkBarGuid,
+      /*title=*/"Folder Title",
+      /*version=*/1,
+      /*unique_position=*/RandomUniquePosition());
+  update.entity.specifics.mutable_bookmark()->set_type(
+      sync_pb::BookmarkSpecifics::FOLDER);
+  update.entity.specifics.mutable_bookmark()->clear_url();
+  update.entity.is_bookmark_unique_position_in_specifics_preprocessed = true;
+  updates.push_back(std::move(update));
+
+  updates_handler.Process(updates, /*got_new_encryption_requirements=*/false);
+
+  // The remote update should be ignored due to type conflict.
+  // Server version is updated, but entity remains unsynced.
+  EXPECT_EQ(entity->metadata().server_version(), 1);
+  EXPECT_TRUE(entity->IsUnsynced());
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
