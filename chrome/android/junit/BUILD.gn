@@ -610,6 +610,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityOpenTimeRecorderTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TwaVerifierTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/controller/webapps/WebappDisclosureControllerTest.java",
+      "src/org/chromium/chrome/browser/browserservices/ui/splashscreen/trustedwebactivity/TwaSplashControllerTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/trustedwebactivity/DisclosureAcceptanceBroadcastReceiverTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/trustedwebactivity/DisclosureUiPickerTest.java",
       "src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureNotificationTest.java",
