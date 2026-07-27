@@ -65,12 +65,7 @@ const MemoryManagedPaintCanvas* PaintRenderingContext2D::GetPaintCanvas()
 
 void PaintRenderingContext2D::WillDrawWithProvider(
     const gfx::Rect& dirty_rect,
-    CanvasPerformanceMonitor::DrawType draw_type) {
-  WillDraw(dirty_rect, draw_type);
-}
-
-void PaintRenderingContext2D::WillDraw(const gfx::Rect&,
-                                       CanvasPerformanceMonitor::DrawType) {}
+    CanvasPerformanceMonitor::DrawType draw_type) {}
 
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(container_size_, this);

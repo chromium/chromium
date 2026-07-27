@@ -502,8 +502,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.
-  virtual void WillDraw(const gfx::Rect& dirty_rect,
-                        CanvasPerformanceMonitor::DrawType) = 0;
   virtual void WillDrawWithProvider(
       const gfx::Rect& dirty_rect,
       CanvasPerformanceMonitor::DrawType draw_type) = 0;
