@@ -120,16 +120,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     };
   }
 
-  private currentLanguage: string;
-  private timezoneButtonVisible: boolean;
-  private debuggingLinkVisible: boolean;
-  override hidden: boolean;
-  private isMeet: boolean;
-  private isFjord: boolean;
-  private isBootAnimation: boolean;
-  private isDeviceRequisitionConfigurable: boolean;
-  private isOobeLoaded: boolean;
-  isQuickStartEnabled: boolean;
+  declare private currentLanguage: string;
+  declare private timezoneButtonVisible: boolean;
+  declare private debuggingLinkVisible: boolean;
+  declare hidden: boolean;
+  declare private isMeet: boolean;
+  declare private isFjord: boolean;
+  declare private isBootAnimation: boolean;
+  declare private isDeviceRequisitionConfigurable: boolean;
+  declare private isOobeLoaded: boolean;
+  declare isQuickStartEnabled: boolean;
 
   private titleLongTouchDetector: LongTouchDetector | null;
   private focusedElement: string | null;

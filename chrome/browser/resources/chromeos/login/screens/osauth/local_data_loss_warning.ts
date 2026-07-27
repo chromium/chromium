@@ -66,10 +66,10 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     };
   }
 
-  private email:string;
-  private disabled : boolean;
-  private isOwner : boolean;
-  private canGoBack : boolean;
+  declare private email: string;
+  declare private disabled: boolean;
+  declare private isOwner: boolean;
+  declare private canGoBack: boolean;
   private handler: LocalDataLossWarningPageHandlerRemote;
 
 

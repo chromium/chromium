@@ -114,16 +114,16 @@ export class UpdateRequired extends UpdateRequiredBase {
     };
   }
 
-  private isNetworkConnected: boolean;
-  private updateProgressUnavailable: boolean;
-  private updateProgressValue: number;
-  private updateProgressMessage: string;
-  private estimatedTimeLeftVisible: boolean;
-  private enterpriseManager: string;
-  private deviceName: string;
-  private eolAdminMessage: string;
-  private usersDataPresent: boolean;
-  private estimatedTimeLeft: number;
+  declare private isNetworkConnected: boolean;
+  declare private updateProgressUnavailable: boolean;
+  declare private updateProgressValue: number;
+  declare private updateProgressMessage: string;
+  declare private estimatedTimeLeftVisible: boolean;
+  declare private enterpriseManager: string;
+  declare private deviceName: string;
+  declare private eolAdminMessage: string;
+  declare private usersDataPresent: boolean;
+  declare private estimatedTimeLeft: number;
 
   override get EXTERNAL_API(): string[] {
     return [

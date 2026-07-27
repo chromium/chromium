@@ -41,8 +41,8 @@ export class FjordImageSelectionScreen extends
     };
   }
 
-  private selectedImageType: string;
-  private errorMessage!: string;
+  declare private selectedImageType: string;
+  declare private errorMessage: string;
   private handler!: FjordImageSelectionPageHandlerRemote;
 
   override ready(): void {

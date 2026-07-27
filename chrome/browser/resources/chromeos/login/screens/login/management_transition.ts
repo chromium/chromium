@@ -79,8 +79,8 @@ class ManagementTransitionScreen extends ManagementTransitionScreenBase {
     };
   }
 
-  private arcTransition: number;
-  private managementEntity: string;
+  declare private arcTransition: number;
+  declare private managementEntity: string;
 
   constructor() {
     super();

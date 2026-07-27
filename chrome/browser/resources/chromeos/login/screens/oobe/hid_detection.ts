@@ -145,17 +145,17 @@ export class HidDetectionScreen extends HidDetectionScreenBase {
     };
   }
 
-  continueButtonEnabled: boolean;
-  keyboardDeviceName: string;
-  pointingDeviceName: string;
-  private touchscreenDetected_: boolean;
-  private mouseState: Connection;
-  private keyboardState: Connection;
-  private pinDialogVisible: boolean;
-  pinCode: string;
-  numKeysEnteredPinCode: number;
-  private pinDialogIsOpen: boolean;
-  pinDialogTitle: string;
+  declare continueButtonEnabled: boolean;
+  declare keyboardDeviceName: string;
+  declare pointingDeviceName: string;
+  declare private touchscreenDetected_: boolean;
+  declare private mouseState: Connection;
+  declare private keyboardState: Connection;
+  declare private pinDialogVisible: boolean;
+  declare pinCode: string;
+  declare numKeysEnteredPinCode: number;
+  declare private pinDialogIsOpen: boolean;
+  declare pinDialogTitle: string;
 
   override get EXTERNAL_API(): string[] {
     return [

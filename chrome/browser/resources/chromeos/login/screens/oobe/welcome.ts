@@ -202,21 +202,22 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     };
   }
 
-  private currentLanguage: string;
-  private currentKeyboard: string;
-  private languages: OobeTypes.LanguageDsc[];
-  private keyboards: OobeTypes.InputMethodsDsc[];
-  private a11yStatus: A11yStatuses;
-  private timezones: OobeTypes.TimezoneDsc[];
-  private highlightStrength: string;
-  private debuggingLinkVisible: boolean;
-  private voicesChangedListenerMaybeGiveChromeVoxHint: (() => void)|undefined;
-  private defaultChromeVoxHintTimeoutId: number|undefined;
+  declare private currentLanguage: string;
+  declare private currentKeyboard: string;
+  declare private languages: OobeTypes.LanguageDsc[];
+  declare private keyboards: OobeTypes.InputMethodsDsc[];
+  declare private a11yStatus: A11yStatuses;
+  declare private timezones: OobeTypes.TimezoneDsc[];
+  declare private highlightStrength: string;
+  declare private debuggingLinkVisible: boolean;
+  declare private voicesChangedListenerMaybeGiveChromeVoxHint:
+      (() => void)|undefined;
+  declare private defaultChromeVoxHintTimeoutId: number|undefined;
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS: number;
-  private chromeVoxHintGiven: boolean;
-  private isMeet: boolean;
-  private isDeviceRequisitionConfigurable: boolean;
+  declare private DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS: number;
+  declare private chromeVoxHintGiven: boolean;
+  declare private isMeet: boolean;
+  declare private isDeviceRequisitionConfigurable: boolean;
   private configurationApplied: boolean;
 
   constructor() {

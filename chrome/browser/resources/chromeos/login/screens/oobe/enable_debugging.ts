@@ -79,9 +79,9 @@ export class EnableDebugging extends EnableDebuggingBase {
     };
   }
 
-  private password_: string;
-  private passwordRepeat_: string;
-  private passwordsMatch_: boolean;
+  declare private password_: string;
+  declare private passwordRepeat_: string;
+  declare private passwordsMatch_: boolean;
 
   override ready(): void {
     super.ready();

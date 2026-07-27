@@ -128,15 +128,15 @@ export class EncryptionMigration extends EncryptionMigrationBase {
     };
   }
 
-  private progress: number;
-  private isResuming: boolean;
-  private batteryPercent: number;
-  private necessaryBatteryPercent: number;
-  private isEnoughBattery: boolean;
-  private isCharging: boolean;
-  private isSkipped: boolean;
-  private availableSpaceInString: string;
-  private necessarySpaceInString: string;
+  declare private progress: number;
+  declare private isResuming: boolean;
+  declare private batteryPercent: number;
+  declare private necessaryBatteryPercent: number;
+  declare private isEnoughBattery: boolean;
+  declare private isCharging: boolean;
+  declare private isSkipped: boolean;
+  declare private availableSpaceInString: string;
+  declare private necessarySpaceInString: string;
   private callbackRouter: EncryptionMigrationPageCallbackRouter;
   private handler: EncryptionMigrationPageHandlerRemote;
 

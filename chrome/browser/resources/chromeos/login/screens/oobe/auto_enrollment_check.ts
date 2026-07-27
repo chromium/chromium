@@ -46,7 +46,7 @@ export class AutoEnrollmentCheckElement extends AutoEnrollmentCheckElementBase {
     };
   }
 
-  private isOobeSoftwareUpdateEnabled: boolean;
+  declare private isOobeSoftwareUpdateEnabled: boolean;
 
   override ready(): void {
     super.ready();

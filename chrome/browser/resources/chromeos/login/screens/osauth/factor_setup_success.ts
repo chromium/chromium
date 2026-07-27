@@ -96,10 +96,10 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
     };
   }
 
-  private hasNextStep: boolean;
-  private buttonsEnabled: boolean;
-  private factors: ModifiedFactors;
-  private changeMode: ChangeMode;
+  declare private hasNextStep: boolean;
+  declare private buttonsEnabled: boolean;
+  declare private factors: ModifiedFactors;
+  declare private changeMode: ChangeMode;
 
   override ready(): void {
     super.ready();

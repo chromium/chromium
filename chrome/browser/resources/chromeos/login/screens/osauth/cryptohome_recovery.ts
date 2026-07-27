@@ -57,8 +57,8 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
     };
   }
 
-  private isDarkModeActive: boolean;
-  private disabled: boolean;
+  declare private isDarkModeActive: boolean;
+  declare private disabled: boolean;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): string {

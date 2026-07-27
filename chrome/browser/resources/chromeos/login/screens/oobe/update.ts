@@ -183,17 +183,17 @@ export class Update extends UpdateBase {
     };
   }
 
-  private manualRebootNeeded: boolean;
-  private cancelAllowed: boolean;
-  private cancelHint: string;
-  private showLowBatteryWarning: boolean;
-  private updateStatusMessagePercent: string;
-  private updateStatusMessageTimeLeft: string;
-  private betterUpdateProgressValue: number;
-  private autoTransition: boolean;
-  private thresholdIndex: number;
-  private isOptOutEnabled: boolean;
-  private isOobeSoftwareUpdateEnabled: boolean;
+  declare private manualRebootNeeded: boolean;
+  declare private cancelAllowed: boolean;
+  declare private cancelHint: string;
+  declare private showLowBatteryWarning: boolean;
+  declare private updateStatusMessagePercent: string;
+  declare private updateStatusMessageTimeLeft: string;
+  declare private betterUpdateProgressValue: number;
+  declare private autoTransition: boolean;
+  declare private thresholdIndex: number;
+  declare private isOptOutEnabled: boolean;
+  declare private isOobeSoftwareUpdateEnabled: boolean;
 
   static get observers(): string[] {
     return ['playAnimation(uiStep)'];

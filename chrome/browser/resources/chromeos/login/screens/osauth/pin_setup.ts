@@ -124,16 +124,16 @@ class PinSetup extends PinSetupBase {
     };
   }
 
-  private enableSubmit: boolean;
-  private isConfirmStep: boolean;
-  authToken: string;
-  private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
-  private hasLoginSupport: boolean;
-  private usingPinAsMainSignInFactor: boolean;
-  isChildAccount: boolean;
-  private isRecoveryMode: boolean;
-  private isSetupDoneButtonEnabled: boolean;
-  private cannotSkipFlow: boolean;
+  declare private enableSubmit: boolean;
+  declare private isConfirmStep: boolean;
+  declare authToken: string;
+  declare private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  declare private hasLoginSupport: boolean;
+  declare private usingPinAsMainSignInFactor: boolean;
+  declare isChildAccount: boolean;
+  declare private isRecoveryMode: boolean;
+  declare private isSetupDoneButtonEnabled: boolean;
+  declare private cannotSkipFlow: boolean;
 
   override get UI_STEPS() {
     return PinSetupState;

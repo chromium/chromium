@@ -129,16 +129,16 @@ export class OfflineLogin extends OfflineLoginBase {
     };
   }
 
-  private disabled: boolean;
-  private manager: string;
-  private emailDomain: string;
-  private displayDomain: string;
-  private email: string;
-  private password: string;
-  private authenticateByPin: boolean;
-  private fullEmail: string;
-  private activeSection: string;
-  private animationInProgress: boolean;
+  declare private disabled: boolean;
+  declare private manager: string;
+  declare private emailDomain: string;
+  declare private displayDomain: string;
+  declare private email: string;
+  declare private password: string;
+  declare private authenticateByPin: boolean;
+  declare private fullEmail: string;
+  declare private activeSection: string;
+  declare private animationInProgress: boolean;
 
   override get EXTERNAL_API(): string[] {
     return [

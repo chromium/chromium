@@ -140,13 +140,13 @@ class ConsumerUpdateScreen extends ConsumerUpdateScreenElementBase {
     return ['playAnimation(uiStep)'];
   }
 
-  private isSkipButtonHidden: boolean;
-  private showLowBatteryWarning: boolean;
-  private updateStatusMessagePercent: string;
-  private updateStatusMessageTimeLeft: string;
-  private betterUpdateProgressValue: number;
-  private autoTransition: boolean;
-  private thresholdIndex: number;
+  declare private isSkipButtonHidden: boolean;
+  declare private showLowBatteryWarning: boolean;
+  declare private updateStatusMessagePercent: string;
+  declare private updateStatusMessageTimeLeft: string;
+  declare private betterUpdateProgressValue: number;
+  declare private autoTransition: boolean;
+  declare private thresholdIndex: number;
   private callbackRouter: ConsumerUpdatePageCallbackRouter;
   private handler: ConsumerUpdatePageHandlerRemote;
 

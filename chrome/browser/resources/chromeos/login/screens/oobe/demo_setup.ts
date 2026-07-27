@@ -77,10 +77,10 @@ class DemoSetupScreen extends DemoSetupScreenBase {
     };
   }
 
-  private setupSteps_: Record<string, number>;
-  private currentStepIndex_: number;
-  private errorMessage_: string;
-  private isPowerwashRequired_: boolean;
+  declare private setupSteps_: Record<string, number>;
+  declare private currentStepIndex_: number;
+  declare private errorMessage_: string;
+  declare private isPowerwashRequired_: boolean;
 
   constructor() {
     super();

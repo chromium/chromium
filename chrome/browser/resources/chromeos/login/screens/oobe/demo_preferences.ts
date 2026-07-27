@@ -102,13 +102,13 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     };
   }
 
-  languages: OobeTypes.LanguageDsc[];
-  countries: OobeTypes.DemoCountryDsc[];
-  private isCountrySelected: boolean;
-  private userCanContinue: boolean;
-  retailerNameInput: string;
-  storeNumberInput: string;
-  private storeNumberInputInvalid: boolean;
+  declare languages: OobeTypes.LanguageDsc[];
+  declare countries: OobeTypes.DemoCountryDsc[];
+  declare private isCountrySelected: boolean;
+  declare private userCanContinue: boolean;
+  declare retailerNameInput: string;
+  declare storeNumberInput: string;
+  declare private storeNumberInputInvalid: boolean;
   private configurationApplied: boolean;
   private countryNotSelectedId: string;
 

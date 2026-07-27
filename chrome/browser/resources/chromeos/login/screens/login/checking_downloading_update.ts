@@ -157,17 +157,17 @@ export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
     };
   }
 
-  private checkingForUpdate: boolean;
-  private progressValue: number;
-  private estimatedTimeLeft: number;
-  private hasEstimate: boolean;
-  private defaultProgressMessage: string;
-  private updateCompleted: boolean;
-  private cancelAllowed: boolean;
-  private checkingForUpdatesKey: string;
-  private downloadingUpdatesKey: string;
-  private estimatedTimeLeftMsg: string;
-  private progressMessage: string;
+  declare private checkingForUpdate: boolean;
+  declare private progressValue: number;
+  declare private estimatedTimeLeft: number;
+  declare private hasEstimate: boolean;
+  declare private defaultProgressMessage: string;
+  declare private updateCompleted: boolean;
+  declare private cancelAllowed: boolean;
+  declare private checkingForUpdatesKey: string;
+  declare private downloadingUpdatesKey: string;
+  declare private estimatedTimeLeftMsg: string;
+  declare private progressMessage: string;
 
   static get observers(): string[] {
     return ['playAnimation(checkingForUpdate)'];

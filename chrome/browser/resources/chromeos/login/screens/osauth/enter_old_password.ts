@@ -70,10 +70,10 @@ export class EnterOldPassword extends EnterOldPasswordBase {
     };
   }
 
-  private password: string;
-  private passwordInvalid: boolean;
-  private disabled: boolean;
-  private passwordInput: CrInputElement;
+  declare private password: string;
+  declare private passwordInvalid: boolean;
+  declare private disabled: boolean;
+  declare private passwordInput: CrInputElement;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): EnterOldPasswordUiState {

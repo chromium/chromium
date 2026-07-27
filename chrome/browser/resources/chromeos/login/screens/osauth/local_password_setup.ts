@@ -77,11 +77,11 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
     };
   }
 
-  authToken: string|undefined;
+  declare authToken: string|undefined;
 
-  private backButtonVisible: boolean;
-  private isRecoveryFlow: boolean;
-  private passwordValue: string;
+  declare private backButtonVisible: boolean;
+  declare private isRecoveryFlow: boolean;
+  declare private passwordValue: string;
 
   constructor() {
     super();

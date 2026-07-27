@@ -76,9 +76,9 @@ export class PasswordSelection extends PasswordSelectionBase {
     };
   }
 
-  private selectedPasswordType: string;
-  private passwordTypeEnum: PasswordType;
-  private backButtonVisible: boolean;
+  declare private selectedPasswordType: string;
+  declare private passwordTypeEnum: PasswordType;
+  declare private backButtonVisible: boolean;
 
   override ready(): void {
     super.ready();

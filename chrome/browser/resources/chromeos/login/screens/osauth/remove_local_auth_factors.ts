@@ -53,7 +53,7 @@ class RemoveLocalAuthFactorsScreen extends
     };
   }
 
-  private email: string = '';
+  declare private email: string;
 
   override get EXTERNAL_API(): string[] {
     return ['showRemoveLocalAuthFactorsSuccessStep'];
