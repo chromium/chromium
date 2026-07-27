@@ -742,8 +742,6 @@ static_library("test_support") {
 
   if (is_chromeos) {
     sources += [
-      "../browser/ui/views/frame/immersive_mode_tester.cc",
-      "../browser/ui/views/frame/immersive_mode_tester.h",
       "base/ash/extension_js_browser_test.cc",
       "base/ash/extension_js_browser_test.h",
       "base/ash/js_test_api.cc",
@@ -832,6 +830,7 @@ static_library("test_support") {
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/settings:test_support",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/views/frame:immersive_mode_tester",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",
       "//chromeos/ash/components/dbus/userdataauth",

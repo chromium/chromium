@@ -19,6 +19,34 @@ source_set("shadow") {
   ]
 }
 
+# immersive_mode_tester is only built on ChromeOS, matching the platforms
+# where its immersive-fullscreen consumers compile it.
+if (is_chromeos) {
+  source_set("immersive_mode_tester") {
+    testonly = true
+
+    sources = [
+      "immersive_mode_tester.cc",
+      "immersive_mode_tester.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/immersive:immersive_mode_controller",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+
+    deps = [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views",
+    ]
+  }
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -73,4 +101,3 @@ source_set("app_menu_button_observer") {
 source_set("top_controls_slide_controller") {
   sources = [ "top_controls_slide_controller.h" ]
 }
-
