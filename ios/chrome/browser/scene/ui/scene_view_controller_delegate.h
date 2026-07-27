@@ -16,6 +16,10 @@
 - (void)sceneViewControllerShowGeminiFloatyIfInvoked:
     (SceneViewController*)viewController;
 
+// Notifies the delegate to hide the Gemini floaty if invoked.
+- (void)sceneViewControllerHideGeminiFloatyIfInvoked:
+    (SceneViewController*)viewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SCENE_UI_SCENE_VIEW_CONTROLLER_DELEGATE_H_

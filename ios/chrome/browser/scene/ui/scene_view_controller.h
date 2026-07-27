@@ -41,6 +41,9 @@
 // Handler for App Bar commands.
 @property(nonatomic, weak) id<AppBarCommands> appBarHandler;
 
+// Handler for Gemini commands.
+@property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
 // Sets the app bar.
 - (void)setAppBar:(UIViewController<ResponderChaining>*)appBar;
 

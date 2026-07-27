@@ -295,6 +295,15 @@ inline LayoutStateScenePassKey PassKey() {
 
 #pragma mark - UIViewController
 
+- (void)presentViewController:(UIViewController*)viewControllerToPresent
+                     animated:(BOOL)flag
+                   completion:(void (^)())completion {
+  [self hideGeminiFloatyIfInvoked];
+  [super presentViewController:viewControllerToPresent
+                      animated:flag
+                    completion:completion];
+}
+
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
   __weak SceneViewController* weakSelf = self;
@@ -683,7 +692,11 @@ inline LayoutStateScenePassKey PassKey() {
   return insets;
 }
 
-
+// Helper method for presentation when attempting to hide the Gemini floaty
+// if invoked.
+- (void)hideGeminiFloatyIfInvoked {
+  [self.delegate sceneViewControllerHideGeminiFloatyIfInvoked:self];
+}
 
 // Helper method for dismissal block when attempting to show the Gemini floaty
 // if invoked.

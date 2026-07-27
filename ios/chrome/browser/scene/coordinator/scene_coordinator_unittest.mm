@@ -16,6 +16,8 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -36,6 +39,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using UserFeedbackDataCallback =
     base::RepeatingCallback<void(UserFeedbackData*)>;
@@ -203,6 +207,25 @@ TEST_F(SceneCoordinatorTest, UpdatesIncognitoContentVisibility) {
   EXPECT_TRUE(scene_state_.incognitoState.incognitoContentVisible);
   [coordinator_ setIncognitoContentVisible:NO];
   EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
+}
+
+// Tests that SceneViewController hides the Gemini floaty when presenting a view
+// controller.
+TEST_F(SceneCoordinatorTest, PresentViewControllerHidesGeminiFloaty) {
+  SceneViewController* scene_view_controller =
+      [[SceneViewController alloc] init];
+  scene_view_controller.layoutGuideCenter = [[LayoutGuideCenter alloc] init];
+  id mock_delegate = OCMProtocolMock(@protocol(SceneViewControllerDelegate));
+  scene_view_controller.delegate = mock_delegate;
+
+  OCMExpect([mock_delegate
+      sceneViewControllerHideGeminiFloatyIfInvoked:scene_view_controller]);
+
+  [scene_view_controller presentViewController:[[UIViewController alloc] init]
+                                      animated:NO
+                                    completion:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
 }
 
 }  // namespace
