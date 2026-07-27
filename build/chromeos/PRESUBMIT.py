@@ -17,7 +17,7 @@ def CommonChecks(input_api, output_api):
   # valuable and gives spurious errors.
   if input_api.sys.platform != 'win32':
     results += input_api.canned_checks.RunPylint(
-        input_api, output_api, pylintrc='pylintrc', version='2.6')
+        input_api, output_api, pylintrc='pylintrc', version='3.2')
     tests = input_api.canned_checks.GetUnitTestsInDirectory(
         input_api, output_api, '.', [r'^.+_test\.py$'])
     results += input_api.RunTests(tests)

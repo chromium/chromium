@@ -35,7 +35,7 @@ def CommonChecks(input_api, output_api, *, is_upload):
       input_api.canned_checks.GetPylint(
           input_api,
           output_api,
-          pylintrc='pylintrc',
+          pylintrc='pylintrc-3.2',
           files_to_skip=[
               r'.*_pb2\.py'
           ] + build_pys,
@@ -53,7 +53,7 @@ def CommonChecks(input_api, output_api, *, is_upload):
               J('..', '..', 'third_party', 'depot_tools'),
               J('..', '..', 'third_party', 'colorama', 'src'),
           ],
-          version='2.7'))
+          version='3.2'))
   tests.extend(
       input_api.canned_checks.GetPylint(
           input_api,

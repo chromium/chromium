@@ -30,7 +30,7 @@ def CommonChecks(input_api, output_api):
                                           output_api,
                                           extra_paths_list=pylint_extra_paths,
                                           pylintrc='pylintrc',
-                                          version='2.7'))
+                                          version='3.2'))
 
     # coveragetest.py is responsible for running unit tests in this directory
     tests.append(
