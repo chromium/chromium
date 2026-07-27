@@ -108,6 +108,13 @@ class MockDownloadManagerDelegate : public DownloadManagerDelegate {
                     SavePackagePathPickedCallback));
   MOCK_METHOD0(ApplicationClientIdForFileScanning, std::string());
   MOCK_METHOD1(AttachExtraInfo, void(download::DownloadItem*));
+  bool SupportsHistoryLoading() override { return supports_history_loading_; }
+  void set_supports_history_loading(bool supports) {
+    supports_history_loading_ = supports;
+  }
+
+ private:
+  bool supports_history_loading_ = true;
 };
 
 MockDownloadManagerDelegate::MockDownloadManagerDelegate() {}
@@ -989,6 +996,18 @@ TEST_F(DownloadManagerShutdownTest,
        OnDownloadCanceledAtShutdownNotCalledForCompleteDownload) {
   RunOnDownloadCanceledAtShutdownCalledTest(download::DownloadItem::COMPLETE,
                                             /*expected_canceled_call_times=*/0);
+}
+
+TEST_F(DownloadManagerTest, PostInitializationWithoutHistoryLoadingSupport) {
+  GetMockDownloadManagerDelegate().set_supports_history_loading(false);
+  EXPECT_FALSE(download_manager_->IsManagerInitialized());
+
+  OnInProgressDownloadManagerInitialized();
+
+  // Since history loading is not supported by the delegate, DownloadManager
+  // becomes initialized immediately after in-progress cache initialization,
+  // without waiting for OnHistoryDBInitialized().
+  EXPECT_TRUE(download_manager_->IsManagerInitialized());
 }
 
 }  // namespace content

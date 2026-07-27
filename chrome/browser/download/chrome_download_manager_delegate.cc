@@ -47,6 +47,7 @@
 #include "chrome/browser/download/insecure_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -643,6 +644,11 @@ ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
 ChromeDownloadManagerDelegate::~ChromeDownloadManagerDelegate() {
   // If a DownloadManager was set for this, Shutdown() must be called.
   DCHECK(!download_manager_);
+}
+
+bool ChromeDownloadManagerDelegate::SupportsHistoryLoading() {
+  return HistoryServiceFactory::GetForProfile(
+             profile_, ServiceAccessType::EXPLICIT_ACCESS) != nullptr;
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {

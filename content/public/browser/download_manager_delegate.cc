@@ -159,4 +159,8 @@ bool DownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+bool DownloadManagerDelegate::SupportsHistoryLoading() {
+  return false;
+}
+
 }  // namespace content

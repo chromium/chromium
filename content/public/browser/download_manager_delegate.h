@@ -255,6 +255,12 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // Whether download is restricted by policy.
   virtual bool IsDownloadRestrictedByPolicy();
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Returns whether the delegate supports history loading. If false,
+  // DownloadManager does not wait for history loading to complete before
+  // becoming initialized.
+  virtual bool SupportsHistoryLoading();
+
  protected:
   virtual ~DownloadManagerDelegate();
 };
