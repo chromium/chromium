@@ -104,6 +104,10 @@ CGFloat HorizontalMargin() {
 
   // The layout guide center for this view.
   LayoutGuideCenter* _layoutGuideCenter;
+
+  // Constraints for selection mode, activated the first time selection mode is
+  // entered.
+  NSArray<NSLayoutConstraint*>* _selectionModeConstraints;
 }
 
 - (instancetype)initWithLayoutGuideCenter:
@@ -141,6 +145,11 @@ CGFloat HorizontalMargin() {
   self.selectedTabsCount = 0;
   // Reset the Select All button to its default title.
   [self configureSelectionButtonTitleSelectAll:YES];
+  if (_mode == TabGridMode::kSelection) {
+    [NSLayoutConstraint activateConstraints:_selectionModeConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_selectionModeConstraints];
+  }
   [self setButtonsForTraitCollection:self.traitCollection];
   if (mode == TabGridMode::kSearch) {
     // Focus the search bar, and make it a first responder once the user enter
@@ -313,6 +322,32 @@ CGFloat HorizontalMargin() {
 }
 
 #pragma mark - Private
+
+// Constraints for the selection mode.
+- (NSArray<NSLayoutConstraint*>*)constraintsForSelectionModeWithContainerView:
+    (UIView*)containerView {
+  NSLayoutConstraint* centeredLabelConstraint =
+      [_selectedTabsLabel.centerXAnchor
+          constraintEqualToAnchor:containerView.centerXAnchor];
+  centeredLabelConstraint.priority = UILayoutPriorityDefaultHigh;
+
+  return @[
+    // Horizontal layout:
+    [_selectAllButton.leadingAnchor
+        constraintEqualToAnchor:containerView.leadingAnchor
+                       constant:HorizontalMargin()],
+    centeredLabelConstraint,
+    [_selectedTabsLabel.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_selectAllButton.trailingAnchor
+                                    constant:HorizontalMargin()],
+    [_selectedTabsLabel.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_exitSelectionButton.leadingAnchor
+                                 constant:-HorizontalMargin()],
+    [_exitSelectionButton.trailingAnchor
+        constraintEqualToAnchor:containerView.trailingAnchor
+                       constant:-HorizontalMargin()],
+  ];
+}
 
 // Returns a new button to be used.
 - (UIButton*)createButtonWithImage:(UIImage*)image
@@ -670,29 +705,10 @@ CGFloat HorizontalMargin() {
       constraintEqualToAnchor:_exitTabGridButton.leadingAnchor
                      constant:-HorizontalMargin()];
 
-  NSLayoutConstraint* centeredLabelConstraint =
-      [_selectedTabsLabel.centerXAnchor
-          constraintEqualToAnchor:containerView.centerXAnchor];
-  centeredLabelConstraint.priority = UILayoutPriorityDefaultHigh;
-
   [NSLayoutConstraint activateConstraints:@[
     searchBarMaximumWidth,
-    [_selectAllButton.leadingAnchor
-        constraintEqualToAnchor:containerView.leadingAnchor
-                       constant:HorizontalMargin()],
     [_pageControl.centerXAnchor
         constraintEqualToAnchor:containerView.centerXAnchor],
-
-    centeredLabelConstraint,
-    [_selectedTabsLabel.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:_selectAllButton.trailingAnchor
-                                    constant:HorizontalMargin()],
-    [_selectedTabsLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_exitSelectionButton.leadingAnchor
-                                 constant:-HorizontalMargin()],
-    [_exitSelectionButton.trailingAnchor
-        constraintEqualToAnchor:containerView.trailingAnchor
-                       constant:-HorizontalMargin()],
 
     [_exitTabGridButton.trailingAnchor
         constraintEqualToAnchor:containerView.trailingAnchor
@@ -708,6 +724,15 @@ CGFloat HorizontalMargin() {
         constraintLessThanOrEqualToAnchor:containerView.trailingAnchor
                                  constant:-HorizontalMargin()],
   ]];
+
+  _selectionModeConstraints =
+      [self constraintsForSelectionModeWithContainerView:containerView];
+
+  if (_mode == TabGridMode::kSelection) {
+    [NSLayoutConstraint activateConstraints:_selectionModeConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_selectionModeConstraints];
+  }
 
   [self setButtonsForTraitCollection:self.traitCollection];
 }
