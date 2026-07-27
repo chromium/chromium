@@ -10300,7 +10300,7 @@
             ]
         }
     ],
-    "EnableExtensionInstallPolicyFetching": [
+    "EnableExtensionInstallPolicyFetchingChromeOS": [
         {
             "platforms": [
                 "chromeos"
