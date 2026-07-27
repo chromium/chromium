@@ -5811,7 +5811,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
          "about to be deleted is a waste.";
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
-    DCHECK(new_style);
+    CHECK(old_style) << "Modifying style of an existing LayoutObject - "
+                        "old_style must be non-null";
+    CHECK(new_style) << "Modifying style of an existing LayoutObject - "
+                        "new_style must be non-null";
     if (layout_object->IsText() &&
         IsA<LayoutTextCombine>(layout_object->Parent())) [[unlikely]] {
       // Adjust style for <br> and <wbr> in combined text.
@@ -5819,6 +5822,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       ComputedStyleBuilder adjust_builder(*new_style);
       StyleAdjuster::AdjustStyleForCombinedText(adjust_builder);
       new_style = adjust_builder.TakeStyle();
+      CHECK(new_style);
     }
     // kEqual means that the computed style didn't change, but there are
     // additional flags in ComputedStyle which may have changed. For instance,
