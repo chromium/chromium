@@ -760,26 +760,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 // PRE_* tests aren't supported on Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/537189155): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart \
-  DISABLED_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart
-#define MAYBE_ShouldNotSendDeviceInfoAfterBrowserRestart \
-  DISABLED_ShouldNotSendDeviceInfoAfterBrowserRestart
-#else
-#define MAYBE_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart \
-  PRE_ShouldNotSendDeviceInfoAfterBrowserRestart
-#define MAYBE_ShouldNotSendDeviceInfoAfterBrowserRestart \
-  ShouldNotSendDeviceInfoAfterBrowserRestart
-#endif
-
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
-                       MAYBE_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
+                       PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
-                       MAYBE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
+                       ShouldNotSendDeviceInfoAfterBrowserRestart) {
   const std::vector<sync_pb::SyncEntity> entities_before =
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
