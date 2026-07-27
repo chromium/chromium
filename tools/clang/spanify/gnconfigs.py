@@ -307,7 +307,6 @@ class GnConfigsImpl:
                 'symbol_level=0',
                 'target_cpu="x64"',
                 'target_os="linux"',
-                f'clang_base_path="{clang_base_path}"',
             ] + current_exec
         }
         self.angle_configs = {
