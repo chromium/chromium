@@ -108,13 +108,28 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
       kActionClearBrowsingData,  kActionTaskManager,
       kActionDevTools,           kActionSendTabToSelf,
       kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage,
-      kActionFederation};
+      kActionFederation,         kActionCycleToNextTab,
+      kActionCycleToPrevTab};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 
   for (actions::ActionId action_id : browser_action_ids) {
     EXPECT_NE(action_manager.FindAction(action_id), nullptr);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, CycleTabs) {
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_TRUE(tab_strip->IsTabSelected(1));
+
+  auto& action_manager = actions::ActionManager::GetForTesting();
+  action_manager.FindAction(kActionCycleToNextTab)->InvokeAction();
+  EXPECT_TRUE(tab_strip->IsTabSelected(0));
+
+  action_manager.FindAction(kActionCycleToPrevTab)->InvokeAction();
+  EXPECT_TRUE(tab_strip->IsTabSelected(1));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,

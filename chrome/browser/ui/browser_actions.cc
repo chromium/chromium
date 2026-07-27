@@ -2884,6 +2884,44 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                if (chrome::IsCtrlTabMruEnabled(bwi)) {
+                  base::RecordAction(
+                      base::UserMetricsAction("Accel_CycleToNextTab"));
+                  chrome::CycleToMruTab(bwi);
+                } else {
+                  base::RecordAction(
+                      base::UserMetricsAction("Accel_SelectNextTab"));
+                  chrome::SelectNextTab(bwi);
+                }
+              },
+              bwi))
+          .SetActionId(kActionCycleToNextTab)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (chrome::IsCtrlTabMruEnabled(bwi)) {
+                  base::RecordAction(
+                      base::UserMetricsAction("Accel_CycleToPrevTab"));
+                  chrome::CycleToMruTab(bwi);
+                } else {
+                  base::RecordAction(
+                      base::UserMetricsAction("Accel_SelectPreviousTab"));
+                  chrome::SelectPreviousTab(bwi);
+                }
+              },
+              bwi))
+          .SetActionId(kActionCycleToPrevTab)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
                 base::RecordAction(
                     base::UserMetricsAction("Accel_SelectNumberedTab"));
                 chrome::SelectNumberedTab(bwi, 0);
