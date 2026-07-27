@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "url/gurl.h"
@@ -73,6 +74,9 @@ const int kPlusButtonIdentifier = -1;
     self.dragDelegate = self;
     self.dropDelegate = self;
     self.dragInteractionEnabled = YES;
+    if (IsNTPRedesignEnabled()) {
+      self.allowsSelection = NO;
+    }
     [self registerClass:[UICollectionViewCell class]
         forCellWithReuseIdentifier:kCellReuseIdentifier];
     [self initializeDataSource];
