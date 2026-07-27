@@ -8,6 +8,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -452,6 +453,11 @@ class ReadAnythingAppController
   void SetAnchorsForTesting(v8::Local<v8::Value> v8_snapshot_lite,
                             std::vector<ui::AXNodeID> content_node_ids);
   void SetLanguageForTesting(const std::string& language_code);
+  void set_forced_distillation_method_for_testing(
+      ReadAnythingAppModel::DistillationMethod method) {
+    forced_distillation_method_for_testing_ = method;
+    model_.set_current_content_distillation_method(method);
+  }
 
  private:
   friend ReadAnythingAppControllerTest;
@@ -678,6 +684,9 @@ class ReadAnythingAppController
 
   // The distilled content result of DOM distiller distillation.
   std::string dom_distiller_content_html_;
+
+  std::optional<ReadAnythingAppModel::DistillationMethod>
+      forced_distillation_method_for_testing_;
 
   // As a subclass of RenderFrameObserver, all objects of this class are stored
   // in data structure and should not get deallocated as long as the object is
