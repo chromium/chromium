@@ -131,11 +131,9 @@ mechanism, the new baselines may affect some other platforms that are not being
 rebaselining but fall back to the rebaselined platforms.
 
 The solution is to copy the current baselines from the to-be-rebaselined
-platforms to all the platforms that immediately fall back to them (i.e. down one
-level in the fallback tree) before downloading new baselines. This is done in a
-hidden internal command
-[`blink_tool.py copy-existing-baselines`](../../third_party/blink/tools/blinkpy/tool/commands/copy_existing_baselines.py),
-which is always executed by `blink_tool.py rebaseline`.
+platforms to the platforms that may otherwise be affected through fallback
+resolution before downloading new baselines. This is handled internally by
+`blink_tool.py rebaseline{,-cl}`.
 
 Finally, `blink_tool.py rebaseline{-cl}` also does optimization in the end by
 default.
