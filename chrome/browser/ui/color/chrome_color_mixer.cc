@@ -341,14 +341,14 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAvatarFillForContrast] = {kColorToolbar};
   mixer[kColorAvatarRingGradientStart] = {SkColorSetRGB(0x31, 0x86, 0xFF)};
   mixer[kColorAvatarRingGradientEnd] = {SkColorSetRGB(0xA9, 0xA8, 0xFF)};
-  mixer[kColorAvatarBadgeWaveBase0] = {SkColorSetRGB(187, 223, 255)};
-  mixer[kColorAvatarBadgeWaveBase1] = {SkColorSetRGB(123, 194, 255)};
-  mixer[kColorAvatarBadgeWaveBase2] = {SkColorSetRGB(163, 166, 255)};
-  mixer[kColorAvatarBadgeWaveBase3] = {SkColorSetRGB(54, 108, 236)};
+  mixer[kColorAvatarBadgeWaveBase0] = {SkColorSetRGB(0xBB, 0xDF, 0xFF)};
+  mixer[kColorAvatarBadgeWaveBase1] = {SkColorSetRGB(0x7B, 0xC2, 0xFF)};
+  mixer[kColorAvatarBadgeWaveBase2] = {SkColorSetRGB(0xA3, 0xA6, 0xFF)};
+  mixer[kColorAvatarBadgeWaveBase3] = {SkColorSetRGB(0x36, 0x6C, 0xEC)};
   mixer[kColorAvatarBadgeWaveOverlay0] = {SK_ColorWHITE};
-  mixer[kColorAvatarBadgeWaveOverlay1] = {SkColorSetRGB(164, 167, 255)};
-  mixer[kColorAvatarBadgeWaveOverlay2] = {SkColorSetRGB(88, 157, 255)};
-  mixer[kColorAvatarBadgeWaveOverlay3] = {SkColorSetRGB(54, 108, 236)};
+  mixer[kColorAvatarBadgeWaveOverlay1] = {SkColorSetRGB(0xA4, 0xA7, 0xFF)};
+  mixer[kColorAvatarBadgeWaveOverlay2] = {SkColorSetRGB(0x58, 0x9D, 0xFF)};
+  mixer[kColorAvatarBadgeWaveOverlay3] = {SkColorSetRGB(0x36, 0x6C, 0xEC)};
   mixer[kColorAvatarBadgeShadow] = {
       dark_mode ? SkColorSetARGB(0xFF, 0x58, 0x9D, 0xFF)
                 : SkColorSetARGB(0xD9, 0x31, 0x86, 0xFF)};
