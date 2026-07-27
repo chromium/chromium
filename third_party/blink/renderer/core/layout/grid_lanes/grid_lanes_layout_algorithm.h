@@ -29,7 +29,9 @@ class SubgriddedItemData;
 enum class GridItemContributionType;
 struct BoxStrut;
 struct GridItemData;
+struct GridLaneData;
 struct GridPlacementData;
+using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 
 class CORE_EXPORT GridLanesLayoutAlgorithm
     : public LayoutAlgorithm<GridLanesNode,
@@ -123,13 +125,15 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // when the stacking axis is the inline axis. `sizing_subtree` represents the
   // grid-lanes container's sizing subtree; its children are finalized on
   // demand so subgridded tracks are observed against the resolved placement in
-  // the case of auto placed subgrids.
+  // the case of auto placed subgrids. If provided, `out_grid_lanes` is
+  // populated with the final item placement data for each track.
   void PlaceGridLanesItems(
       GridItems& grid_items,
       const GridSizingSubtree& sizing_subtree,
       GridLayoutData& layout_data,
       GridLanesRunningPositions& running_positions,
-      std::optional<SizingConstraint> sizing_constraint = std::nullopt);
+      std::optional<SizingConstraint> sizing_constraint = std::nullopt,
+      GridLanesDataVector* out_grid_lanes = nullptr);
 
   // Iterates through and lays out each item in `grid_lanes_items`. If
   // `placement_phase` is kCalculateBaselines, this method measures items and
@@ -144,7 +148,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // baselines from the items. `sizing_subtree` represents the grid-lanes
   // container's sizing subtree; its children are finalized on demand so
   // subgridded tracks are observed against the resolved placement in the case
-  // of auto placed subgrids.
+  // of auto placed subgrids. If provided, `out_grid_lanes` is populated with
+  // the final item placement data for each track.
   void RunGridLanesPlacementPhase(
       GridItems& grid_items,
       const GridSizingSubtree& sizing_subtree,
@@ -153,7 +158,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       LayoutUnit stacking_axis_gap,
       PlacementPhase placement_phase,
       BaselineAccumulator* baseline_accumulator,
-      GridLanesRunningPositions& running_positions);
+      GridLanesRunningPositions& running_positions,
+      GridLanesDataVector* out_grid_lanes = nullptr);
 
   // Creates a constraint space for relaying out a stretch-aligned item with
   // its stretched stacking-axis size.

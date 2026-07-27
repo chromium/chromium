@@ -36,6 +36,9 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
   Member<GridItemData> item;
   GridItemPlacementData placement_data;
 
+  // TODO(almaher): Store the available stacking-axis alignment space so the
+  // item's stretched size can be determined during fragmentation.
+
   // Whether this entry represents the start of a grid item. This will always be
   // true for items that span one track, but for spanners, it will only be true
   // for the first track it occupies.
@@ -57,6 +60,12 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
 };
 
 using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
+
+// Adds an item entry to every lane occupied by its span.
+void AddItemToGridLanesData(GridItemData& grid_lanes_item,
+                            const GridItemPlacementData& placement_data,
+                            GridTrackSizingDirection grid_axis_direction,
+                            GridLanesDataVector& out_grid_lanes);
 
 }  // namespace blink
 

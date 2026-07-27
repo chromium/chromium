@@ -1800,8 +1800,9 @@ void GridLayoutAlgorithm::PlaceGridItems(
     // Don't add these to the builder.
     if (out_grid_items_placement_data) {
       out_grid_items_placement_data->emplace_back(
-          containing_grid_area.offset, relative_offset,
-          result->HasDescendantThatDependsOnPercentageBlockSize());
+          containing_grid_area.offset,
+          result->HasDescendantThatDependsOnPercentageBlockSize(),
+          relative_offset);
     } else {
       container_builder_.AddResult(*result, containing_grid_area.offset,
                                    margins, relative_offset);
@@ -1862,14 +1863,14 @@ struct ResultAndOffsets {
  public:
   ResultAndOffsets(const LayoutResult* result,
                    LogicalOffset offset,
-                   LogicalOffset relative_offset)
+                   std::optional<LogicalOffset> relative_offset)
       : result(result), offset(offset), relative_offset(relative_offset) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 
   Member<const LayoutResult> result;
   LogicalOffset offset;
-  LogicalOffset relative_offset;
+  std::optional<LogicalOffset> relative_offset;
 };
 
 void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(

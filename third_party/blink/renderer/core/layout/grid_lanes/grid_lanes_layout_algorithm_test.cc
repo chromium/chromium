@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -118,6 +119,34 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetAutoPlacementCursor(wtf_size_t cursor,
                               GridLanesRunningPositions& running_positions) {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
+  }
+
+  GridLanesDataVector GetFragmentedGridLanesData() {
+    // Run the grid-lanes algorithm directly in a fragmentation context. The
+    // fragmentation pass currently only collects initial item offsets into the
+    // break token and does not add child layout results, so advancing to
+    // pre-paint would fail its layout-state checks.
+    //
+    // TODO(almaher): Once grid-lanes item fragmentation is supported, test this
+    // with a multicolumn container through a normal full lifecycle.
+    AdvanceToLayoutPhase();
+    BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+    const auto space = ConstructBlockLayoutTestConstraintSpace(
+        {WritingMode::kHorizontalTb, TextDirection::kLtr},
+        LogicalSize(LayoutUnit(300), kIndefiniteSize),
+        /*stretch_inline_size_if_auto=*/true,
+        node.CreatesNewFormattingContext(),
+        /*fragmentainer_space_available=*/LayoutUnit(30));
+    const auto fragment_geometry =
+        CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+    GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+    const LayoutResult* result = algorithm.Layout();
+    const auto* fragment =
+        To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
+    const BlockBreakToken* break_token = fragment->GetBreakToken();
+    CHECK(break_token);
+    return To<GridLanesBreakTokenData>(break_token->TokenData())->grid_lanes;
   }
 
   const GridLayoutTrackCollection& TrackCollection() {
@@ -3035,6 +3064,126 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRowStackingAxisOverflow) {
   // The second item extends past the 55px content-box end.
   EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(5));
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(91));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, PopulateGridLanesBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(3, 100px); flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 20px; position: relative;
+          top: 10%;"></div>
+      <div style="grid-column: 2; height: 30px;"></div>
+      <div style="grid-column: 1; height: 20px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The output has one entry for each track. The unused third lane remains
+  // null.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  EXPECT_FALSE(grid_lanes[2]);
+
+  // Items are stored in placement order within each lane.
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->placement_data.offset,
+            LogicalOffset());
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(grid_lanes[0]->item_data[1]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
+
+  // Grid-lanes leaves relative positioning to the fragment builder.
+  EXPECT_FALSE(grid_lanes[0]->item_data[0]->placement_data.relative_offset);
+
+  // Every entry represents the start of its single-lane item.
+  EXPECT_TRUE(grid_lanes[0]->item_data[0]->is_item_start);
+  EXPECT_TRUE(grid_lanes[1]->item_data[0]->is_item_start);
+  EXPECT_TRUE(grid_lanes[0]->item_data[1]->is_item_start);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, PopulateRowGridLanesBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-lanes-direction: row; grid-template-rows: repeat(2, 50px);
+        flow-tolerance: 0;">
+      <div style="grid-row: 1; width: 20px;"></div>
+      <div style="grid-row: 2; width: 30px;"></div>
+      <div style="grid-row: 1; width: 20px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The output has one entry for each row lane.
+  ASSERT_EQ(grid_lanes.size(), 2u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+
+  // The item in the second row advances in the block axis, while the second
+  // item in the first row advances in the inline axis.
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->placement_data.offset,
+            LogicalOffset());
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(50)}));
+  EXPECT_EQ(grid_lanes[0]->item_data[1]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(20), LayoutUnit()}));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, PopulateSpannerBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(3, 100px); flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 20px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: 1 / span 3; height: 20px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The first lane contains every item, the second contains both spanners, and
+  // the third contains only the three-lane spanner.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 3u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
+  ASSERT_EQ(grid_lanes[2]->item_data.size(), 1u);
+
+  EXPECT_EQ(grid_lanes[0]->item_data[0]->placement_data.offset,
+            LogicalOffset());
+
+  // Each lane spanned by the two-lane item has a distinct entry that references
+  // the same grid item and placement offset.
+  EXPECT_NE(grid_lanes[0]->item_data[0]->item.Get(),
+            grid_lanes[0]->item_data[1]->item.Get());
+  EXPECT_EQ(grid_lanes[0]->item_data[1]->item.Get(),
+            grid_lanes[1]->item_data[0]->item.Get());
+  EXPECT_EQ(grid_lanes[0]->item_data[1]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
+  EXPECT_EQ(grid_lanes[1]->item_data[0]->placement_data.offset,
+            grid_lanes[0]->item_data[1]->placement_data.offset);
+
+  // The three-lane item is likewise shared by all of its lane entries.
+  EXPECT_EQ(grid_lanes[0]->item_data[2]->item.Get(),
+            grid_lanes[1]->item_data[1]->item.Get());
+  EXPECT_EQ(grid_lanes[1]->item_data[1]->item.Get(),
+            grid_lanes[2]->item_data[0]->item.Get());
+  EXPECT_EQ(grid_lanes[0]->item_data[2]->placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(40)}));
+  EXPECT_EQ(grid_lanes[1]->item_data[1]->placement_data.offset,
+            grid_lanes[0]->item_data[2]->placement_data.offset);
+  EXPECT_EQ(grid_lanes[2]->item_data[0]->placement_data.offset,
+            grid_lanes[0]->item_data[2]->placement_data.offset);
+
+  // The single-lane item is a start. Only the first lane entry for each spanner
+  // is its start.
+  EXPECT_TRUE(grid_lanes[0]->item_data[0]->is_item_start);
+  EXPECT_TRUE(grid_lanes[0]->item_data[1]->is_item_start);
+  EXPECT_FALSE(grid_lanes[1]->item_data[0]->is_item_start);
+  EXPECT_TRUE(grid_lanes[0]->item_data[2]->is_item_start);
+  EXPECT_FALSE(grid_lanes[1]->item_data[1]->is_item_start);
+  EXPECT_FALSE(grid_lanes[2]->item_data[0]->is_item_start);
 }
 
 }  // namespace blink
