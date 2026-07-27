@@ -49,6 +49,7 @@ import org.chromium.ui.widget.Toast;
 class LocationBarTablet extends LocationBarLayout implements OnLongClickListener {
     // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
     private static final int HIDEABLE_BUTTON_COUNT = 3;
+    private static final int CENTERING_THRESHOLD_DP = 16;
     private static final float OVERLAY_Z_TRANSLATION = 1.0f;
     private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
     private final LayerDrawable mFocusedPopupDrawable;
@@ -722,46 +723,57 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         Resources resources = getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
 
+        ViewUtils.getRelativeLayoutPosition(
+                mContainerView != null ? mContainerView : getRootView(), mHolder, mPositionArray);
+
         int availableWidth =
                 mContainerView != null
-                        ? mContainerView.getWidth()
+                        ? mContainerView.getMeasuredWidth()
                         : DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
+        int unexpandedWidth =
+                getMeasuredWidth() + layoutParams.leftMargin + layoutParams.rightMargin;
+        int unexpandedLeft = mPositionArray[0] - layoutParams.leftMargin;
+        int unexpandedRight = unexpandedLeft + unexpandedWidth;
 
-        int measuredWidthWithoutExpansion =
-                getMeasuredWidth()
-                        + Math.min(0, layoutParams.leftMargin)
-                        + Math.min(0, layoutParams.rightMargin);
-        int minTabletWidthPx = resources.getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
+        // Step 2: Determine target width
         boolean isPhoneWidthScreen = screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
-        int targetWidthPx =
-                isPhoneWidthScreen
-                        ? availableWidth
-                        : Math.max(
-                                minTabletWidthPx,
-                                measuredWidthWithoutExpansion + 2 * minHorizontalExpansionPx);
+        int minTabletWidthPx = resources.getDimensionPixelSize(R.dimen.fusebox_min_tablet_width);
 
-        ViewUtils.getRelativeLayoutPosition(getRootView(), this, mPositionArray);
-        int currentLeft = mPositionArray[0] - layoutParams.leftMargin;
-        // Our view is relatively centered already; make it exactly centered when expanded.
-        boolean isViewApproximatelyCentered =
-                availableWidth - 2 * currentLeft <= minTabletWidthPx || isPhoneWidthScreen;
-        if (isViewApproximatelyCentered) {
-            int targetLeft = (availableWidth - targetWidthPx) / 2;
-            int targetRight = targetLeft + targetWidthPx;
+        int desiredWidth =
+                Math.max(minTabletWidthPx, unexpandedWidth + 2 * minHorizontalExpansionPx);
+        int targetWidth =
+                Math.min(availableWidth, isPhoneWidthScreen ? availableWidth : desiredWidth);
+        int unexpandedCenteredLeft = (availableWidth - unexpandedWidth) / 2;
+        int centeringThresholdPx =
+                DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), CENTERING_THRESHOLD_DP);
 
-            int currentRight = currentLeft + measuredWidthWithoutExpansion;
-            int shiftLeft = targetLeft - currentLeft;
-            int shiftRight = targetRight - currentRight;
-
-            layoutParams.leftMargin = shiftLeft;
-            layoutParams.rightMargin = -shiftRight;
+        // Step 3: Determine [finalLeft, finalRight] in container coordinates
+        int finalLeft;
+        int finalRight;
+        boolean isApproximatelyCentered =
+                Math.abs(unexpandedLeft - unexpandedCenteredLeft) <= centeringThresholdPx;
+        if (isPhoneWidthScreen || isApproximatelyCentered) {
+            int centeredLeft = Math.max(0, (availableWidth - targetWidth) / 2);
+            finalLeft = centeredLeft;
+            finalRight = centeredLeft + targetWidth;
         } else {
-            // Our view is relatively off-center. Leave it that way, expanding symmetrically from
-            // our current position.
-            int expansionPx = (targetWidthPx - measuredWidthWithoutExpansion) / 2;
-            layoutParams.leftMargin = -expansionPx;
-            layoutParams.rightMargin = -expansionPx;
+            int extraWidth = targetWidth - unexpandedWidth;
+            finalLeft = unexpandedLeft - extraWidth / 2;
+            finalRight = finalLeft + targetWidth;
         }
+
+        // Step 4. Hard-clamp the interval to container bounds [0, availableWidth]
+        if (finalLeft < 0) {
+            finalLeft = 0;
+            finalRight = Math.min(targetWidth, availableWidth);
+        } else if (finalRight > availableWidth) {
+            finalRight = availableWidth;
+            finalLeft = Math.max(0, availableWidth - targetWidth);
+        }
+
+        // Step 5: Apply deltas to parent margins
+        layoutParams.leftMargin = finalLeft - unexpandedLeft;
+        layoutParams.rightMargin = -(finalRight - unexpandedRight);
     }
 
     private void adjustBackgroundForSuggestions() {
