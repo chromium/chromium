@@ -562,26 +562,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testAutocompleteStateChanged_updatesSelectionMode() {
-        LocationBarSelectionController selectionController =
-                mMediator.getSelectionControllerForTesting();
-        assertEquals(
-                LocationBarSelectionController.Mode.SATURATING,
-                selectionController.getSelectionModeForTesting());
-
-        AutocompleteInput input = mSessionState.getAutocompleteInput();
-        mMediator.beginInput(input);
-        assertEquals(
-                LocationBarSelectionController.Mode.WRAPPING,
-                selectionController.getSelectionModeForTesting());
-
-        input.setAutocompleteState(AutocompleteState.DISABLED);
-        assertEquals(
-                LocationBarSelectionController.Mode.SATURATING,
-                selectionController.getSelectionModeForTesting());
-    }
-
-    @Test
     public void testOnTabLoadingNtp() {
         mMediator.onNtpStartedLoading();
         verify(mLocationBarLayout).onNtpStartedLoading();

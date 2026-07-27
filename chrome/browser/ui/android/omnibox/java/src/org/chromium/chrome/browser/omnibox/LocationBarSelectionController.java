@@ -41,7 +41,7 @@ public class LocationBarSelectionController extends SelectionController {
      * @param selectableViews The list of views that this controller addresses/
      */
     public LocationBarSelectionController(List<SelectableView> selectableViews) {
-        super(Mode.SATURATING);
+        super(Mode.WRAPPING);
         mSelectableViews = selectableViews;
         reset();
     }
@@ -99,10 +99,5 @@ public class LocationBarSelectionController extends SelectionController {
         }
 
         return mVisibleViewsHolder;
-    }
-
-    /* package */ @Mode
-    int getSelectionModeForTesting() {
-        return mMode;
     }
 }
