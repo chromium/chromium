@@ -148,8 +148,10 @@ bool ExternalPopupMenu::ShowInternal() {
     // the picker won't be opened.
     if (RuntimeEnabledFeatures::SelectAnchorInViewportEnabled() &&
         local_frame_->GetPage()) {
-      gfx::Rect viewport_rect(
-          local_frame_->GetPage()->GetVisualViewport().Size());
+      gfx::Rect viewport_rect =
+          local_frame_->LocalFrameRoot().IsOutermostMainFrame()
+              ? gfx::Rect(local_frame_->GetPage()->GetVisualViewport().Size())
+              : local_frame_->LocalFrameRoot().RemoteViewportIntersection();
       if (!viewport_rect.Intersects(rect_in_viewport)) {
         DidCancel();
         return false;

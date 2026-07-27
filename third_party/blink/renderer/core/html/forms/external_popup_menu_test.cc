@@ -755,8 +755,8 @@ TEST_F(ExternalPopupMenuTest, OopifSelectOutsideViewport) {
 
   // Set viewport intersection.
   mojom::blink::ViewportIntersectionState intersection_state;
-  intersection_state.main_frame_intersection = gfx::Rect(0, 0, 500, 500);
-  intersection_state.viewport_intersection = gfx::Rect(0, 0, 500, 500);
+  intersection_state.main_frame_intersection = gfx::Rect(0, 0, 100, 100);
+  intersection_state.viewport_intersection = gfx::Rect(0, 0, 100, 100);
   intersection_state.outermost_main_frame_size = gfx::Size(800, 600);
   local_child->GetFrame()->SetViewportIntersectionFromParent(
       intersection_state);
@@ -766,6 +766,70 @@ TEST_F(ExternalPopupMenuTest, OopifSelectOutsideViewport) {
   // viewport intersection). The select should not open.
   select->ShowPopup();
   EXPECT_FALSE(select->PopupIsVisible());
+}
+
+TEST_F(ExternalPopupMenuTest, OopifSelectInsideViewport) {
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeRemote();
+  WebLocalFrameImpl* local_child =
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
+  ASSERT_TRUE(local_child);
+  helper.GetWebView()->Resize(gfx::Size(800, 600));
+
+  // The select is positioned at (0, 400)
+  std::string html = R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+      }
+      select {
+        position: absolute;
+        left: 0px;
+        top: 400px;
+        width: 100px;
+        height: 30px;
+      }
+    </style>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML";
+
+  frame_test_helpers::LoadHTMLString(
+      local_child, html, url_test_helpers::ToKURL("http://example.com/"));
+
+  // Resize the child frame view to be large enough to contain the select.
+  local_child->GetFrameView()->Resize(500, 1000);
+  local_child->GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kTest);
+
+  // Set the visual viewport to 300x300, which is smaller than the select's
+  // local y-coordinate (400)
+  helper.GetWebView()->GetPage()->GetVisualViewport().SetSize(
+      gfx::Size(300, 300));
+
+  helper.GetWebView()->GetChromeClient().SetUseExternalPopupMenus(true);
+  auto* select = To<HTMLSelectElement>(
+      local_child->GetFrame()->GetDocument()->getElementById(
+          AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  // Set viewport intersection, indicating that the child frame is scrolled in
+  // the main frame such that the portion [300, 600] is visible.
+  mojom::blink::ViewportIntersectionState intersection_state;
+  intersection_state.main_frame_intersection = gfx::Rect(0, 300, 500, 300);
+  intersection_state.viewport_intersection = gfx::Rect(0, 300, 500, 300);
+  intersection_state.outermost_main_frame_size = gfx::Size(800, 600);
+  local_child->GetFrame()->SetViewportIntersectionFromParent(
+      intersection_state);
+
+  // The select is at y=400, which is outside a 300x300 viewport relative to the
+  // child frame's top-left, but it is visible within the scrolled viewport
+  // intersection (y in [300, 600]). The select should open.
+  select->ShowPopup();
+  EXPECT_TRUE(select->PopupIsVisible());
 }
 
 }  // namespace blink
