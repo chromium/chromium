@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
@@ -724,11 +725,19 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
         monitor,
     const actor::TaskId& task_id,
     bool supports_paint_stability) {
-  page_stability_monitor_ =
-      std::make_unique<page_content_annotations::PageStabilityMonitor>(
-          *render_frame(), supports_paint_stability,
-          std::make_unique<actor::PageStabilityMonitorDelegate>(
-              task_id, *actor_journal_));
+  page_stability_monitor_ = std::make_unique<
+      page_content_annotations::PageStabilityMonitor>(
+      *render_frame(), supports_paint_stability,
+      std::make_unique<actor::PageStabilityMonitorDelegate>(
+          task_id, *actor_journal_,
+          actor::PageStabilityMonitorDelegate::Thresholds{
+              .timeout_delay = features::kGlicActorPageStabilityTimeout.Get(),
+              .min_wait = features::kGlicActorPageStabilityMinWait.Get(),
+              .initial_paint_timeout =
+                  features::kActorPaintStabilityIntialPaintTimeout.Get(),
+              .subsequent_paint_timeout =
+                  features::kActorPaintStabilitySubsequentPaintTimeout.Get(),
+          }));
   page_stability_monitor_->Bind(std::move(monitor));
 }
 

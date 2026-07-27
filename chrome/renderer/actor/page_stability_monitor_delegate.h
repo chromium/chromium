@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "chrome/renderer/actor/journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
@@ -25,7 +26,24 @@ class PageStabilityMetrics;
 class PageStabilityMonitorDelegate
     : public page_content_annotations::PageStabilityMonitorDelegate {
  public:
-  PageStabilityMonitorDelegate(TaskId task_id, Journal& journal);
+  // The flag-driven thresholds used for page stability monitoring.
+  struct Thresholds {
+    // Overall timeout delay before giving up on waiting for page stability.
+    base::TimeDelta timeout_delay;
+    // Minimum duration to wait before declaring page stability, even if
+    // stability is reached earlier.
+    base::TimeDelta min_wait;
+    // How long the monitor should wait for the initial contentful paint
+    // before declaring paint stability.
+    base::TimeDelta initial_paint_timeout;
+    // How long the monitor should wait for subsequent contentful paints
+    // before declaring paint stability.
+    base::TimeDelta subsequent_paint_timeout;
+  };
+
+  PageStabilityMonitorDelegate(TaskId task_id,
+                               Journal& journal,
+                               const Thresholds& thresholds);
   ~PageStabilityMonitorDelegate() override;
 
   // page_content_annotations::PageStabilityMonitorDelegate:
@@ -43,6 +61,7 @@ class PageStabilityMonitorDelegate
   TaskId task_id_;
   base::raw_ref<Journal> journal_;
   std::unique_ptr<PageStabilityMetrics> metrics_;
+  const Thresholds thresholds_;
 };
 
 }  // namespace actor

@@ -5,9 +5,10 @@
 #include "chrome/renderer/actor/page_stability_monitor_delegate.h"
 
 #include <memory>
+#include <utility>
 #include <variant>
 
-#include "chrome/common/chrome_features.h"
+#include "base/time/time.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/page_stability_metrics.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -19,9 +20,11 @@
 
 namespace actor {
 
-PageStabilityMonitorDelegate::PageStabilityMonitorDelegate(TaskId task_id,
-                                                           Journal& journal)
-    : task_id_(task_id), journal_(journal) {}
+PageStabilityMonitorDelegate::PageStabilityMonitorDelegate(
+    TaskId task_id,
+    Journal& journal,
+    const Thresholds& thresholds)
+    : task_id_(task_id), journal_(journal), thresholds_(thresholds) {}
 
 PageStabilityMonitorDelegate::~PageStabilityMonitorDelegate() = default;
 
@@ -153,18 +156,18 @@ void PageStabilityMonitorDelegate::OnEvent(
 }
 
 base::TimeDelta PageStabilityMonitorDelegate::GetTimeoutDelay() const {
-  return features::kGlicActorPageStabilityTimeout.Get();
+  return thresholds_.timeout_delay;
 }
 
 base::TimeDelta PageStabilityMonitorDelegate::GetMinWait() const {
-  return features::kGlicActorPageStabilityMinWait.Get();
+  return thresholds_.min_wait;
 }
 
 // TODO(b/507143691): This is not based on data and should be revisited when
 // histograms are available, or combined with other heuristics, e.g. pending
 // interaction-attributed network requests.
 base::TimeDelta PageStabilityMonitorDelegate::GetInitialPaintTimeout() const {
-  return features::kActorPaintStabilityIntialPaintTimeout.Get();
+  return thresholds_.initial_paint_timeout;
 }
 
 // TODO(b/507143691): This is not based on data and should be revisited when
@@ -172,7 +175,7 @@ base::TimeDelta PageStabilityMonitorDelegate::GetInitialPaintTimeout() const {
 // interaction-attributed network requests.
 base::TimeDelta PageStabilityMonitorDelegate::GetSubsequentPaintTimeout()
     const {
-  return features::kActorPaintStabilitySubsequentPaintTimeout.Get();
+  return thresholds_.subsequent_paint_timeout;
 }
 
 }  // namespace actor
