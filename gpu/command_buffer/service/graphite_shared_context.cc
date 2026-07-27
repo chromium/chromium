@@ -414,9 +414,13 @@ void GraphiteSharedContext::submitAndFlushBackend(
 
 void GraphiteSharedContext::SubmitAndFlushBackendImpl(
     const skgpu::graphite::SubmitInfo& submit_info) {
+  // Capture this before SubmitImpl() runs, since submitting clears the
+  // context's pending GPU work.
+  bool had_pending_gpu_work = graphite_context_->hasPendingGPUWork();
+
   CHECK(SubmitImpl(submit_info));
 
-  if (delegate_) {
+  if (delegate_ && had_pending_gpu_work) {
     delegate_->FlushBackend();
   }
 }
