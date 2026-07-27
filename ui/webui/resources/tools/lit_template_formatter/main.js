@@ -13,7 +13,7 @@ import {parseArgs} from 'node:util';
 
 import {formatTsExpressions} from './format_expressions.js';
 import {prepareHtmlAst} from './format_html.js';
-import {execAsync, getClangFormatPath, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {execAsync, getClangFormatPath, runClangFormat, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 import {processTemplate} from './process_lit_template_ts.js';
 import {serializeHtmlAst, serializeNode} from './serialize_html.js';
 
@@ -85,7 +85,7 @@ async function formatFile(filePath, sortAttributes, quiet = false) {
   if (!quiet) {
     console.info(`Running clang-format on temporary file...`);
   }
-  await execAsync(`python3 "${clangFormatPath}" -i "${tempFilePath}"`);
+  await runClangFormat(clangFormatPath, ['-i', tempFilePath]);
 
   // Step 6: Reconstruction
   // Read formatted temp file

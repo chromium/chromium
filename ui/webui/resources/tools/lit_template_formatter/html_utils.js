@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {exec} from 'node:child_process';
+import {exec, execFile} from 'node:child_process';
+import {existsSync} from 'node:fs';
 import {join} from 'node:path';
+import {arch, platform} from 'node:process';
 
 // Tags for elements that are only allowed to have a restricted set of
 // elements as children, e.g. <select> can only have <option> children,
@@ -93,21 +95,56 @@ export function getIndentationPrefix(indent) {
 }
 
 /**
- * Executes a shell command asynchronously, optionally writing a string to
- * stdin.
+ * Executes a shell command asynchronously.
  * @param {string} command The shell command to execute.
- * @param {string} [inputStr] Optional input string to write to stdin.
  * @return {Promise<string>} Resolves with stdout.
  */
-export function execAsync(command, inputStr = undefined) {
+export function execAsync(command) {
   const {promise, resolve, reject} = Promise.withResolvers();
-  const child = exec(command, (error, stdout) => {
+  exec(command, (error, stdout) => {
     if (error) {
       reject(error);
     } else {
       resolve(stdout);
     }
   });
+  return promise;
+}
+
+/**
+ * Executes a file directly without spawning a shell.
+ * @param {string} executablePath Path to binary or script to run.
+ * @param {Array<string>} [args] Arguments array.
+ * @return {{promise: Promise<string>, child: Object}} The promise and child
+ *     process.
+ */
+export function execFileAsync(executablePath, args = []) {
+  const {promise, resolve, reject} = Promise.withResolvers();
+  const child = execFile(executablePath, args, (error, stdout) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(stdout);
+    }
+  });
+  return {promise, child};
+}
+
+/**
+ * Runs clang-format on a snippet or file without shell overhead, optionally
+ * piping an input code string to standard input.
+ * @param {string} clangFormatPath Path to clang-format executable or wrapper.
+ * @param {Array<string>} args Arguments to pass to clang-format.
+ * @param {string} [inputStr] Optional input string to write to stdin.
+ * @return {Promise<string>} Resolves with stdout.
+ */
+export function runClangFormat(clangFormatPath, args, inputStr = undefined) {
+  const executable =
+      clangFormatPath.endsWith('.py') ? 'python3' : clangFormatPath;
+  const finalArgs =
+      clangFormatPath.endsWith('.py') ? [clangFormatPath, ...args] : args;
+
+  const {promise, child} = execFileAsync(executable, finalArgs);
   if (inputStr !== undefined) {
     child.stdin.write(inputStr);
     child.stdin.end();
@@ -116,11 +153,32 @@ export function execAsync(command, inputStr = undefined) {
 }
 
 /**
- * Returns the path to the depot_tools clang_format.py wrapper script.
- * This wrapper automatically resolves and executes the correct platform binary.
+ * Returns the path to the platform-specific native clang-format binary in
+ * buildtools, falling back to the depot_tools clang_format.py wrapper script
+ * if the native binary cannot be located.
  * @param {string} workspaceRoot Absolute path to the Chromium root directory.
- * @return {string} Path to clang_format.py wrapper script.
+ * @return {string} Path to clang-format executable.
  */
 export function getClangFormatPath(workspaceRoot) {
+  let platformDir = null;
+  let exeSuffix = '';
+  if (platform === 'linux') {
+    platformDir = 'linux64-format';
+  } else if (platform === 'darwin') {
+    platformDir = arch === 'arm64' ? 'mac_arm64-format' : 'mac-format';
+  } else if (platform === 'win32') {
+    platformDir = 'win-format';
+    exeSuffix = '.exe';
+  }
+
+  if (platformDir) {
+    const nativePath = join(
+        workspaceRoot, 'buildtools', platformDir, `clang-format${exeSuffix}`);
+    if (existsSync(nativePath)) {
+      return nativePath;
+    }
+  }
+
+  console.warn('Native clang-format not found, falling back to python wrapper');
   return join(workspaceRoot, 'third_party', 'depot_tools', 'clang_format.py');
 }

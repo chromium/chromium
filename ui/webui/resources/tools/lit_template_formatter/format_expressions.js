@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {execAsync, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, PROP_PREFIX, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, PROP_PREFIX, runClangFormat, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const ExpressionType = {
   EXPRESSION: 'expression',
@@ -118,14 +118,22 @@ export async function formatTsExpressions(
 
     const limit = computeColumnLimit(value, type);
 
-    // Run clang-format on the snippet using inline JSON style override
-    const style = `{BasedOnStyle: Chromium, ColumnLimit: ${limit}}`;
-    let formattedCode = await execAsync(
-        `python3 "${clangFormatPath}" -assume-filename=f.ts -style="${style}"`,
-        codeToFormat);
+    // If the snippet is a simple identifier, property access, or negation that
+    // already fits within the column limit, clang-format will never modify it.
+    // Skip spawning a process to improve formatting speed.
+    const isSimpleToken = /^!*[a-zA-Z0-9_$.]+$/.test(codeToFormat) &&
+        codeToFormat.length <= limit;
+    let formattedCode = codeToFormat;
+    if (!isSimpleToken) {
+      // Run clang-format on the snippet using inline JSON style override
+      const style = `{BasedOnStyle: Chromium, ColumnLimit: ${limit}}`;
+      formattedCode = await runClangFormat(
+          clangFormatPath, ['-assume-filename=f.ts', `-style=${style}`],
+          codeToFormat);
 
-    // Remove trailing newline added by clang-format if any
-    formattedCode = formattedCode.replace(/\n$/, '');
+      // Remove trailing newline added by clang-format if any
+      formattedCode = formattedCode.replace(/\n$/, '');
+    }
 
     let baseIndent =
         (value.indent || 0) + (value.attrName ? WRAPPED_LINE_INDENT_SIZE : 0);
@@ -136,9 +144,8 @@ export async function formatTsExpressions(
       const newLimit = 80 - baseIndent + config.columnLimitAdjustment;
       if (newLimit > limit) {
         const newStyle = `{BasedOnStyle: Chromium, ColumnLimit: ${newLimit}}`;
-        formattedCode = await execAsync(
-            `python3 "${clangFormatPath}" -assume-filename=f.ts -style="${
-                newStyle}"`,
+        formattedCode = await runClangFormat(
+            clangFormatPath, ['-assume-filename=f.ts', `-style=${newStyle}`],
             codeToFormat);
         formattedCode = formattedCode.replace(/\n$/, '');
       }
