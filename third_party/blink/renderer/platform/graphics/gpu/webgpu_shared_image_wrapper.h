@@ -133,7 +133,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
 
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  const scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken acquire_sync_token_;
   gpu::SyncToken release_sync_token_;
 
