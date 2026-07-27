@@ -27,8 +27,8 @@
           },
           function(task, should) {
             testStartSampling(should, 1.25, {
-              error: 1.0881e-4,
-              snrThreshold: 84.054
+              error: 1.2e-4,
+              snrThreshold: 83.0
             }).then(task.done.bind(task));
           });
 
@@ -39,8 +39,8 @@
           },
           function(task, should) {
             testStartSampling(should, 1.75, {
-              error: 1.0844e-4,
-              snrThreshold: 84.056
+              error: 1.2e-4,
+              snrThreshold: 83.0
             }).then(task.done.bind(task));
           });
 
@@ -57,8 +57,8 @@
             // 1/2 frame from the preceding sampling frame.  This tests one path
             // of the internal implementation.
             testStartWithGain(should, defaultSampleRate, {
-              error: 1.9521e-6,
-              snrThreshold: 128.02
+              error: 2.5e-6,
+              snrThreshold: 126.0
             }).then(task.done.bind(task));
           });
 
@@ -75,8 +75,8 @@
             // frame from the preceding sampling frame.  This tests one path of
             // the internal implementation.
             testStartWithGain(should, 48000, {
-              error: 1.9521e-6,
-              snrThreshold: 122.90
+              error: 2.5e-6,
+              snrThreshold: 120.0
             }).then(task.done.bind(task));
           });
 

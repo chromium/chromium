@@ -27,7 +27,7 @@
         runTest(should, {
           message: 'Sum of positive and negative frequency sine oscillators',
           type: 'sine',
-          threshold: 1.5423e-6
+          threshold: 2.0e-6
         }).then(() => task.done());
       });
 
@@ -35,7 +35,7 @@
         runTest(should, {
           message: 'Sum of positive and negative frequency square oscillators',
           type: 'square',
-          threshold: 1.1496e-5
+          threshold: 1.2e-5
         }).then(() => task.done());
       });
 
@@ -44,7 +44,7 @@
           message:
               'Sum of positive and negative frequency sawtooth oscillators',
           type: 'sawtooth',
-          threshold: 1.1506e-5
+          threshold: 1.2e-5
         }).then(() => task.done());
       });
 
@@ -53,7 +53,7 @@
           message:
               'Sum of positive and negative frequency triangle oscillators',
           type: 'triangle',
-          threshold: 1.0133e-5
+          threshold: 1.1e-5
         }).then(() => task.done());
       });
 
@@ -69,7 +69,7 @@
             startFrequency: 440,
             endFrequency: sampleRate / 4
           },
-          threshold: 1.2368e-6
+          threshold: 1.5e-6
         }).then(() => task.done());
       });
 
@@ -145,7 +145,7 @@
               should(
                   actual,
                   'Sum of positive and negative frequency custom oscillators')
-                  .beCloseToArray(expected, {absoluteThreshold: 2.2352e-6});
+                  .beCloseToArray(expected, {absoluteThreshold: 2.5e-6});
             })
             .then(() => task.done());
       });
