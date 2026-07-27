@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{关闭无痕模式}other{关闭无痕模式（# 个窗口）}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 属于“<ph name="GROUP_NAME" />”群组</translation>
 <translation id="1130676589211693127">右侧耳机的电池电量为 <ph name="PERCENTAGE" />%。</translation>
+<translation id="1130866111814048607">分享标签页时，标签页的网页内容、媒体和网址会发送给 Google，并可能会接受安全审核。</translation>
 <translation id="1133418583142946603">添加当前标签页</translation>
 <translation id="1133751489735776037">三击鼠标</translation>
 <translation id="1136712381129578788">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。要解锁此密钥，请先将其拔出，然后再重新插入。</translation>
@@ -1100,6 +1101,7 @@
 <translation id="1846308012215045257">按住 Ctrl 键的同时点击即可运行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">在盖被合上之后退出</translation>
 <translation id="184862733444771842">功能请求</translation>
+<translation id="184871971966737653">添加打开的标签页，即可随心提问</translation>
 <translation id="1849016657376805933">任何 HID 设备</translation>
 <translation id="1849022541429818637">可以捕获和使用您的鼠标输入</translation>
 <translation id="1849252834922144634">按住即可固定快捷方式</translation>
@@ -2085,6 +2087,7 @@
 <translation id="2624142942574147739">此网页正在使用您的摄像头和麦克风。</translation>
 <translation id="2626799779920242286">请稍后重试。</translation>
 <translation id="2627424346328942291">无法分享</translation>
+<translation id="2627970398976286795">查看 Gemini Spark 的风险</translation>
 <translation id="2628258844236035475">要从 Chrome 自动填充中移除住址吗？</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
@@ -2775,6 +2778,7 @@
 <translation id="3134312457920437826">无法安装扩展程序，因为它使用了不受支持的清单版本。</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
+<translation id="314095642664111744">关闭专注模式</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141318088920353606">正在听取…</translation>
 <translation id="3142562627629111859">新建组</translation>
@@ -3330,6 +3334,7 @@
 <translation id="3569614820047645079">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="3569617221227793022">时区当前设置为 <ph name="TIME_ZONE_ENTRY" />。此设置由您的管理员管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下文件和文件夹</translation>
+<translation id="3570112771874223231">Gemini 在执行任务期间使用的网页内容和网址会分享给 Google，并可能会接受安全审核。</translation>
 <translation id="3571734092741541777">设置</translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575224072358507281">根据 Measurement Lab 的隐私权政策 (measurementlab.net/privacy)，收集 IP 地址和网络测量结果</translation>
@@ -3590,6 +3595,7 @@
 <translation id="3756578970075173856">设置 PIN 码</translation>
 <translation id="3756806135608816820">网站可以请求寻找蓝牙设备</translation>
 <translation id="3756823472711156529">恢复分组</translation>
+<translation id="3757337311115630808">详细了解 Gemini Spark</translation>
 <translation id="3757567010566591880">取消固定到工具栏</translation>
 <translation id="3757645900890881944">搜索工具</translation>
 <translation id="3757733214359997190">未找到任何网站</translation>
@@ -4739,6 +4745,7 @@
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
 <translation id="4647836961514597010">颜色选择器</translation>
 <translation id="4648491805942548247">权限不足</translation>
+<translation id="4648876469762528742">应用已是最新版本。</translation>
 <translation id="4650037136970677721">节省的内存</translation>
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
 <translation id="4651921906638302153">无法使用此账号登录</translation>
@@ -4990,6 +4997,7 @@
 <translation id="4840096453115567876">仍要退出无痕模式？</translation>
 <translation id="4841475798258477260">此设备只能连接到特定的移动网络。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">此网页正试图从未经验证的来源加载脚本。</translation>
+<translation id="4843037705239202082">媒体理解</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4846628405149428620">选择要让此网站将所做更改保存到何处</translation>
 <translation id="4846680374085650406">您目前所采用的是管理员的建议设置。</translation>
@@ -7732,6 +7740,7 @@
 <translation id="7001809623433867903">要清理书签吗？</translation>
 <translation id="7003339318920871147">网络数据库</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 个文件}other{{COUNT} 个文件}}</translation>
+<translation id="7003537330107832201">“<ph name="APP_NAME" />”已推出新版本 <ph name="VERSION" />，系统将关闭所有打开的窗口以应用更新。未保存的数据可能会丢失。</translation>
 <translation id="7003644704445046755">已下载高品质<ph name="LANGUAGE" />语音文件</translation>
 <translation id="7003723821785740825">为您的设备设置更快速的解锁方式</translation>
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>
@@ -8296,6 +8305,7 @@
 <translation id="7434509671034404296">开发者</translation>
 <translation id="7434757724413878233">鼠标加速</translation>
 <translation id="7434969625063495310">无法添加打印服务器。请检查服务器的配置，然后重试。</translation>
+<translation id="7435500219604275502">应用更新</translation>
 <translation id="7439519621174723623">您必须添加设备名称才能继续操作</translation>
 <translation id="7441736921018636843">要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />以移除同步密码</translation>
 <translation id="7441830548568730290">其他用户</translation>
@@ -9468,6 +9478,7 @@
 <translation id="8342387517402567689">在无痕模式下无法安装 Web 应用</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8343578633847737325">近期对话和消息串</translation>
+<translation id="8345099007452202761">“<ph name="APP_NAME" />”已推出新版本 <ph name="VERSION" />，要立即应用更新吗？</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="8347728744337089388">发送到您的设备(&amp;D)</translation>

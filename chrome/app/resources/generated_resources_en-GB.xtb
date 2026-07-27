@@ -189,6 +189,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1130430615924359526">{0,plural, =1{Close Incognito}other{Close Incognito (# windows)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Part of group <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Right battery level <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">When tabs are shared, their page contents, media and URLs are sent to Google and may be reviewed for safety.</translation>
 <translation id="1133418583142946603">Add current tab</translation>
 <translation id="1133751489735776037">Triple-click the mouse</translation>
 <translation id="1136712381129578788">The security key is locked because the wrong PIN was entered too many times. To unlock it, remove and reinsert it.</translation>
@@ -1109,6 +1110,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1846308012215045257">Control-click to run <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Sign out when lid is closed</translation>
 <translation id="184862733444771842">Feature request</translation>
+<translation id="184871971966737653">Add open tabs to ask anything</translation>
 <translation id="1849016657376805933">Any HID device</translation>
 <translation id="1849022541429818637">Allowed to capture and use your mouse input</translation>
 <translation id="1849252834922144634">Tap and hold to pin shortcuts</translation>
@@ -2098,6 +2100,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2624142942574147739">This page is accessing your camera and microphone.</translation>
 <translation id="2626799779920242286">Please try again later.</translation>
 <translation id="2627424346328942291">Can't share</translation>
+<translation id="2627970398976286795">Review the risks of Gemini Spark</translation>
 <translation id="2628258844236035475">Remove your home address from Chrome autofill?</translation>
 <translation id="2628770867680720336">A factory reset of this Chromebook is required to enable ADB debugging. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Start new chat with Gemini</translation>
@@ -2788,6 +2791,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3134312457920437826">Cannot install extension because it uses an unsupported manifest version.</translation>
 <translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
+<translation id="314095642664111744">Turn off focus</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141318088920353606">Listening...</translation>
 <translation id="3142562627629111859">New Group</translation>
@@ -3345,6 +3349,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3569614820047645079">Your files in My Drive sync to your Chromebook automatically so that you can access them without an Internet connection.</translation>
 <translation id="3569617221227793022">Time zone is currently set to <ph name="TIME_ZONE_ENTRY" />. This setting is managed by your administrator.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
+<translation id="3570112771874223231">The page content and URLs that Gemini uses during a task will be shared with Google and may be reviewed for safety.</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3575224072358507281">Collect IP address and network measurement results for Measurement Lab, according to their privacy policy (measurementlab.net/privacy)</translation>
@@ -3605,6 +3610,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
 <translation id="3756823472711156529">Restore group</translation>
+<translation id="3757337311115630808">Learn more about Gemini Spark</translation>
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
 <translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
@@ -4755,6 +4761,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4647283074445570750">Step <ph name="CURRENT_STEP" /> of <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">Colour picker</translation>
 <translation id="4648491805942548247">Insufficient permissions</translation>
+<translation id="4648876469762528742">App is up to date.</translation>
 <translation id="4650037136970677721">Memory saved</translation>
 <translation id="4650591383426000695">Disconnect your phone from your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">Can't sign in with this account</translation>
@@ -5007,6 +5014,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4840096453115567876">Exit Incognito mode anyway?</translation>
 <translation id="4841475798258477260">This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">This page is trying to load scripts from unauthenticated sources.</translation>
+<translation id="4843037705239202082">Media understanding</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846628405149428620">Select where this site can save changes</translation>
 <translation id="4846680374085650406">You are following the administrator's recommendation for this setting.</translation>
@@ -7753,6 +7761,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7001809623433867903">Clean up bookmarks?</translation>
 <translation id="7003339318920871147">Web Databases</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} files}}</translation>
+<translation id="7003537330107832201">A new version (<ph name="VERSION" />) of <ph name="APP_NAME" /> is available. All open windows will be closed to apply the update. Unsaved data may be lost.</translation>
 <translation id="7003644704445046755">High-quality <ph name="LANGUAGE" /> voice files downloaded</translation>
 <translation id="7003723821785740825">Set up a faster way to unlock your device</translation>
 <translation id="7003844668372540529">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>
@@ -8317,6 +8326,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7434509671034404296">Developer</translation>
 <translation id="7434757724413878233">Mouse acceleration</translation>
 <translation id="7434969625063495310">Couldn't add the print server. Please check the server's configuration and try again.</translation>
+<translation id="7435500219604275502">Apply update</translation>
 <translation id="7439519621174723623">Add a device name to continue</translation>
 <translation id="7441736921018636843">To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
 <translation id="7441830548568730290">Other users</translation>
@@ -9489,6 +9499,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8342387517402567689">Web app installs aren't supported in Incognito mode</translation>
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8343578633847737325">Recent chats and threads</translation>
+<translation id="8345099007452202761">A new version (<ph name="VERSION" />) of <ph name="APP_NAME" /> is available. Would you like to apply it now?</translation>
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8347728744337089388">Send to your &amp;device</translation>

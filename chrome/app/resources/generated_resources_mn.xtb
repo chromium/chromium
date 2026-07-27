@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">Хайгч дотор харуулах</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />]-г устгах</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" />-г дотоодод боловсруулдаг бөгөөд энэ нь офлайнаар ажилладаг</translation>
+<translation id="1586075235463145108">Эхлээд энэ төхөөрөмжид Chrome-н автомат хөтчийг асаана уу</translation>
 <translation id="1587275751631642843">&amp;JavaScript системийн удирдлагын мессеж</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1588772269240419305">Лого, нэрийн шинэчлэлтийг хянах</translation>
@@ -1831,6 +1832,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 бүртгэл, нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Дэлгэрэнгүй мэдээлэл}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} бүртгэл, нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Дэлгэрэнгүй мэдээлэл}}</translation>
 <translation id="2428510569851653187">Табыг гэмтсэн үед хийж байсан зүйлээ тайлбарлана уу</translation>
 <translation id="2428939361789119025">Wi-Fi-г унтраах</translation>
+<translation id="2431280447889982015">Аудиотой дэлгэц сонгох</translation>
 <translation id="243275146591958220">Таталтыг цуцлах</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> апп бүртгүүлсэн</translation>
 <translation id="2433237965825924228">Тусгаарласан веб апп баталгаажуулах төхөөрөмжүүд болон тэдгээрт хандах боломжтой ухаалаг картуудыг хянадаг. Ухаалаг карт ихэвчлэн таныг баталгаажуулахад ашигладаг танигчтай байдаг.</translation>
@@ -6203,6 +6205,7 @@
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
 <translation id="5794786537412027208">Бүх Chrome Apps-аас гарах</translation>
 <translation id="5796485699458186843">Шинэ нууцлалтай &amp;таб</translation>
+<translation id="5796656350463724">Табын загварчлал</translation>
 <translation id="5796956053441619942">Алсын зайн төхөөрөмжийн URL-г дэмждэггүй</translation>
 <translation id="5798079537501238810">Сайтууд төлбөр хариуцагч суулгах боломжтой</translation>
 <translation id="5798086737841799234">Баталгаажуулах код оруулах</translation>
@@ -6308,6 +6311,7 @@
 <translation id="5864754048328252126">Цэнэглэж байх үед идэвхгүй төлөвт хийх үйлдэл</translation>
 <translation id="586567932979200359">Та <ph name="PRODUCT_NAME" />-ийг дискний дүрснээс нь ажилуулж байна. Үүнийг компьютер дээрээ суулгаснаар та үүн дээр дискний дүрсгүйгээр ажиллах боломжтой болох бөгөөд үргэлж шинэчлэгдэж байх болно.</translation>
 <translation id="5865733239029070421">Хэрэглээний статистик мэдээ болон алдааны тайланг Google-д автоматаар илгээдэг</translation>
+<translation id="58659335642601499">Аудиотой цонх сонгох</translation>
 <translation id="5866363217037791319">Ажлыг дуусгах</translation>
 <translation id="5868434909835797817">Таны төхөөрөмж дээрх микрофон унтраалттай байна</translation>
 <translation id="5868479397518301468">Нэвтрэх явц завсарласан</translation>

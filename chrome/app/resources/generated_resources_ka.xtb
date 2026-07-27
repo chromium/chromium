@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{ინკოგნიტო ფანჯრის დახურვა}other{ინკოგნიტო ფანჯრის დახურვა (# ფანჯარა)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> — ჯგუფის „<ph name="GROUP_NAME" />“ ნაწილი</translation>
 <translation id="1130676589211693127">მარჯვენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">ჩანართების გაზიარებისას მათი კონტენტი, მედია და URL-ები ეგზავნება Google-ს და შეიძლება მიმოიხილებოდეს უსაფრთხოების მიზნით.</translation>
 <translation id="1133418583142946603">მიმდინარე ჩანართის დამატება</translation>
 <translation id="1133751489735776037">მაუსით სამმაგი დაწკაპუნება</translation>
 <translation id="1136712381129578788">უსაფრთხოების ეს გასაღები დაბლოკილია არასწორი PIN-კოდის მეტისმეტად ბევრჯერ შეყვანის გამო. მის განსაბლოკად გამოართეთ და ხელახლა მიაერთეთ ის.</translation>
@@ -1100,6 +1101,7 @@
 <translation id="1846308012215045257">დააწკაპუნეთ კლავიშზე Control დაჭერით, რათა გაუშვათ <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">სისტემიდან გამოსვლა თავსახურის დახურვისას</translation>
 <translation id="184862733444771842">ფუნქციის მოთხოვნა</translation>
+<translation id="184871971966737653">დაამატეთ გახსნილი ჩანართები, რომ იკითხოთ ნებისმიერი რამ</translation>
 <translation id="1849016657376805933">ნებისმიერი HID მოწყობილობა</translation>
 <translation id="1849022541429818637">საიტებისთვის ნებადართულია თქვენი მაუსის მეშვეობით განხორციელებული შენატანების დაფიქსირება და გამოყენება</translation>
 <translation id="1849252834922144634">ხანგრძლივად შეეხეთ, რათა მალსახმობები ჩაამაგროთ</translation>
@@ -2085,6 +2087,7 @@
 <translation id="2624142942574147739">ამ გვერდს აქვს წვდომა თქვენს კამერასა და მიკროფონზე.</translation>
 <translation id="2626799779920242286">მოგვიანებით სცადეთ.</translation>
 <translation id="2627424346328942291">გაზიარება ვერ ხერხდება</translation>
+<translation id="2627970398976286795">Gemini Spark-ის რისკების მიმოხილვა</translation>
 <translation id="2628258844236035475">ამოიშალოს თქვენი სახლის მისამართი Chrome-ის ავტომატური შევსებიდან?</translation>
 <translation id="2628770867680720336">ADB გამართვის ჩასართავად საჭიროა ამ Chromebook-ის ქარხნულ პარამეტრებზე დაბრუნება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini-სთან ახალი ჩეთის დაწყება</translation>
@@ -2775,6 +2778,7 @@
 <translation id="3134312457920437826">გაფართოების დაინსტალირება შეუძლებელია. რადგან ის იყენებს აღწერის ფაილის მხარდაუჭერელ ვერსიას.</translation>
 <translation id="3134393957315651797">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“. ექსპერიმენტის აღწერილობა: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ნაგულისხმევი ყვითელი ავატარი</translation>
+<translation id="314095642664111744">ფოკუსის გამორთვა</translation>
 <translation id="3141093262818886744">მაინც გახსნა</translation>
 <translation id="3141318088920353606">მიმდინარეობს მოსმენა…</translation>
 <translation id="3142562627629111859">ახალი ჯგუფი</translation>
@@ -3332,6 +3336,7 @@
 <translation id="3569614820047645079">„ჩემს Drive“-ში არსებული თქვენი ფაილების თქვენს Chromebook-თან სინქრონიზაცია ავტომატურად შესრულდება, რომ მათზე წვდომა ინტერნეტთან კავშირის გარეშე შეძლოთ.</translation>
 <translation id="3569617221227793022">სასაათო სარტყლად ამჟამად მითითებულია <ph name="TIME_ZONE_ENTRY" />. ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილებისა და საქაღალდეების ნახვა</translation>
+<translation id="3570112771874223231">გვერდის კონტენტი და URL-ები, რომლებსაც Gemini იყენებს ამოცანის შესრულებისას, გაზიარდება Google-თან და შეიძლება მიმოიხილებოდეს უსაფრთხოების მიზნით.</translation>
 <translation id="3571734092741541777">დაყენება</translation>
 <translation id="3575121482199441727">დაშვება ამ საიტისთვის</translation>
 <translation id="3575224072358507281">IP მისამართებისა და ქსელის გაზომვის შედეგების შეგროვება Measurement Lab-ისთვის, მისი კონფიდენციალურობის დებულების შესაბამისად (measurementlab.net/privacy)</translation>
@@ -3592,6 +3597,7 @@
 <translation id="3756578970075173856">დააყენეთ PIN-კოდი</translation>
 <translation id="3756806135608816820">საიტებს შეუძლია Bluetooth მოწყობილობების მოძიების მოთხოვნა</translation>
 <translation id="3756823472711156529">ჯგუფის აღდგენა</translation>
+<translation id="3757337311115630808">შეიტყვეთ მეტი Gemini Spark-ის შესახებ</translation>
 <translation id="3757567010566591880">ხელსაწყოთა ზოლიდან ჩამაგრების მოხსნა</translation>
 <translation id="3757645900890881944">ძიების ინსტრუმენტები</translation>
 <translation id="3757733214359997190">საიტები ვერ მოიძებნა</translation>
@@ -4742,6 +4748,7 @@
 <translation id="4647283074445570750">ნაბიჯი <ph name="CURRENT_STEP" /> / <ph name="TOTAL_STEPS" />-დან</translation>
 <translation id="4647836961514597010">ფერის ამომრჩეველი</translation>
 <translation id="4648491805942548247">არასაკმარისი ნებართვები</translation>
+<translation id="4648876469762528742">აპი განახლებულია.</translation>
 <translation id="4650037136970677721">მეხსიერების დაზოგილია</translation>
 <translation id="4650591383426000695">თქვენი ტელეფონის კავშირის გაწვეტა <ph name="DEVICE_TYPE" />-თან</translation>
 <translation id="4651921906638302153">ამ ანგარიშით შესვლა ვერ ხერხდება</translation>
@@ -4994,6 +5001,7 @@
 <translation id="4840096453115567876">მაინც გსურთ ინკოგნიტო რეჟიმიდან გასვლა?</translation>
 <translation id="4841475798258477260">ამ მოწყობილობას შეუძლია მხოლოდ კონკრეტულ მობილურ ქსელთან დაკავშირება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ეს გვერდი ცდილობს სკრიპტების გადმოწერას არა საიმედო წყაროებიდან.</translation>
+<translation id="4843037705239202082">მედიის აღქმა</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4846628405149428620">აირჩიეთ, სად შეუძლია ამ საიტს ცვლილებების შენახვა</translation>
 <translation id="4846680374085650406">ამ პატარამეტრის შემთხვევაში, თქვენ იზიარებთ ადმინისტრატორის რეკომენდაციას.</translation>
@@ -6183,6 +6191,7 @@
 <translation id="5794700615121138172">Linux-ის გაზიარებული საქაღალდეები</translation>
 <translation id="5794786537412027208">Chrome-ის ყველა პროგრამის დახურვა</translation>
 <translation id="5796485699458186843">ახალი ინკოგნიტო ჩან&amp;ართი</translation>
+<translation id="5796656350463724">ჩანართის სტილიზება</translation>
 <translation id="5796956053441619942">დისტანციური მოწყობილობიდან URL არ არის მხარდაჭერილი</translation>
 <translation id="5798079537501238810">საიტებს შეუძლია გადახდის დამმუშავებლების ინსტალაცია</translation>
 <translation id="5798086737841799234">შეიყვანეთ დადასტურების კოდი</translation>
@@ -7740,6 +7749,7 @@
 <translation id="7001809623433867903">გსურთ სანიშნეების გასუფთავება?</translation>
 <translation id="7003339318920871147">ვებ მონაცემთა ბაზები</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ფაილი}other{{COUNT} ფაილი}}</translation>
+<translation id="7003537330107832201">ხელმისაწვდომია <ph name="APP_NAME" />-ის ახალი ვერსია (<ph name="VERSION" />). განახლების გამოსაყენებლად დაიხურება ყველა ღია ფანჯარა. შეუნახავი მონაცემები შეიძლება დაიკარგოს.</translation>
 <translation id="7003644704445046755">ჩამოტვირთულია მაღალი ხარისხის ხმოვანი <ph name="LANGUAGE" /> ფაილები</translation>
 <translation id="7003723821785740825">დააყენეთ თქვენი მოწყობილობის უფრო სწრაფად განბლოკვის ხერხი</translation>
 <translation id="7003844668372540529">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_NAME" /></translation>
@@ -8302,6 +8312,7 @@
 <translation id="7434509671034404296">შემმუშავებელი</translation>
 <translation id="7434757724413878233">მაუსის აჩქარება</translation>
 <translation id="7434969625063495310">ბეჭდვის სერვერის დამატება ვერ მოხერხდა. შეამოწმეთ სერვერის კონფიგურაცია და ცადეთ ხელახლა.</translation>
+<translation id="7435500219604275502">განახლების გამოყენება</translation>
 <translation id="7439519621174723623">გასაგრძელებლად დაამატეთ მოწყობილობის სახელი</translation>
 <translation id="7441736921018636843">ამ პარამეტრის შესაცვლელად <ph name="BEGIN_LINK" />გადააყენეთ სინქრონიზაცია<ph name="END_LINK" />, რომ ამოშალოთ სინქრონიზაციის საიდუმლო ფრაზა</translation>
 <translation id="7441830548568730290">სხვა მომხმარებლები</translation>
@@ -9474,6 +9485,7 @@
 <translation id="8342387517402567689">ვებ-აპის ინსტალაცია არ არის მხარდაჭერილი ინკოგნიტო რეჟიმში</translation>
 <translation id="8342861492835240085">აირჩიეთ კოლექცია</translation>
 <translation id="8343578633847737325">ბოლო ჩეთები და თემატური გზავნილები</translation>
+<translation id="8345099007452202761">ხელმისაწვდომია <ph name="APP_NAME" />-ის ახალი ვერსია (<ph name="VERSION" />). გსურთ მისი ახლა გამოყენება?</translation>
 <translation id="8345848587667658367">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და აპები</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8347728744337089388">თქვენს &amp;მოწყობილობაზე გაგზავნა</translation>

@@ -465,7 +465,6 @@
 <translation id="1711234383449478798">Не прымяняецца, паколькі палітыка "<ph name="POLICY_NAME" />" не мае значэння "<ph name="VALUE" />".</translation>
 <translation id="1712552549805331520">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на лакальным камп’ютары</translation>
 <translation id="1713628304598226412">Латок 2</translation>
-<translation id="1713819065634160212">Выкарыстоўваць адрасы з вашага Уліковага запісу Google і захоўваць іх</translation>
 <translation id="1714807406136741351">Рэжым прагляду. Каб паглядзець на дыяграме, як змянялася цана, перайдзіце ў рэжым форм і націскайце стрэлкі ўлева або ўправа.</translation>
 <translation id="1717218214683051432">Датчыкі руху</translation>
 <translation id="1717494416764505390">Паштовая скрынка 3</translation>
@@ -727,6 +726,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку. Змяніць стандартную пошукавую сістэму можна ў любы час.</translation>
+<translation id="2134584557120247184">Авіябілет</translation>
 <translation id="2137891579555018930">Чакаем дазволу...</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
 <translation id="2141000681034340397">Змяніць уведзеныя даныя</translation>
@@ -1426,6 +1426,7 @@
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
+<translation id="3196374699162453920">Код браніравання</translation>
 <translation id="3196902089458890316">Заўсёды абагульваць адпаведныя ўкладкі, каб атрымліваць больш рэлевантныя адказы?</translation>
 <translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце Tab, затым Enter</translation>
@@ -2042,6 +2043,7 @@
 <translation id="4140905366050378834">Тавары і корм для хатніх жывёл</translation>
 <translation id="4140905530744469899">Ідэнтыфікатар профілю:</translation>
 <translation id="4142935452406587478">Латок 10</translation>
+<translation id="4143568335933115324">Аэрапорт прыбыцця</translation>
 <translation id="4147897805161313378">Google Фота</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Канверт Chinese № 4</translation>
@@ -2308,6 +2310,7 @@
 <translation id="4543072026714825470">Каб наступны раз плаціць хутчэй, захавайце картку і адрас для выстаўлення рахункаў ва Уліковым запісе Google</translation>
 <translation id="4546730006268514143">Час чакання пераносу перавышаны</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{Створана дзень таму}one{Створана {NUM_DAYS} дзень таму}few{Створана {NUM_DAYS} дні таму}many{Створана {NUM_DAYS} дзён таму}other{Створана {NUM_DAYS} дня таму}}</translation>
+<translation id="4550087677305533997">Пасажыр</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Блакіроўка экрана выкарыстоўваецца для ўводу пароляў</translation>
 <translation id="4557573143631562971">Страхаванне жылля</translation>
@@ -2361,6 +2364,7 @@
 <translation id="4658801711339831733">Вынік сканіравання захаваны на Google Дыску</translation>
 <translation id="4660592918803576381">Адкрыць на Дыску</translation>
 <translation id="4660780573807106293">Можа запытваць дазвол на выкарыстанне датчыкаў руху і святла</translation>
+<translation id="4661010630350489875">Нумар рэйса</translation>
 <translation id="4661556981531699496">Хатнія і дзікія жывёлы</translation>
 <translation id="4661868874067696603">Пошук іншых варыянтаў куплі</translation>
 <translation id="4663373278480897665">Камера дазволена</translation>
@@ -2832,6 +2836,7 @@
 <translation id="5391010642126249196">Наведана</translation>
 <translation id="5391030615542642809">Прылада <ph name="MANUFACTURER" /></translation>
 <translation id="5391306025131596142">&amp;Адкрыць старонку гісторыі</translation>
+<translation id="5391870546630695708">Аэрапорт адпраўлення</translation>
 <translation id="539203134595252721">Настольны тэніс</translation>
 <translation id="5392506727170022660">Паўглянцавы метал</translation>
 <translation id="5394069166371280357">Сямейныя тэлеперадачы</translation>
@@ -2942,6 +2947,7 @@
 <translation id="5540969246441091044">Верхавая язда</translation>
 <translation id="5541086400771735334">Паштовая скрынка 7</translation>
 <translation id="5541546772353173584">Дадайце адрас электроннай пошты</translation>
+<translation id="5541735141423273733">Дата прыбыцця</translation>
 <translation id="5543452229212526547">Ваш тэкст, а таксама змесціва і URL-адрас старонкі, на якой вы пішаце, будуць адпраўлены ў Google. Спецыялісты не будуць выкарыстоўваць ваша змесціва для паляпшэння штучнага інтэлекту. Ваша арганізацыя можа змяніць гэтыя налады ў любы час.</translation>
 <translation id="5543564889050342791">Заапаркі, акіянарыумы і запаведнікі</translation>
 <translation id="5543722831081909240">180 градусаў</translation>
@@ -4730,6 +4736,7 @@
 <translation id="8288320283441806607">Каб выкарыстоўваць гэту функцыю, уключыце наладу "Палепшыць пошук і прагляд"</translation>
 <translation id="8288807391153049143">Паказаць сертыфікат</translation>
 <translation id="8289355894181816810">Калі вы не ўпэўненыя, што гэта значыць, звярніцеся да адміністратара сеткі.</translation>
+<translation id="8289655756644294629">Дата адпраўлення</translation>
 <translation id="8291367150570302588">Пасведчанне асобы</translation>
 <translation id="829335040383910391">гук</translation>
 <translation id="8294425747071240447">Прапановы на аснове штучнага інтэлекту</translation>

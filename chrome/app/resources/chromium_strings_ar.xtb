@@ -21,6 +21,7 @@
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">‏عند فتح ميزة "البحث بالصور"، سيتم تلقائيًا إرسال عنوان الصفحة وعنوان URL والمحتوى (بما في ذلك ملفات PDF) إلى الخادم. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">‏بعد تسجيل الدخول إلى حسابك، يمكنك استخدام كلمات المرور وغيرها من بيانات حسابك على Google في Chromium. لتغيير ذلك، يُرجى الانتقال إلى "حسابك في Chromium".</translation>
+<translation id="1244381985120794049">‏عرض "Gemini في Chromium" في شريط قوائم Mac</translation>
 <translation id="1257483544893909270">‏يمكنك استخدام اختصار لوحة المفاتيح لاختيار جزء من الشاشة في "Gemini في Chromium".</translation>
 <translation id="1262876892872089030">‏عندما كانت علامة التبويب هذه غير نشطة، تم إخلاء مساحة في الذاكرة للحفاظ على سرعة Chromium. يمكنك اختيار أن يظل هذا الموقع الإلكتروني نشطًا دائمًا.</translation>
 <translation id="1265577313130862557">‏حَظَر Chromium عملية التنزيل هذه لأنّ الملف خطير.</translation>
@@ -592,6 +593,7 @@
 <translation id="7368826207863345663">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام كمبيوتر يعمل بنظام التشغيل macOS 13 أو إصدار أحدث. ويعمل هذا الكمبيوتر بنظام التشغيل macOS 12.</translation>
 <translation id="7376384068949534168">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">‏فتح سوق Chrome الإلكتروني</translation>
+<translation id="7394275517973019558">‏عرض "Gemini في Chromium" في لوحة النظام</translation>
 <translation id="7407655596887111931">‏تم ضبط Chromium كمتصفّحك التلقائي</translation>
 <translation id="7413153308467572558">‏المتابعة من حيث توقفت: يمكن لمتصفّح Chromium استعادة علامات التبويب كلما أعدت تشغيله. لإيقاف هذه الميزة، يُرجى الانتقال إلى</translation>
 <translation id="7427879960656355200">‏استيراد كلمات المرور إلى Chromium</translation>

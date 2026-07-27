@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{Закрити анонімне вікно}one{Закрити # анонімне вікно}few{Закрити # анонімні вікна}many{Закрити # анонімних вікон}other{Закрити # анонімного вікна}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – частина групи "<ph name="GROUP_NAME" />"</translation>
 <translation id="1130676589211693127">Рівень заряду акумулятора правого навушника – <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">Коли ви надаєте доступ до вкладок, їх вміст, медіаконтент і URL-адреси надсилаються в Google і можуть перевірятися на відповідність вимогам безпеки.</translation>
 <translation id="1133418583142946603">Додати поточну вкладку</translation>
 <translation id="1133751489735776037">Тричі натиснути лівою кнопкою миші</translation>
 <translation id="1136712381129578788">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Щоб розблокувати його, вийміть і знову вставте ключ.</translation>
@@ -1109,6 +1110,7 @@
 <translation id="1846308012215045257">Натисніть клавішу Control, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Виходити з облікового запису, коли кришка закрита</translation>
 <translation id="184862733444771842">Запит на додавання функції</translation>
+<translation id="184871971966737653">Додайте відкриті вкладки, щоб поставити запитання</translation>
 <translation id="1849016657376805933">Усі пристрої HID</translation>
 <translation id="1849022541429818637">Дозволено отримувати й використовувати дані, введені за допомогою миші</translation>
 <translation id="1849252834922144634">Натисніть і утримуйте, щоб закріпити ярлики</translation>
@@ -2098,6 +2100,7 @@
 <translation id="2624142942574147739">Ця сторінка має доступ до ваших камери та мікрофона.</translation>
 <translation id="2626799779920242286">Повторіть спробу пізніше.</translation>
 <translation id="2627424346328942291">Не вдалося надіслати</translation>
+<translation id="2627970398976286795">Докладніше про ризики використання Gemini Spark</translation>
 <translation id="2628258844236035475">Вилучити домашню адресу з даних для автозаповнення в Chrome?</translation>
 <translation id="2628770867680720336">Щоб увімкнути налагодження ADB, потрібно скинути цей пристрій Chromebook до заводських налаштувань. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Почати новий чат із Gemini</translation>
@@ -2788,6 +2791,7 @@
 <translation id="3134312457920437826">Не вдалося встановити розширення, оскільки в ньому використовується непідтримувана версія маніфесту.</translation>
 <translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
+<translation id="314095642664111744">Вимкнути фокусування</translation>
 <translation id="3141093262818886744">Усе одно відкрити</translation>
 <translation id="3141318088920353606">Говоріть…</translation>
 <translation id="3142562627629111859">Нова група</translation>
@@ -3345,6 +3349,7 @@
 <translation id="3569614820047645079">Файли з папки "Мій диск" синхронізуються з Chromebook автоматично, щоб ви могли відкривати їх без інтернет-з’єднання.</translation>
 <translation id="3569617221227793022">Зараз вибрано часовий пояс <ph name="TIME_ZONE_ENTRY" />. Цим налаштуванням керує адміністратор.</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> може переглядати вказані нижче файли й папки</translation>
+<translation id="3570112771874223231">Вміст сторінок і URL-адреси, які Gemini використовує під час виконання завдання, надсилаються в Google і можуть перевірятися на відповідність вимогам безпеки.</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3575224072358507281">збирати ІР-адреси й результати вимірювань мережі для Measurement Lab відповідно до політики конфіденційності (measurementlab.net/privacy)</translation>
@@ -3605,6 +3610,7 @@
 <translation id="3756578970075173856">Налаштувати PIN-код</translation>
 <translation id="3756806135608816820">Сайти можуть просити дозвіл шукати пристрої з Bluetooth</translation>
 <translation id="3756823472711156529">Відновити групу</translation>
+<translation id="3757337311115630808">Докладніше про Gemini Spark</translation>
 <translation id="3757567010566591880">Відкріпити від панелі інструментів</translation>
 <translation id="3757645900890881944">Інструменти пошуку</translation>
 <translation id="3757733214359997190">Не знайдено сайтів</translation>
@@ -4755,6 +4761,7 @@
 <translation id="4647283074445570750">Крок <ph name="CURRENT_STEP" /> з <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">Вибір кольору</translation>
 <translation id="4648491805942548247">Недостатні дозволи</translation>
+<translation id="4648876469762528742">Додаток оновлено.</translation>
 <translation id="4650037136970677721">Спогад збережено</translation>
 <translation id="4650591383426000695">Від'єднати телефон від <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">Не вдалося ввійти за допомогою цього облікового запису</translation>
@@ -5006,6 +5013,7 @@
 <translation id="4840096453115567876">Усе одно вимкнути режим анонімного перегляду?</translation>
 <translation id="4841475798258477260">Цей пристрій може підключатися лише до певної мобільної мережі. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Ця сторінка намагається завантажити сценарії з неперевірених джерел.</translation>
+<translation id="4843037705239202082">Розпізнавання медіаконтенту</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4846628405149428620">Виберіть, де сайт може зберігати зміни</translation>
 <translation id="4846680374085650406">Ви дотримуєтеся рекомендації адміністратора щодо цього налаштування.</translation>
@@ -7754,6 +7762,7 @@
 <translation id="7001809623433867903">Видалити закладки?</translation>
 <translation id="7003339318920871147">Онлайнові бази даних</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
+<translation id="7003537330107832201">Доступна нова версія додатка <ph name="APP_NAME" /> (<ph name="VERSION" />). Щоб застосувати оновлення, усі відкриті вікна буде закрито. Незбережені дані може бути втрачено.</translation>
 <translation id="7003644704445046755">Завантажено голосові файли високої якості такою мовою: <ph name="LANGUAGE" /></translation>
 <translation id="7003723821785740825">Налаштуйте швидше розблокування пристрою</translation>
 <translation id="7003844668372540529">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /></translation>
@@ -8317,6 +8326,7 @@
 <translation id="7434509671034404296">Для розробників</translation>
 <translation id="7434757724413878233">Прискорення миші</translation>
 <translation id="7434969625063495310">Не вдалося додати сервер для друку. Перевірте його налаштування й повторіть спробу.</translation>
+<translation id="7435500219604275502">Застосувати оновлення</translation>
 <translation id="7439519621174723623">Щоб продовжити, додайте назву пристрою</translation>
 <translation id="7441736921018636843">Щоб змінити це налаштування, видаліть парольну фразу для синхронізації, <ph name="BEGIN_LINK" />скинувши параметри синхронізації<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">Інші користувачі</translation>
@@ -9489,6 +9499,7 @@
 <translation id="8342387517402567689">Встановлення вебдодатків в анонімному режимі не підтримується</translation>
 <translation id="8342861492835240085">Виберіть колекцію</translation>
 <translation id="8343578633847737325">Нещодавні чати й ланцюжки</translation>
+<translation id="8345099007452202761">Доступна нова версія додатка <ph name="APP_NAME" /> (<ph name="VERSION" />). Застосувати її?</translation>
 <translation id="8345848587667658367">Тепер ви можете переглядати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
 <translation id="8347728744337089388">Надіслати на &amp;пристрій</translation>

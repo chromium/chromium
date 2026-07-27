@@ -465,7 +465,6 @@
 <translation id="1711234383449478798">Ignorée : <ph name="POLICY_NAME" /> n'est pas définie à <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">L'URL <ph name="URL" /> veut stocker des données de façon permanente sur votre ordinateur local</translation>
 <translation id="1713628304598226412">Bac 2</translation>
-<translation id="1713819065634160212">Utiliser et enregistrer les adresses de votre compte Google</translation>
 <translation id="1714807406136741351">Dans le mode Parcourir, vous pouvez passer en mode Formulaires pour utiliser la flèche vers la gauche ou vers la droite afin de consulter les modifications de prix sur le graphique</translation>
 <translation id="1717218214683051432">Capteurs de mouvements</translation>
 <translation id="1717494416764505390">Boîte aux lettres 3</translation>
@@ -727,6 +726,7 @@
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ceux-ci sont présentés dans un ordre aléatoire. Vous pouvez modifier votre moteur de recherche par défaut à tout moment.</translation>
+<translation id="2134584557120247184">Billet d'avion</translation>
 <translation id="2137891579555018930">En attente d'autorisation…</translation>
 <translation id="213826338245044447">Favoris d'appareil mobile</translation>
 <translation id="2141000681034340397">Modifier votre entrée</translation>
@@ -1425,6 +1425,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
+<translation id="3196374699162453920">Code de réservation</translation>
 <translation id="3196902089458890316">Toujours partager les onglets pertinents pour obtenir de meilleures réponses?</translation>
 <translation id="3197136577151645743">Les sites peuvent demander à savoir quand vous utilisez activement cet appareil</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer quelles données vous synchronisez dans les paramètres de Chrome</translation>
@@ -2042,6 +2043,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4140905366050378834">Nourriture et accessoires pour animaux de compagnie</translation>
 <translation id="4140905530744469899">Identifiant de profil :</translation>
 <translation id="4142935452406587478">Bac 10</translation>
+<translation id="4143568335933115324">Aéroport d'arrivée</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Enveloppe chinoise nᵒ 4</translation>
@@ -2308,6 +2310,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4543072026714825470">Pour accélérer le prochain paiement, enregistrez votre carte et votre adresse de facturation dans votre compte Google</translation>
 <translation id="4546730006268514143">Le transfert a dépassé le délai</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{Créé il y a 1 jour}one{Créé il y a {NUM_DAYS} jour}other{Créé il y a {NUM_DAYS} jours}}</translation>
+<translation id="4550087677305533997">Passager</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Vous utilisez votre verrouillage d'écran pour remplir les mots de passe</translation>
 <translation id="4557573143631562971">Assurance habitation</translation>
@@ -2361,6 +2364,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4658801711339831733">Numérisation enregistrée dans Google Disque</translation>
 <translation id="4660592918803576381">Ouvrir dans Disque</translation>
 <translation id="4660780573807106293">Le site peut demander à utiliser vos capteurs de mouvement et de luminosité</translation>
+<translation id="4661010630350489875">Numéro de vol</translation>
 <translation id="4661556981531699496">Faune et animaux de compagnie</translation>
 <translation id="4661868874067696603">Rechercher plus d'options d'achat</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
@@ -2833,6 +2837,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5391010642126249196">Vous avez visité cette page</translation>
 <translation id="5391030615542642809">Appareil <ph name="MANUFACTURER" /></translation>
 <translation id="5391306025131596142">&amp;Ouvrir la page de l'historique</translation>
+<translation id="5391870546630695708">Aéroport de départ</translation>
 <translation id="539203134595252721">Tennis de table</translation>
 <translation id="5392506727170022660">Métal (semi-brillant)</translation>
 <translation id="5394069166371280357">Émissions télévisées familiales</translation>
@@ -2943,6 +2948,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5540969246441091044">Sports équestres</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse de courriel</translation>
+<translation id="5541735141423273733">Date d'arrivée</translation>
 <translation id="5543452229212526547">Le texte, le contenu et l'URL de la page sur laquelle vous écrivez seront envoyés à Google. Votre contenu ne sera pas utilisé par des réviseurs humains afin d'améliorer l'IA. Votre organisation peut modifier ces paramètres à tout moment.</translation>
 <translation id="5543564889050342791">Zoos, aquariums et réserves naturelles</translation>
 <translation id="5543722831081909240">180 degrés</translation>
@@ -4730,6 +4736,7 @@ Détails supplémentaires :
 <translation id="8288320283441806607">Pour utiliser cette fonctionnalité, activez le paramètre Améliorer les recherches et la navigation</translation>
 <translation id="8288807391153049143">Afficher le certificat</translation>
 <translation id="8289355894181816810">Communiquez avec votre administrateur réseau si vous n'êtes pas certain de ce que cela signifie.</translation>
+<translation id="8289655756644294629">Date de départ</translation>
 <translation id="8291367150570302588">Carte d'identité</translation>
 <translation id="829335040383910391">Son</translation>
 <translation id="8294425747071240447">Suggestions, propulsées par l'IA</translation>

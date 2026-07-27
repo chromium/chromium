@@ -465,7 +465,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1711234383449478798">Anwybyddwyd oherwydd nad yw <ph name="POLICY_NAME" /> wedi'i osod i <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520">Mae <ph name="URL" /> eisiau storio data ar eich cyfrifiadur lleol yn barhaol</translation>
 <translation id="1713628304598226412">Hambwrdd 2</translation>
-<translation id="1713819065634160212">Defnyddio a chadw cyfeiriadau o'ch Cyfrif Google</translation>
 <translation id="1714807406136741351">Y modd pori, gallwch newid i'r modd Forms i ddefnyddio'r saeth chwith/dde i adolygu newidiadau pris ar y graff</translation>
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
 <translation id="1717494416764505390">Blwch negeseuon 3</translation>
@@ -985,6 +984,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2485243023686553468">Ffonau Clyfar</translation>
 <translation id="2491120439723279231">Mae tystysgrif y gweinydd yn cynnwys gwallau.</translation>
 <translation id="2491414235131909199">Mae'r dudalen hon wedi'i rhwystro gan estyniad</translation>
+<translation id="2493122313108999546">Wedi'i ailfeintio</translation>
 <translation id="2495083838625180221">Dosrannwr JSON</translation>
 <translation id="2496402116964818747">Gallwch newid a ydych yn defnyddio'ch olion bysedd ar gyfer llenwi cyfrineiriau yn y <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Sganio cerdyn newydd</translation>
@@ -2557,6 +2557,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4936134414789135531">Nid oedd modd dod o hyd i'r <ph name="VALUE_NAME" /> a fewnosodwyd.</translation>
 <translation id="4936573216809994970">Bydd eich uwchlwythiad ffeil i <ph name="CLOUD_PROVIDER" /> yn dechrau mewn 1 awr</translation>
 <translation id="4936675324097895694">Cyllid</translation>
+<translation id="4939748144644852809">Wedi'i symud i'r dde</translation>
 <translation id="4941627891654116707">Maint y ffont</translation>
 <translation id="4943620199112228840">Defnyddio eich meicroffonau</translation>
 <translation id="4943872375798546930">Dim canlyniadau</translation>
@@ -3213,6 +3214,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5953516610448771166">Nid yw Capsiynau Byw ar gael ar gyfer y cyfryngau hyn. I gael capsiynau, rhwystrwch <ph name="CONTENT_SETTINGS" /> ar gyfer y wefan hon.</translation>
 <translation id="5960795367348889467">Dilysu</translation>
 <translation id="5963413905009737549">Adran</translation>
+<translation id="5963685100480647029">Wedi'i symud i'r chwith</translation>
 <translation id="5964247741333118902">Cynnwys wedi'i fewnblannu</translation>
 <translation id="5967260682280773804">36 x 48 modfedd</translation>
 <translation id="5967592137238574583">Golygu Manylion Cyswllt</translation>
@@ -3719,6 +3721,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="671076103358959139">Tocyn Cofrestru:</translation>
 <translation id="6711464428925977395">Mae rhywbeth o'i le ar y dirprwy weinydd, neu mae'r cyfeiriad yn anghywir.</translation>
 <translation id="6711700233707023861">Wedi copïo llinyn amrywiadau i'r clipfwrdd</translation>
+<translation id="6712343563085762261">Wedi'i symud i fyny</translation>
 <translation id="6716039223770814796">Cymharu <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> eitem</translation>
 <translation id="6716672519412350405">Mae <ph name="URL" /> eisiau creu map 3D o'ch amgylchoedd ac olrhain safle'r camera</translation>
 <translation id="6717692133381953670">Tab wedi'i anfon o <ph name="DEVICE_NAME" /></translation>
@@ -4612,6 +4615,7 @@ Manylion ychwanegol:
 <translation id="8081087320434522107">Ceir sedan</translation>
 <translation id="8086429410809447605">Dillad Menywod</translation>
 <translation id="8086971161893892807">Drafft</translation>
+<translation id="8087558780672230449">Wrthi'n llwytho <ph name="APP_ORIGIN" /> i drin eich taliad ar <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Wedi methu â gweld yr erthygl.</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
 <translation id="8091372947890762290">Mae gweithredu wrthi'n aros ar y gweinydd</translation>
@@ -4807,6 +4811,7 @@ Manylion ychwanegol:
 <translation id="8400929824946688748">Swyddi ac Addysg</translation>
 <translation id="8402442052798347631">Gallai ymosodwyr ar y wefan y gwnaethoch geisio ymweld â hi eich twyllo i osod meddalwedd niweidiol sy'n effeithio ar y ffordd rydych yn pori - er enghraifft, trwy newid eich tudalen hafan neu ddangos hysbysebion ychwanegol i chi ar wefannau rydych yn ymweld â nhw. Mae Chrome yn argymell yn gryf i fynd yn ôl i ddiogelwch er mwyn osgoi niwed. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Ffuglen Ffan</translation>
+<translation id="8404028426624581035">Wedi'i symud i lawr</translation>
 <translation id="8405579342203358118">Rheoli pa wybodaeth rydych yn ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="8405621913275228683">Mae'r sgan wedi'i golli oherwydd gwall anhysbys</translation>
 <translation id="8406071103346257942">rhoi'r gorau i ddefnyddio'ch clo sgrin ar gyfer llenwi cyfrineiriau</translation>

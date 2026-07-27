@@ -466,7 +466,6 @@
 <ph name="POLICY_NAME" /> को <ph name="VALUE" /> पर सेट नहीं किया गया है.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> आपके स्थानीय कंप्यूटर पर हमेशा के लिए डेटा संग्रहित करना चाहता है</translation>
 <translation id="1713628304598226412">ट्रे 2</translation>
-<translation id="1713819065634160212">अपने Google खाते में सेव किए गए पतों का इस्तेमाल करें और उन्हें सेव करें</translation>
 <translation id="1714807406136741351">ब्राउज़ मोड, ग्राफ़ पर कीमत में हुए बदलावों की समीक्षा करने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है. ऐसा करने के लिए फ़ॉर्म मोड का इस्तेमाल करें</translation>
 <translation id="1717218214683051432">मोशन सेंसर</translation>
 <translation id="1717494416764505390">मेलबॉक्स 3</translation>
@@ -2520,6 +2519,7 @@
 <translation id="4885256590493466218">चेकआउट के दौरान <ph name="CARD_DETAIL" /> से पैसे चुकाएं</translation>
 <translation id="4886565443854420066">सेटिंग बदलने से पहले, Chrome ब्राउज़र आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="4887406273302438710">Windows Hello की मदद से पासवर्ड सुरक्षित रखें</translation>
+<translation id="4887785555357166111">वीडियो फ़्रेम सेव करें</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में जाकर, अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="4892518386797173871">पीछे का हिस्सा</translation>
 <translation id="4894390983254799375">जैसे: डिवाइस आईडी, डिवाइस का नाम, ओएस वर्शन, और ओएस का उपयोगकर्ता नाम</translation>

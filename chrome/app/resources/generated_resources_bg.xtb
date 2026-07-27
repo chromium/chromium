@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{Затваряне на прозореца в режим „инкогнито“}other{Затваряне на прозорците в режим „инкогнито“ (# прозореца)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> е част от групата <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Нивото на батерията на дясната слушалка е <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">Когато разделите се споделят, съдържанието, мултимедията и URL адресите на съответните страници се изпращат до Google и може да бъдат прегледани с цел безопасност.</translation>
 <translation id="1133418583142946603">Добавяне на текущия раздел</translation>
 <translation id="1133751489735776037">Трикратно кликване с мишката</translation>
 <translation id="1136712381129578788">Ключът за сигурност е заключен поради многократно въвеждане на грешен ПИН код. Премахнете ключа и го поставете отново, за да го отключите.</translation>
@@ -1108,6 +1109,7 @@
 <translation id="1846308012215045257">Задръжте „Ctrl“ и кликнете, за да стартирате <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Излизане от профила при затваряне на капака</translation>
 <translation id="184862733444771842">Заявка за функция</translation>
+<translation id="184871971966737653">Добавяне на отворените раздели с цел задаване на въпроси</translation>
 <translation id="1849016657376805933">Всякакви HID устройства</translation>
 <translation id="1849022541429818637">Сайтове с разрешение за записване и използване на въведеното с мишката</translation>
 <translation id="1849252834922144634">Докоснете и задръжте, за да фиксирате преки пътища</translation>
@@ -2097,6 +2099,7 @@
 <translation id="2624142942574147739">Тази страница осъществява достъп до камерата и микрофона ви.</translation>
 <translation id="2626799779920242286">Моля, опитайте отново по-късно.</translation>
 <translation id="2627424346328942291">Споделянето не е възможно</translation>
+<translation id="2627970398976286795">Прегледайте рисковете от използването на Gemini Spark</translation>
 <translation id="2628258844236035475">Да се премахне ли домашният ви адрес от функцията на Chrome за автоматично попълване?</translation>
 <translation id="2628770867680720336">За да активирате отстраняването на грешки през ADB, трябва да възстановите фабричните настройки на този Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Започване на нов разговор с Gemini</translation>
@@ -2787,6 +2790,7 @@
 <translation id="3134312457920437826">Разширението не може да се инсталира, защото използва неподдържана версия на манифеста.</translation>
 <translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
+<translation id="314095642664111744">Изключване на режима за концентрация</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
 <translation id="3141318088920353606">Слушаме ви...</translation>
 <translation id="3142562627629111859">Нова група</translation>
@@ -3344,6 +3348,7 @@
 <translation id="3569614820047645079">Файловете в „Моят диск“ се синхронизират автоматично с вашия Chromebook, за да имате достъп до тях без връзка с интернет.</translation>
 <translation id="3569617221227793022">Понастоящем зададената часова зона е <ph name="TIME_ZONE_ENTRY" />. Тази настройка се управлява от администратора ви.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да преглежда следните файлове и папки</translation>
+<translation id="3570112771874223231">Съдържанието на страницата и URL адресите, които Gemini използва по време на дадена задача, ще бъдат споделени с Google и може да бъдат прегледани с цел безопасност.</translation>
 <translation id="3571734092741541777">Настройване</translation>
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3575224072358507281">Събира IP адресите и резултатите от измерването на мрежата за Measurement Lab в съответствие с декларацията си за поверителност (measurementlab.net/privacy)</translation>
@@ -3604,6 +3609,7 @@
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
 <translation id="3756806135608816820">Сайтовете могат да извеждат запитвания за търсене на устройства с Bluetooth</translation>
 <translation id="3756823472711156529">Възстановяване на групата</translation>
+<translation id="3757337311115630808">Научете повече за Gemini Spark</translation>
 <translation id="3757567010566591880">Освобождаване от лентата с инструменти</translation>
 <translation id="3757645900890881944">Инструменти за търсене</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
@@ -4754,6 +4760,7 @@
 <translation id="4647283074445570750">Стъпка <ph name="CURRENT_STEP" /> от <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">Инструмент за избор на цветове</translation>
 <translation id="4648491805942548247">Недостатъчни разрешения</translation>
+<translation id="4648876469762528742">Приложението е актуално.</translation>
 <translation id="4650037136970677721">Икономисана памет</translation>
 <translation id="4650591383426000695">Прекратяване на връзката между телефона ви и вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">Не може да се влезе с този профил</translation>
@@ -5006,6 +5013,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4840096453115567876">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="4841475798258477260">Това устройство може да се свързва само с конкретна мобилна мрежа. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Тази страница опитва да зареди скриптове от неудостоверени източници.</translation>
+<translation id="4843037705239202082">Разбиране на мултимедията</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4846628405149428620">Изберете къде този сайт може да запазва промените</translation>
 <translation id="4846680374085650406">Следвате препоръката на администратора за тази настройка.</translation>
@@ -7754,6 +7762,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7001809623433867903">Да се изчистят ли отметките?</translation>
 <translation id="7003339318920871147">Уеб бази от данни</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файла}}</translation>
+<translation id="7003537330107832201">Налице е нова версия (<ph name="VERSION" />) на <ph name="APP_NAME" />. Всички отворени прозорци ще бъдат затворени, за да се приложи актуализацията. Възможно е незапазените данни да бъдат загубени.</translation>
 <translation id="7003644704445046755">Изтеглени са гласови файлове на <ph name="LANGUAGE" /> с високо качество</translation>
 <translation id="7003723821785740825">Настройте по-бърз начин да отключвате устройството си</translation>
 <translation id="7003844668372540529">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>
@@ -8318,6 +8327,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7434509671034404296">Програмист</translation>
 <translation id="7434757724413878233">Ускоряване на мишката</translation>
 <translation id="7434969625063495310">Сървърът за отпечатване не бе добавен. Моля, проверете конфигурацията му и опитайте отново.</translation>
+<translation id="7435500219604275502">Прилагане на актуализацията</translation>
 <translation id="7439519621174723623">Добавете име на устройство, за да продължите</translation>
 <translation id="7441736921018636843">За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" />, така че да премахнете съответния си пропуск</translation>
 <translation id="7441830548568730290">Други потребители</translation>
@@ -9490,6 +9500,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8342387517402567689">Инсталирането на уеб приложения не се поддържа в режим „инкогнито“</translation>
 <translation id="8342861492835240085">Избиране на колекция</translation>
 <translation id="8343578633847737325">Скорошни разговори и нишки</translation>
+<translation id="8345099007452202761">Налице е нова версия (<ph name="VERSION" />) на <ph name="APP_NAME" />. Искате ли да я приложите сега?</translation>
 <translation id="8345848587667658367">Вече можете да преглеждате скорошните снимки, мултимедийни файлове, известия и приложения, които имате на телефона си</translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8347728744337089388">Изпращане до &amp;устройството ви</translation>

@@ -8389,7 +8389,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
 Si se le asigna el valor True a esta política o no se define, <ph name="PRODUCT_NAME" /> podrá reiniciarse automáticamente para aplicar las actualizaciones pendientes cuando se cierren todas las ventanas del navegador.
 
-Si se le asigna el valor False a esta política, se inhabilitarán los reinicios automáticos cuando se cierren todas las ventanas del navegador.</translation>
+Si se le asigna el valor False, se inhabilitarán los reinicios automáticos cuando se cierren todas las ventanas del navegador.</translation>
 <translation id="6319907968994678054">Si se le asigna el valor Enabled a esta política, se desactivará la sincronización de datos en <ph name="PRODUCT_NAME" /> al usar los servicios de sincronización alojados por Google.
       Para desactivar los servicios de <ph name="CHROME_SYNC_NAME" /> por completo, te recomendamos que desactives el servicio en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 

@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">Показать в Finder</translation>
 <translation id="1582955169539260415">удалить [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">Текст на этом языке (<ph name="LANGUAGE" />) обрабатывается на устройстве и используется без подключения к интернету.</translation>
+<translation id="1586075235463145108">Сначала включите автонавигацию в Chrome для этого устройства</translation>
 <translation id="1587275751631642843">Консоль &amp;JavaScript</translation>
 <translation id="1588438908519853928">Обычный</translation>
 <translation id="1588772269240419305">Проверьте новый логотип и название</translation>
@@ -1819,6 +1820,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 аккаунт, пароль сохранен только на этом устройстве. Подробнее…}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунт, пароль сохранен только на этом устройстве. Подробнее…}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунтов, пароль сохранен только на этом устройстве. Подробнее…}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}}</translation>
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
+<translation id="2431280447889982015">Выбрать экран с аудио</translation>
 <translation id="243275146591958220">Отменить скачивание</translation>
 <translation id="2432882794929808179">Зарегистрировано приложений: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Изолированные веб-приложения управляют устройствами аутентификации и подключенными к этим устройствам смарт-картами, на которых хранятся идентификаторы, подтверждающие личность.</translation>
@@ -6190,6 +6192,7 @@
 <translation id="5794700615121138172">Общие папки Linux</translation>
 <translation id="5794786537412027208">Закрыть все приложения Chrome</translation>
 <translation id="5796485699458186843">Новая вкладка инкогнито</translation>
+<translation id="5796656350463724">Стиль вкладок</translation>
 <translation id="5796956053441619942">URL с удаленного устройства не поддерживается.</translation>
 <translation id="5798079537501238810">Разрешить сайтам устанавливать обработчики платежей</translation>
 <translation id="5798086737841799234">Введите код подтверждения</translation>
@@ -6295,6 +6298,7 @@
 <translation id="5864754048328252126">Что делать при переходе в режим бездействия, когда устройство заряжается</translation>
 <translation id="586567932979200359">Вы запускаете <ph name="PRODUCT_NAME" /> с образа на диске. Установка его на компьютере позволит запускать браузер без использования образа и обеспечит его регулярное обновление.</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="58659335642601499">Выбрать окно с аудио</translation>
 <translation id="5866363217037791319">Завершить задачу</translation>
 <translation id="5868434909835797817">На устройстве отключен микрофон</translation>
 <translation id="5868479397518301468">Время ожидания входа истекло</translation>

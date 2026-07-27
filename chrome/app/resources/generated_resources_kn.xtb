@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿರಿ}one{ಅಜ್ಞಾತ (# ವಿಂಡೋಗಳನ್ನು) ಮುಚ್ಚಿರಿ}other{ಅಜ್ಞಾತ (# ವಿಂಡೋಗಳನ್ನು) ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ಗುಂಪಿಗೆ ಸೇರಿದೆ</translation>
 <translation id="1130676589211693127">ಬಲಬದಿಯ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಂಡಾಗ, ಅವುಗಳ ಪುಟದ ಕಂಟೆಂಟ್, ಮೀಡಿಯಾ ಮತ್ತು URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಸುರಕ್ಷತೆಗಾಗಿ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="1133418583142946603">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಸೇರಿಸಿ</translation>
 <translation id="1133751489735776037">ಮೌಸ್ ಅನ್ನು ಟ್ರಿಪಲ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1136712381129578788">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿರುವ ಕಾರಣದಿಂದಾಗಿ, ಭದ್ರತೆ ಕೀ ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಅದನ್ನು ತೆಗೆದು ಮರುಸೇರ್ಪಡಿಸಿ.</translation>
@@ -1101,6 +1102,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> ಅನ್ನು ರನ್ ಮಾಡಲು ಕಂಟ್ರೋಲ್-ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1848219224579402567">ಲಿಡ್‌ ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="184862733444771842">ಫೀಚರ್‌ ವಿನಂತಿ</translation>
+<translation id="184871971966737653">ಏನನ್ನಾದರೂ ಕೇಳಲು ತೆರೆದಿರುವ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1849016657376805933">ಯಾವುದೇ HID ಸಾಧನ</translation>
 <translation id="1849022541429818637">ನಿಮ್ಮ ಮೌಸ್ ಇನ್‌ಪುಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1849252834922144634">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಅಂಡ್ ಹೋಲ್ಡ್ ಮಾಡಿ</translation>
@@ -2089,6 +2091,7 @@
 <translation id="2624142942574147739">ಈ ಪುಟವು ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸುತ್ತಿದೆ.</translation>
 <translation id="2626799779920242286">ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2627424346328942291">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="2627970398976286795">Gemini Spark ನ ಅಪಾಯಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2628258844236035475">Chrome ಆಟೋಫಿಲ್‌ನಿಂದ ನಿಮ್ಮ ಮನೆ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="2628770867680720336">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ Chromebook ಅನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini ಮೂಲಕ ಹೊಸ ಚಾಟ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -2779,6 +2782,7 @@
 <translation id="3134312457920437826">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ಬೆಂಬಲಿಸದ ಮ್ಯಾನಿಫೆಸ್ಟ್‌ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ಪ್ರಯೋಗಕ್ಕಾಗಿ, ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಪ್ರಯೋಗದ ವಿವರಣೆ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">ಡಿಫಾಲ್ಟ್ ಹಳದಿ ಅವರಾರ್</translation>
+<translation id="314095642664111744">ಫೋಕಸ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3141093262818886744">ಹೇಗಿದ್ದರೂ ತೆರೆಯಿರಿ</translation>
 <translation id="3141318088920353606">ಆಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3142562627629111859">ಹೊಸ ಗುಂಪು</translation>
@@ -3334,6 +3338,7 @@
 <translation id="3569614820047645079">ನನ್ನ ಡ್ರೈವ್‌ನಲ್ಲಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ನಿಮ್ಮ Chromebook ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಿಂಕ್ ಆಗುತ್ತವೆ ಇದರಿಂದ ನೀವು ಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್ ಇಲ್ಲದೆಯೇ ಅವುಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3569617221227793022">ಸಮಯ ವಲಯವನ್ನು ಪ್ರಸ್ತುತ <ph name="TIME_ZONE_ENTRY" /> ಗೆ ಸೆಟ್‌ ಮಾಡಲಾಗಿದೆ. ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />, ಈ ಕೆಳಗಿನ ಫೈಲ್‌ಗಳು ಹಾಗೂ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
+<translation id="3570112771874223231">ಕಾರ್ಯವನ್ನು ನಿರ್ವಹಿಸುವಾಗ Gemini ಬಳಸುವ ಪುಟದ ಕಂಟೆಂಟ್ ಮತ್ತು URL ಗಳನ್ನು Google ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ ಹಾಗೂ ಸುರಕ್ಷತೆಗಾಗಿ ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="3571734092741541777">ಹೊಂದಿಸು</translation>
 <translation id="3575121482199441727">ಈ ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಸಿ</translation>
 <translation id="3575224072358507281">ಅವರ ಗೌಪ್ಯತೆ ನೀತಿಯ ಪ್ರಕಾರ (measurementlab.net/privacy) ಮಾಪನ ಲ್ಯಾಬ್‌ಗಾಗಿ IP ವಿಳಾಸ ಮತ್ತು ನೆಟ್‌ವರ್ಕ್ ಮಾಪನ ಫಲಿತಾಂಶಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ</translation>
@@ -3595,6 +3600,7 @@
 <translation id="3756578970075173856">ಪಿನ್ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3756806135608816820">ಸೈಟ್‌ಗಳು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು ಅನುಮತಿಸುವಂತೆ ಕೇಳಬಹುದು</translation>
 <translation id="3756823472711156529">ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
+<translation id="3757337311115630808">Gemini Spark ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3757567010566591880">ಟೂಲ್‌ಬಾರ್‌ನಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="3757645900890881944">ಹುಡುಕಾಟ ಟೂಲ್‌ಗಳು</translation>
 <translation id="3757733214359997190">ಯಾವುದೇ ಸೈಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -4745,6 +4751,7 @@
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> ಹಂತಗಳಲ್ಲಿ <ph name="CURRENT_STEP" /> ಹಂತ</translation>
 <translation id="4647836961514597010">ಬಣ್ಣ ಆಯ್ಕೆಮಾಡುವಿಕೆ</translation>
 <translation id="4648491805942548247">ಸಾಕಷ್ಟಿಲ್ಲದ ಅನುಮತಿಗಳು</translation>
+<translation id="4648876469762528742">ಆ್ಯಪ್ ಅಪ್ ಟು ಡೇಟ್ ಆಗಿದೆ.</translation>
 <translation id="4650037136970677721">ಮೆಮೊರಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4650591383426000695">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ನಿಮ್ಮ ಫೋನ್‌ನ ಸಂಪರ್ಕವನ್ನು ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="4651921906638302153">ಈ ಖಾತೆ ಬಳಸಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -4997,6 +5004,7 @@
 <translation id="4840096453115567876">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ತ್ಯಜಿಸುವುದೇ?</translation>
 <translation id="4841475798258477260">ಈ ಸಾಧನವು ನಿರ್ದಿಷ್ಟ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಮಾತ್ರ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ದೃಢೀಕರಿಸದಿರುವ ಮೂಲಗಳಿಂದ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಲೋಡ್‌ ಮಾಡಲು ಈ ಪುಟವು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
+<translation id="4843037705239202082">ಮೀಡಿಯಾ ಅರ್ಥಮಾಡಿಕೊಳ್ಳುವಿಕೆ</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4846628405149428620">ಈ ಸೈಟ್ ಬದಲಾವಣೆಗಳನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬಹುದು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4846680374085650406">ನೀವು ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಾಗಿ ನಿರ್ವಾಹಕರ ಶಿಫಾರಸನ್ನು ಅನುಸರಿಸುತ್ತಿರುವಿರಿ.</translation>
@@ -7745,6 +7753,7 @@
 <translation id="7001809623433867903">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಕ್ಲೀನ್ ಅಪ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="7003339318920871147">ವೆಬ್ ಡೇಟಾಬೇಸ್‌ಗಳು</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ಫೈಲ್}one{{COUNT} ಫೈಲ್‌ಗಳು}other{{COUNT} ಫೈಲ್‌ಗಳು}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" /> ನ ಹೊಸ ಆವೃತ್ತಿ (<ph name="VERSION" />) ಲಭ್ಯವಿದೆ. ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಅನ್ವಯಿಸಲು ತೆರೆದಿರುವ ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ. ಸೇವ್ ಮಾಡದಿರುವ ಡೇಟಾ ಕಳೆದುಹೋಗಬಹುದು.</translation>
 <translation id="7003644704445046755">ಉತ್ತಮ ಗುಣಮಟ್ಟದ <ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7003723821785740825">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ತ್ವರಿತವಾದ ದಾರಿಯನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>
@@ -8309,6 +8318,7 @@
 <translation id="7434509671034404296">ಡೆವಲಪರ್</translation>
 <translation id="7434757724413878233">ಮೌಸ್ ವೇಗವರ್ಧನೆ</translation>
 <translation id="7434969625063495310">ಪ್ರಿಂಟ್ ಸರ್ವರ್ ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸರ್ವರ್‌ನ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="7435500219604275502">ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಅನ್ವಯಿಸಿ</translation>
 <translation id="7439519621174723623">ಮುಂದುವರಿಸಲು ಸಾಧನದ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7441736921018636843">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಮರುಹೊಂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">ಇತರ ಬಳಕೆದಾರರು</translation>
@@ -9478,6 +9488,7 @@
 <translation id="8342387517402567689">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ವೆಬ್ ಆ್ಯಪ್ ಇನ್‌ಸ್ಟಾಲ್‌ಗಳು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="8342861492835240085">ಸಂಗ್ರಹವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8343578633847737325">ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳು ಮತ್ತು ಥ್ರೆಡ್‌ಗಳು</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" /> ನ ಹೊಸ ಆವೃತ್ತಿ (<ph name="VERSION" />) ಲಭ್ಯವಿದೆ. ನೀವು ಅದನ್ನು ಈಗ ಅನ್ವಯಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="8345848587667658367">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ, ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="8347227221149377169">ಮುದ್ರಣ ಕಾರ್ಯಗಳು</translation>
 <translation id="8347728744337089388">ನಿಮ್ಮ &amp;ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>

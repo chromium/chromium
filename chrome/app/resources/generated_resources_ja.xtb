@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{シークレット モードを終了}other{シークレット モードを終了（# 個のウィンドウ）}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
 <translation id="1130676589211693127">右のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
+<translation id="1130866111814048607">タブを共有すると、そのページのコンテンツ、メディア、URL が Google に送信され、安全性の確認が行われることがあります。</translation>
 <translation id="1133418583142946603">現在のタブを追加</translation>
 <translation id="1133751489735776037">マウスをトリプル クリックする</translation>
 <translation id="1136712381129578788">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。ロックを解除するには、セキュリティ キーをいったん取り外し、もう一度挿入してください。</translation>
@@ -1100,6 +1101,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> を実行するには Control キーを押しながらクリックします</translation>
 <translation id="1848219224579402567">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="184862733444771842">機能リクエスト</translation>
+<translation id="184871971966737653">開いているタブを追加して質問できます</translation>
 <translation id="1849016657376805933">すべての HID デバイス</translation>
 <translation id="1849022541429818637">マウス入力の取得と使用を許可するサイト</translation>
 <translation id="1849252834922144634">長押しするとショートカットを固定できます</translation>
@@ -2084,6 +2086,7 @@
 <translation id="2624142942574147739">このページはカメラとマイクにアクセスしています。</translation>
 <translation id="2626799779920242286">しばらくしてからもう一度お試しください。</translation>
 <translation id="2627424346328942291">共有できません</translation>
+<translation id="2627970398976286795">Gemini Spark のリスクを確認する</translation>
 <translation id="2628258844236035475">Chrome の自動入力から自宅の住所を削除しますか？</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini との新しいチャットを開始</translation>
@@ -2774,6 +2777,7 @@
 <translation id="3134312457920437826">サポートされていないマニフェスト バージョンを使用しているため、拡張機能をインストールできません。</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
+<translation id="314095642664111744">フォーカスをオフにする</translation>
 <translation id="3141093262818886744">開く</translation>
 <translation id="3141318088920353606">お話しください...</translation>
 <translation id="3142562627629111859">新しいグループ</translation>
@@ -3329,6 +3333,7 @@
 <translation id="3569614820047645079">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
 <translation id="3569617221227793022">タイムゾーンは現在 <ph name="TIME_ZONE_ENTRY" /> に設定されています。この設定は管理者によって管理されています。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> は次のファイルとフォルダを表示できます</translation>
+<translation id="3570112771874223231">タスクの実行中に Gemini が使用するページのコンテンツと URL は、Google と共有され、安全性の確認が行われることがあります。</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">このサイトを許可</translation>
 <translation id="3575224072358507281">Measurement Lab のプライバシー ポリシー（measurementlab.net/privacy）に沿って、Measurement Lab の IP アドレスとネットワークの測定結果を収集する</translation>
@@ -3589,6 +3594,7 @@
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
 <translation id="3756823472711156529">グループを復元</translation>
+<translation id="3757337311115630808">Gemini Spark の詳細</translation>
 <translation id="3757567010566591880">ツールバーの固定を解除</translation>
 <translation id="3757645900890881944">検索ツール</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
@@ -4739,6 +4745,7 @@
 <translation id="4647283074445570750">ステップ <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">カラー選択ツール</translation>
 <translation id="4648491805942548247">十分な権限がありません</translation>
+<translation id="4648876469762528742">アプリは最新の状態です。</translation>
 <translation id="4650037136970677721">思い出を保存しました</translation>
 <translation id="4650591383426000695">スマートフォンを <ph name="DEVICE_TYPE" /> から切断します</translation>
 <translation id="4651921906638302153">このアカウントではログインできません</translation>
@@ -4990,6 +4997,7 @@
 <translation id="4840096453115567876">シークレット モードを終了してもよろしいですか？</translation>
 <translation id="4841475798258477260">このデバイスは特定のモバイル ネットワークにのみ接続できます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">このページは承認されていないソースからのスクリプトを読み込もうとしています。</translation>
+<translation id="4843037705239202082">メディア認識</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4846628405149428620">このサイトに変更の保存を許可する場所を選択してください</translation>
 <translation id="4846680374085650406">管理者が推奨する設定を使用しています。</translation>
@@ -7733,6 +7741,7 @@
 <translation id="7001809623433867903">ブックマークを整理しますか？</translation>
 <translation id="7003339318920871147">ウェブ データベース</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 件のファイル}other{{COUNT} 件のファイル}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" /> の新しいバージョン（<ph name="VERSION" />）がご利用いただけます。更新を適用するため、開いているすべてのウィンドウが閉じられます。未保存のデータは失われる可能性があります。</translation>
 <translation id="7003644704445046755">高品質の <ph name="LANGUAGE" /> 音声ファイルをダウンロードしました</translation>
 <translation id="7003723821785740825">デバイスのロックをすばやく解除する方法を設定できます</translation>
 <translation id="7003844668372540529">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />）</translation>
@@ -8297,6 +8306,7 @@
 <translation id="7434509671034404296">開発 / 管理</translation>
 <translation id="7434757724413878233">マウス アクセラレーション</translation>
 <translation id="7434969625063495310">プリント サーバーを追加できませんでした。サーバーの設定を確認してから、もう一度お試しください。</translation>
+<translation id="7435500219604275502">更新を適用</translation>
 <translation id="7439519621174723623">続行するにはデバイス名を追加してください</translation>
 <translation id="7441736921018636843">この設定を変更するには、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />して同期パスフレーズを削除します</translation>
 <translation id="7441830548568730290">他のユーザー</translation>
@@ -9468,6 +9478,7 @@
 <translation id="8342387517402567689">シークレット モードではウェブアプリをインストールできません</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8343578633847737325">最近のチャットとスレッド</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" /> の新しいバージョン（<ph name="VERSION" />）がご利用いただけます。今すぐ適用しますか？</translation>
 <translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8347728744337089388">デバイスに送信(&amp;D)</translation>

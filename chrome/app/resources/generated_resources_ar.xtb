@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{إغلاق نافذة واحدة للتصفّح المتخفي}zero{إغلاق # نافذة للتصفّح المتخفي}two{إغلاق نافذتَي التصفّح المتخفي}few{إغلاق # نوافذ للتصفّح المتخفي}many{إغلاق # نافذةً للتصفّح المتخفي}other{إغلاق # نافذة للتصفّح المتخفي}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - جزء من مجموعة <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">مستوى شحن بطارية السماعة اليمنى %<ph name="PERCENTAGE" />.</translation>
+<translation id="1130866111814048607">‏عند مشاركة علامات التبويب، يتم إرسال محتواها والوسائط وعناوين URL الخاصة بها إلى Google، وقد تتم مراجعتها للتأكّد من سلامتها.</translation>
 <translation id="1133418583142946603">إضافة علامة التبويب الحالية</translation>
 <translation id="1133751489735776037">النقر ثلاث مرات على الماوس</translation>
 <translation id="1136712381129578788">تم قفل مفتاح الأمان بسبب إدخال رقم التعريف الشخصي غير الصحيح عدّة مرات. لفتح قفله، يمكنك إزالته وإعادة إدخاله.</translation>
@@ -754,6 +755,7 @@
 <translation id="1581962803218266616">إظهار في الباحث</translation>
 <translation id="1582955169539260415">حذف [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">تتم معالجة اللغة <ph name="LANGUAGE" /> محليًّا على الجهاز وبلا اتصال بالإنترنت.</translation>
+<translation id="1586075235463145108">‏يُرجى أولاً تفعيل ميزة "التصفّح التلقائي" في Chrome لهذا الجهاز</translation>
 <translation id="1587275751631642843">‏&amp;وحدة تحكم JavaScript</translation>
 <translation id="1588438908519853928">عادي</translation>
 <translation id="1588772269240419305">مراجعة التعديلات التي تم إجراؤها على الشعار والاسم</translation>
@@ -1102,6 +1104,7 @@
 <translation id="1846308012215045257">‏انقر بالماوس مع الضغط على مفتاح Ctrl لتشغيل <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">تسجيل الخروج عند إغلاق الغطاء</translation>
 <translation id="184862733444771842">طلب ميزة</translation>
+<translation id="184871971966737653">إضافة علامات تبويب مفتوحة لطرح أي سؤال</translation>
 <translation id="1849016657376805933">‏كل أجهزة HID</translation>
 <translation id="1849022541429818637">المواقع الإلكترونية المسموح لها بتخزين إدخالات الماوس واستخدامها</translation>
 <translation id="1849252834922144634">يمكنك النقر مع الاستمرار لتثبيت الاختصارات</translation>
@@ -1820,6 +1823,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{‫<ph name="DOMAIN_LINK" /> يتوفّر حساب واحد. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}zero{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}two{‫<ph name="DOMAIN_LINK" /> يتوفّر حسابان ({NUM_PASSWORDS}). تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}few{‫<ph name="DOMAIN_LINK" /> تتوفّر {NUM_PASSWORDS} حسابات. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}many{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حسابًا. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}other{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
+<translation id="2431280447889982015">اختيار شاشة تتضمّن صوتًا</translation>
 <translation id="243275146591958220">إلغاء التنزيل</translation>
 <translation id="2432882794929808179">تم تسجيل تطبيقات عددها <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">تتحكّم "تطبيقات الويب المعزولة" في أجهزة المصادقة والبطاقات الذكية المتاحة لها. وتحتوي البطاقات الذكية عادةً على معرّفات تُستخدَم في مصادقتك.</translation>
@@ -2088,6 +2092,7 @@
 <translation id="2624142942574147739">هذه الصفحة تدخل إلى الكاميرا والميكروفون التابعين لك.</translation>
 <translation id="2626799779920242286">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2627424346328942291">لا يمكن المشاركة</translation>
+<translation id="2627970398976286795">‏مراجعة مخاطر Gemini Spark</translation>
 <translation id="2628258844236035475">‏إزالة عنوان المنزل من ميزة "الملء التلقائي" في Chrome؟</translation>
 <translation id="2628770867680720336">‏يجب إعادة ضبط جهاز Chromebook على الإعدادات الأصلية لتفعيل خيار "تصحيح الأخطاء عبر ADB". <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">‏بدء محادثة جديدة مع Gemini</translation>
@@ -2778,6 +2783,7 @@
 <translation id="3134312457920437826">يتعذّر تثبيت الإضافة لأنّها تستخدم إصدار بيان غير متوافق.</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">الأفاتار التلقائي الأصفر</translation>
+<translation id="314095642664111744">إيقاف ميزة "التركيز"</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
 <translation id="3141318088920353606">جارٍ الاستماع…</translation>
 <translation id="3142562627629111859">مجموعة جديدة</translation>
@@ -3335,6 +3341,7 @@
 <translation id="3569614820047645079">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
 <translation id="3569617221227793022">‏تم ضبط المنطقة الزمنية حاليًا على ‎<ph name="TIME_ZONE_ENTRY" />. ويدير المشرف هذا الإعداد.</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
+<translation id="3570112771874223231">‏ستتم مشاركة عناوين URL ومحتوى الصفحات التي يستخدمها Gemini أثناء تنفيذ مَهمّة معيّنة مع Google، وقد تتم مراجعتها للتأكّد من سلامتها.</translation>
 <translation id="3571734092741541777">إعداد</translation>
 <translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
 <translation id="3575224072358507281">‏جمع عناوين IP ونتائج قياس أداء الشبكة لصالح Measurement Lab، وذلك وفقًا لسياسة الخصوصية الواردة في measurementlab.net/privacy</translation>
@@ -3596,6 +3603,7 @@
 <translation id="3756578970075173856">ضبط رقم التعريف الشخصي</translation>
 <translation id="3756806135608816820">السماح للمواقع الإلكترونية بطلب البحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="3756823472711156529">استعادة المجموعة</translation>
+<translation id="3757337311115630808">‏مزيد من المعلومات حول Gemini Spark</translation>
 <translation id="3757567010566591880">إزالة تثبيت الإضافة من شريط الأدوات</translation>
 <translation id="3757645900890881944">أدوات البحث</translation>
 <translation id="3757733214359997190">لم يتم العثور على أي مواقع</translation>
@@ -4743,6 +4751,7 @@
 <translation id="4647283074445570750">الخطوة <ph name="CURRENT_STEP" /> من أصل <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">علبة الألوان</translation>
 <translation id="4648491805942548247">أذونات غير كافية</translation>
+<translation id="4648876469762528742">التطبيق محدَّث.</translation>
 <translation id="4650037136970677721">تم حفظ هذه الذكرى.</translation>
 <translation id="4650591383426000695">إلغاء ربط الهاتف من الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">لا يمكن تسجيل الدخول باستخدام هذا الحساب</translation>
@@ -4995,6 +5004,7 @@
 <translation id="4840096453115567876">هل تريد إيقاف وضع التصفُّح المتخفي على أي حال؟</translation>
 <translation id="4841475798258477260">لا يمكن لهذا الجهاز الاتصال إلا بشبكة جوّال محدّدة. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">تحاول هذه الصفحة تحميل نصوص برمجية من مصادر غير مصادقة.</translation>
+<translation id="4843037705239202082">فهم الوسائط</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4846628405149428620">اختيار المكان الذي سيحفظ فيه هذا الموقع الإلكتروني التغييرات</translation>
 <translation id="4846680374085650406">أنت تتبع توصية المشرف لهذا الإعداد.</translation>
@@ -6184,6 +6194,7 @@
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
 <translation id="5796485699458186843">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="5796656350463724">تصميم علامات التبويب</translation>
 <translation id="5796956053441619942">‏عنوان URL من الجهاز البعيد غير متوافق</translation>
 <translation id="5798079537501238810">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="5798086737841799234">إدخال رمز تأكيد البيانات</translation>
@@ -6289,6 +6300,7 @@
 <translation id="5864754048328252126">حالة الخمول أثناء الشحن</translation>
 <translation id="586567932979200359">أنت تشغّل <ph name="PRODUCT_NAME" /> من صورته على القرص. ويسمح لك تثبيته على الكمبيوتر بتشغيله بدون الحاجة إلى صورة القرص، كما يضمن ذلك الحفاظ على تحديثه بشكل مستمر.</translation>
 <translation id="5865733239029070421">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
+<translation id="58659335642601499">اختيار نافذة تتضمّن صوتًا</translation>
 <translation id="5866363217037791319">إنهاء المهمّة</translation>
 <translation id="5868434909835797817">الميكروفون غير مفعَّل على جهازك.</translation>
 <translation id="5868479397518301468">انتهت مهلة تسجيل الدخول إلى الملف الشخصي</translation>
@@ -7749,6 +7761,7 @@
 <translation id="7001809623433867903">حذف الإشارات المرجعية؟</translation>
 <translation id="7003339318920871147">قواعد بيانات الويب</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{ملف واحد ({COUNT})}zero{{COUNT} ملف}two{ملفان ({COUNT})}few{{COUNT} ملفات}many{{COUNT} ملفًا}other{{COUNT} ملف}}</translation>
+<translation id="7003537330107832201">يتوفر الإصدار (<ph name="VERSION" />) الجديد من "<ph name="APP_NAME" />". سيتم إغلاق جميع النوافذ المفتوحة لتطبيق التحديث، وقد يتم فقدان البيانات غير المحفوظة.</translation>
 <translation id="7003644704445046755">تم تنزيل ملفات صوت باللغة <ph name="LANGUAGE" /> بجودة عالية</translation>
 <translation id="7003723821785740825">إعداد طريقة أسرع لإلغاء قفل جهازك</translation>
 <translation id="7003844668372540529">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /></translation>
@@ -8313,6 +8326,7 @@
 <translation id="7434509671034404296">المطوِّر</translation>
 <translation id="7434757724413878233">تسريع الماوس</translation>
 <translation id="7434969625063495310">تعذّر العثور على خادم الطباعة. يُرجى التحقّق من إعدادات الخادم وإعادة المحاولة.</translation>
+<translation id="7435500219604275502">تطبيق التحديث</translation>
 <translation id="7439519621174723623">يجب إضافة اسم جهاز للمتابعة.</translation>
 <translation id="7441736921018636843">لتغيير هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /> لإزالة عبارة مرور المزامنة.</translation>
 <translation id="7441830548568730290">المستخدمون الآخرون</translation>
@@ -9486,6 +9500,7 @@
 <translation id="8342387517402567689">لا يمكن تثبيت تطبيقات الويب أثناء استخدام وضع التصفّح المتخفي</translation>
 <translation id="8342861492835240085">اختيار مجموعة</translation>
 <translation id="8343578633847737325">المحادثات وسلاسل المحادثات الأخيرة</translation>
+<translation id="8345099007452202761">يتوفر الإصدار (<ph name="VERSION" />) الجديد من "<ph name="APP_NAME" />". تطبيق التحديث الآن؟</translation>
 <translation id="8345848587667658367">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والإشعارات والتطبيقات المتوفّرة على هاتفك</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="8347728744337089388">الإرسال إلى &amp;جهازك</translation>

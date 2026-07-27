@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{అజ్ఞాత విండోలను మూసివేయండి}other{అజ్ఞాత విండోలను మూసివేయండి (# విండోలు)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> గ్రూప్‌లో భాగం</translation>
 <translation id="1130676589211693127">కుడి వైపు వైర్‌లెస్ బడ్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">ట్యాబ్‌లను షేర్ చేసినప్పుడు, వాటిలోని పేజీ కంటెంట్, మీడియా &amp; URLలు Googleకు వెళతాయి; భద్రతా కారణాల దృష్ట్యా వీటిని రివ్యూ చేసే అవకాశం ఉంది.</translation>
 <translation id="1133418583142946603">ప్రస్తుత ట్యాబ్‌ను జోడించండి</translation>
 <translation id="1133751489735776037">మౌస్‌పై మూడుసార్లు క్లిక్ చేయండి</translation>
 <translation id="1136712381129578788">చాలా ఎక్కువ సార్లు తప్పు పిన్‌ను నమోదు చేసినందున సెక్యూరిటీ కీ లాక్ చేయబడింది. అన్‌లాక్ చేయడానికి, దానిని తీసివేసి, మళ్లీ ఇన్‌సర్ట్ చేయండి.</translation>
@@ -1107,6 +1108,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />ను అమలు చేయడానికి కంట్రోల్ నొక్కి, క్లిక్ చేయండి</translation>
 <translation id="1848219224579402567">మూత మూసి ఉన్నప్పుడు సైన్ అవుట్ చేయండి</translation>
 <translation id="184862733444771842">ఫీచర్ రిక్వెస్ట్</translation>
+<translation id="184871971966737653">ఏదైనా అడగడానికి ఓపెన్ ట్యాబ్‌లను యాడ్ చేయండి</translation>
 <translation id="1849016657376805933">ఏదైనా HID పరికరం</translation>
 <translation id="1849022541429818637">మీ మౌస్ ఇన్‌పుట్‌ను క్యాప్చర్ చేయడానికి, ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="1849252834922144634">షార్ట్‌కట్‌లను పిన్ చేయడానికి ట్యాప్ చేసి ఉంచండి</translation>
@@ -2096,6 +2098,7 @@
 <translation id="2624142942574147739">ఈ పేజీ మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్‌ చేస్తోంది.</translation>
 <translation id="2626799779920242286">దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2627424346328942291">షేర్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="2627970398976286795">Gemini Spark రిస్క్‌లను రివ్యూ చేయండి</translation>
 <translation id="2628258844236035475">Chrome ఆటోఫిల్ నుండి మీ ఇంటి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="2628770867680720336">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయడానికి ఈ Chromebookను ఫ్యాక్టరీ రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Geminiతో కొత్త చాట్‌ను ప్రారంభించండి</translation>
@@ -2786,6 +2789,7 @@
 <translation id="3134312457920437826">ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు ఎందుకంటే ఇది సపోర్ట్ లేని మ్యానిఫెస్ట్ వెర్షన్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ప్రయోగానికి ప్రయోగ స్థితిని ఎంచుకోండి. ప్రయోగ వివరణ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">డిఫాల్ట్ పసుపు రంగు అవతార్</translation>
+<translation id="314095642664111744">ఫోకస్‌ను ఆఫ్ చేయండి</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141318088920353606">వింటోంది...</translation>
 <translation id="3142562627629111859">కొత్త గ్రూప్</translation>
@@ -3343,6 +3347,7 @@
 <translation id="3569614820047645079">నా డ్రైవ్‌లోని మీ ఫైళ్లు ఆటోమేటిక్‌గా మీ Chromebookకు సింక్ అవుతాయి, కాబట్టి మీరు ఇంటర్నెట్ కనెక్షన్ లేకుండానే వాటిని యాక్సెస్ చేయగలరు.</translation>
 <translation id="3569617221227793022">టైమ్ జోన్ ప్రస్తుతం <ph name="TIME_ZONE_ENTRY" />‌కు సెట్ చేసి ఉంది. ఈ సెట్టింగ్ మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />, కింద ఉన్న ఫైళ్లను, ఫోల్డర్‌లను చూడగలదు</translation>
+<translation id="3570112771874223231">టాస్క్ సమయంలో Gemini ఉపయోగించే పేజీ కంటెంట్ &amp; URLలు Googleకు షేర్ అవుతాయి. అలాగే భద్రతా కారణాల దృష్ట్యా వాటిని రివ్యూ చేసే అవకాశం ఉంది.</translation>
 <translation id="3571734092741541777">సెటప్ చేయండి</translation>
 <translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించండి</translation>
 <translation id="3575224072358507281">వారి గోప్యతా పాలసీ (measurementlab.net/privacy) ప్రకారం, మెజర్‌మెంట్ ల్యాబ్ కోసం IP అడ్రస్, నెట్‌వర్క్ మెజర్‌మెంట్ ఫలితాలను కలెక్ట్ చేయండి</translation>
@@ -3603,6 +3608,7 @@
 <translation id="3756578970075173856">పిన్‌ని సెట్ చేయండి</translation>
 <translation id="3756806135608816820">బ్లూటూత్ పరికరాల కోసం వెతకమని సైట్‌లు అడగవచ్చు</translation>
 <translation id="3756823472711156529">గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
+<translation id="3757337311115630808">Gemini Spark గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3757567010566591880">టూల్‌బార్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="3757645900890881944">Search టూల్స్</translation>
 <translation id="3757733214359997190">సైట్‌లు ఏవీ కనుగొనబడలేదు</translation>
@@ -4753,6 +4759,7 @@
 <translation id="4647283074445570750">దశ <ph name="TOTAL_STEPS" />లో <ph name="CURRENT_STEP" />వది</translation>
 <translation id="4647836961514597010">రంగు ఎంపిక</translation>
 <translation id="4648491805942548247">చాలని అనుమతులు</translation>
+<translation id="4648876469762528742">యాప్ అప్‌డేట్ అయి ఉంది.</translation>
 <translation id="4650037136970677721">మెమరీ ఆదా అయ్యింది</translation>
 <translation id="4650591383426000695">మీ <ph name="DEVICE_TYPE" /> నుండి మీ ఫోన్‌ను డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="4651921906638302153">ఈ ఖాతాతో సైన్ ఇన్ చేయడం సాధ్యం కాలేదు</translation>
@@ -5005,6 +5012,7 @@
 <translation id="4840096453115567876">ఏదేమైనా అజ్ఞాత మోడ్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="4841475798258477260">ఈ పరికరం నిర్దిష్ట మొబైల్ నెట్‌వర్క్‌కు మాత్రమే కనెక్ట్ అవ్వగలదు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ప్రామాణీకరించని మూలాల నుండి స్క్రిప్ట్‌లను లోడ్ చేయడానికి, ఈ పేజీ ప్రయత్నిస్తోంది.</translation>
+<translation id="4843037705239202082">మీడియాను అర్థం చేసుకోవడం</translation>
 <translation id="484462545196658690">ఆటో</translation>
 <translation id="4846628405149428620">ఈ సైట్ మార్పులను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
 <translation id="4846680374085650406">మీరు ఈ సెట్టింగ్ కోసం నిర్వాహకుడి సిఫార్సును అనుసరిస్తున్నారు.</translation>
@@ -7750,6 +7758,7 @@
 <translation id="7001809623433867903">బుక్‌మార్క్‌లను క్లీనప్ చేయాలా?</translation>
 <translation id="7003339318920871147">వెబ్ డేటాబేస్‌లు</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ఫైల్}other{{COUNT} ఫైళ్ళు}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" /> యొక్క కొత్త వెర్షన్ (<ph name="VERSION" />) అందుబాటులోకి వచ్చింది. అప్‌డేట్‌ను వర్తింపజేయడానికి ఓపెన్‌లో ఉన్న అన్ని విండోలు క్లోజ్ అవుతాయి. సేవ్ చేయని డేటా కోల్పోవచ్చు.</translation>
 <translation id="7003644704445046755">హై-క్వాలిటీ <ph name="LANGUAGE" /> వాయిస్ ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="7003723821785740825">మీ డివైజ్‌ను అన్‌లాక్ చేయడానికి వేగవంతమైన మార్గాన్ని సెటప్ చేయండి</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /></translation>
@@ -8314,6 +8323,7 @@
 <translation id="7434509671034404296">డెవలపర్</translation>
 <translation id="7434757724413878233">మౌస్ యాక్సిలరేషన్</translation>
 <translation id="7434969625063495310">ప్రింట్ సర్వర్‌ని జోడించడం సాధ్యపడలేదు. దయచేసి సర్వర్ కాన్ఫిగరేషన్ చెక్ చేసుకుని, ఆపై మళ్లీ ట్రై చేయండి.</translation>
+<translation id="7435500219604275502">అప్‌డేట్‌ను అప్లయి చేయండి</translation>
 <translation id="7439519621174723623">కొనసాగించడానికి, పరికరం పేరును జోడించండి</translation>
 <translation id="7441736921018636843">ఈ సెట్టింగ్‌ని మార్చడానికి, మీ సింక్‌ రహస్య పదబంధాన్ని తీసివేయడానికి <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">ఇతర వినియోగదారులు</translation>
@@ -9483,6 +9493,7 @@
 <translation id="8342387517402567689">అజ్ఞాత మోడ్‌లో వెబ్ యాప్ ఇన్‌స్టాల్స్‌కు సపోర్ట్ ఉండదు</translation>
 <translation id="8342861492835240085">సేకరణను ఎంచుకోండి</translation>
 <translation id="8343578633847737325">ఇటీవలి చాట్‌లు &amp; థ్రెడ్‌లు</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" /> యొక్క కొత్త వెర్షన్ (<ph name="VERSION" />) అందుబాటులోకి వచ్చింది. మీరు దీన్ని ఇప్పుడే వర్తింపజేయాలని అనుకుంటున్నారా?</translation>
 <translation id="8345848587667658367">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, ఇంకా యాప్‌లను చూడవచ్చు</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8347728744337089388">మీ డివైజ్‌కు పంపండి</translation>

@@ -189,6 +189,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1130430615924359526">{0,plural, =1{Mbyll dritaren e fshehtë}other{Mbyll dritaret e fshehta (# dritare)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - pjesë e grupit <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Niveli i baterisë djathtas - <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">Kur ndahen skedat, përmbajtjet e faqeve, mediat dhe URL-të e tyre dërgohen te Google dhe mund të shqyrtohen për sigurinë.</translation>
 <translation id="1133418583142946603">Shto skedën aktuale</translation>
 <translation id="1133751489735776037">Kliko tri herë miun</translation>
 <translation id="1136712381129578788">Çelësi i sigurisë është i kyçur sepse është futur shumë herë kod PIN i gabuar. Për ta shkyçur, hiqe dhe rifute atë.</translation>
@@ -1100,6 +1101,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1846308012215045257">Kliko "kontroll" për të ekzekutuar <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Dil nga llogaria kur mbyllet kapaku</translation>
 <translation id="184862733444771842">Kërkesë për funksione</translation>
+<translation id="184871971966737653">Shto skedat e hapura për të pyetur për çdo gjë</translation>
 <translation id="1849016657376805933">Çdo pajisje HID</translation>
 <translation id="1849022541429818637">Lejohen që të regjistrojnë dhe të përdorin veprimet me miun</translation>
 <translation id="1849252834922144634">Trokit dhe mbaj shtypur për të gozhduar shkurtoret</translation>
@@ -2085,6 +2087,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2624142942574147739">Kjo faqe po qaset te kamera dhe mikrofoni yt.</translation>
 <translation id="2626799779920242286">Provo përsëri më vonë.</translation>
 <translation id="2627424346328942291">Nuk mund të ndahet</translation>
+<translation id="2627970398976286795">Rishiko rreziqet e Gemini Spark</translation>
 <translation id="2628258844236035475">Të hiqet adresa jote e shtëpisë nga plotësimi automatik i Chrome?</translation>
 <translation id="2628770867680720336">Kërkohet një rivendosje në cilësimet e fabrikës për këtë Chromebook për të aktivizuar korrigjimin e ADB-së. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Nis një bisedë të re me Gemini</translation>
@@ -2775,6 +2778,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3134312457920437826">Shtesa nuk mund të instalohet sepse përdor një version të manifestit që nuk mbështetet.</translation>
 <translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
+<translation id="314095642664111744">Çaktivizo fokusin</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141318088920353606">Po dëgjon…</translation>
 <translation id="3142562627629111859">Grup i ri</translation>
@@ -3332,6 +3336,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3569614820047645079">Skedarët e tu te "Disku im" sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti.</translation>
 <translation id="3569617221227793022">Brezi orar është caktuar aktualisht në <ph name="TIME_ZONE_ENTRY" />. Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> mund t'i shikojë skedarët dhe dosjet e mëposhtme</translation>
+<translation id="3570112771874223231">Përmbajtjet e faqeve dhe URL-të që Gemini përdor gjatë një detyre do të ndahen me Google dhe mund të shqyrtohen për sigurinë.</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3575224072358507281">Mblidh rezultatet për adresën IP dhe matjen e rrjetit për Measurement Lab, sipas politikës përkatëse të privatësisë (measurementlab.net/privacy)</translation>
@@ -3592,6 +3597,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3756578970075173856">Cakto kodin PIN</translation>
 <translation id="3756806135608816820">Sajtet mund të pyesin që të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="3756823472711156529">Restauro grupin</translation>
+<translation id="3757337311115630808">Mëso më shumë rreth Gemini Spark</translation>
 <translation id="3757567010566591880">Zhgozhdo nga shiriti i veglave</translation>
 <translation id="3757645900890881944">Kërko veglat</translation>
 <translation id="3757733214359997190">Nuk u gjet asnjë sajt</translation>
@@ -4742,6 +4748,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4647283074445570750">Hapi <ph name="CURRENT_STEP" /> nga <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">Zgjedhësi i ngjyrave</translation>
 <translation id="4648491805942548247">Lejet e pamjaftueshme</translation>
+<translation id="4648876469762528742">Aplikacioni është i përditësuar.</translation>
 <translation id="4650037136970677721">Memoria e kursyer</translation>
 <translation id="4650591383426000695">Shkëput telefonin tënd nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">Nuk mund të identifikohesh me këtë llogari</translation>
@@ -4993,6 +5000,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4840096453115567876">Të mbyllet gjithsesi modaliteti "i fshehtë"?</translation>
 <translation id="4841475798258477260">Kjo pajisje mund të lidhet vetëm me një rrjet specifik celular. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Kjo faqe po përpiqet të ngarkojë skripte nga burime të paverifikuara.</translation>
+<translation id="4843037705239202082">Kuptimi i mediave</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4846628405149428620">Zgjidh se ku mund t'i ruajë ndryshimet ky sajt</translation>
 <translation id="4846680374085650406">Po ndjek rekomandimin e administratorit për këtë cilësim.</translation>
@@ -7738,6 +7746,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7001809623433867903">Të pastrohen faqeshënuesit?</translation>
 <translation id="7003339318920871147">Bazat e të dhënave në ueb</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} skedar}other{{COUNT} skedarë}}</translation>
+<translation id="7003537330107832201">Ofrohet një version i ri i (<ph name="VERSION" />) i <ph name="APP_NAME" />. Të gjitha dritaret e hapura do të mbyllen për të zbatuar përditësimin. Të dhënat e paruajtura mund të humbasin.</translation>
 <translation id="7003644704445046755">Skedarët e zërit në <ph name="LANGUAGE" /> me cilësi të lartë u shkarkuan</translation>
 <translation id="7003723821785740825">Konfiguro një mënyrë më të shpejtë për të shkyçur pajisjen tënde</translation>
 <translation id="7003844668372540529">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /></translation>
@@ -8301,6 +8310,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7434509671034404296">Zhvilluesi</translation>
 <translation id="7434757724413878233">Përshpejtimi i miut</translation>
 <translation id="7434969625063495310">Serveri i printimit nuk mund të shtohej. Kontrollo konfigurimin e serverit dhe provo përsëri.</translation>
+<translation id="7435500219604275502">Zbato përditësimin</translation>
 <translation id="7439519621174723623">Shto një pajisje për të vazhduar</translation>
 <translation id="7441736921018636843">Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit për sinkronizimin</translation>
 <translation id="7441830548568730290">Përdoruesit e tjerë</translation>
@@ -9473,6 +9483,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8342387517402567689">Instalimet e aplikacioneve të uebit nuk mbështeten në modalitetin "I fshehtë"</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8343578633847737325">Bisedat dhe bashkëbisedimet e fundit</translation>
+<translation id="8345099007452202761">Ofrohet një version i ri i (<ph name="VERSION" />) i <ph name="APP_NAME" />. Dëshiron ta zbatosh tani?</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8347728744337089388">Dërgo te &amp;pajisja jote</translation>

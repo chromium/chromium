@@ -189,6 +189,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1130430615924359526">{0,plural, =1{Cerrar el modo Incógnito}other{Cerrar el modo Incógnito (# ventanas)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">Nivel de batería del Pixel Bud derecho <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">Cuando se comparten pestañas, se envían a Google las URLs, el contenido multimedia y el contenido de las páginas, y es posible que se revisen por motivos de seguridad.</translation>
 <translation id="1133418583142946603">Agregar pestaña actual</translation>
 <translation id="1133751489735776037">Hacer clic tres veces con el mouse</translation>
 <translation id="1136712381129578788">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Para desbloquearla, quítala y vuelve a insertarla.</translation>
@@ -1100,6 +1101,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1846308012215045257">Presionar Ctrl+clic para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">Salir cuando se cierra la tapa</translation>
 <translation id="184862733444771842">Solicitud de función</translation>
+<translation id="184871971966737653">Agregar pestañas abiertas para hacer cualquier pregunta</translation>
 <translation id="1849016657376805933">Cualquier dispositivo HID</translation>
 <translation id="1849022541429818637">Pueden capturar y usar la entrada del mouse</translation>
 <translation id="1849252834922144634">Mantén presionado para fijar accesos directos</translation>
@@ -2085,6 +2087,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2624142942574147739">Esta página está accediendo a la cámara y al micrófono.</translation>
 <translation id="2626799779920242286">Vuelve a intentarlo más tarde.</translation>
 <translation id="2627424346328942291">No se puede compartir</translation>
+<translation id="2627970398976286795">Revisar los riesgos de Gemini Spark</translation>
 <translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar un nuevo chat con Gemini</translation>
@@ -2775,6 +2778,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3134312457920437826">No se puede instalar la extensión porque usa una versión de manifiesto no compatible.</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
+<translation id="314095642664111744">Desactivar el enfoque</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141318088920353606">Escuchando…</translation>
 <translation id="3142562627629111859">Grupo nuevo</translation>
@@ -3332,6 +3336,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3569614820047645079">Los archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="3569617221227793022">Actualmente, la zona horaria está configurada como <ph name="TIME_ZONE_ENTRY" />. El administrador controla este parámetro de configuración.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas</translation>
+<translation id="3570112771874223231">El contenido de la página y las URLs que Gemini use durante una tarea se compartirán con Google y podrían revisarse por motivos de seguridad.</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575224072358507281">Recopilar los resultados de mediciones de red y dirección IP para Measurement Lab, según su política de privacidad (measurementlab.net/privacy)</translation>
@@ -3592,6 +3597,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3756578970075173856">Establecer un PIN</translation>
 <translation id="3756806135608816820">Permitir que los sitios soliciten permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3756823472711156529">Restablecer grupo</translation>
+<translation id="3757337311115630808">Más información sobre Gemini Spark</translation>
 <translation id="3757567010566591880">Dejar de fijar en la Barra de herramientas</translation>
 <translation id="3757645900890881944">Herramientas de Búsqueda</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
@@ -4742,6 +4748,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647836961514597010">Selector de color</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
+<translation id="4648876469762528742">La app está actualizada.</translation>
 <translation id="4650037136970677721">Memoria ahorrada</translation>
 <translation id="4650591383426000695">Desconecta el teléfono de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651921906638302153">No puedes acceder con esta cuenta</translation>
@@ -4994,6 +5001,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4840096453115567876">¿Deseas salir del modo Incógnito de todas formas?</translation>
 <translation id="4841475798258477260">Este dispositivo solo se puede conectar a una red móvil específica. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">Esta página está tratando de cargar scripts de fuentes no autenticadas.</translation>
+<translation id="4843037705239202082">Comprensión de contenido multimedia</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta configuración.</translation>
@@ -7740,6 +7748,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7001809623433867903">¿Quieres limpiar los favoritos?</translation>
 <translation id="7003339318920871147">Bases de datos web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} archivo}other{{COUNT} archivos}}</translation>
+<translation id="7003537330107832201">Existe una nueva versión (<ph name="VERSION" />) de <ph name="APP_NAME" />. Se cerrarán todas las ventanas abiertas para aplicar la actualización. Es posible que se pierdan los datos no guardados.</translation>
 <translation id="7003644704445046755">Se descargaron archivos de voz de alta calidad en <ph name="LANGUAGE" /></translation>
 <translation id="7003723821785740825">Configura una manera más rápida de desbloquear tu dispostivo</translation>
 <translation id="7003844668372540529">Producto desconocido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
@@ -8304,6 +8313,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7434509671034404296">Opciones para desarrolladores</translation>
 <translation id="7434757724413878233">Aceleración del mouse</translation>
 <translation id="7434969625063495310">No se pudo agregar el servidor de impresión. Revisa la configuración del servidor y vuelve a intentarlo.</translation>
+<translation id="7435500219604275502">Aplicar actualización</translation>
 <translation id="7439519621174723623">Agregar un nombre de dispositivo para continuar</translation>
 <translation id="7441736921018636843">A fin de cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /> para quitar la frase de contraseña de sincronización</translation>
 <translation id="7441830548568730290">Otros usuarios</translation>
@@ -9476,6 +9486,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8342387517402567689">No se admiten las instalaciones de apps web en el modo Incógnito</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8343578633847737325">Chats y conversaciones recientes</translation>
+<translation id="8345099007452202761">Existe una nueva versión (<ph name="VERSION" />) de <ph name="APP_NAME" />. ¿Quieres aplicarla ahora?</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8347728744337089388">Enviar a tu &amp;dispositivo</translation>

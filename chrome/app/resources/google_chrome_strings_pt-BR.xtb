@@ -196,6 +196,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login na rede - Chrome</translation>
 <translation id="2970681950995291301">Para remover sua Conta do Google do Chrome, saia dela na página "Configurações"</translation>
 <translation id="2976869732253036751">Receba alertas de Monitoramento de Preços no seu celular com o Chrome</translation>
+<translation id="2985091279808606502">O Chrome precisa da permissão de acesso à rede local para este site</translation>
 <translation id="2991167882679440829">As senhas e outros dados do Chrome salvos na sua Conta do Google serão removidos deste dispositivo. Para usá-los de novo, faça login outra vez.</translation>
 <translation id="2994465299455873643">Oferece serviços de criptografia e uma maneira segura de recuperar o <ph name="BROWSER_NAME" /> se ele ficar desatualizado. Se esse serviço for desativado, o <ph name="BROWSER_NAME" /> poderá perder o acesso aos dados criptografados. Talvez o <ph name="BROWSER_NAME" /> não se recupere dessa ação.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
@@ -716,6 +717,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8113883687556086139">Confirme sua identidade para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Deixe o Chrome do seu jeito</translation>
 <translation id="8118331347066725040">Enviar feedback sobre a pesquisa com o Lens</translation>
+<translation id="812930250799242837">Login feito como <ph name="USER_NAME" />, assinatura do Google. Abrir menu da conta</translation>
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar o Chrome sem uma conta</translation>
@@ -749,6 +751,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 
 Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair agora, os favoritos que não foram salvos serão excluídos.</translation>
 <translation id="8458117863387545390">Instale o Chrome no seu smartphone</translation>
+<translation id="848851325211467878">Login feito como <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, assinatura do Google. Abrir menu da conta</translation>
 <translation id="8496177819998570653">Gerenciador de senhas do Google</translation>
 <translation id="8498858610309223613">Uma atualização especial de segurança para o Google Chrome acabou de ser aplicada. Reinicie agora, e suas guias serão restauradas.</translation>
 <translation id="8521348052903287641">Regra interna do Google Chrome Dev que permite o tráfego mDNS.</translation>

@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{시크릿 모드 닫기}other{시크릿 모드(창 #개) 닫기}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> 그룹에 속함</translation>
 <translation id="1130676589211693127">오른쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
+<translation id="1130866111814048607">탭이 공유되면 탭의 페이지 콘텐츠, 미디어, URL이 Google로 전송되며 안전을 위해 검토될 수 있습니다.</translation>
 <translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1133751489735776037">마우스 세 번 클릭</translation>
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>
@@ -1109,6 +1110,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />을(를) 실행하려면 Control 키를 누르고 클릭합니다.</translation>
 <translation id="1848219224579402567">덮개가 닫히면 로그아웃</translation>
 <translation id="184862733444771842">기능 요청</translation>
+<translation id="184871971966737653">열려 있는 탭을 추가하여 무엇이든 물어보기</translation>
 <translation id="1849016657376805933">모든 HID 기기</translation>
 <translation id="1849022541429818637">마우스 입력을 캡처하고 사용하도록 허용함</translation>
 <translation id="1849252834922144634">바로가기를 고정하려면 길게 탭하세요</translation>
@@ -2099,6 +2101,7 @@
 <translation id="2624142942574147739">카메라와 마이크에 액세스하는 페이지입니다.</translation>
 <translation id="2626799779920242286">나중에 다시 시도해 주세요.</translation>
 <translation id="2627424346328942291">공유할 수 없음</translation>
+<translation id="2627970398976286795">Gemini Spark의 위험 검토</translation>
 <translation id="2628258844236035475">Chrome 자동 완성에서 집 주소를 삭제하시겠습니까?</translation>
 <translation id="2628770867680720336">ADB 디버깅을 사용 설정하려면 이 Chromebook을 초기화해야 합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini와 새 채팅 시작하기</translation>
@@ -2789,6 +2792,7 @@
 <translation id="3134312457920437826">지원되지 않는 매니페스트 버전을 사용하고 있으므로 확장 프로그램을 설치할 수 없습니다.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
+<translation id="314095642664111744">집중 모드 사용 중지</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141318088920353606">듣는 중...</translation>
 <translation id="3142562627629111859">새 그룹</translation>
@@ -3346,6 +3350,7 @@
 <translation id="3569614820047645079">내 드라이브에 있는 파일이 Chromebook에 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다</translation>
 <translation id="3569617221227793022">현재 시간대가 <ph name="TIME_ZONE_ENTRY" />(으)로 설정되어 있습니다. 관리자가 관리하는 설정입니다.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />에서 다음 파일과 폴더를 볼 수 있습니다.</translation>
+<translation id="3570112771874223231">Gemini가 작업을 수행하는 동안 사용하는 페이지 콘텐츠와 URL이 Google에 공유되며 안전을 위해 검토될 수 있습니다.</translation>
 <translation id="3571734092741541777">설정</translation>
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3575224072358507281">개인정보처리방침(measurementlab.net/privacy)에 따라 Measurement Lab의 IP 주소 및 네트워크 측정 결과를 수집합니다.</translation>
@@ -3606,6 +3611,7 @@
 <translation id="3756578970075173856">PIN 설정</translation>
 <translation id="3756806135608816820">사이트의 블루투스 기기 검색 요청 허용</translation>
 <translation id="3756823472711156529">그룹 복원</translation>
+<translation id="3757337311115630808">Gemini Spark에 대해 자세히 알아보기</translation>
 <translation id="3757567010566591880">툴바에서 고정 해제</translation>
 <translation id="3757645900890881944">Google 검색 도구</translation>
 <translation id="3757733214359997190">사이트를 찾을 수 없습니다.</translation>
@@ -4754,6 +4760,7 @@
 <translation id="4647283074445570750">총 <ph name="TOTAL_STEPS" />단계 중 <ph name="CURRENT_STEP" />단계</translation>
 <translation id="4647836961514597010">색상선택 도구</translation>
 <translation id="4648491805942548247">권한 부족</translation>
+<translation id="4648876469762528742">앱이 최신 버전입니다.</translation>
 <translation id="4650037136970677721">메모리 저장됨</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />에서 휴대전화 연결 해제</translation>
 <translation id="4651921906638302153">이 계정으로 로그인할 수 없음</translation>
@@ -5006,6 +5013,7 @@
 <translation id="4840096453115567876">시크릿 모드를 종료하시겠습니까?</translation>
 <translation id="4841475798258477260">이 기기는 특정 모바일 네트워크에만 연결할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">이 페이지가 인증되지 않은 소스에서 스크립트를 로드하려고 시도하고 있습니다.</translation>
+<translation id="4843037705239202082">미디어 이해</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4846628405149428620">사이트에서 변경사항을 저장할 위치 선택</translation>
 <translation id="4846680374085650406">이 설정에 대한 관리자 권장사항을 따릅니다.</translation>
@@ -7752,6 +7760,7 @@
 <translation id="7001809623433867903">북마크를 정리하시겠습니까?</translation>
 <translation id="7003339318920871147">웹 데이터베이스</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{파일 {COUNT}개}other{파일 {COUNT}개}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" />의 새 버전(<ph name="VERSION" />)을 사용할 수 있습니다. 업데이트를 적용하기 위해 열려 있는 모든 창이 닫힙니다. 저장되지 않은 데이터는 손실될 수 있습니다.</translation>
 <translation id="7003644704445046755">고품질 <ph name="LANGUAGE" /> 음성 파일 다운로드됨</translation>
 <translation id="7003723821785740825">지문을 설정하여 기기를 더욱 빠르게 잠금 해제</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
@@ -8315,6 +8324,7 @@
 <translation id="7434509671034404296">개발자 정보</translation>
 <translation id="7434757724413878233">마우스 가속</translation>
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
+<translation id="7435500219604275502">업데이트 적용</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>
@@ -9487,6 +9497,7 @@
 <translation id="8342387517402567689">시크릿 모드에서는 웹 앱 설치가 지원되지 않습니다</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8343578633847737325">최근 채팅 및 대화목록</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" />의 새 버전(<ph name="VERSION" />)을 사용할 수 있습니다. 지금 적용하시겠습니까?</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8347728744337089388">기기로 보내기(&amp;D)</translation>

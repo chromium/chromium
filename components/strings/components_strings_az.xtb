@@ -465,7 +465,6 @@
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> <ph name="VALUE" /> olaraq ayarlanmadığına görə nəzərə alınmayıb.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="1713628304598226412">Qab 2</translation>
-<translation id="1713819065634160212">Google Hesabınızda ünvanları istifadə edin və yadda saxlayın</translation>
 <translation id="1714807406136741351">Baxış rejimi. Formalar rejiminə dəyişərək qrafikdəki qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
@@ -727,6 +726,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Təsadüfi ardıcıllıqla göstərilir. Defolt seçimi istənilən vaxt dəyişə bilərsiniz.</translation>
+<translation id="2134584557120247184">Uçuş bileti</translation>
 <translation id="2137891579555018930">İcazə gözlənilir...</translation>
 <translation id="213826338245044447">Mobil Əlfəcinlər</translation>
 <translation id="2141000681034340397">Daxiletməni redaktə edin</translation>
@@ -1423,6 +1423,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3194737229810486521"><ph name="URL" /> datanı həmişəlik cihazınızda saxlamaq istəyir</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> <ph name="SERVER_NAME" /> serverində</translation>
+<translation id="3196374699162453920">Rezervasiya kodu</translation>
 <translation id="3196902089458890316">Daha yaxşı cavablar üçün müvafiq tablar həmişə paylaşılsın?</translation>
 <translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
@@ -2038,6 +2039,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4140905366050378834">Heyvan Yeməkləri və Heyvanlara Qulluq Vasitələri</translation>
 <translation id="4140905530744469899">Profil ID-si:</translation>
 <translation id="4142935452406587478">Qab 10</translation>
+<translation id="4143568335933115324">Eniş edəcəyi hava limanı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Zərf Çin #4</translation>
@@ -2304,6 +2306,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4543072026714825470">Növbəti dəfə sürətli ödəniş üçün kart və ödəmə ünvanını Google Hesabında yadda saxlayın</translation>
 <translation id="4546730006268514143">Ötürmə vaxtı bitdi</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 gün əvvəl yaradıldı}other{{NUM_DAYS} gün əvvəl yaradıldı}}</translation>
+<translation id="4550087677305533997">Sərnişin</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Parolları daxil etmək üçün ekran kilidindən istifadə edirsiniz</translation>
 <translation id="4557573143631562971">Ev Sığortası</translation>
@@ -2357,6 +2360,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4658801711339831733">Skan Google Diskdə yadda saxlanıldı</translation>
 <translation id="4660592918803576381">Diskdə açın</translation>
 <translation id="4660780573807106293">Hərəkət və işıq sensorlarınızdan istifadə etmək üçün icazə istəyə bilər</translation>
+<translation id="4661010630350489875">Uçuş nömrəsi</translation>
 <translation id="4661556981531699496">Ev heyvanları və Heyvanlar</translation>
 <translation id="4661868874067696603">Digər alış seçimlərini axtarın</translation>
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
@@ -2829,6 +2833,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5391010642126249196">Daxil olmusunuz</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" /> Cihaz</translation>
 <translation id="5391306025131596142">&amp;Tarixçə səhifəsini açın</translation>
+<translation id="5391870546630695708">Yola düşəcəyi hava limanı</translation>
 <translation id="539203134595252721">Stolüstü Tennis</translation>
 <translation id="5392506727170022660">Metal (yarıparlaq)</translation>
 <translation id="5394069166371280357">Ailəvi TV şouları</translation>
@@ -2939,6 +2944,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5540969246441091044">Atçılıq</translation>
 <translation id="5541086400771735334">Poçt qutusu 7</translation>
 <translation id="5541546772353173584">E-poçt Əlavə Edin</translation>
+<translation id="5541735141423273733">Gəliş tarixi</translation>
 <translation id="5543452229212526547">Mətn, yazdığınız səhifənin kontent və URL-i Google-a göndəriləcək. Kontentiniz insan redaktorlar tərəfindən Sİ-ni təkmilləşdirmək üçün istifadə edilməyəcək. Təşkilatınız bu ayarları istənilən vaxt dəyişə bilər.</translation>
 <translation id="5543564889050342791">Zooparklar, akvariumlar və qoruqlar</translation>
 <translation id="5543722831081909240">180 dərəcə</translation>
@@ -4726,6 +4732,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8288320283441806607">Bu funksiyadan istifadə üçün Axtarış edin və Daha yaxşı axtarışı aktiv edin</translation>
 <translation id="8288807391153049143">Sertifikatı göstərin</translation>
 <translation id="8289355894181816810">Bunun mənasını bilmirsinizsə, şəbəkə administratorunuz ilə əlaqə saxlayın.</translation>
+<translation id="8289655756644294629">Gediş tarixi</translation>
 <translation id="8291367150570302588">ID kartı</translation>
 <translation id="829335040383910391">səs</translation>
 <translation id="8294425747071240447">Təkliflər, Sİ dəstəkli</translation>

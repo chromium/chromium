@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{इन्कोग्निटो विन्डो बन्द गर्नुहोस्}other{इन्कोग्निटो विन्डोहरू (# वटा विन्डो) बन्द गर्नुहोस्}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - समूहको अंश <ph name="GROUP_NAME" /></translation>
 <translation id="1130676589211693127">दायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="1130866111814048607">ट्याबहरू सेयर गर्दा ती ट्याबमा खोलिएका पेजका कन्टेन्ट, मिडिया र URL हरू Google मा पठाइन्छन् र सुरक्षासम्बन्धी प्रयोजनका लागि तिनको समीक्षा गरिन सक्छ।</translation>
 <translation id="1133418583142946603">हालको ट्याब थप्नुहोस्</translation>
 <translation id="1133751489735776037">माउसमा तीन पटक क्लिक गर्नुहोस्</translation>
 <translation id="1136712381129578788">अत्यन्तै धेरै पटक गलत PIN प्रविष्टि गरिएका कारण सुरक्षा साँचो लक गरिएको छ। यसलाई अनलक गर्न उक्त PIN हटाई फेरि हाल्नुहोस्।</translation>
@@ -1101,6 +1102,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> चालु गर्न कन्ट्रोल-क्लिक गर्नुहोस्</translation>
 <translation id="1848219224579402567">लिड बन्द गरिएको बेला साइन आउट गर्नुहोस्‌</translation>
 <translation id="184862733444771842">सुविधासम्बन्धी अनुरोध</translation>
+<translation id="184871971966737653">कुनै कुरा सोध्न खुला ट्याबहरू हाल्नुहोस्</translation>
 <translation id="1849016657376805933">कुनै पनि HID डिभाइस</translation>
 <translation id="1849022541429818637">माउस इन्पुट क्याप्चर तथा प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="1849252834922144634">सर्टकटहरू पिन गर्न ट्याप गरी थिचिरहनुहोस्</translation>
@@ -2085,6 +2087,7 @@
 <translation id="2624142942574147739">यो पृष्ठले तपाईंको क्यामेरा र माइक्रोफोनको पहुँच गरिरहेको छ।</translation>
 <translation id="2626799779920242286">कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2627424346328942291">सेयर गर्न सकिएन</translation>
+<translation id="2627970398976286795">Gemini Spark का जोखिमहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="2628258844236035475">Chrome को अटोफिलमा सेभ गरिएको तपाईंको घरको ठेगाना हटाउने हो?</translation>
 <translation id="2628770867680720336">ADB डिबग प्रक्रिया सक्षम पार्न यो Chromebook को सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini सँग नयाँ च्याट सुरु गर्नुहोस्</translation>
@@ -2776,6 +2779,7 @@
 <translation id="3134312457920437826">यो एक्स्टेन्सनले म्यानिफेस्टको प्रयोग गर्न नमिल्ने संस्करण प्रयोग गर्ने भएकाले यसलाई इन्स्टल गर्न सकिएन।</translation>
 <translation id="3134393957315651797">परीक्षणको चरणमा रहेको <ph name="EXPERIMENT_NAME" /> नामक सुविधाको स्थिति चयन गर्नुहोस्। परीक्षणको चरणमा रहेको सुविधाको विवरण: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डिफल्ट पहेँलो अवतार</translation>
+<translation id="314095642664111744">फोकस अफ गर्नुहोस्</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141318088920353606">सुन्दै...</translation>
 <translation id="3142562627629111859">नयाँ समूह</translation>
@@ -3331,6 +3335,7 @@
 <translation id="3569614820047645079">तपाईं "मेरो ड्राइभ" मा रहेका फाइलहरू इन्टरनेटविनै प्रयोग गर्न सक्नुहोस् भन्नाका लागि ती फाइलहरू तपाईंको Chromebook मा स्वतः सिंक हुन्छन्।</translation>
 <translation id="3569617221227793022">हाल सेट गरिएको प्रामाणिक समय:<ph name="TIME_ZONE_ENTRY" />। तपाईंका एड्मिन यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ले निम्न फाइल र फोल्डरहरू हेर्न सक्छ</translation>
+<translation id="3570112771874223231">Gemini ले कुनै कार्य गर्ने क्रममा प्रयोग गर्ने पेजका कन्टेन्ट र URL हरू Google सँग सेयर गरिने छन् र सुरक्षासम्बन्धी प्रयोजनका लागि तिनको समीक्षा गरिन सक्छ।</translation>
 <translation id="3571734092741541777">सेटअप गर्नुहोस्</translation>
 <translation id="3575121482199441727">यो साइटलाई अनुमति दिनुहोस्</translation>
 <translation id="3575224072358507281">Measurement Lab का हकमा उसको गोपनीयता नीति (measurementlab.net/privacy) अनुसार IP एड्रेस र नेटवर्कको मापन गर्ने परिणामहरू सङ्कलन गर्नुहोस्</translation>
@@ -3591,6 +3596,7 @@
 <translation id="3756578970075173856">PIN सेट गर्नुहोस्</translation>
 <translation id="3756806135608816820">साइटहरूले ब्लुटुथ डिभाइसहरू खोज्ने अनुमति माग्न सक्छन्</translation>
 <translation id="3756823472711156529">समूह रिस्टोर गर्नुहोस्</translation>
+<translation id="3757337311115630808">Gemini Spark का बारेमा थप जान्नुहोस्</translation>
 <translation id="3757567010566591880">टुलबारबाट अनपिन गर्नुहोस्</translation>
 <translation id="3757645900890881944">Search सम्बन्धी टुलहरू</translation>
 <translation id="3757733214359997190">कुनै पनि साइट फेला परेन</translation>
@@ -4740,6 +4746,7 @@
 <translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> मध्ये <ph name="CURRENT_STEP" /> औँ चरण</translation>
 <translation id="4647836961514597010">रङ्ग चयनकर्ता</translation>
 <translation id="4648491805942548247">अपर्याप्त अनुमतिहरू</translation>
+<translation id="4648876469762528742">एप अप-टु-डेट छ।</translation>
 <translation id="4650037136970677721">मेमोरी सेभ गरियो</translation>
 <translation id="4650591383426000695">आफ्नो <ph name="DEVICE_TYPE" /> बाट आफ्नो फोन छुटाउनुहोस्</translation>
 <translation id="4651921906638302153">यो खाता प्रयोग गरी साइन इन गर्न मिल्दैन</translation>
@@ -4992,6 +4999,7 @@
 <translation id="4840096453115567876">जे भए पनि इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
 <translation id="4841475798258477260">यो डिभाइस विशेष मोबाइल नेटवर्कमा मात्र कनेक्ट गर्न मिल्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">यस पृष्ठले प्रमाणित नगरिएका स्रोतहरूबाट स्क्रिप्टहरू लोड गर्ने कोशिश गरिरहेको छ।</translation>
+<translation id="4843037705239202082">मिडिया बुझ्ने सुविधा</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4846628405149428620">यो साइटले परिवर्तनहरू कहाँ सेभ गर्न सक्छ भन्ने कुरा चयन गर्नुहोस्</translation>
 <translation id="4846680374085650406">तपाईंले यो सेटिङका लागि प्रशासकको सिफारिस पालना गरिरहनुभएको छ ।</translation>
@@ -7736,6 +7744,7 @@
 <translation id="7001809623433867903">बुकमार्कहरू हटाउने हो?</translation>
 <translation id="7003339318920871147">वेब डाटाबेसहरू</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} वटा फाइल}other{{COUNT} वटा फाइल}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" /> को नयाँ संस्करण (<ph name="VERSION" />) उपलब्ध छ। अपडेट लागू गर्न खुला रहेका सबै विन्डोहरू बन्द गरिने छन्। सेभ नगरिएको डेटा गुम्न सक्छ।</translation>
 <translation id="7003644704445046755">उच्च गुणस्तरीय <ph name="LANGUAGE" /> भ्वाइस फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="7003723821785740825">आफ्नो डिभाइस अनलक गर्ने अझ द्रुत तरिका सेटअप गर्नुहोस्</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
@@ -8299,6 +8308,7 @@
 <translation id="7434509671034404296">विकासकर्ता</translation>
 <translation id="7434757724413878233">माउसको गति बढाउने कार्य</translation>
 <translation id="7434969625063495310">छपाइसम्बन्धी सर्भर थप्न पार्न सकिएन। कृपया सर्भरको कन्फिगुरेसन जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="7435500219604275502">अपडेट लागू गर्नुहोस्</translation>
 <translation id="7439519621174723623">जारी राख्न कुनै डिभाइसको नाम राख्नुहोस्</translation>
 <translation id="7441736921018636843">यो सेटिङ परिवर्तन गर्ने प्रयोजनका लागि आफ्नो सिंकसम्बन्धी पासफ्रेज हटाउन <ph name="BEGIN_LINK" />सिंक गर्ने सेवा रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">अन्य प्रयोगकर्ताहरू</translation>
@@ -9471,6 +9481,7 @@
 <translation id="8342387517402567689">इन्कोग्निटो मोडमा वेब एप इन्स्टल गर्न मिल्दैन</translation>
 <translation id="8342861492835240085">सङ्ग्रह चयन गर्नुहोस्</translation>
 <translation id="8343578633847737325">हालसालैका च्याट तथा थ्रेडहरू</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" /> को नयाँ संस्करण (<ph name="VERSION" />) उपलब्ध छ। तपाईं अहिले नै यो अपडेट लागू गर्न चाहनुहुन्छ?</translation>
 <translation id="8345848587667658367">तपाईं अब आफ्नो फोनका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8347728744337089388">आफ्नो डिभाइसमा पठाउनुहोस्</translation>

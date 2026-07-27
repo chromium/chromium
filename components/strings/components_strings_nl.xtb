@@ -465,7 +465,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1711234383449478798">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld op <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vraagt toestemming om permanent gegevens op je lokale computer op te slaan</translation>
 <translation id="1713628304598226412">Lade 2</translation>
-<translation id="1713819065634160212">Adressen uit je Google-account gebruiken en opslaan</translation>
 <translation id="1714807406136741351">Browsemodus, je kunt overschakelen naar de formuliermodus om prijswijzigingen in het diagram te checken met de pijl-links en pijl-rechts</translation>
 <translation id="1717218214683051432">Bewegingssensoren</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
@@ -984,6 +983,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2485243023686553468">Smartphones</translation>
 <translation id="2491120439723279231">Het servercertificaat bevat fouten.</translation>
 <translation id="2491414235131909199">Deze pagina is geblokkeerd door een extensie</translation>
+<translation id="2493122313108999546">Formaat aangepast</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747">Je kunt in <ph name="SETTINGS" /> wijzigen of je je vingerafdruk wilt gebruiken om wachtwoorden in te vullen</translation>
 <translation id="2498091847651709837">Nieuwe pas scannen</translation>
@@ -2546,6 +2546,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4936134414789135531">De ingevoegde <ph name="VALUE_NAME" /> kan niet worden gevonden.</translation>
 <translation id="4936573216809994970">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over 1 uur</translation>
 <translation id="4936675324097895694">Financieel</translation>
+<translation id="4939748144644852809">Naar rechts verplaatst</translation>
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4943620199112228840">Je microfoons gebruiken</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
@@ -3200,6 +3201,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5953516610448771166">Live ondertiteling is niet beschikbaar voor deze media. Blokkeer <ph name="CONTENT_SETTINGS" /> voor deze site als je ondertiteling wilt hebben.</translation>
 <translation id="5960795367348889467">Verificatie</translation>
 <translation id="5963413905009737549">Sectie</translation>
+<translation id="5963685100480647029">Naar links verplaatst</translation>
 <translation id="5964247741333118902">Ingesloten content</translation>
 <translation id="5967260682280773804">36 x 48 inch</translation>
 <translation id="5967592137238574583">Contactgegevens bewerken</translation>
@@ -3705,6 +3707,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="671076103358959139">Inschrijftoken:</translation>
 <translation id="6711464428925977395">Er is iets mis met de proxyserver of het adres is onjuist.</translation>
 <translation id="6711700233707023861">Tekenreeks met varianten gekopieerd naar klembord</translation>
+<translation id="6712343563085762261">Omhoog verplaatst</translation>
 <translation id="6716039223770814796">Vergelijk <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
 <translation id="6717692133381953670">Tabblad gestuurd vanaf <ph name="DEVICE_NAME" /></translation>
@@ -4599,6 +4602,7 @@ Aanvullende informatie:
 <translation id="8081087320434522107">Sedans</translation>
 <translation id="8086429410809447605">Dameskleding</translation>
 <translation id="8086971161893892807">Concept</translation>
+<translation id="8087558780672230449"><ph name="APP_ORIGIN" /> wordt geladen om je betaling op <ph name="MERCHANT_ORIGIN" /> te verwerken.</translation>
 <translation id="8088680233425245692">Kan artikel niet bekijken.</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8091372947890762290">Activering is in behandeling op de server</translation>
@@ -4793,6 +4797,7 @@ Aanvullende informatie:
 <translation id="8400929824946688748">Vacatures en opleidingen</translation>
 <translation id="8402442052798347631">Aanvallers op de site die je probeerde te bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website om schade te voorkomen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfictie</translation>
+<translation id="8404028426624581035">Omlaag verplaatst</translation>
 <translation id="8405579342203358118">De informatie die je synchroniseert beheren in de Chrome-instellingen</translation>
 <translation id="8405621913275228683">Scan is verloren gegaan vanwege een onbekende fout</translation>
 <translation id="8406071103346257942">je schermvergrendeling niet meer te gebruiken om wachtwoorden in te vullen</translation>

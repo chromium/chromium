@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{關閉無痕式視窗}other{關閉無痕式視窗 (# 個視窗)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
 <translation id="1130676589211693127">右邊電量係 <ph name="PERCENTAGE" />%。</translation>
+<translation id="1130866111814048607">共用分頁時，系統會將頁面內容、媒體和網址傳送給 Google，並可能送交安全審核。</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1133751489735776037">連按三下滑鼠</translation>
 <translation id="1136712381129578788">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。如要解鎖，請移除安全密鑰後重新插入。</translation>
@@ -1108,6 +1109,7 @@
 <translation id="1846308012215045257">按住 Ctrl 鍵並按一下即可執行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="1848219224579402567">蓋上螢幕時登出帳戶</translation>
 <translation id="184862733444771842">功能要求</translation>
+<translation id="184871971966737653">新增已開啟的分頁以查詢任何內容</translation>
 <translation id="1849016657376805933">任何 HID 裝置</translation>
 <translation id="1849022541429818637">允許擷取和使用你的滑鼠輸入</translation>
 <translation id="1849252834922144634">按住即可固定捷徑</translation>
@@ -2097,6 +2099,7 @@
 <translation id="2624142942574147739">這個網頁正在存取您的相機和麥克風。</translation>
 <translation id="2626799779920242286">請稍後再試。</translation>
 <translation id="2627424346328942291">無法分享</translation>
+<translation id="2627970398976286795">睇 Gemini Spark 嘅風險</translation>
 <translation id="2628258844236035475">要從 Chrome 自動填入功能中移除住宅地址嗎？</translation>
 <translation id="2628770867680720336">必須將 Chromebook 回復原廠設定才能啟用 ADB 偵錯。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">與 Gemini 展開新對話</translation>
@@ -2787,6 +2790,7 @@
 <translation id="3134312457920437826">擴充程式使用的資訊清單版本不受支援，因此無法安裝擴充程式。</translation>
 <translation id="3134393957315651797">揀「<ph name="EXPERIMENT_NAME" />」嘅實驗狀態。實驗描述：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設黃色圖片</translation>
+<translation id="314095642664111744">關閉「專注模式」</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141318088920353606">正在聽取…</translation>
 <translation id="3142562627629111859">新群組</translation>
@@ -3342,6 +3346,7 @@
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。</translation>
 <translation id="3569617221227793022">時區目前設定為 <ph name="TIME_ZONE_ENTRY" />。此設定由管理員管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下檔案和資料夾</translation>
+<translation id="3570112771874223231">Gemini 在處理任務期間所用的頁面內容和網址會與 Google 分享，並可能送交安全審核。</translation>
 <translation id="3571734092741541777">設定</translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575224072358507281">根據 Measurement Lab 的《私隱權政策》(measurementlab.net/privacy) 收集 IP 位址和 Measurement Lab 的網絡測量結果</translation>
@@ -3602,6 +3607,7 @@
 <translation id="3756578970075173856">設定 PIN</translation>
 <translation id="3756806135608816820">網站可要求尋找藍牙裝置</translation>
 <translation id="3756823472711156529">還原群組</translation>
+<translation id="3757337311115630808">進一步了解 Gemini Spark</translation>
 <translation id="3757567010566591880">從「工具列」中取消固定</translation>
 <translation id="3757645900890881944">搜尋工具</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
@@ -4752,6 +4758,7 @@
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="4647836961514597010">顏色挑選器</translation>
 <translation id="4648491805942548247">權限不足</translation>
+<translation id="4648876469762528742">應用程式目前是最新版本。</translation>
 <translation id="4650037136970677721">已釋出記憶體</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
 <translation id="4651921906638302153">無法使用此帳戶登入</translation>
@@ -5003,6 +5010,7 @@
 <translation id="4840096453115567876">仍要離開無痕模式嗎？</translation>
 <translation id="4841475798258477260">此裝置只可連接特定的流動網絡。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">這個網頁正嘗試從未授權的來源載入指令碼。</translation>
+<translation id="4843037705239202082">媒體理解</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4846628405149428620">選取此網站可以儲存變更的位置</translation>
 <translation id="4846680374085650406">您目前所採用的是管理員的建議設定。</translation>
@@ -6189,6 +6197,7 @@
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5796485699458186843">新無痕式分頁</translation>
+<translation id="5796656350463724">分頁樣式</translation>
 <translation id="5796956053441619942">不支援來自遠端裝置的網址</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
 <translation id="5798086737841799234">輸入確認碼</translation>
@@ -7745,6 +7754,7 @@
 <translation id="7001809623433867903">要清理書籤嗎？</translation>
 <translation id="7003339318920871147">網絡數據庫</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>
+<translation id="7003537330107832201">「<ph name="APP_NAME" />」現已推出新版本 (<ph name="VERSION" />)。系統會關閉所有已開啟的視窗以套用更新。未儲存的資料可能會遺失。</translation>
 <translation id="7003644704445046755">已下載高品質<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="7003723821785740825">設定快速解鎖裝置的方式</translation>
 <translation id="7003844668372540529">來自 <ph name="VENDOR_NAME" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
@@ -8308,6 +8318,7 @@
 <translation id="7434509671034404296">開發人員</translation>
 <translation id="7434757724413878233">滑鼠加速</translation>
 <translation id="7434969625063495310">無法新增列印伺服器。請檢查伺服器設定，然後再試一次。</translation>
+<translation id="7435500219604275502">套用更新</translation>
 <translation id="7439519621174723623">新增裝置名稱以繼續</translation>
 <translation id="7441736921018636843">如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步密碼短語</translation>
 <translation id="7441830548568730290">其他使用者</translation>
@@ -9478,6 +9489,7 @@
 <translation id="8342387517402567689">無痕模式不支援安裝網絡應用程式</translation>
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8343578633847737325">最近的即時通訊和對話串</translation>
+<translation id="8345099007452202761">「<ph name="APP_NAME" />」現已推出新版本 (<ph name="VERSION" />)。要立即套用嗎？</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8347728744337089388">傳送至你的裝置</translation>

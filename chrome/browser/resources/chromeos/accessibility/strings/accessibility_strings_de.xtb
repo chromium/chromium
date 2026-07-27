@@ -29,7 +29,7 @@
 <translation id="1161762950103988776">Sprung</translation>
 <translation id="1164857107703583584">Mit Sprungbefehlen kannst du effizient zwischen den Elementen einer Webseite wechseln.</translation>
 <translation id="1175914831232945926">Ziffern</translation>
-<translation id="1186712907912748007">Drag‑and‑drop-Vorgang läuft. Zum Beenden <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
+<translation id="1186712907912748007">Drag‑and‑Drop-Vorgang läuft. Zum Beenden <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
 <translation id="1188858454923323853">ergänzend</translation>
 <translation id="1189258430971676908">Übungsbereich: Drop-down-Listen</translation>
 <translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{verschachtelte Ebene {$$COUNT}}}</translation>
@@ -695,7 +695,7 @@
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Eine modale Benachrichtigung</translation>
-<translation id="5406272775687194041">Drag-and-drop starten</translation>
+<translation id="5406272775687194041">Drag and Drop starten</translation>
 <translation id="5420259671171615858">In Menüs suchen</translation>
 <translation id="5435274640623994081">Earcon-Protokollierung aktivieren</translation>
 <translation id="5444587279251314700">(aktiv)</translation>
@@ -968,7 +968,7 @@
 <translation id="7285387653379749618">Tabellen</translation>
 <translation id="7289186959554153431">Überschrift 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
-<translation id="7297440685387139507">Drag-and-drop beenden</translation>
+<translation id="7297440685387139507">Drag and Drop beenden</translation>
 <translation id="7307364818959876261">.input {$$COUNT :number} .match $$COUNT 1{{Leerzeichen}} *{{{$$COUNT} Leerzeichen}}</translation>
 <translation id="7308519659008003150">Kein vorheriges Formularfeld</translation>
 <translation id="731121099745151312">tritm</translation>

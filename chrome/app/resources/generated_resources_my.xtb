@@ -189,6 +189,7 @@
 <translation id="1130430615924359526">{0,plural, =1{ရုပ်ဖျက်ကို ပိတ်ရန်}other{ရုပ်ဖျက်ကို ပိတ်ရန် (ဝင်းဒိုး # ခု)}}</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> အုပ်စု၏ တစ်စိတ်တစ်ဒေသ</translation>
 <translation id="1130676589211693127">ညာဘက် ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
+<translation id="1130866111814048607">တဘ်များကို မျှဝေသောအခါ ၎င်းတို့၏ စာမျက်နှာအကြောင်းအရာ၊ မီဒီယာနှင့် URL များကို Google သို့ ပို့မည်ဖြစ်ပြီး လုံခြုံရေးအတွက် စိစစ်နိုင်သည်။</translation>
 <translation id="1133418583142946603">လက်ရှိတဘ်ကို ထည့်ရန်</translation>
 <translation id="1133751489735776037">မောက်စ်ကို သုံးချက်နှိပ်ရန်</translation>
 <translation id="1136712381129578788">ပင်နံပါတ်အမှားကို အကြိမ်များစွာထည့်သဖြင့် လုံခြုံရေးကီးကို လော့ခ်ချလိုက်ပါသည်။ ၎င်းကိုဖွင့်ရန် ဖယ်ရှားပြီး ပြန်ထည့်သွင်းပါ။</translation>
@@ -1108,6 +1109,7 @@
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> ကို ဖွင့်ရန် ကွန်ထရိုး-ကလစ် နှိပ်ပါ</translation>
 <translation id="1848219224579402567">အဖုံးပိတ်လိုက်သည့်အခါ ထွက်ရန်</translation>
 <translation id="184862733444771842">ဝန်ဆောင်မှု တောင်းဆိုချက်</translation>
+<translation id="184871971966737653">ကြိုက်ရာမေးရန်အတွက် ဖွင့်ထားသော တဘ်များကို ထည့်ရန်</translation>
 <translation id="1849016657376805933">HID စက်ပစ္စည်းအားလုံး</translation>
 <translation id="1849022541429818637">သင့်မောက်စ်ဖြည့်သွင်းမှုကို မှတ်တမ်းတင်ပြီး သုံးရန် ခွင့်ပြုထားသည်</translation>
 <translation id="1849252834922144634">ဖြတ်လမ်းလင့်ခ်များ ပင်ထိုးရန် တို့ထားပါ</translation>
@@ -2096,6 +2098,7 @@
 <translation id="2624142942574147739">ဒီစာမျက်နှာသည် သင်၏ ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို ရယူသုံးနေသည်။</translation>
 <translation id="2626799779920242286">ကျေးဇူးပြုပြီး နောက်မှာ ထပ်စမ်းပါ။</translation>
 <translation id="2627424346328942291">မျှဝေ၍ မရပါ</translation>
+<translation id="2627970398976286795">Gemini Spark ၏ အန္တရာယ်ဖြစ်နိုင်ခြေများကို စစ်ဆေးရန်</translation>
 <translation id="2628258844236035475">သင့်အိမ်လိပ်စာကို ‘Chrome အော်တိုဖြည့်’ မှ ဖယ်ရှားမလား။</translation>
 <translation id="2628770867680720336">ADB အမှားရှာပြင်ခြင်းကို ဖွင့်ရန်အတွက် ဤ Chromebook ကို စက်ရုံထုတ်အတိုင်း ပြင်ဆင်သတ်မှတ်ရပါမည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini ဖြင့် ချတ်အသစ် စတင်ရန်</translation>
@@ -2787,6 +2790,7 @@
 <translation id="3134312457920437826">မပံ့ပိုးသော မန်နီးဖက်စ်ဗားရှင်းကို သုံးသောကြောင့် နောက်ဆက်တွဲကို ထည့်သွင်း၍မရပါ။</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။ စမ်းသပ်မှု ဖော်ပြချက်- <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">မူရင်းအဝါရောင်ချန်နယ်ပုံ</translation>
+<translation id="314095642664111744">အာရုံစိုက်မှုကို ပိတ်ရန်</translation>
 <translation id="3141093262818886744">မည်သို့ပင်ဖြစ်စေ ဖွင့်ရန်</translation>
 <translation id="3141318088920353606">နားထောင်နေသည်…</translation>
 <translation id="3142562627629111859">အုပ်စုအသစ်</translation>
@@ -3344,6 +3348,7 @@
 <translation id="3569614820047645079">အင်တာနက်ချိတ်ဆက်မှု မရှိဘဲ သုံးနိုင်ရန် ‘ကျွန်ုပ်၏ Drive’ ရှိ သင့်ဖိုင်များကို Chromebook သို့ အလိုအလျောက် စင့်ခ်လုပ်သည်။</translation>
 <translation id="3569617221227793022">ဒေသစံတော်ချိန်ကို လောလောဆယ် <ph name="TIME_ZONE_ENTRY" /> သို့ သတ်မှတ်ထားသည်။ ဤဆက်တင်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်။</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> သည် အောက်ပါဖိုင်နှင့် ဖိုင်တွဲများကို ကြည့်နိုင်သည်</translation>
+<translation id="3570112771874223231">လုပ်ဆောင်စရာတစ်ခုအတွင်း Gemini အသုံးပြုသည့် စာမျက်နှာအကြောင်းအရာနှင့် URL များကို Google နှင့် မျှဝေမည်ဖြစ်ပြီး လုံခြုံရေးအတွက် စိစစ်နိုင်သည်။</translation>
 <translation id="3571734092741541777">စဖွင့်သတ်မှတ်ရန်</translation>
 <translation id="3575121482199441727">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုရန်</translation>
 <translation id="3575224072358507281">Measurement Lab အတွက် IP လိပ်စာနှင့် ကွန်ရက်တိုင်းတာမှု ရလဒ်များကို ၎င်းတို့၏ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ (measurementlab.net/privacy) အရ စုဆောင်းသည်</translation>
@@ -3604,6 +3609,7 @@
 <translation id="3756578970075173856">'ပင်နံပါတ်' သတ်မှတ်ပါ</translation>
 <translation id="3756806135608816820">ဘလူးတုသ်သုံးစက်များ ရှာရန် ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="3756823472711156529">အုပ်စုကို ပြန်ယူရန်</translation>
+<translation id="3757337311115630808">Gemini Spark အကြောင်း ပိုလေ့လာရန်</translation>
 <translation id="3757567010566591880">ကိရိယာဘားမှ ပင်ဖြုတ်ရန်</translation>
 <translation id="3757645900890881944">ရှာဖွေရေးတူးလ်များ</translation>
 <translation id="3757733214359997190">မည်သည့်ဝဘ်ဆိုက်မျှ မရှိပါ</translation>
@@ -4753,6 +4759,7 @@
 <translation id="4647283074445570750">အဆင့် <ph name="TOTAL_STEPS" /> ဆင့် အနက်မှ <ph name="CURRENT_STEP" /></translation>
 <translation id="4647836961514597010">အရောင် ရွေးသူ</translation>
 <translation id="4648491805942548247">ခွင့်ပြုချက်များ မလုံလောက်</translation>
+<translation id="4648876469762528742">အက်ပ်သည် အပ်ဒိတ်ဖြစ်နေသည်။</translation>
 <translation id="4650037136970677721">မှတ်ဉာဏ် ချွေတာထားသည်</translation>
 <translation id="4650591383426000695">သင်၏ <ph name="DEVICE_TYPE" /> ကို သင့်ဖုန်းနှင့် ချိတ်ဆက်မှု ဖြုတ်မည်</translation>
 <translation id="4651921906638302153">ဤအကောင့်ဖြင့် လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
@@ -5005,6 +5012,7 @@
 <translation id="4840096453115567876">မည်သို့ပင်ဖြစ်စေ ရုပ်ဖျက်မုဒ်မှ ထွက်လိုပါသလား။</translation>
 <translation id="4841475798258477260">ဤစက်သည် သတ်မှတ်ထားသည့် မိုဘိုင်းကွန်ရက်ကိုသာ ချိတ်ဆက်နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">ဤစာမျက်နှာသည် အထောက်အထားမခိုင်လုံသော အရင်းအမြစ်များမှ စခရစ်များ ရယူရန် ကြိုးစားနေသည်။</translation>
+<translation id="4843037705239202082">မီဒီယာ နားလည်မှု</translation>
 <translation id="484462545196658690">အော်တို</translation>
 <translation id="4846628405149428620">ဤဝဘ်ဆိုက်က အပြောင်းအလဲများ သိမ်းနိုင်မည့်နေရာ ရွေးရန်</translation>
 <translation id="4846680374085650406">ဤဆက်တင်အတွက် ကြီးကြပ်သူ၏ အကြံပြုချက်အား သင်လိုက်နာနေ။</translation>
@@ -7751,6 +7759,7 @@
 <translation id="7001809623433867903">လိပ်စာများ ရှင်းထုတ်မလား။</translation>
 <translation id="7003339318920871147">ဝဘ် ဒေတာဘေ့စ်များ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ဖိုင်}other{{COUNT} ဖိုင်}}</translation>
+<translation id="7003537330107832201"><ph name="APP_NAME" /> ၏ ဗားရှင်းအသစ် (<ph name="VERSION" />) ရနိုင်ပါပြီ။ အပ်ဒိတ်ကို သုံးရန် ဖွင့်ထားသော ဝင်းဒိုးအားလုံးကို ပိတ်ပါမည်။ သိမ်းမထားသော ဒေတာများ ဆုံးရှုံးနိုင်သည်။</translation>
 <translation id="7003644704445046755">အရည်အသွေးမြင့် <ph name="LANGUAGE" /> အသံဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="7003723821785740825">သင့်စက်ပစ္စည်းကို ပိုမိုမြန်ဆန်သည့် နည်းလမ်းဖြင့် လော့ခ်ဖွင့်ရန် စနစ်ထည့်သွင်းပါ</translation>
 <translation id="7003844668372540529">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် <ph name="VENDOR_NAME" /> မှ ဖြစ်၏</translation>
@@ -8314,6 +8323,7 @@
 <translation id="7434509671034404296">ပြုစုသူ</translation>
 <translation id="7434757724413878233">မောက်စ် အရှိန်မြှင့်ရန်</translation>
 <translation id="7434969625063495310">ပုံနှိပ်စက်ဆာဗာကို ထည့်၍မရပါ။ ဆာဗာ၏ စီစဉ်သတ်မှတ်ချက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="7435500219604275502">အပ်ဒိတ်ကို သုံးရန်</translation>
 <translation id="7439519621174723623">ရှေ့ဆက်ရန် စက်အမည်ထည့်ပါ</translation>
 <translation id="7441736921018636843">ဤဆက်တင်ကို ပြောင်းရန်အတွက် <ph name="BEGIN_LINK" />စင့်ခ်ကို ပြင်ဆင်သတ်မှတ်<ph name="END_LINK" /> ပြီး သင်၏ စင့်ခ်လုပ်ထားသည့် စကားဝှက်စာကို ဖယ်ရှားပါ</translation>
 <translation id="7441830548568730290">အခြားအသုံးပြုသူများ</translation>
@@ -9486,6 +9496,7 @@
 <translation id="8342387517402567689">‘ရုပ်ဖျက်မုဒ်’ တွင် ဝဘ်အက်ပ်ထည့်သွင်းမှုများကို မပံ့ပိုးပါ</translation>
 <translation id="8342861492835240085">သိမ်းဆည်းထားသည်များကို ရွေးရန်</translation>
 <translation id="8343578633847737325">လတ်တလော ချတ်နှင့် စာတွဲများ</translation>
+<translation id="8345099007452202761"><ph name="APP_NAME" /> ၏ ဗားရှင်းအသစ် (<ph name="VERSION" />) ရနိုင်ပါပြီ။ ၎င်းကို ယခု သုံးလိုပါသလား</translation>
 <translation id="8345848587667658367">သင့်ဖုန်း၏ လတ်တလော ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ယခု ကြည့်နိုင်ပြီ</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="8347728744337089388">သင်၏ &amp;စက်သို့ ပို့ရန်</translation>
