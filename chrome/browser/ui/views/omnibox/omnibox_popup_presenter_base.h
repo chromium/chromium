@@ -196,7 +196,10 @@ class OmniboxPopupPresenterBase
   // show/hide rather than unconditionally re-requesting focus after show.
   virtual bool ShouldPreserveRequestedFocus() const;
 
-  virtual void LogResultToContentReadyMetric(bool success);
+  // Logs the ResultToContentReady metric. This is called synchronously when the
+  // visual state is ready.
+  virtual void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
+                                             bool success);
 
   LocationBar* location_bar() const { return location_bar_.get(); }
 
@@ -245,6 +248,7 @@ class OmniboxPopupPresenterBase
 
   // Callback for when the visual state is ready.
   void OnVisualStateReady(base::TimeTicks show_widget_time,
+                          base::TimeTicks result_ready_time,
                           bool from_fallback,
                           bool success);
 

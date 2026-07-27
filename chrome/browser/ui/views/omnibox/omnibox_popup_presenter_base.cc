@@ -89,6 +89,8 @@ void OmniboxPopupPresenterBase::Show() {
 
     auto show_request_time = base::TimeTicks::Now();
     auto timeout = ShouldDeferUntilVisualStateReady();
+    base::TimeTicks result_ready_time =
+        controller()->autocomplete_controller()->result().result_ready_time();
     if (timeout.has_value()) {
       is_deferred_ = true;
       content->GetWebContents()
@@ -97,6 +99,7 @@ void OmniboxPopupPresenterBase::Show() {
               base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                              visual_state_weak_factory_.GetWeakPtr(),
                              show_request_time,
+                             result_ready_time,
                              /*from_fallback=*/false));
 
       // Add a backup timer in case the visual state callback is never called.
@@ -108,6 +111,7 @@ void OmniboxPopupPresenterBase::Show() {
           base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                          visual_state_weak_factory_.GetWeakPtr(),
                          show_request_time,
+                         result_ready_time,
                          /*from_fallback=*/true,
                          /*success=*/false),
           timeout.value());
@@ -118,6 +122,7 @@ void OmniboxPopupPresenterBase::Show() {
               base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
                              visual_state_weak_factory_.GetWeakPtr(),
                              show_request_time,
+                             result_ready_time,
                              /*from_fallback=*/false));
       ShowWidget(show_request_time);
     }
@@ -126,10 +131,11 @@ void OmniboxPopupPresenterBase::Show() {
 
 void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks show_request_time,
+    base::TimeTicks result_ready_time,
     bool from_fallback,
     bool success) {
   if (!from_fallback) {
-    LogResultToContentReadyMetric(success);
+    LogResultToContentReadyMetric(result_ready_time, success);
   }
 
   if (!is_deferred_) {
@@ -203,10 +209,9 @@ void OmniboxPopupPresenterBase::RequestFocus() {
   }
 }
 
-void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(bool success) {
-  base::TimeTicks result_ready_time =
-      controller()->autocomplete_controller()->result().result_ready_time();
-
+void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
+    base::TimeTicks result_ready_time,
+    bool success) {
   if (result_ready_time.is_null()) {
     omnibox::LogResultToContentReadyEarlyExitReason(
         omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
