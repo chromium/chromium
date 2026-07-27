@@ -511,11 +511,19 @@ class PermissionRequestManager
 
   ContentSetting GetRequestInitialStatus(PermissionRequest* request);
 
+  // Adopts a TabInterface if not already adopted (e.g. for discarded or
+  // prerendered tabs where TabInterface lookup is created after helper
+  // attachment).
+  void AdoptTabInterfaceIfNeeded(tabs::TabInterface* tab_interface);
+
   void RegisterTabSubscriptions(tabs::TabInterface* tab_interface);
   void OnTabActiveStatusChanged(bool is_active,
                                 tabs::TabInterface* tab_interface);
   void OnTabDetached(tabs::TabInterface* tab_interface,
                      tabs::TabInterface::DetachReason reason);
+  void OnTabWillDiscardContents(tabs::TabInterface* tab_interface,
+                                content::WebContents* old_contents,
+                                content::WebContents* new_contents);
   void OnTabAttached(tabs::TabInterface* tab_interface);
   void OnTabActiveChanged();
 
