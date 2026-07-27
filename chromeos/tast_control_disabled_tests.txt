@@ -148,4 +148,7 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r114
 tast.hwsec.CrossVersionChromeLogin.ti50_r120
 tast.hwsec.CrossVersionChromeLogin.ti50_r125
 
+# b/539379110
+tast.cryptohome.UssMigrationChallengeCredential.rsassa_all
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
