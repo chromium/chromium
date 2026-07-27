@@ -63,6 +63,12 @@ const MemoryManagedPaintCanvas* PaintRenderingContext2D::GetPaintCanvas()
   return &paint_recorder_.getRecordingCanvas();
 }
 
+void PaintRenderingContext2D::WillDrawWithProvider(
+    const gfx::Rect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
+  WillDraw(dirty_rect, draw_type);
+}
+
 void PaintRenderingContext2D::WillDraw(const gfx::Rect&,
                                        CanvasPerformanceMonitor::DrawType) {}
 

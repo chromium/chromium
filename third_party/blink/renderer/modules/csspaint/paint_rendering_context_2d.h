@@ -68,6 +68,8 @@ class MODULES_EXPORT PaintRenderingContext2D
   }
 
   void WillDraw(const gfx::Rect&, CanvasPerformanceMonitor::DrawType) final;
+  void WillDrawWithProvider(const gfx::Rect& dirty_rect,
+                            CanvasPerformanceMonitor::DrawType) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 

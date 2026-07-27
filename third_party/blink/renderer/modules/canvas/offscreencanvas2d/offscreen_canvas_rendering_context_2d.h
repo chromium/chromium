@@ -104,6 +104,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
+  void WillDrawWithProvider(const gfx::Rect& dirty_rect,
+                            CanvasPerformanceMonitor::DrawType) final;
 
   void FlushIfRecordingLimitExceeded();
 

@@ -143,6 +143,11 @@ class Test2DRecordingContext final
   }
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
+  void WillDrawWithProvider(
+      const gfx::Rect& dirty_rect,
+      CanvasPerformanceMonitor::DrawType draw_type) override {
+    WillDraw(dirty_rect, draw_type);
+  }
 
   sk_sp<PaintFilter> StateGetFilter() override {
     return GetState().GetFilterForOffscreenCanvas({}, this);
