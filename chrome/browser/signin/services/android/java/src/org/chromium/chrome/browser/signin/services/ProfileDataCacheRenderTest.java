@@ -8,6 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
@@ -42,6 +46,7 @@ import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibil
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.util.SubscriptionTierBrandingDelegate;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -134,7 +139,8 @@ public class ProfileDataCacheRenderTest {
                                     mImageSize,
                                     /* ringThicknessPx= */ 0,
                                     /* badgeConfig= */ null,
-                                    /* aiTierRingEnabled= */ false);
+                                    /* aiTierRingEnabled= */ false,
+                                    /* brandingDelegate= */ null);
                 });
     }
 
@@ -168,7 +174,8 @@ public class ProfileDataCacheRenderTest {
                                     mImageSize,
                                     /* ringThicknessPx= */ 0,
                                     /* badgeConfig= */ null,
-                                    /* aiTierRingEnabled= */ false);
+                                    /* aiTierRingEnabled= */ false,
+                                    /* brandingDelegate= */ null);
 
                     final DisplayableProfileData profileData =
                             mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
@@ -218,14 +225,31 @@ public class ProfileDataCacheRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    SubscriptionTierBrandingDelegate brandingDelegate =
+                            new SubscriptionTierBrandingDelegate() {
+                                @Override
+                                public Shader getRingShader(RectF bounds) {
+                                    return new LinearGradient(
+                                            bounds.left,
+                                            bounds.top,
+                                            bounds.right,
+                                            bounds.bottom,
+                                            Color.RED,
+                                            Color.GREEN,
+                                            Shader.TileMode.CLAMP);
+                                }
+                            };
                     mProfileDataCache =
-                            ProfileDataCache.createWithAiTierRingOrBadge(
+                            new ProfileDataCache(
                                     sActivity,
+                                    mAccountManagerTestRule.getAccountManagerFacade(),
                                     mAccountManagerTestRule.getIdentityManager(),
                                     mSubscriptionEligibilityServiceMock,
                                     mImageSize,
                                     RING_THICKNESS,
-                                    /* badgeConfig= */ null);
+                                    /* badgeConfig= */ null,
+                                    /* aiTierRingEnabled= */ true,
+                                    brandingDelegate);
                     mProfileDataCache.addObserver(mObserver);
                 });
 
