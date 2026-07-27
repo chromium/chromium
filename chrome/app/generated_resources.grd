@@ -8753,6 +8753,45 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_ACTION_CHIP_WRITE_EDIT_PROMPT_8" desc="Text shown on the composebox searchbox on click of the write or edit chip on the NTP" >
         Draft a cover letter intro that highlights my skills and experience for a specific role
       </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_16" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a fun itinerary for a weekend movie marathon. Come up with a theme, at least 4 must-watch films, and recommend specific snacks to pair with the movie
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_17" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a prioritized, room-by-room deep cleaning checklist targeting commonly missed spots
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_18" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a realistic digital detox plan for me this weekend
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_19" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Draft an 8-week training schedule for a complete beginner who wants to run a 5K. Include alternating walking and running intervals, and designated rest days
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_20" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Help me create a 10-minute full body workout. I want to focus on strength, stamina and flexibility
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_21" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a 10-minute workout routine that I can do in my room that doesn't include jumping or loud movements
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_22" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a 15-minute morning routine that helps make my mornings run smoother. Make sure it includes a mindfulness exercise
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_23" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Create a 7-day study schedule for my upcoming exam using the pomodoro technique and spaced repetition. I don't want to cram the day before the test so make sure the day before includes light review and sleep
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_24" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Draft a lesson plan, outlining an engaging session for my class
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_25" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        I want to impress someone. Look for open tables for 2 at restaurants everyone’s talking about right now
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_26" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        I’m in the mood for a cozy café where I can unplug for a bit, read, and maybe get some work done. Can you find spots nearby that are known for being quiet, comfortable, and have reliable wi-fi?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_27" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Are there any open tables at nearby restaurants tonight?
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_BRAINSTORM_PROMPT_28" desc="Text shown on the composebox searchbox on click of the brainstorm chip on the NTP." >
+        Find family-friendly restaurants that take reservations. Must have a kids menu and a casual atmosphere
+      </message>
 
 
       <!-- NTP Modules -->
