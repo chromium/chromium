@@ -93,10 +93,11 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
     };
   }
 
-  private confirmationManager_: ConfirmationManagerInterface|null;
-  private transferUpdateListener_: TransferUpdateListenerPendingReceiver|null;
-  private selectedShareTarget_: ShareTarget|null;
-  private payloadPreview_: PayloadPreview|null;
+  declare private confirmationManager_: ConfirmationManagerInterface|null;
+  declare private transferUpdateListener_:
+      TransferUpdateListenerPendingReceiver|null;
+  declare private selectedShareTarget_: ShareTarget|null;
+  declare private payloadPreview_: PayloadPreview|null;
 
   override ready() {
     super.ready();

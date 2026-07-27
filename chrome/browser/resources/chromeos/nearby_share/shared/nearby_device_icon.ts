@@ -41,7 +41,7 @@ export class NearbyDeviceIconElement extends PolymerElement {
     };
   }
 
-  shareTarget: ShareTarget|null;
+  declare shareTarget: ShareTarget|null;
 
   private getShareTargetIcon_(): string {
     if (!this.shareTarget) {

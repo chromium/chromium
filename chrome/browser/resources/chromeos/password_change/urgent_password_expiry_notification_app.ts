@@ -50,7 +50,7 @@ class UrgentPasswordExpiryNotificationElement extends
     };
   }
 
-  private title_: string;
+  declare private title_: string;
   private expirationTimeMs_: number = 0;
   private countDownIntervalId_: number|null = null;
   private countDownIntervalMs_: number|null = null;

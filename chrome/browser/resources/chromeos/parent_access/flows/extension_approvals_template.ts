@@ -37,11 +37,11 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     };
   }
 
-  screenTitle: string;
-  screenSubtitle: string;
-  extensionIconSrc: string;
-  extensionName: string;
-  extensionPermissions: Permission[];
+  declare screenTitle: string;
+  declare screenSubtitle: string;
+  declare extensionIconSrc: string;
+  declare extensionName: string;
+  declare extensionPermissions: Permission[];
 
   override ready() {
     super.ready();

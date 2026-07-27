@@ -127,16 +127,16 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     };
   }
 
-  payloadPreview: PayloadPreview|null;
-  confirmationManager: ConfirmationManagerInterface|null;
-  transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
-  selectedShareTarget: ShareTarget|null;
+  declare payloadPreview: PayloadPreview|null;
+  declare confirmationManager: ConfirmationManagerInterface|null;
+  declare transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
+  declare selectedShareTarget: ShareTarget|null;
 
-  private shareTargets_: ShareTarget[];
-  private selfShareTargets_: ShareTarget[];
-  private nonSelfShareTargets_: ShareTarget[];
-  private errorTitle_: string|null;
-  private errorDescription_: string|null;
+  declare private shareTargets_: ShareTarget[];
+  declare private selfShareTargets_: ShareTarget[];
+  declare private nonSelfShareTargets_: ShareTarget[];
+  declare private errorTitle_: string|null;
+  declare private errorDescription_: string|null;
 
   private mojoEventTarget_: ShareTargetListenerCallbackRouter|null = null;
   private listenerIds_: number[]|null = null;

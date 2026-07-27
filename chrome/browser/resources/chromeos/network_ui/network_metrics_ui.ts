@@ -88,14 +88,14 @@ class NetworkMetricsUiElement extends NetworkMetricsUiElementBase {
     };
   }
 
-  private rssiValues_: number[];
-  private minRssi_: number;
-  private maxRssi_: number;
-  private timeValues_: number[];
-  private running_: boolean;
-  private graphRendered_: boolean;
-  private delay_: number;
-  private dataCap_: number;
+  declare private rssiValues_: number[];
+  declare private minRssi_: number;
+  declare private maxRssi_: number;
+  declare private timeValues_: number[];
+  declare private running_: boolean;
+  declare private graphRendered_: boolean;
+  declare private delay_: number;
+  declare private dataCap_: number;
 
   private browserProxy_: NetworkUiBrowserProxy =
       NetworkUiBrowserProxyImpl.getInstance();

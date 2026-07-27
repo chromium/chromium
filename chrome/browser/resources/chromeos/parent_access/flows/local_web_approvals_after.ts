@@ -32,9 +32,9 @@ export class LocalWebApprovalsAfter extends LocalWebApprovalsAfterBase {
     };
   }
 
-  childName: string;
-  url: string;
-  favicon: string;
+  declare childName: string;
+  declare url: string;
+  declare favicon: string;
 
   override ready() {
     super.ready();

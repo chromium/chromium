@@ -57,9 +57,9 @@ export class NearbyDeviceElement extends PolymerElement {
     };
   }
 
-  isSelected: boolean;
-  shareTarget: ShareTarget|null;
-  targetImageSize: number;
+  declare isSelected: boolean;
+  declare shareTarget: ShareTarget|null;
+  declare targetImageSize: number;
 
   override ready(): void {
     super.ready();

@@ -184,13 +184,13 @@ class SetTimeDialogElement extends SetTimeDialogBase {
 
   private browserProxy_: SetTimeBrowserProxy =
       SetTimeBrowserProxyImpl.getInstance();
-  private readonly isTimezoneVisible_: boolean;
-  private readonly maxDate_: string;
-  private readonly minDate_: string;
+  declare private readonly isTimezoneVisible_: boolean;
+  declare private readonly maxDate_: string;
+  declare private readonly minDate_: string;
   private prevValues_:
       {dateInput: string, timeInput: string} = {dateInput: '', timeInput: ''};
-  private selectedTimezone_: string;
-  private readonly timezoneItems_: TimezoneListItem[];
+  declare private selectedTimezone_: string;
+  declare private readonly timezoneItems_: TimezoneListItem[];
   /** ID of the timeout used to refresh the current time. */
   private timeTimeoutId_: number|null = null;
 

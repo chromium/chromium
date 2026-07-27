@@ -105,18 +105,18 @@ export class NearbyPageTemplateElement extends PolymerElement {
     };
   }
 
-  a11yAnnouncedSubTitle: string|null;
-  actionButtonEventName: string;
-  actionButtonLabel: string|null;
-  actionDisabled: boolean;
-  cancelButtonEventName: string;
-  cancelButtonLabel: string|null;
-  closeOnly: boolean;
-  pageTitle: string;
-  subTitle: string|null;
-  utilityButtonLabel: string|null;
-  utilityButtonEventName: string;
-  utilityButtonOpenInNew: boolean;
+  declare a11yAnnouncedSubTitle: string|null;
+  declare actionButtonEventName: string;
+  declare actionButtonLabel: string|null;
+  declare actionDisabled: boolean;
+  declare cancelButtonEventName: string;
+  declare cancelButtonLabel: string|null;
+  declare closeOnly: boolean;
+  declare pageTitle: string;
+  declare subTitle: string|null;
+  declare utilityButtonLabel: string|null;
+  declare utilityButtonEventName: string;
+  declare utilityButtonOpenInNew: boolean;
 
   private fire_(eventName: string, detail?: unknown): void {
     this.dispatchEvent(new CustomEvent(

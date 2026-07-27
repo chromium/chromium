@@ -160,26 +160,26 @@ export class NearbyContactVisibilityElement extends
     ];
   }
 
-  contacts: NearbyVisibilityContact[];
+  declare contacts: NearbyVisibilityContact[];
   // Mirroring the enum to allow usage in Polymer HTML bindings.
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  ContactsState: ContactsState;
-  contactsState: ContactsState;
-  isVisibilitySelected: boolean;
-  selectedVisibility: string|null;
-  settings: NearbySettings|null;
+  declare ContactsState: ContactsState;
+  declare contactsState: ContactsState;
+  declare isVisibilitySelected: boolean;
+  declare selectedVisibility: string|null;
+  declare settings: NearbySettings|null;
   isSelectedContactsToggled: boolean;
-  profileEmail: string;
+  declare profileEmail: string;
 
   private contactManager_: ContactManagerInterface|null;
   private downloadContactsObserverReceiver_: DownloadContactsObserverReceiver|
       null;
   private downloadTimeoutId_: number|null;
-  private isDarkModeActive_: boolean;
-  private isAllContactsToggledOn_: boolean;
-  private isQuickShareV2Enabled_: boolean;
-  private numUnreachable_: number;
-  private numUnreachableMessage_: string;
+  declare private isDarkModeActive_: boolean;
+  declare private isAllContactsToggledOn_: boolean;
+  declare private isQuickShareV2Enabled_: boolean;
+  declare private numUnreachable_: number;
+  declare private numUnreachableMessage_: string;
 
   constructor() {
     super();

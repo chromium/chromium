@@ -155,16 +155,16 @@ export class NearbyConfirmationPageElement extends
     };
   }
 
-  confirmationManager: ConfirmationManagerInterface;
-  transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
-  shareTarget: ShareTarget|null;
-  payloadPreview: PayloadPreview|null;
+  declare confirmationManager: ConfirmationManagerInterface;
+  declare transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
+  declare shareTarget: ShareTarget|null;
+  declare payloadPreview: PayloadPreview|null;
 
-  private confirmationToken_: string|null;
-  private errorTitle_: string|null;
-  private errorDescription_: string|null;
-  private needsConfirmation_: boolean;
-  private lastTransferStatus_: TransferStatus;
+  declare private confirmationToken_: string|null;
+  declare private errorTitle_: string|null;
+  declare private errorDescription_: string|null;
+  declare private needsConfirmation_: boolean;
+  declare private lastTransferStatus_: TransferStatus;
 
   private transferUpdateListener_: TransferUpdateListener|null = null;
 

@@ -98,13 +98,13 @@ class NetworkUiElement extends NetworkUiElementBase {
     };
   }
 
-  private tabNames_: string[];
-  private selectedTab_: number;
-  private hostname_: string;
-  private tetheringConfigToSet_: string;
-  private isGuestModeActive_: boolean;
-  private invalidJSON_: boolean;
-  private showNetworkSelect_: boolean;
+  declare private tabNames_: string[];
+  declare private selectedTab_: number;
+  declare private hostname_: string;
+  declare private tetheringConfigToSet_: string;
+  declare private isGuestModeActive_: boolean;
+  declare private invalidJSON_: boolean;
+  declare private showNetworkSelect_: boolean;
   private onHashChange_: () => void = () => {
     this.selectTabFromHash_();
   };

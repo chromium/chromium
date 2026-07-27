@@ -70,10 +70,10 @@ export class NearbyProgressElement extends PolymerElement {
     };
   }
 
-  hasError: boolean;
-  shareTarget: ShareTarget|null;
-  showIndeterminateProgress: boolean;
-  targetImageSize: number;
+  declare hasError: boolean;
+  declare shareTarget: ShareTarget|null;
+  declare showIndeterminateProgress: boolean;
+  declare targetImageSize: number;
 
   override ready(): void {
     super.ready();

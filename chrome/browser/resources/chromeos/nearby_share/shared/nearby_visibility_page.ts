@@ -65,9 +65,9 @@ export class NearbyVisibilityPageElement extends
     };
   }
 
-  settings: NearbySettings;
-  private isVisibilitySelected_: boolean;
-  private entryPoint_: NearbyShareOnboardingEntryPoint;
+  declare settings: NearbySettings;
+  declare private isVisibilitySelected_: boolean;
+  declare private entryPoint_: NearbyShareOnboardingEntryPoint;
 
   override ready(): void {
     super.ready();

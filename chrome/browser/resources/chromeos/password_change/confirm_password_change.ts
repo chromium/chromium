@@ -90,15 +90,15 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     ];
   }
 
-  private showSpinner_: boolean;
-  private showOldPasswordPrompt_: boolean;
-  private oldPassword_: string;
-  private showNewPasswordPrompt_: boolean;
-  private newPassword_: string;
-  private confirmNewPassword_: string;
-  private currentValidationError_: ValidationErrorType;
-  private promptString_: string;
-  private errorString_: string;
+  declare private showSpinner_: boolean;
+  declare private showOldPasswordPrompt_: boolean;
+  declare private oldPassword_: string;
+  declare private showNewPasswordPrompt_: boolean;
+  declare private newPassword_: string;
+  declare private confirmNewPassword_: string;
+  declare private currentValidationError_: ValidationErrorType;
+  declare private promptString_: string;
+  declare private errorString_: string;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -53,8 +53,8 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
     };
   }
 
-  disabled: boolean;
-  payloadPreview: PayloadPreview|null;
+  declare disabled: boolean;
+  declare payloadPreview: PayloadPreview|null;
 
   private getTitle_(): string {
     if (!this.payloadPreview) {

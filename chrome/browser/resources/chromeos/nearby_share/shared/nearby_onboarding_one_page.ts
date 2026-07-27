@@ -74,10 +74,10 @@ export class NearbyOnboardingOnePageElement extends
     };
   }
 
-  errorMessage: string;
-  settings: NearbySettings|null;
-  private entryPoint_: NearbyShareOnboardingEntryPoint;
-  private isQuickShareV2Enabled_: boolean;
+  declare errorMessage: string;
+  declare settings: NearbySettings|null;
+  declare private entryPoint_: NearbyShareOnboardingEntryPoint;
+  declare private isQuickShareV2Enabled_: boolean;
 
   override ready(): void {
     super.ready();

@@ -88,12 +88,12 @@ class NetworkLogsUiElement extends NetworkLogsUiElementBase {
     return ['onShillDebuggingChanged_(shillDebugging_)'];
   }
 
-  private systemLogs_: boolean;
-  private filterPII_: boolean;
-  private debugLogs_: boolean;
-  private chromeLogs_: boolean;
-  private policies_: boolean;
-  private shillDebugging_: string;
+  declare private systemLogs_: boolean;
+  declare private filterPII_: boolean;
+  declare private debugLogs_: boolean;
+  declare private chromeLogs_: boolean;
+  declare private policies_: boolean;
+  declare private shillDebugging_: string;
 
   private browserProxy_: NetworkUiBrowserProxy =
       NetworkUiBrowserProxyImpl.getInstance();
