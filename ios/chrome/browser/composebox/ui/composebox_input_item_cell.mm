@@ -27,7 +27,7 @@ const CGFloat kCloseButtonTrailing = 8.0;
 /// The point size for the symbol icons.
 const CGFloat kSymbolSize = 24.0;
 /// The size of the close icon.
-const CGFloat kCloseIconSize = 20;
+const CGFloat kCloseIconSize = 22;
 /// The alpha value for the close button.
 const CGFloat kCloseButtonAlpha = 0.9;
 }  // namespace
@@ -124,8 +124,12 @@ const CGFloat kCloseButtonAlpha = 0.9;
     _scrimView.backgroundColor = theme.inputItemBackgroundColor;
   }
 
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseIconSize
+                          weight:UIImageSymbolWeightLight
+                           scale:UIImageSymbolScaleDefault];
   UIImage* image = SymbolWithPalette(
-      SymbolWithPointSize(SymbolXMarkCircleFill, kCloseIconSize), @[
+      SymbolWithConfiguration(SymbolXMarkCircleFill, config), @[
         [UIColor colorNamed:kTextSecondaryColor],
         [theme.inputItemBackgroundColor
             colorWithAlphaComponent:kCloseButtonAlpha]

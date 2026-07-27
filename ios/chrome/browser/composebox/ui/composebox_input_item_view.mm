@@ -27,7 +27,7 @@ const CGFloat kLabelFontSize = 13.0;
 // The fade view width.
 const CGFloat kFadeViewWidth = 20.0f;
 /// The close button trailing.
-const CGFloat kTrailingMargin = 8.0;
+const CGFloat kTrailingMargin = 28.0;
 }  // namespace
 
 @implementation ComposeboxInputItemView {
