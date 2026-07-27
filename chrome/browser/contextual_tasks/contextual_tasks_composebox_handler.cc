@@ -26,6 +26,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -636,8 +637,10 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
 
 bool ContextualTasksComposeboxHandler::IsContextualSearchTabSharingEligible()
     const {
-  return web_ui_interface_ &&
-         web_ui_interface_->IsContextualTasksEligibleOnInit();
+  if (!profile_ || profile_->IsOffTheRecord()) {
+    return false;
+  }
+  return contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_);
 }
 
 void ContextualTasksComposeboxHandler::SetAimThreadRestoredTabs(

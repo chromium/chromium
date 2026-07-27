@@ -295,8 +295,10 @@ class ContextualTasksComposeboxHandlerTest
 
   explicit ContextualTasksComposeboxHandlerTest(
       const std::map<std::string, std::string>& parameters) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        contextual_tasks::kContextualTasks, parameters);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks, parameters},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+        {});
   }
   ~ContextualTasksComposeboxHandlerTest() override = default;
 
