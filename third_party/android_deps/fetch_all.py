@@ -29,7 +29,6 @@ import sys
 import tempfile
 import textwrap
 import urllib.request
-import zipfile
 
 from typing import Dict
 
@@ -90,9 +89,6 @@ _REDUCED_ID_LENGTH_MAP = {
     'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
     'com_google_android_accessibility_test_framework',
 }
-
-# If this file exists in an aar file then it is appended to LICENSE
-_THIRD_PARTY_LICENSE_FILENAME = 'third_party_licenses.txt'
 
 # Path to the aar.py script used to generate .info files.
 _AAR_PY = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp', 'aar.py')
@@ -641,19 +637,6 @@ def main():
 
         logging.info('# Generate Android .aar info files.')
         _CreateAarInfos(aar_files)
-
-        if not args.ignore_licenses:
-            logging.info('# Looking for nested license files.')
-            for aar_file in aar_files:
-                # Play Services .aar files have embedded licenses.
-                with zipfile.ZipFile(aar_file) as z:
-                    if _THIRD_PARTY_LICENSE_FILENAME in z.namelist():
-                        aar_dirname = os.path.dirname(aar_file)
-                        license_path = os.path.join(aar_dirname, 'LICENSE')
-                        # Make sure to append as we don't want to lose the
-                        # existing license.
-                        with open(license_path, 'ab') as f:
-                            f.write(z.read(_THIRD_PARTY_LICENSE_FILENAME))
 
         logging.info('# Compare CIPD packages.')
         existing_packages = ParseDeps(output_android_deps_dir, _LIBS_DIR)
