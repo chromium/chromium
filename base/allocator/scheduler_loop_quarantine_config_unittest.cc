@@ -351,6 +351,47 @@ TEST(SchedulerLoopQuarantineConfigTest, FeatureDisabledNoSwitch) {
   EXPECT_FALSE(config.enable_quarantine);
 }
 
+TEST(SchedulerLoopQuarantineConfigTest, HasSchedulerLoopQuarantineTaskControl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kPartitionAllocSchedulerLoopQuarantine,
+      {{"PartitionAllocSchedulerLoopQuarantineConfig", R"({
+          "browser": {
+            "main": {
+              "enable-task-controlled-purge": true,
+              "pause-in-between-tasks": true
+            }
+          },
+          "gpu": {
+            "main": {
+              "enable-task-controlled-purge": true,
+              "pause-in-between-tasks": false
+            }
+          },
+          "utility": {
+            "main": {
+              "enable-task-controlled-purge": false,
+              "pause-in-between-tasks": true
+            }
+          },
+          "renderer": {
+            "main": {
+              "enable-task-controlled-purge": false,
+              "pause-in-between-tasks": false
+            }
+          }
+        })"}});
+
+  // Enables both.
+  EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("browser"));
+  // Enables task-controlled purge only.
+  EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("gpu"));
+  // Enables pause-in-between-tasks only.
+  EXPECT_TRUE(HasSchedulerLoopQuarantineTaskControl("utility"));
+  // Enables neither.
+  EXPECT_FALSE(HasSchedulerLoopQuarantineTaskControl("renderer"));
+}
+
 }  // namespace
 }  // namespace base::allocator
 

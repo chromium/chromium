@@ -1202,20 +1202,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
               process_type_identifier,
               SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks);
 
-  const auto scheduler_loop_quarantine_main_config =
-      GetSchedulerLoopQuarantineConfiguration(
-          process_type, SchedulerLoopQuarantineBranchType::kMain);
-  const auto scheduler_loop_quarantine_io_config =
-      GetSchedulerLoopQuarantineConfiguration(
-          process_type, SchedulerLoopQuarantineBranchType::kIO);
-
-  if (scheduler_loop_quarantine_thread_local_config
-          .enable_task_controlled_purge ||
-      scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks ||
-      scheduler_loop_quarantine_main_config.enable_task_controlled_purge ||
-      scheduler_loop_quarantine_main_config.pause_in_between_tasks ||
-      scheduler_loop_quarantine_io_config.enable_task_controlled_purge ||
-      scheduler_loop_quarantine_io_config.pause_in_between_tasks) {
+  if (HasSchedulerLoopQuarantineTaskControl(process_type_identifier)) {
     base::EnableSchedulerLoopQuarantineTaskControlledPurge();
   }
 

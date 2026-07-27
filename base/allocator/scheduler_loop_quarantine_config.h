@@ -37,6 +37,11 @@ GetSchedulerLoopQuarantineConfiguration(
     std::string_view process_type_identifier,
     SchedulerLoopQuarantineBranchType branch_type);
 
+// Returns whether any branch for `process_type_identifier` has enabled
+// task-controlled purge or pause in between tasks.
+BASE_EXPORT bool HasSchedulerLoopQuarantineTaskControl(
+    std::string_view process_type_identifier);
+
 }  // namespace base::allocator
 
 #endif  // BASE_ALLOCATOR_SCHEDULER_LOOP_QUARANTINE_CONFIG_H_
