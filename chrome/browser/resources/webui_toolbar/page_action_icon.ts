@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -39,6 +40,9 @@ export class PageActionIconElement extends CrLitElement {
   static override get properties() {
     return {
       state: {type: Object},
+
+      // Draw a focus ring as if focused.
+      forceFocusRing: {type: Boolean},
     };
   }
 
@@ -48,6 +52,15 @@ export class PageActionIconElement extends CrLitElement {
     tooltipText: '',
     icon: {handleId: 0n},
   };
+
+  accessor forceFocusRing: boolean = false;
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('forceFocusRing')) {
+      this.classList.toggle('force-focus-ring', this.forceFocusRing);
+    }
+  }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private iconTable_: IconTable = IconTable.getInstance();

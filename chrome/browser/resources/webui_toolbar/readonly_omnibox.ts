@@ -75,6 +75,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       isComposing: {type: Boolean},
 
       adjustedCopyResult: {type: Object},
+
+      isPopupOpen: {type: Boolean},
     };
   }
 
@@ -98,6 +100,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   accessor isComposing: boolean = false;
   accessor adjustedCopyResult: AdjustOmniboxTextForCopyResult|null = null;
+  accessor isPopupOpen: boolean = false;
 
   private focusRequestHandle_: FocusRequestHandle =
       INVALID_FOCUS_REQUEST_HANDLE;
@@ -146,6 +149,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       'ArrowDown',
       ' ',
       'Backspace',
+      'Delete',
+      'PageUp',
+      'PageDown',
+      'Tab',
     ]);
   }
 
@@ -594,9 +601,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
 
     if (this.maybeForwardKeys.has(event.key)) {
-      // TODO(crbug.com/503785596): shouldn't do this if shift is down.
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        event.preventDefault();
+        // Shift+Down/Up does selection, plain Down/Up navigates suggestions.
+        if (!event.shiftKey) {
+          event.preventDefault();
+        } else {
+          return;
+        }
       }
 
       // Backspace is only relevant to the other end if we're at the very
@@ -606,6 +617,33 @@ export class ReadonlyOmniboxElement extends CrLitElement {
           (this.$.textInput.selectionStart! !== 0 ||
            this.$.textInput.selectionEnd! !== 0)) {
         return;
+      }
+
+      // Shift-Delete can delete suggestion entries.
+      if (event.key === 'Delete') {
+        if (event.shiftKey && this.isPopupOpen) {
+          event.preventDefault();
+        } else {
+          return;
+        }
+      }
+
+      // Page keys navigate selection unless modifiers are pressed.
+      if (event.key === 'PageUp' || event.key === 'PageDown') {
+        if (!event.ctrlKey && !event.altKey && !event.shiftKey) {
+          event.preventDefault();
+        } else {
+          return;
+        }
+      }
+
+      if (event.key === 'Tab') {
+        // See FocusManager::IsTabTraversalKeyEvent
+        if (!event.ctrlKey && !event.altKey && this.isPopupOpen) {
+          event.preventDefault();
+        } else {
+          return;
+        }
       }
 
       this.browserProxy_.toolbarUIHandler.onOmniboxAction({

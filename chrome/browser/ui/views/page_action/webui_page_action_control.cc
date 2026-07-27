@@ -321,6 +321,13 @@ void WebUIPageActionControl::UpdateController(
   }
 }
 
+void WebUIPageActionControl::SetShouldHidePageActions(
+    bool should_hide_page_actions) {
+  if (active_controller_) {
+    active_controller_->SetShouldHidePageActions(should_hide_page_actions);
+  }
+}
+
 std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
 WebUIPageActionControl::GetPageActionStates() {
   std::vector<toolbar_ui_api::mojom::PageActionStatePtr> states;

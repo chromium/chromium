@@ -82,12 +82,13 @@
   transition-property: none;
 }
 
-:host(#location-bar:not(.popup-open)):has(> readonly-omnibox:focus-within) {
+:host(#location-bar:not(.no-focus-ring)):has(> readonly-omnibox:focus-within) {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }
 
 @media (forced-colors: active) {
-  :host(#location-bar:not(.popup-open)):has(> readonly-omnibox:focus-within) {
+  :host(#location-bar:not(.no-focus-ring)):has(
+      > readonly-omnibox:focus-within) {
     outline: var(--cr-focus-outline-hcm);
   }
 }
