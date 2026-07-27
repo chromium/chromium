@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -264,6 +265,46 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   EXPECT_FALSE(screenshot.drawsNothing());
   EXPECT_LE(screenshot.width(), image_options.max_width);
   EXPECT_LE(screenshot.height(), image_options.max_height);
+}
+
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContextForDiscardedWebpage) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Discard the active tab by replacing its WebContents with a discarded
+  // placeholder that copies the original navigation history.
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<content::WebContents> discarded_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  discarded_contents->GetController().CopyStateFrom(
+      &original_contents->GetController(), /*needs_reload=*/true);
+  browser()->tab_strip_model()->DiscardWebContentsAt(
+      browser()->tab_strip_model()->active_index(),
+      std::move(discarded_contents));
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  active_contents->SetWasDiscarded(true);
+  active_contents->GetController().SetNeedsReload();
+  EXPECT_TRUE(active_contents->WasDiscarded());
+
+  base::test::TestFuture<std::unique_ptr<lens::ContextualInputData>> future;
+  controller->GetPageContext(future.GetCallback());
+  auto data = future.Take();
+
+  EXPECT_TRUE(data->tab_session_id.has_value());
+  EXPECT_EQ(data->page_url, url);
+  EXPECT_TRUE(data->page_title.has_value());
+  EXPECT_EQ(data->primary_content_type, lens::MimeType::kAnnotatedPageContent);
+
+  content::WebContents* restored_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(restored_contents->WasDiscarded());
 }
 
 }  // namespace lens
