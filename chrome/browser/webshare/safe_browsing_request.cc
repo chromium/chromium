@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -65,6 +66,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
 
     if (database_manager_->CheckDownloadUrl({url}, this)) {
       timeout_.Stop();
+      LogCheckResult(SafeBrowsingRequest::CheckResult::kSafe);
       SendResultToHandler(/*is_url_safe=*/true);
     }
   }
@@ -75,6 +77,7 @@ class SafeBrowsingRequest::SafeBrowsingClient
 
   void OnTimeout() {
     database_manager_->CancelCheck(this);
+    LogCheckResult(SafeBrowsingRequest::CheckResult::kTimeout);
     SendResultToHandler(/*is_url_safe=*/true);
   }
 
@@ -91,7 +94,13 @@ class SafeBrowsingRequest::SafeBrowsingClient
     timeout_.Stop();
     bool is_url_safe =
         threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE;
+    LogCheckResult(is_url_safe ? SafeBrowsingRequest::CheckResult::kSafe
+                               : SafeBrowsingRequest::CheckResult::kUnsafe);
     SendResultToHandler(is_url_safe);
+  }
+
+  void LogCheckResult(SafeBrowsingRequest::CheckResult result) {
+    base::UmaHistogramEnumeration("WebShare.SafeBrowsingCheck.Result", result);
   }
 
   base::OneShotTimer timeout_;

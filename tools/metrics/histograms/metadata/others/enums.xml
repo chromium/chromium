@@ -317,6 +317,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/subscription_eligibility/subscription_eligibility_metrics_util.h:AiSubscriptionTierStatus) -->
 
+<!-- LINT.IfChange(WebShareSafeBrowsingCheckResult) -->
+
+<enum name="WebShareSafeBrowsingCheckResult">
+  <int value="0" label="Safe"/>
+  <int value="1" label="Unsafe"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webshare/safe_browsing_request.h:WebShareSafeBrowsingCheckResult) -->
+
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:
   cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))

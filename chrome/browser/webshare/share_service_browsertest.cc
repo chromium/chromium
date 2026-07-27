@@ -248,7 +248,11 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ("share succeeded", content::EvalJs(contents, "share_pdf_file()"));
+  histogram_tester.ExpectBucketCount("WebShare.SafeBrowsingCheck.Result",
+                                     SafeBrowsingRequest::CheckResult::kSafe,
+                                     1);
   auto* expected_v5_manager =
       safe_browsing::V5GetHashProtocolManagerFactory::GetForBrowserContext(
           GetProfile());
@@ -259,6 +263,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
   AddDangerousUrl(url);
   EXPECT_EQ("share failed: NotAllowedError: Permission denied",
             content::EvalJs(contents, "share_pdf_file()"));
+  histogram_tester.ExpectBucketCount("WebShare.SafeBrowsingCheck.Result",
+                                     SafeBrowsingRequest::CheckResult::kUnsafe,
+                                     1);
 }
 
 class ShareServicePrerenderBrowserTest : public ShareServiceBrowserTest {

@@ -5969,6 +5969,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebShare.SafeBrowsingCheck.Result"
+    enum="WebShareSafeBrowsingCheckResult" expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of the Safe Browsing download check when sharing a file
+    via the WebShare API. Logged each time a check completes (safe, unsafe, or
+    timeout).
+  </summary>
+</histogram>
+
 <histogram name="WebShare.ShareOutcome" enum="WebShareOutcome"
     expires_after="2024-12-01">
   <owner>mgiuca@chromium.org</owner>
