@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "components/prefs/pref_service.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/events/event_constants.h"
@@ -70,6 +71,9 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
         ui_manager_->ShowForProfile(profile, context);
       }
       break;
+    case InvocationSource::kProfilePicker:
+      ui_manager_->ShowForProfile(profile, context);
+      break;
   }
 }
 
@@ -79,6 +83,23 @@ void OmniboxEverywhereController::Close() {
 
 bool OmniboxEverywhereController::IsVisible() const {
   return ui_manager_->IsVisible();
+}
+
+void OmniboxEverywhereController::ShowProfilePicker() {
+  Close();
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  ProfilePicker::Show(ProfilePicker::Params::ForOmniboxEverywhere(
+      base::BindOnce(&OmniboxEverywhereController::OnProfilePicked,
+                     weak_factory_.GetWeakPtr())));
+#endif
+}
+
+void OmniboxEverywhereController::OnProfilePicked(Profile* new_profile) {
+  if (!new_profile) {
+    return;
+  }
+  OnInvoke(InvocationSource::kProfilePicker, new_profile);
 }
 
 void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {

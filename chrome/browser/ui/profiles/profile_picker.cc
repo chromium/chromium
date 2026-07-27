@@ -58,6 +58,7 @@ ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
   // Use specialized constructors when available.
   CHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
   CHECK_NE(entry_point, EntryPoint::kGlicManager);
+  CHECK_NE(entry_point, EntryPoint::kOmniboxEverywhere);
   return ProfilePicker::Params(entry_point, GetPickerProfilePath());
 }
 
@@ -95,6 +96,14 @@ ProfilePicker::Params ProfilePicker::Params::ForGlicManager(
 }
 
 // static
+ProfilePicker::Params ProfilePicker::Params::ForOmniboxEverywhere(
+    base::OnceCallback<void(Profile*)> picked_profile_callback) {
+  Params params(EntryPoint::kOmniboxEverywhere, GetPickerProfilePath());
+  params.picked_profile_callback_ = std::move(picked_profile_callback);
+  return params;
+}
+
+// static
 ProfilePicker::Params ProfilePicker::Params::ForTesting(  // IN-TEST
     EntryPoint entry_point,
     const base::FilePath& profile_path) {
@@ -112,7 +121,8 @@ void ProfilePicker::Params::NotifyFirstRunExited(
 
 void ProfilePicker::Params::NotifyProfilePicked(Profile* profile) {
   CHECK(picked_profile_callback_);
-  CHECK_EQ(entry_point_, EntryPoint::kGlicManager);
+  CHECK(entry_point_ == EntryPoint::kGlicManager ||
+        entry_point_ == EntryPoint::kOmniboxEverywhere);
   std::move(picked_profile_callback_).Run(profile);
 }
 
@@ -126,6 +136,7 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
   base::flat_set<EntryPoint> exclusive_entry_points = {
       EntryPoint::kFirstRun,
       EntryPoint::kGlicManager,
+      EntryPoint::kOmniboxEverywhere,
   };
   if (entry_point_ != other.entry_point_ &&
       (exclusive_entry_points.contains(entry_point_) ||

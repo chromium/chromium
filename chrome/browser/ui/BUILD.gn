@@ -3376,6 +3376,8 @@ static_library("ui") {
         "views/profiles/first_run_flow_controller.h",
         "views/profiles/profile_picker_glic_flow_controller.cc",
         "views/profiles/profile_picker_glic_flow_controller.h",
+        "views/profiles/profile_picker_omnibox_everywhere_flow_controller.cc",
+        "views/profiles/profile_picker_omnibox_everywhere_flow_controller.h",
         "views/profiles/profile_picker_reauth_provider.cc",
         "views/profiles/profile_picker_reauth_provider.h",
         "views/profiles/profile_picker_sign_in_provider.cc",

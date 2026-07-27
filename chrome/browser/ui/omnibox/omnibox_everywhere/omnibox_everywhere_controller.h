@@ -22,6 +22,8 @@ namespace omnibox_everywhere {
 enum class InvocationSource {
   // Triggered by a global system hotkey registration.
   kGlobalHotkey,
+  // Triggered by the profile picker.
+  kProfilePicker,
 };
 
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
@@ -54,6 +56,10 @@ class OmniboxEverywhereController
   // Returns true if the Omnibox Everywhere widget is visible.
   bool IsVisible() const;
 
+  // Shows Chrome's native Profile Picker to switch profiles for Omnibox
+  // Everywhere.
+  void ShowProfilePicker();
+
   // Called during profile teardown to synchronously close the widget.
   void ShutdownForProfile(Profile* profile);
 
@@ -63,6 +69,8 @@ class OmniboxEverywhereController
                       const std::string& command_id) override;
 
  private:
+  void OnProfilePicked(Profile* new_profile);
+
   // Resolves the target profile for the Omnibox Everywhere invocation.
   // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
   Profile* GetTargetProfile();
@@ -74,6 +82,7 @@ class OmniboxEverywhereController
   BooleanPrefMember hotkey_pref_member_;
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
   raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
+  base::WeakPtrFactory<OmniboxEverywhereController> weak_factory_{this};
 };
 
 }  // namespace omnibox_everywhere

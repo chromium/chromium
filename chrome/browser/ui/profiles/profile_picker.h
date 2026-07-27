@@ -103,7 +103,10 @@ class ProfilePicker {
     // address.
     kOnStartupCreateProfileWithEmail = 17,
 
-    kMaxValue = kOnStartupCreateProfileWithEmail,
+    // Opens the Omnibox Everywhere version of the Profile Picker.
+    kOmniboxEverywhere = 18,
+
+    kMaxValue = kOmniboxEverywhere,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerEntryPoint)
 
@@ -160,6 +163,10 @@ class ProfilePicker {
     // (returning the loaded profile) or when the picker is closed (returning a
     // nullptr profile).
     static Params ForGlicManager(
+        base::OnceCallback<void(Profile*)> picked_profile_callback);
+
+    // Builds parameter for the `kOmniboxEverywhere` entry point.
+    static Params ForOmniboxEverywhere(
         base::OnceCallback<void(Profile*)> picked_profile_callback);
 
     // Builds parameters for testing purposes, allowing any entry point and
