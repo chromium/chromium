@@ -51,10 +51,11 @@ ThreatMetadata GetThreatMetadata(const V5::FullHash::FullHashDetail& detail) {
 }
 
 int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
-  if (detail.threat_type() == V5::ThreatType::SOCIAL_ENGINEERING &&
-      std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+  bool is_canary =
+      std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY);
+  if (detail.threat_type() == V5::ThreatType::SOCIAL_ENGINEERING && is_canary) {
     // SUSPICIOUS threat type.
-    return 4;
+    return 7;
   }
   // LINT.IfChange(ThreatTypeSeverity)
   switch (detail.threat_type()) {
@@ -64,8 +65,12 @@ int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
       return 0;
     case V5::ThreatType::UNWANTED_SOFTWARE:
       return 1;
-    case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+    // Subresource filter threat types are ranked according to the hierarchy:
+    // BETTER_ADS > ABUSIVE > BETTER_ADS (CANARY) > ABUSIVE (CANARY)
     case V5::ThreatType::BETTER_ADS_VIOLATION:
+      return is_canary ? 4 : 2;
+    case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+      return is_canary ? 5 : 3;
     case V5::ThreatType::NOTIFICATION_ABUSE:
       return 2;
     case V5::ThreatType::TRICK_TO_BILL:
