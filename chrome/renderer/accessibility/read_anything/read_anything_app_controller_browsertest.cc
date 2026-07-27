@@ -3321,12 +3321,13 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnStringAttributeChanged_ReadabilityFlagEnabled_DoesNothing) {
+       OnStringAttributeChanged_ReadabilityDistillation_DoesNothing) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kReadAnythingImagesViaAlgorithm,
-                                 features::kReadAnythingWithReadability},
-                                {});
-
+  feature_list.InitAndEnableFeature(features::kReadAnythingImagesViaAlgorithm);
+  model().set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
   // Create an image node with a placeholder "data:" URL, mimicking a
   // lazy-loaded image.
   static constexpr ui::AXNodeID kImageNodeId = 2;

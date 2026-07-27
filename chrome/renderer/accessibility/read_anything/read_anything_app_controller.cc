@@ -551,8 +551,16 @@ void ReadAnythingAppController::OnStringAttributeChanged(
     const std::string& new_value) {
   // Return early when the images flag is disabled to avoid potential crashes.
   if (!features::IsReadAnythingImagesViaAlgorithmEnabled() ||
-      features::IsReadAnythingWithReadabilityEnabled() ||
       attr != ax::mojom::StringAttribute::kUrl) {
+    return;
+  }
+
+  // Also return early for Readability, since images for Readability are
+  // processed separately.
+  bool is_readability_distillation =
+      model_.is_readability_next_distillation_method() ||
+      model_.is_readability_current_distillation_method();
+  if (is_readability_distillation) {
     return;
   }
 
