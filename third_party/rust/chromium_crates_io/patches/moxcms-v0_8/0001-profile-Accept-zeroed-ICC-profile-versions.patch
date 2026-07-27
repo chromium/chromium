@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Thu, 23 Jul 2026 00:00:00 +0000
+Subject: [PATCH] profile: Accept zeroed ICC profile versions
+
+Some otherwise valid ICC profiles found in the wild have zeroed profile
+version bytes. skcms accepts those profiles and Chromium previously relied on
+that behavior. Treat fully zeroed version bytes as v2.0 for compatibility
+while still rejecting other v0.x values and ICC MAX / future major versions.
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/moxcms-v0_8/src/profile.rs b/third_party/rust/chromium_crates_io/vendor/moxcms-v0_8/src/profile.rs
+index ffae667b6af93..5f361cdc17294 100644
+--- a/third_party/rust/chromium_crates_io/vendor/moxcms-v0_8/src/profile.rs
++++ b/third_party/rust/chromium_crates_io/vendor/moxcms-v0_8/src/profile.rs
+@@ -90,7 +90,10 @@ impl TryFrom<u32> for ProfileVersion {
+     type Error = CmsError;
+     fn try_from(value: u32) -> Result<Self, Self::Error> {
+         // First try exact match for known versions
+         match value {
++            // Some otherwise valid ICC profiles have zeroed version bytes.
++            // skcms accepts them; treat them as v2.0 for compatibility.
++            0x00000000 => return Ok(ProfileVersion::V2_0),
+             0x02000000 => return Ok(ProfileVersion::V2_0),
+             0x02100000 => return Ok(ProfileVersion::V2_1),
+             0x02200000 => return Ok(ProfileVersion::V2_2),
+@@ -109,11 +112,12 @@ impl TryFrom<u32> for ProfileVersion {
+         let minor = (value >> 20) & 0x0F;
+ 
+         // Accept profiles with patch versions (e.g., v2.0.2, v3.4, v4.2.9)
+-        // but reject invalid versions (v0.x) and unsupported versions (v5.x+ / ICC MAX)
++        // but reject invalid versions (v0.x) and unsupported versions
++        // (v5.x+ / ICC MAX).
+         match major {
+             0 => {
+-                // Version 0.x is invalid - reject
+-                Err(CmsError::InvalidProfile)
++                // Non-zero v0.x versions are invalid.
++                Err(CmsError::InvalidProfile)
+             }
+             2 => {
+                 // v2.x - map to the appropriate v2 minor version or highest known
+@@ -1499,7 +1503,11 @@ mod tests {
+ 
+     #[test]
+     fn test_profile_version_parsing_patch_versions() {
+-        // Patch versions found in real ICC profiles should be accepted
++        // Completely zeroed version bytes found in otherwise valid profiles
++        // should be accepted and treated as v2.0 for compatibility.
++        assert_eq!(ProfileVersion::try_from(0x00000000).unwrap(), ProfileVersion::V2_0);
++
++        // Patch versions found in real ICC profiles should be accepted.
+ 
+         // v2.0.2 (SM245B.icc) - minor bugfix version
+         assert!(
+@@ -1522,7 +1531,13 @@ mod tests {
+ 
+     #[test]
+     fn test_profile_version_parsing_rejected() {
+         // Invalid and unsupported versions should be rejected
++
++        // Non-zero v0.x versions should still be rejected.
++        assert!(
++            ProfileVersion::try_from(0x00100000).is_err(),
++            "v0.1 should be rejected"
++        );
+ 
+         // v5.0 (iccMAX) - reject because it has different white point requirements
+         assert!(
+-- 
+2.50.1
