@@ -58,7 +58,7 @@ StripTabUnderlineManager::TabUnderlineContext::~TabUnderlineContext() = default;
 StripTabUnderlineManager::TabUnderlineContext::TabUnderlineContext(
     std::unique_ptr<glic::TabUnderlineController> c,
     std::unique_ptr<UiDelegateImpl> d)
-    : controller(std::move(c)), delegate(std::move(d)) {}
+    : delegate(std::move(d)), controller(std::move(c)) {}
 
 void StripTabUnderlineManager::Destroy(JNIEnv* env) {
   delete this;

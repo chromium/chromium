@@ -46,8 +46,10 @@ class StripTabUnderlineManager {
         std::unique_ptr<UiDelegateImpl> delegate);
     ~TabUnderlineContext();
 
-    std::unique_ptr<glic::TabUnderlineController> controller;
+    // Destroying the delegate after the controller ensures the controller can
+    // safely reference its delegate during teardown.
     std::unique_ptr<UiDelegateImpl> delegate;
+    std::unique_ptr<glic::TabUnderlineController> controller;
   };
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
