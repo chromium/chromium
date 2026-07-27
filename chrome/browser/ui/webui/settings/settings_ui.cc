@@ -37,8 +37,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/preloading/preloading_features.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
@@ -489,18 +487,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               std::make_unique<SanitizedImageSource>(profile));
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
-  PrivacySandboxService* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile);
-  html_source->AddBoolean(
-      "isPrivacySandboxRestricted",
-      privacy_sandbox_service->IsPrivacySandboxRestricted());
   html_source->AddBoolean(
       "isRelatedWebsiteSetsUiEnabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsUi));
-  html_source->AddBoolean(
-      "isPrivacySandboxAdPrivacyUxDeprecationEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation));
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

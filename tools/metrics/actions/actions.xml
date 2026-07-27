@@ -43481,6 +43481,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Block3PCookies">
+  <obsolete>
+    Made obsolete 07/2026 with the removal of the cookies page Privacy Sandbox
+    toast.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
@@ -43932,6 +43936,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
+  <obsolete>
+    Made obsolete 07/2026 with the removal of the cookies page Privacy Sandbox
+    toast.
+  </obsolete>
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>

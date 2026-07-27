@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -66,10 +66,6 @@ suite('CookiesPageTest', function() {
   });
 
   setup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxAdPrivacyUxDeprecationEnabled: false,
-    });
-
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -141,86 +137,6 @@ suite('CookiesPageTest', function() {
     testMetricsBrowserProxy.reset();
   });
 
-
-  test('privacySandboxToast', async function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-    });
-    resetRouterForTesting();
-    await createPage();
-    assertFalse(page.$.toast.open);
-
-    // Disabling 3P cookies should display the privacy sandbox toast.
-    page.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    blockAll3pc().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        page.getPref('generated.third_party_cookie_blocking_setting.value'),
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-    assertTrue(page.$.toast.open);
-
-    // Re-enabling 3P cookies should not display the toast.
-    block3pcIncognito().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        page.getPref('generated.third_party_cookie_blocking_setting.value'),
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    assertFalse(page.$.toast.open);
-
-    // The toast should not be displayed if the user has any privacy sandbox
-    // APIs disabled.
-    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', false);
-    blockAll3pc().click();
-    await flushTasks();
-    assertEquals(
-        page.getPref('generated.third_party_cookie_blocking_setting.value'),
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-    assertFalse(page.$.toast.open);
-
-    // Reset the state to show the toast.
-    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
-    page.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    blockAll3pc().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        page.getPref('generated.third_party_cookie_blocking_setting.value'),
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-    assertTrue(page.$.toast.open);
-
-    // Reselecting a non-3P cookie blocking setting should hide the toast.
-    block3pcIncognito().click();
-    await eventToPromise('change', thirdPartyCookieBlockingSettingGroup());
-    await flushTasks();
-    assertEquals(
-        page.getPref('generated.third_party_cookie_blocking_setting.value'),
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    assertFalse(page.$.toast.open);
-  });
-
-  test('privacySandboxToast_restrictedSandbox', async function() {
-    // No toast should be shown if the privacy sandbox is restricted.
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: true,
-    });
-    resetRouterForTesting();
-    await createPage();
-
-    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
-    blockAll3pc().click();
-    assertEquals(
-        'Settings.ThirdPartyCookies.Block',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
-    assertFalse(page.$.toast.open);
-  });
-
   test('disabledRWSToggle', async () => {
     // Verify the RWS toggle is enabled iff the user has selected block 3PCs.
     const relatedWebsiteSetsToggle =
@@ -243,25 +159,6 @@ suite('CookiesPageTest', function() {
         page.getPref('generated.third_party_cookie_blocking_setting').value);
     assertTrue(
         relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
-  });
-
-  test('privacySandboxToast_adPrivacyDeprecationEnabled', async function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxAdPrivacyUxDeprecationEnabled: true,
-      isPrivacySandboxRestricted: false,
-    });
-    resetRouterForTesting();
-    await createPage();
-    assertFalse(page.$.toast.open);
-
-    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
-    blockAll3pc().click();
-
-    assertEquals(
-        'Settings.ThirdPartyCookies.Block',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
-    assertFalse(page.$.toast.open);
   });
 });
 

@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
@@ -25,7 +24,6 @@ import '../site_settings/site_list.js';
 import './do_not_track_toggle.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -36,22 +34,15 @@ import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import type {Route} from '../router.js';
-import {RouteObserverMixin, Router} from '../router.js';
+import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_browser_proxy.js';
 
 import {getTemplate} from './cookies_page.html.js';
 
-export interface SettingsCookiesPageElement {
-  $: {
-    toast: CrToastElement,
-  };
-}
-
-const SettingsCookiesPageElementBase = RouteObserverMixin(SettingsViewMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
+const SettingsCookiesPageElementBase = SettingsViewMixin(
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
@@ -102,38 +93,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
-    super.currentRouteChanged(newRoute, oldRoute);
-
-    if (newRoute !== routes.COOKIES) {
-      this.$.toast.hide();
-    }
-  }
-
   private onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
-  }
-
-  private showOrHideToast(switchedToBlock3pcs: boolean) {
-    // If this change resulted in the user now blocking 3P cookies where they
-    // previously were not, and any of privacy sandbox APIs are enabled,
-    // the privacy sandbox toast should be shown.
-    const areAnyPrivacySandboxApisEnabled =
-        this.getPref('privacy_sandbox.m1.topics_enabled').value ||
-        this.getPref('privacy_sandbox.m1.fledge_enabled').value ||
-        this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
-
-    if (areAnyPrivacySandboxApisEnabled && switchedToBlock3pcs) {
-      if (!loadTimeData.getBoolean(
-              'isPrivacySandboxAdPrivacyUxDeprecationEnabled') &&
-          !loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
-        this.$.toast.show();
-      }
-      this.metricsBrowserProxy_.recordAction(
-          'Settings.PrivacySandbox.Block3PCookies');
-    } else {
-      this.$.toast.hide();
-    }
   }
 
   private onThirdPartyCookieBlockingSettingChanged_() {
@@ -154,24 +115,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             'Settings.ThirdPartyCookies.Block');
     }
 
-    const currentThirdPartyCookieBlockingSetting =
-        this.getPref('generated.third_party_cookie_blocking_setting').value;
-    this.showOrHideToast(
-        currentThirdPartyCookieBlockingSetting ===
-            ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY &&
-        selection === ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-
     thirdPartyCookieBlockingSettingGroup.sendPrefChange();
-  }
-
-  private onPrivacySandboxClick_() {
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
-    this.$.toast.hide();
-    // TODO(crbug.com/40162029): Replace this with an ordinary OpenWindowProxy
-    // call.
-    this.shadowRoot!.querySelector<HTMLAnchorElement>(
-                        '#privacySandboxLink')!.click();
   }
 
   private relatedWebsiteSetsToggleDisabled_() {

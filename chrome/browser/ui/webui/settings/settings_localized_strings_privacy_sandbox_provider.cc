@@ -49,10 +49,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   // replace those before the corresponding flag value is checked, which is why
   // they are included independently of the flag value.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"privacySandboxCookiesDialog",
-       IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG},
-      {"privacySandboxCookiesDialogMore",
-       IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE},
       {"privacySandboxAdMeasurementDialogDescription",
        IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION},
       {"adPrivacyLinkRowLabel", IDS_SETTINGS_AD_PRIVACY_LINK_ROW_LABEL},
