@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/overscroll_configuration.h"
@@ -26,9 +27,12 @@ class OverscrollControllerTest : public ::testing::Test {
   OverscrollControllerTest(const OverscrollControllerTest&) = delete;
   OverscrollControllerTest& operator=(const OverscrollControllerTest&) = delete;
 
-  void ResetController() {
+  void ResetController(base::OnceClosure closure) {
     controller_.reset();
     controller_reset_ = true;
+    if (closure) {
+      std::move(closure).Run();
+    }
   }
 
  protected:
@@ -137,6 +141,8 @@ class OverscrollControllerTest : public ::testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
   // This must be the last member.
   base::WeakPtrFactory<OverscrollControllerTest> weak_factory_{this};
 };
@@ -205,9 +211,13 @@ TEST_F(OverscrollControllerTest,
   EXPECT_EQ(OVERSCROLL_NONE, delegate()->completed_mode());
 
   // Inertial update event complete the overscroll action.
+  base::RunLoop run_loop;
   EXPECT_FALSE(SimulateGestureScrollUpdate(
       100, 0, blink::WebGestureDevice::kTouchpad, timestamp, true));
+  delegate()->set_delete_controller_on_complete(true);
+  delegate()->set_on_complete_callback(run_loop.QuitClosure());
   SimulateAck(false);
+  run_loop.Run();
   EXPECT_EQ(OVERSCROLL_NONE, controller_mode());
   EXPECT_EQ(OverscrollSource::NONE, controller_source());
   EXPECT_EQ(OVERSCROLL_NONE, delegate()->current_mode());
@@ -818,10 +828,12 @@ TEST_F(OverscrollControllerTest, DelegateDeletesControllerOnComplete) {
   EXPECT_EQ(OVERSCROLL_SOUTH, delegate()->current_mode());
   EXPECT_EQ(OVERSCROLL_NONE, delegate()->completed_mode());
 
+  base::RunLoop run_loop;
   // Set up the delegate to invoke a callback that deletes the controller.
   delegate()->set_delete_controller_on_complete(true);
-  delegate()->set_on_complete_callback(base::BindOnce(
-      &OverscrollControllerTest::ResetController, weak_factory_.GetWeakPtr()));
+  delegate()->set_on_complete_callback(
+      base::BindOnce(&OverscrollControllerTest::ResetController,
+                     weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
 
   timestamp += base::Seconds(1);
 
@@ -830,6 +842,8 @@ TEST_F(OverscrollControllerTest, DelegateDeletesControllerOnComplete) {
       SimulateGestureEvent(blink::WebInputEvent::Type::kGestureScrollEnd,
                            blink::WebGestureDevice::kTouchscreen, timestamp));
   SimulateAck(false);
+
+  run_loop.Run();
 
   // The callback should have been run, deleting the controller.
   EXPECT_TRUE(controller_reset_);
