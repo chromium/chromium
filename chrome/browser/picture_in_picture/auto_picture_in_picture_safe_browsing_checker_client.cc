@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,6 +79,7 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::CheckUrlSafety(GURL url) {
   // not called.
   if (is_safe_synchronously) {
     timer_.Stop();
+    LogCheckResult(CheckResult::kSafe);
     report_url_safety_cb_.Run(true);
   }
 }
@@ -92,10 +94,12 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
   timer_.Stop();
 
   if (threat_types_.contains(threat_type)) {
+    LogCheckResult(CheckResult::kUnsafe);
     report_url_safety_cb_.Run(false);
     return;
   }
 
+  LogCheckResult(CheckResult::kSafe);
   report_url_safety_cb_.Run(true);
 }
 
@@ -104,7 +108,14 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::OnCheckBlocklistTimeout() {
   DCHECK(database_manager_);
 
   database_manager_->CancelCheck(this);
+  LogCheckResult(CheckResult::kTimeout);
   report_url_safety_cb_.Run(false);
+}
+
+void AutoPictureInPictureSafeBrowsingCheckerClient::LogCheckResult(
+    CheckResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.AutoPictureInPicture.SafeBrowsingCheckResult", result);
 }
 
 base::WeakPtr<safe_browsing::V5GetHashProtocolManager>

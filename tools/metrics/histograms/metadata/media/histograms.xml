@@ -3333,6 +3333,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AutoPictureInPicture.SafeBrowsingCheckResult"
+    enum="AutoPictureInPictureSafeBrowsingCheckResult"
+    expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of the Safe Browsing blocklist check for Auto
+    Picture-in-Picture URL safety. Logged when the check completes or times out.
+  </summary>
+</histogram>
+
 <histogram name="Media.Autoplay.EnterprisePolicyOverride" enum="Boolean"
     expires_after="2027-03-01">
   <owner>philyan@chromium.org</owner>

@@ -5,6 +5,7 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
@@ -112,12 +113,16 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
        CheckCanceledOnCheckBlocklistTimeout) {
+  base::HistogramTester histogram_tester;
   safe_browsing_check_client()->CheckUrlSafety(kPageUrl);
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
 
   EXPECT_CALL(report_url_safety_cb(), Run(false));
   safe_browsing_check_client()->OnCheckBlocklistTimeout();
   EXPECT_TRUE(mock_database_manager()->HasCalledCancelCheck());
+  histogram_tester.ExpectBucketCount(
+      "Media.AutoPictureInPicture.SafeBrowsingCheckResult",
+      AutoPictureInPictureSafeBrowsingCheckerClient::CheckResult::kTimeout, 1);
 }
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
@@ -144,6 +149,7 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
        CheckPerformedSynchronously) {
+  base::HistogramTester histogram_tester;
   MockSafeBrowsingDatabaseManager::ScopedSimulateSafeSynchronousResponse
       synchronous_response_scope =
           mock_database_manager()->CreateSimulateSafeSynchronousResponseScope(
@@ -153,10 +159,14 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
   EXPECT_CALL(report_url_safety_cb(), Run(true));
   safe_browsing_check_client()->CheckUrlSafety(kPageUrl);
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
+  histogram_tester.ExpectBucketCount(
+      "Media.AutoPictureInPicture.SafeBrowsingCheckResult",
+      AutoPictureInPictureSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
 }
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
        CheckerReportsURLAsSafe) {
+  base::HistogramTester histogram_tester;
   mock_database_manager()->SetThreatTypeForUrl(
       kPageUrl, safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
   safe_browsing_check_client()->CheckUrlSafety(kPageUrl);
@@ -165,10 +175,14 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
   EXPECT_CALL(report_url_safety_cb(), Run(true));
   FastForwardBy(kSafeBrowsingCheckDelay);
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
+  histogram_tester.ExpectBucketCount(
+      "Media.AutoPictureInPicture.SafeBrowsingCheckResult",
+      AutoPictureInPictureSafeBrowsingCheckerClient::CheckResult::kSafe, 1);
 }
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
        CheckerReportsURLAsNotSafe) {
+  base::HistogramTester histogram_tester;
   mock_database_manager()->SetThreatTypeForUrl(
       kPageUrl, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   safe_browsing_check_client()->CheckUrlSafety(kPageUrl);
@@ -177,4 +191,7 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
   EXPECT_CALL(report_url_safety_cb(), Run(false));
   FastForwardBy(kSafeBrowsingCheckDelay);
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
+  histogram_tester.ExpectBucketCount(
+      "Media.AutoPictureInPicture.SafeBrowsingCheckResult",
+      AutoPictureInPictureSafeBrowsingCheckerClient::CheckResult::kUnsafe, 1);
 }

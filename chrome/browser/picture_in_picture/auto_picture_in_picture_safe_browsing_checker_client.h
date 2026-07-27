@@ -37,6 +37,20 @@ class AutoPictureInPictureSafeBrowsingCheckerClient
 
   static constexpr base::TimeDelta kMinimumCheckDelay = base::Milliseconds(500);
 
+  // LINT.IfChange(AutoPictureInPictureSafeBrowsingCheckResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CheckResult {
+    // The check completed and the URL was classified as safe.
+    kSafe = 0,
+    // The check completed and the URL was classified as unsafe.
+    kUnsafe = 1,
+    // The check timed out before a result was received.
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AutoPictureInPictureSafeBrowsingCheckResult)
+
   AutoPictureInPictureSafeBrowsingCheckerClient(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
@@ -70,6 +84,9 @@ class AutoPictureInPictureSafeBrowsingCheckerClient
   // Callback to be run if a Safe Browsing request does not return a response
   // within `safe_browsing_check_delay` time.
   void OnCheckBlocklistTimeout();
+
+  // Logs the outcome of the Safe Browsing blocklist check.
+  void LogCheckResult(CheckResult result);
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 

@@ -318,6 +318,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Recovered"/>
 </enum>
 
+<!-- LINT.IfChange(AutoPictureInPictureSafeBrowsingCheckResult) -->
+
+<enum name="AutoPictureInPictureSafeBrowsingCheckResult">
+  <int value="0" label="Safe"/>
+  <int value="1" label="Unsafe"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h:AutoPictureInPictureSafeBrowsingCheckResult) -->
+
 <enum name="AutoplayPolicyStatus">
   <int value="0" label="AllowedByEnterprisePolicy"/>
   <int value="1" label="AllowedByDelegatedEnterprisePolicy"/>
