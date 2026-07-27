@@ -6364,16 +6364,16 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         <ph name="DOMAIN">%1$s<ex>www.google.com</ex></ph> - Sent from <ph name="DEVICE_NAME">%2$s<ex>Tanya's Pixel 2XL</ex></ph>
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes the bottom sheet where a user can pick a device to share the tab with.">
-        List of devices to share a tab with.
+        Choose a device.
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_SHEET_HALF_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's devices is opened at half height. The sheet will occupy the bottom half the screen.">
-        List of devices to share a tab with opened at half height.
+        "Choose a device" opened at half height.
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's devices is opened at full height. The sheet will occupy the entire screen.">
-        List of devices to share a tab with opened at full height.
+        "Choose a device" opened at full height.
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet showing a list of the user's devices is closed.">
-        List of devices to share a tab with is closed.
+        "Choose a device" is closed.
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_SHEET_TOOLBAR" desc="Header for device picker sheet where users can pick a device to send a tab to.">
         Send to
