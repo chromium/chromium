@@ -326,6 +326,12 @@ class GpuIntegrationTest(
       # could technically be hit on any platform.
       default_args.append('--disable-backgrounding-occluded-windows')
 
+    if cls._is_asan:
+      # The slowness introduced by ASAN can flakily cause tests to fail due to
+      # the GPU process getting killed by the watchdog. Disabling the watchdog
+      # seems to allow such tests to pass.
+      default_args.append('--disable-gpu-watchdog')
+
     return default_args + additional_args
 
   @classmethod
