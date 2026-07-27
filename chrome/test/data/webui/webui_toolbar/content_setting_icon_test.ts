@@ -5,14 +5,29 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {ContentSettingImageType} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, ContentSettingImageType} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ContentSettingIconElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+
+class TestToolbarUiHandler extends TestBrowserProxy {
+  constructor() {
+    super(['showContentSettingsBubble']);
+  }
+
+  showContentSettingsBubble(type: ContentSettingImageType) {
+    this.methodCalled('showContentSettingsBubble', type);
+  }
+}
 
 suite('ContentSettingIcon', function() {
   let icon: ContentSettingIconElement;
+  let handler: TestToolbarUiHandler;
 
   setup(async () => {
+    handler = new TestToolbarUiHandler();
+    BrowserProxyImpl.setInstance({toolbarUIHandler: handler} as any);
+
     const trustedTypes = window.trustedTypes!;
     document.body.innerHTML = trustedTypes.emptyHTML;
     icon = document.createElement('content-setting-icon');
@@ -93,5 +108,20 @@ suite('ContentSettingIcon', function() {
     assertEquals(1, icons.length);
     assertEquals(ContentSettingImageType.kCookies, icons[0]!.state.type);
     assertFalse(icons[0]!.hasAttribute('animating'));
+  });
+
+  test('RightClick', () => {
+    const button = icon.$.chip;
+
+    // contextmenu should prevent default and NOT open the bubble.
+    const contextMenuEvent =
+        new PointerEvent('contextmenu', {cancelable: true});
+    button.dispatchEvent(contextMenuEvent);
+    assertTrue(contextMenuEvent.defaultPrevented);
+    assertEquals(0, handler.getCallCount('showContentSettingsBubble'));
+
+    // auxclick should open the bubble.
+    button.dispatchEvent(new PointerEvent('auxclick', {button: 2}));
+    assertEquals(1, handler.getCallCount('showContentSettingsBubble'));
   });
 });

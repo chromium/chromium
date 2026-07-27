@@ -170,11 +170,15 @@ export class ContentSettingIconElement extends CrLitElement {
   }
 
   protected onAuxclick_() {
+    // Handles both middle and right clicks.
     this.showContentSettingsBubble_();
   }
 
-  protected onContextmenu_() {
-    this.showContentSettingsBubble_();
+  protected onContextmenu_(e: PointerEvent) {
+    // Prevent the default browser context menu on right click. The right click
+    // action is natively handled as opening the bubble, which we process in
+    // onAuxclick_ instead to avoid double-triggering.
+    e.preventDefault();
   }
 
   protected onPointerenter_() {
