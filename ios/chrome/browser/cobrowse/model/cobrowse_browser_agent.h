@@ -30,9 +30,6 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // Sets the provider for UI state information.
   void SetUIStateProvider(UIStateProvider* provider);
 
-  // Sets the context for the Cobrowse flow.
-  void SetCobrowseContext(CobrowseContext* context);
-
   // Returns the current Cobrowse context.
   CobrowseContext* GetCobrowseContext();
 
@@ -42,6 +39,7 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   bool IsSessionActive() override;
   void SetSessionActive(bool active) override;
   bool IsTabGridVisible() override;
+  void SetCobrowseContext(CobrowseContext* context) override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;

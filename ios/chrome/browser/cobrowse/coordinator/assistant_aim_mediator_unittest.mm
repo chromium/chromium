@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -46,6 +47,7 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -682,4 +684,52 @@ TEST_F(AssistantAIMMediatorTest, LoadedURL) {
   fake_web_state_ = nullptr;
   [mediator_ disconnect];
   EXPECT_EQ(mediator_.loadedURL, GURL());
+}
+
+// Tests that didFinishNavigation updates the context.
+TEST_F(AssistantAIMMediatorTest, UpdatesContextOnNavigation) {
+  GURL aim_url("https://www.google.com/search?q=test_query&udm=50");
+  fake_web_state_->SetCurrentURL(aim_url);
+
+  id<CRWWebStateObserver> web_state_observer =
+      static_cast<id<CRWWebStateObserver>>(mediator_);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  [web_state_observer webState:fake_web_state_ didFinishNavigation:&context];
+
+  CobrowseContext* cobrowse_context = agent->GetCobrowseContext();
+  EXPECT_TRUE(cobrowse_context);
+  EXPECT_TRUE([cobrowse_context.searchQuery isEqualToString:@"test_query"]);
+}
+
+// Tests that didFinishNavigation does not update the context for non-AIM URLs.
+TEST_F(AssistantAIMMediatorTest, DoesNotUpdateContextOnNonAimNavigation) {
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  // Set an initial context.
+  GURL initial_url("https://www.google.com/search?q=initial_query&udm=50");
+  CobrowseContext* initial_context =
+      [[CobrowseContext alloc] initWithURL:initial_url];
+  agent->SetCobrowseContext(initial_context);
+
+  GURL non_aim_url("https://www.example.com/");
+  fake_web_state_->SetCurrentURL(non_aim_url);
+
+  id<CRWWebStateObserver> web_state_observer =
+      static_cast<id<CRWWebStateObserver>>(mediator_);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+
+  [web_state_observer webState:fake_web_state_ didFinishNavigation:&context];
+
+  CobrowseContext* cobrowse_context = agent->GetCobrowseContext();
+  EXPECT_TRUE(cobrowse_context);
+  EXPECT_TRUE([cobrowse_context.searchQuery isEqualToString:@"initial_query"]);
 }

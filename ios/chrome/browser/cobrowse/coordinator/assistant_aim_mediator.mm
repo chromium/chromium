@@ -592,8 +592,16 @@
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
-  CobrowseContext* context =
-      [[CobrowseContext alloc] initWithURL:webState->GetVisibleURL()];
+  GURL url = webState->GetVisibleURL();
+  CobrowseContext* context = [[CobrowseContext alloc] initWithURL:url];
+
+  if (IsAimURL(url) || IsAimZeroStateURL(url)) {
+    _context = context;
+    if (_cobrowseBrowserAgent) {
+      _cobrowseBrowserAgent->SetCobrowseContext(_context);
+    }
+  }
+
   if (context.searchQuery) {
     [_consumer setHeaderTitle:context.searchQuery];
   } else {

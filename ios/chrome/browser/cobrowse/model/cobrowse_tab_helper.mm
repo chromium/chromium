@@ -73,9 +73,10 @@ void CobrowseTabHelper::DidStartNavigation(
     return;
   }
 
-  const GURL& url = navigation_context->GetUrl();
-  if (ShouldHideAssistant(url)) {
-    [scene_handler_ hideAssistant];
+  // Do not trigger the assistant when the web state is not currently visible.
+  // This could happen e.g. for navigations indirectly caused by the APC
+  // extraction process in the tab picker.
+  if (!web_state->IsVisible()) {
     return;
   }
 
@@ -85,10 +86,21 @@ void CobrowseTabHelper::DidStartNavigation(
     return;
   }
 
-  // Do not trigger the assistant when the web state is not currently visible.
-  // This could happen e.g. for navigations indirectly caused by the APC
-  // extraction process in the tab picker.
-  if (!web_state->IsVisible()) {
+  const GURL& url = navigation_context->GetUrl();
+
+  // If the session is active and we navigate to an AIM URL, update the context
+  // before `ShouldHideAssistant` hides the UI and returns early. This ensures
+  // follow-up AIM queries (which happen in the same tab) correctly sync their
+  // URL context. Note: We cannot use `ConfigureAssistantContextForWebState`
+  // here because it extracts the URL from the tab's opener, which would fail
+  // to capture the new URL of a same-tab navigation.
+  if (delegate_->IsSessionActive() &&
+      (IsAimURL(url) || IsAimZeroStateURL(url))) {
+    delegate_->SetCobrowseContext([[CobrowseContext alloc] initWithURL:url]);
+  }
+
+  if (ShouldHideAssistant(url)) {
+    [scene_handler_ hideAssistant];
     return;
   }
 

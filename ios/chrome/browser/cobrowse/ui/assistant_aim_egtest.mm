@@ -554,6 +554,56 @@ id<GREYMatcher> CloseButton() {
       performAction:grey_tap()];
 }
 
+// Tests that when navigating the main browser to a new AIM URL while a session
+// is active, the context is updated, so that when returning to a non-AIM tab,
+// the updated context is displayed.
+- (void)testNavigateInMainBrowserUpdatesCobrowseContext {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  // 1. Navigate to fake aim page A.
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("localhost", "/search?udm=50&q=pageA")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 2. Open a new tab and navigate to a fake aim page B.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("localhost", "/search?udm=50&q=pageB")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 3. Open cobrowse by tapping on a link in fake aim page B.
+  // Context becomes aim page B.
+  [ChromeEarlGrey tapWebStateElementWithID:@"my_link"];
+  [ChromeEarlGrey waitForMainTabCount:3];
+
+  // Wait for cobrowse to appear on the new non-AIM tab.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(@"pageB")];
+
+  // 4. Navigate back to fake aim page A.
+  // Tab 0 is page A.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+
+  // 5. Query a new thing in this fake AIM webpage A.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "localhost", "/search?udm=50&q=pageA_updated")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 6. Go back to a tab that is not an AIM page.
+  // Tab 2 is the non-AIM page we opened from page B.
+  [ChromeEarlGrey selectTabAtIndex:2];
+
+  // 7. Observe that cobrowse is now displaying the context of AIM page A.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
+                                                          @"pageA_updated")];
+}
+
 // Tests that the assistant starts in minimized state when the flag is enabled.
 // All 3 detents are available in this mode. This test verifies that we start
 // in minimized and are not stuck in it.

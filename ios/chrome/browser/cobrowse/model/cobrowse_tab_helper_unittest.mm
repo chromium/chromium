@@ -289,6 +289,7 @@ TEST_F(CobrowseTabHelperTest, HideAssistantOnAimSearchNavigation) {
   GURL aim_search_url("https://www.google.com/search?q=test&udm=50");
 
   web::FakeWebState* web_state = CreateAndInsertWebState({});
+  web_state->WasShown();
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   web::FakeNavigationContext context;
@@ -307,6 +308,7 @@ TEST_F(CobrowseTabHelperTest, HideAssistantOnAimZeroStateSearchNavigation) {
   GURL aim_zero_state_url("https://www.google.com/?udm=50");
 
   web::FakeWebState* web_state = CreateAndInsertWebState({});
+  web_state->WasShown();
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
 
   web::FakeNavigationContext context;

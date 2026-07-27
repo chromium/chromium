@@ -13,6 +13,8 @@
 
 class TemplateURLService;
 
+@class CobrowseContext;
+
 @protocol SceneCommands;
 
 // Tab helper that listens for new tabs to triggers or not the cobrowse view.
@@ -34,6 +36,9 @@ class CobrowseTabHelper : public web::WebStateObserver,
 
     // Returns whether the tab grid is currently visible.
     virtual bool IsTabGridVisible() = 0;
+
+    // Sets the context directly.
+    virtual void SetCobrowseContext(CobrowseContext* context) = 0;
   };
 
   CobrowseTabHelper(const CobrowseTabHelper&) = delete;
