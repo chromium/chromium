@@ -46,7 +46,8 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type);
 // Converts an `AtMemoryQueryResponse` proto into a list of
 // `MemorySearchResult.`
 std::vector<MemorySearchResult> ExtractRemoteResults(
-    const personal_context::proto::AtMemoryQueryResponse& response);
+    const personal_context::proto::AtMemoryQueryResponse& response,
+    std::string_view app_locale);
 
 // The following functions are exposed in the header for testing purposes only:
 
@@ -61,12 +62,14 @@ std::vector<MemoryEntrySource> ExtractSources(
 
 // Extracts secondary metadata attributes from an `AtMemorySearchResult` proto.
 std::vector<EntryMetadata> ExtractMetadata(
-    const personal_context::proto::AtMemorySearchResult& proto_result);
+    const personal_context::proto::AtMemorySearchResult& proto_result,
+    std::string_view app_locale);
 
 // Converts a single `AtMemorySearchResult` proto into a `MemorySearchResult`
 // struct.
 MemorySearchResult ConvertToMemorySearchResult(
-    const personal_context::proto::AtMemorySearchResult& proto_result);
+    const personal_context::proto::AtMemorySearchResult& proto_result,
+    std::string_view app_locale);
 
 }  // namespace autofill
 

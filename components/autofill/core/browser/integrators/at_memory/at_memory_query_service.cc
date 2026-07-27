@@ -825,7 +825,7 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   }
 
   std::vector<MemorySearchResult> remote_results =
-      ExtractRemoteResults(response);
+      ExtractRemoteResults(response, locale_);
 
   std::vector<MemoryDataType> local_data_types;
   base::flat_set<std::u16string> filter_words;

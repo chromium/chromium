@@ -8,10 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_vector.h"
+#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
@@ -43,6 +49,68 @@ std::optional<personal_context::proto::Date> ParseDate(std::string_view str) {
     return date;
   }
   return std::nullopt;
+}
+
+std::u16string FormatAttributeValue(
+    const personal_context::proto::Attribute& attribute,
+    std::string_view app_locale) {
+  if (attribute.has_typed_value()) {
+    const personal_context::proto::TypedValue& typed_value =
+        attribute.typed_value();
+    switch (typed_value.value_case()) {
+      case personal_context::proto::TypedValue::kCountryCode: {
+        std::u16string country_name = l10n_util::GetDisplayNameForCountry(
+            typed_value.country_code(), app_locale);
+        // Depending on the platform, `GetDisplayNameForCountry` either returns
+        // an empty string, the country code itself, or the country code
+        // prefixed with an underscore if the look-up fails.
+        if (!country_name.empty() &&
+            !base::EqualsCaseInsensitiveASCII(country_name,
+                                              typed_value.country_code()) &&
+            !base::EqualsCaseInsensitiveASCII(
+                country_name,
+                base::StrCat({"_", typed_value.country_code()}))) {
+          return country_name;
+        }
+        break;
+      }
+      case personal_context::proto::TypedValue::kDate: {
+        // TODO(crbug.com/539400547): Support localized date formatting.
+        const personal_context::proto::Date& date = typed_value.date();
+        return base::UTF8ToUTF16(base::StringPrintf(
+            "%04d-%02d-%02d", date.year(), date.month(), date.day()));
+      }
+      case personal_context::proto::TypedValue::kDateTime: {
+        // TODO(crbug.com/539400547): Support localized date formatting.
+        const personal_context::proto::DateTime& date_time =
+            typed_value.date_time();
+        std::u16string date_str = base::UTF8ToUTF16(
+            base::StringPrintf("%04d-%02d-%02d", date_time.year(),
+                               date_time.month(), date_time.day()));
+        base::Time::Exploded exploded{
+            .year = date_time.year(),
+            .month = date_time.month(),
+            .day_of_month = date_time.day(),
+            .hour = date_time.hours(),
+            .minute = date_time.minutes(),
+        };
+        base::Time time;
+        if (base::Time::FromLocalExploded(exploded, &time)) {
+          return base::StrCat(
+              {date_str, u" ", base::TimeFormatTimeOfDay(time)});
+        }
+        return date_str;
+      }
+      case personal_context::proto::TypedValue::kStringList:
+        return base::UTF8ToUTF16(
+            base::JoinString(base::ToVector<std::string_view>(
+                                 typed_value.string_list().values()),
+                             ", "));
+      case personal_context::proto::TypedValue::VALUE_NOT_SET:
+        break;
+    }
+  }
+  return base::UTF8ToUTF16(attribute.value());
 }
 
 }  // namespace
@@ -771,7 +839,8 @@ std::vector<MemoryEntrySource> ExtractSources(
 }
 
 std::vector<EntryMetadata> ExtractMetadata(
-    const personal_context::proto::AtMemorySearchResult& proto_result) {
+    const personal_context::proto::AtMemorySearchResult& proto_result,
+    std::string_view app_locale) {
   std::vector<EntryMetadata> metadata_list;
   for (const personal_context::proto::Attribute& secondary :
        proto_result.secondary_attributes()) {
@@ -782,14 +851,15 @@ std::vector<EntryMetadata> ExtractMetadata(
     } else if (secondary.has_schemaless_key()) {
       other_type_name = base::UTF8ToUTF16(secondary.schemaless_key());
     }
-    metadata_list.emplace_back(other_type, other_type_name,
-                               base::UTF8ToUTF16(secondary.value()));
+    metadata_list.emplace_back(other_type, std::move(other_type_name),
+                               FormatAttributeValue(secondary, app_locale));
   }
   return metadata_list;
 }
 
 MemorySearchResult ConvertToMemorySearchResult(
-    const personal_context::proto::AtMemorySearchResult& proto_result) {
+    const personal_context::proto::AtMemorySearchResult& proto_result,
+    std::string_view app_locale) {
   MemoryDataType memory_data_type = MemoryDataType::kUnknown;
   std::u16string type_name;
   std::u16string primary_value;
@@ -801,25 +871,27 @@ MemorySearchResult ConvertToMemorySearchResult(
     } else if (primary.has_schemaless_key()) {
       type_name = base::UTF8ToUTF16(primary.schemaless_key());
     }
-    primary_value = base::UTF8ToUTF16(primary.value());
+    primary_value = FormatAttributeValue(primary, app_locale);
   }
 
-  MemorySearchResult pcontext_result(memory_data_type, type_name, primary_value,
+  MemorySearchResult pcontext_result(memory_data_type, std::move(type_name),
+                                     std::move(primary_value),
                                      proto_result.relevance_score());
   pcontext_result.sources = ExtractSources(proto_result);
-  pcontext_result.metadata_list = ExtractMetadata(proto_result);
+  pcontext_result.metadata_list = ExtractMetadata(proto_result, app_locale);
   pcontext_result.is_obfuscated = IsSpiiMemoryDataType(memory_data_type);
   return pcontext_result;
 }
 
 std::vector<MemorySearchResult> ExtractRemoteResults(
-    const personal_context::proto::AtMemoryQueryResponse& response) {
+    const personal_context::proto::AtMemoryQueryResponse& response,
+    std::string_view app_locale) {
   std::vector<MemorySearchResult> remote_results;
   for (int32_t i = 0; i < response.results_size(); ++i) {
     const personal_context::proto::AtMemorySearchResult& proto_result =
         response.results(i);
     MemorySearchResult pcontext_result =
-        ConvertToMemorySearchResult(proto_result);
+        ConvertToMemorySearchResult(proto_result, app_locale);
     pcontext_result.remote_response_index = i;
     if (!pcontext_result.value.empty()) {
       remote_results.push_back(std::move(pcontext_result));

@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
@@ -18,6 +20,7 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsEmpty;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
@@ -163,7 +166,8 @@ TEST(MemoryDataTypeUtilTest,
       personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY);
   secondary->set_value("US");
 
-  MemorySearchResult result = ConvertToMemorySearchResult(proto_result);
+  MemorySearchResult result =
+      ConvertToMemorySearchResult(proto_result, "en-US");
   EXPECT_EQ(result.type, MemoryDataType::kPassportNumber);
   EXPECT_EQ(result.value, u"A12345678");
   EXPECT_EQ(result.confidence_score, 0.85f);
@@ -183,7 +187,8 @@ TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultSchemalessKey) {
   primary->set_schemaless_key("custom_passport_key");
   primary->set_value("CUSTOM_VAL");
 
-  MemorySearchResult result = ConvertToMemorySearchResult(proto_result);
+  MemorySearchResult result =
+      ConvertToMemorySearchResult(proto_result, "en-US");
   EXPECT_EQ(result.type, MemoryDataType::kUnknown);
   EXPECT_EQ(result.type_name, u"custom_passport_key");
   EXPECT_EQ(result.value, u"CUSTOM_VAL");
@@ -207,11 +212,164 @@ TEST(MemoryDataTypeUtilTest, ExtractRemoteResultsFiltersEmptyValues) {
       personal_context::proto::MEMORY_DATA_TYPE_PHONE);
   empty_result->mutable_primary_attribute()->set_value("");
 
-  std::vector<MemorySearchResult> results = ExtractRemoteResults(response);
+  std::vector<MemorySearchResult> results =
+      ExtractRemoteResults(response, "en-US");
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].type, MemoryDataType::kEmail);
   EXPECT_EQ(results[0].value, u"test@example.com");
   EXPECT_EQ(results[0].remote_response_index, 0);
+}
+
+// Tests formatting of Date attribute values into YYYY-MM-DD strings.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultDate) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->set_value("2026 07 24");
+  personal_context::proto::Date* date =
+      attr->mutable_typed_value()->mutable_date();
+  date->set_year(2026);
+  date->set_month(7);
+  date->set_day(24);
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"2026-07-24");
+}
+
+// Tests formatting of DateTime attribute values into YYYY-MM-DD <time> strings.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultDateTime) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->set_value("2026-12-31");
+  personal_context::proto::DateTime* date_time =
+      attr->mutable_typed_value()->mutable_date_time();
+  date_time->set_year(2026);
+  date_time->set_month(12);
+  date_time->set_day(31);
+  date_time->set_hours(14);
+  date_time->set_minutes(30);
+
+  // ICU inserts a "narrow space" between the time and the "PM".
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"2026-12-31 2:30\u202FPM");
+}
+
+// Tests formatting of DateTime attribute values when FromLocalExploded fails
+// due to an invalid time.
+TEST(MemoryDataTypeUtilTest,
+     ConvertToMemorySearchResultDateTimeInvalidTimeFallback) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->set_value("2026-12-31 25:00");
+  personal_context::proto::DateTime* date_time =
+      attr->mutable_typed_value()->mutable_date_time();
+  date_time->set_year(2026);
+  date_time->set_month(12);
+  date_time->set_day(31);
+  date_time->set_hours(25);  // Invalid hour.
+  date_time->set_minutes(0);
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"2026-12-31");
+}
+
+// Tests formatting of ISO country code attribute values.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultCountryCode) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->mutable_typed_value()->set_country_code("DE");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"Germany");
+}
+
+// Tests formatting of ISO country code attribute values using a non-English
+// app_locale.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultCountryCodeWithLocale) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->mutable_typed_value()->set_country_code("DE");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "de").value,
+            u"Deutschland");
+}
+
+// Tests formatting of lowercase ISO country code attribute values.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultCountryCodeLowercase) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->mutable_typed_value()->set_country_code("de");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"Germany");
+}
+
+// Tests fallback to untyped value when country code is invalid.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultCountryCodeFallback) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->set_value("Untyped Fallback");
+  attr->mutable_typed_value()->set_country_code("INVALID");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"Untyped Fallback");
+}
+
+// Tests formatting of StringList attribute values joined by commas.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultStringList) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  personal_context::proto::StringList* list =
+      attr->mutable_typed_value()->mutable_string_list();
+  list->add_values("Item 1");
+  list->add_values("Item 2");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"Item 1, Item 2");
+}
+
+// Tests fallback to untyped string value when typed_value is unset.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultFallback) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+  personal_context::proto::Attribute* attr =
+      proto_result.mutable_primary_attribute();
+  attr->set_value("Fallback String");
+
+  EXPECT_EQ(ConvertToMemorySearchResult(proto_result, "en-US").value,
+            u"Fallback String");
+}
+
+// Tests that ConvertToMemorySearchResult formats typed_value on primary and
+// secondary attributes.
+TEST(MemoryDataTypeUtilTest, ConvertToMemorySearchResultFormatsTypedValue) {
+  personal_context::proto::AtMemorySearchResult proto_result;
+
+  personal_context::proto::Attribute* primary =
+      proto_result.mutable_primary_attribute();
+  primary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_EXPIRATION_DATE);
+  primary->mutable_typed_value()->mutable_date()->set_year(2030);
+  primary->mutable_typed_value()->mutable_date()->set_month(5);
+  primary->mutable_typed_value()->mutable_date()->set_day(20);
+
+  personal_context::proto::Attribute* secondary =
+      proto_result.add_secondary_attributes();
+  secondary->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_COUNTRY);
+  secondary->mutable_typed_value()->set_country_code("FR");
+
+  MemorySearchResult result =
+      ConvertToMemorySearchResult(proto_result, "en-US");
+  EXPECT_EQ(result.value, u"2030-05-20");
+  EXPECT_THAT(result.metadata_list,
+              ElementsAre(Field(&EntryMetadata::value, u"France")));
 }
 
 }  // namespace
