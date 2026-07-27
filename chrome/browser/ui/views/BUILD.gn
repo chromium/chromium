@@ -124,8 +124,8 @@ source_set("confirm_bubble") {
     "confirm_bubble_views.h",
   ]
   deps = [
-    "//chrome/browser/ui:confirm_bubble",
     ":layout_provider",
+    "//chrome/browser/ui:confirm_bubble",
     "//components/constrained_window",
     "//components/strings:components_strings",
     "//components/vector_icons",
@@ -140,11 +140,11 @@ source_set("status_bubble") {
   public = [ "status_bubble_views.h" ]
   sources = [ "status_bubble_views.cc" ]
   deps = [
+    ":views",
     "//base",
     "//cc/paint",
     "//chrome/browser/ui:status_bubble",
     "//chrome/browser/ui/color:color_headers",
-    ":views",
     "//components/url_formatter",
     "//skia",
     "//ui/base",
@@ -155,30 +155,16 @@ source_set("status_bubble") {
   ]
 }
 
-if (is_linux || is_chromeos) {
-  source_set("process_singleton_dialog_linux") {
-    sources = [ "process_singleton_dialog_linux.cc" ]
-    deps = [
-      "//base",
-      "//chrome/app:branded_strings",
-      "//chrome/app:generated_resources",
-      "//chrome/browser/ui:process_singleton_dialog_linux",
-      "//chrome/browser/ui:simple_message_box_headers",
-      "//ui/base",
-    ]
-  }
-}
-
 if (is_win) {
   source_set("uninstall_browser_prompt") {
     public = [ "uninstall_view.h" ]
     sources = [ "uninstall_view.cc" ]
     deps = [
+      ":layout_provider",
       "//base",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser/ui:uninstall_browser_prompt",
-      ":layout_provider",
       "//chrome/common:constants",
       "//content/public/common",
       "//ui/base",

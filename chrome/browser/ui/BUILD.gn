@@ -3648,7 +3648,7 @@ static_library("ui") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/ui/views:process_singleton_dialog_linux" ]
+    deps += [ "//chrome/browser/ui/dialogs:process_singleton_dialog_linux" ]
 
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
@@ -5735,10 +5735,4 @@ source_set("status_bubble") {
 source_set("storage_pressure_bubble") {
   public = [ "storage_pressure_bubble.h" ]
   public_deps = [ "//url" ]
-}
-
-if (is_linux || is_chromeos) {
-  source_set("process_singleton_dialog_linux") {
-    public = [ "process_singleton_dialog_linux.h" ]
-  }
 }

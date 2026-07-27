@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
-#define CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
+#ifndef CHROME_BROWSER_UI_DIALOGS_PROCESS_SINGLETON_DIALOG_LINUX_H_
+#define CHROME_BROWSER_UI_DIALOGS_PROCESS_SINGLETON_DIALOG_LINUX_H_
 
 #include <string>
 
@@ -15,4 +15,4 @@
 bool ShowProcessSingletonDialog(const std::u16string& message,
                                 const std::u16string& relaunch_text);
 
-#endif  // CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
+#endif  // CHROME_BROWSER_UI_DIALOGS_PROCESS_SINGLETON_DIALOG_LINUX_H_

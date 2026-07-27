@@ -103,7 +103,7 @@
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/process_singleton_dialog_linux.h"
+#include "chrome/browser/ui/dialogs/process_singleton_dialog_linux.h"
 #endif
 
 using content::BrowserThread;

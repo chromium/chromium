@@ -71,3 +71,16 @@ source_set("browser_dialogs") {
     deps += [ "//ui/android" ]
   }
 }
+
+if (is_linux || is_chromeos) {
+  source_set("process_singleton_dialog_linux") {
+    public = [ "process_singleton_dialog_linux.h" ]
+    sources = [ "process_singleton_dialog_linux.cc" ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//ui/base",
+    ]
+  }
+}
