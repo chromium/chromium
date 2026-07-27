@@ -36,10 +36,9 @@ public final class ExperimentalOptions {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(
                             TAG,
-                            String.format(
-                                    "Experimental options could not be parsed, using default"
-                                            + " values. Error: %s",
-                                    e.getMessage()));
+                            "Experimental options could not be parsed, using default values. Error:"
+                                    + " %s",
+                            e.getMessage());
                 }
             }
         }
@@ -205,9 +204,9 @@ public final class ExperimentalOptions {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(
                         TAG,
-                        String.format(
-                                "Failed to get %s options: %s",
-                                experimentalOptionFieldTrialName, e.getMessage()));
+                        "Failed to get %s options: %s",
+                        experimentalOptionFieldTrialName,
+                        e.getMessage());
             }
         }
 
@@ -220,7 +219,7 @@ public final class ExperimentalOptions {
             value = clazz.cast(options.get(option));
         } catch (JSONException | ClassCastException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+                Log.v(TAG, "Failed to get %s options: %s", option, e.getMessage());
             }
         }
         return value;
@@ -236,7 +235,7 @@ public final class ExperimentalOptions {
             value = clazz.cast(mJson.get(option));
         } catch (JSONException | ClassCastException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+                Log.v(TAG, "Failed to get %s options: %s", option, e.getMessage());
             }
         }
         return value;

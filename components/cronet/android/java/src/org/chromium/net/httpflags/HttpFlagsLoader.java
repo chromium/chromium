@@ -82,19 +82,18 @@ public final class HttpFlagsLoader {
             if (providerApplicationInfo == null) return null;
             Log.d(
                     TAG,
-                    String.format(
-                            "Found application exporting HTTP flags: %s",
-                            providerApplicationInfo.packageName));
+                    "Found application exporting HTTP flags: %s",
+                    providerApplicationInfo.packageName);
 
             File flagsFile = getFlagsFileFromProvider(providerApplicationInfo);
-            Log.d(TAG, String.format("HTTP flags file path: %s", flagsFile.getAbsolutePath()));
+            Log.d(TAG, "HTTP flags file path: %s", flagsFile.getAbsolutePath());
 
             Flags flags = loadFlagsFile(flagsFile);
             if (flags == null) return null;
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 // Gated behind isLoggable() because this can be surprisingly expensive to log,
                 // especially if we have many flags.
-                Log.d(TAG, String.format("Successfully loaded HTTP flags: %s", flags));
+                Log.d(TAG, "Successfully loaded HTTP flags: %s", flags);
             }
 
             return flags;

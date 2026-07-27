@@ -424,7 +424,7 @@ public class CronetLibraryLoader {
 
     @CalledByNative
     private static void setNetworkThreadPriorityOnNetworkThread(int priority) {
-        Log.d(TAG, "Setting network thread priority to " + priority);
+        Log.d(TAG, "Setting network thread priority to %d", priority);
         Process.setThreadPriority(priority);
     }
 

@@ -389,10 +389,9 @@ public abstract class CronetProvider {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(
                         TAG,
-                        "Tried to load "
-                                + className
-                                + " provider class but it wasn't"
-                                + " included in the app classpath");
+                        "Tried to load %s provider class but it wasn't included in the app"
+                                + " classpath",
+                        className);
             }
         }
     }
