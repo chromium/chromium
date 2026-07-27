@@ -286,8 +286,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _updateCheckItem = [[SettingsCheckItem alloc] initWithType:UpdateItemType];
     _updateCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_TITLE);
-    UIImage* updateCheckIcon = DefaultSymbolTemplateWithPointSize(
-        kInfoCircleSymbol, kLeadingSymbolImagePointSize);
+    UIImage* updateCheckIcon = SymbolTemplateWithPointSize(
+        SymbolInfoCircle, kLeadingSymbolImagePointSize);
     _updateCheckItem.leadingIcon = updateCheckIcon;
     _updateCheckItem.leadingIconTintColor = [UIColor colorNamed:kGrey400Color];
     _updateCheckItem.infoButtonTarget = self;
@@ -312,8 +312,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _passwordCheckItem.infoButtonSelector = @selector(infoButtonWasTapped:);
     _passwordCheckItem.infoButtonTag = PasswordItemType;
 
-    UIImage* passwordCheckIcon = CustomSymbolTemplateWithPointSize(
-        kPasswordSymbol, kLeadingSymbolImagePointSize);
+    UIImage* passwordCheckIcon = SymbolTemplateWithPointSize(
+        SymbolPassword, kLeadingSymbolImagePointSize);
 
     _passwordCheckItem.leadingIcon = passwordCheckIcon;
     _passwordCheckItem.leadingIconTintColor =
@@ -339,7 +339,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _safeBrowsingCheckItem.text = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_TITLE);
     UIImage* safeBrowsingCheckIcon =
-        CustomSymbolWithPointSize(kPrivacySymbol, kLeadingSymbolImagePointSize);
+        SymbolWithPointSize(SymbolPrivacy, kLeadingSymbolImagePointSize);
     _safeBrowsingCheckItem.leadingIcon = safeBrowsingCheckIcon;
     _safeBrowsingCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];

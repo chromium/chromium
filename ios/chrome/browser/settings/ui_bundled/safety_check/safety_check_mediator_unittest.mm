@@ -91,14 +91,14 @@ std::unique_ptr<TestingPrefServiceSimple> SetPrefService() {
 
 // The image when the state is safe.
 UIImage* SafeImage() {
-  return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                            kTrailingSymbolImagePointSize);
+  return SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill,
+                                     kTrailingSymbolImagePointSize);
 }
 
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
-  return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
-                                            kTrailingSymbolImagePointSize);
+  return SymbolTemplateWithPointSize(SymbolErrorCircleFill,
+                                     kTrailingSymbolImagePointSize);
 }
 
 // The color when the state is safe.
