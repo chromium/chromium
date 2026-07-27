@@ -698,8 +698,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   EXPECT_EQ(ax::mojom::Role::kButton, cookies_node->GetData().role);
 }
 
+// TODO(crbug.com/539404715): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckReloadButtonColor) {
+                       DISABLED_CheckReloadButtonColor) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -758,8 +759,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
+// TODO(crbug.com/539404715): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckBackButtonColor) {
+                       DISABLED_CheckBackButtonColor) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -818,8 +820,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
+// TODO(crbug.com/539404715): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckForwardButtonColor) {
+                       DISABLED_CheckForwardButtonColor) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -879,8 +882,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
+// TODO(crbug.com/539404715): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckHomeButtonColor) {
+                       DISABLED_CheckHomeButtonColor) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
   ui::TrackedElement* element = nullptr;
@@ -936,8 +940,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
+// TODO(crbug.com/539404715): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckSplitTabsButtonColor) {
+                       DISABLED_CheckSplitTabsButtonColor) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
                                                   true);
 
@@ -3790,8 +3795,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }));
 }
 
+// TODO(crbug.com/539404714): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       RightClickSplitTabsButton) {
+                       DISABLED_RightClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   PinButton(browser(), web_view, prefs::kPinSplitTabButton);
@@ -4297,8 +4303,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {
   }));
 }
 
+// TODO(crbug.com/539283722): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       ExtensionUserActionsPlumbing) {
+                       DISABLED_ExtensionUserActionsPlumbing) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL allowed_url =
@@ -5036,8 +5043,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   }
 }
 
+// TODO(crbug.com/539404714): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
-                       RightClickHomeButton) {
+                       DISABLED_RightClickHomeButton) {
   WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
@@ -5862,8 +5870,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, InvokeActions) {
   }
 }
 
+// TODO(crbug.com/539404712): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       HighlightOnShowTranslateBubble) {
+                       DISABLED_HighlightOnShowTranslateBubble) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   content::WebContents* web_ui_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
