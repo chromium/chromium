@@ -43,6 +43,7 @@
 
 class BrowserWindowInterface;
 class ExtensionsContainerViews;
+class MediaToolbarButton;
 class WebUILocationBar;
 class WebUIToolbarUI;
 class WebUIToolbarInternalWebView;
@@ -156,6 +157,7 @@ class WebUIToolbarWebView
     return &pinned_toolbar_actions_;
   }
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface();
+  MediaToolbarButton* GetMediaToolbarButton();
   WebUIAppMenuControl* GetAppMenuControl() { return &app_menu_control_; }
   ExtensionsContainerViews* extensions_container_views();
   const WebUIAppMenuControl* GetAppMenuControl() const {

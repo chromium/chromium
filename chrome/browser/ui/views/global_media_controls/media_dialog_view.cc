@@ -88,11 +88,11 @@ bool MediaDialogView::has_been_opened_ = false;
 
 // static
 views::Widget* MediaDialogView::ShowDialogFromToolbar(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     MediaNotificationService* service,
     Profile* profile) {
   return ShowDialog(
-      anchor_view, views::BubbleBorder::TOP_RIGHT, service, profile, nullptr,
+      anchor, views::BubbleBorder::TOP_RIGHT, service, profile, nullptr,
       global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon);
 }
 
@@ -103,15 +103,16 @@ views::Widget* MediaDialogView::ShowDialogCentered(
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  auto* widget = ShowDialog(nullptr, views::BubbleBorder::TOP_CENTER, service,
-                            profile, contents, entry_point);
+  auto* widget =
+      ShowDialog(views::BubbleAnchor(), views::BubbleBorder::TOP_CENTER,
+                 service, profile, contents, entry_point);
   instance_->SetAnchorRect(bounds);
   return widget;
 }
 
 // static
 views::Widget* MediaDialogView::ShowDialog(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow anchor_position,
     MediaNotificationService* service,
     Profile* profile,
@@ -121,9 +122,9 @@ views::Widget* MediaDialogView::ShowDialog(
   // Hide the previous instance if it exists, since there can only be one dialog
   // instance at a time.
   HideDialog();
-  instance_ = new MediaDialogView(anchor_view, anchor_position, service,
-                                  profile, contents, entry_point);
-  if (!anchor_view) {
+  instance_ = new MediaDialogView(anchor, anchor_position, service, profile,
+                                  contents, entry_point);
+  if (!anchor) {
     instance_->set_has_parent(false);
   }
 
@@ -352,13 +353,13 @@ MediaDialogView::GetListViewForTesting() const {
 }
 
 MediaDialogView::MediaDialogView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow anchor_position,
     MediaNotificationService* service,
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point)
-    : BubbleDialogDelegateView(anchor_view, anchor_position),
+    : BubbleDialogDelegateView(anchor, anchor_position),
       service_(service),
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(AddChildView(

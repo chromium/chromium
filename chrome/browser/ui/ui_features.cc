@@ -382,6 +382,7 @@ bool IsNewTabAddsToActiveGroupEnabled() {
 }
 
 BASE_FEATURE(kWebUIAvatarButton, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebUIMediaButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsWebUIReloadButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
@@ -446,6 +447,13 @@ bool IsWebUIAvatarButtonEnabled() {
           base::FeatureList::IsEnabled(features::kWebUIAvatarButton));
 }
 
+bool IsWebUIMediaButtonEnabled() {
+  return !IsProcessOverheadExperimentActive() &&
+         base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         (base::FeatureList::IsEnabled(features::kWebUIToolbar) ||
+          base::FeatureList::IsEnabled(features::kWebUIMediaButton));
+}
+
 bool IsWebUIPerformanceInterventionButtonEnabled() {
   return !IsProcessOverheadExperimentActive() &&
          base::FeatureList::IsEnabled(features::kInitialWebUI) &&
@@ -472,7 +480,8 @@ bool IsWebUIToolbarEnabled() {
           IsWebUIBackForwardButtonEnabled() ||
           IsWebUIPinnedToolbarActionsEnabled() ||
           IsWebUIExtensionsContainerEnabled() || IsWebUIAvatarButtonEnabled() ||
-          IsWebUIAppMenuButtonEnabled() || IsWebUIBatterySaverButtonEnabled() ||
+          IsWebUIMediaButtonEnabled() || IsWebUIAppMenuButtonEnabled() ||
+          IsWebUIBatterySaverButtonEnabled() ||
           IsWebUIPerformanceInterventionButtonEnabled());
 }
 
@@ -486,7 +495,8 @@ bool IsWebUIToolbarFullyEnabled() {
           IsWebUIBackForwardButtonEnabled() &&
           IsWebUIPinnedToolbarActionsEnabled() &&
           IsWebUIExtensionsContainerEnabled() && IsWebUIAvatarButtonEnabled() &&
-          IsWebUIAppMenuButtonEnabled() && IsWebUIBatterySaverButtonEnabled() &&
+          IsWebUIMediaButtonEnabled() && IsWebUIAppMenuButtonEnabled() &&
+          IsWebUIBatterySaverButtonEnabled() &&
           IsWebUIPerformanceInterventionButtonEnabled());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

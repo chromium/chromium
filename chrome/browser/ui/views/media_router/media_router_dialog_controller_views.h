@@ -18,7 +18,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class MediaToolbarButtonView;
+class MediaToolbarButton;
 
 namespace media_router {
 
@@ -92,7 +92,7 @@ class MediaRouterDialogControllerViews
   // open the dialog. Returns nullptr if:
   // (1) the browser does not have a media button (i.e. the browser is
   // running a PWA.) or (2) |hide_media_button_for_testing_| is true.
-  MediaToolbarButtonView* GetMediaButton();
+  MediaToolbarButton* GetMediaButton();
 
   // CastToolbarButtonController is responsible for showing and hiding the
   // toolbar action. It's owned by MediaRouterUIService and it may be nullptr.

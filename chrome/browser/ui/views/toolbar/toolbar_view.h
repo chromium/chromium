@@ -55,7 +55,7 @@ class ExtensionsToolbarButton;
 class ExtensionsToolbarDesktop;
 class HomeButton;
 class ExtensionsToolbarCoordinator;
-class MediaToolbarButtonView;
+class MediaToolbarButton;
 class ReloadButton;
 class WebUIToolbarWebView;
 class PinnedToolbarActionsContainer;
@@ -186,7 +186,7 @@ class ToolbarView : public views::AccessiblePaneView,
   PerformanceInterventionButton* performance_intervention_button() const {
     return performance_intervention_button_;
   }
-  MediaToolbarButtonView* media_button() const { return media_button_; }
+  MediaToolbarButton* media_button() const { return media_button_; }
   HomeButton* home_button() const { return home_; }
 
   views::LabelButton* GetGlicButton();
@@ -392,7 +392,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // `toolbar_webview_->GetPinnedActionsContainer()`.
   raw_ptr<PinnedToolbarActions> pinned_toolbar_actions_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
-  raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
+  raw_ptr<MediaToolbarButton> media_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
 
   // The button currently holding the lock to be shown/hidden.

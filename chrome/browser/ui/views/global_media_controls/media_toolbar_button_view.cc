@@ -133,7 +133,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialogFromToolbar(this, service_,
+    MediaDialogView::ShowDialogFromToolbar(GetBubbleAnchor(), service_,
                                            browser_->GetProfile());
     ClosePromoBubble(/*engaged=*/true);
     observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
@@ -157,6 +157,14 @@ void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
           feature_engagement::kIPHGMCCastStartStopFeature);
     }
   }
+}
+
+views::BubbleAnchor MediaToolbarButtonView::GetBubbleAnchor() {
+  return views::BubbleAnchor(this);
+}
+
+MediaToolbarButtonController* MediaToolbarButtonView::GetController() {
+  return controller_.get();
 }
 
 BEGIN_METADATA(MediaToolbarButtonView)

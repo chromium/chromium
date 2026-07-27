@@ -19,12 +19,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
 using content::WebContents;
 
@@ -242,12 +243,12 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
   MediaNotificationService* const service =
       MediaNotificationServiceFactory::GetForProfile(profile);
-  MediaToolbarButtonView* const media_button = GetMediaButton();
+  MediaToolbarButton* const media_button = GetMediaButton();
   // If there exists a media button, anchor the dialog to this media button.
   if (media_button) {
     scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
-        media_button, views::BubbleBorder::TOP_RIGHT, service, profile,
-        initiator(),
+        media_button->GetBubbleAnchor(), views::BubbleBorder::TOP_RIGHT,
+        service, profile, initiator(),
         global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
     return;
   }
@@ -260,8 +261,8 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
   // platforms.
   if (browser_view) {
     scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
-        browser_view->top_container(), views::BubbleBorder::TOP_CENTER, service,
-        profile, initiator(),
+        views::BubbleAnchor(browser_view->top_container()),
+        views::BubbleBorder::TOP_CENTER, service, profile, initiator(),
         global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
   } else {
     // Show the GMC dialog anchored to the top of the web contents.
@@ -276,7 +277,7 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
+MediaToolbarButton* MediaRouterDialogControllerViews::GetMediaButton() {
   if (hide_media_button_for_testing_) {
     return nullptr;
   }
@@ -286,7 +287,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   ToolbarView* const toolbar_view =
       browser_view ? browser_view->toolbar() : nullptr;
-  MediaToolbarButtonView* media_button =
+  MediaToolbarButton* media_button =
       toolbar_view ? toolbar_view->media_button() : nullptr;
 
   if (!media_button) {
@@ -294,7 +295,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   }
   // Show the |media_button| before opening the dialog so that when the bubble
   // dialog is opened, it has an anchor.
-  media_button->media_toolbar_button_controller()->ShowToolbarButton();
+  media_button->GetController()->ShowToolbarButton();
   toolbar_view->DeprecatedLayoutImmediately();
 
   return media_button;

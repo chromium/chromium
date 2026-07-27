@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -18,6 +19,8 @@
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -275,9 +278,16 @@ MediaDialogUiForTest::~MediaDialogUiForTest() = default;
 
 MediaToolbarButtonView* MediaDialogUiForTest::GetToolbarIcon() {
   LayoutBrowserIfNecessary();
-  return BrowserView::GetBrowserViewForBrowser(browser_callback_.Run())
-      ->toolbar()
-      ->media_button();
+  auto* media_button =
+      BrowserView::GetBrowserViewForBrowser(browser_callback_.Run())
+          ->toolbar()
+          ->media_button();
+  if (!media_button) {
+    return nullptr;
+  }
+  views::BubbleAnchor anchor = media_button->GetBubbleAnchor();
+  CHECK(anchor.GetIfView());
+  return views::AsViewClass<MediaToolbarButtonView>(anchor.GetIfView());
 }
 
 void MediaDialogUiForTest::LayoutBrowserIfNecessary() {

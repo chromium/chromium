@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
@@ -395,9 +396,11 @@ void ToolbarView::Init() {
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  media_button = std::make_unique<MediaToolbarButtonView>(
-      browser_view_,
-      std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
+  if (!features::IsWebUIMediaButtonEnabled()) {
+    media_button = std::make_unique<MediaToolbarButtonView>(
+        browser_view_,
+        std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
+  }
 #endif
 
   // Always add children in order from left to right, for accessibility.
@@ -529,7 +532,9 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<PerformanceInterventionButton>(browser_));
   }
 
-  if (media_button) {
+  if (features::IsWebUIMediaButtonEnabled()) {
+    media_button_ = toolbar_webview_->GetMediaToolbarButton();
+  } else if (media_button) {
     media_button_ = AddChildView(std::move(media_button));
   }
 

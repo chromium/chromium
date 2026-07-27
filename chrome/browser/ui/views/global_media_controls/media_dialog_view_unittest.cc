@@ -23,6 +23,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/test/button_test_api.h"
 
 class MediaDialogViewTest : public ChromeViewsTestBase {
@@ -49,9 +50,9 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
     anchor_widget_->Show();
     soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
 
-    MediaDialogView::ShowDialogFromToolbar(anchor_widget_->GetContentsView(),
-                                           notification_service_.get(),
-                                           profile());
+    MediaDialogView::ShowDialogFromToolbar(
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        notification_service_.get(), profile());
     view_ = MediaDialogView::GetDialogViewForTesting();
   }
 

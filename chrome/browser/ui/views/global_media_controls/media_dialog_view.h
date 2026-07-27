@@ -19,6 +19,7 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class PrefChangeRegistrar;
@@ -53,7 +54,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   MediaDialogView(const MediaDialogView&) = delete;
   MediaDialogView& operator=(const MediaDialogView&) = delete;
 
-  static views::Widget* ShowDialogFromToolbar(views::View* anchor_view,
+  static views::Widget* ShowDialogFromToolbar(views::BubbleAnchor anchor,
                                               MediaNotificationService* service,
                                               Profile* profile);
   static views::Widget* ShowDialogCentered(
@@ -63,7 +64,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       content::WebContents* contents,
       global_media_controls::GlobalMediaControlsEntryPoint entry_point);
   static views::Widget* ShowDialog(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       views::BubbleBorder::Arrow anchor_position,
       MediaNotificationService* service,
       Profile* profile,
@@ -115,7 +116,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   friend class MediaDialogViewWithRemotePlaybackTest;
 
   MediaDialogView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       views::BubbleBorder::Arrow anchor_position,
       MediaNotificationService* service,
       Profile* profile,
