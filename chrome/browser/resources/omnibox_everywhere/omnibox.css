@@ -345,8 +345,12 @@ cr-searchbox-dropdown::part(dropdown-content) {
   border-radius: 50%;
 }
 
+:host([ntp-realbox-next-enabled]) cr-searchbox-input {
+  --cr-searchbox-icon-left-position: 20px;
+}
+
 :host([ntp-realbox-next-enabled]) cr-searchbox-input::part(icon) {
-  display: none;
+  display: flex;
 }
 
 :host([ntp-realbox-next-enabled]) .searchbox-icon-button-container {

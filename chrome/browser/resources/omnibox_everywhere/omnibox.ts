@@ -109,7 +109,7 @@ export class OmniboxEverywhereOmniboxElement extends
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor contextManagementInComposeboxEnabled: boolean = false;
   protected accessor searchboxIcon_: string =
-      loadTimeData.getString('searchboxDefaultIcon');
+      '//resources/cr_components/searchbox/icons/google_g.svg';
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
