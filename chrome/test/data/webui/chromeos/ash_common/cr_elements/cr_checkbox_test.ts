@@ -233,4 +233,10 @@ suite('cr-checkbox', function() {
     assertFalse(checkbox.hasAttribute('tabindex'));
     assertEquals('0', innerCheckbox.getAttribute('tabindex'));
   });
+
+  test('tabIndex PropertyPropagation', () => {
+    assertEquals('0', innerCheckbox.getAttribute('tabindex'));
+    checkbox.tabIndex = -1;
+    assertEquals('-1', innerCheckbox.getAttribute('tabindex'));
+  });
 });

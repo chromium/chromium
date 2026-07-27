@@ -58,6 +58,12 @@ suite('cr-input', function() {
         });
   });
 
+  test('autofocus PropertyPropagation', () => {
+    assertFalse(input.autofocus);
+    crInput.autofocus = true;
+    assertTrue(input.autofocus);
+  });
+
   test('UnsupportedInputTabindex', () => {
     assertThrows(() => {
       crInput.inputTabindex = 2;

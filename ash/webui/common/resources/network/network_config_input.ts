@@ -37,11 +37,6 @@ export class NetworkConfigInputElement extends NetworkConfigInputElementBase {
     return {
       label: String,
 
-      hidden: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
-
       invalid: {
         type: Boolean,
         value: false,

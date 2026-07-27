@@ -81,24 +81,6 @@ suite('routineResultListTestSuite', function() {
         HTMLDivElement)));
   });
 
-  test('HideElement', async () => {
-    await initializeRoutineResultList([]);
-    assert(routineResultListElement);
-    assertFalse(routineResultListElement.hidden);
-    assertFalse(strictQuery(
-                    '#resultListContainer', routineResultListElement.shadowRoot,
-                    HTMLElement)
-                    .hidden);
-    routineResultListElement.hidden = true;
-    flushTasks();
-    assertTrue(routineResultListElement.hidden);
-    assert(routineResultListElement);
-    assertTrue(strictQuery(
-                   '#resultListContainer', routineResultListElement.shadowRoot,
-                   HTMLElement)
-                   .hidden);
-  });
-
   test('EmptyByDefault', async () => {
     await initializeRoutineResultList([]);
     assertEquals(0, getEntries().length);

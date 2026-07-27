@@ -126,4 +126,16 @@ suite('cr-expand-button', function() {
     assertEquals('', button.title);
   });
 
+  test('tabIndex propagation', async () => {
+    assertEquals(0, button.tabIndex);
+    assertEquals('0', icon.getAttribute('tabindex'));
+
+    button.tabIndex = -1;
+    await button.updateComplete;
+    assertEquals('-1', icon.getAttribute('tabindex'));
+
+    button.tabIndex = 0;
+    await button.updateComplete;
+    assertEquals('0', icon.getAttribute('tabindex'));
+  });
 });

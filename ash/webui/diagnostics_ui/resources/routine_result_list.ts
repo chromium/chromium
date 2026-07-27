@@ -45,11 +45,6 @@ export class RoutineResultListElement extends PolymerElement {
         value: () => [],
       },
 
-      hidden: {
-        type: Boolean,
-        value: false,
-      },
-
       hideVerticalLines: {
         type: Boolean,
         value: false,
@@ -71,7 +66,6 @@ export class RoutineResultListElement extends PolymerElement {
     };
   }
 
-  declare hidden: boolean;
   declare hideVerticalLines: boolean;
   declare usingRoutineGroups: boolean;
   declare ignoreRoutineStatusUpdates: boolean;

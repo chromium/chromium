@@ -51,7 +51,7 @@
 <cr-input type="search" id="searchInput" class="search-box-input"
     on-search="onSearchTermSearch" on-input="onSearchTermInput"
     aria-label$="[[label]]" placeholder="[[label]]"
-    autofocus="[[autofocus]]" spellcheck="false">
+    spellcheck="false">
   <div slot="inline-prefix" id="icon" class="cr-icon icon-search" alt=""></div>
   <cr-icon-button id="clearSearch" class="icon-cancel"
       hidden$="[[!hasSearchText]]" slot="suffix" on-click="onClearClick_"

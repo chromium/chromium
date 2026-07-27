@@ -131,4 +131,12 @@ suite('cr-search-field', function() {
     assertTrue(calledSetValue);
     assertEquals(0, searches!.length);
   });
+
+  test('autofocus propagated to search input', () => {
+    assertFalse(field.autofocus);
+    assertFalse(field.getSearchInput().hasAttribute('autofocus'));
+
+    field.autofocus = true;
+    assertTrue(field.getSearchInput().hasAttribute('autofocus'));
+  });
 });

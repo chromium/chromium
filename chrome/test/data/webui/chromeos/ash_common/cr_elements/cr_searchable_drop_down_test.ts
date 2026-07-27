@@ -404,4 +404,15 @@ suite('cr-searchable-drop-down', function() {
 
     assertEquals('rat', dropDown.value);
   });
+
+  // The autofocus attribute is passed through to the inner cr-input.
+  test('autofocus attribute', function() {
+    const input = dropDown.shadowRoot!.querySelector('cr-input')!;
+
+    dropDown.autofocus = true;
+    assertTrue(input.autofocus);
+
+    dropDown.autofocus = false;
+    assertFalse(input.autofocus);
+  });
 });

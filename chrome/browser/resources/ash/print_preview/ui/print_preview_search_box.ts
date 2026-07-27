@@ -45,8 +45,6 @@ export class PrintPreviewSearchBoxElement extends
 
   static get properties() {
     return {
-      autofocus: Boolean,
-
       searchQuery: {
         type: Object,
         notify: true,
