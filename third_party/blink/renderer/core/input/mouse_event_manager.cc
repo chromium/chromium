@@ -1136,14 +1136,12 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
   initializer->setView(frame_->GetDocument()->domWindow());
   initializer->setComposed(true);
   // Per the DnD spec, these events have a default `dropEffect`.
-  if (RuntimeEnabledFeatures::SetDefaultDropEffectEnabled()) {
-    if (event_type == event_type_names::kDragenter ||
-        event_type == event_type_names::kDragover) {
-      data_transfer->SetDestinationOperationFromEffectAllowed();
-    } else if (event_type == event_type_names::kDragleave) {
-      data_transfer->SetDestinationOperation(
-          ui::mojom::blink::DragOperation::kNone);
-    }
+  if (event_type == event_type_names::kDragenter ||
+      event_type == event_type_names::kDragover) {
+    data_transfer->SetDestinationOperationFromEffectAllowed();
+  } else if (event_type == event_type_names::kDragleave) {
+    data_transfer->SetDestinationOperation(
+        ui::mojom::blink::DragOperation::kNone);
   }
   initializer->setDataTransfer(data_transfer);
   initializer->setSourceCapabilities(
@@ -1167,8 +1165,7 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
   // an uninitialized state. In cases where a drag leaves a target, having
   // dropEffect explicitly set to none would be incorrect and may
   // cause unintended behavior when the dataTransfer object is reused.
-  if (RuntimeEnabledFeatures::SetDefaultDropEffectEnabled() &&
-      event_type == event_type_names::kDragleave) {
+  if (event_type == event_type_names::kDragleave) {
     data_transfer->resetDropEffect();
   }
   return event_result;

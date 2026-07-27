@@ -290,10 +290,7 @@ void DragController::PerformDrop(DragData* drag_data,
       // Sending an event can result in the destruction of the view and part.
       DataTransfer* data_transfer = CreateDraggingDataTransfer(
           DataTransferAccessPolicy::kReadable, drag_data);
-      if (RuntimeEnabledFeatures::PreserveDropEffectEnabled()) {
-        data_transfer->SetDestinationOperation(
-            browser_drag_operation.operation);
-      }
+      data_transfer->SetDestinationOperation(browser_drag_operation.operation);
       SetSourceEffectAllowedForDragData(data_transfer, drag_data);
       EventHandler& event_handler = local_root.GetEventHandler();
       prevented_default = event_handler.PerformDragAndDrop(

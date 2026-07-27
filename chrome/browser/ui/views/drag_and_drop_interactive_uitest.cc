@@ -543,15 +543,6 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
         base::NumberToString(std::get<1>(GetParam())));
   }
 
-  void SetUp() override {
-    // Ensure PreserveDropEffect is enabled for DragAndDropBrowserTest.
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPreserveDropEffect, {}},
-         {blink::features::kSetDefaultDropEffect, {}}},
-        {});
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
