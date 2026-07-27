@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/values.h"
@@ -148,40 +149,41 @@ void PrefValueMap::SetDouble(std::string_view key, const double value) {
 void PrefValueMap::GetDifferingKeys(
     const PrefValueMap* other,
     std::vector<std::string>* differing_keys) const {
+  static_assert(
+      std::is_same_v<decltype(prefs_),
+                     std::map<std::string, base::Value, std::less<void>>>,
+      "If the type of the prefs_ map changes, be sure that the new type is "
+      "still sorted or adapt this function.");
   differing_keys->clear();
 
-  // Put everything into ordered maps.
-  std::map<std::string, const base::Value*> this_prefs;
-  std::map<std::string, const base::Value*> other_prefs;
-  for (const auto& pair : prefs_)
-    this_prefs.emplace(pair.first, &pair.second);
-  for (const auto& pair : other->prefs_)
-    other_prefs.emplace(pair.first, &pair.second);
-
-  // Walk over the maps in lockstep, adding everything that is different.
-  auto this_pref = this_prefs.begin();
-  auto other_pref = other_prefs.begin();
-  while (this_pref != this_prefs.end() && other_pref != other_prefs.end()) {
+  // prefs_ is already an ordered map, so walk both maps directly in
+  // lockstep instead of copying into intermediate maps first.
+  auto this_pref = prefs_.begin();
+  auto other_pref = other->prefs_.begin();
+  while (this_pref != prefs_.end() && other_pref != other->prefs_.end()) {
     const int diff = this_pref->first.compare(other_pref->first);
     if (diff == 0) {
-      if (*this_pref->second != *other_pref->second)
+      if (this_pref->second != other_pref->second) {
         differing_keys->push_back(this_pref->first);
+      }
       ++this_pref;
       ++other_pref;
     } else if (diff < 0) {
       differing_keys->push_back(this_pref->first);
       ++this_pref;
-    } else if (diff > 0) {
+    } else {
       differing_keys->push_back(other_pref->first);
       ++other_pref;
     }
   }
 
   // Add the remaining entries.
-  for (; this_pref != this_prefs.end(); ++this_pref)
+  for (; this_pref != prefs_.end(); ++this_pref) {
     differing_keys->push_back(this_pref->first);
-  for (; other_pref != other_prefs.end(); ++other_pref)
+  }
+  for (; other_pref != other->prefs_.end(); ++other_pref) {
     differing_keys->push_back(other_pref->first);
+  }
 }
 
 base::DictValue PrefValueMap::AsDict() const {
