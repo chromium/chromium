@@ -856,6 +856,12 @@ bool IsOmniboxCrashFixKillSwitchEnabled() {
   return base::FeatureList::IsEnabled(kOmniboxCrashFixKillSwitch);
 }
 
+BASE_FEATURE(kAlertCrashFixKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAlertCrashFixKillSwitchEnabled() {
+  return base::FeatureList::IsEnabled(kAlertCrashFixKillSwitch);
+}
+
 BASE_FEATURE(kAIMEligibilityServiceStartWithProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
