@@ -645,6 +645,39 @@ if (!is_android) {
     }
   }
 
+  source_set("theme_colors_source_manager") {
+    sources = [
+      "theme_colors_source_manager.cc",
+      "theme_colors_source_manager_factory.cc",
+    ]
+    public = [
+      "theme_colors_source_manager.h",
+      "theme_colors_source_manager_factory.h",
+    ]
+    public_deps = [
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+    ]
+    deps = [
+      ":theme_source",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/webui/webui_toolbar:impl",
+      "//chrome/common:chrome_features",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/base",
+      "//ui/color",
+    ]
+
+    # webui_toolbar_ui.cc and webui_toolbar_ui_browsertest.cc include
+    # theme_colors_source_manager(_factory).h, while this target depends on
+    # //chrome/browser/ui (which pulls in webui_toolbar transitively).
+    allow_circular_includes_from =
+        [ "//chrome/browser/ui/webui/webui_toolbar:impl" ]
+  }
+
   source_set("webui_load_timer") {
     sources = [
       "webui_load_timer.cc",

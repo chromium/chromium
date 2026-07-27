@@ -1557,10 +1557,6 @@ static_library("ui") {
       "views/search_engines/dse_reset_dialog.h",
       "webui/chrome_web_contents_handler.cc",
       "webui/chrome_web_contents_handler.h",
-      "webui/theme_colors_source_manager.cc",
-      "webui/theme_colors_source_manager.h",
-      "webui/theme_colors_source_manager_factory.cc",
-      "webui/theme_colors_source_manager_factory.h",
     ]
 
     if (enable_dice_support) {
