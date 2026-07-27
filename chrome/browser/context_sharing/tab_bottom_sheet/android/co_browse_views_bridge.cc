@@ -157,9 +157,6 @@ TabAndroid* CoBrowseViewsBridge::GetTabAndroid() const {
 }
 
 void CoBrowseViewsBridge::OnTabInserted(tabs::TabInterface* tab) {
-  if (!guest_web_contents_) {
-    return;
-  }
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
     return;
