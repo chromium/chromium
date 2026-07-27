@@ -89,16 +89,14 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
 
 OmniboxEverywhereUIManager::~OmniboxEverywhereUIManager() = default;
 
+content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
+  return contents_wrapper_ ? contents_wrapper_->web_contents() : nullptr;
+}
+
 void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
                                                 gfx::NativeWindow context) {
   if (widget_ && profile_ == profile && widget_->IsVisible()) {
-    widget_->Activate();
-    if (widget_->GetContentsView()) {
-      widget_->GetContentsView()->RequestFocus();
-    }
-    if (contents_wrapper_ && contents_wrapper_->web_contents()) {
-      contents_wrapper_->web_contents()->Focus();
-    }
+    ActivateAndFocus();
     return;
   }
 
@@ -116,76 +114,101 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   profile_ = profile;
   is_navigating_ = false;
 
-  if (!contents_wrapper_) {
-    contents_wrapper_ = CreateContentsWrapper(profile_);
+  EnsureContentsWrapperInitialized(profile_);
+  CreateAndInitWidget(context);
+  ActivateAndFocus();
 
-    if (contents_wrapper_->web_contents()) {
-      OmniboxPopupWebContentsHelper::CreateForWebContents(
-          contents_wrapper_->web_contents());
+  if (web_contents()) {
+    if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
+      constexpr gfx::Size kAutoResizeMinSize(800, 50);
+      constexpr gfx::Size kAutoResizeMaxSize(800, 800);
+      rwhv->EnableAutoResize(kAutoResizeMinSize, kAutoResizeMaxSize);
     }
-
-    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-
-    // Since the Omnibox Everywhere widget is a standalone popup without a
-    // native browser window, in order to support Google Drive picker
-    // integration, we need to manually set the BrowserWindowInterface for the
-    // WebContents.
-    ProfileBrowserCollection* profile_collection =
-        ProfileBrowserCollection::GetForProfile(profile_);
-    CHECK(profile_collection);
-    BrowserWindowInterface* active_bwi =
-        profile_collection->GetLastActiveBrowser();
-    if (active_bwi) {
-      webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
-                                       active_bwi);
-    }
-    browser_collection_observation_.Observe(profile_collection);
   }
+}
+
+void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
+    Profile* profile) {
+  if (contents_wrapper_) {
+    return;
+  }
+  contents_wrapper_ = CreateContentsWrapper(profile);
+
+  if (web_contents()) {
+    OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents());
+  }
+
+  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+
+  // Since the Omnibox Everywhere widget is a standalone popup without a
+  // native browser window, in order to support Google Drive picker
+  // integration, we need to manually set the BrowserWindowInterface for the
+  // WebContents.
+  ProfileBrowserCollection* profile_collection =
+      ProfileBrowserCollection::GetForProfile(profile);
+  CHECK(profile_collection);
+  BrowserWindowInterface* active_bwi =
+      profile_collection->GetLastActiveBrowser();
+  if (active_bwi && web_contents()) {
+    webui::SetBrowserWindowInterface(web_contents(), active_bwi);
+  }
+  browser_collection_observation_.Observe(profile_collection);
+}
+
+void OmniboxEverywhereUIManager::CreateAndInitWidget(
+    gfx::NativeWindow context) {
+  if (widget_) {
+    return;
+  }
+  widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+#if BUILDFLAG(IS_WIN)
+  params.dont_show_in_taskbar = true;
+#endif  // BUILDFLAG(IS_WIN)
+  widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
+  params.delegate = widget_delegate_.get();
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  if (context) {
+    params.context = context;
+  }
+
+  display::Display target_display =
+      display::Screen::Get()->GetDisplayNearestPoint(
+          display::Screen::Get()->GetCursorScreenPoint());
+  gfx::Rect screen_bounds = target_display.bounds();
+  constexpr gfx::Size kDefaultPopupSize(864, 632);
+  params.bounds =
+      gfx::Rect(screen_bounds.x() +
+                    (screen_bounds.width() - kDefaultPopupSize.width()) / 2,
+                screen_bounds.y() +
+                    (screen_bounds.height() - kDefaultPopupSize.height()) / 2,
+                kDefaultPopupSize.width(), kDefaultPopupSize.height());
+
+  widget_->Init(std::move(params));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
+  widget_observation_.Observe(widget_.get());
+
+  auto web_view = std::make_unique<views::WebView>(profile_);
+  web_view->SetWebContents(web_contents());
+  web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  if (web_contents()) {
+    if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
+      rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
+    }
+  }
+  widget_->SetContentsView(std::move(web_view));
+}
+
+void OmniboxEverywhereUIManager::ActivateAndFocus() {
   if (!widget_) {
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-    params.activatable = views::Widget::InitParams::Activatable::kYes;
-  #if BUILDFLAG(IS_WIN)
-    params.dont_show_in_taskbar = true;
-  #endif // BUILDFLAG(IS_WIN)
-    widget_delegate_ = std::make_unique<OmniboxEverywhereWidgetDelegate>();
-    params.delegate = widget_delegate_.get();
-    params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-    if (context) {
-      params.context = context;
-    }
-
-    display::Display target_display =
-        display::Screen::Get()->GetDisplayNearestPoint(
-            display::Screen::Get()->GetCursorScreenPoint());
-    gfx::Rect screen_bounds = target_display.bounds();
-    gfx::Size popup_size(864, 632);
-    params.bounds = gfx::Rect(
-        screen_bounds.x() + (screen_bounds.width() - popup_size.width()) / 2,
-        screen_bounds.y() + (screen_bounds.height() - popup_size.height()) / 2,
-        popup_size.width(), popup_size.height());
-
-    widget_->Init(std::move(params));
-    widget_->MakeCloseSynchronous(base::BindOnce(
-        &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
-    widget_observation_.Observe(widget_.get());
-
-    auto web_view = std::make_unique<views::WebView>(profile_);
-    web_view->SetWebContents(contents_wrapper_->web_contents());
-    web_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    if (contents_wrapper_->web_contents()) {
-      if (auto* rwhv =
-              contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
-        rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
-      }
-    }
-    widget_->SetContentsView(std::move(web_view));
+    return;
   }
-
   widget_->Show();
 #if BUILDFLAG(IS_MAC)
   OrderOmniboxEverywhereFrontOnMac(widget_.get());
@@ -196,12 +219,8 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   if (widget_->GetContentsView()) {
     widget_->GetContentsView()->RequestFocus();
   }
-  if (contents_wrapper_->web_contents()) {
-    contents_wrapper_->web_contents()->Focus();
-    if (auto* rwhv =
-            contents_wrapper_->web_contents()->GetRenderWidgetHostView()) {
-      rwhv->EnableAutoResize(gfx::Size(800, 50), gfx::Size(800, 800));
-    }
+  if (web_contents()) {
+    web_contents()->Focus();
   }
 }
 
@@ -270,28 +289,18 @@ void OmniboxEverywhereUIManager::CloseUI() {
 }
 
 void OmniboxEverywhereUIManager::ShowUI() {
-  if (widget_) {
-    widget_->Show();
-#if BUILDFLAG(IS_MAC)
-    OrderOmniboxEverywhereFrontOnMac(widget_.get());
-#else
-    widget_->Activate();
-#endif
-    if (widget_->GetContentsView()) {
-      widget_->GetContentsView()->RequestFocus();
-    }
-    if (contents_wrapper_->web_contents()) {
-      contents_wrapper_->web_contents()->Focus();
-    }
-  }
+  ActivateAndFocus();
 }
 
 void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
     content::WebContents* source,
     const gfx::Size& new_size) {
   if (widget_) {
+    constexpr int kAutoResizeHeightPadding = 96;
+    constexpr int kAutoResizeMinHeight = 56;
     gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
-    bounds.set_height(std::max(new_size.height() + 96, 56));
+    bounds.set_height(std::max(new_size.height() + kAutoResizeHeightPadding,
+                               kAutoResizeMinHeight));
     widget_->SetBounds(bounds);
   }
 }
@@ -314,17 +323,15 @@ void OmniboxEverywhereUIManager::OnDrivePickerClosed() {
 
 void OmniboxEverywhereUIManager::OnBrowserActivated(
     BrowserWindowInterface* browser) {
-  if (contents_wrapper_ && contents_wrapper_->web_contents()) {
-    webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
-                                     browser);
+  if (web_contents()) {
+    webui::SetBrowserWindowInterface(web_contents(), browser);
   }
 }
 
 void OmniboxEverywhereUIManager::OnBrowserClosed(
     BrowserWindowInterface* browser) {
-  if (contents_wrapper_ && contents_wrapper_->web_contents()) {
-    if (webui::GetBrowserWindowInterface(contents_wrapper_->web_contents()) ==
-        browser) {
+  if (web_contents()) {
+    if (webui::GetBrowserWindowInterface(web_contents()) == browser) {
       BrowserWindowInterface* active_bwi = nullptr;
       // Get the profile collection from the scoped observation object directly
       // rather than performing a manual lookup on the profile pointer.
@@ -334,8 +341,7 @@ void OmniboxEverywhereUIManager::OnBrowserClosed(
         CHECK(profile_collection);
         active_bwi = profile_collection->GetLastActiveBrowser();
       }
-      webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
-                                       active_bwi);
+      webui::SetBrowserWindowInterface(web_contents(), active_bwi);
     }
   }
 }

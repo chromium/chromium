@@ -94,6 +94,11 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   }
 
  private:
+  content::WebContents* web_contents() const;
+  void EnsureContentsWrapperInitialized(Profile* profile);
+  void CreateAndInitWidget(gfx::NativeWindow context);
+  void ActivateAndFocus();
+
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
 
   void CleanUpWidget();
