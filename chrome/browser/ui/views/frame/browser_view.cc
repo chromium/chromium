@@ -1922,10 +1922,6 @@ bool BrowserView::IsLoadingAnimationRunning() const {
   return !loading_animation_start_.is_null();
 }
 
-void BrowserView::SetStarredState(bool is_starred) {
-  // TODO(crbug.com/532595263): Remove this method.
-  // `BookmarkPageActionController` directly observes for changes.
-}
 
 void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      content::WebContents* new_contents,

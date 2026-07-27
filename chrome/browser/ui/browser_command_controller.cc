@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
-#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -2160,8 +2159,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_->UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, is_normal);
 
   // Page-related commands
-  window()->SetStarredState(
-      BookmarkTabHelper::FromWebContents(current_web_contents)->is_starred());
   command_updater_->UpdateCommandEnabled(IDC_VIEW_SOURCE,
                                          CanViewSource(browser_));
 

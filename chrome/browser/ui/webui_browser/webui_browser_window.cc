@@ -745,9 +745,6 @@ void WebUIBrowserWindow::UpdateLoadingAnimations(bool is_visible) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::SetStarredState(bool is_starred) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
 
 void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
                                             content::WebContents* new_contents,

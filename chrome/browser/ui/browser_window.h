@@ -227,8 +227,6 @@ class BrowserWindow : public ui::BaseWindow {
   // if the window is visible.
   virtual void UpdateLoadingAnimations(bool is_visible) = 0;
 
-  // Sets the starred state for the current tab.
-  virtual void SetStarredState(bool is_starred) = 0;
 
   // Called when the active tab changes.  Subclasses which implement
   // TabStripModelObserver should implement this instead of ActiveTabChanged();

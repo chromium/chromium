@@ -27,7 +27,6 @@
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
-#include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -118,7 +117,6 @@ enum class BrowserClosingStatus {
 class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
-                public BookmarkTabHelperObserver,
                 public BrowserWindowInterface {
  public:
   // Possible elements of the Browser window.
@@ -750,10 +748,6 @@ class Browser : public TabStripModelObserver,
       const base::UnguessableToken& guid,
       content::RenderFrameHost* render_frame_host) override;
 #endif
-
-  // Overridden from BookmarkTabHelperObserver:
-  void URLStarredChanged(content::WebContents* web_contents,
-                         bool starred) override;
 
   // Command and state updating ///////////////////////////////////////////////
 

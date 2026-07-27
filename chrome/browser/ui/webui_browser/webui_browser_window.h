@@ -80,7 +80,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   void OnBookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
   void UpdateLoadingAnimations(bool is_visible) override;
-  void SetStarredState(bool is_starred) override;
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,

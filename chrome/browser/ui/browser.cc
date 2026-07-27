@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
-#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -2252,15 +2251,6 @@ void Browser::CapturePaintPreviewOfSubframe(
 }
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-// Browser, BookmarkTabHelperObserver implementation:
-
-void Browser::URLStarredChanged(content::WebContents* web_contents,
-                                bool starred) {
-  if (web_contents == tab_strip_model_->GetActiveWebContents()) {
-    window_->SetStarredState(starred);
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Command and state updating (private):
@@ -2708,10 +2698,8 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
       ->SetDelegate(set_delegate ? BrowserWindowModalDialogDelegate::From(this)
                                  : nullptr);
   if (delegate) {
-    BookmarkTabHelper::FromWebContents(web_contents)->AddObserver(this);
     web_contents_collection_.StartObserving(web_contents);
   } else {
-    BookmarkTabHelper::FromWebContents(web_contents)->RemoveObserver(this);
     web_contents_collection_.StopObserving(web_contents);
   }
 }

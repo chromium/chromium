@@ -79,7 +79,6 @@ class TestBrowserWindow : public BrowserWindow,
   std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override {}
   void UpdateLoadingAnimations(bool is_visible) override {}
-  void SetStarredState(bool is_starred) override {}
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           int index,
