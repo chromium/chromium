@@ -976,11 +976,18 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   ASSERT_TRUE(initial_aiv2_arch);
   EXPECT_FALSE(initial_aiv2_arch->FindBool("enabled").value_or(true));
 
+  const base::DictValue* initial_instrumentation_breakpoints =
+      initial_config.FindDict("devToolsInstrumentationBreakpoints");
+  ASSERT_TRUE(initial_instrumentation_breakpoints);
+  EXPECT_FALSE(
+      initial_instrumentation_breakpoints->FindBool("enabled").value_or(true));
+
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler,
-       ::features::kDevToolsAiV2Architecture},
+       ::features::kDevToolsAiV2Architecture,
+       ::features::kDevToolsInstrumentationBreakpoints},
       {});
 
   // Verify state of features after enabling them.
@@ -1000,6 +1007,12 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
       result.FindDict("devToolsAiV2Architecture");
   ASSERT_TRUE(aiv2_arch);
   EXPECT_TRUE(aiv2_arch->FindBool("enabled").value_or(false));
+
+  const base::DictValue* instrumentation_breakpoints =
+      result.FindDict("devToolsInstrumentationBreakpoints");
+  ASSERT_TRUE(instrumentation_breakpoints);
+  EXPECT_TRUE(
+      instrumentation_breakpoints->FindBool("enabled").value_or(false));
 }
 
 TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigGdpProfiles) {

@@ -13536,6 +13536,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPaymentHandlerCameraAccessName,
      flag_descriptions::kPaymentHandlerCameraAccessDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(payments::features::kPaymentHandlerCameraAccess)},
+    {"devtools-instrumentation-breakpoints",
+     flag_descriptions::kDevToolsInstrumentationBreakpointsName,
+     flag_descriptions::kDevToolsInstrumentationBreakpointsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsInstrumentationBreakpoints)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

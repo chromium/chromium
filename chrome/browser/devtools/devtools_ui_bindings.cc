@@ -2229,6 +2229,13 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                                        ::features::kDevToolsPlusButton,
                                        enabled_by_flags, disabled_by_flags)));
 
+  response_dict.Set(
+      "devToolsInstrumentationBreakpoints",
+      base::DictValue().Set(
+          "enabled", GetFeatureStateForDevTools(
+                         ::features::kDevToolsInstrumentationBreakpoints,
+                         enabled_by_flags, disabled_by_flags)));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // We check AreExtensionsOnExtensionURLsAllowed() here because this is used to
   // restrict access to chrome-extension:// URLs, and that helper covers both

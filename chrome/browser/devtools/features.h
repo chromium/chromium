@@ -142,6 +142,8 @@ BASE_DECLARE_FEATURE(kDevToolsAiOriginTrialsApis);
 BASE_DECLARE_FEATURE(kDevToolsUseGcaApi);
 
 BASE_DECLARE_FEATURE(kDevToolsPlusButton);
+
+BASE_DECLARE_FEATURE(kDevToolsInstrumentationBreakpoints);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

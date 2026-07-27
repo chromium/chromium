@@ -2550,6 +2550,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "devtools-instrumentation-breakpoints",
+    "owners": [ "kimanh@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "devtools-live-edit",
     "owners": [ "bmeurer@chromium.org", "szuend@chromium.org" ],
     "expiry_milestone": 154

@@ -13085,6 +13085,7 @@ from previous Chrome versions.
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-454359275" label="kQuickAnswersMaterialNextUI:disabled"/>
   <int value="-454246685" label="AndroidAppIntegrationWithFavicon:disabled"/>
+  <int value="-453577040" label="DevToolsInstrumentationBreakpoints:enabled"/>
   <int value="-453506590" label="MediaLinkHelpers:disabled"/>
   <int value="-452734575" label="ArcExtendInputAnrTimeout:enabled"/>
   <int value="-451898735" label="private-aggregation-developer-mode"/>
@@ -17249,6 +17250,7 @@ from previous Chrome versions.
   <int value="870664435" label="DownloadProgressInfoBar:disabled"/>
   <int value="871071097" label="MostVisitedTilesReselect:disabled"/>
   <int value="871435095" label="EnableAggregatedMlAppRanking:disabled"/>
+  <int value="871677656" label="DevToolsInstrumentationBreakpoints:disabled"/>
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
   <int value="872409871" label="InlinePdfV2:disabled"/>
   <int value="872507779" label="AIMSuppressVerbatimMatch:enabled"/>

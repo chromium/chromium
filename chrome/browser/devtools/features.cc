@@ -242,4 +242,9 @@ BASE_FEATURE(kDevToolsUseGcaApi, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether the Plus Button is shown in main DevTools panel/drawer tabbed
 // locations, replacing the "More tools" overflow menu.
 BASE_FEATURE(kDevToolsPlusButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether instrumentation breakpoints are enabled in DevTools.
+BASE_FEATURE(kDevToolsInstrumentationBreakpoints,
+             "DevToolsInstrumentationBreakpoints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

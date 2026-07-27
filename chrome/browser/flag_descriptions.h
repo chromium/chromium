@@ -1987,6 +1987,11 @@ inline constexpr char kDevToolsEnableDurableMessagesDescription[] =
     "Enables a durable message storing mechanism, which allows preserving "
     "HTTP message bodies for debugging.";
 
+inline constexpr char kDevToolsInstrumentationBreakpointsName[] =
+    "Instrumentation breakpoints";
+inline constexpr char kDevToolsInstrumentationBreakpointsDescription[] =
+    "Enables instrumentation breakpoints in DevTools.";
+
 inline constexpr char kDevToolsLiveEditName[] =
     "Enable JavaScript live editing in DevTools";
 inline constexpr char kDevToolsLiveEditDescription[] =
