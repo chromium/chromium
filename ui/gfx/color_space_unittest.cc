@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/skia_color_space_util.h"
 
 namespace gfx {
@@ -380,6 +381,22 @@ TEST(ColorSpace, AsHDR) {
   EXPECT_TRUE(cs.GetTransferFunction(&fn));
   EXPECT_NEAR(fn.a, 0.5, kEpsilon);
   EXPECT_NEAR(fn.g, 2.5, kEpsilon);
+}
+
+TEST(DisplayColorSpacesTest,
+     RasterAndCompositeColorSpaceForHDRWithCustomLinear) {
+  skcms_Matrix3x3 primaries = SkNamedGamut::kSRGB;
+  skcms_TransferFunction near_linear_fn = {1.0f, 1.0f, 0.0f, 0.0f,
+                                           0.0f, 0.0f, 0.0f};
+  ColorSpace custom_linear_cs =
+      ColorSpace::CreateCustom(primaries, near_linear_fn);
+
+  DisplayColorSpaces display_color_spaces(custom_linear_cs);
+  display_color_spaces.SetHDRMaxLuminanceRelative(2.0f);
+
+  ColorSpace blend_cs = display_color_spaces.GetRasterAndCompositeColorSpace(
+      ContentColorUsage::kHDR);
+  EXPECT_TRUE(blend_cs.IsSuitableForBlending());
 }
 
 }  // namespace
