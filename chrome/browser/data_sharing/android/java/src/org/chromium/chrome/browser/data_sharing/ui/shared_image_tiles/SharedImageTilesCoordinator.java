@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -46,8 +45,8 @@ public class SharedImageTilesCoordinator {
     private final Context mContext;
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
-    private final @NonNull DataSharingService mDataSharingService;
-    private final @NonNull CollaborationService mCollaborationService;
+    private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
     private @Nullable String mCollaborationId;
     private int mAvailableMemberCount;
     private int mIconTilesCount;
@@ -65,8 +64,8 @@ public class SharedImageTilesCoordinator {
     public SharedImageTilesCoordinator(
             Context context,
             SharedImageTilesConfig config,
-            @NonNull DataSharingService dataSharingService,
-            @NonNull CollaborationService collaborationService) {
+            DataSharingService dataSharingService,
+            CollaborationService collaborationService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
                         .with(SharedImageTilesProperties.VIEW_CONFIG, config)
