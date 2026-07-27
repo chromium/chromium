@@ -80,6 +80,10 @@ final class SigninButtonMediator
                 SigninManager.SignInStateObserver,
                 BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 TintObserver {
+    // TODO(crbug.com/475816843): Make this non-static and non-final when re-introducing the sign-in
+    // text button.
+    private static final boolean SHOW_AVATAR_WHEN_SIGNED_OUT = true;
+
     private final Context mContext;
     private final PropertyModel mModel;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -91,6 +95,9 @@ final class SigninButtonMediator
     private final ModalDialogManager mModalDialogManager;
     private final SnackbarManager mSnackbarManager;
     private final ThemeColorProvider mThemeColorProvider;
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private final Runnable mOnSigninTapped;
+
     private @Nullable Profile mProfile;
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private @Nullable SigninManager mSigninManager;
@@ -108,15 +115,9 @@ final class SigninButtonMediator
 
     private @Nullable ColorStateList mActivityFocusTint;
 
-    private boolean mShowAvatarWhenSignedOut;
-
     private boolean mHasSpaceToShow = true;
 
     private boolean mShouldShowOnPage;
-
-    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-
-    private final Runnable mOnSigninTapped;
 
     /**
      * @param context The {@link Context} to retrieve resources.
@@ -235,11 +236,6 @@ final class SigninButtonMediator
         }
     }
 
-    void showAvatarWhenSignedOut(boolean showAvatarWhenSignedOut) {
-        mShowAvatarWhenSignedOut = showAvatarWhenSignedOut;
-        updateButtonState();
-    }
-
     boolean hasSpaceToShow() {
         return mHasSpaceToShow;
     }
@@ -293,7 +289,7 @@ final class SigninButtonMediator
         boolean showSigninText =
                 profileData == null
                         && assumeNonNull(mSigninManager).isSigninAllowed()
-                        && !mShowAvatarWhenSignedOut;
+                        && !SHOW_AVATAR_WHEN_SIGNED_OUT;
 
         if (!showSigninText) {
             mModel.set(

@@ -447,7 +447,6 @@ public class ToolbarTablet extends ToolbarLayout {
         if (signinButtonCoordinator != null) {
             signinButtonCoordinator.setShowOnAllPages(
                     SigninFeatureMap.sProfileDiscOnAllPages.isEnabled());
-            signinButtonCoordinator.showAvatarWhenSignedOut(true);
         }
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;

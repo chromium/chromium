@@ -562,20 +562,12 @@ public class SigninButtonCoordinatorTest {
     }
 
     private void verifySignedOutButtonVisible() {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
-            ViewUtils.waitForVisibleView(
-                    allOf(
-                            withId(R.id.avatar_button),
-                            isDisplayed(),
-                            withContentDescription(
-                                    R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
-        } else {
-            ViewUtils.waitForVisibleView(
-                    allOf(
-                            withId(R.id.signin_text_button),
-                            isDisplayed(),
-                            withText(R.string.signin_promo_sign_in)));
-        }
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.avatar_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
 
     private void setSigninAllowed(boolean allowed) {
