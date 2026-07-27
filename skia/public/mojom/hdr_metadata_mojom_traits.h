@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKIA_PUBLIC_MOJOM_HDR_METADATA_MO_TRAITS_H_
-#define SKIA_PUBLIC_MOJOM_HDR_METADATA_MO_TRAITS_H_
+#ifndef SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
+#define SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 
 #include <cmath>
 
@@ -263,6 +263,9 @@ struct StructTraits<skia::mojom::SkHdrAdaptiveGlobalToneMapDataView,
     }
     out->fHdrReferenceWhite = data.hdr_reference_white();
     if (!data.ReadHeadroomAdaptiveToneMap(&out->fHeadroomAdaptiveToneMap)) {
+      return false;
+    }
+    if (!out->isValid()) {
       return false;
     }
     return true;

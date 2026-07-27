@@ -722,8 +722,8 @@ TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap) {
                           .fGreen = 0.2f,
                           .fBlue = 0.3f,
                           .fMax = 0.4f,
-                          .fMin = 0.5f,
-                          .fComponent = 0.6f,
+                          .fMin = 0.0f,
+                          .fComponent = 0.0f,
                       },
                   .fGainCurve =
                       {
@@ -869,6 +869,30 @@ TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap_InvalidFloats) {
     bad.fHeadroomAdaptiveToneMap->fAlternateImages[0]
         .fColorGainFunction.fGainCurve.fControlPoints[0]
         .fX = kNaN;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
+  }
+  {
+    skhdr::AdaptiveGlobalToneMap bad = in;
+    bad.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+        .fColorGainFunction.fGainCurve.fControlPoints.clear();
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
+  }
+  {
+    skhdr::AdaptiveGlobalToneMap bad = in;
+    bad.fHeadroomAdaptiveToneMap->fAlternateImages[0]
+        .fColorGainFunction.fGainCurve.fControlPoints.resize(33);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
+  }
+  {
+    skhdr::AdaptiveGlobalToneMap bad = in;
+    for (size_t i = 0; i < 4; ++i) {
+      auto alt = bad.fHeadroomAdaptiveToneMap->fAlternateImages.front();
+      alt.fHdrHeadroom += static_cast<float>(i);
+      bad.fHeadroomAdaptiveToneMap->fAlternateImages.push_back(alt);
+    }
     EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
                  skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
   }
