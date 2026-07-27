@@ -218,7 +218,7 @@ void RouteMap::OnPreviewStart() {
 }
 
 void RouteMap::OnPreviewFinished() {
-  if (!navigation_state_ || navigation_state_->IsInPreview()) {
+  if (!navigation_state_ || !navigation_state_->IsInPreview()) {
     return;
   }
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
