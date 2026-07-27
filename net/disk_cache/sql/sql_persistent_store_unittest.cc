@@ -7089,6 +7089,16 @@ TEST_P(SqlPersistentStoreSharedCacheTest, MoveBlobsToSharedCache) {
   EXPECT_EQ(GetSizeOfAllEntries(),
             static_cast<int64_t>(kSqlBackendStaticResourceSize +
                                  kKey.string().size() + kData.size()));
+
+  // Verify OpenEntry returns the entry with shared_cache_resource_id populated.
+  auto open_result = OpenEntry(kKey);
+  ASSERT_TRUE(open_result.has_value());
+  ASSERT_TRUE(open_result->has_value());
+  EXPECT_TRUE((*open_result)->shared_cache_resource_id.has_value());
+  EXPECT_EQ((*open_result)->shared_cache_resource_id->db_id,
+            kSharedResourceId.db_id);
+  EXPECT_EQ((*open_result)->shared_cache_resource_id->row_id,
+            kSharedResourceId.row_id);
 }
 
 }  // namespace disk_cache

@@ -122,14 +122,34 @@ inline constexpr const char kIndex_BlobsResIdStart[] =
     "CREATE UNIQUE INDEX index_blobs_res_id_start ON "
     "blobs(res_id, start)";
 
-inline constexpr const char kOpenEntry_SelectLiveResources[] =
-    // clang-format off
+inline constexpr const char
+    kOpenEntry_SelectLiveResources_SharedCacheDisabled[] =
+        // clang-format off
     "SELECT "
         "res_id,"      // 0
         "last_used,"   // 1
         "body_end,"    // 2
         "check_sum,"   // 3
         "head "        // 4
+    "FROM resources "
+    "WHERE "
+        "cache_key_hash=? AND " // 0
+        "cache_key=? AND "      // 1
+        "doomed=0 "
+    "ORDER BY res_id DESC";
+// clang-format on
+
+inline constexpr const char
+    kOpenEntry_SelectLiveResources_SharedCacheEnabled[] =
+        // clang-format off
+    "SELECT "
+        "res_id,"              // 0
+        "last_used,"           // 1
+        "body_end,"            // 2
+        "check_sum,"           // 3
+        "head,"                // 4
+        "shared_cache_db_id,"  // 5
+        "shared_cache_row_id " // 6
     "FROM resources "
     "WHERE "
         "cache_key_hash=? AND " // 0
@@ -664,7 +684,10 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
     case Query::kIndex_BlobsResIdStart:
       return internal::kIndex_BlobsResIdStart;
     case Query::kOpenEntry_SelectLiveResources:
-      return internal::kOpenEntry_SelectLiveResources;
+      if (shared_cache_enabled) {
+        return internal::kOpenEntry_SelectLiveResources_SharedCacheEnabled;
+      }
+      return internal::kOpenEntry_SelectLiveResources_SharedCacheDisabled;
     case Query::kCreateEntry_InsertIntoResources:
       if (shared_cache_enabled) {
         return internal::kCreateEntry_InsertIntoResources_SharedCacheEnabled;

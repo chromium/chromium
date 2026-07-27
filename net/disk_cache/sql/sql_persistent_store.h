@@ -155,6 +155,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     int64_t body_end = 0;
     // The entry's header data (stream 0).
     scoped_refptr<net::GrowableIOBuffer> head;
+    // The resource ID of the shared cache database where the blobs are stored.
+    std::optional<SqlSharedCacheResourceId> shared_cache_resource_id;
+
     // True if the entry was opened, false if it was newly created.
     bool opened = false;
   };

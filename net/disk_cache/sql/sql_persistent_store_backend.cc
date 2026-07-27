@@ -197,6 +197,19 @@ int32_t CalculateCheckSum(base::span<const uint8_t> data,
   return static_cast<int32_t>(crc32_value);
 }
 
+std::optional<SqlSharedCacheResourceId> GetSharedCacheResourceIdFromStatement(
+    sql::Statement& statement,
+    int db_id_column,
+    int row_id_column) {
+  int64_t db_id = statement.ColumnInt64(db_id_column);
+  int64_t row_id = statement.ColumnInt64(row_id_column);
+  if (db_id != 0 && row_id != 0) {
+    return SqlSharedCacheResourceId{SqlSharedCacheDbId(db_id),
+                                    SqlSharedCacheRowId(row_id)};
+  }
+  return std::nullopt;
+}
+
 // Sets up the database schema and indexes.
 [[nodiscard]] bool InitSchema(sql::Database& db, bool shared_cache_enabled) {
   if (!db.Execute(disk_cache_sql_queries::GetQuery(
@@ -663,6 +676,10 @@ OptionalEntryInfoOrError SqlPersistentStore::Backend::OpenEntryInternal(
   entry_info.body_end = statement.ColumnInt64(2);
   int32_t check_sum = statement.ColumnInt(3);
   base::span<const uint8_t> blob_span = statement.ColumnBlob(4);
+  if (shared_cache_enabled_) {
+    entry_info.shared_cache_resource_id =
+        GetSharedCacheResourceIdFromStatement(statement, 5, 6);
+  }
   if (CalculateCheckSum(blob_span, key.hash()) != check_sum) {
     return base::unexpected(Error::kCheckSumError);
   }
