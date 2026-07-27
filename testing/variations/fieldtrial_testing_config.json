@@ -22106,18 +22106,14 @@
                     ],
                     "disable_features": [
                         "CrOSLateBootInitDLServer",
-                        "CrOSLateBootSetRtForDisplayThreads",
-                        "SetRtForDisplayThreads",
-                        "SetThreadBgForBgProcess"
+                        "CrOSLateBootSetRtForDisplayThreads"
                     ],
                     "min_os_version": "16088.0.0"
                 },
                 {
                     "name": "EnabledRTForDisplay_M132_20241107",
                     "enable_features": [
-                        "CrOSLateBootInitDLServer",
-                        "SetRtForDisplayThreads",
-                        "SetThreadBgForBgProcess"
+                        "CrOSLateBootInitDLServer"
                     ],
                     "disable_features": [
                         "CrOSLateBootSetRtForDisplayThreads",
@@ -22131,10 +22127,6 @@
                         "CrOSLateBootInitDLServer",
                         "CrOSLateBootSetRtForDisplayThreads",
                         "SchedQoSOnResourcedForChrome"
-                    ],
-                    "disable_features": [
-                        "SetRtForDisplayThreads",
-                        "SetThreadBgForBgProcess"
                     ],
                     "min_os_version": "16088.0.0"
                 }
