@@ -27,9 +27,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
+#include "components/safe_browsing/core/browser/db/sb_store.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
@@ -466,9 +466,21 @@ bool SBLocalDatabaseManager::CheckExtensionIDs(
     return true;
   }
 
+  std::set<FullHashStr> hashes_to_check;
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    // Extension IDs are 32 a-p characters expanded from 16-byte hashes. The
+    // local extensions blocklist is in the 16-byte hash format, so convert the
+    // caller's input to that before proceeding with local lookups.
+    for (const auto& extension_id : extension_ids) {
+      hashes_to_check.insert(SBStore::ExtensionIdToHash(extension_id));
+    }
+  } else {
+    hashes_to_check = extension_ids;
+  }
+
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       client, ClientCallbackType::CHECK_EXTENSION_IDS,
-      StoresToCheck({GetChromeExtMalwareId()}), extension_ids,
+      StoresToCheck({GetChromeExtMalwareId()}), hashes_to_check,
       /*needs_full_hash_check_after_local_match=*/
       !base::FeatureList::IsEnabled(kExtensionBlocklistSkipNetworkQuery) &&
           !base::FeatureList::IsEnabled(kLocalListsUseSBv5));
@@ -1324,7 +1336,14 @@ void SBLocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
         // Populate unsafe_extension_ids directly from local database match
         // keys.
         for (const auto& entry : check->full_hash_to_store_and_hash_prefixes) {
-          unsafe_extension_ids.insert(entry.first);
+          if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+            // Convert matched 16-byte hashes back to the 32-character
+            // extension ID representation expected by the client.
+            unsafe_extension_ids.insert(
+                SBStore::ExtensionHashToId(entry.first));
+          } else {
+            unsafe_extension_ids.insert(entry.first);
+          }
         }
       } else {
         DCHECK_EQ(check->full_hash_threat_types.size(),

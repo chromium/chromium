@@ -484,7 +484,7 @@ V5Store::ConvertExtensionsBlocklistFromV4ToV5(
     if (!crx_file::id_util::IdIsValid(id)) {
       return ConvertExtensionBlocklistV4ToV5Result::kInvalidExtensionId;
     }
-    v5_hash_data.append(SBStore::ExtensionV4IdToV5Hash(id));
+    v5_hash_data.append(SBStore::ExtensionIdToHash(id));
   }
   if (!base::WriteFile(v5_hash_file_path, v5_hash_data)) {
     return ConvertExtensionBlocklistV4ToV5Result::kWriteV5Failed;

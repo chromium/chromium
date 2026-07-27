@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
+#include "components/safe_browsing/core/browser/db/sb_store.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
@@ -1870,8 +1871,8 @@ TEST_F(SBLocalDatabaseManagerTest,
   WaitForTasksOnTaskRunner();
 
   // extension_id_1 is in the local DB but the full hash won't match.
-  const FullHashStr extension_id_1("aaaabbbbccccdddd"),
-      extension_id_2("ddddccccbbbbaaaa");
+  const FullHashStr extension_id_1("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      extension_id_2("aapbdbdomjkkjkaonfhkkikfgjllclec");
 
   // Put a match in the db that will cause a protocol-manager request.
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -1924,8 +1925,8 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
   WaitForTasksOnTaskRunner();
 
   // Both extensions are good and not in the local DB.
-  const FullHashStr extension_id_1("aaaabbbbccccdddd"),
-      extension_id_2("ddddccccbbbbaaaa");
+  const FullHashStr extension_id_1("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      extension_id_2("aapbdbdomjkkjkaonfhkkikfgjllclec");
 
   // Replace database with empty store (nothing blocklisted).
   StoreAndHashPrefixes store_and_hash_prefixes;
@@ -1951,8 +1952,8 @@ TEST_F(SBLocalDatabaseManagerTest,
                              kLocalListsUseSBv5});
 
   // bad_extension_id is in the local DB and the full hash will match.
-  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
-      good_extension_id("ddddccccbbbbaaaa");
+  const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
   FullHashInfo fhi(bad_extension_id, GetChromeExtMalwareId(), base::Time());
 
   // Setup to receive full-hash hit.
@@ -1986,13 +1987,15 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
   WaitForTasksOnTaskRunner();
 
   // bad_extension_id is in the local DB.
-  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
-      good_extension_id("ddddccccbbbbaaaa");
+  const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
 
-  // Put a match in the db.
+  // Put a match in the db. In V5, local DB stores 16-byte hashes.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
-                                       bad_extension_id);
+  store_and_hash_prefixes.emplace_back(
+      GetChromeExtMalwareId(),
+      GetParam().enable_v5 ? SBStore::ExtensionIdToHash(bad_extension_id)
+                           : bad_extension_id);
   ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
@@ -2020,8 +2023,8 @@ TEST_F(
                              kLocalListsUseSBv5});
 
   // bad_extension_id is in the local DB and the full hash will match.
-  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
-      good_extension_id("ddddccccbbbbaaaa");
+  const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
 
   auto test_url_loader_factory =
       std::make_unique<network::TestURLLoaderFactory>();
@@ -2074,13 +2077,15 @@ TEST_P(
   WaitForTasksOnTaskRunner();
 
   // bad_extension_id is in the local DB.
-  const FullHashStr bad_extension_id("aaaabbbbccccdddd"),
-      good_extension_id("ddddccccbbbbaaaa");
+  const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
+      good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
 
-  // Put a match in the db.
+  // Put a match in the db. In V5, local DB stores 16-byte hashes.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
-                                       bad_extension_id);
+  store_and_hash_prefixes.emplace_back(
+      GetChromeExtMalwareId(),
+      GetParam().enable_v5 ? SBStore::ExtensionIdToHash(bad_extension_id)
+                           : bad_extension_id);
   ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});

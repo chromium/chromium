@@ -337,14 +337,21 @@ class SBStore {
   // Returns the state of the store (i.e. state for V4, version for V5).
   virtual const std::string& GetStoreState() const = 0;
 
- protected:
-  // Converts a 32-character V4 extension ID string into its raw 16-byte V5
-  // binary hash representation.
-  // `v4_id` is the base-16 string extension ID to convert. Must be exactly 32
-  // characters long.
+  // Converts a 32-character extension ID string into its raw 16-byte binary
+  // hash representation.
+  // `extension_id` is the base-16 string extension ID to convert. Must be
+  // exactly 32 characters long.
   // Returns a string containing the raw 16 binary bytes.
-  static std::string ExtensionV4IdToV5Hash(std::string_view v4_id);
+  static std::string ExtensionIdToHash(std::string_view extension_id);
 
+  // Converts a raw 16-byte binary hash representation of an extension ID
+  // into its 32-character extension ID string.
+  // `extension_hash` is the raw 16-byte binary hash to convert. Must be
+  // exactly 16 bytes long.
+  // Returns a string containing the 32-character extension ID.
+  static std::string ExtensionHashToId(std::string_view extension_hash);
+
+ protected:
   static constexpr uint32_t kFileMagic = 0x600D71FE;
   static constexpr uint32_t kV4FileVersion = 9;
   static constexpr uint32_t kV5FileVersion = 10;

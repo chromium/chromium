@@ -137,8 +137,8 @@ class V4StoreTest : public PlatformTest {
     return HashPrefixMapView(map.begin(), map.end());
   }
 
-  std::string ExtensionV4IdToV5Hash(std::string_view v4_id) {
-    return SBStore::ExtensionV4IdToV5Hash(v4_id);
+  std::string ExtensionIdToHash(std::string_view extension_id) {
+    return SBStore::ExtensionIdToHash(extension_id);
   }
 
   StoreReadResult ReadFromDisk(V4Store& store) { return store.ReadFromDisk(); }
@@ -209,10 +209,8 @@ class V4StoreTest : public PlatformTest {
     list_details->set_version("v5_version");
 
     std::string v5_hash_data;
-    v5_hash_data.append(
-        ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
-    v5_hash_data.append(
-        ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
+    v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
+    v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
 
     if (override_checksum.has_value()) {
       list_details->mutable_checksum()->set_sha256(override_checksum.value());
@@ -869,10 +867,8 @@ TEST_F(V4StoreTest, TestExtensionMigrationCleanupOnLateFailure) {
   list_details->set_version("v5_version");
 
   std::string v5_hash_data;
-  v5_hash_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
-  v5_hash_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
+  v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
+  v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
 
   std::array<uint8_t, crypto::hash::kSha256Size> v5_checksum;
   crypto::hash::Hash(crypto::hash::HashKind::kSha256,
@@ -921,10 +917,8 @@ TEST_F(V4StoreTest, TestExtensionMigrationSuccess) {
 
   // We will write V5 hashes.
   std::string v5_hash_data;
-  v5_hash_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
-  v5_hash_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
+  v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
+  v5_hash_data.append(ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
 
   V5HashFile* hash_file = list_details->mutable_hash_file();
   hash_file->set_extension("foo");

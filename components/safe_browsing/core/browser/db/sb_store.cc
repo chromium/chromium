@@ -244,17 +244,24 @@ V5StoreReadResult SBStore::ParseAndValidateV5StoreFileFormat(
 }
 
 // static
-std::string SBStore::ExtensionV4IdToV5Hash(std::string_view v4_id) {
-  CHECK_EQ(v4_id.size(), 32u);
-  CHECK(crx_file::id_util::IdIsValid(v4_id));
-  std::string v5_hash;
-  v5_hash.reserve(16);
+std::string SBStore::ExtensionIdToHash(std::string_view extension_id) {
+  CHECK_EQ(extension_id.size(), 32u);
+  CHECK(crx_file::id_util::IdIsValid(extension_id));
+  std::string extension_hash;
+  extension_hash.reserve(16);
   for (size_t i = 0; i < 32; i += 2) {
-    uint8_t val1 = base::ToLowerASCII(v4_id[i]) - 'a';
-    uint8_t val2 = base::ToLowerASCII(v4_id[i + 1]) - 'a';
-    v5_hash.push_back(static_cast<char>((val1 << 4) | val2));
+    uint8_t val1 = base::ToLowerASCII(extension_id[i]) - 'a';
+    uint8_t val2 = base::ToLowerASCII(extension_id[i + 1]) - 'a';
+    extension_hash.push_back(static_cast<char>((val1 << 4) | val2));
   }
-  return v5_hash;
+  return extension_hash;
+}
+
+// static
+std::string SBStore::ExtensionHashToId(std::string_view extension_hash) {
+  CHECK_EQ(extension_hash.size(), 16u);
+  return crx_file::id_util::GenerateIdFromHash(
+      base::as_byte_span(extension_hash));
 }
 
 SBUpdateResponse::SBUpdateResponse() = default;

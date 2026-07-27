@@ -173,8 +173,8 @@ class V5StoreTest : public PlatformTest {
     }
   }
 
-  std::string ExtensionV4IdToV5Hash(std::string_view v4_id) {
-    return SBStore::ExtensionV4IdToV5Hash(v4_id);
+  std::string ExtensionIdToHash(std::string_view extension_id) {
+    return SBStore::ExtensionIdToHash(extension_id);
   }
 
   void WriteV4FileFormatProtoToFile(
@@ -302,9 +302,9 @@ class V5StoreTest : public PlatformTest {
       EXPECT_EQ("v4_version", store.version());
       std::string expected_v5_data;
       expected_v5_data.append(
-          ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
+          ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
       expected_v5_data.append(
-          ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
+          ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
       EXPECT_EQ(GetHashPrefixList(store).view().at(16), expected_v5_data);
 
       // Verify checksum.
@@ -1330,9 +1330,9 @@ TEST_F(V5StoreTest, TestExtensionMigrationSuccess) {
   // Expected V5 hashes (16 bytes each).
   std::string expected_v5_data;
   expected_v5_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
+      ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllcleb"));
   expected_v5_data.append(
-      ExtensionV4IdToV5Hash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
+      ExtensionIdToHash("aapbdbdomjkkjkaonfhkkikfgjllclec"));
   EXPECT_EQ(GetHashPrefixList(store).view().at(16), expected_v5_data);
 
   // Verify checksum is not written because the source had no checksum.

@@ -199,6 +199,7 @@ static_library("sb_local_database_manager") {
     ":database_manager",
     ":safebrowsing_proto",
     ":sb_database",
+    ":sb_store",
     ":sb_update_protocol_manager",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",

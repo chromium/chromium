@@ -206,9 +206,12 @@ class SafeBrowsingDatabaseManager
   virtual bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                                 Client* client) = 0;
 
-  // Check which prefixes in |extension_ids| are in the safebrowsing blocklist.
-  // Returns true if not, false if further checks need to be made in which case
-  // the result will be passed to |client|.
+  // Check which prefixes in `extension_ids` are in the safebrowsing blocklist.
+  // `extension_ids` is the set of extension IDs to check. Each entry must be
+  // a valid 32-character string formatted with characters 'a'-'p'.
+  // `client` is the client callback listener.
+  // Returns true if none of the extension IDs are blocklisted (determined
+  // synchronously), or false if an asynchronous check is required and pending.
   virtual bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                                  Client* client) = 0;
 
