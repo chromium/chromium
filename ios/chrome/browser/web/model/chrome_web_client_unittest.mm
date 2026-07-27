@@ -9,16 +9,19 @@
 #import <memory>
 
 #import "base/command_line.h"
+#import "base/feature_list.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/strings/grit/components_strings.h"
@@ -292,9 +295,26 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
   EXPECT_TRUE([page containsString:error_string]);
 }
 
+class ChromeWebClientTest_V4V5 : public ChromeWebClientTest,
+                                 public ::testing::WithParamInterface<bool> {
+ public:
+  ChromeWebClientTest_V4V5() {
+    feature_list_.InitWithFeatureState(safe_browsing::kLocalListsUseSBv5,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeWebClientTest_V4V5,
+                         ::testing::Bool(),
+                         testing::PrintToStringParamName());
+
 // Tests PrepareErrorPage for a safe browsing error, which results in a
 // committed safe browsing interstitial.
-TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
+TEST_P(ChromeWebClientTest_V4V5, PrepareErrorPageForSafeBrowsingError) {
   // Store an unsafe resource in `web_state`'s container.
   web::FakeWebState web_state;
   web_state.SetBrowserState(profile());
@@ -309,7 +329,9 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   resource.url = GURL("http://www.chromium.test");
   resource.weak_web_state = web_state.GetWeakPtr();
   // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
-  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  resource.threat_source =
+      GetParam() ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+                 : safe_browsing::ThreatSource::LOCAL_PVER4;
   SafeBrowsingUrlAllowList::FromWebState(&web_state)
       ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)

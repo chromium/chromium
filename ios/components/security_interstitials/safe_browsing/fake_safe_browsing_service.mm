@@ -75,7 +75,10 @@ void RunCheckUrlCallback(
     security_interstitials::UnsafeResource resource;
     resource.url = url;
     resource.threat_type = GetThreatTypeForUrl(url);
-    resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+    resource.threat_source =
+        base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+            ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+            : safe_browsing::ThreatSource::LOCAL_PVER4;
     resource.callback = base::BindRepeating(
         &CheckUrlCallbackRunner::MaybeRunCallback,
         std::make_unique<CheckUrlCallbackRunner>(std::move(callback)));

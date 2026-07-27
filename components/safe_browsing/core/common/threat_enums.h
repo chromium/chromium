@@ -13,6 +13,7 @@ namespace safe_browsing {
 enum class ThreatSource {
   UNKNOWN,
   // From SBLocalDatabaseManager, protocol v4. Desktop only.
+  // TODO(crbug.com/372395685): delete upon v4 deprecation.
   LOCAL_PVER4,
   // From ClientSideDetectionHost.
   CLIENT_SIDE_DETECTION,
@@ -29,6 +30,8 @@ enum class ThreatSource {
   // Triggered by Glic web client when server reports a dangerous Counter
   // Abuse verdict.
   GLIC_COUNTER_ABUSE,
+  // From SBLocalDatabaseManager, protocol v5. Desktop only.
+  LOCAL_PVER5_LOCAL_BLOCKLIST,
 };
 
 // What subtype that expands more into details on what threat category

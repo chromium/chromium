@@ -40,11 +40,14 @@ enum class SafeBrowsingDecisionTimingWithAsync {
 }
 
 class SafeBrowsingTabHelperTest
-    : public testing::TestWithParam<SafeBrowsingDecisionTimingWithAsync> {
+    : public testing::TestWithParam<
+          std::tuple<SafeBrowsingDecisionTimingWithAsync, bool>> {
  protected:
   SafeBrowsingTabHelperTest()
       : browser_state_(std::make_unique<web::FakeBrowserState>()),
         client_(/*pref_service=*/nullptr) {
+    feature_list_.InitWithFeatureState(safe_browsing::kLocalListsUseSBv5,
+                                       UseV5());
     SafeBrowsingQueryManager::CreateForWebState(&web_state_, &client_);
     SafeBrowsingTabHelper::CreateForWebState(&web_state_, &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
@@ -55,12 +58,18 @@ class SafeBrowsingTabHelperTest
     web_state_.SetBrowserState(browser_state_.get());
   }
 
+  SafeBrowsingDecisionTimingWithAsync GetTiming() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool UseV5() const { return std::get<1>(GetParam()); }
+
   // Whether Safe Browsing decisions arrive before calls to
   // ShouldAllowResponseUrl().
   bool SafeBrowsingDecisionArrivesBeforeResponse() const {
-    return GetParam() == SafeBrowsingDecisionTimingWithAsync::
-                             kBeforeResponseAsyncDisabled ||
-           GetParam() ==
+    return GetTiming() == SafeBrowsingDecisionTimingWithAsync::
+                              kBeforeResponseAsyncDisabled ||
+           GetTiming() ==
                SafeBrowsingDecisionTimingWithAsync::kBeforeResponseAsyncEnabled;
   }
 
@@ -173,6 +182,7 @@ class SafeBrowsingTabHelperTest
     }
   }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
@@ -1170,10 +1180,12 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeNavigationFailureLateVerdict) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    /* No InstantiationName */,
+    All,
     SafeBrowsingTabHelperTest,
-    testing::Values(
-        SafeBrowsingDecisionTimingWithAsync::kBeforeResponseAsyncDisabled,
-        SafeBrowsingDecisionTimingWithAsync::kBeforeResponseAsyncEnabled,
-        SafeBrowsingDecisionTimingWithAsync::kAfterResponseAsyncDisabled,
-        SafeBrowsingDecisionTimingWithAsync::kAfterResponseAsyncEnabled));
+    testing::Combine(
+        testing::Values(
+            SafeBrowsingDecisionTimingWithAsync::kBeforeResponseAsyncDisabled,
+            SafeBrowsingDecisionTimingWithAsync::kBeforeResponseAsyncEnabled,
+            SafeBrowsingDecisionTimingWithAsync::kAfterResponseAsyncDisabled,
+            SafeBrowsingDecisionTimingWithAsync::kAfterResponseAsyncEnabled),
+        testing::Bool()));

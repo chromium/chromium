@@ -341,7 +341,7 @@ void AssertNoInterstitial(Browser* browser) {
 class SafeBrowsingBlockingPageBrowserTest
     : public CertVerifierBrowserTest,
       public testing::WithParamInterface<
-          testing::tuple<SBThreatType, bool, bool>> {
+          testing::tuple<SBThreatType, bool, bool, bool>> {
  public:
   SafeBrowsingBlockingPageBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -368,11 +368,18 @@ class SafeBrowsingBlockingPageBrowserTest
       disabled_features.push_back(
           safe_browsing::kExtendedReportingRemovePrefDependency);
     }
+    if (UseV5()) {
+      enabled_features.push_back(base::test::FeatureRefAndParams(
+          safe_browsing::kLocalListsUseSBv5, {}));
+    } else {
+      disabled_features.push_back(safe_browsing::kLocalListsUseSBv5);
+    }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
 
   bool IsSberDeprecated() const { return std::get<2>(GetParam()); }
+  bool UseV5() const { return std::get<3>(GetParam()); }
 
   SafeBrowsingBlockingPageBrowserTest(
       const SafeBrowsingBlockingPageBrowserTest&) = delete;
@@ -1183,7 +1190,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
   const std::string delay_long_range_histogram =
       "interstitial." + prefix + ".show_delay_long_range";
-  const std::string threat_source = ".from_device_v4";
+  const std::string threat_source =
+      UseV5() ? ".from_local_blocklist_v5" : ".from_device_v4";
 
   // TODO(nparker): Check for *.from_device as well.
 
@@ -1272,7 +1280,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
   const std::string delay_long_range_histogram =
       "interstitial." + prefix + ".show_delay_long_range";
-  const std::string threat_source = ".from_device_v4";
+  const std::string threat_source =
+      UseV5() ? ".from_local_blocklist_v5" : ".from_device_v4";
 
   // Histograms should start off empty.
   histograms.ExpectTotalCount(decision_histogram, 0);
@@ -1650,7 +1659,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
             SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 // Check back and forward work correctly after clicking through an interstitial.
 #if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
@@ -1736,7 +1746,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   EXPECT_TRUE(report.client_properties().has_url_api_type());
   EXPECT_TRUE(report.client_properties().has_is_async_check());
   EXPECT_EQ(report.client_properties().url_api_type(),
-            ClientSafeBrowsingReportRequest::PVER4_NATIVE);
+            UseV5()
+                ? ClientSafeBrowsingReportRequest::PVER5_NATIVE_LOCAL_BLOCKLIST
+                : ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   EXPECT_FALSE(report.client_properties().is_async_check());
 }
 
@@ -1767,7 +1779,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
             SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
                        CheckReportListsInteractions) {
@@ -1923,6 +1936,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(SBThreatType::SB_THREAT_TYPE_URL_MALWARE),
         // If isolate all sites for testing.
         testing::Bool(),
+        testing::Bool(),
         testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingHatsSurveyBrowserTest,
@@ -2059,7 +2073,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
             SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 IN_PROC_BROWSER_TEST_P(TrustSafetySentimentSurveyV2BrowserTest,
                        TrustSafetySentimentTriggerredOnProceed) {
@@ -2105,7 +2120,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
             SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
                        TestInterstitialPageStringsEnhancedEnabled) {
@@ -2818,7 +2834,16 @@ INSTANTIATE_TEST_SUITE_P(
 // displayed.
 class SafeBrowsingBlockingPageIDNTest
     : public SecurityInterstitialIDNTest,
-      public testing::WithParamInterface<SBThreatType> {
+      public testing::WithParamInterface<std::tuple<SBThreatType, bool>> {
+ public:
+  SafeBrowsingBlockingPageIDNTest() {
+    feature_list_.InitWithFeatureState(safe_browsing::kLocalListsUseSBv5,
+                                       UseV5());
+  }
+
+  SBThreatType GetThreatType() const { return std::get<0>(GetParam()); }
+  bool UseV5() const { return std::get<1>(GetParam()); }
+
  protected:
   // SecurityInterstitialIDNTest implementation
   security_interstitials::SecurityInterstitialPage* CreateInterstitial(
@@ -2833,17 +2858,22 @@ class SafeBrowsingBlockingPageIDNTest
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
-    resource.threat_type = GetParam();
+    resource.threat_type = GetThreatType();
     resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
         CreateForRenderFrameToken(primary_main_frame_id.child_id.value(),
                                   primary_main_frame->GetFrameToken().value());
-    resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+    resource.threat_source =
+        UseV5() ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+                : safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();
     return ui_manager->CreateBlockingPage(
         contents, request_url, {resource}, /*forward_extension_event=*/false,
         /*blocked_page_shown_timestamp=*/std::nullopt);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/40666794): VerifyIDNDecoded does not work with committed
@@ -2856,9 +2886,10 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageIDNTest,
 INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingBlockingPageIDNTestWithThreatType,
     SafeBrowsingBlockingPageIDNTest,
-    testing::Values(SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
-                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
-                    SBThreatType::SB_THREAT_TYPE_URL_UNWANTED));
+    testing::Combine(testing::Values(SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+                                     SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+                                     SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
+                     testing::Bool()));
 
 class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     : public policy::PolicyTest {
@@ -4219,7 +4250,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
             SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 // Attempt to prerender an unsafe page. The prerender navigation should be
 // cancelled and should not affect the security state of the primary page.
@@ -4348,7 +4380,8 @@ INSTANTIATE_TEST_SUITE_P(
             SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
             SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
         testing::Bool(),
-        testing::Bool()));  // If isolate all sites for testing.
+        testing::Bool(),
+        testing::Bool()));  // Isolate all sites, SBER deprecated, Use V5.
 
 IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
                        TimestampNotInCSBRRClickedThroughBlockingPage) {

@@ -71,6 +71,7 @@ static_library("test_database_manager") {
     ":util",
     ":v4_protocol_manager_util",
     "//base",
+    "//components/safe_browsing/core/common:features",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

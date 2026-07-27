@@ -396,6 +396,7 @@ source_set("unit_tests_internal") {
     "//components/infobars/core",
     "//components/lookalikes/core",
     "//components/payments/core",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/strings",

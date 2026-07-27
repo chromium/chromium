@@ -615,10 +615,16 @@ ThreatSource SBLocalDatabaseManager::GetBrowseUrlThreatSource(
     CheckBrowseUrlType check_type) const {
   DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
       << "SB Local database only supports hash database check.";
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST;
+  }
   return ThreatSource::LOCAL_PVER4;
 }
 
 ThreatSource SBLocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST;
+  }
   return ThreatSource::LOCAL_PVER4;
 }
 

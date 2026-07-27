@@ -16,6 +16,7 @@ source_set("interstitials") {
     "//components/application_locale_storage",
     "//components/resources",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",

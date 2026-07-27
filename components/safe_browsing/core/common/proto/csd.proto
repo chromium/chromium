@@ -1971,6 +1971,8 @@ message ClientSafeBrowsingReportRequest {
     CLIENT_SIDE_DETECTION = 9;
     // Glic Counter Abuse.
     GLIC = 10;
+    // Native implementation of Safe Browsing API v5 protocol.
+    PVER5_NATIVE_LOCAL_BLOCKLIST = 11;
   }
 
   // The information propagated from the client about various environment

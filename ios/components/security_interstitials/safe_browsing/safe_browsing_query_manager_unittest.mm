@@ -136,19 +136,26 @@ ACTION_P4(VerifyAsyncQueryFinished,
 }
 }  // namespace
 
-class SafeBrowsingQueryManagerTest : public PlatformTest {
+class SafeBrowsingQueryManagerTest : public PlatformTest,
+                                     public testing::WithParamInterface<bool> {
  protected:
   SafeBrowsingQueryManagerTest()
       : browser_state_(new web::FakeBrowserState()),
         web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
         client_(/*pref_service=*/nullptr) {
+    feature_list_.InitWithFeatureState(safe_browsing::kLocalListsUseSBv5,
+                                       GetParam());
     SafeBrowsingQueryManager::CreateForWebState(web_state_.get(), &client_);
     SafeBrowsingUrlAllowList::CreateForWebState(web_state_.get());
     manager()->AddObserver(&observer_);
     web_state_->SetBrowserState(browser_state_.get());
   }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+ protected:
   SafeBrowsingQueryManager* manager() {
     return SafeBrowsingQueryManager::FromWebState(web_state_.get());
   }
@@ -177,8 +184,13 @@ class SafeBrowsingQueryManagerTest : public PlatformTest {
   FakeSafeBrowsingClient client_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingQueryManagerTest,
+                         ::testing::Bool(),
+                         testing::PrintToStringParamName());
+
 // Tests a query for a safe URL.
-TEST_F(SafeBrowsingQueryManagerTest, SafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerTest, SafeURLQuery) {
   GURL url("http://chromium.test");
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -196,7 +208,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SafeURLQuery) {
 }
 
 // Tests a query for an unsafe URL.
-TEST_F(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -215,7 +227,7 @@ TEST_F(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
 
 // Tests a query for an unsafe URL with async checks enabled, where the URL
 // is unsafe with both sync and async checks.
-TEST_F(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -234,7 +246,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
 
 // Tests a query for an unsafe URL with async checks enabled, where the URL
 // is unsafe with async checks only.
-TEST_F(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
+TEST_P(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
@@ -253,7 +265,7 @@ TEST_F(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
 
 // Tests that back-to-back queries for the same unsafe URL correctly sets an
 // UnsafeResource on both queries.
-TEST_F(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
+TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .Times(2)
@@ -275,7 +287,7 @@ TEST_F(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
 
 // Tests that StoreUnsafeResource associates the UnsafeResource with all
 // queries that match the UnsafeResource's URL.
-TEST_F(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
+TEST_P(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .Times(2)
@@ -297,7 +309,7 @@ TEST_F(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
 }
 
 // Tests observer callbacks for manager destruction.
-TEST_F(SafeBrowsingQueryManagerTest, ManagerDestruction) {
+TEST_P(SafeBrowsingQueryManagerTest, ManagerDestruction) {
   web_state_ = nullptr;
   EXPECT_TRUE(observer_.manager_destroyed());
 }

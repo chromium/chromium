@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/webui/ui_bundled/interstitials/interstitial_ui_util.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/time/time.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/grit/dev_ui_components_resources.h"
 #import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -171,7 +173,10 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.threat_type = threat_type;
   resource.weak_web_state = web_state->GetWeakPtr();
   // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
-  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  resource.threat_source =
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+          ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+          : safe_browsing::ThreatSource::LOCAL_PVER4;
 
   return SafeBrowsingBlockingPage::Create(resource);
 }
@@ -184,7 +189,10 @@ CreateEnterpriseBlockPage(web::WebState* web_state, const GURL& url) {
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
   resource.weak_web_state = web_state->GetWeakPtr();
   // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
-  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  resource.threat_source =
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+          ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+          : safe_browsing::ThreatSource::LOCAL_PVER4;
   return enterprise_connectors::IOSEnterpriseInterstitial::CreateBlockingPage(
       resource);
 }
@@ -197,7 +205,10 @@ CreateEnterpriseWarnPage(web::WebState* web_state, const GURL& url) {
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.weak_web_state = web_state->GetWeakPtr();
   // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
-  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  resource.threat_source =
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+          ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+          : safe_browsing::ThreatSource::LOCAL_PVER4;
   return enterprise_connectors::IOSEnterpriseInterstitial::CreateWarningPage(
       resource);
 }

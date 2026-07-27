@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -41,7 +44,10 @@ UnsafeResource CreateResource(web::WebState* web_state, const GURL& url) {
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   resource.weak_web_state = web_state->GetWeakPtr();
-  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  resource.threat_source =
+      base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+          ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+          : safe_browsing::ThreatSource::LOCAL_PVER4;
   return resource;
 }
 }  // namespace
@@ -84,19 +90,37 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 };
 
+class SafeBrowsingBlockingPageTest_V4V5
+    : public SafeBrowsingBlockingPageTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SafeBrowsingBlockingPageTest_V4V5() {
+    feature_list_.InitWithFeatureState(safe_browsing::kLocalListsUseSBv5,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingBlockingPageTest_V4V5,
+                         ::testing::Bool(),
+                         testing::PrintToStringParamName());
+
 // Tests that the blocking page reports to SafeBrowsingClient on creation.
-TEST_F(SafeBrowsingBlockingPageTest, ReportsOnCreation) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5, ReportsOnCreation) {
   EXPECT_TRUE(client_->on_security_interstitial_shown_called());
 }
 
 // Tests that the blocking page generates HTML.
-TEST_F(SafeBrowsingBlockingPageTest, GenerateHTML) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5, GenerateHTML) {
   EXPECT_GT(page_->GetHtmlContents().size(), 0U);
 }
 
 // Tests that the blocking page handles the proceed command by updating the
 // allow list and reloading the page.
-TEST_F(SafeBrowsingBlockingPageTest, HandleProceedCommand) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5, HandleProceedCommand) {
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(&web_state_);
   ASSERT_FALSE(allow_list->AreUnsafeNavigationsAllowed(url_));
@@ -120,7 +144,7 @@ TEST_F(SafeBrowsingBlockingPageTest, HandleProceedCommand) {
 
 // Tests that the blocking page handles the don't proceed command by navigating
 // back.
-TEST_F(SafeBrowsingBlockingPageTest, HandleDontProceedCommand) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5, HandleDontProceedCommand) {
   // Insert a safe navigation so that the page can navigate back to safety, then
   // add a navigation for the committed interstitial page.
   GURL kSafeUrl("http://www.safe.test");
@@ -146,7 +170,8 @@ TEST_F(SafeBrowsingBlockingPageTest, HandleDontProceedCommand) {
 
 // Tests that the blocking page handles the don't proceed command by closing the
 // WebState if there is no safe NavigationItem to navigate back to.
-TEST_F(SafeBrowsingBlockingPageTest, HandleDontProceedCommandWithoutSafeItem) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5,
+       HandleDontProceedCommandWithoutSafeItem) {
   // Send the don't proceed command.
   SendCommand(security_interstitials::CMD_DONT_PROCEED);
 
@@ -160,7 +185,8 @@ TEST_F(SafeBrowsingBlockingPageTest, HandleDontProceedCommandWithoutSafeItem) {
 
 // Tests that the blocking page removes pending allow list decisions if
 // destroyed.
-TEST_F(SafeBrowsingBlockingPageTest, RemovePendingDecisionsUponDestruction) {
+TEST_P(SafeBrowsingBlockingPageTest_V4V5,
+       RemovePendingDecisionsUponDestruction) {
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(&web_state_);
   std::set<safe_browsing::SBThreatType> pending_threats;

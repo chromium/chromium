@@ -100,12 +100,16 @@ void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
 safe_browsing::ThreatSource
 FakeSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
     safe_browsing::CheckBrowseUrlType check_type) const {
-  return safe_browsing::ThreatSource::LOCAL_PVER4;
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+             : safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
 safe_browsing::ThreatSource
 FakeSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
-  return safe_browsing::ThreatSource::LOCAL_PVER4;
+  return base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)
+             ? safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+             : safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
 bool FakeSafeBrowsingDatabaseManager::CheckExtensionIDs(

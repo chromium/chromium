@@ -749,22 +749,15 @@ class SBLocalDatabaseManagerTest_V4V5
   base::test::ScopedFeatureList feature_list_;
 };
 
-class SBLocalDatabaseManagerTest_V5 : public SBLocalDatabaseManagerTest {
- public:
-  SBLocalDatabaseManagerTest_V5() {
-    feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_P(SBLocalDatabaseManagerTest_V4V5, TestGetThreatSource) {
   WaitForTasksOnTaskRunner();
-  EXPECT_EQ(ThreatSource::LOCAL_PVER4,
+  ThreatSource expected_threat_source =
+      GetParam() ? ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST
+                 : ThreatSource::LOCAL_PVER4;
+  EXPECT_EQ(expected_threat_source,
             sb_local_database_manager_->GetBrowseUrlThreatSource(
                 CheckBrowseUrlType::kHashDatabase));
-  EXPECT_EQ(ThreatSource::LOCAL_PVER4,
+  EXPECT_EQ(expected_threat_source,
             sb_local_database_manager_->GetNonBrowseUrlThreatSource());
 }
 
@@ -844,6 +837,16 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
   histograms.ExpectTotalCount(
       "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration", 1);
 }
+
+class SBLocalDatabaseManagerTest_V5 : public SBLocalDatabaseManagerTest {
+ public:
+  SBLocalDatabaseManagerTest_V5() {
+    feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_F(SBLocalDatabaseManagerTest_V5,
        TestCheckBrowseUrl_V5_NullManagerReturnsSafe) {

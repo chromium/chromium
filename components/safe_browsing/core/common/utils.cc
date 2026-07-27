@@ -156,6 +156,8 @@ std::string_view GetExtraMetricsSuffix(
   switch (unsafe_resource.threat_source) {
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return "from_device_v4";
+    case safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST:
+      return "from_local_blocklist_v5";
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return "from_client_side_detection";
     case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:

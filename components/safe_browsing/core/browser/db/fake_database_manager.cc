@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+
+#include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 
@@ -109,11 +112,17 @@ bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
 safe_browsing::ThreatSource
 FakeSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
     CheckBrowseUrlType check_type) const {
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST;
+  }
   return safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
 safe_browsing::ThreatSource
 FakeSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return safe_browsing::ThreatSource::LOCAL_PVER5_LOCAL_BLOCKLIST;
+  }
   return safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
