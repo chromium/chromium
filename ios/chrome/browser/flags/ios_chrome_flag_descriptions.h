@@ -1781,6 +1781,12 @@ inline constexpr char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
     "subject to an opt-out preference.";
 
+inline constexpr char kSafeBrowsingLocalListsUseSBv5Name[] =
+    "Safe Browsing Local Lists use v5 API";
+inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =
+    "Fetch and check local lists using the Safe Browsing v5 API instead of the "
+    "v4 Update API.";
+
 inline constexpr char kSafeBrowsingRealTimeLookupName[] =
     "Enable real-time Safe Browsing";
 inline constexpr char kSafeBrowsingRealTimeLookupDescription[] =

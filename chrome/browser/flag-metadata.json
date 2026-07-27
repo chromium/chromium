@@ -8744,6 +8744,14 @@
     "expiry_milestone": 152
   },
   {
+    "name": "safe-browsing-local-lists-use-sbv5",
+    "owners": [
+      "thefrog@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "safe-browsing-scam-detection-keyboard-lock-trigger-android",
     "owners": [
       "xinghuilu@chromium.org",
