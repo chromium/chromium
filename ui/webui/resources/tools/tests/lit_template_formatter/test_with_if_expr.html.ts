@@ -9,12 +9,17 @@ export function getHtml(this: DummyTestElement) {
 <div class="wrapper">
   <div class="inner">
   <if expr="is_chromeos">
-    <div class="cros"></div>
+    <div class="cros">
+      Hello From ChromeOS Build!!!!!
+    </div>
   </if>
   </div>
 </div>
 <if expr="is_win">
-  <span>Windows Only</span>
+    <span>Windows Only</span>
+<cr-button id="winButton" @click="${this.onWinButtonClick_}">
+       Click Me!
+  </cr-button>
 </if>
 <!--_html_template_end_-->`;
 }

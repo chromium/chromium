@@ -102,6 +102,10 @@ function format(node, depth, placeholderMap) {
       }
 
       if (child.nodeName === '#text') {
+        if (child.value.trim() === '') {
+          newChildren.push(child);
+          continue;
+        }
         // Check for placeholders to record metadata.
         const matches =
             child.value.match(new RegExp(`${EXPR_PREFIX}-\\d+`, 'g'));
@@ -109,21 +113,21 @@ function format(node, depth, placeholderMap) {
           for (const match of matches) {
             recordMetadata(placeholderMap, match, depth);
           }
-          // If the child node has a leading newline and whitespace, replace it
-          // with the appropriate indentation whitespace.
-          if (/^\n\s*/.test(child.value)) {
-            child.value = child.value.replace(
-                /^\n\s*/, getIndentationPrefix(depth * INDENT_SIZE));
-          }
-          // If the child node has trailing whitespace, initially set it to the
-          // parent's indentation (for the closing tag). If it has a subsequent
-          // sibling, this will be overwritten later by ensureNewlineAndIndent.
-          if (TRAILING_NEWLINE_REGEX.test(child.value)) {
-            const trailingIndent =
-                getDepthForNode(node, depth - 1) * INDENT_SIZE;
-            child.value = child.value.replace(
-                TRAILING_NEWLINE_REGEX, getIndentationPrefix(trailingIndent));
-          }
+        }
+        // If the child node has a leading newline and whitespace, replace it
+        // with the appropriate indentation whitespace.
+        if (/^\n[ \t]*/.test(child.value)) {
+          child.value = child.value.replace(
+              /^\n[ \t]*/, getIndentationPrefix(depth * INDENT_SIZE));
+        }
+        // If the child node has trailing whitespace, initially set it to the
+        // parent's indentation (for the closing tag). If it has a subsequent
+        // sibling, this will be overwritten later by ensureNewlineAndIndent.
+        if (TRAILING_NEWLINE_REGEX.test(child.value)) {
+          const trailingIndent =
+              depth > 0 ? getDepthForNode(node, depth - 1) * INDENT_SIZE : 0;
+          child.value = child.value.replace(
+              TRAILING_NEWLINE_REGEX, getIndentationPrefix(trailingIndent));
         }
       }
 
