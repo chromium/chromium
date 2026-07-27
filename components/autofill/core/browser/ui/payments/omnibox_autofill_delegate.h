@@ -83,24 +83,23 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer,
   // Checks if `trigger_field_global_id_` is in the frame.
   bool IsTriggerFieldGlobalIdInFrame(AutofillDriver& driver) const;
 
-  // Resets the delegate's internal state, clearing `candidate_form_found_`
-  // `trigger_form_global_id_`, and `trigger_field_global_id_`.
-  void Reset();
-
-  // Hides the omnibox autofill chip via the payments autofill client and resets
-  // the delegate's internal state. This is called when the autofill manager
-  // state transitions away from active or when the triggering form is removed
-  // from the DOM.
-  void HideOmniboxAutofillChip();
-
   // Fills or previews the card associated with the `suggestion`.
   void FillOrPreviewCard(const Suggestion& suggestion,
                          mojom::ActionPersistence action_persistence);
+
+  // Resets the Omnibox Autofill flow. Hides the omnibox chip via the payments
+  // autofill client if it was shown (when `field_became_visible_` is `true`).
+  // Clears `candidate_form_found_`, `field_became_visible_`,
+  // `trigger_form_global_id_`, and `trigger_field_global_id_`.
+  void Reset();
 
   // If true, the OmniboxAutofillDelegate is likely waiting for the user to
   // scroll the candidate form into the viewport, so parsing logic to find
   // candidate forms should no longer be run.
   bool candidate_form_found_ = false;
+
+  // If true, the IntersectionObserver reported that the field became visible.
+  bool field_became_visible_ = false;
 
   // The global ID of the form for which Omnibox Autofill should trigger.
   FormGlobalId trigger_form_global_id_;

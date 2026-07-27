@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -124,6 +125,7 @@ bool IsValidOmniboxAutofillSuggestion(SuggestionType type) {
 }  // namespace
 
 using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
+using autofill_metrics::OmniboxAutofillShowChipDecisionPart2;
 
 OmniboxAutofillDelegate::OmniboxAutofillDelegate(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {
@@ -258,15 +260,15 @@ void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
     AutofillManager::LifecycleState previous,
     AutofillManager::LifecycleState current) {
   if (!candidate_form_found_) {
-    // Candidate form has not yet been found, so the chip is not being shown.
+    // Candidate form has not yet been found, so no flow is active.
     return;
   }
   switch (previous) {
     case AutofillManager::LifecycleState::kActive:
-      // Hide the chip only when the specific frame containing the trigger field
-      // transitions away from active.
+      // Reset state (and hide the chip if it was shown) when the specific frame
+      // containing the trigger field transitions away from active.
       if (IsTriggerFieldGlobalIdInFrame(manager.driver())) {
-        HideOmniboxAutofillChip();
+        Reset();
       }
       break;
     case AutofillManager::LifecycleState::kInactive:
@@ -281,12 +283,14 @@ void OmniboxAutofillDelegate::OnAfterFormsSeen(
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
   if (!candidate_form_found_) {
-    // Candidate form has not yet been found, so the chip is not being shown.
+    // Candidate form has not yet been found, so no flow is active.
     return;
   }
   for (const FormGlobalId& id : removed_forms) {
+    // Reset state (and hide the chip if it was shown) when the trigger form is
+    // removed from the DOM.
     if (id == trigger_form_global_id_) {
-      HideOmniboxAutofillChip();
+      Reset();
       return;
     }
   }
@@ -404,7 +408,12 @@ void OmniboxAutofillDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
 }
 
 void OmniboxAutofillDelegate::OnFieldBecameVisible() {
+  // Log that the field became visible to the user's viewport.
+  LogOmniboxAutofillShowChipDecisionPart2(
+      OmniboxAutofillShowChipDecisionPart2::kSuccess);
+  field_became_visible_ = true;
   visibility_receiver_.reset();
+
   auto* manager =
       static_cast<BrowserAutofillManager*>(trigger_autofill_manager_.get());
   if (!manager) {
@@ -496,18 +505,6 @@ bool OmniboxAutofillDelegate::IsTriggerFieldGlobalIdInFrame(
   return trigger_field_global_id_.frame_token == driver.GetFrameToken();
 }
 
-void OmniboxAutofillDelegate::Reset() {
-  candidate_form_found_ = false;
-  trigger_form_global_id_ = FormGlobalId();
-  trigger_field_global_id_ = FieldGlobalId();
-  trigger_autofill_manager_.reset();
-}
-
-void OmniboxAutofillDelegate::HideOmniboxAutofillChip() {
-  client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();
-  Reset();
-}
-
 void OmniboxAutofillDelegate::FillOrPreviewCard(
     const Suggestion& suggestion,
     mojom::ActionPersistence action_persistence) {
@@ -524,6 +521,27 @@ void OmniboxAutofillDelegate::FillOrPreviewCard(
                               suggestion.payload, *manager,
                               trigger_form_global_id_, trigger_field_global_id_,
                               AutofillTriggerSource::kOmniboxAutofill);
+}
+
+void OmniboxAutofillDelegate::Reset() {
+  CHECK(candidate_form_found_);
+
+  if (field_became_visible_) {
+    client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();
+  } else {
+    // If a candidate form was found but its trigger field never became visible
+    // by the time `Reset()` is called (e.g., the user never scrolled it into
+    // view), log that IntersectionObserver never reported it as visible.
+    LogOmniboxAutofillShowChipDecisionPart2(
+        OmniboxAutofillShowChipDecisionPart2::
+            kIntersectionObserverNeverReportedVisibility);
+  }
+
+  candidate_form_found_ = false;
+  field_became_visible_ = false;
+  trigger_form_global_id_ = FormGlobalId();
+  trigger_field_global_id_ = FieldGlobalId();
+  trigger_autofill_manager_.reset();
 }
 
 }  // namespace autofill

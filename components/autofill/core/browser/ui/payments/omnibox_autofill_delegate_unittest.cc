@@ -39,6 +39,7 @@ namespace {
 
 using autofill_metrics::OmniboxAutofillEvents;
 using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
+using autofill_metrics::OmniboxAutofillShowChipDecisionPart2;
 using test::CreateFormDataForFrame;
 using test::CreateTestFormField;
 using ::testing::NiceMock;
@@ -575,20 +576,14 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
-      /*suggestions=*/{},
-      /*on_suggestions_shown=*/base::DoNothing(),
-      /*on_suggestions_hidden=*/base::DoNothing(),
-      /*did_select_suggestion=*/base::DoNothing(),
-      /*did_deselect_suggestion=*/base::DoNothing(),
-      /*did_accept_suggestion=*/base::DoNothing());
-
-  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
-  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
-
   OmniboxAutofillDelegate* delegate =
       payments_autofill_client().GetOmniboxAutofillDelegate();
   ASSERT_TRUE(delegate);
+
+  delegate->OnFieldBecameVisible();
+
+  EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
 
   delegate->OnAutofillManagerStateChanged(
       autofill_manager(), /*previous=*/AutofillManager::LifecycleState::kActive,
@@ -612,6 +607,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   }
 
   // Trigger state change to inactive (from active), which triggers `Reset()`.
+  base::HistogramTester histogram_tester;
   OmniboxAutofillDelegate* delegate =
       payments_autofill_client().GetOmniboxAutofillDelegate();
   ASSERT_TRUE(delegate);
@@ -619,15 +615,19 @@ TEST_F(OmniboxAutofillDelegateTest,
       autofill_manager(), /*previous=*/AutofillManager::LifecycleState::kActive,
       /*current=*/AutofillManager::LifecycleState::kInactive);
 
+  // Verify that `Reset()` recorded that the field never became visible.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart2",
+      OmniboxAutofillShowChipDecisionPart2::
+          kIntersectionObserverNeverReportedVisibility,
+      1);
+
   // Verify that the state was reset. If it was reset, we can find the candidate
   // form again and it will log success.
-  {
-    base::HistogramTester histogram_tester;
-    FormsSeen({form});
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
-        OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
-  }
+  FormsSeen({form});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
@@ -663,13 +663,11 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_HidesChip) {
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
-      /*suggestions=*/{},
-      /*on_suggestions_shown=*/base::DoNothing(),
-      /*on_suggestions_hidden=*/base::DoNothing(),
-      /*did_select_suggestion=*/base::DoNothing(),
-      /*did_deselect_suggestion=*/base::DoNothing(),
-      /*did_accept_suggestion=*/base::DoNothing());
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  delegate->OnFieldBecameVisible();
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
@@ -695,19 +693,24 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_ResetsState) {
   }
 
   // Remove the form. This should trigger `OnAfterFormsSeen` and `Reset()`.
+  base::HistogramTester histogram_tester;
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{form.global_id()},
                                  AutofillManagerTestApi::pass_key());
 
+  // Verify that `Reset()` recorded that the field never became visible.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart2",
+      OmniboxAutofillShowChipDecisionPart2::
+          kIntersectionObserverNeverReportedVisibility,
+      1);
+
   // Verify that the state was reset. If it was reset, we can find the candidate
   // form again.
-  {
-    base::HistogramTester histogram_tester;
-    FormsSeen({form});
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
-        OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
-  }
+  FormsSeen({form});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
@@ -830,6 +833,9 @@ TEST_F(OmniboxAutofillDelegateTest, OnFieldBecameVisible_LogsMetrics) {
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.QueriedCreditCardFormIsSecure",
                                       true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart2",
+      OmniboxAutofillShowChipDecisionPart2::kSuccess, 1);
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kChipShown, 1);
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",

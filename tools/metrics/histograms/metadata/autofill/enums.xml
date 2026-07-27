@@ -5656,6 +5656,18 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillShowChipDecisionPart1) -->
 
+<!-- LINT.IfChange(OmniboxAutofillShowChipDecisionPart2) -->
+
+<enum name="OmniboxShowChipDecisionPart2">
+  <int value="0"
+      label="IntersectionObserver never reported that the field became
+             visible"/>
+  <int value="1"
+      label="IntersectionObserver reported that the field became visible"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillShowChipDecisionPart2) -->
+
 <!-- LINT.IfChange(OneTimeTokensBackendErrorCode) -->
 
 <enum name="OneTimeTokensBackendErrorCode">

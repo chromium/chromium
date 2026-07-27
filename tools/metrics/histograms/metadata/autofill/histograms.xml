@@ -6056,6 +6056,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OmniboxAutofill.ShowChipDecisionPart2"
+    enum="OmniboxShowChipDecisionPart2" expires_after="2027-04-30">
+  <owner>ferny@google.com</owner>
+  <owner>osaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the outcome of the second chunk of the decision of whether to show the
+    omnibox chip or not.
+
+    Note that this histogram is recorded once per Omnibox Autofill flow (either
+    when OnFieldBecameVisible() or Reset() is called), *not* necessarily once
+    per page load. The difference between
+    Autofill.OmniboxAutofill.ShowChipDecisionPart1's final bucket (kSuccess) and
+    this histogram's final bucket (kSuccess) represents the total dropoff from
+    starting the IntersectionObserver to showing the omnibox chip.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.AuthLatency" units="ms"
     expires_after="2027-05-01">
   <owner>koerber@google.com</owner>
