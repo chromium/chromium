@@ -565,14 +565,8 @@ void HttpCache::Transaction::SetPriority(RequestPriority priority) {
 
 void HttpCache::Transaction::SetWebSocketHandshakeStreamCreateHelper(
     WebSocketHandshakeStreamBase::CreateHelper* create_helper) {
+  CHECK(!network_transaction());
   websocket_handshake_stream_base_create_helper_ = create_helper;
-
-  // TODO(shivanisha). Since this function must be invoked before Start() as
-  // per the API header, a network transaction should not exist at that point.
-  HttpTransaction* transaction = network_transaction();
-  if (transaction) {
-    transaction->SetWebSocketHandshakeStreamCreateHelper(create_helper);
-  }
 }
 
 void HttpCache::Transaction::SetConnectedCallback(

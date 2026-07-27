@@ -12750,15 +12750,13 @@ TEST_F(HttpCacheTest, SetWebSocketHandshakeStreamCreateHelper) {
   EXPECT_FALSE(cache.network_layer()->last_transaction());
 
   info.url = GURL(kSimpleGET_Transaction.url);
+  trans->SetWebSocketHandshakeStreamCreateHelper(&create_helper);
+
   TestCompletionCallback callback;
   EXPECT_EQ(ERR_IO_PENDING,
             trans->Start(&info, callback.callback(), NetLogWithSource()));
 
   ASSERT_TRUE(cache.network_layer()->last_transaction());
-  EXPECT_FALSE(cache.network_layer()
-                   ->last_transaction()
-                   ->websocket_handshake_stream_create_helper());
-  trans->SetWebSocketHandshakeStreamCreateHelper(&create_helper);
   EXPECT_EQ(&create_helper, cache.network_layer()
                                 ->last_transaction()
                                 ->websocket_handshake_stream_create_helper());
