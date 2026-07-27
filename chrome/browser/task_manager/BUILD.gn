@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -402,5 +403,9 @@ if (!is_android) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (enable_pdf) {
+      deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+    }
   }
 }

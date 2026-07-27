@@ -132,6 +132,38 @@ source_set("test_mime_handler_stream_manager") {
   ]
 }
 
+source_set("pdf_extension_test_base") {
+  testonly = true
+
+  sources = [
+    "pdf_extension_test_base.cc",
+    "pdf_extension_test_base.h",
+  ]
+
+  public_deps = [
+    ":test_mime_handler_stream_manager",
+    "//chrome/browser/extensions:test_support",
+  ]
+
+  deps = [
+    ":pdf",
+    ":pdf_extension_test_utils",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/guest_view/browser",
+    "//components/guest_view/browser:test_support",
+    "//components/pdf/browser",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//pdf:features",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -162,6 +194,7 @@ if (!is_android) {
     deps = [
       ":pdf_extension_test_utils",
       "//base",
+      "//chrome/browser/pdf:pdf_extension_test_base",
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
@@ -205,6 +238,7 @@ if (!is_android) {
       "//base",
       "//chrome/app:command_ids",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/pdf:pdf_extension_test_base",
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui",
       "//chrome/test:test_support",

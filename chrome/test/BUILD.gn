@@ -565,18 +565,6 @@ static_library("test_support") {
   data_deps = []
 
   if (enable_pdf) {
-    sources += [
-      "../browser/pdf/pdf_extension_test_base.cc",
-      "../browser/pdf/pdf_extension_test_base.h",
-    ]
-
-    deps += [
-      "../browser/pdf",
-      "../browser/pdf:pdf_extension_test_utils",
-      "//components/pdf/browser",
-      "//extensions/browser/api:extensions_api_client",
-      "//pdf:features",
-    ]
     public_deps += [ "../browser/pdf:test_mime_handler_stream_manager" ]
   }
 
@@ -3472,6 +3460,7 @@ if (!is_android) {
       deps += [
         "../browser/pdf",
         "../browser/pdf:browser_tests",
+        "../browser/pdf:pdf_extension_test_base",
         "../browser/pdf:pdf_extension_test_utils",
         "../browser/ui/pdf",
         "//build/config/coverage:buildflags",

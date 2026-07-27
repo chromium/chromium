@@ -84,6 +84,10 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+  }
 }
 
 source_set("unit_tests") {

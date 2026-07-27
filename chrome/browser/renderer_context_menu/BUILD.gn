@@ -4,6 +4,7 @@
 
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 # The bubble model headers only need the small confirm_bubble_model target
@@ -409,6 +410,10 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/boca/on_task" ]
+    }
+
+    if (enable_pdf) {
+      deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
     }
   }
 

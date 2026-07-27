@@ -3178,6 +3178,10 @@ source_set("browser_tests") {
       "//third_party/wpt_tools/wpt/resources/testdriver.js",
     ]
   }  # enable_extensions
+
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

@@ -278,6 +278,10 @@ if (!is_android) {
         deps += [ "//components/pdf/browser" ]
       }
     }
+
+    if (enable_pdf) {
+      deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+    }
   }
 }
 

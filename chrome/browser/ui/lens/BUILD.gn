@@ -293,6 +293,7 @@ source_set("browser_tests") {
     "//chrome/browser/contextual_tasks:test_support",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/pdf:pdf_extension_test_base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin/e2e_tests:test_support",
     "//chrome/browser/sync",
