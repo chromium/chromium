@@ -22,7 +22,7 @@ namespace tabs {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kTabSearchPinnedToTabstrip, true);
-  registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
+  registry->RegisterBooleanPref(prefs::kOrganizerPanelPinnedToTabstrip, true);
   registry->RegisterBooleanPref(
       prefs::kEverythingMenuPinnedToTabstrip,
       !base::FeatureList::IsEnabled(

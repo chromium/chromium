@@ -647,7 +647,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kPinnedCastMigrationComplete, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kProjectsPanelEntrypointEnabled,
+    {prefs::kOrganizerPanelEntrypointEnabled,
      {syncable_prefs_ids::kProjectsPanelEntrypointEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

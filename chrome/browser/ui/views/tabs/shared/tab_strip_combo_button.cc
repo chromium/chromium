@@ -110,7 +110,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
       base::BindRepeating(&TabStripComboButton::UpdateButtonsVisibility,
                           base::Unretained(this)));
   pref_registrar_.Add(
-      prefs::kProjectsPanelPinnedToTabstrip,
+      prefs::kOrganizerPanelPinnedToTabstrip,
       base::BindRepeating(&TabStripComboButton::UpdateButtonsVisibility,
                           base::Unretained(this)));
   pref_registrar_.Add(
@@ -150,7 +150,7 @@ void TabStripComboButton::UpdateButtonsVisibility() {
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   const std::string_view pref_name =
       tab_groups::IsProjectsPanelFeatureEnabled()
-          ? prefs::kProjectsPanelPinnedToTabstrip
+          ? prefs::kOrganizerPanelPinnedToTabstrip
           : prefs::kEverythingMenuPinnedToTabstrip;
 
   if (start_button_) {
@@ -295,7 +295,7 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
   if (source == start_button_) {
     if (tab_groups::IsProjectsPanelFeatureEnabled()) {
       command_id = IDC_PROJECTS_PANEL_TOGGLE_PIN;
-      pref_name = prefs::kProjectsPanelPinnedToTabstrip;
+      pref_name = prefs::kOrganizerPanelPinnedToTabstrip;
       string_id = prefs->GetBoolean(pref_name)
                       ? IDS_PROJECTS_PANEL_BUTTON_CXMENU_UNPIN
                       : IDS_PROJECTS_PANEL_BUTTON_CXMENU_PIN;
@@ -364,7 +364,7 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   std::string_view pref_name;
   if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
-    pref_name = prefs::kProjectsPanelPinnedToTabstrip;
+    pref_name = prefs::kOrganizerPanelPinnedToTabstrip;
   } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
     pref_name = prefs::kEverythingMenuPinnedToTabstrip;
   } else {

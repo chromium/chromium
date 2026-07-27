@@ -1198,6 +1198,8 @@ inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 #if !BUILDFLAG(IS_ANDROID)
 // Boolean determining whether the projects panel entrypoint is displayed in the
 // tab strip.
+inline constexpr char kOrganizerPanelEntrypointEnabled[] =
+    "organizer_panel.entrypoint_enabled";
 inline constexpr char kProjectsPanelEntrypointEnabled[] =
     "projects_panel.entrypoint_enabled";
 
@@ -1223,8 +1225,10 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
 inline constexpr char kTabSearchPinnedToTabstrip[] =
     "tab_search.pinned_to_tabstrip";
 
-// Boolean determining whether the projects panel button is pinned to the tab
+// Boolean determining whether the organizer panel button is pinned to the tab
 // strip.
+inline constexpr char kOrganizerPanelPinnedToTabstrip[] =
+    "organizer_panel.pinned_to_tabstrip";
 inline constexpr char kProjectsPanelPinnedToTabstrip[] =
     "projects_panel.pinned_to_tabstrip";
 

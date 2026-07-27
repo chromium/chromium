@@ -74,7 +74,7 @@ class TabStripComboButtonInteractiveUiTest
 
   auto EnsureBothButtonsVisible() {
     return Steps(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
-                 SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true),
+                 SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true),
                  WaitForShow(kTabSearchButtonElementId),
                  WaitForShow(kVerticalTabStripProjectsButtonElementId));
   }
@@ -155,11 +155,11 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       CheckFlatEdge(kVerticalTabStripProjectsButtonElementId, FlatEdge::kRight),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kLeft),
       // Hide start button via pref.
-      SetPinned(prefs::kProjectsPanelPinnedToTabstrip, false),
+      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, false),
       WaitForHide(kVerticalTabStripProjectsButtonElementId),
       CheckFlatEdge(kTabSearchButtonElementId, FlatEdge::kNone),
       // Show start button again.
-      SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true));
+      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                   CheckResult(
                       [this]() {
                         return browser()->GetProfile()->GetPrefs()->GetBoolean(
-                            prefs::kProjectsPanelPinnedToTabstrip);
+                            prefs::kOrganizerPanelPinnedToTabstrip);
                       },
                       false));
 }
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonHorizontalInteractiveUiTest,
   RunTestSequence(
       // Pin both tab search and projects panel.
       SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
-      SetPinned(prefs::kProjectsPanelPinnedToTabstrip, true),
+      SetPinned(prefs::kOrganizerPanelPinnedToTabstrip, true),
       // Tab search should be visible.
       WaitForShow(kTabSearchButtonElementId),
       // Projects panel should NOT be present in the view hierarchy of the combo

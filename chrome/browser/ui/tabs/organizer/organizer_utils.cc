@@ -14,7 +14,7 @@ namespace projects {
 bool IsProjectsPanelEntrypointEnabled(const Profile* profile) {
   return tab_groups::IsProjectsPanelFeatureEnabled() &&
          profile->GetPrefs()->GetBoolean(
-             prefs::kProjectsPanelEntrypointEnabled);
+             prefs::kOrganizerPanelEntrypointEnabled);
 }
 
 }  // namespace projects

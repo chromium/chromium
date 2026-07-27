@@ -11,7 +11,7 @@ namespace projects {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
-      prefs::kProjectsPanelEntrypointEnabled, true,
+      prefs::kOrganizerPanelEntrypointEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

@@ -287,7 +287,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kTabSearchPinnedToTabstrip] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kProjectsPanelPinnedToTabstrip] =
+  (*s_allowlist)[::prefs::kOrganizerPanelPinnedToTabstrip] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kEverythingMenuPinnedToTabstrip] =
       settings_api::PrefType::kBoolean;

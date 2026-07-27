@@ -40,8 +40,6 @@ source_set("mixers") {
     "new_tab_page_color_mixer.h",
     "omnibox_color_mixer.cc",
     "omnibox_color_mixer.h",
-    "organizer_panel_color_mixer.cc",
-    "organizer_panel_color_mixer.h",
     "product_specifications_color_mixer.cc",
     "product_specifications_color_mixer.h",
     "tab_group_color_ids.h",

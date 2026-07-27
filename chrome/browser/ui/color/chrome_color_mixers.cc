@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 #include "chrome/browser/ui/color/new_tab_page_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
-#include "chrome/browser/ui/color/organizer_panel_color_mixer.h"
 #include "chrome/browser/ui/color/product_specifications_color_mixer.h"
 #include "chrome/browser/ui/color/tab_strip_color_mixer.h"
 #include "ui/color/color_provider_utils.h"
@@ -64,7 +63,6 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
   AddNewTabPageColorMixer(provider, key);
   AddOmniboxColorMixer(provider, key);
   AddProductSpecificationsColorMixer(provider, key);
-  AddProjectsPanelColorMixer(provider, key);
   AddTabStripColorMixer(provider, key);
 
   AddMaterialChromeColorMixer(provider, key);
