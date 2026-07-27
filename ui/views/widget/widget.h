@@ -38,6 +38,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -1372,6 +1373,21 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // the ShouldPaintAsActive() state.
   void NotifyPaintAsActiveChanged();
 
+  // Enables input protection. Installs standard policies (occlusion, window
+  // activation, click-spam) if `custom_protector` is nullptr. Otherwise, the
+  // caller must configure the provided protector with the desired policies.
+  // See ui/views/input_protection/README.md for details on how this works.
+  void EnableInputEventActivationProtection(
+      std::unique_ptr<InputEventActivationProtector> custom_protector =
+          nullptr);
+
+  // Returns true if input event activation protection is enabled.
+  bool IsInputEventActivationProtectionEnabled() const;
+
+  InputEventActivationProtector* input_protector_for_testing() {
+    return input_protector_.get();
+  }
+
   base::WeakPtr<Widget> GetWeakPtr();
 
   // Overridden from NativeWidgetDelegate:
@@ -1631,6 +1647,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   ui::ColorId GetBackgroundColorId() const;
 
+  // Returns true if the event is a possibly unintended interaction.
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                       const View* target);
+
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
@@ -1825,6 +1845,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
+
+  // Handles input protection for this widget.
+  std::unique_ptr<InputEventActivationProtector> input_protector_;
+
+  // True if input protection is enabled for this widget.
+  bool input_event_activation_protection_enabled_ = false;
 
   // Indicates whether there is an autosize task in the task queue. Also used to
   // cancel the autosize task in testing.

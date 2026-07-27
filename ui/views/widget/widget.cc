@@ -54,6 +54,8 @@
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
+#include "ui/views/input_protection/occlusion_aware_input_protection_policy.h"
+#include "ui/views/input_protection/window_activation_input_protection_policy.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
@@ -1322,6 +1324,47 @@ bool Widget::IsVisible() const {
 
 bool Widget::IsVisibleOnScreen() const {
   return native_widget_ ? native_widget_->IsVisibleOnScreen() : false;
+}
+
+void Widget::EnableInputEventActivationProtection(
+    std::unique_ptr<InputEventActivationProtector> custom_protector) {
+  if (!base::FeatureList::IsEnabled(features::kEnableInputProtection)) {
+    return;
+  }
+
+  if (input_event_activation_protection_enabled_) {
+    return;
+  }
+
+  input_event_activation_protection_enabled_ = true;
+  if (custom_protector) {
+    input_protector_ = std::move(custom_protector);
+    return;
+  }
+
+  input_protector_ = std::make_unique<InputEventActivationProtector>();
+  // TODO(crbug.com/467460499): `DefaultInputProtectionPolicy` is installed by
+  // default (inside `InputEventActivationProtector`), but it won't work fully
+  // because visibility changes are not yet forwarded from the Widget.
+  // This will be addressed in a follow-up CL.
+  input_protector_->AddPolicy(
+      std::make_unique<OcclusionAwareInputProtectionPolicy>());
+  input_protector_->AddPolicy(
+      std::make_unique<WindowActivationInputProtectionPolicy>(this));
+}
+
+bool Widget::IsInputEventActivationProtectionEnabled() const {
+  return input_event_activation_protection_enabled_;
+}
+
+bool Widget::IsPossiblyUnintendedInteraction(const ui::Event& event,
+                                             const View* target) {
+  if (!IsInputEventActivationProtectionEnabled()) {
+    return false;
+  }
+
+  return input_protector_->IsPossiblyUnintendedInteraction(
+      event, /*allow_key_events=*/false, target);
 }
 
 const ui::ThemeProvider* Widget::GetThemeProvider() const {

@@ -60,6 +60,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/configurable_test_native_frame_view.h"
 #include "ui/views/test/mock_drag_controller.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/test/mock_native_widget.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_views.h"
@@ -67,6 +68,7 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/views_features.h"
 #include "ui/views/views_test_suite.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -5878,7 +5880,7 @@ class WidgetWithAXTree : public WidgetTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAccessibilityTreeForViews};
+      ::features::kAccessibilityTreeForViews};
 };
 
 TEST_F(WidgetWithAXTree, WidgetAXManagerInitializedWhenFlagIsOn) {
@@ -6778,5 +6780,54 @@ TEST_F(WidgetTest, ShouldDescendIntoChildForEventHandling) {
   toplevel->CloseNow();
 }
 #endif  // defined(USE_AURA)
+
+TEST_F(WidgetTest, InputProtectionDisabledByDefault) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  EXPECT_FALSE(widget->IsInputEventActivationProtectionEnabled());
+  EXPECT_EQ(widget->input_protector_for_testing(), nullptr);
+
+  // Attempting to enable it when feature is disabled should be a no-op.
+  widget->EnableInputEventActivationProtection();
+  EXPECT_FALSE(widget->IsInputEventActivationProtectionEnabled());
+  EXPECT_EQ(widget->input_protector_for_testing(), nullptr);
+}
+
+TEST_F(WidgetTest, InputProtectionForwardsToProtector) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnableInputProtection);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+
+  widget->EnableInputEventActivationProtection(std::move(mock_protector));
+  EXPECT_TRUE(widget->IsInputEventActivationProtectionEnabled());
+  ASSERT_NE(widget->input_protector_for_testing(), nullptr);
+
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+
+  // Expect that the mock protector is called and returns true.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(
+                                       testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_TRUE(
+      widget->input_protector_for_testing()->IsPossiblyUnintendedInteraction(
+          dummy_event, /*allow_key_events=*/false, widget->GetRootView()));
+
+  // Expect that the mock protector is called and returns false.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(
+                                       testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(false));
+
+  EXPECT_FALSE(
+      widget->input_protector_for_testing()->IsPossiblyUnintendedInteraction(
+          dummy_event, /*allow_key_events=*/false, widget->GetRootView()));
+}
 
 }  // namespace views::test
