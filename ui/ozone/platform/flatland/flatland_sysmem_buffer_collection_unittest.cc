@@ -226,6 +226,9 @@ TEST_F(FlatlandSysmemBufferCollectionTest, InitializeValidation) {
 
     // Test invalid size (area overflows int).
     gfx::Size invalid_size(100000, 100000);
+    EXPECT_CALL(mock_log, Log(logging::LOGGING_ERROR, _, _, _,
+                              HasSubstr("Invalid size: 100000x100000")))
+        .Times(1);
 
     bool result = collection->Initialize(
         /*sysmem_alloc=*/nullptr,
@@ -313,15 +316,22 @@ TEST_F(FlatlandSysmemBufferCollectionTest,
 }
 
 TEST_F(FlatlandSysmemBufferCollectionTest,
-       CreateNativePixmapAcceptsSizeLargerThanAllocatedBounds) {
+       CreateNativePixmapRejectsSizeLargerThanAllocatedBounds) {
   zx::eventpair client_handle;
   auto collection = MakeCollection(NativePixmapBufferUsage::kGpuRead,
                                    &client_handle, /*include_vmo=*/false);
 
+  base::test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+  EXPECT_CALL(mock_log,
+              Log(logging::LOGGING_ERROR, _, _, _,
+                  HasSubstr("exceeds the allocated sysmem buffer size")))
+      .Times(1);
+
   auto pixmap = collection->CreateNativePixmap(
       MakePixmapHandle(client_handle),
       gfx::Size(kAllocatedWidth * 2, kAllocatedHeight * 2));
-  EXPECT_TRUE(pixmap);
+  EXPECT_FALSE(pixmap);
 }
 
 TEST_F(FlatlandSysmemBufferCollectionTest,
@@ -338,16 +348,23 @@ TEST_F(FlatlandSysmemBufferCollectionTest,
 }
 
 TEST_F(FlatlandSysmemBufferCollectionTest,
-       CreateNativePixmapMappableAcceptsSizeLargerThanAllocatedBounds) {
+       CreateNativePixmapMappableRejectsSizeLargerThanAllocatedBounds) {
   zx::eventpair client_handle;
   auto collection =
       MakeCollection(NativePixmapBufferUsage::kGpuReadCpuReadWrite,
                      &client_handle, /*include_vmo=*/true);
 
+  base::test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+  EXPECT_CALL(mock_log,
+              Log(logging::LOGGING_ERROR, _, _, _,
+                  HasSubstr("exceeds the allocated sysmem buffer size")))
+      .Times(1);
+
   auto pixmap = collection->CreateNativePixmap(
       MakePixmapHandle(client_handle),
       gfx::Size(kAllocatedWidth * 2, kAllocatedHeight * 2));
-  EXPECT_TRUE(pixmap);
+  EXPECT_FALSE(pixmap);
 }
 
 TEST_F(FlatlandSysmemBufferCollectionTest, CreateVkImageAcceptsValidSize) {
@@ -373,7 +390,7 @@ TEST_F(FlatlandSysmemBufferCollectionTest, CreateVkImageAcceptsValidSize) {
   EXPECT_EQ(allocation_size, kAllocatedBufferBytes);
 }
 
-TEST_F(FlatlandSysmemBufferCollectionTest, CreateVkImageAcceptsOversizedImage) {
+TEST_F(FlatlandSysmemBufferCollectionTest, CreateVkImageRejectsOversizedImage) {
   zx::eventpair client_handle;
   VkDevice dummy_device = reinterpret_cast<VkDevice>(1);
   auto collection =
@@ -384,15 +401,22 @@ TEST_F(FlatlandSysmemBufferCollectionTest, CreateVkImageAcceptsOversizedImage) {
   VkDeviceMemory vk_memory = VK_NULL_HANDLE;
   VkDeviceSize allocation_size = 0;
 
+  base::test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+  EXPECT_CALL(mock_log,
+              Log(logging::LOGGING_ERROR, _, _, _,
+                  HasSubstr("exceeds the allocated sysmem buffer size")))
+      .Times(1);
+
   bool result = collection->CreateVkImage(
       0, dummy_device, gfx::Size(kAllocatedWidth * 2, kAllocatedHeight * 2),
       &vk_image, &image_info, &vk_memory, &allocation_size);
 
-  EXPECT_TRUE(result);
+  EXPECT_FALSE(result);
 }
 
 TEST_F(FlatlandSysmemBufferCollectionTest,
-       CreateVkImageAllowsVulkanRequirementMismatch) {
+       CreateVkImageAllowsVulkanRequirementMismatchWithWarning) {
   zx::eventpair client_handle;
   VkDevice dummy_device = reinterpret_cast<VkDevice>(1);
   auto collection =
@@ -405,6 +429,14 @@ TEST_F(FlatlandSysmemBufferCollectionTest,
 
   // Set mock Vulkan requirements to exceed the allocated buffer size.
   g_mock_vk_image_requirements_size = kAllocatedBufferBytes + 1024;
+
+  base::test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+  // We expect a warning log but NOT a crash.
+  EXPECT_CALL(mock_log,
+              Log(logging::LOGGING_WARNING, _, _, _,
+                  HasSubstr("exceed the allocated sysmem buffer size")))
+      .Times(1);
 
   bool result = collection->CreateVkImage(
       0, dummy_device, gfx::Size(kAllocatedWidth, kAllocatedHeight), &vk_image,
