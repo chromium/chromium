@@ -138,6 +138,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "TabRestore";
     case mojom::InvocationSource::kReshowInactive:
       return "ReshowInactive";
+    case mojom::InvocationSource::kTabContextMenu:
+      return "TabContextMenu";
   }
 }
 }  // namespace glic

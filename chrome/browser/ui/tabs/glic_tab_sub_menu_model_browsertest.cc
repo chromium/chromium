@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -483,7 +484,12 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnshareCommandShown) {
   glic::GlicTabPinningWaiter waiter(&service->active_instance_sharing_manager(),
                                     handles_to_wait_for);
 
-  service->instance_coordinator().CreateNewConversationForTabs({tab});
+  glic::GlicInvokeOptions options(
+      glic::mojom::InvocationSource::kTabContextMenu);
+  options.target = glic::Target(*tab, glic::NewConversation());
+  options.tab_sharing = glic::TabSharingOptions(
+      {tab->GetHandle()}, glic::GlicPinTrigger::kContextMenu);
+  service->instance_coordinator().Invoke(std::move(options));
   waiter.Wait();
 
   // Select both tabs and open the context menu.
@@ -539,7 +545,12 @@ IN_PROC_BROWSER_TEST_F(
     std::vector<tabs::TabHandle> handles_to_wait_for = {tab0->GetHandle()};
     glic::GlicTabPinningWaiter waiter(
         &service->active_instance_sharing_manager(), handles_to_wait_for);
-    service->instance_coordinator().CreateNewConversationForTabs({tab0});
+    glic::GlicInvokeOptions options(
+        glic::mojom::InvocationSource::kTabContextMenu);
+    options.target = glic::Target(*tab0, glic::NewConversation());
+    options.tab_sharing = glic::TabSharingOptions(
+        {tab0->GetHandle()}, glic::GlicPinTrigger::kContextMenu);
+    service->instance_coordinator().Invoke(std::move(options));
     waiter.Wait();
   }
 
@@ -549,7 +560,12 @@ IN_PROC_BROWSER_TEST_F(
     std::vector<tabs::TabHandle> handles_to_wait_for = {tab1->GetHandle()};
     glic::GlicTabPinningWaiter waiter(
         &service->active_instance_sharing_manager(), handles_to_wait_for);
-    service->instance_coordinator().CreateNewConversationForTabs({tab1});
+    glic::GlicInvokeOptions options(
+        glic::mojom::InvocationSource::kTabContextMenu);
+    options.target = glic::Target(*tab1, glic::NewConversation());
+    options.tab_sharing = glic::TabSharingOptions(
+        {tab1->GetHandle()}, glic::GlicPinTrigger::kContextMenu);
+    service->instance_coordinator().Invoke(std::move(options));
     waiter.Wait();
   }
 
@@ -652,7 +668,12 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
     std::vector<tabs::TabHandle> handles_to_wait_for = {tab->GetHandle()};
     glic::GlicTabPinningWaiter waiter(
         &service->active_instance_sharing_manager(), handles_to_wait_for);
-    service->instance_coordinator().CreateNewConversationForTabs({tab});
+    glic::GlicInvokeOptions options(
+        glic::mojom::InvocationSource::kTabContextMenu);
+    options.target = glic::Target(*tab, glic::NewConversation());
+    options.tab_sharing = glic::TabSharingOptions(
+        {tab->GetHandle()}, glic::GlicPinTrigger::kContextMenu);
+    service->instance_coordinator().Invoke(std::move(options));
     waiter.Wait();
   }
   EXPECT_TRUE(

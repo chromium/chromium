@@ -1951,6 +1951,8 @@ enum InvocationSource {
   [MinVersion=26] kTabRestore = 39,
   // Implicitly focused or revealed, e.g., on tab switch or re-focus.
   [MinVersion=26] kReshowInactive = 40,
+  // From the tab context menu.
+  [MinVersion=27] kTabContextMenu = 41,
 };
 
 // LINT.ThenChange(

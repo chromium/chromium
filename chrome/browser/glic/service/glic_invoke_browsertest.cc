@@ -507,7 +507,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNonConnectingBrowserTest,
   ASSERT_TRUE(instance);
 
   // Associate tab2 with the same instance to keep it alive when tab1 closes.
-  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  GlicInvokeOptions options2(mojom::InvocationSource::kTabContextMenu);
+  options2.target = Target(*tab2, instance->id());
+  options2.tab_sharing =
+      TabSharingOptions({tab2->GetHandle()}, GlicPinTrigger::kContextMenu);
+  coordinator().Invoke(std::move(options2));
 
   // Close tab1 while Invoke is in progress.
   tab1->Close();

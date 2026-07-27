@@ -142,15 +142,6 @@ class GlicInstanceCoordinatorImpl
   void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
                                  GlicUnpinTrigger trigger) override;
 
-  // Creates a new conversation and pins the given tabs.
-  // This overrides any conversation that was already associated with any
-  // of the given tabs.
-  void CreateNewConversationForTabs(
-      const std::vector<tabs::TabInterface*>& tabs) override;
-
-  // Pins the given tabs to the instance with the given id.
-  void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,
-                           const InstanceId& instance_id) override;
 
   // Toggles the side panel for the active tab if `browser` is provided,
   // otherwise toggles the floating window for the instance. Focus is given
@@ -248,10 +239,6 @@ class GlicInstanceCoordinatorImpl
   std::vector<InstanceWebContents> GetAllUnhibernatedWebContents() override;
 
   void OnInstanceActuatingChanged(bool actuating);
-
-  void ShowInstanceForTabs(GlicInstanceImpl* instance,
-                           const std::vector<tabs::TabInterface*>& tabs,
-                           GlicPinTrigger pin_trigger);
 
   void ToggleFloaty(
       bool prevent_close,

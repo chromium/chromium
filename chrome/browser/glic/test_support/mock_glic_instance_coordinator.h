@@ -97,14 +97,6 @@ class MockGlicInstanceCoordinator
               (),
               (override));
 
-  MOCK_METHOD(void,
-              CreateNewConversationForTabs,
-              (const std::vector<tabs::TabInterface*>&),
-              (override));
-  MOCK_METHOD(void,
-              ShowInstanceForTabs,
-              (const std::vector<tabs::TabInterface*>&, const InstanceId&),
-              (override));
   MOCK_METHOD(std::vector<ConversationInfo>,
               GetRecentlyActiveInstances,
               (size_t, base::TimeDelta),

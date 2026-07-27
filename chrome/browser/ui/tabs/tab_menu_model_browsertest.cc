@@ -10,6 +10,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
@@ -619,6 +620,13 @@ class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
         ->active_instance_sharing_manager();
   }
 
+  glic::GlicSharingManagerInternal& sharing_manager(
+      glic::GlicInstance* instance) {
+    CHECK(instance);
+    return *static_cast<glic::GlicSharingManagerInternal*>(
+        instance->GetSharingManager());
+  }
+
   tabs::TabHandle TabHandleAtIndex(int index) {
     return tab_strip()->GetTabAtIndex(index)->GetHandle();
   }
@@ -651,8 +659,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
   auto* instance =
       service->GetInstanceForTab(browser()->GetActiveTabInterface());
   ASSERT_TRUE(instance);
-  service->instance_coordinator().ShowInstanceForTabs(
-      {tab_strip()->GetTabAtIndex(0)}, instance->id());
+  sharing_manager(instance).PinTabs(
+      {tab_strip()->GetTabAtIndex(0)->GetHandle()},
+      glic::GlicPinTrigger::kContextMenu);
 
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
@@ -670,15 +679,17 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
   auto* instance =
       service->GetInstanceForTab(browser()->GetActiveTabInterface());
   ASSERT_TRUE(instance);
-  const int limit = sharing_manager().GetMaxPinnedTabs();
+  const int limit = sharing_manager(instance).GetMaxPinnedTabs();
   for (int i = 0; i < limit; ++i) {
     chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-    service->instance_coordinator().ShowInstanceForTabs(
-        {tab_strip()->GetTabAtIndex(i)}, instance->id());
+    sharing_manager(instance).PinTabs(
+        {tab_strip()->GetTabAtIndex(i)->GetHandle()},
+        glic::GlicPinTrigger::kContextMenu);
   }
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   tab_strip()->SelectTabAt(limit);
-  service->instance_coordinator().ShowInstanceForTabs(
-      {tab_strip()->GetTabAtIndex(limit)}, instance->id());
-  EXPECT_FALSE(sharing_manager().IsTabPinned(TabHandleAtIndex(limit)));
+  sharing_manager(instance).PinTabs(
+      {tab_strip()->GetTabAtIndex(limit)->GetHandle()},
+      glic::GlicPinTrigger::kContextMenu);
+  EXPECT_FALSE(sharing_manager(instance).IsTabPinned(TabHandleAtIndex(limit)));
 }

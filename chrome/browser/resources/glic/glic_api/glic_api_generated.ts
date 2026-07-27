@@ -417,6 +417,8 @@ export enum InvocationSource {
   TAB_RESTORE = 39,
   // Implicitly focused or revealed, e.g., on tab switch or re-focus.
   RESHOW_INACTIVE = 40,
+  // From the tab context menu.
+  TAB_CONTEXT_MENU = 41,
 }
 
 // Target for actuation.

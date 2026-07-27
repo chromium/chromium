@@ -181,6 +181,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SharedImage"/>
   <variant name="SharedTab"/>
   <variant name="Skills"/>
+  <variant name="TabContextMenu"/>
   <variant name="TabRestore"/>
   <variant name="TextSelectionNudge"/>
   <variant name="TextSelectionWidget"/>

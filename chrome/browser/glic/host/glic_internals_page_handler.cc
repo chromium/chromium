@@ -268,6 +268,8 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kTabRestore";
     case glic::mojom::InvocationSource::kReshowInactive:
       return "kReshowInactive";
+    case glic::mojom::InvocationSource::kTabContextMenu:
+      return "kTabContextMenu";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);

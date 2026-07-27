@@ -147,7 +147,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
 
   // Bind the ungrouped tab. It should automatically be added to the tab group
   // associated with the instance.
-  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  GlicInvokeOptions options(mojom::InvocationSource::kTabContextMenu);
+  options.target = Target(*tab2, instance->id());
+  options.tab_sharing =
+      TabSharingOptions({tab2->GetHandle()}, GlicPinTrigger::kContextMenu);
+  coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(tab2->GetGroup(), group_id.value());
 
@@ -179,7 +183,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest, UnbindTabRemovesTabFromGroup) {
 
   // Bind the ungrouped tab. It should automatically be added to the tab group
   // associated with the instance.
-  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  GlicInvokeOptions options(mojom::InvocationSource::kTabContextMenu);
+  options.target = Target(*tab2, instance->id());
+  options.tab_sharing =
+      TabSharingOptions({tab2->GetHandle()}, GlicPinTrigger::kContextMenu);
+  coordinator().Invoke(std::move(options));
 
   EXPECT_EQ(tab2->GetGroup(), group_id.value());
 
@@ -223,7 +231,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
 
   // Bind the ungrouped tab. It should automatically be added to the tab group
   // associated with the instance.
-  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  GlicInvokeOptions options(mojom::InvocationSource::kTabContextMenu);
+  options.target = Target(*tab2, instance->id());
+  options.tab_sharing =
+      TabSharingOptions({tab2->GetHandle()}, GlicPinTrigger::kContextMenu);
+  coordinator().Invoke(std::move(options));
   EXPECT_EQ(tab2->GetGroup(), group_id.value());
 
   // Manually move the tab back to the other group
@@ -261,7 +273,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabGroupBrowserTest,
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForGlicClient(instance));
 
-  coordinator().ShowInstanceForTabs({tab2}, instance->id());
+  GlicInvokeOptions options(mojom::InvocationSource::kTabContextMenu);
+  options.target = Target(*tab2, instance->id());
+  options.tab_sharing =
+      TabSharingOptions({tab2->GetHandle()}, GlicPinTrigger::kContextMenu);
+  coordinator().Invoke(std::move(options));
   EXPECT_EQ(tab2->GetGroup(), group_id.value());
 
   // Calling UnbindTabGroup on the instance should clean up the instance

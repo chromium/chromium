@@ -626,6 +626,7 @@ chromium-metrics-reviews@google.com.
   <int value="38" label="Detach/Attach button"/>
   <int value="39" label="Tab restore"/>
   <int value="40" label="Reshow inactive"/>
+  <int value="41" label="Tab context menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -1066,6 +1067,10 @@ chromium-metrics-reviews@google.com.
   <int value="162" label="Reshow inactive, attached, audio mode."/>
   <int value="163" label="Reshow inactive, detached, text mode."/>
   <int value="164" label="Reshow inactive, detached, audio mode."/>
+  <int value="165" label="Tab context menu, attached, text mode."/>
+  <int value="166" label="Tab context menu, attached, audio mode."/>
+  <int value="167" label="Tab context menu, detached, text mode."/>
+  <int value="168" label="Tab context menu, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
