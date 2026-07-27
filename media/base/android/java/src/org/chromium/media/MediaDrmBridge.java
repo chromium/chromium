@@ -534,7 +534,7 @@ public class MediaDrmBridge {
         Log.d(TAG, "Set origin: %s", origin);
 
         if (!isWidevine()) {
-            Log.d(TAG, "Property " + ORIGIN + " isn't supported");
+            Log.d(TAG, "Property %s isn't supported", ORIGIN);
             return true;
         }
 
@@ -1775,7 +1775,7 @@ public class MediaDrmBridge {
                                 return;
                             }
 
-                            Log.d(TAG, "SessionLost: " + sessionId);
+                            Log.d(TAG, "SessionLost: %s", sessionId);
                             if (mMediaDrm != null) {
                                 closeSessionNoException(sessionId);
                             }

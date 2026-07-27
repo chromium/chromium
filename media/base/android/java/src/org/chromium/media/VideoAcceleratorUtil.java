@@ -564,9 +564,9 @@ class VideoAcceleratorUtil {
                 if (supportedProfileLevels.isEmpty()) {
                     Log.d(
                             TAG,
-                            "CodecCapabilities.profileLevels is missing for codec "
-                                    + type
-                                    + ". Assuming default support.");
+                            "CodecCapabilities.profileLevels is missing for codec %s. Assuming"
+                                + " default support.",
+                            type);
                     switch (codec) {
                         case VideoCodec.VP8:
                             supportedProfileLevels.put(
@@ -624,30 +624,21 @@ class VideoAcceleratorUtil {
 
                     Log.d(
                             TAG,
-                            "Support: name="
-                                    + info.getName()
-                                    + ", profile="
-                                    + profile.profile
-                                    + ", level="
-                                    + profile.level
-                                    + ", min="
-                                    + profile.minWidth
-                                    + "x"
-                                    + profile.minHeight
-                                    + ", max="
-                                    + profile.maxWidth
-                                    + "x"
-                                    + profile.maxHeight
-                                    + ", is_sw="
-                                    + profile.isSoftwareCodec
-                                    + ", supports_low_latency="
-                                    + profile.supportsLowLatency
-                                    + ", requires_low_latency="
-                                    + profile.requiresLowLatency
-                                    + ", supports_secure="
-                                    + profile.supportsSecurePlayback
-                                    + ", requires_secure="
-                                    + profile.requiresSecurePlayback);
+                            "Support: name=%s, profile=%d, level=%d, min=%dx%d, max=%dx%d,"
+                                + " is_sw=%b, supports_low_latency=%b, requires_low_latency=%b,"
+                                + " supports_secure=%b, requires_secure=%b",
+                            info.getName(),
+                            profile.profile,
+                            profile.level,
+                            profile.minWidth,
+                            profile.minHeight,
+                            profile.maxWidth,
+                            profile.maxHeight,
+                            profile.isSoftwareCodec,
+                            profile.supportsLowLatency,
+                            profile.requiresLowLatency,
+                            profile.supportsSecurePlayback,
+                            profile.requiresSecurePlayback);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
                     if (needsPortraitEntry) {
