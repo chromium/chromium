@@ -268,22 +268,6 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   NOTREACHED();
 }
 
-bool CanTriggerAutofillAiSavePromptSurveyForEntityType(EntityType type) {
-  switch (type.name()) {
-    case EntityTypeName::kVehicle:
-      return true;
-    case EntityTypeName::kFlightReservation:
-    case EntityTypeName::kKnownTravelerNumber:
-    case EntityTypeName::kRedressNumber:
-    case EntityTypeName::kPassport:
-    case EntityTypeName::kNationalIdCard:
-    case EntityTypeName::kDriversLicense:
-    case EntityTypeName::kOrder:
-    case EntityTypeName::kShipment:
-      return false;
-  }
-  NOTREACHED();
-}
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1018,37 +1002,6 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
         GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}});
 }
 
-void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
-    bool prompt_accepted,
-    EntityType entity_type,
-    const base::flat_set<EntityTypeName>& saved_entities) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!CanTriggerAutofillAiSavePromptSurveyForEntityType(entity_type)) {
-    return;
-  }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-  CHECK(hats_service);
-
-  const std::string trigger_id =
-      prompt_accepted
-          ? features::kAutofillAiSavePromptSurveyAcceptedTriggerId.Get()
-          : features::kAutofillAiSavePromptSurveyDeclinedTriggerId.Get();
-  if (!trigger_id.empty()) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerAutofillAiSavePrompt, web_contents(),
-        /*timeout_ms=*/10000,
-        /*product_specific_bits_data=*/{},
-        {{"Entity type", std::string(entity_type.name_as_string())},
-         {"Saved entities",
-          GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}},
-        HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
-        base::DoNothing(), trigger_id);
-  }
-#endif
-}
 
 bool ChromeAutofillClient::IsTabInActorMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

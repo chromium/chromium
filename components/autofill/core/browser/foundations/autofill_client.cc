@@ -295,12 +295,6 @@ void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::TriggerAutofillAiSavePromptSurvey(
-    bool prompt_accepted,
-    EntityType entity_type,
-    const base::flat_set<EntityTypeName>& saved_entities) {
-  NOTIMPLEMENTED();
-}
 
 bool AutofillClient::IsTabInActorMode() const {
   return false;
