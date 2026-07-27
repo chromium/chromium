@@ -229,17 +229,14 @@ void CastWindowManagerBindings::InvokeV8Callback(
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
-      v8::Local<v8::Function>::New(isolate, std::move(*callback_function));
+      v8::Local<v8::Function>::New(isolate, *callback_function);
 
-  v8::MaybeLocal<v8::Value> maybe_result =
-      handler->Call(context, context->Global(), 0, nullptr);
-
-  *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
-
-  v8::Local<v8::Value> result;
-  std::ignore = maybe_result.ToLocal(&result);
+  // Running |handler| may delete |this|; do not touch any members afterwards.
+  std::ignore = handler->Call(context, context->Global(), 0, nullptr);
 }
 
 void CastWindowManagerBindings::InvokeV8Callback(
@@ -253,22 +250,20 @@ void CastWindowManagerBindings::InvokeV8Callback(
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
-      v8::Local<v8::Function>::New(isolate, std::move(*callback_function));
+      v8::Local<v8::Function>::New(isolate, *callback_function);
 
   v8::Local<v8::Number> touch_x = v8::Integer::New(isolate, touch_location.x());
   v8::Local<v8::Number> touch_y = v8::Integer::New(isolate, touch_location.y());
 
   auto args = std::to_array<v8::Local<v8::Value>>({touch_x, touch_y});
 
-  v8::MaybeLocal<v8::Value> maybe_result =
+  // Running |handler| may delete |this|; do not touch any members afterwards.
+  std::ignore =
       handler->Call(context, context->Global(), args.size(), args.data());
-
-  *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
-
-  v8::Local<v8::Value> result;
-  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::OnBackGesture(
@@ -285,13 +280,14 @@ void CastWindowManagerBindings::OnBackGesture(
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
-  v8::Local<v8::Function> handler = v8::Local<v8::Function>::New(
-      isolate, std::move(on_back_gesture_callback_));
+  v8::Local<v8::Function> handler =
+      v8::Local<v8::Function>::New(isolate, on_back_gesture_callback_);
+  // Running |handler| may delete |this|; do not touch any members afterwards.
   auto result = handler->Call(context, context->Global(), 0, nullptr);
 
-  on_back_gesture_callback_ =
-      v8::UniquePersistent<v8::Function>(isolate, handler);
   if (result.IsEmpty()) {
     LOG(ERROR) << "No value from callback execution; ";
     std::move(callback).Run(false);

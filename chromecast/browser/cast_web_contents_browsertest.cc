@@ -25,6 +25,8 @@
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/browser/test_interfaces.test-mojom.h"
+#include "chromecast/common/feature_constants.h"
+#include "chromecast/common/mojom/gesture.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -1165,6 +1167,106 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, InterfaceBinding) {
 
   EXPECT_EQ(2u, provider.num_adders());
   EXPECT_EQ(2u, provider.num_doublers());
+}
+
+// Browser-side mojom::GestureSource which captures the renderer's
+// GestureHandler so the test can dispatch gesture events directly.
+class TestGestureSource : public mojom::GestureSource {
+ public:
+  TestGestureSource() = default;
+  ~TestGestureSource() override = default;
+
+  void Bind(mojo::PendingReceiver<mojom::GestureSource> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void WaitForSubscribe() {
+    if (handler_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    subscribed_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  mojo::Remote<mojom::GestureHandler>& handler() { return handler_; }
+
+  // mojom::GestureSource:
+  void Subscribe(mojo::PendingRemote<mojom::GestureHandler> handler) override {
+    handler_.reset();
+    handler_.Bind(std::move(handler));
+    if (subscribed_closure_) {
+      std::move(subscribed_closure_).Run();
+    }
+  }
+  void SetCanGoBack(bool can_go_back) override {}
+  void SetCanTopDrag(bool can_top_drag) override {}
+  void SetCanRightDrag(bool can_right_drag) override {}
+
+ private:
+  mojo::ReceiverSet<mojom::GestureSource> receivers_;
+  mojo::Remote<mojom::GestureHandler> handler_;
+  base::OnceClosure subscribed_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
+                       WindowManagerGestureCallbackDetachesFrame) {
+  // ===========================================================================
+  // Test: A page-supplied gesture callback may detach its own frame while it is
+  // running. The renderer must remain in a consistent state once the callback
+  // returns.
+  // ===========================================================================
+  TestGestureSource gesture_source;
+  cast_web_contents_->local_interfaces()->AddBinder(base::BindRepeating(
+      &TestGestureSource::Bind, base::Unretained(&gesture_source)));
+
+  base::DictValue features;
+  features.Set(feature::kEnableSystemGestures, base::DictValue());
+  cast_web_contents_->AddRendererFeatures(std::move(features));
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADING));
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADED))
+        .WillOnce(InvokeWithoutArgs([&]() { QuitRunLoop(); }));
+  }
+  cast_web_contents_->LoadUrl(GURL(url::kAboutBlankURL));
+  run_loop_->Run();
+
+  ASSERT_TRUE(ExecJs(web_contents_.get(),
+                     "var ifr = document.createElement('iframe');"
+                     "document.body.appendChild(ifr);"));
+  content::RenderFrameHost* child =
+      content::ChildFrameAt(web_contents_.get(), 0);
+  ASSERT_TRUE(child);
+
+  // Wait for the cast.__platform__.windowManager bindings to be installed in
+  // the subframe, register a tap callback that removes the frame and bind the
+  // GestureHandler to the browser-side source.
+  ASSERT_TRUE(ExecJs(child,
+                     "(async () => {"
+                     "  while (!self.cast || !cast.__platform__ ||"
+                     "         !cast.__platform__.windowManager) {"
+                     "    await new Promise(r => setTimeout(r, 0));"
+                     "  }"
+                     "  cast.__platform__.windowManager.onTapGesture("
+                     "      () => { frameElement.remove(); });"
+                     "  cast.__platform__.windowManager.canGoBack(true);"
+                     "})();"));
+  gesture_source.WaitForSubscribe();
+  ASSERT_TRUE(gesture_source.handler().is_bound());
+
+  // Dispatch the gesture; the JS callback synchronously detaches the frame.
+  base::RunLoop disconnect_loop;
+  gesture_source.handler().set_disconnect_handler(
+      disconnect_loop.QuitClosure());
+  gesture_source.handler()->OnTapGesture();
+  disconnect_loop.Run();
+
+  // The main frame's renderer must still be responsive.
+  EXPECT_EQ(true, content::EvalJs(web_contents_.get(),
+                                  "document.querySelector('iframe') === null"));
 }
 
 }  // namespace chromecast

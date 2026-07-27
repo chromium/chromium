@@ -332,20 +332,18 @@ void CastDemoBindings::VolumeChanged(float level) {
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
-      v8::Local<v8::Function>::New(isolate, std::move(volume_change_handler_));
+      v8::Local<v8::Function>::New(isolate, volume_change_handler_);
 
   auto args =
       std::to_array<v8::Local<v8::Value>>({gin::ConvertToV8(isolate, level)});
 
-  v8::MaybeLocal<v8::Value> maybe_result =
+  // Running |handler| may delete |this|; do not touch any members afterwards.
+  std::ignore =
       handler->Call(context, context->Global(), args.size(), args.data());
-
-  volume_change_handler_ = v8::UniquePersistent<v8::Function>(isolate, handler);
-
-  v8::Local<v8::Value> result;
-  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastDemoBindings::PersistLocalStorage() {

@@ -6,6 +6,7 @@
 
 #include <array>
 #include <tuple>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -52,7 +53,7 @@ void SettingsUiBindings::HandleSideSwipe(
       context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
-      v8::Local<v8::Function>::New(isolate, std::move(side_swipe_handler_));
+      v8::Local<v8::Function>::New(isolate, side_swipe_handler_);
 
   v8::Local<v8::Number> touch_event =
       v8::Integer::New(isolate, static_cast<int>(event));
@@ -64,13 +65,9 @@ void SettingsUiBindings::HandleSideSwipe(
   auto args = std::to_array<v8::Local<v8::Value>>(
       {touch_event, touch_origin, touch_x, touch_y});
 
-  v8::MaybeLocal<v8::Value> maybe_result =
+  // Running |handler| may delete |this|; do not touch any members afterwards.
+  std::ignore =
       handler->Call(context, context->Global(), args.size(), args.data());
-
-  side_swipe_handler_ = v8::UniquePersistent<v8::Function>(isolate, handler);
-
-  v8::Local<v8::Value> result;
-  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void SettingsUiBindings::SendPlatformInfo(
@@ -88,7 +85,7 @@ void SettingsUiBindings::SendPlatformInfo(
       context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Function> handler =
-      v8::Local<v8::Function>::New(isolate, std::move(platform_info_handler_));
+      v8::Local<v8::Function>::New(isolate, platform_info_handler_);
 
   v8::Local<v8::String> platform_info =
       v8::String::NewFromUtf8(isolate, platform_info_json.data(),
@@ -97,13 +94,9 @@ void SettingsUiBindings::SendPlatformInfo(
 
   auto args = std::to_array<v8::Local<v8::Value>>({platform_info});
 
-  v8::MaybeLocal<v8::Value> maybe_result =
+  // Running |handler| may delete |this|; do not touch any members afterwards.
+  std::ignore =
       handler->Call(context, context->Global(), args.size(), args.data());
-
-  platform_info_handler_ = v8::UniquePersistent<v8::Function>(isolate, handler);
-
-  v8::Local<v8::Value> result;
-  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void SettingsUiBindings::Install(v8::Local<v8::Object> cast_platform,
@@ -136,8 +129,11 @@ void SettingsUiBindings::SetPlatformInfoHandler(
   platform_info_handler_ =
       v8::UniquePersistent<v8::Function>(isolate, platform_info_handler);
   if (!pending_platform_info_json_.empty()) {
-    SendPlatformInfo(pending_platform_info_json_);
-    pending_platform_info_json_.clear();
+    std::string pending;
+    std::swap(pending, pending_platform_info_json_);
+    // SendPlatformInfo() runs script and may delete |this|; do not touch any
+    // members afterwards.
+    SendPlatformInfo(pending);
   }
 }
 

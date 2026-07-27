@@ -531,6 +531,7 @@ cast_source_set("browsertests") {
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/base/metrics",
+    "//chromecast/common:feature_constants",
     "//chromecast/graphics",
     "//chromecast/mojo",
     "//components/keyed_service/content",

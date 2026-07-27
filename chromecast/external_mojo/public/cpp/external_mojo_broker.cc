@@ -17,6 +17,8 @@
 
 #include <optional>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -435,6 +437,10 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   LOG(INFO) << "Initializing external mojo broker at: " << broker_path;
+
+  if (!use_abstract_namespace) {
+    base::DeleteFile(base::FilePath(broker_path));
+  }
 
   mojo::NamedPlatformChannel::Options channel_options;
   channel_options.server_name = broker_path;
