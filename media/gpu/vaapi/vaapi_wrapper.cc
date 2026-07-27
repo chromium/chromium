@@ -600,33 +600,38 @@ bool FillVASurfaceAttribExternalBuffers(
                << std::size(va_attrib_extbuf.pitches);
     return false;
   }
-  for (size_t i = 0; i < num_planes; ++i) {
-    UNSAFE_TODO(va_attrib_extbuf.pitches[i]) = pixmap.GetDmaBufPitch(i);
-    UNSAFE_TODO(va_attrib_extbuf.offsets[i]) =
-        base::checked_cast<uint32_t>(pixmap.GetDmaBufOffset(i));
-    DVLOG(4) << "plane " << i
-             << ": pitch: " << UNSAFE_TODO(va_attrib_extbuf.pitches[i])
-             << " offset: " << UNSAFE_TODO(va_attrib_extbuf.offsets[i]);
-  }
-  va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
 
+  // This legacy DRM_PRIME path collapses all planes onto fd[0] with
+  // num_buffers=1, so every plane's (offset + pitch*rows) must fit inside
+  // fd[0] regardless of what per-plane fd the pixmap carries. Validate each
+  // plane against fd[0].
   const int dma_buf_fd = pixmap.GetDmaBufFd(0);
   if (dma_buf_fd < 0) {
     LOG(ERROR) << "Failed to get dmabuf from a NativePixmap";
     return false;
   }
-  const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
-  if (data_size == static_cast<off_t>(-1)) {
-    PLOG(ERROR) << "Failed to get the size of the dma-buf";
+
+  const auto format =
+      media::SharedImageFormatToVideoPixelFormat(shared_image_format);
+  if (!format) {
+    LOG(ERROR) << "Failed to get the VideoPixelFormat from the buffer format";
     return false;
   }
-  if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
-    PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
-    return false;
+
+  uint32_t fd0_size = 0u;
+  for (size_t i = 0; i < num_planes; ++i) {
+    uint32_t plane_offset = 0u;
+    uint32_t plane_pitch = 0u;
+    if (!ValidateAndGetPlaneInfo(pixmap, *format, size,
+                                 /*dma_buf_fd=*/dma_buf_fd, i, fd0_size,
+                                 plane_offset, plane_pitch)) {
+      return false;
+    }
+    UNSAFE_TODO(va_attrib_extbuf.pitches[i]) = plane_pitch;
+    UNSAFE_TODO(va_attrib_extbuf.offsets[i]) = plane_offset;
   }
-  // If the data size doesn't fit in a uint32_t, we probably have bigger
-  // problems.
-  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(data_size);
+  va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
+  va_attrib_extbuf.data_size = fd0_size;
 
   // We only have to pass the first file descriptor to a driver. A VA-API driver
   // shall create a VASurface from the single fd correctly.
