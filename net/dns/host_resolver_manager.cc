@@ -449,12 +449,10 @@ HostResolverManager::HostResolverManager(
       is_happy_eyeballs_v3_enabled_(
           base::FeatureList::IsEnabled(features::kHappyEyeballsV3)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      https_svcb_options_(options.https_svcb_options
-                              ? *options.https_svcb_options
-                              : HostResolver::HttpsSvcbOptions::FromFeatures()),
-      platform_apis_enabled_(options.insecure_dns_via_platform_apis_enabled) {
-  CHECK(!platform_apis_enabled_ || features::IsDnsPlatformSupported());
-
+      https_svcb_options_(
+          options.https_svcb_options
+              ? *options.https_svcb_options
+              : HostResolver::HttpsSvcbOptions::FromFeatures()) {
   PrioritizedDispatcher::Limits job_limits = GetDispatcherLimits(options);
   dispatcher_ = std::make_unique<PrioritizedDispatcher>(job_limits);
   max_queued_jobs_ = job_limits.total_jobs * 100u;
@@ -484,13 +482,16 @@ HostResolverManager::HostResolverManager(
   UpdateConnectionType(connection_type);
 
 #if defined(ENABLE_BUILT_IN_DNS)
-  dns_client_ = DnsClient::CreateClient(net_log_);
   InsecureDnsMode initial_insecure_dns_mode = InsecureDnsMode::kDisabled;
   if (options.insecure_dns_client_enabled) {
     initial_insecure_dns_mode = options.insecure_dns_via_platform_apis_enabled
                                     ? InsecureDnsMode::kEnabledPlatform
                                     : InsecureDnsMode::kEnabledBuiltIn;
   }
+  CHECK(initial_insecure_dns_mode != InsecureDnsMode::kEnabledPlatform ||
+        features::IsDnsPlatformSupported());
+
+  dns_client_ = DnsClient::CreateClient(net_log_);
   dns_client_->SetInsecureEnabled(
       initial_insecure_dns_mode,
       options.additional_types_via_insecure_dns_enabled);
@@ -650,8 +651,6 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
 
   if (!dns_client_)
     return;
-
-  platform_apis_enabled_ = mode == InsecureDnsMode::kEnabledPlatform;
 
   bool enabled_before = dns_client_->CanUseInsecureDnsTransactions();
   bool additional_types_before =
@@ -1343,7 +1342,9 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
   // correct cache tasks for the secure dns mode are added.
   const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
   const TaskType dns_task_type =
-      platform_apis_enabled_ ? TaskType::DNS_PLATFORM : TaskType::DNS;
+      (dns_client_->GetInsecureDnsMode() == InsecureDnsMode::kEnabledPlatform)
+          ? TaskType::DNS_PLATFORM
+          : TaskType::DNS;
   // Upgrade the insecure DnsTask depending on the secure dns mode.
   switch (secure_dns_mode) {
     case SecureDnsMode::kSecure:

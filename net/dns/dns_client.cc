@@ -183,6 +183,10 @@ class DnsClientImpl : public DnsClient {
     can_query_additional_types_via_insecure_ = additional_types_enabled;
   }
 
+  InsecureDnsMode GetInsecureDnsMode() const override {
+    return insecure_dns_mode_;
+  }
+
   void RecordFallbackFromSecureTransactionPreferred(
       FallbackFromSecureTransactionPreferredReason reason) const {
     base::UmaHistogramEnumeration(

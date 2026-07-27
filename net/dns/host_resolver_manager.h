@@ -637,8 +637,6 @@ class NET_EXPORT HostResolverManager
   // An experimental flag for features::kUseDnsHttpsSvcb.
   HostResolver::HttpsSvcbOptions https_svcb_options_;
 
-  // If true, task type DNS_PLATFORM will be used instead of DNS.
-  bool platform_apis_enabled_;
 
   std::vector<CompletionOnceCallback> ipv6_request_callbacks_;
 

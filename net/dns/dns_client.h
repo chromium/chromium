@@ -77,6 +77,7 @@ class NET_EXPORT DnsClient {
   virtual bool CanQueryAdditionalTypesViaInsecureDns() const = 0;
   virtual void SetInsecureEnabled(InsecureDnsMode mode,
                                   bool additional_types_enabled) = 0;
+  virtual InsecureDnsMode GetInsecureDnsMode() const = 0;
 
   // When true, DoH should not be used in AUTOMATIC mode since no DoH servers
   // have a successful probe state.

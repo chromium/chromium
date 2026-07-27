@@ -822,6 +822,10 @@ void MockDnsClient::SetInsecureEnabled(InsecureDnsMode mode,
   additional_types_enabled_ = additional_types_enabled;
 }
 
+InsecureDnsMode MockDnsClient::GetInsecureDnsMode() const {
+  return insecure_dns_mode_;
+}
+
 bool MockDnsClient::FallbackFromSecureTransactionPreferred(
     ResolveContext* context) const {
   bool doh_server_available =

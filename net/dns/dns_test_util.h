@@ -446,6 +446,7 @@ class MockDnsClient : public DnsClient {
   bool CanQueryAdditionalTypesViaInsecureDns() const override;
   void SetInsecureEnabled(InsecureDnsMode mode,
                           bool additional_types_enabled) override;
+  InsecureDnsMode GetInsecureDnsMode() const override;
   bool FallbackFromSecureTransactionPreferred(
       ResolveContext* resolve_context) const override;
   bool FallbackFromInsecureTransactionPreferred() const override;
