@@ -1221,10 +1221,11 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     willDisplayMenuForConfiguration:(UIContextMenuConfiguration*)configuration
                            animator:
                                (id<UIContextMenuInteractionAnimating>)animator {
-
-  [self.geminiHandler
-      hideFloatyIfInvokedAnimated:YES
-                       fromSource:gemini::FloatyUpdateSource::ContextMenu];
+  if (IsPageActionMenuEnabled()) {
+    [self.geminiHandler
+        hideFloatyIfInvokedAnimated:YES
+                         fromSource:gemini::FloatyUpdateSource::ContextMenu];
+  }
 }
 
 - (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
@@ -1232,6 +1233,16 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
                       animator:(id<UIContextMenuInteractionAnimating>)animator {
   self.activeContextMenuAnimator = animator;
   __weak LocationBarViewController* weakSelf = self;
+
+  if (IsPageActionMenuEnabled()) {
+    [animator addAnimations:^{
+      [weakSelf.geminiHandler
+          updateFloatyVisibilityIfEligibleAnimated:NO
+                                        fromSource:gemini::FloatyUpdateSource::
+                                                       ContextMenu];
+    }];
+  }
+
   [animator addCompletion:^{
     weakSelf.activeContextMenuAnimator = nil;
   }];
