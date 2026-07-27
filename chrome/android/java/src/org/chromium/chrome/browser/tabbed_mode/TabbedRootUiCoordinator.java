@@ -2360,6 +2360,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSideUiStateProviderSupplier.onAvailable(
                 provider -> maybeInitializeVerticalTabs(currentlySelectedProfile));
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
+        if (mTopControlsLockCoordinator != null) {
+            mTopControlsLockCoordinator.setSideUiStateProvider(mSideUiCoordinator);
+        }
 
         // TODO(crbug.com/510890983): Add render tests for the secondary container adjustment.
         View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);

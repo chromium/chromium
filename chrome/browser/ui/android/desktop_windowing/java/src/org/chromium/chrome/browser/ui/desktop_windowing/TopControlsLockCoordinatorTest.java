@@ -34,6 +34,8 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.TestActivity;
@@ -51,6 +53,7 @@ public class TopControlsLockCoordinatorTest {
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
 
     @Captor
     private ArgumentCaptor<DesktopWindowStateManager.AppHeaderObserver> mAppHeaderObserverCaptor;
@@ -217,5 +220,21 @@ public class TopControlsLockCoordinatorTest {
         // Verify that updates no longer trigger changes.
         mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
         verify(mTopControlsStacker, never()).setScrollingDisabled(anyBoolean());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testLockWhenSideUiToolbarHeightShowing() {
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
+        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION);
+        TopControlsLockCoordinator coordinator = createCoordinator();
+        verify(mTopControlsStacker).setScrollingDisabled(false);
+
+        var specs = new SideUiSpecs(240, 0);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(specs);
+        coordinator.setSideUiStateProvider(mSideUiStateProvider);
+
+        verify(mTopControlsStacker).setScrollingDisabled(true);
+        verify(mTopControlsStacker).requestLayerUpdatePost(false);
     }
 }
