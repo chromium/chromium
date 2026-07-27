@@ -113,38 +113,36 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     recorder_for_external_draws_->DisableLineDrawingAsPaths();
   }
 
-  if (auto* sii =
-          context_provider_wrapper_->ContextProvider().SharedImageInterface()) {
-    // The SharedImages created by this provider serve as a means of
-    // import/export between VideoFrames/canvas and WebGPU, e.g.:
-    // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
-    //   WebGPU textures will then be read by clients)
-    // * Export from WebGPU into a static bitmap image via
-    //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
-    //   export happens via the WebGPU interface)
-    // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
-    // Additionally, these SharedImages are both read and written by the
-    // raster interface (both occur, for example, when copying canvas
-    // resources between canvases) and can be put into
-    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-    // GL textures by WebGL (via
-    // AcceleratedStaticBitmapImage::CopyToTexture()).
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  // The SharedImages created by this provider serve as a means of
+  // import/export between VideoFrames/canvas and WebGPU, e.g.:
+  // * Import from VideoFrames into WebGPU via CreateExternalTexture() (the
+  //   WebGPU textures will then be read by clients)
+  // * Export from WebGPU into a static bitmap image via
+  //   GpuCanvasContext::{PaintRenderingResultsToSnapshot, GetImage}() (the
+  //   export happens via the WebGPU interface)
+  // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
+  // Additionally, these SharedImages are both read and written by the
+  // raster interface (both occur, for example, when copying canvas
+  // resources between canvases) and can be put into
+  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
+  // GL textures by WebGL (via
+  // AcceleratedStaticBitmapImage::CopyToTexture()).
+  gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
-    shared_image_ = sii->CreateSharedImage(
-        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         shared_image_usage_flags, "CanvasResourceRaster"},
-        gpu::kNullSurfaceHandle);
+  auto* sii =
+      context_provider_wrapper_->ContextProvider().SharedImageInterface();
+  shared_image_ = sii->CreateSharedImage(
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
+       shared_image_usage_flags, "CanvasResourceRaster"},
+      gpu::kNullSurfaceHandle);
 
-    if (shared_image_) {
-      WaitSyncToken(shared_image_->creation_sync_token());
-      release_sync_token_ = shared_image_->creation_sync_token();
-    }
+  if (shared_image_) {
+    WaitSyncToken(shared_image_->creation_sync_token());
+    release_sync_token_ = shared_image_->creation_sync_token();
   }
 }
 
