@@ -18,8 +18,9 @@ namespace internal {
 // file. This allows for compile-time optimization.
 
 // The `resources` table stores the main metadata for each cache entry.
-inline constexpr const char kInitSchema_CreateTableResources[] =
-    // clang-format off
+inline constexpr const char
+    kInitSchema_CreateTableResources_SharedCacheDisabled[] =
+        // clang-format off
     "CREATE TABLE resources("
         // Unique ID for the resource
         "res_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
@@ -41,6 +42,36 @@ inline constexpr const char kInitSchema_CreateTableResources[] =
         "cache_key TEXT NOT NULL,"
         // Serialized response headers
         "head BLOB)";
+// clang-format on
+
+inline constexpr const char
+    kInitSchema_CreateTableResources_SharedCacheEnabled[] =
+        // clang-format off
+    "CREATE TABLE resources("
+        // Unique ID for the resource
+        "res_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+        // Timestamp for LRU
+        "last_used INTEGER NOT NULL,"
+        // In memory hints (MemoryEntryDataHints).
+        "hints INTEGER NOT NULL,"
+        // End offset of the body
+        "body_end INTEGER NOT NULL,"
+        // Total bytes consumed by the entry
+        "bytes_usage INTEGER NOT NULL,"
+        // Flag for entries pending deletion
+        "doomed INTEGER NOT NULL,"
+        // The checksum `crc32(head + cache_key_hash)`.
+        "check_sum INTEGER NOT NULL,"
+        // The hash of `cache_key` created by simple_util::GetEntryHashKey()
+        "cache_key_hash INTEGER NOT NULL,"
+        // The cache key created by HttpCache::GenerateCacheKeyForRequest()
+        "cache_key TEXT NOT NULL,"
+        // Serialized response headers
+        "head BLOB,"
+        // Unique ID for the database in the shared cache
+        "shared_cache_db_id INTEGER NOT NULL,"
+        // Row ID in the database in the shared cache
+        "shared_cache_row_id INTEGER NOT NULL)";
 // clang-format on
 
 // The `blobs` table stores the data chunks of the cached body.
@@ -107,8 +138,9 @@ inline constexpr const char kOpenEntry_SelectLiveResources[] =
     "ORDER BY res_id DESC";
 // clang-format on
 
-inline constexpr const char kCreateEntry_InsertIntoResources[] =
-    // clang-format off
+inline constexpr const char
+    kCreateEntry_InsertIntoResources_SharedCacheDisabled[] =
+        // clang-format off
     "INSERT INTO resources("
         "last_used,"      // 0
         "hints,"
@@ -119,6 +151,24 @@ inline constexpr const char kCreateEntry_InsertIntoResources[] =
         "cache_key_hash," // 5
         "cache_key) "     // 6
     "VALUES(?,0,?,?,?,?,?,?) "
+    "RETURNING res_id";
+// clang-format on
+
+inline constexpr const char
+    kCreateEntry_InsertIntoResources_SharedCacheEnabled[] =
+        // clang-format off
+    "INSERT INTO resources("
+        "last_used,"            // 0
+        "hints,"
+        "body_end,"             // 1
+        "bytes_usage,"          // 2
+        "doomed,"               // 3
+        "check_sum,"            // 4
+        "cache_key_hash,"       // 5
+        "cache_key,"            // 6
+        "shared_cache_db_id,"
+        "shared_cache_row_id) "
+    "VALUES(?,0,?,?,?,?,?,?,0,0) "
     "RETURNING res_id";
 // clang-format on
 
@@ -195,7 +245,7 @@ inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
     "RETURNING res_id";
 // clang-format on
 
-inline constexpr const char kInsertIntoResources[] =
+inline constexpr const char kInsertIntoResources_SharedCacheDisabled[] =
     // clang-format off
     "INSERT INTO resources("
         "last_used,"      // 0
@@ -208,6 +258,24 @@ inline constexpr const char kInsertIntoResources[] =
         "cache_key,"      // 7
         "head) "          // 8
     "VALUES(?,?,?,?,?,?,?,?,?) "
+    "RETURNING res_id";
+// clang-format on
+
+inline constexpr const char kInsertIntoResources_SharedCacheEnabled[] =
+    // clang-format off
+    "INSERT INTO resources("
+        "last_used,"            // 0
+        "hints,"                // 1
+        "body_end,"             // 2
+        "bytes_usage,"          // 3
+        "doomed,"               // 4
+        "check_sum,"            // 5
+        "cache_key_hash,"       // 6
+        "cache_key,"            // 7
+        "head,"                 // 8
+        "shared_cache_db_id,"
+        "shared_cache_row_id) "
+    "VALUES(?,?,?,?,?,?,?,?,?,0,0) "
     "RETURNING res_id";
 // clang-format on
 
@@ -564,10 +632,13 @@ enum class Query {
   kMaxValue = kLoadInMemoryIndex_SelectHintsFromLiveResources,
 };
 
-inline base::cstring_view GetQuery(Query query) {
+inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
   switch (query) {
     case Query::kInitSchema_CreateTableResources:
-      return internal::kInitSchema_CreateTableResources;
+      if (shared_cache_enabled) {
+        return internal::kInitSchema_CreateTableResources_SharedCacheEnabled;
+      }
+      return internal::kInitSchema_CreateTableResources_SharedCacheDisabled;
     case Query::kInitSchema_CreateTableBlobs:
       return internal::kInitSchema_CreateTableBlobs;
 
@@ -582,7 +653,10 @@ inline base::cstring_view GetQuery(Query query) {
     case Query::kOpenEntry_SelectLiveResources:
       return internal::kOpenEntry_SelectLiveResources;
     case Query::kCreateEntry_InsertIntoResources:
-      return internal::kCreateEntry_InsertIntoResources;
+      if (shared_cache_enabled) {
+        return internal::kCreateEntry_InsertIntoResources_SharedCacheEnabled;
+      }
+      return internal::kCreateEntry_InsertIntoResources_SharedCacheDisabled;
     case Query::kDoomEntry_MarkDoomedResources:
       return internal::kDoomEntry_MarkDoomedResources;
     case Query::kDeleteDoomedEntry_DeleteFromResources:
@@ -604,7 +678,10 @@ inline base::cstring_view GetQuery(Query query) {
     case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
     case Query::kInsertIntoResources:
-      return internal::kInsertIntoResources;
+      if (shared_cache_enabled) {
+        return internal::kInsertIntoResources_SharedCacheEnabled;
+      }
+      return internal::kInsertIntoResources_SharedCacheDisabled;
     case Query::kUpdateLastUsed:
       return internal::kUpdateLastUsed;
     case Query::kUpdateLastUsedHeader:

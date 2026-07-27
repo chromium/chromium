@@ -14,9 +14,11 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/cache_type.h"
+#include "net/base/features.h"
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
@@ -28,8 +30,9 @@
 namespace disk_cache_sql_queries {
 
 // Defines the set of queries that are used for schema and index creation. These
-// queries are not suitable for checking plans against an already-initialized
-// database.
+// queries are executed during database initialization and do not operate on
+// existing data, so their performance is not as critical as data manipulation
+// queries.
 constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kInitSchema_CreateTableResources,
     Query::kInitSchema_CreateTableBlobs,
@@ -39,9 +42,18 @@ constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kIndex_BlobsResIdStart,
 });
 
-class SqlPersistentStoreQueriesTest : public testing::Test {
+class SqlPersistentStoreQueriesTest : public testing::TestWithParam<bool> {
  protected:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          net::features::kRendererAccessibleHttpCache);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::features::kRendererAccessibleHttpCache);
+    }
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
 
   // Creates a database file with the correct schema in the temporary directory.
   // This is done by instantiating and initializing a SqlPersistentStore, which
@@ -86,6 +98,7 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   disk_cache::SqlAsyncTaskManager async_task_manager_;
 };
@@ -94,7 +107,7 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
 // checking their query plans. This is essential for ensuring the performance of
 // database operations. A query that performs a full table scan instead of using
 // an index can lead to significant performance degradation.
-TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
+TEST_P(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
   CreateDatabaseInTemDir();
 
   // Defines the expected query plan for each query. An empty plan indicates
@@ -217,10 +230,12 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
   for (const auto& it : kAllQueriesAndPlans) {
-    const base::cstring_view query_string = GetQuery(it.first);
+    const base::cstring_view query_string = GetQuery(it.first, GetParam());
     SCOPED_TRACE(query_string);
     EXPECT_EQ(GetQueryPlan(query_string), it.second);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SqlPersistentStoreQueriesTest, testing::Bool());
 
 }  // namespace disk_cache_sql_queries

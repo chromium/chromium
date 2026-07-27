@@ -54,7 +54,6 @@
 
 namespace disk_cache {
 
-using disk_cache_sql_queries::GetQuery;
 using disk_cache_sql_queries::Query;
 
 using Error = SqlPersistentStore::Error;
@@ -199,13 +198,19 @@ int32_t CalculateCheckSum(base::span<const uint8_t> data,
 }
 
 // Sets up the database schema and indexes.
-[[nodiscard]] bool InitSchema(sql::Database& db) {
-  if (!db.Execute(GetQuery(Query::kInitSchema_CreateTableResources)) ||
-      !db.Execute(GetQuery(Query::kInitSchema_CreateTableBlobs)) ||
-      !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyHashDoomed)) ||
-      !db.Execute(GetQuery(Query::kIndex_LiveResourcesLastUsed)) ||
-      !db.Execute(GetQuery(Query::kIndex_LiveResourcesHints)) ||
-      !db.Execute(GetQuery(Query::kIndex_BlobsResIdStart))) {
+[[nodiscard]] bool InitSchema(sql::Database& db, bool shared_cache_enabled) {
+  if (!db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kInitSchema_CreateTableResources, shared_cache_enabled)) ||
+      !db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kInitSchema_CreateTableBlobs, shared_cache_enabled)) ||
+      !db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kIndex_ResourcesCacheKeyHashDoomed, shared_cache_enabled)) ||
+      !db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kIndex_LiveResourcesLastUsed, shared_cache_enabled)) ||
+      !db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kIndex_LiveResourcesHints, shared_cache_enabled)) ||
+      !db.Execute(disk_cache_sql_queries::GetQuery(
+          Query::kIndex_BlobsResIdStart, shared_cache_enabled))) {
     return false;
   }
   return true;
@@ -482,7 +487,7 @@ Error SqlPersistentStore::Backend::InitializeInternal(
 
   if (is_new_db) {
     // Initialize the database schema.
-    if (!InitSchema(db_)) {
+    if (!InitSchema(db_, shared_cache_enabled_)) {
       return Error::kFailedToInitializeSchema;
     }
   }
