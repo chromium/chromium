@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "components/tabs/public/tab_interface.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -328,9 +329,8 @@ RestartabilityState RestartabilityMonitor::ComputeCurrentState() {
         }
 
         TabStripModel* tab_strip_model = browser_interface->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
-          if (CouldTabDisplayBeforeUnloadDialog(
-                  tab_strip_model->GetWebContentsAt(i))) {
+        for (tabs::TabInterface* tab : *tab_strip_model) {
+          if (CouldTabDisplayBeforeUnloadDialog(tab->GetContents())) {
             state.has_dirty_tabs = true;
             break;
           }
