@@ -2619,7 +2619,7 @@ Chromium is unable to recover your settings.
         </message>
 
         <!-- Feature Showcase - Gemini -->
-        <message name="IDS_FEATURE_SHOWCASE_GEMINI_TITLE" desc="" translateable="false">
+        <message name="IDS_FEATURE_SHOWCASE_GEMINI_TITLE" desc="This is the headline for the Gemini (AI assistant) opt-in screen. It introduces the benefit of AI assistance for productivity. (CHAR LIMIT = 60)">
           Ask anything, right where you are, with Gemini in Chromium
         </message>
 
