@@ -624,11 +624,11 @@ class SearchEngineChoiceServiceDisplayStateRecordTest
 
   static TemplateURL::OwnedTemplateURLVector
   OwnedTemplateURLVectorFromPrepopulatedEngines(
-      const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+      const std::vector<
+          raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>&
           engines) {
     TemplateURL::OwnedTemplateURLVector result;
-    for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
-         engines) {
+    for (const auto& engine : engines) {
       result.push_back(std::make_unique<TemplateURL>(
           *TemplateURLDataFromPrepopulatedEngine(*engine)));
     }
@@ -761,9 +761,10 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest, Record_Taiyaki) {
 
 TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
        RecordNoop_UnsupportedCountry) {
-  auto engines = {&TemplateURLPrepopulateData::google,
-                  &TemplateURLPrepopulateData::bing,
-                  &TemplateURLPrepopulateData::yahoo};
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      engines = {&TemplateURLPrepopulateData::google,
+                 &TemplateURLPrepopulateData::bing,
+                 &TemplateURLPrepopulateData::yahoo};
   base::HistogramTester histogram_tester;
 
   {

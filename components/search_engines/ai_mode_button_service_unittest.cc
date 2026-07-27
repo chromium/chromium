@@ -218,7 +218,7 @@ TEST_F(AiModeButtonServiceTest, IsValidConfig) {
 TEST(AiModeButtonConfigTest, AllCompiledThirdPartyConfigsAreValid) {
   // Verify that every single 3p config defined in ai_mode_button_config.json is
   // valid.
-  for (const auto* config : ai_mode_button_config::kAiModeButtonConfigs) {
+  for (const auto& config : ai_mode_button_config::kAiModeButtonConfigs) {
     SCOPED_TRACE(
         base::StringPrintf("Testing ID %d", static_cast<int>(config->id)));
     EXPECT_TRUE(TestAiModeButtonService::IsValidConfig(*config));
@@ -229,7 +229,7 @@ TEST(AiModeButtonConfigTest, CompiledThirdPartyConfigsContainNoDuplicateIds) {
   // Verify that every single 3p config defined in ai_mode_button_config.json
   // has a unique `id`.
   std::set<SearchEngineType> seen;
-  for (const auto* config : ai_mode_button_config::kAiModeButtonConfigs) {
+  for (const auto& config : ai_mode_button_config::kAiModeButtonConfigs) {
     SCOPED_TRACE(
         base::StringPrintf("Testing ID %d", static_cast<int>(config->id)));
     EXPECT_TRUE(seen.insert(config->id).second);

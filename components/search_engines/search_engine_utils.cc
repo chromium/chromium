@@ -57,7 +57,7 @@ SearchEngineType GetEngineType(const GURL& url) {
   // Now check the rest of the prepopulate data.
   const auto& all_engines = regional_capabilities::GetAllPrepopulatedEngines();
 
-  auto it = std::ranges::find_if(all_engines, [&](const auto* engine) {
+  auto it = std::ranges::find_if(all_engines, [&](const auto& engine) {
     return HasSameDomainUrl(url, engine);
   });
   if (it == all_engines.end()) {

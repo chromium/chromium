@@ -98,8 +98,8 @@ const PrepopulatedEngine android_codesearch_next = {
 };
 
 using RegionalAndNonRegionalEngines =
-    std::pair<std::vector<const PrepopulatedEngine*>,
-              std::vector<const PrepopulatedEngine*>>;
+    std::pair<std::vector<raw_ptr<const PrepopulatedEngine>>,
+              std::vector<raw_ptr<const PrepopulatedEngine>>>;
 
 // Sample set of prepopulated engines. This version is the basic,
 // pre-migration one: android search in the current region, and chrome and

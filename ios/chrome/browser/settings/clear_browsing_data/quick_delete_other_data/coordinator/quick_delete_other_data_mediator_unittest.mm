@@ -116,7 +116,7 @@ class QuickDeleteOtherDataMediatorTest : public PlatformTest {
     auto prepopulated_engines =
         regional_capabilities::GetAllPrepopulatedEngines();
     TemplateURL* defaultSearchEngine = nullptr;
-    for (const auto* engine : prepopulated_engines) {
+    for (const auto& engine : prepopulated_engines) {
       if (engine->type == engine_type) {
         defaultSearchEngine =
             template_url_service_->Add(std::make_unique<TemplateURL>(

@@ -212,8 +212,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ValidSearchURLs) {
   // TemplateURLPrepopulateData::Resolver::MatchesEngineUnderMigration that all
   // prepopulated search engine URLs can be parsed without needing to resolve
   // replacements. Google is the exception, but that's accounted for.
-  for (const PrepopulatedEngine* engine :
-       TemplateURLPrepopulateData::kAllEngines) {
+  for (const auto& engine : TemplateURLPrepopulateData::kAllEngines) {
     if (engine == &TemplateURLPrepopulateData::google) {
       continue;  // URL is not valid, it has a lot of replacements that need to
                  // be processed before use.
@@ -880,24 +879,25 @@ class TemplateURLPrepopulateDataMigrationTest
       .migrate_to_id = fake_engine_new.id,
   };
 
-  std::vector<const PrepopulatedEngine*> sample_regional_engines = {
+  std::vector<raw_ptr<const PrepopulatedEngine>> sample_regional_engines = {
       &TemplateURLPrepopulateData::google,
       &duckduckgo,
       &fake_engine,
   };
 
-  std::vector<const PrepopulatedEngine*> no_other_known_engines;
+  std::vector<raw_ptr<const PrepopulatedEngine>> no_other_known_engines;
 
-  std::vector<const PrepopulatedEngine*>
+  std::vector<raw_ptr<const PrepopulatedEngine>>
       sample_regional_engines_with_migration = {
           &TemplateURLPrepopulateData::google,
           &duckduckgo,
           &fake_engine_new,
       };
 
-  std::vector<const PrepopulatedEngine*> other_known_engines_with_migration = {
-      &fake_engine_deprecated,
-  };
+  std::vector<raw_ptr<const PrepopulatedEngine>>
+      other_known_engines_with_migration = {
+          &fake_engine_deprecated,
+      };
 
   std::unique_ptr<TemplateURLData> legacy_data =
       TemplateURLDataFromPrepopulatedEngine(fake_engine);

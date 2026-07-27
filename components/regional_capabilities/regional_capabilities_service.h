@@ -105,7 +105,7 @@ class RegionalCapabilitiesService : public KeyedService {
 
   // -- Getters for regional capabilities -------------------------------------
 
-  std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
   GetRegionalPrepopulatedEngines();
 
   // Returns whether the profile is associated with a region in which we can

@@ -99,7 +99,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
 
 std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
     PrefService& prefs,
-    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
     int prepopulated_id,
     bool use_first_as_fallback) {
   // This could be more efficient. We load all URLs but keep only one.
@@ -133,7 +134,7 @@ std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
 template <typename EngineMatcher>
 constexpr const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInDataImpl(
     EngineMatcher engine_matcher,
-    const std::vector<const PrepopulatedEngine*>&
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
   // Locate region-specific search engine first to avoid more thorough
   // scanning. In most cases this should offer the correct match.
@@ -174,7 +175,7 @@ int GetDataVersion(PrefService* prefs) {
 
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService& prefs,
-    const std::vector<const PrepopulatedEngine*>&
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
@@ -190,7 +191,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService& prefs,
-    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
     int prepopulated_id) {
   return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
                                         prepopulated_id,
@@ -218,7 +220,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
 
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     int prepopulated_id,
-    const std::vector<const PrepopulatedEngine*>&
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
   return GetPrepopulatedEngineFromBuiltInDataImpl(
       [prepopulated_id](const PrepopulatedEngine* engine) {
@@ -229,7 +231,7 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
 
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     std::u16string_view keyword,
-    const std::vector<const PrepopulatedEngine*>&
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
   return GetPrepopulatedEngineFromBuiltInDataImpl(
       [keyword](const PrepopulatedEngine* engine) {
@@ -240,7 +242,8 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
-    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
+        regional_prepopulated_engines,
     int prepopulated_id) {
   // TODO(crbug.com/40940777): Refactor to better share code with
   // `GetPrepopulatedEngine()`.
@@ -273,7 +276,7 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService& prefs,
-    const std::vector<const PrepopulatedEngine*>&
+    const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
   return FindPrepopulatedEngineInternal(prefs, regional_prepopulated_engines,
                                         google.id,

@@ -45,7 +45,8 @@ namespace search_engines {
 
 namespace {
 std::vector<std::unique_ptr<TemplateURL>> ToOwnedTemplateURLs(
-    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+    const std::vector<
+        raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>&
         engines) {
   return base::ToVector(
       engines,

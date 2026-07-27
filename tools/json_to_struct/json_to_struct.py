@@ -144,6 +144,9 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
     if aggregation.kind == AggregationKind.MAP:
       headers.append("base/containers/fixed_flat_map.h")
 
+    if aggregation.kind != AggregationKind.NONE:
+      headers.append("base/memory/raw_ptr.h")
+
     for header in sorted(set(headers)):
       f.write(u'#include "%s"\n' % header)
     f.write(u'\n')

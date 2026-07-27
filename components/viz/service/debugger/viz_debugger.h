@@ -14,6 +14,7 @@
 
 #include "base/debug/debugging_buildflags.h"
 #include "base/macros/concat.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -254,7 +255,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   // and mutated by multiple threads simultaneously or individually.
   std::vector<DrawCall> draw_rect_calls_{kDefaultBufferSize};
   std::vector<LogCall> logs_{kDefaultBufferSize};
-  std::vector<StaticSource*> sources_;
+  std::vector<raw_ptr<StaticSource>> sources_;
   std::vector<Buffer> buffers_;
 
   // Individual tail indices tracker variables for next insertion index in

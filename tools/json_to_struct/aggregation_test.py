@@ -231,7 +231,7 @@ class AggregationTest(unittest.TestCase):
 
     self.assertEqual(
         GenerateHHAggregation('TypeName', agg).strip(),
-        'extern const std::array<const TypeName*, 5> kTestArray;')
+        'extern const std::array<raw_ptr<const TypeName>, 5> kTestArray;')
 
   def testHHMapAggregation(self):
     agg = AggregationDetails(
@@ -244,7 +244,7 @@ class AggregationTest(unittest.TestCase):
 
     self.assertEqual(
         GenerateHHAggregation('ValueTypeName', agg).strip(),
-        'extern const base::fixed_flat_map<std::string_view, const ValueTypeName*, 5> kTestMap;'
+        'extern const base::fixed_flat_map<std::string_view, raw_ptr<const ValueTypeName>, 5> kTestMap;'
     )
 
   def testCCNoAggregation(self):
@@ -269,7 +269,7 @@ class AggregationTest(unittest.TestCase):
 
     self.assertEqual(
         GenerateCCAggregation('TypeName', agg), '''
-const std::array<const TypeName*, 3> kTestArray ({{
+const std::array<raw_ptr<const TypeName>, 3> kTestArray ({{
   &item_1,
   &item_2,
   &item_3,
@@ -287,8 +287,8 @@ const std::array<const TypeName*, 3> kTestArray ({{
 
     self.assertEqual(
         GenerateCCAggregation('ValueTypeName', agg), '''
-const base::fixed_flat_map<std::string, const ValueTypeName*, 3> kTestMap =
-    base::MakeFixedFlatMap<std::string, const ValueTypeName*>({
+const base::fixed_flat_map<std::string, raw_ptr<const ValueTypeName>, 3> kTestMap =
+    base::MakeFixedFlatMap<std::string, raw_ptr<const ValueTypeName>>({
   {std::string("src_1"), &tgt_1},
   {std::string("src_2"), &tgt_2},
   {std::string("src_3"), &tgt_3},

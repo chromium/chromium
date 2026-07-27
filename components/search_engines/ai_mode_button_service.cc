@@ -112,7 +112,7 @@ std::optional<AiModeButtonUiConfig> AiModeButtonService::BuildCurrentUiConfig()
   }
 
   const ai_mode_button_config::AiModeButtonConfig* found_config = nullptr;
-  for (const auto* config : ai_mode_button_config::kAiModeButtonConfigs) {
+  for (const auto& config : ai_mode_button_config::kAiModeButtonConfigs) {
     if (config->id == type) {
       // `kAiModeButtonConfigs` contains a debug config to allow for manual
       // testing. Skip it if the debug param is false.

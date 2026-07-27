@@ -131,7 +131,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsByKeyword(
   } else {
     // Search the entire search engine database to find matching entry.
     auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-    for (const auto* engine : all_engines) {
+    for (const auto& engine : all_engines) {
       if (engine->keyword == keyword) {
         result = TemplateURLDataFromPrepopulatedEngine(*engine);
         break;
@@ -169,7 +169,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
 
   // Search the entire search engine database to find matching entry.
   auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-  for (const auto* engine : all_engines) {
+  for (const auto& engine : all_engines) {
     if (engine->id == data_to_match.prepopulate_id) {
       return {TemplateURLDataFromPrepopulatedEngine(*engine),
               ReconciliationType::kByIdFromAllEngines};

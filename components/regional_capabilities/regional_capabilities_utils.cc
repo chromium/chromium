@@ -58,8 +58,9 @@ const RegionalSettings& GetRegionalSettings(CountryId country_id) {
   return *iter->second;
 }
 
-void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
-                                PrefService& prefs) {
+void ShufflePrepopulatedEngines(
+    std::vector<raw_ptr<const PrepopulatedEngine>>& engines,
+    PrefService& prefs) {
   std::default_random_engine generator;
   generator.seed(prefs::GetShuffleSeed(prefs));
 
@@ -69,10 +70,11 @@ void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
 }  // namespace
 
 constexpr MigratingEngines ComputeMigratedEnginesMapping(
-    base::span<const PrepopulatedEngine* const> all_engines) {
+    base::span<const raw_ptr<const PrepopulatedEngine>> all_engines) {
   MigratingEngines migrating_engines;
 
-  for (const PrepopulatedEngine* engine : all_engines) {
+  for (const auto& engine_ref : all_engines) {
+    const PrepopulatedEngine* engine = engine_ref.get();
     if (engine->migrate_to_id == 0) {
       continue;
     }
@@ -161,12 +163,12 @@ bool HasSearchEngineCountryListOverride() {
       country_override.value());
 }
 
-std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
+std::vector<raw_ptr<const PrepopulatedEngine>> GetPrepopulatedEngines(
     CountryId country_id,
     PrefService& prefs,
     SearchEngineListType search_engine_list_type) {
   const RegionalSettings& regional_settings = GetRegionalSettings(country_id);
-  std::vector<const PrepopulatedEngine*> engines;
+  std::vector<raw_ptr<const PrepopulatedEngine>> engines;
 
   switch (search_engine_list_type) {
     case SearchEngineListType::kTopN: {
@@ -174,12 +176,13 @@ std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
       // default) than 5 entries.
       size_t num_top_engines = std::min(regional_settings.search_engines.size(),
                                         kTopSearchEnginesThreshold);
-      engines = base::ToVector(
+      engines = base::ToVector<raw_ptr<const PrepopulatedEngine>>(
           base::span(regional_settings.search_engines).first(num_top_engines));
       break;
     }
     case SearchEngineListType::kShuffled: {
-      engines = base::ToVector(regional_settings.search_engines);
+      engines = base::ToVector<raw_ptr<const PrepopulatedEngine>>(
+          regional_settings.search_engines);
       ShufflePrepopulatedEngines(engines, prefs);
       break;
     }
@@ -192,8 +195,9 @@ std::vector<const PrepopulatedEngine*> GetPrepopulatedEngines(
   return engines;
 }
 
-std::vector<const PrepopulatedEngine*> GetAllEeaRegionPrepopulatedEngines() {
-  std::vector<const PrepopulatedEngine*> result;
+std::vector<raw_ptr<const PrepopulatedEngine>>
+GetAllEeaRegionPrepopulatedEngines() {
+  std::vector<raw_ptr<const PrepopulatedEngine>> result;
 
   // We use a `flat_set` to filter out engines that have the same prepopulated
   // id. For example, `yahoo_fr` and `yahoo_de` have the same prepopulated id
@@ -205,9 +209,9 @@ std::vector<const PrepopulatedEngine*> GetAllEeaRegionPrepopulatedEngines() {
     const auto& search_engines =
         GetRegionalSettings(eea_country_id).search_engines;
 
-    for (const auto* search_engine : search_engines) {
+    for (const auto& search_engine : search_engines) {
       if (auto [_, added] = used_engines.emplace(search_engine->id); added) {
-        result.push_back(search_engine);
+        result.push_back(search_engine.get());
       }
     }
   }
@@ -215,11 +219,13 @@ std::vector<const PrepopulatedEngine*> GetAllEeaRegionPrepopulatedEngines() {
   return result;
 }
 
-std::vector<const PrepopulatedEngine*> GetDefaultPrepopulatedEngines() {
-  return base::ToVector(GetRegionalSettings(CountryId()).search_engines);
+std::vector<raw_ptr<const PrepopulatedEngine>> GetDefaultPrepopulatedEngines() {
+  return base::ToVector<raw_ptr<const PrepopulatedEngine>>(
+      GetRegionalSettings(CountryId()).search_engines);
 }
 
-const base::span<const TemplateURLPrepopulateData::PrepopulatedEngine* const>
+const base::span<
+    const raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
 GetAllPrepopulatedEngines() {
   if (const auto& overrides = GetPrepopulatedEnginesTestOverrideInternal();
       overrides.has_value()) {
@@ -240,10 +246,10 @@ const PrepopulatedEnginesOverride& GetPrepopulatedEnginesOverrideForTesting() {
 
 ScopedPrepopulatedEnginesOverride
 SetPrepopulatedEnginesOverrideForTesting(  // IN-TEST
-    std::vector<const PrepopulatedEngine*> regional_engines,
-    std::vector<const PrepopulatedEngine*> other_known_engines) {
+    std::vector<raw_ptr<const PrepopulatedEngine>> regional_engines,
+    std::vector<raw_ptr<const PrepopulatedEngine>> other_known_engines) {
   CHECK_IS_TEST();
-  std::vector<const PrepopulatedEngine*> all_engines;
+  std::vector<raw_ptr<const PrepopulatedEngine>> all_engines;
   // The `all_engines` list is generally used when some entry was not found by
   // looking through the regional list. Append `other_known_engines` first to
   // make it easier to show an engine being pulled from that list rather than

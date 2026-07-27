@@ -24,13 +24,13 @@ using ::TemplateURLPrepopulateData::google;
 using ::TemplateURLPrepopulateData::PrepopulatedEngine;
 using ::TemplateURLPrepopulateData::yahoo;
 
-std::vector<const PrepopulatedEngine*> sample_regional_engines = {
+std::vector<raw_ptr<const PrepopulatedEngine>> sample_regional_engines = {
     &google,
     &duckduckgo,
     &bing,
 };
 
-std::vector<const PrepopulatedEngine*> other_known_engines = {
+std::vector<raw_ptr<const PrepopulatedEngine>> other_known_engines = {
     &yahoo,
     &ecosia,
 };

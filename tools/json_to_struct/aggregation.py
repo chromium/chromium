@@ -112,7 +112,8 @@ def GenerateCCAggregation(type_name: str,
         aggregation (AggregationDetails): The aggregation details.
 
     Returns:
-        Optional[str]: The generated C++ aggregation code if applicable, otherwise None.
+        Optional[str]: The generated C++ aggregation code if applicable,
+        otherwise None.
     """
   if aggregation.kind == AggregationKind.ARRAY:
     return _GenerateCCArray(type_name, aggregation)
@@ -135,7 +136,7 @@ def _GenerateCCArray(type_name: str, aggregation: AggregationDetails) -> str:
         str: The generated C++ array aggregation code.
     """
   res = '\nconst '
-  res += f'std::array<const {type_name}*, {len(aggregation.elements)}> '
+  res += f'std::array<raw_ptr<const {type_name}>, {len(aggregation.elements)}> '
   res += f'{aggregation.name} '
 
   res += '({{\n'
@@ -160,9 +161,10 @@ def _GenerateCCMap(type_name: str, aggregation: AggregationDetails) -> str:
 
   res = '\nconst '
   res += f'base::fixed_flat_map<{aggregation.map_key_type}, '
-  res += f'const {type_name}*, {len(aggregation.GetSortedMapElements())}> '
+  res += f'raw_ptr<const {type_name}>, '
+  res += f'{len(aggregation.GetSortedMapElements())}> '
   res += f'{aggregation.name} =\n'
-  res += f'    base::MakeFixedFlatMap<{key_type}, const {type_name}*>'
+  res += f'    base::MakeFixedFlatMap<{key_type}, raw_ptr<const {type_name}>>'
 
   res += '({\n'
   for (alias_name, element_name) in aggregation.GetSortedMapElements():
@@ -181,7 +183,8 @@ def GenerateHHAggregation(type_name: str,
         aggregation (AggregationDetails): The aggregation details.
 
     Returns:
-        Optional[str]: The generated header file aggregation code if applicable, otherwise None.
+        Optional[str]: The generated header file aggregation code if
+        applicable, otherwise None.
     """
   if aggregation.kind == AggregationKind.ARRAY:
     return _GenerateHHArray(type_name, aggregation)
@@ -204,7 +207,7 @@ def _GenerateHHArray(type_name: str, aggregation: AggregationDetails) -> str:
         str: The generated header file array aggregation declaration.
     """
   res = '\nextern const '
-  res += f'std::array<const {type_name}*, {len(aggregation.elements)}> '
+  res += f'std::array<raw_ptr<const {type_name}>, {len(aggregation.elements)}> '
   res += f'{aggregation.name};\n'
   return res
 
@@ -222,6 +225,7 @@ def _GenerateHHMap(type_name: str, aggregation: AggregationDetails) -> str:
     """
   res = '\nextern const '
   res += f'base::fixed_flat_map<{aggregation.map_key_type}, '
-  res += f'const {type_name}*, {len(aggregation.GetSortedMapElements())}> '
+  res += f'raw_ptr<const {type_name}>, '
+  res += f'{len(aggregation.GetSortedMapElements())}> '
   res += f'{aggregation.name};\n'
   return res

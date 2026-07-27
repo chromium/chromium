@@ -310,7 +310,7 @@ CountryId CountryOverrideToCountryId(
 // Updates in place the `engines` vector to replace deprecated entries with the
 // post-migration ones. No-op if the migration feature is disabled.
 void ApplyPrepopulatedEnginesMigration(
-    std::vector<const PrepopulatedEngine*>& engines) {
+    std::vector<raw_ptr<const PrepopulatedEngine>>& engines) {
   if (!base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration)) {
     return;
   }
@@ -371,9 +371,9 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #endif
 }
 
-std::vector<const PrepopulatedEngine*>
+std::vector<raw_ptr<const PrepopulatedEngine>>
 RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
-  std::vector<const PrepopulatedEngine*> engines;
+  std::vector<raw_ptr<const PrepopulatedEngine>> engines;
 
   if (HasSearchEngineCountryListOverride()) {
     auto country_override = std::get<SearchEngineCountryListOverride>(
