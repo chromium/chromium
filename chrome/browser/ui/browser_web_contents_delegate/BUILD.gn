@@ -14,6 +14,7 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/search",

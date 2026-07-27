@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,14 +19,22 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
+#include "components/blocked_content/list_item_position.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/drop_data.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/base_window.h"
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #endif  // defined(USE_AURA)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#endif
 
 DEFINE_USER_DATA(BrowserWebContentsDelegate);
 
@@ -185,4 +196,81 @@ void BrowserWebContentsDelegate::PreHandleDragUpdate(
 
 void BrowserWebContentsDelegate::PreHandleDragExit() {
   window_->PreHandleDragExit();
+}
+
+void BrowserWebContentsDelegate::HandleDragEnded() {
+  window_->HandleDragEnded();
+}
+
+bool BrowserWebContentsDelegate::CanDragEnter(
+    content::WebContents* source,
+    const content::DropData& data,
+    blink::DragOperationsMask operations_allowed) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Disallow drag-and-drop navigation for Settings windows which do not support
+  // external navigation.
+  if ((operations_allowed & blink::kDragOperationLink) &&
+      chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
+          browser_->GetBrowserForMigrationOnly())) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+void BrowserWebContentsDelegate::CreateSmsPrompt(
+    content::RenderFrameHost*,
+    const std::vector<url::Origin>&,
+    const std::string& one_time_code,
+    base::OnceClosure on_confirm,
+    base::OnceClosure on_cancel) {
+  // TODO(crbug.com/40103792): implementation left pending deliberately.
+  std::move(on_confirm).Run();
+}
+
+bool BrowserWebContentsDelegate::ShouldAllowRunningInsecureContent(
+    content::WebContents* web_contents,
+    bool allowed_per_prefs,
+    const url::Origin& origin,
+    const GURL& resource_url) {
+  // Note: this implementation is a mirror of
+  // ContentSettingsObserver::allowRunningInsecureContent.
+  if (allowed_per_prefs) {
+    return true;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  return content_settings->GetContentSetting(
+             web_contents->GetLastCommittedURL(), GURL(),
+             ContentSettingsType::MIXEDSCRIPT) == CONTENT_SETTING_ALLOW;
+}
+
+void BrowserWebContentsDelegate::OnDidBlockNavigation(
+    content::WebContents* web_contents,
+    const GURL& blocked_url,
+    const GURL& initiator_url,
+    const url::Origin& initiator_origin,
+    blink::mojom::NavigationBlockedReason reason) {
+  if (reason ==
+      blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {
+    if (auto* framebust_helper =
+            FramebustBlockTabHelper::FromWebContents(web_contents)) {
+      auto on_click = [](const GURL& url, size_t index, size_t total_elements) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "WebCore.Framebust.ClickThroughPosition",
+            blocked_content::GetListItemPositionFromDistance(index,
+                                                             total_elements));
+      };
+      framebust_helper->AddBlockedUrl(blocked_url, initiator_origin,
+                                      base::BindOnce(on_click));
+    }
+  }
+}
+
+bool BrowserWebContentsDelegate::IsBackForwardCacheSupported(
+    content::WebContents& web_contents) {
+  return true;
 }

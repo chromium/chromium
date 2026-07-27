@@ -1133,7 +1133,7 @@ void Browser::PreHandleDragExit() {
 }
 
 void Browser::HandleDragEnded() {
-  window_->HandleDragEnded();
+  BrowserWebContentsDelegate::From(this)->HandleDragEnded();
 }
 
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
@@ -1152,24 +1152,18 @@ bool Browser::HandleKeyboardEvent(content::WebContents* source,
 bool Browser::CanDragEnter(content::WebContents* source,
                            const content::DropData& data,
                            blink::DragOperationsMask operations_allowed) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Disallow drag-and-drop navigation for Settings windows which do not support
-  // external navigation.
-  if ((operations_allowed & blink::kDragOperationLink) &&
-      chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(this)) {
-    return false;
-  }
-#endif
-  return true;
+  return BrowserWebContentsDelegate::From(this)->CanDragEnter(
+      source, data, operations_allowed);
 }
 
-void Browser::CreateSmsPrompt(content::RenderFrameHost*,
-                              const std::vector<url::Origin>&,
+void Browser::CreateSmsPrompt(content::RenderFrameHost* host,
+                              const std::vector<url::Origin>& origin_list,
                               const std::string& one_time_code,
                               base::OnceClosure on_confirm,
                               base::OnceClosure on_cancel) {
-  // TODO(crbug.com/40103792): implementation left pending deliberately.
-  std::move(on_confirm).Run();
+  BrowserWebContentsDelegate::From(this)->CreateSmsPrompt(
+      host, origin_list, one_time_code, std::move(on_confirm),
+      std::move(on_cancel));
 }
 
 bool Browser::ShouldAllowRunningInsecureContent(
@@ -1177,19 +1171,9 @@ bool Browser::ShouldAllowRunningInsecureContent(
     bool allowed_per_prefs,
     const url::Origin& origin,
     const GURL& resource_url) {
-  // Note: this implementation is a mirror of
-  // ContentSettingsObserver::allowRunningInsecureContent.
-  if (allowed_per_prefs) {
-    return true;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  HostContentSettingsMap* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  return content_settings->GetContentSetting(
-             web_contents->GetLastCommittedURL(), GURL(),
-             ContentSettingsType::MIXEDSCRIPT) == CONTENT_SETTING_ALLOW;
+  return BrowserWebContentsDelegate::From(this)
+      ->ShouldAllowRunningInsecureContent(web_contents, allowed_per_prefs,
+                                          origin, resource_url);
 }
 
 void Browser::OnDidBlockNavigation(
@@ -1198,20 +1182,8 @@ void Browser::OnDidBlockNavigation(
     const GURL& initiator_url,
     const url::Origin& initiator_origin,
     blink::mojom::NavigationBlockedReason reason) {
-  if (reason ==
-      blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {
-    if (auto* framebust_helper =
-            FramebustBlockTabHelper::FromWebContents(web_contents)) {
-      auto on_click = [](const GURL& url, size_t index, size_t total_elements) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "WebCore.Framebust.ClickThroughPosition",
-            blocked_content::GetListItemPositionFromDistance(index,
-                                                             total_elements));
-      };
-      framebust_helper->AddBlockedUrl(blocked_url, initiator_origin,
-                                      base::BindOnce(on_click));
-    }
-  }
+  BrowserWebContentsDelegate::From(this)->OnDidBlockNavigation(
+      web_contents, blocked_url, initiator_url, initiator_origin, reason);
 }
 
 content::PictureInPictureResult Browser::EnterPictureInPicture(
@@ -1225,7 +1197,8 @@ void Browser::ExitPictureInPicture() {
 }
 
 bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
-  return true;
+  return BrowserWebContentsDelegate::From(this)->IsBackForwardCacheSupported(
+      web_contents);
 }
 
 content::PreloadingEligibility Browser::IsPrerender2Supported(
