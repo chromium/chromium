@@ -253,7 +253,9 @@ void ComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
   // Reset the AIM tool mode to not include file upload if it currently does.
   if (GetInputState().active_tool ==
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
-    input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    if (auto* model = input_state_model()) {
+      model->setActiveTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    }
   }
 }
 
@@ -290,7 +292,12 @@ void ComposeboxHandler::SubmitQuery(
     omnibox::ChromeAimEntryPoint aim_entrypoint,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
-  CHECK(input_state_model());
+  if (!input_state_model()) {
+    InitializeInputStateModel();
+    if (!input_state_model()) {
+      return;
+    }
+  }
 
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Record AIM tool and model mode on query submission.

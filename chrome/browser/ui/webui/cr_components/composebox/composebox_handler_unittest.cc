@@ -602,3 +602,20 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery_DestructionSafe) {
 
   EXPECT_EQ(test_handler, nullptr);
 }
+
+TEST_F(ComposeboxHandlerTest, SubmitQuery_NullInputStateModel) {
+  mock_searchbox_page_.receiver_.reset();
+
+  auto test_handler = std::make_unique<ComposeboxHandler>(
+      mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
+      base::BindLambdaForTesting(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }),
+      base::DoNothing());
+
+  // This should not crash and should return early.
+  test_handler->SubmitQuery("test query", 1, false, false, false, false, false);
+}
