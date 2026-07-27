@@ -215,18 +215,18 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 // Creates a button for the navigation bar.
-- (UIButton*)addTopButtonWithSymbolName:(NSString*)symbolName
-                    symbolConfiguration:
-                        (UIImageSymbolConfiguration*)symbolConfiguration
-                              isLeading:(BOOL)isLeading
-                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+- (UIButton*)addTopButtonWithSymbol:(Symbol)symbol
+                symbolConfiguration:
+                    (UIImageSymbolConfiguration*)symbolConfiguration
+                          isLeading:(BOOL)isLeading
+            accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   NSArray<UIColor*>* colors = @[
     [UIColor colorNamed:kTextSecondaryColor],
     [UIColor colorNamed:kTertiaryBackgroundColor]
   ];
 
   UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(symbolName, symbolConfiguration), colors);
+      SymbolWithConfiguration(symbol, symbolConfiguration), colors);
 
   // Add padding on all sides of the button, to make it a 44x44 touch target.
   CGFloat verticalInsets = (kMinimumTouchTargetSize - image.size.height) / 2.0;
@@ -283,8 +283,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       actionWithTitle:
           l10n_util::GetNSString(
               IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM)
-                image:DefaultSymbolWithConfiguration(@"arrow.up.right.square",
-                                                     symbolConfiguration)
+                image:SymbolWithConfiguration(SymbolOpenImageAction,
+                                              symbolConfiguration)
            identifier:kAccountMenuManageYourGoogleAccountId
               handler:^(UIAction* action) {
                 base::RecordAction(base::UserMetricsAction(
@@ -297,8 +297,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIAction* editAccountListAction =
       [UIAction actionWithTitle:l10n_util::GetNSString(
                                     IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)
-                          image:DefaultSymbolWithConfiguration(
-                                    @"pencil", symbolConfiguration)
+                          image:SymbolWithConfiguration(SymbolPencil,
+                                                        symbolConfiguration)
                      identifier:kAccountMenuEditAccountListId
                         handler:^(UIAction* action) {
                           base::RecordAction(base::UserMetricsAction(
@@ -309,7 +309,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
 
   _ellipsisButton = [[UIBarButtonItem alloc]
-      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol, kButtonImageSize)
+      initWithImage:SymbolWithPointSize(SymbolMenu, kButtonImageSize)
                menu:ellipsisMenu];
   _ellipsisButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ICON_OPTION_MENU);
@@ -450,7 +450,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     ImageContentConfiguration* trailingImageConfiguration =
         [[ImageContentConfiguration alloc] init];
     trailingImageConfiguration.image = SymbolWithPalette(
-        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        SymbolWithPointSize(SymbolEnterprise, kEnterpriseIconPointSize),
         @[ [UIColor colorNamed:kStaticGrey600Color] ]);
     configuration.trailingConfiguration = trailingImageConfiguration;
   }
@@ -498,7 +498,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   ImageContentConfiguration* imageConfiguration =
       [[ImageContentConfiguration alloc] init];
   imageConfiguration.image =
-      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+      SymbolWithPointSize(SymbolErrorCircleFill, kErrorSymbolSize);
   imageConfiguration.imageTintColor = [UIColor colorNamed:kRed500Color];
 
   configuration.leadingConfiguration = imageConfiguration;

@@ -608,8 +608,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       initWithType:BatchUploadRecommendationItemType];
   item.selectionStyle = UITableViewCellSelectionStyleNone;
   item.detailText = [self itemsToUploadRecommendationString];
-  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
-                                         kBatchUploadSymbolPointSize);
+  item.image =
+      SymbolWithPointSize(SymbolCloudAndArrowUp, kBatchUploadSymbolPointSize);
   item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityIdentifier =
       kBatchUploadRecommendationItemAccessibilityIdentifier;
@@ -1168,7 +1168,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   syncErrorItem.selectionStyle = UITableViewCellSelectionStyleNone;
   syncErrorItem.detailText = l10n_util::GetNSString(messageID);
   syncErrorItem.image =
-      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolPointSize);
+      SymbolWithPointSize(SymbolErrorCircleFill, kErrorSymbolPointSize);
   syncErrorItem.imageViewTintColor = [UIColor colorNamed:kRed500Color];
   syncErrorItem.accessibilityElementsHidden = YES;
   return syncErrorItem;

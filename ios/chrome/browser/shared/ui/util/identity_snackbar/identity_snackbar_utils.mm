@@ -44,10 +44,10 @@ constexpr CGFloat kSymbolsPointSize = 24;
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, kSymbolsPointSize));
+      SymbolWithPointSize(SymbolGoogleIcon, kSymbolsPointSize));
 #else
   return MakeSymbolMulticolor(
-      DefaultSymbolWithPointSize(kGearshape2Symbol, kSymbolsPointSize));
+      SymbolWithPointSize(SymbolGearshape2, kSymbolsPointSize));
 #endif
 }
 
@@ -55,8 +55,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 UIImage* GetEnterpriseIcon() {
   UIColor* color = [UIColor colorNamed:kTextSecondaryColor];
   return SymbolWithPalette(
-      CustomSymbolWithPointSize(kEnterpriseSymbol, kSymbolsPointSize),
-      @[ color ]);
+      SymbolWithPointSize(SymbolEnterprise, kSymbolsPointSize), @[ color ]);
 }
 
 }  // namespace
