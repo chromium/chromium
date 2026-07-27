@@ -291,7 +291,9 @@ source_set("test_support") {
     "test_support/fake_freezing_delegate.h",
     "test_support/fake_memory_saver_mode_delegate.h",
     "test_support/fake_power_monitor_source.h",
+    "test_support/page_discarding_utils.h",
     "test_support/site_data_utils.h",
+    "test_support/test_user_performance_tuning_manager_environment.h",
   ]
 
   sources = [
@@ -300,20 +302,31 @@ source_set("test_support") {
     "test_support/fake_freezing_delegate.cc",
     "test_support/fake_memory_saver_mode_delegate.cc",
     "test_support/fake_power_monitor_source.cc",
+    "test_support/page_discarding_utils.cc",
     "test_support/site_data_utils.cc",
+    "test_support/test_user_performance_tuning_manager_environment.cc",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/performance_manager",
     "//components/performance_manager",
+    "//components/performance_manager/test_support",
   ]
 
   deps = [
     "//base/test:test_support",
     "//components/performance_manager/test_support:test_support_common",
+    "//components/prefs:test_support",
     "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/power" ]
+  }
 }
 
 source_set("unit_tests") {

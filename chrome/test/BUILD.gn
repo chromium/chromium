@@ -210,6 +210,7 @@ static_library("test_support") {
     ":test_switches",
     "//chrome/browser/notifications:test_support",
     "//chrome/browser/origin_trials",
+    "//chrome/browser/performance_manager:test_support",
     "//chrome/browser/profiles:profile_test_util",
     "//chrome/browser/renderer_context_menu:test_support",
     "//chrome/browser/safe_browsing:test_database_helper",
@@ -226,8 +227,6 @@ static_library("test_support") {
 
   sources = [
     "../app/startup_timestamps.h",
-    "../browser/performance_manager/test_support/page_discarding_utils.cc",
-    "../browser/performance_manager/test_support/page_discarding_utils.h",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
     "base/chrome_render_view_host_test_harness.cc",
@@ -657,8 +656,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.cc",
-      "../browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h",
       "../browser/signin/signin_browser_test_base.h",
       "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h",
       "../browser/ui/views/test/split_view_browser_test_mixin.h",
