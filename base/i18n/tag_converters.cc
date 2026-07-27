@@ -159,6 +159,10 @@ std::optional<LanguageTag> LanguageTagConverter::FromString(
   return impl_->FromString(*bcp47_converted_tag);
 }
 
+std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag) {
+  return LanguageTagConverter::GetInstance().FromString(tag);
+}
+
 base::Value LanguageTagToValue(const LanguageTag& tag) {
   return base::Value(tag.tag_string());
 }
