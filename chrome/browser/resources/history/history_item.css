@@ -114,6 +114,27 @@
   padding-inline-start: 12px;
 }
 
+#title-and-domain #actor-icon {
+  --cr-icon-color: var(--color-sys-on-tonal-container,
+      var(--cr-fallback-color-on-tonal-container));
+  --cr-icon-size: 12px;
+  align-items: center;
+  background-color: var(--color-sys-surface1,
+      var(--cr-fallback-color-surface1));
+  border-radius: 50%;
+  color: var(--color-sys-on-tonal-container,
+      var(--cr-fallback-color-on-tonal-container));
+  display: flex;
+  flex: none;
+  height: 16px;
+  justify-content: center;
+  margin-inline-start: -10px;
+  padding-inline-start: 0;
+  position: relative;
+  width: 16px;
+  z-index: 1;
+}
+
 #bookmark-star {
   --cr-icon-button-fill-color: var(--interactive-color);
   --cr-icon-button-icon-size: 16px;

@@ -47,6 +47,13 @@ export function getHtml(this: HistoryItemElement) {
                   @auxclick="${this.onLinkAuxclick_}" @contextmenu="${this.onLinkContextmenu_}"
                   aria-describedby="${this.getAriaDescribedByForHeading_()}">
                 <div class="website-icon" id="icon"></div>
+                ${this.shouldShowActorIconNextToFavicon_() ? html`
+                  <cr-tooltip-icon id="actor-icon"
+                      icon-class="${this.actorIconClass_()}"
+                      tooltip-text="$i18n{actorTaskTooltip}"
+                      icon-aria-label="$i18n{actorTaskTooltip}">
+                  </cr-tooltip-icon>
+                ` : ''}
                 <history-searched-label class="website-title"
                     title="${this.item?.title}"
                     search-term="${this.searchTerm}"></history-searched-label>

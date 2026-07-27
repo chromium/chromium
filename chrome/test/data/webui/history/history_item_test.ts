@@ -194,5 +194,23 @@ suite('<history-item> integration test', function() {
         items[5]!.shadowRoot.querySelector<HTMLElement>('#bookmark-star')));
   });
 
+  test('actor-initiated visit with critical actions enabled', async function() {
+    loadTimeData.overrideValues({
+      enableBrowsingHistoryActorIntegrationM1: true,
+      isCriticalActionsEnabled: true,
+    });
 
+    const newResults = [...TEST_HISTORY_RESULTS];
+    newResults[1]!.isActorVisit = true;
+    element.addNewResults(newResults, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    const startActorIcon = items[1]!.shadowRoot.querySelector<HTMLElement>(
+        '#title-and-domain #actor-icon');
+    const endActorIcon =
+        items[1]!.shadowRoot.querySelector<HTMLElement>('#icons #actor-icon');
+    assertTrue(isVisible(startActorIcon));
+    assertFalse(isVisible(endActorIcon));
+  });
 });

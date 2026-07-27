@@ -232,8 +232,22 @@ export class HistoryItemElement extends HistoryItemElementBase {
         'title-and-domain';
   }
 
-  protected shouldShowActorTooltip_() {
-    return this.item?.isActorVisit;
+  protected shouldShowActorTooltip_(): boolean {
+    if (this.isCriticalActionsEnabled_()) {
+      return false;
+    }
+    return !!this.item?.isActorVisit;
+  }
+
+  protected shouldShowActorIconNextToFavicon_(): boolean {
+    if (!this.isCriticalActionsEnabled_()) {
+      return false;
+    }
+    return !!this.item?.isActorVisit;
+  }
+
+  private isCriticalActionsEnabled_(): boolean {
+    return loadTimeData.getBoolean('isCriticalActionsEnabled');
   }
 
   /**
