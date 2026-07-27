@@ -4891,6 +4891,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT" desc="Accessibility hint spoken by VoiceOver to let the user know there is a new feature. This string will be appended to an existing accesibility label when the UI is showing a 'new' badge to attract the user's attention. For example, the label 'Default Browser' would become 'Default Browser, new feature', which is why the string is not capitalized at its start. [iOS/iPadOS only]">
         new feature
       </message>
+      <message name="IDS_IOS_NEW_IA_PROMO_IPH_BOTTOM_OMNIBOX_TEXT" desc="Main text of the in-product help informing the user that the address bar moved to the bottom and they can revert this change from the settings [iOS only]">
+        You can now change the position of the address bar in "Settings" and then "Address bar"
+      </message>
+      <message name="IDS_IOS_NEW_IA_PROMO_IPH_BOTTOM_OMNIBOX_TITLE" desc="Title of the in-product help informing the user that the address bar moved to the bottom of the screen [iOS only]">
+        Your controls, where you need them
+      </message>
       <message name="IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TEXT" desc="Main text for the second in-product help bubble suggesting Gemini built-in. [Length: unlimited] [iOS only]">
         Get help with your tabs and tasks
       </message>
