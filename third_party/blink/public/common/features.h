@@ -1635,6 +1635,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSendCnameAliasesToSubresourceFilterFromRenderer);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetIntervalWithoutClamp);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSetSelectionForAccessibilityHandlingInputEvent);
 
 // If enabled, the shared storage worklet threads (on the same renderer process)
 // will share the same backing thread; otherwise, each will own a dedicated

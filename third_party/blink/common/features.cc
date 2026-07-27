@@ -2172,6 +2172,10 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
 // Tracking bug: https://crbug.com/402694.
 BASE_FEATURE(kSetIntervalWithoutClamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSetSelectionForAccessibilityHandlingInputEvent,
+             "SetSelectionForAccessibilityHandlingInputEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

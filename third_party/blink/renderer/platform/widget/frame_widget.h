@@ -356,6 +356,12 @@ class PLATFORM_EXPORT FrameWidget {
                                base::TimeTicks start_time) = 0;
 
   virtual void OnFirstContentfulPaint() = 0;
+
+  // Whether or not the widget is in the process of handling input events.
+  virtual bool HandlingInputEvent() = 0;
+
+  // Set state that the widget is in the process of handling input events.
+  virtual void SetHandlingInputEvent(bool handling) = 0;
 };
 
 }  // namespace blink

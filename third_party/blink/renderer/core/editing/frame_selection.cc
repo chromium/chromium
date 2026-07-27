@@ -31,6 +31,7 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
@@ -101,11 +102,35 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 #define EDIT_DEBUG 0
 
 namespace blink {
+
+namespace {
+
+class ScopedHandlingInputEvent {
+ public:
+  explicit ScopedHandlingInputEvent(FrameWidget* widget) : widget_(widget) {
+    if (widget_) {
+      was_handling_input_event_ = widget_->HandlingInputEvent();
+      widget_->SetHandlingInputEvent(true);
+    }
+  }
+  ~ScopedHandlingInputEvent() {
+    if (widget_) {
+      widget_->SetHandlingInputEvent(was_handling_input_event_);
+    }
+  }
+
+ private:
+  FrameWidget* widget_ = nullptr;
+  bool was_handling_input_event_ = false;
+};
+
+}  // namespace
 
 static inline bool ShouldAlwaysUseDirectionalSelection(LocalFrame* frame) {
   return frame->GetEditor().Behavior().ShouldConsiderSelectionAsDirectional();
@@ -444,6 +469,13 @@ void FrameSelection::SetSelectionForAccessibility(
     const SelectionInDomTree& selection,
     const SetSelectionOptions& options) {
   ClearDocumentCachedRange();
+
+  FrameWidget* widget = nullptr;
+  if (base::FeatureList::IsEnabled(
+          features::kSetSelectionForAccessibilityHandlingInputEvent)) {
+    widget = frame_->GetWidgetForLocalRoot();
+  }
+  ScopedHandlingInputEvent scoped_handling_input_event(widget);
 
   const bool did_set = SetSelectionDeprecated(selection, options);
   CacheRangeOfDocument(CreateRange(selection.ComputeRange()));
