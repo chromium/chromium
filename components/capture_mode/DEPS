@@ -20,5 +20,6 @@ include_rules = [
 specific_include_rules = {
   ".*unittest\\.cc": [
     "+components/viz/test",
+    "+services/audio/public/cpp/fake_stream_factory.h",
   ],
 }
