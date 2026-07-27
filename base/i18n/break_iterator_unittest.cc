@@ -10,8 +10,10 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -610,6 +612,77 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
+  EXPECT_FALSE(iter.Advance());
+}
+
+TEST(BreakIteratorTest, DefaultLocaleTag) {
+  test::ScopedRestoreICUDefaultLocale restore_locale("en_US");
+
+  std::u16string str(u"Hello world. This is a test.");
+  BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
+  EXPECT_EQ(iter.locale_tag().tag_string(), "en-US");
+  ASSERT_TRUE(iter.Init());
+
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"Hello world. ", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"This is a test.", iter.GetString());
+  EXPECT_FALSE(iter.Advance());
+}
+
+TEST(BreakIteratorTest, CustomLocaleTag) {
+  test::ScopedRestoreICUDefaultLocale restore_locale("en_US");
+
+  std::u16string str(u"こんにちは。元気ですか？");
+  LanguageTag ja_tag = GetKnownLanguageTag("ja-JP");
+
+  BreakIterator iter(str, BreakIterator::BREAK_SENTENCE, ja_tag);
+  EXPECT_EQ(iter.locale_tag().tag_string(), "ja-JP");
+  ASSERT_TRUE(iter.Init());
+
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"こんにちは。", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"元気ですか？", iter.GetString());
+  EXPECT_FALSE(iter.Advance());
+}
+
+TEST(BreakIteratorTest, CustomLocaleWordBreak) {
+  test::ScopedRestoreICUDefaultLocale restore_locale("en_US");
+
+  std::u16string str(u"พิมพ์น้อยลง");
+  LanguageTag th_tag = GetKnownLanguageTag("th-TH");
+
+  BreakIterator iter(str, BreakIterator::BREAK_WORD, th_tag);
+  EXPECT_EQ(iter.locale_tag().tag_string(), "th-TH");
+  ASSERT_TRUE(iter.Init());
+
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"พิมพ์", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"น้อย", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"ลง", iter.GetString());
+  EXPECT_FALSE(iter.Advance());
+}
+
+TEST(BreakIteratorTest, CustomLocaleSetText) {
+  test::ScopedRestoreICUDefaultLocale restore_locale("en_US");
+
+  std::u16string str1(u"こんにちは。");
+  std::u16string str2(u"元気ですか？");
+  LanguageTag ja_tag = GetKnownLanguageTag("ja-JP");
+
+  BreakIterator iter(str1, BreakIterator::BREAK_SENTENCE, ja_tag);
+  ASSERT_TRUE(iter.Init());
+
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"こんにちは。", iter.GetString());
+  EXPECT_FALSE(iter.Advance());
+
+  EXPECT_TRUE(iter.SetText(str2));
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_EQ(u"元気ですか？", iter.GetString());
   EXPECT_FALSE(iter.Advance());
 }
 

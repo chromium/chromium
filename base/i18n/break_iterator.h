@@ -8,10 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
+#include "base/i18n/language_tag.h"
 
 // The BreakIterator class iterates through the words, word breaks, and
 // line breaks in a UTF-16 string.
@@ -109,6 +111,9 @@ class BASE_I18N_EXPORT BreakIterator {
 
   // Requires |str| to live as long as the BreakIterator does.
   BreakIterator(std::u16string_view str, BreakType break_type);
+  BreakIterator(std::u16string_view str,
+                BreakType break_type,
+                const LanguageTag& locale_tag);
   // Make a rule-based iterator. BreakType == RULE_BASED is implied.
   // TODO(andrewhayden): This signature could easily be misinterpreted as
   // "(const std::u16string& str, const std::u16string& locale)". We should do
@@ -182,6 +187,8 @@ class BASE_I18N_EXPORT BreakIterator {
   // or BreakIterator::npos when done.
   size_t pos() const { return pos_; }
 
+  const LanguageTag& locale_tag() const { return locale_tag_; }
+
  private:
   UBreakIteratorPtr iter_;
 
@@ -197,6 +204,9 @@ class BASE_I18N_EXPORT BreakIterator {
   // Previous and current iterator positions.
   size_t prev_ = npos;
   size_t pos_ = 0;
+
+  const LanguageTag locale_tag_;
+  const bool is_custom_locale_ = false;
 };
 
 }  // namespace i18n

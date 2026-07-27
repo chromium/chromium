@@ -10,12 +10,14 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
+#include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/ubrk.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
+#include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
 
 namespace base::i18n {
@@ -100,6 +102,57 @@ DefaultLocaleBreakIteratorCache<UBRK_LINE>& GetLineBreakCache() {
   return *cache;
 }
 
+UBreakIteratorType ToUBreakIteratorType(BreakIterator::BreakType break_type) {
+  switch (break_type) {
+    case BreakIterator::BREAK_CHARACTER:
+      return UBRK_CHARACTER;
+    case BreakIterator::BREAK_WORD:
+      return UBRK_WORD;
+    case BreakIterator::BREAK_SENTENCE:
+      return UBRK_SENTENCE;
+    case BreakIterator::BREAK_LINE:
+    case BreakIterator::BREAK_NEWLINE:
+      return UBRK_LINE;
+    case BreakIterator::RULE_BASED:
+      NOTREACHED();
+  }
+}
+
+UBreakIteratorPtr OpenBreakIterator(BreakIterator::BreakType break_type,
+                                    const LanguageTag& locale_tag,
+                                    bool is_custom_locale,
+                                    const std::u16string& rules,
+                                    UErrorCode& status) {
+  if (is_custom_locale && break_type != BreakIterator::RULE_BASED) {
+    std::string locale_str(locale_tag.tag_string());
+    return UBreakIteratorPtr(ubrk_open(ToUBreakIteratorType(break_type),
+                                       locale_str.c_str(), nullptr, 0,
+                                       &status));
+  }
+  switch (break_type) {
+    case BreakIterator::BREAK_CHARACTER:
+      return GetCharBreakCache().Lease(status);
+    case BreakIterator::BREAK_WORD:
+      return GetWordBreakCache().Lease(status);
+    case BreakIterator::BREAK_SENTENCE:
+      return GetSentenceBreakCache().Lease(status);
+    case BreakIterator::BREAK_LINE:
+    case BreakIterator::BREAK_NEWLINE:
+      return GetLineBreakCache().Lease(status);
+    case BreakIterator::RULE_BASED: {
+      UParseError parse_error;
+      UBreakIteratorPtr iter(
+          ubrk_openRules(rules.c_str(), static_cast<int32_t>(rules.length()),
+                         nullptr, 0, &parse_error, &status));
+      if (U_FAILURE(status)) {
+        NOTREACHED() << "ubrk_openRules failed to parse rule string at line "
+                     << parse_error.line << ", offset " << parse_error.offset;
+      }
+      return iter;
+    }
+  }
+}
+
 }  // namespace
 
 void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
@@ -109,13 +162,35 @@ void UBreakIteratorDeleter::operator()(UBreakIterator* ptr) {
 }
 
 BreakIterator::BreakIterator(std::u16string_view str, BreakType break_type)
-    : string_(str), break_type_(break_type) {}
+    : string_(str),
+      break_type_(break_type),
+      locale_tag_(LanguageTagConverter::GetInstance().FromIcuLocale(
+          icu::Locale::getDefault())) {}
+
+BreakIterator::BreakIterator(std::u16string_view str,
+                             BreakType break_type,
+                             const LanguageTag& locale_tag)
+    : string_(str),
+      break_type_(break_type),
+      locale_tag_(locale_tag),
+      is_custom_locale_(true) {}
 
 BreakIterator::BreakIterator(std::u16string_view str,
                              const std::u16string& rules)
-    : string_(str), rules_(rules), break_type_(RULE_BASED) {}
+    : string_(str),
+      rules_(rules),
+      break_type_(RULE_BASED),
+      locale_tag_(LanguageTagConverter::GetInstance().FromIcuLocale(
+          icu::Locale::getDefault())) {}
 
 BreakIterator::~BreakIterator() {
+  // Custom-locale iterators are created dynamically and not stored in
+  // DefaultLocaleBreakIteratorCache to avoid cache pollution. Returning early
+  // lets iter_'s destructor safely close the ICU handle via
+  // UBreakIteratorDeleter.
+  if (is_custom_locale_) {
+    return;
+  }
   switch (break_type_) {
     case RULE_BASED:
       return;
@@ -137,31 +212,8 @@ BreakIterator::~BreakIterator() {
 
 bool BreakIterator::Init() {
   UErrorCode status = U_ZERO_ERROR;
-  UParseError parse_error;
-  switch (break_type_) {
-    case BREAK_CHARACTER:
-      iter_ = GetCharBreakCache().Lease(status);
-      break;
-    case BREAK_WORD:
-      iter_ = GetWordBreakCache().Lease(status);
-      break;
-    case BREAK_SENTENCE:
-      iter_ = GetSentenceBreakCache().Lease(status);
-      break;
-    case BREAK_LINE:
-    case BREAK_NEWLINE:
-      iter_ = GetLineBreakCache().Lease(status);
-      break;
-    case RULE_BASED:
-      iter_ = UBreakIteratorPtr(
-          ubrk_openRules(rules_.c_str(), static_cast<int32_t>(rules_.length()),
-                         nullptr, 0, &parse_error, &status));
-      if (U_FAILURE(status)) {
-        NOTREACHED() << "ubrk_openRules failed to parse rule string at line "
-                     << parse_error.line << ", offset " << parse_error.offset;
-      }
-      break;
-  }
+  iter_ = OpenBreakIterator(break_type_, locale_tag_, is_custom_locale_, rules_,
+                            status);
 
   if (U_FAILURE(status) || iter_ == nullptr) {
     return false;
