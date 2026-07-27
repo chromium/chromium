@@ -2514,12 +2514,6 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   }
 }
 
-gfx::Vector2d PaintLayer::PixelSnappedScrolledContentOffset() const {
-  if (GetLayoutObject().IsScrollContainer())
-    return GetLayoutBox()->PixelSnappedScrolledContentOffset();
-  return gfx::Vector2d();
-}
-
 PaintLayerClipper PaintLayer::Clipper() const {
   return PaintLayerClipper(this);
 }

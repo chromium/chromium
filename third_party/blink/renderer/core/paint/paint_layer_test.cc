@@ -69,69 +69,6 @@ TEST_P(PaintLayerTest, RootLayerScrollBounds) {
             plsa->VisibleContentRect(kIncludeScrollbars));
 }
 
-TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='scroll' style='width: 400px; height: 400px; overflow: scroll;
-        will-change: transform'>
-      <div id='content' style='position: relative; background: blue;
-          width: 2000px; height: 2000px'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
-
-  PaintLayer* content_layer = GetPaintLayerByElementId("content");
-
-  scroll_layer->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone);
-  UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(
-      gfx::Vector2d(1000, 1000),
-      content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
-  EXPECT_FALSE(content_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
-  UpdateAllLifecyclePhasesForTest();
-}
-
-TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-     /* to prevent the mock overlay scrollbar from affecting compositing. */
-     ::-webkit-scrollbar { display: none; }
-    </style>
-    <div id='scroll' style='width: 400px; height: 400px; overflow: scroll'>
-      <div id='content' style='position: relative; background: blue;
-          width: 2000px; height: 2000px'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
-  EXPECT_FALSE(scroll_layer->GetLayoutObject()
-                   .FirstFragment()
-                   .PaintProperties()
-                   ->ScrollTranslation()
-                   ->HasDirectCompositingReasons());
-
-  PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  const auto& fragment = content_layer->GetLayoutObject().FirstFragment();
-  EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000), fragment.GetContentsCullRect().Rect());
-
-  scroll_layer->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone);
-  UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(
-      gfx::Vector2d(1000, 1000),
-      content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
-
-  EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
-  EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000), fragment.GetContentsCullRect().Rect());
-  EXPECT_FALSE(content_layer->SelfNeedsRepaint());
-
-  UpdateAllLifecyclePhasesForTest();
-}
-
 TEST_P(PaintLayerTest, HasNonIsolatedDescendantWithBlendMode) {
   SetBodyInnerHTML(R"HTML(
     <div id='stacking-grandparent' style='isolation: isolate'>
@@ -1525,7 +1462,7 @@ TEST_P(PaintLayerTest, FloatLayerAndAbsoluteUnderInlineLayer) {
   EXPECT_EQ(container, span->ContainingLayer());
 }
 
-TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
+TEST_P(PaintLayerTest, FloatLayerUnderInlineLayer) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='overflow: scroll; width: 50px; height: 50px'>
       <span id='span' style='position: relative; top: 100px; left: 100px'>
@@ -1540,16 +1477,11 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
   PaintLayer* floating = GetPaintLayerByElementId("floating");
   PaintLayer* span = GetPaintLayerByElementId("span");
   PaintLayer* container = GetPaintLayerByElementId("container");
-  container->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(span, floating->Parent());
   EXPECT_EQ(span, floating->ContainingLayer());
   EXPECT_EQ(container, span->Parent());
   EXPECT_EQ(container, span->ContainingLayer());
-  EXPECT_EQ(gfx::Vector2d(0, 400),
-            span->ContainingLayer()->PixelSnappedScrolledContentOffset());
 }
 
 TEST_P(PaintLayerTest, FloatLayerUnderBlockUnderInlineLayer) {
@@ -1655,7 +1587,7 @@ TEST_P(PaintLayerTest, PaintingContainerFloatingIframe) {
   EXPECT_EQ(GetPaintLayerByElementId("span"), target->PaintingContainer());
 }
 
-TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
+TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayer) {
   SetBodyInnerHTML(R"HTML(
     <div id='columns' style='overflow: hidden; width: 80px; height: 80px;
         columns: 2; column-gap: 0'>
@@ -1672,16 +1604,11 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   PaintLayer* spanner = GetPaintLayerByElementId("spanner");
   PaintLayer* extra_layer = GetPaintLayerByElementId("extraLayer");
   PaintLayer* columns = GetPaintLayerByElementId("columns");
-  columns->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(200, 0), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(extra_layer, spanner->Parent());
   EXPECT_EQ(columns, spanner->ContainingLayer());
   EXPECT_EQ(columns, extra_layer->Parent());
   EXPECT_EQ(columns, extra_layer->ContainingLayer());
-  EXPECT_EQ(gfx::Vector2d(200, 0),
-            spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
 }
 
 TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {

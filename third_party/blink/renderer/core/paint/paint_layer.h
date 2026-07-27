@@ -222,13 +222,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return curr;
   }
 
-  // This is the scroll offset that's actually used to display to the screen.
-  // It should only be used in paint/compositing type use cases (includes hit
-  // testing, intersection observer). Most other cases should use the unsnapped
-  // offset from LayoutBox (for layout) or the source offset from the
-  // ScrollableArea.
-  gfx::Vector2d PixelSnappedScrolledContentOffset() const;
-
   bool IsRootLayer() const { return is_root_layer_; }
 
   void UpdateScrollingAfterLayout();
