@@ -732,6 +732,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mGlicClickListener = clickListener;
         mGlicLongClickListener = longClickListener;
         updateGlicActionChipVisibilityInternal();
+        onWidthConsumerVisibilityChanged();
     }
 
     private void updateGlicActionChipVisibilityInternal() {

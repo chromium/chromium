@@ -1355,6 +1355,7 @@ public final class ToolbarTabletUnitTest {
         ToolbarWidthConsumer consumer = mToolbarTablet.getGlicWidthConsumerForTesting();
         assertNotNull(consumer);
 
+        doReturn(1200).when(mToolbarTablet).getWidth();
         mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
         View glicChip = mToolbarTablet.getGlicActionChipForTesting();
         assertNotNull(glicChip);
@@ -1380,6 +1381,7 @@ public final class ToolbarTabletUnitTest {
         assertEquals(View.GONE, glicChip.getVisibility());
 
         // Re-triggering visibility update while no space is available must keep chip GONE.
+        doReturn(300).when(mToolbarTablet).getWidth();
         mToolbarTablet.setGlicActionChipVisibility(true, v -> {}, v -> false);
         assertEquals(View.GONE, glicChip.getVisibility());
     }
@@ -1443,6 +1445,21 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setGlicActionChipVisibility(
                 /* visible= */ false, mockClickListener, mockLongClickListener);
         assertEquals("Glic action chip should be hidden.", View.GONE, actionChip.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testSetGlicActionChipVisibility_invokesOnWidthConsumerVisibilityChanged() {
+        View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
+        View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
+
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ true, mockClickListener, mockLongClickListener);
+        verify(mToolbarTablet).onWidthConsumerVisibilityChanged();
+
+        mToolbarTablet.setGlicActionChipVisibility(
+                /* visible= */ false, mockClickListener, mockLongClickListener);
+        verify(mToolbarTablet, Mockito.times(2)).onWidthConsumerVisibilityChanged();
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
