@@ -30,9 +30,6 @@
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -48,25 +45,22 @@
 
 namespace ash {
 
-ViewsScreenLocker::ViewsScreenLocker()
-    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
-          // TODO(crbug.com/404133029): Avoid using g_browser_process.
-          g_browser_process->platform_part()->browser_policy_connector_ash())),
+ViewsScreenLocker::ViewsScreenLocker(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    : local_state_(CHECK_DEREF(local_state)),
+      user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
+          local_state,
+          &CHECK_DEREF(application_locale_storage),
+          std::move(shared_url_loader_factory),
+          &CHECK_DEREF(browser_policy_connector_ash),
+          DisplayedScreen::LOCK_SCREEN)),
+      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
+          &CHECK_DEREF(browser_policy_connector_ash))),
       auth_performer_(UserDataAuthClient::Get()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
-
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
-  PrefService* local_state = g_browser_process->local_state();
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  user_selection_screen_ = std::make_unique<ChromeUserSelectionScreen>(
-      local_state, application_locale_storage,
-      std::move(shared_url_loader_factory), browser_policy_connector_ash,
-      DisplayedScreen::LOCK_SCREEN);
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
@@ -204,10 +198,9 @@ void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
 
 void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
     const AccountId& account_id) {
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
   const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
-          CHECK_DEREF(g_browser_process->local_state()), account_id);
+      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(local_state_.get(),
+                                                           account_id);
   LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
       account_id, enable_challenge_response);
 }

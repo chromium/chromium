@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -19,6 +21,17 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -31,7 +44,14 @@ class UserSelectionScreen;
 class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public chromeos::PowerManagerClient::Observer {
  public:
-  ViewsScreenLocker();
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  ViewsScreenLocker(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
 
   ViewsScreenLocker(const ViewsScreenLocker&) = delete;
   ViewsScreenLocker& operator=(const ViewsScreenLocker&) = delete;
@@ -76,6 +96,8 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
   void OnPinCanAuthenticate(const AccountId& account_id,
                             bool can_authenticate,
                             cryptohome::PinLockAvailability available_at);
+
+  const raw_ref<PrefService> local_state_;
 
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 
