@@ -4136,6 +4136,49 @@ TEST_P(GLES3DecoderTest, ClearRenderableLevelsWithOutOfRangeBaseLevel) {
   manager->ClearRenderableLevels(GetDecoder(), texture_ref);
 }
 
+class GLES3DecoderNPOTImmutableTest : public GLES3DecoderManualInitTest {};
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLES3DecoderNPOTImmutableTest,
+                         ::testing::Bool());
+
+TEST_P(GLES3DecoderNPOTImmutableTest,
+       DontChangeBaseLevelForNPOTImmutableTextures) {
+  InitState init;
+  init.extensions = "GL_EXT_texture_storage ";
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.dont_change_base_level_for_npot_immutable_textures = true;
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  // Set up an NPOT immutable texture via TexStorage2D.
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  EXPECT_CALL(*gl_, TexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8, 5, 5))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  cmds::TexStorage2DEXT storage_cmd;
+  storage_cmd.Init(GL_TEXTURE_2D, 1, GL_RGBA8, 5, 5);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(storage_cmd));
+
+  // Setting BASE_LEVEL to 0 (same value) should succeed.
+  cmds::TexParameteri same_param_cmd;
+  same_param_cmd.Init(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+  EXPECT_CALL(*gl_, TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_EQ(error::kNoError, ExecuteCmd(same_param_cmd));
+
+  // Changing BASE_LEVEL to 1 should lose context when workaround is enabled.
+  cmds::TexParameteri param_cmd;
+  param_cmd.Init(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 1);
+  EXPECT_EQ(error::kLostContext, ExecuteCmd(param_cmd));
+}
+
 // TODO(gman): Complete this test.
 // TEST_P(GLES2DecoderTest, CompressedTexImage2DGLError) {
 // }

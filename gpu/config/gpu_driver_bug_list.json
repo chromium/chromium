@@ -3818,6 +3818,18 @@
       "features": [
         "disable_d3d12_video_encoder"
       ]
+    },
+    {
+      "id": 486,
+      "cr_bugs": [534903095],
+      "description": "Changing BASE_LEVEL of NPOT immutable texture triggers driver bug on PowerVR GPUs.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "dont_change_base_level_for_npot_immutable_textures"
+      ]
     }
   ]
 }
