@@ -4,7 +4,6 @@
 
 #include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
 
-#include "base/win/atl.h"
 #include "base/win/ntsecapi_shim.h"
 #include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/common/gcp_strings.h"

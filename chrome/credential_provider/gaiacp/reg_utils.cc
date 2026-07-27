@@ -10,7 +10,6 @@
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
