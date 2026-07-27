@@ -184,8 +184,6 @@ void SendTabToSelfDevicePickerBubbleView::InitDeviceSelectionBubble() {
           views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION));
   subtitle->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  subtitle->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  SetInitiallyFocusedView(subtitle);
 
   // Manage devices link.
   auto* link = header_container->AddChildView(std::make_unique<views::Link>(
@@ -279,11 +277,10 @@ void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
 
   if (first_device) {
     if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
-      // Auto-select the first device on launch
+      // Auto-select the first device on launch.
       SelectTargetDevice(first_device);
-    } else {
-      SetInitiallyFocusedView(first_device);
     }
+    SetInitiallyFocusedView(first_device);
   }
 }
 

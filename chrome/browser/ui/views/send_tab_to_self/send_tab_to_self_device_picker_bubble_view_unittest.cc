@@ -9,19 +9,25 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace send_tab_to_self {
 
@@ -58,6 +64,12 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
                std::string_view device_name),
               (override));
 };
+
+bool IsAccessibleNodeSelected(const views::View* view) {
+  ui::AXNodeData node_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+}
 
 }  // namespace
 
@@ -124,6 +136,78 @@ TEST_F(SendTabToSelfDevicePickerBubbleViewTest, ButtonPressed) {
   views::test::ButtonTestApi(
       static_cast<views::Button*>(button_container->children()[2]))
       .NotifyDefaultMouseClick();
+}
+
+// Test fixture for SendTabToSelfDevicePickerBubbleView with the enhanced
+// desktop UI feature enabled.
+class SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest
+    : public SendTabToSelfDevicePickerBubbleViewTest {
+ public:
+  SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{kSendTabToSelfEnhancedDesktopUI};
+};
+
+// Verifies that when enhanced desktop UI is enabled, the first target device
+// button in the list of options receives initial keyboard focus when the dialog
+// opens.
+TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
+       InitiallyFocusedViewIsFirstDeviceWhenEnhancedUiEnabled) {
+  const views::View* container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, container->children().size());
+
+  // The first device entry should be the initially focused view for screen
+  // readers and keyboard navigation when the dialog opens.
+  EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
+}
+
+// Verifies that the first target device button is automatically selected on
+// open and its accessibility node data indicates that it is selected.
+TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
+       FirstDeviceIsSelectedAndAccessibleOnOpen) {
+  const views::View* container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, container->children().size());
+
+  auto* first_button = views::AsViewClass<SendTabToSelfBubbleDeviceButton>(
+      container->children()[0]);
+  auto* second_button = views::AsViewClass<SendTabToSelfBubbleDeviceButton>(
+      container->children()[1]);
+
+  EXPECT_TRUE(first_button->IsSelected());
+  EXPECT_FALSE(second_button->IsSelected());
+
+  // Verify that the accessible node data exposes the selected state to screen
+  // readers.
+  EXPECT_TRUE(IsAccessibleNodeSelected(first_button));
+  EXPECT_FALSE(IsAccessibleNodeSelected(second_button));
+}
+
+// Verifies that selecting a different target device updates the selected state
+// and accessibility node data for both the newly selected and previously
+// selected target device buttons.
+TEST_F(SendTabToSelfDevicePickerBubbleViewEnhancedDesktopUITest,
+       SelectTargetDeviceUpdatesAccessibilitySelection) {
+  const views::View* container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, container->children().size());
+
+  auto* first_button = views::AsViewClass<SendTabToSelfBubbleDeviceButton>(
+      container->children()[0]);
+  auto* second_button = views::AsViewClass<SendTabToSelfBubbleDeviceButton>(
+      container->children()[1]);
+
+  EXPECT_TRUE(first_button->IsSelected());
+  EXPECT_FALSE(second_button->IsSelected());
+
+  // Select the second device button.
+  bubble_->SelectTargetDevice(second_button);
+
+  EXPECT_FALSE(first_button->IsSelected());
+  EXPECT_TRUE(second_button->IsSelected());
+
+  // Verify accessibility attributes after selection change.
+  EXPECT_FALSE(IsAccessibleNodeSelected(first_button));
+  EXPECT_TRUE(IsAccessibleNodeSelected(second_button));
 }
 
 }  // namespace send_tab_to_self

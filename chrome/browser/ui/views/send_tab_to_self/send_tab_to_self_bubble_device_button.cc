@@ -19,6 +19,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -123,6 +124,9 @@ void SendTabToSelfBubbleDeviceButton::SetSelected(bool selected) {
   // `CreateCheckmarkIcon()`) that indicates the device is selected.
   if (secondary_view()) {
     secondary_view()->SetVisible(selected);
+  }
+  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
+    GetViewAccessibility().SetIsSelected(selected);
   }
 }
 
