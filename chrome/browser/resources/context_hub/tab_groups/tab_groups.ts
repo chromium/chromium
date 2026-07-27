@@ -209,8 +209,8 @@ export class TabGroupsElement extends CrLitElement {
 
   protected onTabClick_(e: Event) {
     const target = e.currentTarget as HTMLElement;
-    const tabId = parseInt(target.dataset['id'] || '0', 10);
-    if (tabId) {
+    const tabId = BigInt(target.dataset['id'] || '0');
+    if (tabId !== 0n) {
       browserProxyFactory.getInstance().handler.switchToTab(tabId);
     }
   }

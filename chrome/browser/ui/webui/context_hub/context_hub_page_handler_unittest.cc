@@ -49,7 +49,7 @@ class MockTabProvider : public ContextHubPageHandler::TabProvider {
               GetTabs,
               (content::WebContents*),
               (override));
-  MOCK_METHOD(void, SwitchToTab, (content::WebContents*, int32_t), (override));
+  MOCK_METHOD(void, SwitchToTab, (content::WebContents*, int64_t), (override));
 };
 #endif
 
@@ -391,7 +391,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
 TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
   std::vector<std::unique_ptr<content::WebContents>> test_tabs;
   std::vector<content::WebContents*> raw_test_tabs;
-  std::vector<int32_t> tab_ids;
+  std::vector<int64_t> tab_ids;
   for (int i = 0; i < 5; ++i) {
     auto tab =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);

@@ -15,7 +15,7 @@
 namespace context_hub {
 
 struct TabData {
-  int32_t id;
+  int64_t id;
   std::string title;
   GURL url;
 };

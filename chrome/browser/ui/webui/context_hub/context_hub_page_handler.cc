@@ -60,7 +60,7 @@ class BrowserTabProvider : public ContextHubPageHandler::TabProvider {
   }
 
   void SwitchToTab(content::WebContents* web_contents,
-                   int32_t tab_id) override {
+                   int64_t tab_id) override {
     if (!web_contents) {
       return;
     }
@@ -368,7 +368,7 @@ void ContextHubPageHandler::GetExistingTabGroupsAndChats(
       std::move(open_tabs), std::move(mojo_history), std::move(callback)));
 }
 
-void ContextHubPageHandler::SwitchToTab(int32_t tab_id) {
+void ContextHubPageHandler::SwitchToTab(int64_t tab_id) {
   if (tab_provider_) {
     tab_provider_->SwitchToTab(web_contents_, tab_id);
   }

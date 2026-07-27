@@ -211,17 +211,15 @@ void ContextHubService::HandleModelExecutionResult(
 
   std::vector<TabGroupEntry> groups;
 
-  base::flat_map<int32_t, size_t> tab_index_map;
+  base::flat_map<int64_t, size_t> tab_index_map;
   for (size_t i = 0; i < tabs.size(); ++i) {
     tab_index_map.emplace(tabs[i].id, i);
   }
 
   for (const optimization_guide::proto::TabGroupMinimal& group_proto :
        response->group_response().minimal_tab_groups()) {
-    std::vector<int32_t> valid_tab_ids;
-    for (int64_t tab_id_64 : group_proto.tab_ids()) {
-      // TODO(b/533453094): Update tab ID struct member type to int64.
-      int32_t tab_id = static_cast<int32_t>(tab_id_64);
+    std::vector<int64_t> valid_tab_ids;
+    for (int64_t tab_id : group_proto.tab_ids()) {
       if (tab_index_map.contains(tab_id) &&
           std::ranges::find(valid_tab_ids, tab_id) == valid_tab_ids.end()) {
         valid_tab_ids.push_back(tab_id);
@@ -233,7 +231,7 @@ void ContextHubService::HandleModelExecutionResult(
       entry.label = group_proto.label();
       entry.created_timestamp = base::Time::Now();
       entry.last_accessed_timestamp = entry.created_timestamp;
-      for (int32_t tab_id : valid_tab_ids) {
+      for (int64_t tab_id : valid_tab_ids) {
         entry.tab_ids.push_back(tab_id);
         if (tab_index_map.contains(tab_id)) {
           size_t index = tab_index_map.at(tab_id);

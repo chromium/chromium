@@ -57,7 +57,7 @@ struct MemoryBankEntry {
 };
 
 struct TabInfo {
-  int32 id;
+  int64 id;
   string title;
   url.mojom.Url url;
 };
@@ -117,7 +117,7 @@ interface PageHandler {
                                      array<ChatMessage> history);
 
   // Switches to the specified tab.
-  SwitchToTab(int32 tab_id);
+  SwitchToTab(int64 tab_id);
 
   // Clears stored tab groups.
   [RuntimeFeature=kAutoTabGroups]
