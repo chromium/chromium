@@ -1286,73 +1286,23 @@ void Browser::CloseContents(content::WebContents* source) {
 }
 
 void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
-  if (is_type_normal()) {
-    return;
-  }
-
-  std::vector<blink::mojom::WebFeature> features = {
-      blink::mojom::WebFeature::kMovedOrResizedPopup};
-  if (creation_timer_.Elapsed() > base::Seconds(2)) {
-    // Additionally measure whether a popup was moved after creation, to
-    // distinguish between popups that reposition themselves after load and
-    // those which move popups continuously.
-    features.push_back(
-        blink::mojom::WebFeature::kMovedOrResizedPopup2sAfterCreation);
-  }
-
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      source->GetPrimaryMainFrame(), std::move(features));
-  window_->SetBounds(bounds);
+  BrowserWebContentsDelegate::From(this)->SetContentsBounds(source, bounds);
 }
 
 void Browser::UpdateTargetURL(WebContents* source, const GURL& url) {
-  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
-  for (StatusBubble* status_bubble : status_bubbles) {
-    StatusBubbleViews* status_bubble_views =
-        static_cast<StatusBubbleViews*>(status_bubble);
-    ContentsWebView* anchor =
-        static_cast<ContentsWebView*>(status_bubble_views->base_view());
-    if (source == anchor->GetWebContents()) {
-      status_bubble->SetURL(url);
-      break;
-    }
-  }
+  BrowserWebContentsDelegate::From(this)->UpdateTargetURL(source, url);
 }
 
 void Browser::ContentsMouseEvent(WebContents* source, const ui::Event& event) {
-  const ui::EventType type = event.type();
-  const bool exited = type == ui::EventType::kMouseExited;
-  // Disregard synthesized events, and mouse enter and exit, which may occur
-  // without explicit user input events during window state changes.
-  if (type != ui::EventType::kMouseEntered && !exited &&
-      !event.IsSynthesized()) {
-    browser_window_features()->exclusive_access_manager()->OnUserInput();
-  }
-
-  // Mouse motion events update the status bubble, if it exists.
-  std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
-  for (StatusBubble* status_bubble : status_bubbles) {
-    StatusBubbleViews* status_bubble_views =
-        static_cast<StatusBubbleViews*>(status_bubble);
-    ContentsWebView* anchor =
-        static_cast<ContentsWebView*>(status_bubble_views->base_view());
-    if (source == anchor->GetWebContents() &&
-        (type == ui::EventType::kMouseMoved || exited)) {
-      status_bubble->MouseMoved(exited);
-      if (exited) {
-        status_bubble->SetURL(GURL());
-      }
-      break;
-    }
-  }
+  BrowserWebContentsDelegate::From(this)->ContentsMouseEvent(source, event);
 }
 
 void Browser::ContentsZoomChange(bool zoom_in) {
-  chrome::ExecuteCommand(this, zoom_in ? IDC_ZOOM_PLUS : IDC_ZOOM_MINUS);
+  BrowserWebContentsDelegate::From(this)->ContentsZoomChange(zoom_in);
 }
 
 bool Browser::TakeFocus(content::WebContents* source, bool reverse) {
-  return false;
+  return BrowserWebContentsDelegate::From(this)->TakeFocus(source, reverse);
 }
 
 bool Browser::DidAddMessageToConsole(
@@ -1361,71 +1311,29 @@ bool Browser::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id) {
-  static bool is_headless_mode = headless::IsHeadlessMode();
-  if (is_headless_mode) {
-    const bool is_builtin_component = !!source->GetWebUI();
-    headless::LogConsoleMessage(log_level, message, line_no,
-                                is_builtin_component, source_id);
-    return true;
-  }
-  return false;
+  return BrowserWebContentsDelegate::From(this)->DidAddMessageToConsole(
+      source, log_level, message, line_no, source_id);
 }
 
 void Browser::BeforeUnloadFired(WebContents* web_contents,
                                 bool proceed,
                                 bool* proceed_to_fire_unload) {
-  UnloadController::From(this)->BeforeUnloadFired(web_contents, proceed,
-                                                  proceed_to_fire_unload);
+  BrowserWebContentsDelegate::From(this)->BeforeUnloadFired(
+      web_contents, proceed, proceed_to_fire_unload);
 }
 
 bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
-  // Navigations in background tabs shouldn't change the focus state of the
-  // omnibox, since it's associated with the foreground tab.
-  if (source != tab_strip_model_->GetActiveWebContents()) {
-    return false;
-  }
-
-  // This should be based on the pending entry if there is one, so that
-  // back/forward navigations to the NTP are handled.  The visible entry can't
-  // be used here, since back/forward navigations are not treated as visible
-  // entries to avoid URL spoofs.
-  content::NavigationEntry* entry =
-      source->GetController().GetPendingEntry()
-          ? source->GetController().GetPendingEntry()
-          : source->GetController().GetLastCommittedEntry();
-  if (entry) {
-    const GURL& url = entry->GetURL();
-    const GURL& virtual_url = entry->GetVirtualURL();
-
-    if (virtual_url.SchemeIs(content::kViewSourceScheme)) {
-      return false;
-    }
-
-    if ((url.SchemeIs(content::kChromeUIScheme) &&
-         url.host() == chrome::kChromeUINewTabHost) ||
-        (virtual_url.SchemeIs(content::kChromeUIScheme) &&
-         virtual_url.host() == chrome::kChromeUINewTabHost)) {
-      return true;
-    }
-
-    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
-      return true;
-    }
-  }
-
-  return search::NavEntryIsInstantNTP(source, entry);
+  return BrowserWebContentsDelegate::From(this)
+      ->ShouldFocusLocationBarByDefault(source);
 }
 
 bool Browser::ShouldFocusPageAfterCrash(WebContents* source) {
-  // Focus only the active page when reloading after a crash, otherwise
-  // return false. This is to ensure background reloads via hovercard
-  // don't end up causing a focus loss which results in its dismissal.
-  return source == tab_strip_model_->GetActiveWebContents();
+  return BrowserWebContentsDelegate::From(this)->ShouldFocusPageAfterCrash(
+      source);
 }
 
 void Browser::ShowRepostFormWarningDialog(WebContents* source) {
-  TabModalConfirmDialog::Create(
-      std::make_unique<RepostFormWarningController>(source), source);
+  BrowserWebContentsDelegate::From(this)->ShowRepostFormWarningDialog(source);
 }
 
 bool Browser::IsWebContentsCreationOverridden(

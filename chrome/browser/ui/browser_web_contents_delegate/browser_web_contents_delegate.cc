@@ -7,12 +7,15 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/repost_form_warning_controller.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
@@ -28,21 +31,28 @@
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/blocked_content/list_item_position.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/headless/console_message_logger/headless_console_message_logger.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/base_window.h"
 
 #if defined(USE_AURA)
@@ -572,4 +582,158 @@ void BrowserWebContentsDelegate::CloseContents(content::WebContents* source) {
     chrome::CloseWebContents(browser_->GetBrowserForMigrationOnly(), source,
                              true);
   }
+}
+
+void BrowserWebContentsDelegate::SetContentsBounds(content::WebContents* source,
+                                                   const gfx::Rect& bounds) {
+  if ((browser_->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
+    return;
+  }
+
+  std::vector<blink::mojom::WebFeature> features = {
+      blink::mojom::WebFeature::kMovedOrResizedPopup};
+  if (creation_timer_.Elapsed() > base::Seconds(2)) {
+    // Additionally measure whether a popup was moved after creation, to
+    // distinguish between popups that reposition themselves after load and
+    // those which move popups continuously.
+    features.push_back(
+        blink::mojom::WebFeature::kMovedOrResizedPopup2sAfterCreation);
+  }
+
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      source->GetPrimaryMainFrame(), std::move(features));
+  window_->SetBounds(bounds);
+}
+
+void BrowserWebContentsDelegate::UpdateTargetURL(content::WebContents* source,
+                                                 const GURL& url) {
+  std::vector<StatusBubble*> status_bubbles =
+      browser_->GetBrowserForMigrationOnly()->GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    StatusBubbleViews* status_bubble_views =
+        static_cast<StatusBubbleViews*>(status_bubble);
+    ContentsWebView* anchor =
+        static_cast<ContentsWebView*>(status_bubble_views->base_view());
+    if (source == anchor->GetWebContents()) {
+      status_bubble->SetURL(url);
+      break;
+    }
+  }
+}
+
+void BrowserWebContentsDelegate::ContentsMouseEvent(
+    content::WebContents* source,
+    const ui::Event& event) {
+  const ui::EventType type = event.type();
+  const bool exited = type == ui::EventType::kMouseExited;
+  // Disregard synthesized events, and mouse enter and exit, which may occur
+  // without explicit user input events during window state changes.
+  if (type != ui::EventType::kMouseEntered && !exited &&
+      !event.IsSynthesized()) {
+    exclusive_access_manager_->OnUserInput();
+  }
+
+  // Mouse motion events update the status bubble, if it exists.
+  std::vector<StatusBubble*> status_bubbles =
+      browser_->GetBrowserForMigrationOnly()->GetStatusBubbles();
+  for (StatusBubble* status_bubble : status_bubbles) {
+    StatusBubbleViews* status_bubble_views =
+        static_cast<StatusBubbleViews*>(status_bubble);
+    ContentsWebView* anchor =
+        static_cast<ContentsWebView*>(status_bubble_views->base_view());
+    if (source == anchor->GetWebContents() &&
+        (type == ui::EventType::kMouseMoved || exited)) {
+      status_bubble->MouseMoved(exited);
+      if (exited) {
+        status_bubble->SetURL(GURL());
+      }
+      break;
+    }
+  }
+}
+
+void BrowserWebContentsDelegate::ContentsZoomChange(bool zoom_in) {
+  chrome::ExecuteCommand(&*browser_, zoom_in ? IDC_ZOOM_PLUS : IDC_ZOOM_MINUS);
+}
+
+bool BrowserWebContentsDelegate::TakeFocus(content::WebContents* source,
+                                           bool reverse) {
+  return false;
+}
+
+bool BrowserWebContentsDelegate::DidAddMessageToConsole(
+    content::WebContents* source,
+    blink::mojom::ConsoleMessageLevel log_level,
+    const std::u16string& message,
+    int32_t line_no,
+    const std::u16string& source_id) {
+  static bool is_headless_mode = headless::IsHeadlessMode();
+  if (is_headless_mode) {
+    const bool is_builtin_component = !!source->GetWebUI();
+    headless::LogConsoleMessage(log_level, message, line_no,
+                                is_builtin_component, source_id);
+    return true;
+  }
+  return false;
+}
+
+void BrowserWebContentsDelegate::BeforeUnloadFired(
+    content::WebContents* web_contents,
+    bool proceed,
+    bool* proceed_to_fire_unload) {
+  unload_controller_->BeforeUnloadFired(web_contents, proceed,
+                                        proceed_to_fire_unload);
+}
+
+bool BrowserWebContentsDelegate::ShouldFocusLocationBarByDefault(
+    content::WebContents* source) {
+  // Navigations in background tabs shouldn't change the focus state of the
+  // omnibox, since it's associated with the foreground tab.
+  if (source != browser_->GetTabStripModel()->GetActiveWebContents()) {
+    return false;
+  }
+
+  // This should be based on the pending entry if there is one, so that
+  // back/forward navigations to the NTP are handled.  The visible entry can't
+  // be used here, since back/forward navigations are not treated as visible
+  // entries to avoid URL spoofs.
+  content::NavigationEntry* entry =
+      source->GetController().GetPendingEntry()
+          ? source->GetController().GetPendingEntry()
+          : source->GetController().GetLastCommittedEntry();
+  if (entry) {
+    const GURL& url = entry->GetURL();
+    const GURL& virtual_url = entry->GetVirtualURL();
+
+    if (virtual_url.SchemeIs(content::kViewSourceScheme)) {
+      return false;
+    }
+
+    if ((url.SchemeIs(content::kChromeUIScheme) &&
+         url.host() == chrome::kChromeUINewTabHost) ||
+        (virtual_url.SchemeIs(content::kChromeUIScheme) &&
+         virtual_url.host() == chrome::kChromeUINewTabHost)) {
+      return true;
+    }
+
+    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+      return true;
+    }
+  }
+
+  return search::NavEntryIsInstantNTP(source, entry);
+}
+
+bool BrowserWebContentsDelegate::ShouldFocusPageAfterCrash(
+    content::WebContents* source) {
+  // Focus only the active page when reloading after a crash, otherwise
+  // return false. This is to ensure background reloads via hovercard
+  // don't end up causing a focus loss which results in its dismissal.
+  return source == browser_->GetTabStripModel()->GetActiveWebContents();
+}
+
+void BrowserWebContentsDelegate::ShowRepostFormWarningDialog(
+    content::WebContents* source) {
+  TabModalConfirmDialog::Create(
+      std::make_unique<RepostFormWarningController>(source), source);
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_BROWSER_WEB_CONTENTS_DELEGATE_BROWSER_WEB_CONTENTS_DELEGATE_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -123,8 +124,28 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
   void LoadingStateChanged(content::WebContents* source,
                            bool should_show_loading_ui) override;
   void CloseContents(content::WebContents* source) override;
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
+  void UpdateTargetURL(content::WebContents* source, const GURL& url) override;
+  void ContentsMouseEvent(content::WebContents* source,
+                          const ui::Event& event) override;
+  void ContentsZoomChange(bool zoom_in) override;
+  bool TakeFocus(content::WebContents* source, bool reverse) override;
+  bool DidAddMessageToConsole(content::WebContents* source,
+                              blink::mojom::ConsoleMessageLevel log_level,
+                              const std::u16string& message,
+                              int32_t line_no,
+                              const std::u16string& source_id) override;
+  void BeforeUnloadFired(content::WebContents* source,
+                         bool proceed,
+                         bool* proceed_to_fire_unload) override;
+  bool ShouldFocusLocationBarByDefault(content::WebContents* source) override;
+  bool ShouldFocusPageAfterCrash(content::WebContents* source) override;
+  void ShowRepostFormWarningDialog(content::WebContents* source) override;
 
  private:
+  const base::ElapsedTimer creation_timer_;
+
   const raw_ref<ExclusiveAccessManager> exclusive_access_manager_;
   const raw_ref<chrome::BrowserCommandController> command_controller_;
   const raw_ref<UnloadController> unload_controller_;

@@ -926,8 +926,6 @@ class Browser : public TabStripModelObserver,
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;
 
-  const base::ElapsedTimer creation_timer_;
-
   // The opener browser of the document picture-in-picture browser. Null if the
   // current browser is a regular browser.
   raw_ptr<BrowserWindowInterface> opener_browser_ = nullptr;
