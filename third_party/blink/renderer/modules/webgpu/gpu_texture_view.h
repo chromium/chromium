@@ -21,9 +21,8 @@ class GPUTextureView : public DawnObject<wgpu::TextureView> {
   GPUTextureView& operator=(const GPUTextureView&) = delete;
 
  private:
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 };
 

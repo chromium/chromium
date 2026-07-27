@@ -109,9 +109,8 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
                                                  size_t data_length);
   void ResetMappingState(v8::Isolate* isolate);
 
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 
   uint64_t size_;

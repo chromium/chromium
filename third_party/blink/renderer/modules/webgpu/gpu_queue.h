@@ -134,9 +134,8 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
 
  private:
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 };
 

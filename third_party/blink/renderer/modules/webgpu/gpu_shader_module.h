@@ -38,9 +38,8 @@ class GPUShaderModule : public DawnObject<wgpu::ShaderModule> {
       wgpu::CompilationInfoRequestStatus status,
       const wgpu::CompilationInfo* info);
 
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 
   // Holds an estimate of the memory used by Tint for this shader module.

@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
@@ -31,7 +32,7 @@ DawnObjectBase::GetDawnControlClient() const {
 
 void DawnObjectBase::setLabel(const String& value) {
   label_ = value;
-  SetLabelImpl(value);
+  SetLabelImpl(StringUtf8Adaptor(value).AsStringView());
 }
 
 void DawnObjectBase::EnsureFlush(scheduler::EventLoop& event_loop) {

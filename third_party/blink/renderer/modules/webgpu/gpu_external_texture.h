@@ -158,9 +158,8 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
       std::optional<media::VideoFrame::ID> media_video_frame_unique_id,
       ExceptionState& exception_state);
 
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 
   bool IsCurrentFrameFromHTMLVideoElementValid();

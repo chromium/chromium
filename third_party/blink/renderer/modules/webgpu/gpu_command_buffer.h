@@ -21,9 +21,8 @@ class GPUCommandBuffer : public DawnObject<wgpu::CommandBuffer> {
   GPUCommandBuffer& operator=(const GPUCommandBuffer&) = delete;
 
  private:
-  void SetLabelImpl(const String& value) override {
-    std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+  void SetLabelImpl(std::string_view value) override {
+    GetHandle().SetLabel(value);
   }
 };
 
