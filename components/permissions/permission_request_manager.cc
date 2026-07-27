@@ -526,6 +526,8 @@ void PermissionRequestManager::DidFinishNavigation(
     return;
   }
 
+  had_same_origin_navigation_ = navigation_handle->IsSameOrigin();
+
   if (!navigation_handle->IsErrorPage()) {
     permissions::PermissionUmaUtil::
         RecordTopLevelPermissionsHeaderPolicyOnNavigation(
@@ -1036,13 +1038,19 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionsGestureGatedPrompts)) {
     if (auto request = requests_.front().get()) {
+      bool same_origin_excluded =
+          permissions::feature_params::
+              kPermissionsGestureGatedPromptsExcludeSameOriginNavigations
+                  .Get() &&
+          had_same_origin_navigation_;
       // We explicitly don't mute requests initiated by an embedded permission
       // element (e.g., the <permission> HTML tag). This is because interaction
       // with such an element constitutes a specific, high-intent user signal
       // that justifies showing the prompt.
       if (!requests_.front()->IsEmbeddedPermissionElementInitiated() &&
           request->GetGestureType() ==
-              PermissionRequestGestureType::NO_GESTURE) {
+              PermissionRequestGestureType::NO_GESTURE &&
+          !same_origin_excluded) {
         if ((request->request_type() == RequestType::kNotifications &&
              permissions::feature_params::
                  kPermissionsGestureGatedPromptsMuteNotifications.Get()) ||

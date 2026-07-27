@@ -314,6 +314,11 @@ const base::FeatureParam<bool> kPermissionsGestureGatedPromptsMuteGeolocation{
     &permissions::features::kPermissionsGestureGatedPrompts, "mute_geolocation",
     false};
 
+const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsExcludeSameOriginNavigations{
+        &permissions::features::kPermissionsGestureGatedPrompts,
+        "exclude_same_origin_navigations", false};
+
 #if !BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<bool> kKeyboardLockPromptUIStyle{
     &permissions::features::kKeyboardLockPrompt, "use_pepc_ui", true};

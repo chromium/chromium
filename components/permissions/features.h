@@ -193,6 +193,10 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool>
     kPermissionsGestureGatedPromptsMuteGeolocation;
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsExcludeSameOriginNavigations;
+
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<bool> kKeyboardLockPromptUIStyle;

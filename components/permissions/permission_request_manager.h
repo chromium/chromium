@@ -594,6 +594,9 @@ class PermissionRequestManager
   // origin requesting the permission.
   bool is_notification_prompt_cooldown_active_ = false;
 
+  // Whether the current page is the result of a same-origin navigation.
+  bool had_same_origin_navigation_ = false;
+
   // A vector of selectors which decide if the quiet prompt UI should be used
   // to display permission requests. Sorted from the highest priority to the
   // lowest priority selector.

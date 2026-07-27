@@ -2785,6 +2785,114 @@ struct GestureGatedTestcase {
   std::optional<std::string> warning_message;
 };
 
+class PermissionRequestManagerSameOriginGestureTest
+    : public PermissionRequestManagerTest {
+ public:
+  void SetUp() override {
+    PermissionRequestManagerTest::SetUp();
+    manager_->clear_permission_ui_selector_for_testing();
+    manager_->add_permission_ui_selector_for_testing(
+        std::make_unique<MockNotificationGeolocationPermissionUiSelector>(
+            Decision::UseNormalUiAndShowNoWarning(),
+            /*prediction_likelihood=*/std::nullopt,
+            /*async_delay=*/std::nullopt));
+  }
+};
+
+TEST_F(PermissionRequestManagerSameOriginGestureTest,
+       ExcludeSameOriginNavigationsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPermissionsGestureGatedPrompts,
+      {{"mute_geolocation", "true"},
+       {"exclude_same_origin_navigations", "true"}});
+
+  // 1. Initial navigation (not same-origin): gestureless prompt is muted.
+  {
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         std::move(request));
+    WaitForBubbleToBeShown();
+
+    EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
+    EXPECT_EQ(manager_->ReasonForUsingQuietUi(),
+              QuietUiReason::kTriggeredDueToLackOfGesture);
+
+    Accept();
+    EXPECT_TRUE(request_state.granted);
+  }
+
+  // 2. Same-origin navigation: gestureless prompt is NOT muted when exclude
+  // param is true.
+  NavigateAndCommit(GURL("https://www.google.com/foo"));
+  {
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         std::move(request));
+    WaitForBubbleToBeShown();
+
+    EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
+    EXPECT_EQ(manager_->ReasonForUsingQuietUi(), std::nullopt);
+
+    Accept();
+    EXPECT_TRUE(request_state.granted);
+  }
+
+  // 3. Cross-origin navigation: gestureless prompt is muted again.
+  NavigateAndCommit(GURL("https://www.youtube.com/foo"));
+  {
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         std::move(request));
+    WaitForBubbleToBeShown();
+
+    EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
+    EXPECT_EQ(manager_->ReasonForUsingQuietUi(),
+              QuietUiReason::kTriggeredDueToLackOfGesture);
+
+    Accept();
+    EXPECT_TRUE(request_state.granted);
+  }
+}
+
+TEST_F(PermissionRequestManagerSameOriginGestureTest,
+       ExcludeSameOriginNavigationsDisabledByDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPermissionsGestureGatedPrompts,
+      {{"mute_geolocation", "true"},
+       {"exclude_same_origin_navigations", "false"}});
+
+  // Same-origin navigation still mutes gestureless prompt when exclude param is
+  // false.
+  NavigateAndCommit(GURL("https://www.google.com/foo"));
+  {
+    MockPermissionRequest::MockPermissionRequestState request_state;
+    auto request = std::make_unique<MockPermissionRequest>(
+        RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
+        request_state.GetWeakPtr());
+    manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                         std::move(request));
+    WaitForBubbleToBeShown();
+
+    EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
+    EXPECT_EQ(manager_->ReasonForUsingQuietUi(),
+              QuietUiReason::kTriggeredDueToLackOfGesture);
+
+    Accept();
+    EXPECT_TRUE(request_state.granted);
+  }
+}
+
 class PermissionRequestManagerEnforceGestureTest
     : public PermissionRequestManagerTest,
       public testing::WithParamInterface<GestureGatedTestcase> {
