@@ -133,13 +133,9 @@ WebGpuSharedImageWrapper::WebGpuSharedImageWrapper(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : size_(size),
-      format_(format),
-      alpha_type_(alpha_type),
-      color_space_(color_space),
-      hdr_metadata_(hdr_metadata),
+    : hdr_metadata_(hdr_metadata),
       recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
+          std::make_unique<MemoryManagedPaintRecorder>(size,
                                                        /*client=*/nullptr)),
       shared_image_(CreateClientSharedImage(format,
                                             size,
