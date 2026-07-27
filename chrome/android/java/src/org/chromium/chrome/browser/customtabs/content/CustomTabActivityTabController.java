@@ -454,9 +454,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 ProfileProvider.getOrCreateProfile(
                         profileProvider, mIntentDataProvider.isOffTheRecord());
         boolean needsShow = false;
-        String appId = CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
-        assumeNonNull(appId);
-        Tab tab = maybeRestoreTab(profile, appId);
+        // mSession (and thus appId) can be null when CustomTabActivity is launched
+        // programmatically for popup windows (e.g. extension WebAuthFlow).
+        @Nullable String appId =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
+        Tab tab = appId != null ? maybeRestoreTab(profile, appId) : null;
 
         if (tab == null) {
             if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
@@ -480,7 +482,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                         warmupManager.takeSpareTab(
                                 profile, startHidden, TabLaunchType.FROM_EXTERNAL_APP);
                 needsShow = startHidden;
-                TabAssociatedApp.from(tab).setAppId(appId);
+                if (appId != null) {
+                    TabAssociatedApp.from(tab).setAppId(appId);
+                }
                 ReparentingTask.from(tab)
                         .finish(
                                 ReparentingDelegateFactory.createReparentingTaskDelegate(
@@ -491,7 +495,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             } else {
                 WebContents webContents = takeWebContents();
                 Callback<Tab> tabCallback =
-                        preInitTab -> TabAssociatedApp.from(preInitTab).setAppId(appId);
+                        preInitTab -> {
+                            if (appId != null) {
+                                TabAssociatedApp.from(preInitTab).setAppId(appId);
+                            }
+                        };
                 tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory, tabCallback);
             }
         }
@@ -579,13 +587,12 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                     clientPackageName);
         }
 
-        if (!tab.isOffTheRecord()) {
+        if (!tab.isOffTheRecord() && mSession != null) {
             TabObserver observer =
                     new EmptyTabObserver() {
                         @Override
                         public void onContentChanged(Tab tab) {
                             if (tab.getWebContents() != null) {
-                                assumeNonNull(mSession);
                                 CustomTabsConnection.getInstance()
                                         .setClientDataHeaderForNewTab(
                                                 mSession, tab.getWebContents());
@@ -626,8 +633,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             @Nullable SessionHolder<?> token) {
         registrar.registerTabObserver(customTabObserver);
         registrar.registerTabObserver(customTabNavigationEventObserver);
-        assumeNonNull(token);
-        registrar.registerPageLoadMetricsObserver(new PageLoadMetricsObserver(token, tab));
+        if (token != null) {
+            registrar.registerPageLoadMetricsObserver(new PageLoadMetricsObserver(token, tab));
+        }
         registrar.registerPageLoadMetricsObserver(
                 new FirstMeaningfulPaintObserver(customTabObserver, tab));
 
@@ -737,8 +745,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 : mode != TabCreationMode.RESTORED;
     }
 
-    private @Nullable Tab maybeRestoreTab(Profile profile, String appId) {
-        if (mResumeManager != null) {
+    private @Nullable Tab maybeRestoreTab(Profile profile, @Nullable String appId) {
+        if (mResumeManager != null && appId != null) {
             return mResumeManager.maybeRestoreTab(
                     mCipherFactory,
                     profile,

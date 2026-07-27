@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -130,8 +131,8 @@ class WebAuthFlow : public content::WebContentsObserver,
   base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  void SetWindowCreatedCallbackForTesting(
-      base::OnceCallback<void(BrowserWindowInterface*)> callback);
+  void OnBrowserWindowInterfaceInitialized(BrowserWindowInterface* browser);
+  void SetPopupDisplayedCallbackForTesting(base::OnceClosure callback);
 #endif
 
  private:
@@ -198,8 +199,8 @@ class WebAuthFlow : public content::WebContentsObserver,
   bool initial_url_loaded_ = false;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  base::OnceCallback<void(BrowserWindowInterface*)>
-      window_created_callback_for_testing_;
+  base::OnceClosure popup_displayed_callback_for_testing_;
+  base::WeakPtrFactory<WebAuthFlow> weak_factory_{this};
 #endif
 };
 

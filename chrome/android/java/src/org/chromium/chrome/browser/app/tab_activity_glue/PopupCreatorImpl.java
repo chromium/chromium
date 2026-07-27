@@ -325,6 +325,22 @@ public class PopupCreatorImpl implements PopupCreator {
             context.startActivity(intent, activityOptions);
         } catch (SecurityException e) {
             Log.w(TAG, "tryStartActivity: no permission to start a movable task", e);
+            // On devices where Chrome lacks REPOSITION_SELF_WINDOWS permission, launching an
+            // activity with setMovableTaskRequired(true) triggers a SecurityException. Fall back
+            // to starting the activity without movableTaskRequired option.
+            if (activityOptions != null) {
+                Bundle fallbackOptions = new Bundle(activityOptions);
+                fallbackOptions.remove("android.activity.movableTaskRequired");
+                try {
+                    context.startActivity(intent, fallbackOptions);
+                    return true;
+                } catch (SecurityException retryException) {
+                    Log.w(
+                            TAG,
+                            "tryStartActivity: retry without movableTaskRequired also failed",
+                            retryException);
+                }
+            }
             return false;
         } catch (AndroidRuntimeException e) {
             final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();

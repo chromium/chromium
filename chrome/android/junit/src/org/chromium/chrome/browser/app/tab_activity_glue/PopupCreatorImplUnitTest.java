@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -538,12 +539,25 @@ public class PopupCreatorImplUnitTest {
     public void testTryStartActivity_securityException() {
         final Intent intent = mock(Intent.class);
         final Bundle ao = new Bundle();
-        doThrow(new SecurityException()).when(mContext).startActivity(intent, ao);
+        doThrow(new SecurityException()).when(mContext).startActivity(any(), any());
 
         assertFalse(
                 "tryStartActivity should have returned false due to an exception being thrown",
                 mPopupCreator.tryStartActivity(mContext, intent, ao));
-        verify(mContext).startActivity(intent, ao);
+        verify(mContext, times(2)).startActivity(any(), any());
+    }
+
+    @Test
+    public void testTryStartActivity_securityException_retriesWithoutMovableTask() {
+        final Intent intent = mock(Intent.class);
+        final Bundle ao = new Bundle();
+        ao.putBoolean("android.activity.movableTaskRequired", true);
+        doThrow(new SecurityException()).when(mContext).startActivity(eq(intent), eq(ao));
+
+        assertTrue(
+                "tryStartActivity should succeed on retry without movableTaskRequired",
+                mPopupCreator.tryStartActivity(mContext, intent, ao));
+        verify(mContext, times(2)).startActivity(eq(intent), any());
     }
 
     @Test
