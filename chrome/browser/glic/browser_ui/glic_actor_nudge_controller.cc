@@ -203,9 +203,9 @@ void GlicActorNudgeController::CloseBubble() {
 }
 
 bool GlicActorNudgeController::IsShowingNudge() {
-  return (IsDelegateActive(horizontal_tabs_delegate_) &&
+  return (horizontal_tabs_delegate_ &&
           horizontal_tabs_delegate_->GetIsShowingGlicActorTaskIconNudge()) ||
-         (IsDelegateActive(vertical_tabs_delegate_) &&
+         (vertical_tabs_delegate_ &&
           vertical_tabs_delegate_->GetIsShowingGlicActorTaskIconNudge());
 }
 
@@ -220,30 +220,20 @@ void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
 void GlicActorNudgeController::CallOnBoth(
     base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {
   // One or both or neither delegate may need updated.
-  if (IsDelegateActive(horizontal_tabs_delegate_)) {
+  if (horizontal_tabs_delegate_) {
     fn.Run(*horizontal_tabs_delegate_);
   }
-  if (IsDelegateActive(vertical_tabs_delegate_)) {
+  if (vertical_tabs_delegate_) {
     fn.Run(*vertical_tabs_delegate_);
   }
-}
-
-bool GlicActorNudgeController::IsDelegateActive(
-    GlicSplitButtonDelegate* delegate) const {
-  return delegate && delegate->IsGlicAdded();
 }
 
 GlicSplitButtonDelegate* GlicActorNudgeController::GetActiveDelegate() const {
   auto* vertical_tab_strip_state_controller =
       tabs::VerticalTabStripStateController::From(browser_);
-  if (vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs() &&
-      IsDelegateActive(vertical_tabs_delegate_)) {
-    return vertical_tabs_delegate_;
-  }
-  if (IsDelegateActive(horizontal_tabs_delegate_)) {
-    return horizontal_tabs_delegate_;
-  }
-  return nullptr;
+  return vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()
+             ? vertical_tabs_delegate_
+             : horizontal_tabs_delegate_;
 }
 
 }  // namespace glic

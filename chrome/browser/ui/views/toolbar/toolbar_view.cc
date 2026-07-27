@@ -861,7 +861,9 @@ void ToolbarView::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
     return;
   }
 
-  CHECK(glic_button_);
+  if (!glic_button_) {
+    return;
+  }
   if (!params.label.empty()) {
     glic_button_->SetNudgeLabel(std::move(params.label));
     ShowToolbarNudge(glic_button_);
@@ -875,11 +877,15 @@ void ToolbarView::OnHideGlicNudgeUI() {
 }
 
 void ToolbarView::SetGlicActorNudgeLabel(const std::u16string& nudge_label) {
-  glic_actor_task_icon()->ShowNudgeLabel(nudge_label);
+  if (glic_actor_task_icon_) {
+    glic_actor_task_icon_->ShowNudgeLabel(nudge_label);
+  }
 }
 
 void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_text) {
-  CHECK(glic_actor_task_icon_);
+  if (!glic_button_ || !glic_actor_task_icon_) {
+    return;
+  }
   if (GetIsShowingGlicNudge()) {
     // If the glic button is showing, start the hide animation in parallel to
     // the show actor nudge animation.
@@ -889,12 +895,10 @@ void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_text) {
   ShowGlicActorNudge(nudge_text);
 }
 
-bool ToolbarView::IsGlicAdded() {
-  return glic_button_ && glic_actor_task_icon_;
-}
-
 void ToolbarView::ShowGlicActorNudge(const std::u16string nudge_text) {
-  CHECK(glic_actor_task_icon_);
+  if (!glic_button_ || !glic_actor_task_icon_) {
+    return;
+  }
   // Start animation for minimizing the glic button.
   glic_button_->Collapse();
   ShowGlicActorTaskIcon();
@@ -903,8 +907,10 @@ void ToolbarView::ShowGlicActorNudge(const std::u16string nudge_text) {
 }
 
 void ToolbarView::ShowGlicActorTaskIcon() {
-  CHECK(glic_actor_button_container_);
-  CHECK(glic_button_);
+  if (!glic_button_ || !glic_actor_task_icon_ ||
+      !glic_actor_button_container_) {
+    return;
+  }
   // If the nudge is showing (ex: previous state was CheckTasks), hide the
   // nudge.
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
@@ -929,7 +935,9 @@ void ToolbarView::ShowGlicActorTaskIcon() {
 }
 
 void ToolbarView::HideGlicActorTaskIcon() {
-  CHECK(glic_actor_task_icon_);
+  if (!glic_actor_task_icon_) {
+    return;
+  }
 
   // If it's already hidden, do nothing.
   if (!glic_actor_task_icon_->GetVisible() &&
@@ -951,17 +959,24 @@ void ToolbarView::HideGlicActorTaskIcon() {
 }
 
 void ToolbarView::SetGlicActorNudgePressedState(bool pressed) {
-  glic_actor_task_icon()->SetPressedState(pressed);
+  if (glic_actor_task_icon_) {
+    glic_actor_task_icon_->SetPressedState(pressed);
+  }
 }
 
 void ToolbarView::ShowActorTaskListBubble() {
+  if (!glic_actor_task_icon_) {
+    return;
+  }
   ActorTaskListBubbleController::From(browser_)->ShowBubble(
       glic_actor_task_icon());
 }
 
 void ToolbarView::FinalizeHideGlicActorTaskIcon() {
-  CHECK(glic_actor_button_container_);
-  CHECK(glic_button_);
+  if (!glic_button_ || !glic_actor_task_icon_ ||
+      !glic_actor_button_container_) {
+    return;
+  }
   // Reset Nudge State
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
     // TODO(crbug.com/484389669): Glic actor nudge animation

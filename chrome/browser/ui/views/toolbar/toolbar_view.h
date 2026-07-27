@@ -248,7 +248,6 @@ class ToolbarView : public views::AccessiblePaneView,
   void ShowGlicActorTaskIcon() override;
   void HideGlicActorTaskIcon() override;
   bool GetIsShowingGlicActorTaskIconNudge() override;
-  bool IsGlicAdded() override;
   void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override;
   void TriggerGlicActorNudge(const std::u16string& nudge_text) override;
   void SetGlicActorNudgePressedState(bool pressed) override;

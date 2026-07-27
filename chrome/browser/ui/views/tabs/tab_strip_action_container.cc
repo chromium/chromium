@@ -311,7 +311,10 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
     return;
   }
 
-  CHECK(glic_button_);
+  if (!glic_button_) {
+    return;
+  }
+
   if (!params.label.empty()) {
     glic_button_->SetNudgeLabel(std::move(params.label));
     if (!glic_button_->GetIsShowingNudge()) {
@@ -321,8 +324,9 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
 }
 
 void TabStripActionContainer::OnHideGlicNudgeUI() {
-  CHECK(glic_button_);
-  HideTabStripNudge(glic_button_);
+  if (glic_button_) {
+    HideTabStripNudge(glic_button_);
+  }
 }
 
 bool TabStripActionContainer::GetIsShowingGlicNudge() {
@@ -347,15 +351,20 @@ void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
 
   if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
       features::kGlicButtonContainerBackground.Get()) {
-    glic_actor_button_container_->SetBackgroundColor(
-        glic_button_->GetBackgroundColor());
-    glic_actor_button_container_->SetHighlighted(open);
+    if (glic_actor_button_container_) {
+      glic_actor_button_container_->SetBackgroundColor(
+          glic_button_->GetBackgroundColor());
+      glic_actor_button_container_->SetHighlighted(open);
+    }
   }
 }
 
 void TabStripActionContainer::ShowGlicActorTaskIcon() {
-  CHECK(glic_actor_button_container_);
-  CHECK(glic_button_);
+  if (!glic_button_ || !glic_actor_task_icon_ ||
+      !glic_actor_button_container_) {
+    return;
+  }
+
   // If the nudge is showing (ex: previous state was CheckTasks), hide the
   // nudge.
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
@@ -393,9 +402,9 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
 }
 
 void TabStripActionContainer::HideGlicActorTaskIcon() {
-  CHECK(glic_actor_button_container_);
-  CHECK(glic_button_);
-  CHECK(glic_actor_task_icon_);
+  if (!glic_actor_task_icon_) {
+    return;
+  }
 
   // If it's already hidden, do nothing.
   if (!glic_actor_task_icon_->GetVisible()) {
@@ -424,22 +433,24 @@ bool TabStripActionContainer::GetIsShowingGlicActorTaskIconNudge() {
   return glic_actor_task_icon_ && glic_actor_task_icon_->GetIsShowingNudge();
 }
 
-bool TabStripActionContainer::IsGlicAdded() {
-  return glic_button_ && glic_actor_task_icon_;
-}
-
 views::FlexLayoutView* TabStripActionContainer::glic_actor_button_container() {
   return glic_actor_button_container_;
 }
 
 void TabStripActionContainer::SetGlicActorNudgeLabel(
     const std::u16string& nudge_label) {
-  glic_actor_task_icon()->ShowNudgeLabel(nudge_label);
+  if (!glic_actor_task_icon_) {
+    return;
+  }
+  glic_actor_task_icon_->ShowNudgeLabel(nudge_label);
 }
 
 void TabStripActionContainer::TriggerGlicActorNudge(
     const std::u16string& nudge_text) {
-  CHECK(glic_actor_task_icon_);
+  if (!glic_button_ || !glic_actor_task_icon_) {
+    return;
+  }
+
   if (GetIsShowingGlicNudge()) {
     // If the glic button is showing, start the hide animation in parallel to
     // the show actor nudge animation.
@@ -450,17 +461,25 @@ void TabStripActionContainer::TriggerGlicActorNudge(
 }
 
 void TabStripActionContainer::SetGlicActorNudgePressedState(bool pressed) {
-  glic_actor_task_icon()->SetPressedState(pressed);
+  if (!glic_actor_task_icon_) {
+    return;
+  }
+  glic_actor_task_icon_->SetPressedState(pressed);
 }
 
 void TabStripActionContainer::ShowActorTaskListBubble() {
+  if (!glic_actor_task_icon_) {
+    return;
+  }
   ActorTaskListBubbleController::From(browser_window_interface_)
       ->ShowBubble(glic_actor_task_icon());
 }
 
 void TabStripActionContainer::ShowGlicActorNudge(
     const std::u16string& nudge_text) {
-  CHECK(glic_actor_task_icon_);
+  if (!glic_button_ || !glic_actor_task_icon_) {
+    return;
+  }
   // Start animation for minimizing the glic button.
   glic_button_->Collapse();
   ShowGlicActorTaskIcon();
@@ -907,6 +926,10 @@ bool TabStripActionContainer::ButtonOwnsAnimation(
 }
 
 void TabStripActionContainer::FinalizeHideGlicActorTaskIcon() {
+  if (!glic_button_ || !glic_actor_task_icon_ ||
+      !glic_actor_button_container_) {
+    return;
+  }
   // 1. Reset Nudge State
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
     if (animation_session_ &&

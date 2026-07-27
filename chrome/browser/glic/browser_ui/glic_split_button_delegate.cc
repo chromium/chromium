@@ -33,9 +33,6 @@ void GlicSplitButtonDelegate::HideGlicActorTaskIcon() {}
 bool GlicSplitButtonDelegate::GetIsShowingGlicActorTaskIconNudge() {
   return false;
 }
-bool GlicSplitButtonDelegate::IsGlicAdded() {
-  return false;
-}
 void GlicSplitButtonDelegate::SetGlicActorNudgeLabel(
     const std::u16string& nudge_label) {}
 void GlicSplitButtonDelegate::TriggerGlicActorNudge(

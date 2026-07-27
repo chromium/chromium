@@ -58,9 +58,6 @@ class GlicSplitButtonDelegate {
   // Returns true if the actor icon is showing with nudge text.
   virtual bool GetIsShowingGlicActorTaskIconNudge();
 
-  // Returns true if the glic button and actor button exist.
-  virtual bool IsGlicAdded();
-
   // Update the nudge label.
   virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
 
