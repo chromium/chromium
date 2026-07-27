@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,12 +28,15 @@ SubresourceFilterSafeBrowsingClientRequest::
         base::TimeTicks start_time,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
-        SubresourceFilterSafeBrowsingClient* client)
+        SubresourceFilterSafeBrowsingClient* client,
+        base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+            v5_get_hash_protocol_manager)
     : safe_browsing::SafeBrowsingDatabaseManager::Client(GetPassKey()),
       request_id_(request_id),
       start_time_(start_time),
       database_manager_(std::move(database_manager)),
-      client_(client) {
+      client_(client),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -43,6 +47,11 @@ SubresourceFilterSafeBrowsingClientRequest::
     database_manager_->CancelCheck(this);
   }
   timer_.Stop();
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+SubresourceFilterSafeBrowsingClientRequest::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {

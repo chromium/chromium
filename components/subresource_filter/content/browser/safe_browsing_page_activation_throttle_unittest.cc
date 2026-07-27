@@ -22,6 +22,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
@@ -53,6 +54,7 @@
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
@@ -113,8 +115,20 @@ class TestSafeBrowsingActivationThrottleDelegate
 
   void ClearAllowlist() { allowlisted_hosts_.clear(); }
 
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  GetV5GetHashProtocolManager() override {
+    return v5_get_hash_protocol_manager_;
+  }
+
+  void set_v5_get_hash_protocol_manager(
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager> manager) {
+    v5_get_hash_protocol_manager_ = manager;
+  }
+
  private:
   std::set<std::string> allowlisted_hosts_;
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager_;
 };
 
 struct ActivationListTestData {
@@ -139,6 +153,30 @@ const ActivationListTestData kActivationListTestData[] = {
      ActivationList::BETTER_ADS,
      safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
      {{SBType::BETTER_ADS, SBLevel::ENFORCE}}},
+};
+
+class V5TestingDatabaseManager : public FakeSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager() = default;
+
+  bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+    }
+    return FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
+        url, client);
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ private:
+  ~V5TestingDatabaseManager() override = default;
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_manager_from_client_;
 };
 
 }  //  namespace
@@ -342,6 +380,11 @@ class SafeBrowsingPageActivationThrottleTest
 
   testing::ScopedSubresourceFilterConfigurator* scoped_configuration() {
     return &scoped_configuration_;
+  }
+
+  void set_fake_safe_browsing_database(
+      scoped_refptr<FakeSafeBrowsingDatabaseManager> database) {
+    fake_safe_browsing_database_ = database;
   }
 
  protected:
@@ -1101,5 +1144,26 @@ INSTANTIATE_TEST_SUITE_P(ActivationLevelTest,
 INSTANTIATE_TEST_SUITE_P(ActivationScopeTest,
                          SafeBrowsingPageActivationThrottleScopeTest,
                          ::testing::ValuesIn(kActivationScopeTestData));
+
+TEST_F(SafeBrowsingPageActivationThrottleTest, GetV5GetHashProtocolManager) {
+  auto v5_db_manager = base::MakeRefCounted<V5TestingDatabaseManager>();
+  set_fake_safe_browsing_database(v5_db_manager);
+
+  safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
+      /*url_loader_factory=*/nullptr,
+      safe_browsing::V4ProtocolConfig("test", false, "key", "1.0"),
+      /*cache=*/nullptr);
+
+  delegate()->set_v5_get_hash_protocol_manager(
+      v5_protocol_manager.GetWeakPtr());
+
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://example.com"), web_contents());
+  navigation_simulator->Start();
+
+  EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
+            &v5_protocol_manager);
+}
 
 }  // namespace subresource_filter

@@ -29,7 +29,8 @@ ThrottleManagerTestSupport::ThrottleManagerTestSupport(
       content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
       "");
   profile_context_ = std::make_unique<SubresourceFilterProfileContext>(
-      settings_map_.get(), cookie_settings_.get());
+      settings_map_.get(), cookie_settings_.get(),
+      /*v5_get_hash_protocol_manager=*/nullptr);
 
   // ProfileInteractionManager assumes that this object is present in the
   // context of the passed-in WebContents.

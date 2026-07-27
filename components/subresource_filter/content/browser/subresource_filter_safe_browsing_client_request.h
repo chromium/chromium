@@ -9,12 +9,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 
 class GURL;
+
+namespace safe_browsing {
+class V5GetHashProtocolManager;
+}  // namespace safe_browsing
 
 namespace subresource_filter {
 
@@ -27,10 +32,12 @@ class SubresourceFilterSafeBrowsingClientRequest
  public:
   SubresourceFilterSafeBrowsingClientRequest(
       size_t request_id,
-      base::TimeTicks start_time_,
+      base::TimeTicks start_time,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      SubresourceFilterSafeBrowsingClient* client);
+      SubresourceFilterSafeBrowsingClient* client,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager);
 
   SubresourceFilterSafeBrowsingClientRequest(
       const SubresourceFilterSafeBrowsingClientRequest&) = delete;
@@ -47,6 +54,9 @@ class SubresourceFilterSafeBrowsingClientRequest
       safe_browsing::SBThreatType threat_type,
       const safe_browsing::SubresourceFilterMatch& subresource_filter_match)
       override;
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  GetV5GetHashProtocolManager() override;
 
   size_t request_id() const { return request_id_; }
 
@@ -77,6 +87,10 @@ class SubresourceFilterSafeBrowsingClientRequest
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   raw_ptr<SubresourceFilterSafeBrowsingClient> client_ = nullptr;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager_;
 
   // Timer to abort the safe browsing check if it takes too long.
   base::OneShotTimer timer_;

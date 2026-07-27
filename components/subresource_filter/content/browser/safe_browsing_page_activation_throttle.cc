@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
@@ -92,7 +93,8 @@ SafeBrowsingPageActivationThrottle::SafeBrowsingPageActivationThrottle(
       delegate_(delegate) {
   database_client_.reset(new SubresourceFilterSafeBrowsingClient(
       std::move(database_manager), this,
-      base::SingleThreadTaskRunner::GetCurrentDefault()));
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      delegate_ ? delegate_->GetV5GetHashProtocolManager() : nullptr));
 
   CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()));
   CheckCurrentUrl();

@@ -23,6 +23,10 @@
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "content/public/browser/navigation_throttle.h"
 
+namespace safe_browsing {
+class V5GetHashProtocolManager;
+}  // namespace safe_browsing
+
 namespace subresource_filter {
 
 // Enum representing a position in the redirect chain. These values are
@@ -59,6 +63,11 @@ class SafeBrowsingPageActivationThrottle final
         content::NavigationHandle* navigation_handle,
         mojom::ActivationLevel initial_activation_level,
         ActivationDecision* decision) = 0;
+
+    // Returns a weak pointer to the V5GetHashProtocolManager used for Safe
+    // Browsing v5 lookups.
+    virtual base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+    GetV5GetHashProtocolManager() = 0;
   };
 
   // `delegate` is allowed to be null, in which case the client creating this

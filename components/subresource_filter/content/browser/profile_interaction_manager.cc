@@ -172,6 +172,12 @@ ProfileInteractionManager::GetCookieSettings() {
   return profile_context_->cookie_settings();
 }
 
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+ProfileInteractionManager::GetV5GetHashProtocolManager() {
+  return profile_context_ ? profile_context_->GetV5GetHashProtocolManager()
+                          : nullptr;
+}
+
 content::WebContents* ProfileInteractionManager::GetWebContents() {
   CHECK(page_);
   CHECK(page_->IsPrimary());

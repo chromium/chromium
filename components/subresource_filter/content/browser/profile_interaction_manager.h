@@ -70,6 +70,11 @@ class ProfileInteractionManager
       mojom::ActivationLevel initial_activation_level,
       ActivationDecision* decision) override;
 
+  // Returns a weak pointer to the V5GetHashProtocolManager used for Safe
+  // Browsing v5 lookups.
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  GetV5GetHashProtocolManager() override;
+
 #if BUILDFLAG(IS_ANDROID)
   AdsBlockedMessageDelegate* ads_blocked_message_delegate_for_testing() {
     return ads_blocked_message_delegate_;

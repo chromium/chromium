@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 
@@ -25,6 +26,7 @@ class TracedValue;
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
+class V5GetHashProtocolManager;
 }  // namespace safe_browsing
 
 namespace subresource_filter {
@@ -57,7 +59,9 @@ class SubresourceFilterSafeBrowsingClient {
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       SafeBrowsingPageActivationThrottle* throttle,
-      scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager);
 
   SubresourceFilterSafeBrowsingClient(
       const SubresourceFilterSafeBrowsingClient&) = delete;
@@ -82,6 +86,10 @@ class SubresourceFilterSafeBrowsingClient {
   // A raw_ptr is safe because `throttle_` owns `this`.
   raw_ptr<SafeBrowsingPageActivationThrottle> throttle_;
   scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner_;
+
+  // The protocol manager used for Safe Browsing v5 get hash requests.
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager_;
 };
 
 }  // namespace subresource_filter

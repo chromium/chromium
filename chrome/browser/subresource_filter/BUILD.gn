@@ -30,6 +30,7 @@ source_set("subresource_filter") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/keyed_service/core",
     "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//url",

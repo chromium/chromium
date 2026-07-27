@@ -67,9 +67,12 @@ class SubresourceFilterProfileContext::Storage {
 
 SubresourceFilterProfileContext::SubresourceFilterProfileContext(
     HostContentSettingsMap* settings_map,
-    scoped_refptr<content_settings::CookieSettings> cookie_settings)
-    : storage_(std::make_unique<Storage>(settings_map,
-                                         std::move(cookie_settings))) {}
+    scoped_refptr<content_settings::CookieSettings> cookie_settings,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager)
+    : storage_(
+          std::make_unique<Storage>(settings_map, std::move(cookie_settings))),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {}
 
 SubresourceFilterProfileContext::~SubresourceFilterProfileContext() = default;
 
@@ -86,6 +89,11 @@ SubresourceFilterProfileContext::ads_intervention_manager() {
 content_settings::CookieSettings*
 SubresourceFilterProfileContext::cookie_settings() {
   return CHECK_DEREF(storage_).cookie_settings();
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+SubresourceFilterProfileContext::GetV5GetHashProtocolManager() const {
+  return v5_get_hash_protocol_manager_;
 }
 
 void SubresourceFilterProfileContext::SetEmbedderData(
