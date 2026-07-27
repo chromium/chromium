@@ -1074,4 +1074,40 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
   }
 }
 
+// Tests that when split ZIP support is enabled and a 9-digit ZIP is stored in
+// the profile, a heuristic prediction of `ADDRESS_HOME_ZIP_PREFIX` for a
+// 5-digit entry is logged as a true positive.
+TEST_F(QualityMetricsTest, SplitZip_PrefixPredictionIsTruePositive) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillSupportSplitZipCode};
+
+  personal_data().test_address_data_manager().ClearProfiles();
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&profile, test::SetProfileInfoOptionsBuilder()
+                                     .with_country("US")
+                                     .with_zipcode("79401-1234")
+                                     .Build());
+  personal_data().address_data_manager().AddProfile(profile);
+
+  test::FormDescription form_description = {
+      .description_for_logging = "SplitZip_PrefixPredictionIsTruePositive",
+      .fields = {{.heuristic_type = ADDRESS_HOME_ZIP_PREFIX, .value = u"79401"},
+                 {.heuristic_type = ADDRESS_HOME_ZIP_SUFFIX, .value = u"1234"}},
+  };
+
+  FormData form = GetAndAddSeenForm(form_description);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldPredictionQuality.ByFieldType.Heuristic"),
+              BucketsAre(Bucket(GetFieldTypeGroupPredictionQualityMetric(
+                                    ADDRESS_HOME_ZIP_PREFIX, TRUE_POSITIVE),
+                                1),
+                         Bucket(GetFieldTypeGroupPredictionQualityMetric(
+                                    ADDRESS_HOME_ZIP_SUFFIX, TRUE_POSITIVE),
+                                1)));
+}
+
 }  // namespace autofill::autofill_metrics

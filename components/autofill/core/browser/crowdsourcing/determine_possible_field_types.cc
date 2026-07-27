@@ -421,19 +421,19 @@ void FindAndSetPossibleDateFieldTypesAndFormatStrings(
 
 void RationalizePossibleSplitZipFieldTypes(
     base::span<PossibleTypes> possible_types) {
-  bool is_prev_zip_prefix = false;
-
-  for (auto& possible_type : possible_types) {
+  for (auto it = possible_types.begin(); it != possible_types.end(); ++it) {
     // Voting for ADDRESS_HOME_ZIP_SUFFIX is allowed only if the previous field
     // had ADDRESS_HOME_ZIP_PREFIX as one of its possible types.
-    if (possible_type.types.contains(ADDRESS_HOME_ZIP_SUFFIX) &&
-        !is_prev_zip_prefix) {
-      possible_type.types.erase(ADDRESS_HOME_ZIP_SUFFIX);
+    if (it->types.contains(ADDRESS_HOME_ZIP_SUFFIX)) {
+      if (it == possible_types.begin() ||
+          !(it - 1)->types.contains(ADDRESS_HOME_ZIP_PREFIX)) {
+        it->types.erase(ADDRESS_HOME_ZIP_SUFFIX);
+      }
     }
 
-    // Votes for ADDRESS_HOME_ZIP_PREFIX are mapped to ADDRESS_HOME_ZIP
-    // to prevent unexpected voting results on international forms.
-    // On such forms with a single zip code field, American users often
+    // Votes for single ADDRESS_HOME_ZIP_PREFIX fields are mapped to
+    // ADDRESS_HOME_ZIP to prevent unexpected voting results on international
+    // forms. On such forms with a single zip code field, American users often
     // enter a 5-digit zip code. Since these 5-digit values correspond to both
     // ADDRESS_HOME_ZIP and ADDRESS_HOME_ZIP_PREFIX, they can cause votes
     // for ADDRESS_HOME_ZIP_PREFIX, while users from other countries
@@ -441,10 +441,12 @@ void RationalizePossibleSplitZipFieldTypes(
     // If ADDRESS_HOME_ZIP_PREFIX wins the vote, it could result in
     // partial zip values autofilled in Japan, Brazil, and other
     // countries with split zip code formats.
-    is_prev_zip_prefix = false;
-    if (possible_type.types.erase(ADDRESS_HOME_ZIP_PREFIX)) {
-      possible_type.types.insert(ADDRESS_HOME_ZIP);
-      is_prev_zip_prefix = true;
+    if (it->types.contains(ADDRESS_HOME_ZIP_PREFIX)) {
+      if (it + 1 == possible_types.end() ||
+          !(it + 1)->types.contains(ADDRESS_HOME_ZIP_SUFFIX)) {
+        it->types.erase(ADDRESS_HOME_ZIP_PREFIX);
+        it->types.insert(ADDRESS_HOME_ZIP);
+      }
     }
   }
 }

@@ -1500,7 +1500,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .description = "Two zip fields (prefix and suffix)",
-            .fields = {{"zip1", "79401", {ADDRESS_HOME_ZIP}},
+            .fields = {{"zip1", "79401", {ADDRESS_HOME_ZIP_PREFIX}},
                        {"zip2", "4321", {ADDRESS_HOME_ZIP_SUFFIX}}},
         }}));
 
