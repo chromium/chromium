@@ -267,6 +267,7 @@ android_library("core_java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:search_java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/subscription_eligibility:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_ui/android:java",
