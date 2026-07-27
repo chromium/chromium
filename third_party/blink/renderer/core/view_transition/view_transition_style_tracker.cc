@@ -1125,14 +1125,20 @@ void ViewTransitionStyleTracker::SetCaptureRectsFromCompositor(
     // This rect no longer matters.
     element_data->cached_captured_rect_in_layout_space.reset();
 
-    if (auto* pseudo_element = OriginatingElement()->GetStyledPseudoElement(
-            PseudoId::kPseudoIdViewTransitionOld, entry.key)) {
-      static_cast<ViewTransitionContentElement*>(pseudo_element)
-          ->SetIntrinsicSize(rect_from_compositor,
-                             element_data->GetReferenceRect(
-                                 /*use_cached_data=*/true, device_pixel_ratio_),
-                             /*propagates_max_extents_rect=*/false);
+    auto* originating_element = OriginatingElement();
+    if (!originating_element) {
+      continue;
     }
+    auto* pseudo_element = originating_element->GetStyledPseudoElement(
+        PseudoId::kPseudoIdViewTransitionOld, entry.key);
+    if (!pseudo_element) {
+      continue;
+    }
+    static_cast<ViewTransitionContentElement*>(pseudo_element)
+        ->SetIntrinsicSize(rect_from_compositor,
+                           element_data->GetReferenceRect(
+                               /*use_cached_data=*/true, device_pixel_ratio_),
+                           /*propagates_max_extents_rect=*/false);
   }
 }
 
