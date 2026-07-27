@@ -6,6 +6,9 @@ source_set("public") {
   sources = [
     "features.cc",
     "features.h",
+    "notebook.cc",
+    "notebook.h",
+    "notebook_id.h",
     "notebooks_constants.h",
     "notebooks_eligibility_service.h",
     "notebooks_network_service.cc",
@@ -16,5 +19,19 @@ source_set("public") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/notebooks:unit_tests" ]
+
+  sources = [ "notebook_unittest.cc" ]
+
+  deps = [
+    ":public",
+    "//base",
+    "//testing/gtest",
   ]
 }
