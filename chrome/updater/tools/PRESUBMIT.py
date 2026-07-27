@@ -10,8 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 def CommonChecks(input_api, output_api):
     return input_api.canned_checks.RunPylint(input_api,
-                                             output_api,
-                                             version='2.7')
+                                              output_api,
+                                              version='3.2')
 
 
 def CheckChangeOnUpload(input_api, output_api):

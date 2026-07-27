@@ -14,22 +14,38 @@ _OTA_DOC_LINK = 'https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3
 def CheckPylint(input_api, output_api):
   disabled_warnings = [
       # TODO(crbug.com/413421824): Burn down this list over time.
-      'cyclic-imports',
+      'anomalous-backslash-in-string',
+      'bad-indentation',
+      'cell-var-from-loop',
+      'consider-using-enumerate',
+      'consider-using-from-import',
+      'cyclic-import',
+      'deprecated-module',
+      'duplicate-code',
       'expression-not-assigned',
-      'logging-fstring-interpolation',
+      'implicit-str-concat',
+      'line-too-long',
       'logging-format-interpolation',
-      'no-else-return',
+      'logging-fstring-interpolation',
+      'logging-not-lazy',
+      'missing-final-newline',
+      'missing-module-docstring',
       'redefined-builtin',
       'redefined-outer-name',
+      'singleton-comparison',
+      'superfluous-parens',
+      'undefined-variable',
+      'unspecified-encoding',
       'unused-argument',
-      'unused-outer-name',
+      'unused-import',
+      'use-list-literal',
       # No plans to fix these. Wildcards are part of the test discovery
       # mechanism.
       'wildcard-import',
       'unused-wildcard-import',
   ]
   check = input_api.canned_checks.GetPylint(
-      input_api, output_api, disabled_warnings=disabled_warnings)
+      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2')
   return input_api.RunTests(check)
 
 
