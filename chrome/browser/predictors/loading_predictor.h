@@ -22,6 +22,7 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -81,7 +82,9 @@ class LoadingPredictor : public KeyedService,
       HintOrigin origin,
       base::UnguessableToken network_restrictions_id,
       bool preconnectable = false,
-      std::optional<PreconnectPrediction> preconnect_prediction = std::nullopt);
+      std::optional<PreconnectPrediction> preconnect_prediction = std::nullopt,
+      content::GlobalRenderFrameHostId initiator_frame_id =
+          content::GlobalRenderFrameHostId());
 
   // Indicates that a page load hint is no longer active.
   void CancelPageLoadHint(const GURL& url);

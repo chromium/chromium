@@ -75,9 +75,13 @@ GURL CreateRedirectURL(const std::string& scheme,
 
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
-    network::mojom::RequestDestination destination)
+    network::mojom::RequestDestination destination,
+    base::UnguessableToken network_restrictions_id,
+    content::GlobalRenderFrameHostId initiator_frame_id)
     : url(url),
-      destination(destination) {
+      destination(destination),
+      network_restrictions_id(network_restrictions_id),
+      initiator_frame_id(initiator_frame_id) {
   CHECK(
       base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch) ||
       base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource));

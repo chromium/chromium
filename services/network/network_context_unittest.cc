@@ -10930,11 +10930,69 @@ TEST_F(NetworkContextTest, Prefetch) {
 
   network_context->Prefetch(
       /*request_id=*/0, mojom::kURLLoadOptionNone, request,
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      GetTestNetworkRestrictionsId());
 
   auto received_request = future.Take();
   EXPECT_EQ(received_request.GetURL(), url);
   EXPECT_EQ(received_request.method, net::test_server::METHOD_GET);
+}
+
+TEST_F(NetworkContextTest, PrefetchBlockedByConnectionAllowlist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kNetworkContextPrefetch,
+                                 network::features::kConnectionAllowlists},
+                                {});
+
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  base::test::TestFuture<const net::test_server::HttpRequest&> request_future;
+  test_server.RegisterRequestMonitor(
+      request_future.GetSequenceBoundRepeatingCallback());
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken network_restrictions_id =
+      base::UnguessableToken::Create();
+
+  // Create an empty connection allowlist associated with the network
+  // restriction id (blocking everything).
+  base::test::TestFuture<void> revoked;
+  auto revoked_nonce_pattern =
+      CreateIdAndAllowlistedPatterns(network_restrictions_id);
+  std::vector<network::mojom::IdAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RestrictNetworkForIds(std::move(nonces_to_urls),
+                                         base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  const auto url = test_server.GetURL("/echo");
+  auto origin = url::Origin::Create(test_server.GetURL("/"));
+  auto isolation_info = net::IsolationInfo::CreateForInternalRequest(origin);
+
+  ASSERT_FALSE(network_context->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+      network_restrictions_id, url,
+      isolation_info.network_anonymization_key()));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = isolation_info;
+  request.site_for_cookies = isolation_info.site_for_cookies();
+
+  network_context->Prefetch(
+      /*request_id=*/0, mojom::kURLLoadOptionNone, request,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      network_restrictions_id);
+
+  // Wait to see if any request arrives. Since it's blocked, it shouldn't.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
+
+  EXPECT_FALSE(request_future.IsReady());
 }
 
 class NetworkContextBrowserCookieTest

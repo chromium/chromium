@@ -11,8 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -160,6 +162,8 @@ class LoadingPredictorTabHelper
       const std::optional<url::Origin>& initiator_origin,
       const GURL& main_frame_url,
       bool should_add_preconnects_to_prediction,
+      base::UnguessableToken network_restrictions_id,
+      content::GlobalRenderFrameHostId initiator_frame_id,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
@@ -169,6 +173,8 @@ class LoadingPredictorTabHelper
   void PrepareForPageLoad(scoped_refptr<PageData> page_data,
                           const std::optional<url::Origin> initiator_origin,
                           const GURL main_frame_url,
+                          base::UnguessableToken network_restrictions_id,
+                          content::GlobalRenderFrameHostId initiator_frame_id,
                           bool should_consult_optimization_guide);
 
   bool is_prepare_for_pageload_called_for_testing_ = false;

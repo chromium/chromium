@@ -29,6 +29,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -131,7 +132,8 @@ class PerformNetworkContextPrefetchRecorderTest : public testing::Test {
                     const std::vector<GURL>& resources) {
     const net::SchemefulSite site(page_url);
     auto requests = base::ToVector(resources, [&](const GURL& resource_url) {
-      return PrefetchRequest(resource_url, destination);
+      return PrefetchRequest(resource_url, destination,
+                             network::GetTestNetworkRestrictionsId());
     });
     PerformNetworkContextPrefetch(profile_.get(), page_url,
                                   std::move(requests));

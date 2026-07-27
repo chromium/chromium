@@ -21,6 +21,7 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/connection_allowlist_util.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,6 +29,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -187,6 +189,26 @@ void PrefetchManager::Start(const GURL& url,
     return;
   }
 
+  // Enforce the frame's Connection Allowlist if needed. If the
+  // initiator_frame_id is null, the request is browser-initiated which is out
+  // of scope for enforcement. If the initiator_frame_id does not map to a live
+  // frame, then there is no allowlist for that frame to enforce.
+  std::erase_if(requests, [&](const PrefetchRequest& request) {
+    if (!request.initiator_frame_id) {
+      return false;
+    }
+    if (auto* rfh =
+            content::RenderFrameHost::FromID(request.initiator_frame_id)) {
+      return !content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+          rfh, request.url, /*is_redirect=*/false);
+    }
+    return true;
+  });
+
+  if (requests.empty()) {
+    return;
+  }
+
   PrefetchInfo* info;
   if (prefetch_info_.find(url) == prefetch_info_.end()) {
     auto iterator_and_whether_inserted =
@@ -227,15 +249,13 @@ bool PrefetchManager::IsAvailableForPrefetch(
   return GetResourceTypeForPrefetch(destination).has_value();
 }
 
-// TODO(crbug.com/447954811, crbug.com/524282506): Enforce the connection
-// allowlist for prefetch requests.
-//
 // If `kPrefetchManagerUseNetworkContextPrefetch` feature is enabled,
 // `PrefetchManager` uses `NetworkContext::Prefetch`.
 // Else, it uses a URL loader factory for the browser process.
 //
-// Neither of them checks the connection allowlist of the prefetch initiator
-// `RenderFrameHost`.
+// Note that because the browser process URL loader factory is used, we cannot
+// enforce the Connection Allowlist in the network service. Enforcement instead
+// occurs in PrefetchManager::Start.
 void PrefetchManager::PrefetchUrl(
     std::unique_ptr<PrefetchJob> job,
     scoped_refptr<network::SharedURLLoaderFactory> factory) {

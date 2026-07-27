@@ -204,12 +204,13 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
   if (!loading_predictor)
     return;
 
-  // TODO(crbug.com/447954811, crbug.com/524282506): Pass the
-  // `network_restrictions_id` from the request initiator RenderFrameHost.
   loading_predictor->PrepareForPageLoad(
       preconnect_origin, preconnect_url_serialized,
       predictors::HintOrigin::NAVIGATION_PREDICTOR,
-      network::GetTODONetworkRestrictionsId(), true);
+      web_contents()->GetPrimaryMainFrame()->GetNetworkRestrictionsID(),
+      /*preconnectable=*/true,
+      /*preconnect_prediction=*/std::nullopt,
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId());
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.

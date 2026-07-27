@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/network_anonymization_key.h"
@@ -49,6 +50,27 @@ namespace {
 
 constexpr char kLoadingPredictorOptimizationHintsReceiveStatusHistogram[] =
     "LoadingPredictor.OptimizationHintsReceiveStatus";
+
+// TODO(537801204): It's possible that the navigation initiator's frame is gone
+// by now, meaning that its IDs cannot be fetched and its connection allowlist
+// cannot be enforced. Once PolicyContainer data is plumbed through
+// InitiatorNavigationState, we should remove this function and fetch the
+// connection allowlist from there instead.
+void GetInitiatorIds(content::NavigationHandle* navigation_handle,
+                     base::UnguessableToken& network_restrictions_id,
+                     content::GlobalRenderFrameHostId& frame_id) {
+  network_restrictions_id = network::GetNoOpNetworkRestrictionsId();
+  frame_id = content::GlobalRenderFrameHostId();
+  if (navigation_handle->GetInitiatorFrameToken().has_value()) {
+    if (auto* initiator_rfh = content::RenderFrameHost::FromFrameToken(
+            content::GlobalRenderFrameHostToken(
+                navigation_handle->GetInitiatorProcessId(),
+                *navigation_handle->GetInitiatorFrameToken()))) {
+      network_restrictions_id = initiator_rfh->GetNetworkRestrictionsID();
+      frame_id = initiator_rfh->GetGlobalId();
+    }
+  }
+}
 
 // Called only for subresources.
 // platform/loader/fetch/README.md in blink contains more details on
@@ -371,9 +393,6 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   // predictor bookkeeping -- since the navigation won't load. Otherwise the
   // destination host would leak (e.g. via its DNS resolution) even though the
   // navigation is blocked. See https://github.com/WICG/connection-allowlists.
-  // TODO(crbug.com/447954811): Once the real network_restrictions_id is plumbed
-  // into the speculative preconnect/preresolve path, the network service will
-  // enforce the allowlist directly and this gate can be removed.
   if (navigation_handle->IsBlockedByConnectionAllowlist()) {
     return;
   }
@@ -399,6 +418,11 @@ void LoadingPredictorTabHelper::DidStartNavigation(
                              ukm::SourceIdType::NAVIGATION_ID),
       navigation_handle->GetURL(), navigation_handle->NavigationStart());
 
+  base::UnguessableToken initiator_network_restrictions_id;
+  content::GlobalRenderFrameHostId initiator_frame_id;
+  GetInitiatorIds(navigation_handle, initiator_network_restrictions_id,
+                  initiator_frame_id);
+
   if (base::FeatureList::IsEnabled(
           blink::features::kLCPPPrefetchSubresourceAsync)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -407,11 +431,13 @@ void LoadingPredictorTabHelper::DidStartNavigation(
             &LoadingPredictorTabHelper::PrepareForPageLoad,
             weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(&page_data),
             navigation_handle->GetInitiatorOrigin(),
-            navigation_handle->GetURL(), should_consult_optimization_guide));
+            navigation_handle->GetURL(), initiator_network_restrictions_id,
+            initiator_frame_id, should_consult_optimization_guide));
   } else {
     PrepareForPageLoad(base::WrapRefCounted(&page_data),
                        navigation_handle->GetInitiatorOrigin(),
                        navigation_handle->GetURL(),
+                       initiator_network_restrictions_id, initiator_frame_id,
                        should_consult_optimization_guide);
   }
 }
@@ -420,18 +446,19 @@ void LoadingPredictorTabHelper::PrepareForPageLoad(
     scoped_refptr<PageData> page_data,
     const std::optional<url::Origin> initiator_origin,
     const GURL main_frame_url,
+    base::UnguessableToken initiator_network_restrictions_id,
+    content::GlobalRenderFrameHostId initiator_frame_id,
     bool should_consult_optimization_guide) {
   TRACE_EVENT("navigation", "LoadingPredictorTabHelper::PrepareForPageLoad.");
   is_prepare_for_pageload_called_for_testing_ = true;
   if (!predictor_ || predictor_->WasShutdown()) {
     return;
   }
-  // TODO(crbug.com/447954811, crbug.com/524282506): Pass the
-  // `network_restrictions_id` from the request initiator RenderFrameHost.
   page_data->has_local_preconnect_predictions_for_current_navigation_ =
-      predictor_->PrepareForPageLoad(initiator_origin, main_frame_url,
-                                     HintOrigin::NAVIGATION,
-                                     network::GetTODONetworkRestrictionsId());
+      predictor_->PrepareForPageLoad(
+          initiator_origin, main_frame_url, HintOrigin::NAVIGATION,
+          initiator_network_restrictions_id, /*preconnectable=*/false,
+          /*preconnect_prediction=*/std::nullopt, initiator_frame_id);
 
   if ((page_data->has_local_preconnect_predictions_for_current_navigation_ &&
        !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) ||
@@ -447,14 +474,14 @@ void LoadingPredictorTabHelper::PrepareForPageLoad(
   page_data->last_optimization_guide_prediction_->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
 
+  bool should_add_preconnects =
+      !page_data->has_local_preconnect_predictions_for_current_navigation_;
   optimization_guide_decider_->CanApplyOptimization(
       main_frame_url, optimization_guide::proto::LOADING_PREDICTOR,
-      base::BindOnce(
-          &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
-          weak_ptr_factory_.GetWeakPtr(), std::move(page_data),
-          initiator_origin, main_frame_url,
-          !page_data
-               ->has_local_preconnect_predictions_for_current_navigation_));
+      base::BindOnce(&LoadingPredictorTabHelper::OnOptimizationGuideDecision,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(page_data),
+                     initiator_origin, main_frame_url, should_add_preconnects,
+                     initiator_network_restrictions_id, initiator_frame_id));
 }
 
 void LoadingPredictorTabHelper::DidRedirectNavigation(
@@ -491,6 +518,11 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
       !page_data->last_optimization_guide_prediction_)
     return;
 
+  base::UnguessableToken initiator_network_restrictions_id;
+  content::GlobalRenderFrameHostId initiator_frame_id;
+  GetInitiatorIds(navigation_handle, initiator_network_restrictions_id,
+                  initiator_frame_id);
+
   // Get an updated prediction for the navigation.
   optimization_guide_decider_->CanApplyOptimization(
       navigation_handle->GetURL(), optimization_guide::proto::LOADING_PREDICTOR,
@@ -500,7 +532,8 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
           navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
           !(page_data
                 ->has_local_preconnect_predictions_for_current_navigation_ &&
-            is_same_origin_redirect)));
+            is_same_origin_redirect),
+          initiator_network_restrictions_id, initiator_frame_id));
 }
 
 void LoadingPredictorTabHelper::DidFinishNavigation(
@@ -598,6 +631,8 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& main_frame_url,
     bool should_add_preconnects_to_prediction,
+    base::UnguessableToken network_restrictions_id,
+    content::GlobalRenderFrameHostId initiator_frame_id,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -701,12 +736,10 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
   // use the predictions to pre* subresources.
   if (!page_data->document_page_data_holder_ &&
       features::ShouldUseOptimizationGuidePredictions()) {
-    // TODO(crbug.com/447954811, crbug.com/524282506): Pass the
-    // `network_restrictions_id` from the request initiator RenderFrameHost.
-    predictor_->PrepareForPageLoad(initiator_origin, main_frame_url,
-                                   HintOrigin::OPTIMIZATION_GUIDE,
-                                   network::GetTODONetworkRestrictionsId(),
-                                   /*preconnectable=*/false, prediction);
+    predictor_->PrepareForPageLoad(
+        initiator_origin, main_frame_url, HintOrigin::OPTIMIZATION_GUIDE,
+        network_restrictions_id,
+        /*preconnectable=*/false, prediction, initiator_frame_id);
   }
 }
 

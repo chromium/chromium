@@ -1866,11 +1866,14 @@ interface NetworkContext {
   // request is subseqently received from a render process, the prefetch will
   // be consumed. `request_id`, `options` and `traffic_annotation` will be
   // passed to the CreateLoaderAndStart() method of CorsURLLoaderFactory when
-  // the request is started.
+  // the request is started. The `network_restrictions_id` will be used to block
+  // any prefetches forbidden by the Connection Allowlist before calling
+  // CreateLoaderAndStart().
   Prefetch(int32 request_id,
            uint32 options,
            URLRequest request,
-           MutableNetworkTrafficAnnotationTag traffic_annotation);
+           MutableNetworkTrafficAnnotationTag traffic_annotation,
+           mojo_base.mojom.UnguessableToken network_restrictions_id);
 
   // Returns whether this NetworkContext was bound to a network.
   // `bound_network` represents a net::handles::NetworkHandle,

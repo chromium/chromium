@@ -68,7 +68,7 @@ PreresolveJob::PreresolveJob(
     mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
         connection_change_observer_client,
     PreresolveInfo* info,
-    const base::UnguessableToken& network_restrictions_id)
+    base::UnguessableToken network_restrictions_id)
     : url(url),
       num_sockets(num_sockets),
       allow_credentials(allow_credentials),
@@ -100,8 +100,7 @@ PreresolveJob::PreresolveJob(
                     std::nullopt,
                     mojo::NullRemote(),
                     info,
-                    preconnect_request.network_restrictions_id.value_or(
-                        network::GetTODONetworkRestrictionsId())) {}
+                    preconnect_request.network_restrictions_id) {}
 
 PreresolveJob::PreresolveJob(PreresolveJob&& other) = default;
 PreresolveJob::~PreresolveJob() = default;
@@ -285,13 +284,11 @@ void PreconnectManagerImpl::PreconnectUrl(
 
   // TODO(crbug.com/406022435): pass the actual `keepalive_config` from the
   // caller.
-  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
-  // caller.
   network_context->PreconnectSockets(
       num_sockets, url,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
-      network_anonymization_key, network::GetTODONetworkRestrictionsId(),
+      network_anonymization_key, network_restrictions_id,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       std::move(keepalive_config),
       std::move(connection_change_observer_client));

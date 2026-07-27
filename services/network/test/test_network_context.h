@@ -395,11 +395,12 @@ class TestNetworkContext : public mojom::NetworkContext {
       RestrictNetworkForIdsCallback callback) override {}
   void ClearNetworkRestrictions(const std::vector<base::UnguessableToken>&
                                     network_restrictions_ids) override {}
-  void Prefetch(int32_t request_id,
-                uint32_t options,
-                const ResourceRequest& request,
-                const net::MutableNetworkTrafficAnnotationTag&
-                    traffic_annotation) override {}
+  void Prefetch(
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& request,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const base::UnguessableToken& network_restrictions_id) override {}
   void GetBoundNetworkForTesting(
       GetBoundNetworkForTestingCallback callback) override {}
   void GetDeviceBoundSessionManager(

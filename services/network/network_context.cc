@@ -3791,8 +3791,32 @@ void NetworkContext::Prefetch(
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    const base::UnguessableToken& network_restrictions_id) {
   if (!prefetch_enabled_) {
+    return;
+  }
+
+  // Retrieve the NAK for Connection Allowlist enforcement.
+  const net::NetworkAnonymizationKey& nak =
+      request.trusted_params.has_value()
+          ? request.trusted_params->isolation_info.network_anonymization_key()
+          : net::NetworkAnonymizationKey::CreateTransient();
+
+  // TODO(crbug.com/536913419): Handle the Connection Allowlist redirects
+  // directive correctly, rather than cancelling the whole prefetch.
+  if (!IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+          network_restrictions_id, request.url, nak, /*is_redirect=*/true)) {
+    return;
+  }
+
+  // The UrlLoaderFactory used below is different from the one used for
+  // subresources, which is normally where enforcement for Connection Allowlist
+  // happens. Enforce here instead before delegating the request to the
+  // prefetch-specific factory. This request is also an initial prefetch and
+  // not a redirect, so perform the allowlist check accordingly.
+  if (!IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+          network_restrictions_id, request.url, nak, /*is_redirect=*/false)) {
     return;
   }
 

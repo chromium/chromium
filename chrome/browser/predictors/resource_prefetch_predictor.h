@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
@@ -30,8 +31,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/sqlite_proto/key_value_data.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preconnect_request.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -60,7 +63,11 @@ class ResourcePrefetcherManager;
 
 struct PrefetchRequest {
   PrefetchRequest(const GURL& url,
-                  network::mojom::RequestDestination destination);
+                  network::mojom::RequestDestination destination,
+                  base::UnguessableToken network_restrictions_id =
+                      network::GetNoOpNetworkRestrictionsId(),
+                  content::GlobalRenderFrameHostId initiator_frame_id =
+                      content::GlobalRenderFrameHostId());
 
   PrefetchRequest(const PrefetchRequest&) = default;
   PrefetchRequest(PrefetchRequest&&) = default;
@@ -69,6 +76,8 @@ struct PrefetchRequest {
 
   GURL url;
   network::mojom::RequestDestination destination;
+  base::UnguessableToken network_restrictions_id;
+  content::GlobalRenderFrameHostId initiator_frame_id;
 };
 
 // Stores a result of pre* prediction. The |requests| vector is the main

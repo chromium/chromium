@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -35,6 +36,8 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace {
@@ -442,6 +445,115 @@ IN_PROC_BROWSER_TEST_F(
   // Histogram count should not increase after navigating the fenced frame.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);
+}
+
+class NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest
+    : public NavigationPredictorPreconnectClientBrowserTest {
+ public:
+  NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest() = default;
+  ~NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest()
+      override = default;
+
+  void SetUp() override {
+    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
+
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationPredictorPreconnectClientBrowserTest::SetUpCommandLine(
+        command_line);
+    feature_list_.InitWithFeatures(
+        {network::features::kConnectionAllowlists}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
+      bool success) override {
+    preresolve_results_[url] = success;
+    preresolve_done_count_++;
+  }
+
+  void WaitForPreresolveCount(int expected_count) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return preresolve_done_count_ == expected_count; }));
+  }
+
+ protected:
+  std::map<GURL, bool> preresolve_results_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest,
+    PreconnectBlockedByConnectionAllowlist) {
+  const GURL& url = GetTestURL("/preload/connection_allowlist_inverted.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // 1. Same-origin navigation preconnect (initiated before headers are loaded)
+  // should succeed.
+  // 2. NavigationPredictorPreconnectClient same-origin preconnect (initiated
+  // after load) should fail because same-origin is not in the allowlist.
+  WaitForPreresolveCount(2);
+  EXPECT_EQ(2, preresolve_done_count_);
+
+  // `url` has a path, but in the preresolve_results_ that path is removed.
+  GURL stripped_url = url.GetWithEmptyPath();
+  EXPECT_TRUE(preresolve_results_.contains(stripped_url));
+  EXPECT_FALSE(preresolve_results_[stripped_url]);
+
+  // 3. Trigger a preconnect to an allowed cross-origin URL
+  // (https://example.com).
+  const GURL allowed_url("https://example.com");
+  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
+      browser()->GetProfile());
+  ASSERT_TRUE(loading_predictor);
+
+  auto* primary_main_frame = browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame();
+  loading_predictor->PrepareForPageLoad(
+      primary_main_frame->GetLastCommittedOrigin(), allowed_url,
+      predictors::HintOrigin::NAVIGATION_PREDICTOR,
+      primary_main_frame->GetNetworkRestrictionsID(),
+      /*preconnectable=*/true,
+      /*preconnect_prediction=*/std::nullopt,
+      primary_main_frame->GetGlobalId());
+
+  // Wait for the third preresolve, which should succeed.
+  WaitForPreresolveCount(3);
+  EXPECT_EQ(3, preresolve_done_count_);
+  EXPECT_TRUE(preresolve_results_.contains(allowed_url));
+  EXPECT_TRUE(preresolve_results_[allowed_url]);
+
+  // 4. Trigger a preconnect to a blocked cross-origin URL
+  // (https://blocked.com).
+  const GURL blocked_url("https://blocked.com");
+  loading_predictor->PrepareForPageLoad(
+      primary_main_frame->GetLastCommittedOrigin(), blocked_url,
+      predictors::HintOrigin::NAVIGATION_PREDICTOR,
+      primary_main_frame->GetNetworkRestrictionsID(),
+      /*preconnectable=*/true,
+      /*preconnect_prediction=*/std::nullopt,
+      primary_main_frame->GetGlobalId());
+
+  // Wait for the fourth preresolve, which should fail.
+  WaitForPreresolveCount(4);
+  EXPECT_EQ(4, preresolve_done_count_);
+  EXPECT_TRUE(preresolve_results_.contains(blocked_url));
+  EXPECT_FALSE(preresolve_results_[blocked_url]);
 }
 
 }  // namespace

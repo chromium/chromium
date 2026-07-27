@@ -152,7 +152,8 @@ bool LoadingPredictor::PrepareForPageLoad(
     HintOrigin origin,
     base::UnguessableToken network_restrictions_id,
     bool preconnectable,
-    std::optional<PreconnectPrediction> preconnect_prediction) {
+    std::optional<PreconnectPrediction> preconnect_prediction,
+    content::GlobalRenderFrameHostId initiator_frame_id) {
   CHECK(!shutdown_);
 
   TRACE_EVENT("loading", "LoadingPredictor::PrepareForPageLoad");
@@ -233,11 +234,12 @@ bool LoadingPredictor::PrepareForPageLoad(
 
   // For each request of the `PreconnectPrediction`, populate its
   // `network_restrictions_id`.
-  // TODO(crbug.com/447954811, crbug.com/524282506): For each prefetch request,
-  // (prediction.prefetch_requests), add a new member `network_restrictions_id`
-  // and populate it as well.
   for (auto& request : prediction.requests) {
     request.network_restrictions_id = network_restrictions_id;
+  }
+  for (auto& request : prediction.prefetch_requests) {
+    request.network_restrictions_id = network_restrictions_id;
+    request.initiator_frame_id = initiator_frame_id;
   }
 
   ++total_hints_activated_;
@@ -388,9 +390,10 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
 
-  if (!prediction.requests.empty())
+  if (!prediction.requests.empty()) {
     preconnect_manager()->Start(url, std::move(prediction.requests),
                                 kLoadingPredictorPreconnectTrafficAnnotation);
+  }
 }
 
 void LoadingPredictor::MaybeRemovePreconnect(const GURL& url) {
