@@ -382,7 +382,10 @@ source_set("impl") {
       "accounts_policy_manager.cc",
       "accounts_policy_manager_factory.cc",
     ]
-    deps += [ "//chrome/browser/ui/startup" ]
+    deps += [
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/webui:profile_helper",
+    ]
   }
 
   if (enable_dice_support && is_win) {

@@ -279,9 +279,7 @@ source_set("configs") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    deps += [
-      "//chrome/browser/ui/webui/discards",
-    ]
+    deps += [ "//chrome/browser/ui/webui/discards" ]
   }
 
   if (enable_dice_support || is_chromeos) {
@@ -583,6 +581,44 @@ if (enable_extensions_core) {
       "//chrome/common",
       "//chrome/common:constants",
       "//components/supervised_user/core/common",
+    ]
+  }
+}
+
+if (is_win || is_mac || is_linux) {
+  source_set("profile_helper") {
+    sources = [ "profile_helper.cc" ]
+    public = [ "profile_helper.h" ]
+    public_deps = [ "//chrome/browser/profiles:profile" ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//content/public/browser",
+    ]
+  }
+}
+
+if (is_chromeos) {
+  source_set("certificate_provisioning_ui_handler") {
+    sources = [ "certificate_provisioning_ui_handler.cc" ]
+    public = [ "certificate_provisioning_ui_handler.h" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser:browser_process_platform_part",
+      "//chrome/browser/ash/cert_provisioning",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/profiles",
+      "//chrome/common",
+      "//chrome/common/net",
+      "//components/policy/core/browser",
+      "//components/policy/core/common:common_constants",
+      "//components/user_manager",
+      "//ui/base",
     ]
   }
 }

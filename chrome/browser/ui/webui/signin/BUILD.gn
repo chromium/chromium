@@ -440,6 +440,7 @@ if (!is_chromeos) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/webui:profile_helper",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
       "//chrome/browser/ui/webui/management",

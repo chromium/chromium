@@ -70,6 +70,7 @@ if (chrome_root_store_cert_management_ui) {
         "//chrome/browser/ash/kcer",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/profiles",
+        "//chrome/browser/ui/webui:certificate_provisioning_ui_handler",
         "//chromeos/ash/components/kcer",
         "//chromeos/components/certificate_provider",
       ]

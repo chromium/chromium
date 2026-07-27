@@ -1302,7 +1302,6 @@ static_library("ui") {
     # following headers get componentized:
     # c/b/ui/browser_commands.h, browser_window.h
     # c/b/ui/scoped_tabbed_browser_displayer.h
-    # c/b/ui/webui/profile_helper.h
     "//chrome/browser/signin:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -2373,8 +2372,6 @@ static_library("ui") {
       "views/web_apps/protocol_handler_picker_coordinator.h",
       "views/web_apps/protocol_handler_picker_dialog.cc",
       "views/web_apps/protocol_handler_picker_dialog.h",
-      "webui/certificate_provisioning_ui_handler.cc",
-      "webui/certificate_provisioning_ui_handler.h",
     ]
 
     deps += [
@@ -3298,8 +3295,6 @@ static_library("ui") {
       "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
       "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
-      "webui/profile_helper.cc",
-      "webui/profile_helper.h",
     ]
 
     deps += [

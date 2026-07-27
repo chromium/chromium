@@ -330,6 +330,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/default_browser",
       "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/webui:profile_helper",
     ]
   }
 
