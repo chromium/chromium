@@ -62,10 +62,19 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
 using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 
 // Adds an item entry to every lane occupied by its span.
-void AddItemToGridLanesData(GridItemData& grid_lanes_item,
-                            const GridItemPlacementData& placement_data,
-                            GridTrackSizingDirection grid_axis_direction,
-                            GridLanesDataVector& out_grid_lanes);
+//
+// For a densely packed item, `spanner_indices_below_opening` has one index per
+// occupied lane. Each index identifies the spanner in that lane's
+// `GridLaneData::item_data` under which the new entry should be nested.
+// `kNotFound` indicates that the lane has no spanner below the opening, so the
+// new entry is added directly to the lane. The vector is empty for an item that
+// was not densely packed.
+void AddItemToGridLanesData(
+    GridItemData& grid_lanes_item,
+    const GridItemPlacementData& placement_data,
+    const Vector<wtf_size_t>& spanner_indices_below_opening,
+    GridTrackSizingDirection grid_axis_direction,
+    GridLanesDataVector& out_grid_lanes);
 
 }  // namespace blink
 

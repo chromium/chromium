@@ -3186,4 +3186,214 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateSpannerBreakTokenData) {
   EXPECT_FALSE(grid_lanes[2]->item_data[0]->is_item_start);
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, PopulateDensePackedBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(3, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 2; height: 20px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: 1; height: 10px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The packed item is nested in lane 1, the first item remains direct in lane
+  // 2, and the unused third lane remains null.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
+  EXPECT_FALSE(grid_lanes[2]);
+
+  // The packed item is stored under the spanner below its selected opening.
+  const auto& spanner = *grid_lanes[0]->item_data[0];
+  ASSERT_EQ(spanner.items_packed_above.size(), 1u);
+  const auto& packed_item = *spanner.items_packed_above[0];
+
+  // The packed item fills the opening above the spanner.
+  EXPECT_EQ(spanner.placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
+  EXPECT_EQ(packed_item.placement_data.offset, LogicalOffset());
+  EXPECT_TRUE(packed_item.is_item_start);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest, PopulateDensePackedSpannerBreakTokenData) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(3, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 20px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: span 2; height: 10px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // The packed spanner is nested under the lane 2 spanner, but remains a direct
+  // entry in lane 3 because that opening has no spanner below it.
+  ASSERT_EQ(grid_lanes.size(), 3u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[2]->item_data.size(), 1u);
+
+  // Both entries for the packed spanner reference the same grid item and
+  // placement offset.
+  const auto& spanner = *grid_lanes[1]->item_data[0];
+  ASSERT_EQ(spanner.items_packed_above.size(), 1u);
+  const auto& packed_spanner_start = *spanner.items_packed_above[0];
+  const auto& packed_spanner_continuation = *grid_lanes[2]->item_data[0];
+
+  EXPECT_EQ(packed_spanner_start.item.Get(),
+            packed_spanner_continuation.item.Get());
+  EXPECT_EQ(packed_spanner_start.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(packed_spanner_continuation.placement_data.offset,
+            packed_spanner_start.placement_data.offset);
+  EXPECT_TRUE(packed_spanner_start.is_item_start);
+  EXPECT_FALSE(packed_spanner_continuation.is_item_start);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateDenseSpannerWithDifferentParentsPerLane) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(4, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 30px;"></div>
+      <div style="grid-column: 4; height: 30px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: 3 / span 2; height: 20px;"></div>
+      <div style="grid-column: 2 / span 2; height: 10px;"></div>
+      <div style="grid-column: 2 / span 2; height: 5px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // Each outer lane contains its initial item and parent spanner. Each inner
+  // lane contains one direct parent spanner; the packed spanners are nested.
+  ASSERT_EQ(grid_lanes.size(), 4u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[2]->item_data.size(), 1u);
+  ASSERT_EQ(grid_lanes[3]->item_data.size(), 2u);
+
+  // Each packed spanner is stored under a different parent in each occupied
+  // lane.
+  const auto& first_parent = *grid_lanes[1]->item_data[0];
+  const auto& second_parent = *grid_lanes[2]->item_data[0];
+  ASSERT_EQ(first_parent.items_packed_above.size(), 2u);
+  ASSERT_EQ(second_parent.items_packed_above.size(), 2u);
+
+  const auto& first_packed_spanner_start = *first_parent.items_packed_above[0];
+  const auto& first_packed_spanner_continuation =
+      *second_parent.items_packed_above[0];
+
+  const auto& second_packed_spanner_start = *first_parent.items_packed_above[1];
+  const auto& second_packed_spanner_continuation =
+      *second_parent.items_packed_above[1];
+
+  // The first packed spanner starts at the top of both openings.
+  EXPECT_NE(first_parent.item.Get(), second_parent.item.Get());
+  EXPECT_EQ(first_packed_spanner_start.item.Get(),
+            first_packed_spanner_continuation.item.Get());
+  EXPECT_EQ(first_packed_spanner_start.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(first_packed_spanner_continuation.placement_data.offset,
+            first_packed_spanner_start.placement_data.offset);
+  EXPECT_TRUE(first_packed_spanner_start.is_item_start);
+  EXPECT_FALSE(first_packed_spanner_continuation.is_item_start);
+
+  // The second packed spanner follows it and remains associated with the same
+  // per-lane parents.
+  EXPECT_EQ(second_packed_spanner_start.item.Get(),
+            second_packed_spanner_continuation.item.Get());
+  EXPECT_EQ(second_packed_spanner_start.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit(10)}));
+  EXPECT_EQ(second_packed_spanner_continuation.placement_data.offset,
+            second_packed_spanner_start.placement_data.offset);
+  EXPECT_TRUE(second_packed_spanner_start.is_item_start);
+  EXPECT_FALSE(second_packed_spanner_continuation.is_item_start);
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateDenseItemAboveDenseSpannerUsesRootSpanner) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(4, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 30px;"></div>
+      <div style="grid-column: 3; height: 10px;"></div>
+      <div style="grid-column: 4; height: 30px;"></div>
+      <div style="grid-column: 1 / span 2; height: 20px;"></div>
+      <div style="grid-column: 3 / span 2; height: 20px;"></div>
+      <div style="grid-column: 2 / span 2; height: 10px;"></div>
+      <div style="grid-column: 2; height: 5px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // Lane 2 has one direct root spanner with both packed items nested under it.
+  ASSERT_EQ(grid_lanes.size(), 4u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
+  const auto& root_spanner = *grid_lanes[1]->item_data[0];
+  ASSERT_EQ(root_spanner.items_packed_above.size(), 2u);
+  const auto& packed_spanner = *root_spanner.items_packed_above[0];
+  const auto& packed_item = *root_spanner.items_packed_above[1];
+
+  // The single-lane item uses the opening above the packed spanner but remains
+  // a sibling under the original root instead of nesting under that spanner.
+  EXPECT_EQ(packed_spanner.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit(10)}));
+  EXPECT_TRUE(packed_spanner.items_packed_above.empty());
+  EXPECT_EQ(packed_item.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       PopulateDenseItemsUseCorrectSpannerForMultipleOpenings) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-columns: repeat(2, 100px); grid-auto-flow: dense;
+        grid-lanes-pack: dense; flow-tolerance: 0;">
+      <div style="grid-column: 1; height: 20px;"></div>
+      <div style="grid-column: 1 / span 2; height: 10px;"></div>
+      <div style="grid-column: 1; height: 30px;"></div>
+      <div style="grid-column: 1 / span 2; height: 10px;"></div>
+      <div style="grid-column: 2; height: 15px;"></div>
+      <div style="grid-column: 2; height: 25px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+
+  // Lane 1 contains its two single-lane items and both spanners. Lane 2 has the
+  // two spanners, each of which created a distinct opening.
+  ASSERT_EQ(grid_lanes.size(), 2u);
+  ASSERT_EQ(grid_lanes[0]->item_data.size(), 4u);
+  ASSERT_EQ(grid_lanes[1]->item_data.size(), 2u);
+
+  const auto& first_spanner = *grid_lanes[1]->item_data[0];
+  const auto& second_spanner = *grid_lanes[1]->item_data[1];
+  ASSERT_EQ(first_spanner.items_packed_above.size(), 1u);
+  ASSERT_EQ(second_spanner.items_packed_above.size(), 1u);
+
+  const auto& first_packed_item = *first_spanner.items_packed_above[0];
+  const auto& second_packed_item = *second_spanner.items_packed_above[0];
+
+  // Each packed item is associated with the spanner below the opening it
+  // selected.
+  EXPECT_EQ(first_spanner.placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
+  EXPECT_EQ(first_packed_item.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
+  EXPECT_EQ(second_spanner.placement_data.offset,
+            (LogicalOffset{LayoutUnit(), LayoutUnit(60)}));
+  EXPECT_EQ(second_packed_item.placement_data.offset,
+            (LogicalOffset{LayoutUnit(100), LayoutUnit(30)}));
+}
+
 }  // namespace blink

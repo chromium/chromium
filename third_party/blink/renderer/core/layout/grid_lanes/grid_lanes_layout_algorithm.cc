@@ -989,6 +989,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // be added to the item's size in the stacking axis.
     const bool is_dense_packing = style.IsGridLanesPackDense();
     bool item_moved_to_earlier_opening = false;
+    Vector<wtf_size_t> spanner_indices_below_opening;
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
@@ -998,7 +999,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
               /*auto_placement_stacking_axis_offset=*/
               start_offset_in_stacking_axis, track_collection, grid_lanes_item,
               /*item_index=*/container_builder_.Children().size(),
-              child_layout_subtree);
+              child_layout_subtree,
+              out_grid_lanes ? &spanner_indices_below_opening : nullptr);
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.
@@ -1135,7 +1137,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
               ? std::make_optional(
                     /*max_running_position=*/start_offset_in_stacking_axis)
               : std::nullopt,
-          item_index, child_layout_subtree);
+          item_index, child_layout_subtree, out_grid_lanes);
 
       // Update auto-placement cursor after we have determined the item's final
       // placement.
@@ -1171,15 +1173,13 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         // When `out_grid_lanes` is provided, the container is fragmented. This
         // pass only collects initial item offsets; items will run their actual
         // fragmentation layout pass later using the data aggregated here.
-        //
-        // TODO(almaher): Nest densely packed items under the item they were
-        // packed above.
         AddItemToGridLanesData(
             grid_lanes_item,
             GridItemPlacementData(
                 containing_grid_area.offset,
                 result->HasDescendantThatDependsOnPercentageBlockSize()),
-            grid_axis_direction, *out_grid_lanes);
+            spanner_indices_below_opening, grid_axis_direction,
+            *out_grid_lanes);
       } else {
         // Items are only added to the container in the final placement pass.
         // During the baseline calculation pass, we only compute and store track

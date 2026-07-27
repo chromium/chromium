@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lane_data.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -76,6 +77,11 @@ class CORE_EXPORT GridLanesRunningPositions {
     // The item directly above this opening, used for alignment in the stacking
     // axis.
     AlignmentCandidate alignment_candidate;
+
+    // The index into the corresponding `GridLaneData::item_data` of the spanner
+    // directly below this opening. Dense items placed into the opening are
+    // nested under this entry for fragmentation.
+    wtf_size_t spanner_below_index{kNotFound};
   };
 
   GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
@@ -130,7 +136,9 @@ class CORE_EXPORT GridLanesRunningPositions {
   //
   // `item_index` is the index of the item's fragment in the container
   // builder, and `layout_subtree` is the item's layout subtree (only
-  // non-null for subgrids).
+  // non-null for subgrids). `grid_lanes`, when provided during fragmentation
+  // collection, determines the index at which this item will be added to each
+  // lane so new openings can refer to the spanner below them.
   //
   // Example of how `max_running_position_for_span` is used when dense-packing
   // is enabled: |Track 1|Track 2|Track 3|
@@ -154,7 +162,8 @@ class CORE_EXPORT GridLanesRunningPositions {
       LayoutUnit new_running_position,
       std::optional<LayoutUnit> max_running_position_for_span = std::nullopt,
       wtf_size_t item_index = kNotFound,
-      GridLayoutSubtree* layout_subtree = nullptr);
+      GridLayoutSubtree* layout_subtree = nullptr,
+      const GridLanesDataVector* grid_lanes = nullptr);
 
   // Returns the max-position for a given span.
   LayoutUnit GetMaxPositionForSpan(const GridSpan& span) const;
@@ -179,7 +188,9 @@ class CORE_EXPORT GridLanesRunningPositions {
   // densely-packed across the open ending of a track after the current running
   // position, the running position of that track will be updated in this
   // method. For an example, see the comment for
-  // `AccumulateTrackOpeningsToAccommodateItem`.
+  // `AccumulateTrackOpeningsToAccommodateItem`. If provided,
+  // `spanner_indices_below_opening` receives the index into each corresponding
+  // `GridLaneData::item_data` of the spanner below the selected opening.
   LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       const LayoutUnit item_stacking_axis_contribution,
@@ -187,7 +198,8 @@ class CORE_EXPORT GridLanesRunningPositions {
       const GridLayoutTrackCollection& track_collection,
       GridItemData& grid_lanes_item,
       wtf_size_t item_index = kNotFound,
-      GridLayoutSubtree* layout_subtree = nullptr);
+      GridLayoutSubtree* layout_subtree = nullptr,
+      Vector<wtf_size_t>* spanner_indices_below_opening = nullptr);
 
   // If the span of `grid_lanes_item` is indefinite this method will find and
   // set the span where the item should be placed. Then, this method will return
