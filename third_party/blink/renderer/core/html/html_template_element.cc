@@ -116,7 +116,7 @@ ContainerNode* HTMLTemplateElement::InsertionTarget() const {
 
 void HTMLTemplateElement::FinishParsingChildren() {
   if (patch_) {
-    patch_->Finalize();
+    patch_->Finalize(this);
     patch_ = nullptr;
   }
 }

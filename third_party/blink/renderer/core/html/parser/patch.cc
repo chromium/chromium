@@ -6,13 +6,16 @@
 
 #include "base/memory/stack_allocated.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -47,10 +50,15 @@ Patch* Patch::Prepare(ContainerNode* scope,
     return nullptr;
   }
 
+  const bool is_buffered =
+      RuntimeEnabledFeatures::DeclarativeFragmentEnabled() &&
+      template_element->FastHasAttribute(html_names::kBufferAttr);
+
   if (marker_name.empty()) {
     if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
       return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), scope,
-                                         template_element, template_element);
+                                         template_element, template_element,
+                                         is_buffered);
     }
     return nullptr;
   }
@@ -76,7 +84,7 @@ Patch* Patch::Prepare(ContainerNode* scope,
     if (processing_instruction->target() == kMarkerTarget) {
       return MakeGarbageCollected<Patch>(
           base::PassKey<Patch>(), processing_instruction->parentNode(),
-          processing_instruction, processing_instruction);
+          processing_instruction, processing_instruction, is_buffered);
     }
 
     if (processing_instruction->target() != kStartTarget) {
@@ -95,9 +103,9 @@ Patch* Patch::Prepare(ContainerNode* scope,
           marker_depth++;
         } else if (next_processing_instruction->target() == kEndTarget) {
           if (marker_depth == 0) {
-            return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
-                                               processing_instruction,
-                                               next_processing_instruction);
+            return MakeGarbageCollected<Patch>(
+                base::PassKey<Patch>(), parent, processing_instruction,
+                next_processing_instruction, is_buffered);
           }
           marker_depth--;
         }
@@ -108,7 +116,8 @@ Patch* Patch::Prepare(ContainerNode* scope,
 
     // No end PI found.
     return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
-                                       processing_instruction, nullptr);
+                                       processing_instruction, nullptr,
+                                       is_buffered);
   }
 
   // No start/marker PI found.
@@ -122,8 +131,22 @@ void Patch::Apply(HTMLConstructionSiteTask& task) {
                         : nullptr;
 }
 
-void Patch::Finalize() {
+void Patch::Finalize(HTMLTemplateElement* template_element) {
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  if (is_buffered_) {
+    DocumentFragment* content = template_element->content();
+    CHECK(content);
+    CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
+    if (parent_) {
+      Node* next_child = end_marker_ && end_marker_->parentNode() == parent_
+                             ? end_marker_.Get()
+                             : nullptr;
+      // TODO(nrosenthal): add more tests to assert script execution behavior at
+      // this point.
+      parent_->InsertBefore(content, next_child);
+    }
+  }
+
   if (ContainerNode* start_parent = start_marker_->parentNode()) {
     start_parent->ParserRemoveChild(*start_marker_);
   }
@@ -133,8 +156,12 @@ void Patch::Finalize() {
     }
   }
 
+  if (template_element && template_element->parentNode()) {
+    template_element->parentNode()->ParserRemoveChild(*template_element);
+  }
+
   // In normal parsing, positional style invalidation and other effects happen
-  // when finishehd parsing. When patching, we need to run the same logic when
+  // when finished parsing. When patching, we need to run the same logic when
   // the patch finalizes.
   if (Element* element = DynamicTo<Element>(*parent_)) {
     element->DidFinishParsingChildren();

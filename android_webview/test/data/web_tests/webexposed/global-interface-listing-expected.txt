@@ -5184,6 +5184,7 @@ interface HTMLTableSectionElement : HTMLElement
     setter vAlign
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
+    getter buffer
     getter content
     getter htmlFor
     getter shadowRootAdoptedStyleSheets
@@ -5195,6 +5196,7 @@ interface HTMLTemplateElement : HTMLElement
     getter shadowRootSerializable
     getter shadowRootSlotAssignment
     method constructor
+    setter buffer
     setter htmlFor
     setter shadowRootAdoptedStyleSheets
     setter shadowRootClonable

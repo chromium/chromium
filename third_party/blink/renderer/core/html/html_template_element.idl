@@ -53,5 +53,6 @@
     [CEReactions, Reflect, RuntimeEnabled=ScopedCustomElementRegistry] attribute DOMString shadowRootCustomElementRegistry;
 
     // Used by document patching
+    [CEReactions, Reflect, RuntimeEnabled=DeclarativeFragment] attribute boolean buffer;
     [CEReactions, Reflect=for, RuntimeEnabled=DocumentPatching] attribute DOMString htmlFor;
 };
