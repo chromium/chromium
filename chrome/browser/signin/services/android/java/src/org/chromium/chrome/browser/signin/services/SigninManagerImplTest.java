@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -34,7 +35,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -164,6 +167,114 @@ public class SigninManagerImplTest {
     public void testDataNotWipedOnSignOutWithManagedAccount() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
         verifyDataNotWipedOnSignout();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.USER_POLICY_FETCH_REQUIRES_ACCEPTANCE)
+    public void testPolicyFetchRequiresAcceptance_NotAccepted() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.setUserAcceptedAccountManagement(false));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", false);
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSigninManager.signin(
+                                TestAccounts.MANAGED_ACCOUNT,
+                                SigninAccessPoint.WEB_SIGNIN,
+                                callback));
+
+        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.USER_POLICY_FETCH_REQUIRES_ACCEPTANCE)
+    public void testPolicyFetchRequiresAcceptance_FeatureDisabled() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.setUserAcceptedAccountManagement(false));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", false);
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSigninManager.signin(
+                                TestAccounts.MANAGED_ACCOUNT,
+                                SigninAccessPoint.WEB_SIGNIN,
+                                callback));
+
+        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.USER_POLICY_FETCH_REQUIRES_ACCEPTANCE)
+    public void testPolicyFetchRequiresAcceptance_Accepted() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.setUserAcceptedAccountManagement(true));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch", true);
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSigninManager.signin(
+                                TestAccounts.MANAGED_ACCOUNT,
+                                SigninAccessPoint.WEB_SIGNIN,
+                                callback));
+
+        verify(callback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)).onSignInComplete();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN)
+    @EnableFeatures(SigninFeatures.USER_POLICY_FETCH_REQUIRES_ACCEPTANCE)
+    public void testPolicyFetchRequiresAcceptance_ThrowException() {
+        mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mSigninManager.setUserAcceptedAccountManagement(false));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch")
+                        .build();
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThrows(
+                            IllegalStateException.class,
+                            () ->
+                                    mSigninManager.signin(
+                                            TestAccounts.MANAGED_ACCOUNT,
+                                            SigninAccessPoint.WEB_SIGNIN,
+                                            callback));
+                });
+
+        verify(callback, never()).onSignInComplete();
+        histogramWatcher.assertExpected();
     }
 
     @Test

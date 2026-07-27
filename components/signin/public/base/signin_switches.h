@@ -833,6 +833,13 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUsePrimaryAndTonalButtonsForPromos);
 
 #if BUILDFLAG(IS_ANDROID)
+// Additional gate for user policy registration and download based on user
+// accepting account management.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUserPolicyFetchRequiresAcceptance);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 enum class SeamlessSigninStringType {
   // Strings with "Sign in to Chrome" in the title and "Continue as" in the
   // primary button

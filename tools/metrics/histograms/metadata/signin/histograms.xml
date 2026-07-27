@@ -883,6 +883,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch"
+    enum="Boolean" expires_after="2027-01-13">
+  <owner>shadmehr@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Indicates whether the user had accepted account management when attempting
+    to sign in to a managed account on Android, recorded before the policy
+    registration request is dispatched.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2026-11-29">
   <owner>mthiesse@chromium.org</owner>

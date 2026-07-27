@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
@@ -182,6 +183,19 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
     const CoreAccountInfo& account,
     RegisterPolicyWithAccountCallback callback) {
   if (!ShouldLoadPolicyForUser(account.email)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  bool user_accepted_account_management =
+      enterprise_util::UserAcceptedAccountManagement(profile_);
+  base::UmaHistogramBoolean(
+      "Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch",
+      user_accepted_account_management);
+
+  if (!user_accepted_account_management &&
+      base::FeatureList::IsEnabled(
+          switches::kUserPolicyFetchRequiresAcceptance)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
