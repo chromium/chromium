@@ -388,8 +388,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
   }
 
   if (suggestion.type == SuggestionType::kAutocompleteAtMemoryButton) {
-    // TODO(crbug.com/527936416) - Clicking this chip should open the
-    // AtMemoryViewController.
+    [self.delegate showAtMemory];
     if (SuggestionHandledCompletion c =
             std::exchange(_suggestionHandledCompletion, nil)) {
       c();

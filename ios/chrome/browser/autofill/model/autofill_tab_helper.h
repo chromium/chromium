@@ -13,8 +13,9 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @class AutofillAgent;
-@protocol AutofillAgentDelegate;
+@class AutofillAgentDelegate;
 @protocol AutofillCommands;
+@protocol AtMemoryCommands;
 @protocol FormSuggestionProvider;
 @protocol SnackbarCommands;
 @class UIViewController;
@@ -38,7 +39,10 @@ class AutofillTabHelper : public web::WebStateObserver,
   void SetBaseViewController(UIViewController* base_view_controller);
 
   void SetAutofillHandler(id<AutofillCommands> autofill_handler);
-  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
+  // Sets the handlers for the UI commands. `snackbar_handler` handles snackbar
+  // commands and `at_memory_handler` handles AtMemory commands.
+  void SetCommandHandlers(id<SnackbarCommands> snackbar_handler,
+                          id<AtMemoryCommands> at_memory_handler);
 
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
@@ -56,8 +60,17 @@ class AutofillTabHelper : public web::WebStateObserver,
   // autofill::ChildFrameRegistrarObserver implementation.
   void OnDidDoubleRegistration(autofill::LocalFrameToken local) override;
 
+  // Re-creates `autofill_agent_delegate_` with the current command handlers and
+  // assigns it to the `autofill_agent_`. If `snackbar_handler_` is nil, both
+  // the delegate and its assignment are nilled out.
+  void UpdateAutofillAgentDelegate();
+
+  // The handlers.
+  __weak id<SnackbarCommands> snackbar_handler_;
+  __weak id<AtMemoryCommands> at_memory_handler_;
+
   // The delegate for the AutofillAgent.
-  __strong id<AutofillAgentDelegate> autofill_agent_delegate_;
+  __strong AutofillAgentDelegate* autofill_agent_delegate_;
 
   // The Objective-C AutofillAgent instance.
   __strong AutofillAgent* autofill_agent_;

@@ -18,6 +18,7 @@ source_set("eg2_tests") {
     "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/manual_fill/public",
     "//ios/chrome/browser/autofill/manual_fill/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/model:constants",

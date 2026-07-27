@@ -9,6 +9,9 @@
 
 @protocol AtMemoryCommands <NSObject>
 
+// Commands the parent coordinator to show the AtMemory UI.
+- (void)showAtMemory;
+
 // Commands the parent coordinator to dismiss the AtMemory UI.
 - (void)dismissAtMemory;
 

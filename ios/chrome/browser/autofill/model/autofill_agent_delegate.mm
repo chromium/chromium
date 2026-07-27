@@ -5,16 +5,20 @@
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 
 @implementation AutofillAgentDelegate {
-  __weak id<SnackbarCommands> _commandHandler;
+  __weak id<SnackbarCommands> _snackbarHandler;
+  __weak id<AtMemoryCommands> _atMemoryHandler;
 }
 
-- (instancetype)initWithCommandHandler:(id<SnackbarCommands>)commandHandler {
+- (instancetype)initWithSnackbarHandler:(id<SnackbarCommands>)snackbarHandler
+                        atMemoryHandler:(id<AtMemoryCommands>)atMemoryHandler {
   if ((self = [super init])) {
-    _commandHandler = commandHandler;
-    DCHECK(_commandHandler);
+    _snackbarHandler = snackbarHandler;
+    _atMemoryHandler = atMemoryHandler;
+    DCHECK(_snackbarHandler);
   }
   return self;
 }
@@ -23,11 +27,15 @@
                      buttonText:(NSString*)buttonText
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction {
-  DCHECK(_commandHandler);
-  [_commandHandler showSnackbarWithMessage:messageText
-                                buttonText:buttonText
-                             messageAction:messageAction
-                          completionAction:completionAction];
+  DCHECK(_snackbarHandler);
+  [_snackbarHandler showSnackbarWithMessage:messageText
+                                 buttonText:buttonText
+                              messageAction:messageAction
+                           completionAction:completionAction];
+}
+
+- (void)showAtMemory {
+  [_atMemoryHandler showAtMemory];
 }
 
 @end

@@ -7,12 +7,18 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
+@protocol AtMemoryCommands;
 @protocol SnackbarCommands;
 
 // Implementation of AutofillAgentDelegate protocol.
 @interface AutofillAgentDelegate : NSObject <AutofillAgentDelegate>
 
-- (instancetype)initWithCommandHandler:(id<SnackbarCommands>)commandHandler
+// The designated initializer. `snackbarHandler` is used to display snackbars
+// triggered by the Autofill flow. `atMemoryCommands` is used to show the
+// AtMemory UI when the user interacts with the AtMemory button, but can be nil
+// if the feature flag is disabled.
+- (instancetype)initWithSnackbarHandler:(id<SnackbarCommands>)snackbarHandler
+                        atMemoryHandler:(id<AtMemoryCommands>)atMemoryCommands
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -59,6 +59,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/image/image_unittest_util.h"
 #import "url/gurl.h"
@@ -1209,4 +1211,35 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_Undo) {
                                frameID:base::SysUTF8ToNSString(kTestFrameId)
                      completionHandler:^(){
                      }];
+}
+
+// Tests selecting the AtMemory button suggestion.
+TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteAtMemoryButton) {
+  // Mock the agent delegate.
+  id delegate_mock = OCMProtocolMock(@protocol(AutofillAgentDelegate));
+  autofill_agent_.delegate = delegate_mock;
+
+  // Expect `showAtMemory` to be called.
+  OCMExpect([delegate_mock showAtMemory]);
+
+  // Select suggestion to trigger AtMemory.
+  __block BOOL completion_handler_called = NO;
+  FormSuggestion* form_suggestion = SimpleFormSuggestion(
+      u"Test AtMemory", autofill::SuggestionType::kAutocompleteAtMemoryButton);
+  [autofill_agent_ didSelectSuggestion:form_suggestion
+                               atIndex:0
+                                  form:@"single-username-form"
+                        formRendererID:FormRendererId(1)
+                       fieldIdentifier:@"username-field-1"
+                       fieldRendererID:FieldRendererId(2)
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
+                     completionHandler:^() {
+                       completion_handler_called = YES;
+                     }];
+
+  // Verify that the delegate method was called.
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+
+  // Check that the completion handler was called.
+  EXPECT_TRUE(completion_handler_called);
 }

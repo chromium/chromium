@@ -6,6 +6,7 @@ include_rules = [
   "+components/subscription_eligibility",
   "+components/wallet/core/browser",
   "+ios/chrome/browser/account_settings/model",
+  "+ios/chrome/browser/autofill/atmemory/public",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/optimization_guide/model",

@@ -25,6 +25,7 @@
 #import "components/sync/service/sync_prefs.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
@@ -1382,5 +1383,13 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [self verifyFieldsHaveBeenFilledWithUsername:username password:password];
 }
 
-@end
+// Tests that closing a tab after focusing a form field does not crash
+// during FormInputAccessoryCoordinator teardown when AtMemory was not shown.
+- (void)testAtMemoryUnopenedTeardown {
+  [self loadLoginPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
+  [ChromeEarlGrey closeCurrentTab];
+}
 
+@end

@@ -154,6 +154,11 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Triggers the Autofill AI save entity bubble.
 + (void)showAutofillAiSaveEntityBubble;
 
+// TODO(crbug.com/538242036): Remove showAtMemoryUI once the
+// SuggestionType::kAutocompleteAtMemoryButton can be received.
+// Triggers the AtMemory UI.
++ (void)showAtMemoryUI;
+
 // Saves a Redress Number entity with the given name and number. Returns the
 // UUID of the created entity. Because entities are saved asynchronously, it is
 // not immediately available to be retrieved from the EntityDataManager.

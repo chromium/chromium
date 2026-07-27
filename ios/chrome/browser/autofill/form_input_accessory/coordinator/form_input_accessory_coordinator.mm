@@ -183,6 +183,9 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
   // Modal alert.
   AlertCoordinator* _alertCoordinator;
+
+  // The coordinator for the AtMemory Autofill feature.
+  AtMemoryCoordinator* _atMemoryCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -313,6 +316,7 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   [self stopManualFillAllPasswordCoordinator];
 
   [self dismissAlertCoordinator];
+  [self dismissAtMemory];
 }
 
 - (void)stopChildren {
@@ -328,7 +332,7 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
                       forDataType:(manual_fill::ManualFillDataType)dataType
          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
   if (dataType == manual_fill::ManualFillDataType::kAtMemory) {
-    [self presentAtMemory];
+    [self showAtMemory];
     return;
   }
 
@@ -723,8 +727,27 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
 #pragma mark - AtMemoryCommands
 
+- (void)showAtMemory {
+  if (_atMemoryCoordinator) {
+    return;
+  }
+  _atMemoryCoordinator = [[AtMemoryCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+
+  [self.childCoordinators addObject:_atMemoryCoordinator];
+
+  [_atMemoryCoordinator start];
+}
+
 - (void)dismissAtMemory {
-  [self reset];
+  if (!_atMemoryCoordinator) {
+    return;
+  }
+  AtMemoryCoordinator* coordinator = _atMemoryCoordinator;
+  _atMemoryCoordinator = nil;
+  [coordinator stop];
+  [self.childCoordinators removeObject:coordinator];
 }
 
 #pragma mark - SecurityAlertCommands
@@ -785,16 +808,6 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   [_allPasswordCoordinator stop];
   _allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
   _allPasswordCoordinator = nil;
-}
-
-// Presents the AtMemory Page Sheet (on iPhone) or Form Sheet (on iPad).
-- (void)presentAtMemory {
-  AtMemoryCoordinator* atMemoryCoordinator = [[AtMemoryCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
-  [atMemoryCoordinator start];
-
-  [self.childCoordinators addObject:atMemoryCoordinator];
 }
 
 - (void)dismissAlertCoordinator {

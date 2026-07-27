@@ -40,11 +40,19 @@ void AutofillTabHelper::SetAutofillHandler(
   autofill_client_->set_commands_handler(autofill_handler);
 }
 
-void AutofillTabHelper::SetSnackbarHandler(
-    id<SnackbarCommands> snackbar_handler) {
-  if (snackbar_handler) {
-    autofill_agent_delegate_ =
-        [[AutofillAgentDelegate alloc] initWithCommandHandler:snackbar_handler];
+void AutofillTabHelper::SetCommandHandlers(
+    id<SnackbarCommands> snackbar_handler,
+    id<AtMemoryCommands> at_memory_handler) {
+  snackbar_handler_ = snackbar_handler;
+  at_memory_handler_ = at_memory_handler;
+  UpdateAutofillAgentDelegate();
+}
+
+void AutofillTabHelper::UpdateAutofillAgentDelegate() {
+  if (snackbar_handler_) {
+    autofill_agent_delegate_ = [[AutofillAgentDelegate alloc]
+        initWithSnackbarHandler:snackbar_handler_
+                atMemoryHandler:at_memory_handler_];
     autofill_agent_.delegate = autofill_agent_delegate_;
   } else {
     autofill_agent_delegate_ = nil;

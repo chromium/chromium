@@ -19,6 +19,9 @@ class WebState;
 // Delegate for AutofillAgent.
 @protocol AutofillAgentDelegate
 
+// Presents the AtMemory UI.
+- (void)showAtMemory;
+
 // Shows a snackbar displaying a message with `messageText` and a button with
 // `buttonText` which triggers `messageAction` on tap. `completionAction` will
 // be called when the snackbar finishes presenting, BOOL is YES if the dismissal

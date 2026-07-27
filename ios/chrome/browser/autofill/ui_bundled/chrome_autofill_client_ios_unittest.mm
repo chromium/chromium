@@ -99,7 +99,8 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
     mock_snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
     autofill_agent_delegate_ = [[AutofillAgentDelegate alloc]
-        initWithCommandHandler:mock_snackbar_handler_];
+        initWithSnackbarHandler:mock_snackbar_handler_
+                atMemoryHandler:nil];
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_snackbar_handler_
