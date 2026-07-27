@@ -1977,14 +1977,14 @@ void Canvas2DRecorderContext::clearRect(double x,
   if (RectContainsTransformedRect(rect, clip_bounds)) {
     CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
                   OverdrawOp::kClearRect);
-    WillDraw(gfx::SkIRectToRect(clip_bounds),
-             CanvasPerformanceMonitor::DrawType::kOther);
+    WillDrawWithProvider(gfx::SkIRectToRect(clip_bounds),
+                         CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
-      WillDraw(gfx::SkIRectToRect(clip_bounds),
-               CanvasPerformanceMonitor::DrawType::kOther);
+      WillDrawWithProvider(gfx::SkIRectToRect(clip_bounds),
+                           CanvasPerformanceMonitor::DrawType::kOther);
       c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
     }
   }
