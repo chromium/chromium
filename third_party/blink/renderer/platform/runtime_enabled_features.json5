@@ -3457,7 +3457,7 @@
     {
       name: "GetDisplayMediaAudioSelection",
       depends_on: ["GetDisplayMedia"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "GetDisplayMediaRequiresUserActivation",
