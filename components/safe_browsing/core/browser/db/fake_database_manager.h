@@ -49,9 +49,10 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
 
- private:
+ protected:
   ~FakeSafeBrowsingDatabaseManager() override;
 
+ private:
   void CheckBrowseURLAsync(GURL url,
                            SBThreatType result_threat_type,
                            uintptr_t client_id);

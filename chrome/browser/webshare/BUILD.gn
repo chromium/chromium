@@ -81,6 +81,7 @@ if (is_win || is_chromeos || is_mac) {
         "//components/safe_browsing/content/common:file_type_policies",
         "//components/safe_browsing/core/browser/db",
         "//components/safe_browsing/core/browser/db:database_manager",
+        "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
         "//components/safe_browsing/core/common",
       ]
     }
@@ -139,6 +140,7 @@ if (is_win || is_chromeos || is_mac) {
       "//chrome/test:test_support",
       "//components/safe_browsing/content/common:file_type_policies_test_support",
       "//components/safe_browsing/core/browser/db:test_database_manager",
+      "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",

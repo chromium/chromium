@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -34,16 +35,24 @@ class SafeBrowsingRequest::SafeBrowsingClient
           pass_key,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
+      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+          v5_get_hash_protocol_manager,
       base::WeakPtr<SafeBrowsingRequest> handler,
       scoped_refptr<base::TaskRunner> handler_task_runner)
       : safe_browsing::SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
         database_manager_(database_manager),
+        v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
         handler_(handler),
         handler_task_runner_(handler_task_runner) {}
 
   ~SafeBrowsingClient() override {
     if (timeout_.IsRunning())
       database_manager_->CancelCheck(this);
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  GetV5GetHashProtocolManager() override {
+    return v5_get_hash_protocol_manager_;
   }
 
   void CheckUrl(const GURL& url) {
@@ -87,6 +96,8 @@ class SafeBrowsingRequest::SafeBrowsingClient
 
   base::OneShotTimer timeout_;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_get_hash_protocol_manager_;
   base::WeakPtr<SafeBrowsingRequest> handler_;
   scoped_refptr<base::TaskRunner> handler_task_runner_;
 };
@@ -95,12 +106,15 @@ class SafeBrowsingRequest::SafeBrowsingClient
 
 SafeBrowsingRequest::SafeBrowsingRequest(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager,
     const GURL& url,
     base::OnceCallback<void(bool)> callback)
     : callback_(std::move(callback)) {
   client_ = std::make_unique<SafeBrowsingClient>(
       safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
-      database_manager, weak_factory_.GetWeakPtr(),
+      database_manager, v5_get_hash_protocol_manager,
+      weak_factory_.GetWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());
   client_->CheckUrl(url);
 }

@@ -16,21 +16,25 @@
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
+class V5GetHashProtocolManager;
 }
 
 // Represents a single request to the Safe Browsing service to check whether
 // a website is safe when sharing files with the Web Share API. It is used for
-// PDFs for instance on Desktop platforms. Can be created and used on any one
+// PDFs for instance on Desktop platforms. Must be created and used on the UI
 // thread.
 class SafeBrowsingRequest {
  public:
   // Constructs a request that check whether a website |url| is safe by
-  // consulting the |database_manager|, and invokes |callback| when done.
+  // consulting the |database_manager| and |v5_get_hash_protocol_manager|, and
+  // invokes |callback| when done.
   //
   // It is guaranteed that |callback| will never be invoked synchronously, and
   // it will not be invoked after |this| goes out of scope.
   SafeBrowsingRequest(scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
                           database_manager,
+                      base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+                          v5_get_hash_protocol_manager,
                       const GURL& url,
                       base::OnceCallback<void(bool)> callback);
   ~SafeBrowsingRequest();
@@ -41,7 +45,7 @@ class SafeBrowsingRequest {
   SafeBrowsingRequest(const SafeBrowsingRequest&) = delete;
   SafeBrowsingRequest& operator=(const SafeBrowsingRequest&) = delete;
 
-  // Posted by the |client_| from the IO thread when it gets a response.
+  // Posted by the |client_| on the UI thread when it gets a response.
   void OnResultReceived(bool is_url_safe);
 
   // The client interfacing with Safe Browsing.

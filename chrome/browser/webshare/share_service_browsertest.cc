@@ -5,7 +5,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -16,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -151,6 +154,39 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Fullscreen) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace {
+
+class V5TestingDatabaseManager
+    : public safe_browsing::FakeSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager()
+      : safe_browsing::FakeSafeBrowsingDatabaseManager(
+            content::GetUIThreadTaskRunner({})) {}
+
+  bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
+                        Client* client) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+    }
+    return safe_browsing::FakeSafeBrowsingDatabaseManager::CheckDownloadUrl(
+        url_chain, client);
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ protected:
+  ~V5TestingDatabaseManager() override = default;
+
+ private:
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_manager_from_client_;
+};
+
+}  // namespace
+
 class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
  public:
   SafeBrowsingShareServiceBrowserTest()
@@ -162,8 +198,7 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
-        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
-            content::GetUIThreadTaskRunner({}));
+        base::MakeRefCounted<V5TestingDatabaseManager>();
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -182,9 +217,12 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
     safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
   }
 
+  V5TestingDatabaseManager* fake_safe_browsing_database_manager() {
+    return fake_safe_browsing_database_manager_.get();
+  }
+
  private:
-  scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
-      fake_safe_browsing_database_manager_;
+  scoped_refptr<V5TestingDatabaseManager> fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
 };
@@ -211,6 +249,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ("share succeeded", content::EvalJs(contents, "share_pdf_file()"));
+  auto* expected_v5_manager =
+      safe_browsing::V5GetHashProtocolManagerFactory::GetForBrowserContext(
+          GetProfile());
+  EXPECT_EQ(
+      fake_safe_browsing_database_manager()->v5_manager_from_client().get(),
+      expected_v5_manager);
 
   AddDangerousUrl(url);
   EXPECT_EQ("share failed: NotAllowedError: Permission denied",

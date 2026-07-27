@@ -33,8 +33,10 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #endif
 
 // IsDangerousFilename() and IsDangerousMimeType() should be kept in sync with
@@ -243,8 +245,14 @@ void ShareServiceImpl::Share(const std::string& title,
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   DCHECK(!safe_browsing_request_);
   if (should_check_url && g_browser_process->safe_browsing_service()) {
+    auto* v5_manager =
+        web_contents->GetBrowserContext()
+            ? safe_browsing::V5GetHashProtocolManagerFactory::
+                  GetForBrowserContext(web_contents->GetBrowserContext())
+            : nullptr;
     safe_browsing_request_.emplace(
         g_browser_process->safe_browsing_service()->database_manager(),
+        v5_manager ? v5_manager->GetWeakPtr() : nullptr,
         web_contents->GetLastCommittedURL(),
         base::BindOnce(&ShareServiceImpl::RunShareOperation,
                        weak_factory_.GetWeakPtr(), title, text, share_url,
