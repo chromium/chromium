@@ -72,7 +72,6 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
-      "../android/send_tab_to_self/android_notification_handler_test_util.cc",
       "../android/send_tab_to_self/android_notification_handler_unittest.cc",
     ]
     deps += [
@@ -91,7 +90,6 @@ if (is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "../android/send_tab_to_self/android_notification_handler_browsertest.cc",
-      "../android/send_tab_to_self/android_notification_handler_test_util.cc",
     ]
     deps = [
       ":send_tab_to_self",

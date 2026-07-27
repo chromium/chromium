@@ -10,16 +10,16 @@
 #include "base/android/application_status_listener.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
-#include "chrome/browser/android/send_tab_to_self/android_notification_handler_test_util.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
@@ -51,10 +51,12 @@ class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
-    // Wait for the default tab to be fully initialized to avoid ANR/crashes
-    // when tests attempt to access GetTab(0) immediately.
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return GetTabListInterface()->GetTabCount() >= 1; }));
+    // Wait for the default tab and its WebContents to be fully initialized.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetTabListInterface() && GetTabListInterface()->GetActiveTab() &&
+             GetTabListInterface()->GetActiveTab()->GetContents();
+    }));
+    model()->SetLocalCacheGuid(kDeviceId);
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -69,6 +71,12 @@ class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
         ->GetFakeSendTabToSelfModel();
   }
 
+  void WaitForTabCount(int expected_count) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetTabListInterface()->GetTabCount() == expected_count;
+    }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
@@ -76,7 +84,6 @@ class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
 IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
                        AutoOpenWhenBroughtToForeground) {
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  EntryOpenedWaiter waiter(model());
 
   const SendTabToSelfEntry* entry =
       model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
@@ -88,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
-  waiter.Wait();
+  WaitForTabCount(initial_tab_count + 1);
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
@@ -111,14 +118,13 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  EntryOpenedWaiter waiter(model());
 
   const SendTabToSelfEntry* entry =
       model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  waiter.Wait();
+  WaitForTabCount(initial_tab_count + 1);
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
@@ -167,9 +173,9 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerModelNotReadyBrowserTest,
   EXPECT_EQ(initial_tab_count, GetTabListInterface()->GetTabCount());
 
   // Now make model ready. This should trigger auto-open.
-  EntryOpenedWaiter waiter(model());
   model()->SetIsReady(true);
-  waiter.Wait();
+
+  WaitForTabCount(initial_tab_count + 1);
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
@@ -194,16 +200,13 @@ class AndroidNotificationHandlerWithoutTabGridAutoOpenSupportBrowserTest
 IN_PROC_BROWSER_TEST_F(
     AndroidNotificationHandlerWithoutTabGridAutoOpenSupportBrowserTest,
     NoAutoOpenInTabSwitcher) {
-  // Simulating application already running in foreground
+  // Simulating application running in foreground with no active visible tab.
   base::android::ApplicationStatusListener::NotifyApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
-  // Hide the active tab's web contents to simulate tab switcher open.
-  content::WebContents* active_contents =
-      GetTabListInterface()->GetTab(0)->GetContents();
-  active_contents->WasHidden();
-  ASSERT_EQ(content::Visibility::HIDDEN, active_contents->GetVisibility());
-
+  // Close the active tab so tab model has no active visible web contents.
+  static_cast<TabModel*>(GetTabListInterface())->CloseTabAt(0);
+  ASSERT_EQ(0, GetTabListInterface()->GetTabCount());
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
 
   const SendTabToSelfEntry* entry =
@@ -211,8 +214,8 @@ IN_PROC_BROWSER_TEST_F(
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  // Since it's in background/hidden and flag is disabled, it should NOT
-  // auto-open.
+  // Since there is no active visible web contents and flag is disabled, it
+  // should NOT auto-open.
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -239,14 +242,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(content::Visibility::HIDDEN, active_contents->GetVisibility());
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  EntryOpenedWaiter waiter(model());
 
   const SendTabToSelfEntry* entry =
       model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  waiter.Wait();
+  WaitForTabCount(initial_tab_count + 1);
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
   EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());

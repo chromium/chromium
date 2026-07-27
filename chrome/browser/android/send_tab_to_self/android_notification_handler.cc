@@ -344,6 +344,8 @@ void AndroidNotificationHandler::OpenEntryInBackgroundTab(
     const SendTabToSelfEntry& entry,
     content::WebContents& target_web_contents,
     int tabstrip_index) {
+  send_tab_to_self_model_->MarkEntryOpened(entry.GetGUID());
+
   auto nav_params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
       entry.GetURL(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
@@ -385,8 +387,6 @@ void AndroidNotificationHandler::OnNavigationStarted(
       send_tab_to_self::AttachTabLabel(tab, guid, device_name);
     }
   }
-
-  send_tab_to_self_model_->MarkEntryOpened(guid);
 }
 
 void AndroidNotificationHandler::ShowMessageBanner(

@@ -127,14 +127,6 @@ void FakeSendTabToSelfModel::MarkEntryOpened(std::string_view guid) {
   auto it = entries_.find(guid);
   if (it != entries_.end()) {
     it->second->MarkOpened(base::Time::Now());
-    // Avoid notifying observers when `AddEntriesRemotely` is underway.
-    // TODO(crbug.com/488072250: Alternatively, consider allow re-entrancy in
-    // the observer list.
-    if (!is_adding_entries_remotely_) {
-      for (auto& observer : observers_) {
-        observer.OnEntriesOpenedRemotely({it->second.get()});
-      }
-    }
   }
 }
 
@@ -256,8 +248,6 @@ FakeSendTabToSelfModel::AddEntriesRemotely(
   }
 
   if (is_ready_) {
-    base::AutoReset<bool> adding_entries_remotely(&is_adding_entries_remotely_,
-                                                  true);
     for (auto& observer : observers_) {
       observer.OnEntriesAddedRemotely(results);
     }
