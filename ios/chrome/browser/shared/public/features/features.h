@@ -125,6 +125,9 @@ extern const base::FeatureParam<int>
 // Feature flag the "Hide Toolbar" button in the overflow menu.
 BASE_DECLARE_FEATURE(kHideToolbarsInOverflowMenu);
 
+// Returns true if the "Hide Toolbar" button is enabled.
+bool IsHideToolbarEnabled();
+
 // Flag to hide voice and lens actions in fusebox.
 BASE_DECLARE_FEATURE(kHideFuseboxVoiceLensActions);
 

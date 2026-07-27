@@ -912,7 +912,7 @@ void GetPresetNTPBackgroundPreview(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
-  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+  if (IsHideToolbarEnabled()) {
     self.hideToolbarsAction = [self collapseToolbars];
   }
 
@@ -1902,7 +1902,7 @@ void GetPresetNTPBackgroundPreview(
 
   self.askBWGAction.enabled = [self isGeminiAvailable];
 
-  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+  if (IsHideToolbarEnabled()) {
     self.hideToolbarsAction.enabled = ![self isCurrentWebPageNTP];
   }
 }
@@ -2649,7 +2649,7 @@ void GetPresetNTPBackgroundPreview(
   if (IsReaderModeAvailable()) {
     actions.push_back(overflow_menu::ActionType::ReaderMode);
   }
-  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+  if (IsHideToolbarEnabled()) {
     actions.push_back(overflow_menu::ActionType::HideToolbars);
   }
 

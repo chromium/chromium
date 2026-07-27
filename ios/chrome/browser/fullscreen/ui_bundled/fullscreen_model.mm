@@ -105,7 +105,7 @@ void FullscreenModel::ResetForNavigation() {
     if (!manually_forced_) {
       return;
     }
-    CHECK(base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu));
+    CHECK(IsHideToolbarEnabled());
     SetForceFullscreenMode(false);
     SetInsetsUpdateEnabled(true);
     set_manually_forced(false);

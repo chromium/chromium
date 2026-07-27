@@ -1162,7 +1162,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     [menuElements addObject:divider];
   }
 
-  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+  if (IsHideToolbarEnabled()) {
     UIImage* image = SymbolWithPointSize(SymbolExpand, kSymbolActionPointSize);
 
     UIAction* hideAddressBarAction =

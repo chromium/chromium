@@ -37,6 +37,13 @@ BASE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch,
 BASE_FEATURE(kOmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsHideToolbarEnabled() {
+  if (IsChromeNextIaEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu);
+}
 BASE_FEATURE(kHideFuseboxVoiceLensActions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedHighlightingIOS, base::FEATURE_ENABLED_BY_DEFAULT);
