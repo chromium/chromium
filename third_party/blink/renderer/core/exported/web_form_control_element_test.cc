@@ -317,6 +317,7 @@ TEST_F(WebFormControlElementTest,
       </select>
     </div>
   )");
+  UpdateAllLifecyclePhasesForTest();
 
   WebFormControlElement input(
       DynamicTo<HTMLFormControlElement>(GetElementById("input_id")));
@@ -668,8 +669,7 @@ TEST_F(WebFormControlElementTest,
   GetElementById("inner_host")
       ->setAttribute(html_names::kSlotAttr, AtomicString("s1"));
 
-  // Force slot assignment recalc and style update.
-  GetDocument().UpdateStyleAndLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
 
   // Since the inner host is moved out of the outer canvas, but the inner input
   // is still slotted inside the inner canvas, the suggested value on the input

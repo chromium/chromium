@@ -4144,13 +4144,16 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
   RecomputeDirectionFromParent();
 
+  // Do not call ComputeIsInCanvasSubtree from here because during
+  // slot assignment it will cause DCHECK failures. If an element is slotted
+  // the checks will be re-run when slot assignment completes.
   auto* parent = ParentOrShadowHostElement();
   if (parent && parent->IsCanvasOrInCanvasSubtree()) {
-    SetIsCanvasOrInCanvasSubtree(true);
+    SetIsInCanvasSubtree(true);
   } else if (!parent && insertion_point.IsDocumentNode()) {
     auto* owner = GetDocument().LocalOwner();
     if (owner && owner->IsCanvasOrInCanvasSubtree()) {
-      SetIsCanvasOrInCanvasSubtree(true);
+      SetIsInCanvasSubtree(true);
     }
   }
 
@@ -4295,13 +4298,14 @@ void Element::MovedFrom(ContainerNode& old_parent) {
 
 #if DCHECK_IS_ON()
 void VerifySubtreeIsInCanvas(const Element& element, bool value) {
+  DCHECK(element.IsInCanvasSubtree() == value);
   if (IsA<HTMLCanvasElement>(element)) {
+    DCHECK(element.IsCanvasOrInCanvasSubtree());
     // When the verifier starts with an element outside the tree that should
     // have value false, but then reaches a canvas within the subtree (e.g.
     // in an iframe or nested), we should set the expected value back to true.
     value = true;
   }
-  DCHECK(element.IsCanvasOrInCanvasSubtree() == value);
   if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
     for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
       VerifySubtreeIsInCanvas(child, value);
@@ -4330,15 +4334,8 @@ void VerifySubtreeIsInCanvas(const Element& element, bool value) {
 }
 #endif
 
-void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
-  if (IsA<HTMLCanvasElement>(*this)) {
-    value = true;
-  }
-
-  if (value != IsCanvasOrInCanvasSubtree()) {
-    SetElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree, value);
-    DidChangeIsCanvasOrInCanvasSubtree(value);
-  } else {
+void Element::SetIsInCanvasSubtree(bool value) {
+  if (value == IsInCanvasSubtree()) {
 #if DCHECK_IS_ON()
     if (!GetDocument().IsSlotAssignmentRecalcForbidden()) {
       VerifySubtreeIsInCanvas(*this, value);
@@ -4347,15 +4344,23 @@ void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
     return;
   }
 
+  SetElementFlag(ElementFlags::kIsInCanvasSubtree, value);
+  // Note that this call leads to HTMLFrameOwnerElement updating iframes.
+  DidChangeIsInCanvasSubtree();
+  if (!value && IsA<HTMLCanvasElement>(*this)) {
+    // Nested canvas element must reset the value to true.
+    value = true;
+  }
+
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
-      child.SetIsCanvasOrInCanvasSubtree(value);
+      child.SetIsInCanvasSubtree(value);
     }
   }
   if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
     for (Node* node : slot->AssignedNodesNoRecalc()) {
       if (auto* child = DynamicTo<Element>(node)) {
-        child->SetIsCanvasOrInCanvasSubtree(value);
+        child->SetIsInCanvasSubtree(value);
       }
     }
   }
@@ -4363,23 +4368,11 @@ void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
     if (!child.IsPseudoElement() && child.AssignedSlotWithoutRecalc()) {
       continue;
     }
-    child.SetIsCanvasOrInCanvasSubtree(value);
+    child.SetIsInCanvasSubtree(value);
   }
 }
 
-void Element::DidChangeIsCanvasOrInCanvasSubtree(bool) {
-  if (auto* layout_object = GetLayoutObject()) {
-    layout_object->SetNeedsPaintPropertyUpdate();
-    if (layout_object->HasLayer()) {
-      To<LayoutBoxModelObject>(layout_object)->Layer()->SetNeedsRepaint();
-    }
-    ObjectPaintInvalidator(*layout_object)
-        .InvalidateDisplayItemClient(*layout_object,
-                                     PaintInvalidationReason::kUncacheable);
-  }
-}
-
-bool Element::IsInCanvasSubtree() const {
+bool Element::ComputeIsInCanvasSubtree() const {
   auto& document = GetDocument();
   const Element* parent = nullptr;
   if (document.IsFlatTreeTraversalForbidden() ||
@@ -4404,6 +4397,28 @@ bool Element::IsInCanvasSubtree() const {
 
   auto* owner = document.LocalOwner();
   return owner && owner->IsCanvasOrInCanvasSubtree();
+}
+
+bool Element::IsCanvasOrInCanvasSubtree() const {
+  if (IsInCanvasSubtree()) {
+    return true;
+  }
+  if (IsA<HTMLCanvasElement>(*this)) {
+    return true;
+  }
+  return false;
+}
+
+void Element::DidChangeIsInCanvasSubtree() {
+  if (auto* layout_object = GetLayoutObject()) {
+    layout_object->SetNeedsPaintPropertyUpdate();
+    if (layout_object->HasLayer()) {
+      To<LayoutBoxModelObject>(layout_object)->Layer()->SetNeedsRepaint();
+    }
+    ObjectPaintInvalidator(*layout_object)
+        .InvalidateDisplayItemClient(*layout_object,
+                                     PaintInvalidationReason::kUncacheable);
+  }
 }
 
 void Element::RemovedFrom(ContainerNode& insertion_point) {
@@ -4496,7 +4511,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     document.RemoveFromTopLayerImmediately(this);
   }
 
-  SetIsCanvasOrInCanvasSubtree(false);
+  SetIsInCanvasSubtree(false);
 
   if (NodeRareData* data = RareData()) {
     data->ClearFocusgroupData();

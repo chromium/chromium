@@ -1339,7 +1339,7 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   String sanitized_value = SanitizeValue(value);
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
-      IsCanvasOrInCanvasSubtree()) {
+      IsInCanvasSubtree()) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
     sanitized_value = String();
@@ -1365,10 +1365,9 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   input_type_view_->UpdateView();
 }
 
-void HTMLInputElement::DidChangeIsCanvasOrInCanvasSubtree(
-    bool is_in_canvas_subtree) {
-  TextControlElement::DidChangeIsCanvasOrInCanvasSubtree(is_in_canvas_subtree);
-  if (is_in_canvas_subtree &&
+void HTMLInputElement::DidChangeIsInCanvasSubtree() {
+  TextControlElement::DidChangeIsInCanvasSubtree();
+  if (IsInCanvasSubtree() &&
       RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.

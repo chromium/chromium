@@ -702,8 +702,8 @@ void HTMLTextAreaElement::setDefaultValue(const String& default_value) {
 
 void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
   String sanitized_value = value;
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
-      IsInCanvasSubtree()) {
+  if (IsInCanvasSubtree() &&
+      RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
     sanitized_value = String();
@@ -716,10 +716,9 @@ void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
-void HTMLTextAreaElement::DidChangeIsCanvasOrInCanvasSubtree(
-    bool is_in_canvas_subtree) {
-  TextControlElement::DidChangeIsCanvasOrInCanvasSubtree(is_in_canvas_subtree);
-  if (is_in_canvas_subtree &&
+void HTMLTextAreaElement::DidChangeIsInCanvasSubtree() {
+  TextControlElement::DidChangeIsInCanvasSubtree();
+  if (IsInCanvasSubtree() &&
       RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.

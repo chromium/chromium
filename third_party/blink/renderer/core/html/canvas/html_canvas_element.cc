@@ -403,7 +403,6 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(
 
 Node::InsertionNotificationRequest HTMLCanvasElement::InsertedInto(
     ContainerNode& node) {
-  SetIsCanvasOrInCanvasSubtree(true);
   ColorSchemeMayHaveChanged();
   return HTMLElement::InsertedInto(node);
 }

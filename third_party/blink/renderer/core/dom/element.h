@@ -198,7 +198,7 @@ enum SpellcheckAttributeState {
 enum class ElementFlags {
   kTabIndexWasSetExplicitly = 1 << 0,
   kStyleAffectedByEmpty = 1 << 1,
-  kIsCanvasOrInCanvasSubtree = 1 << 2,
+  kIsInCanvasSubtree = 1 << 2,
   kContainsFullScreenElement = 1 << 3,
   kIsInTopLayer = 1 << 4,
   kContainsPersistentVideo = 1 << 5,
@@ -1130,16 +1130,19 @@ class CORE_EXPORT Element : public ContainerNode {
     SetElementFlag(ElementFlags::kStyleAffectedByEmpty);
   }
 
-  void SetIsCanvasOrInCanvasSubtree(bool);
-  bool IsCanvasOrInCanvasSubtree() const {
-    return HasElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree);
+  // Determine whether the parent or owner of this element is a canvas element
+  // or in a canvas subtree.
+  bool ComputeIsInCanvasSubtree() const;
+  // Recursively sets the IsInCanvasSubtree bit for the element and its subtree.
+  void SetIsInCanvasSubtree(bool value);
+  // Is in the subtree of a canvas element, but not the canvas element itself.
+  bool IsInCanvasSubtree() const {
+    return HasElementFlag(ElementFlags::kIsInCanvasSubtree);
   }
-  // Called when `IsCanvasOrInCanvasSubtree()` changes.
-  // Note: `is_in_canvas_subtree` passes the new state so that overriding
-  // methods do not need to recompute it, thus avoiding re-entrancy.
-  virtual void DidChangeIsCanvasOrInCanvasSubtree(bool is_in_canvas_subtree);
-  // Like `IsCanvasOrInCanvasSubtree()`, but excludes the outermost <canvas>.
-  bool IsInCanvasSubtree() const;
+  // Like `IsInCanvasSubtree()`, but includes <canvas> elements.
+  bool IsCanvasOrInCanvasSubtree() const;
+  // Called when `IsInCanvasSubtree()` changes.
+  virtual void DidChangeIsInCanvasSubtree();
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"
@@ -2244,7 +2247,6 @@ class CORE_EXPORT Element : public ContainerNode {
   void DetachDescendantsNeedingReattachDuringSkip();
 
   ShadowRoot* GetShadowRootInternal() const;
-
 
   // Returns true if the element satisfies conditions for focusability for
   // spatial navigation, even if the spatial navigation is not currently

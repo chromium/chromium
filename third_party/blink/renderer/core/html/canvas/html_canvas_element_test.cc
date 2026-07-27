@@ -500,7 +500,7 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
     <div id=div></div>
     <canvas id=canvas>
       <div id=nested_div></div>
-      <canvas id=nested_canvas></canvas>
+        <canvas id=nested_canvas></canvas>
       <input id=nested_input>
     </canvas>
   )HTML");
@@ -534,6 +534,10 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
   div->appendChild(nested_canvas);
   EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(nested_canvas->IsInCanvasSubtree());
+  EXPECT_TRUE(nested_input->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input->IsInCanvasSubtree());
+  EXPECT_TRUE(nested_input_shadow->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(nested_input_shadow->IsInCanvasSubtree());
   div->appendChild(nested_input);
   EXPECT_FALSE(nested_input->IsCanvasOrInCanvasSubtree());
   EXPECT_FALSE(nested_input->IsInCanvasSubtree());
