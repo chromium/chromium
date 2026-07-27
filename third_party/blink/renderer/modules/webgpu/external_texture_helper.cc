@@ -369,7 +369,7 @@ ExternalTexture CreateExternalTexture(
   // Using CopyVideoFrameToSharedImage() is an optional one copy upload path.
   // However, the formats this path supports are quite limited. Check whether
   // the current video frame could be uploaded through this one copy upload
-  // path. If not, fallback to DrawVideoFrameIntoResourceProvider().
+  // path. If not, fallback to drawing the video frame into the shared image.
   // CopyVideoFrameToSharedImage also doesn't support rescaling the image so we
   // cannot use it if the visible_rect isn't the same size as natural_size.
   // TODO(crbug.com/327270287): Expand CopyVideoFrameToSharedImage() to
@@ -386,7 +386,7 @@ ExternalTexture CreateExternalTexture(
   gfx::ColorSpace resource_color_space = src_color_space.GetAsRGB();
 
   // We need to workaround issue crbug.com/1407112. It requires no color space
-  // conversion when drawing video frame to resource provider.
+  // conversion when drawing the video frame to the shared image.
   // Leverage Dawn to do the color space conversion.
   // TODO(crbug.com/1407112): Don't use compatRgbColorSpace but the
   // exact color space after fixing this issue.

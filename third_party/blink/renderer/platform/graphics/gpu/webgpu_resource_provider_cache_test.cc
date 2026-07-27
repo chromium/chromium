@@ -56,33 +56,33 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
   auto size = gfx::Size(10, 10);
   Vector<WebGpuSharedImageWrapper*> returned_wrappers;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_0 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_0->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_0->shared_image_wrapper());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_1 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_1->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_1->shared_image_wrapper());
 
-  // Now release the holders to recycle the resource_providers.
-  provider_holder_0.reset();
-  provider_holder_1.reset();  // MRU
+  // Now release the leases to recycle the wrappers.
+  wrapper_lease_0.reset();
+  wrapper_lease_1.reset();  // MRU
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_2 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_2->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_2->shared_image_wrapper());
 
-  // LeaseWebGpuSharedImageWrapper should return the MRU provider, which
-  // is provider_holder_1, for provider_holder_2.
+  // LeaseWebGpuSharedImageWrapper should return the MRU wrapper, which
+  // is wrapper_lease_1, for wrapper_lease_2.
   EXPECT_EQ(returned_wrappers[1], returned_wrappers[2]);
 }
 
@@ -92,40 +92,40 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
 
   Vector<WebGpuSharedImageWrapper*> returned_wrappers;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_0 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_0->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_0->shared_image_wrapper());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_1 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_1->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_1->shared_image_wrapper());
 
-  // Now release the holders to recycle the resource_providers.
-  provider_holder_1.reset();
-  provider_holder_0.reset();
+  // Now release the leases to recycle the wrappers.
+  wrapper_lease_1.reset();
+  wrapper_lease_0.reset();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_2 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_2->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_2->shared_image_wrapper());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_3 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_3 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_3->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_3->shared_image_wrapper());
 
-  // LeaseWebGpuSharedImageWrapper should return the same resource
-  // provider for the request with the same size.
+  // LeaseWebGpuSharedImageWrapper should return the same shared image
+  // wrapper for the request with the same size.
   EXPECT_EQ(returned_wrappers[0], returned_wrappers[2]);
   EXPECT_EQ(returned_wrappers[1], returned_wrappers[3]);
 }
@@ -136,69 +136,69 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
 
   Vector<WebGpuSharedImageWrapper*> returned_wrappers;
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_0 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_0->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_0->shared_image_wrapper());
 
-  // Now release the holder to recycle the resource_provider.
-  provider_holder_0.reset();
+  // Now release the lease to recycle the wrapper.
+  wrapper_lease_0.reset();
 
   // (1) For different size.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_1 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_1->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_1->shared_image_wrapper());
 
-  // Cache miss. A new resource provider should be created.
+  // Cache miss. A new wrapper should be created.
   EXPECT_NE(returned_wrappers[0], returned_wrappers[1]);
 
   // (2) For different color space
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_2 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_2 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGBLinear(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_2->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_2->shared_image_wrapper());
 
-  // Cache miss. A new resource provider should be created.
+  // Cache miss. A new wrapper should be created.
   EXPECT_NE(returned_wrappers[0], returned_wrappers[2]);
 
   // (3) For different format
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_3 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_3 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_F16, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_3->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_3->shared_image_wrapper());
 
-  // Cache miss. A new resource provider should be created.
+  // Cache miss. A new wrapper should be created.
   EXPECT_NE(returned_wrappers[0], returned_wrappers[3]);
 
   // (4) For different alpha type.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_4 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_4 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kOpaque_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_4->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_4->shared_image_wrapper());
 
-  // Cache miss. A new resource provider should be created.
+  // Cache miss. A new wrapper should be created.
   EXPECT_NE(returned_wrappers[0], returned_wrappers[4]);
 
   // (5) For the same config again.
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_5 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_5 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_5->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_5->shared_image_wrapper());
 
-  // Should get the same provider.
+  // Should get the same wrapper.
   EXPECT_EQ(returned_wrappers[0], returned_wrappers[5]);
 }
 
@@ -209,23 +209,23 @@ TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_0 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_0->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_0->shared_image_wrapper());
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_1 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_1->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_1->shared_image_wrapper());
 
-  // Now release the holders to recycle the resource_providers.
-  provider_holder_0.reset();
-  provider_holder_1.reset();
+  // Now release the leases to recycle the wrappers.
+  wrapper_lease_0.reset();
+  wrapper_lease_1.reset();
 
   // Before the intended delay, the recycled resources should not be released
   // from cache.
@@ -248,30 +248,30 @@ TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
   int wait_count =
       recyclable_resource_cache_->GetWaitCountBeforeDeletionForTesting();
 
-  std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_0 =
+  std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_0 =
       recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
           kPremul_SkAlphaType);
-  returned_wrappers.push_back(provider_holder_0->shared_image_wrapper());
+  returned_wrappers.push_back(wrapper_lease_0->shared_image_wrapper());
 
-  // Release the holder to recycle the resource_provider.
-  provider_holder_0.reset();
+  // Release the lease to recycle the wrapper.
+  wrapper_lease_0.reset();
 
   // Before the intended delay, the recycled resources should not be released
   // from cache.
   for (int i = 0; i < wait_count; i++) {
     if (i == 1) {
       // Now request a resource with the same configuration.
-      std::unique_ptr<WebGpuSharedImageWrapperLease> provider_holder_1 =
+      std::unique_ptr<WebGpuSharedImageWrapperLease> wrapper_lease_1 =
           recyclable_resource_cache_->LeaseWebGpuSharedImageWrapper(
               viz::SinglePlaneFormat::kRGBA_8888, resource_size,
               gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
               kPremul_SkAlphaType);
-      returned_wrappers.push_back(provider_holder_1->shared_image_wrapper());
+      returned_wrappers.push_back(wrapper_lease_1->shared_image_wrapper());
 
-      // Release the holders again to recycle the resource_providers.
-      provider_holder_1.reset();
+      // Release the leases again to recycle the wrappers.
+      wrapper_lease_1.reset();
     }
 
     wtf_size_t size =
