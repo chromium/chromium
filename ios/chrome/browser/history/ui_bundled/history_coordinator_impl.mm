@@ -65,8 +65,9 @@
 #pragma mark - Private
 
 - (void)dismissHistoryNavigationWithCompletion:(ProceduralBlock)completion {
-  [_historyNavigationController dismissViewControllerAnimated:YES
-                                                   completion:completion];
+  [_historyNavigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completion];
   _historyNavigationController = nil;
   _viewController.historyService = nullptr;
 }
