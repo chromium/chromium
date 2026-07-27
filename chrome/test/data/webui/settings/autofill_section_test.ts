@@ -12,7 +12,7 @@ import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerPro
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -1644,66 +1644,4 @@ suite('AutofillSectionAddressLocaleTests', function() {
     assertEquals(state, cols[1]!.value);
     assertEquals(zip, cols[2]!.value);
   });
-});
-
-suite('PlusAddressesTest', function() {
-  const fakeUrl = 'https://foo.bar';
-  let metrics: MetricsTracker;
-  let openWindowProxy: TestOpenWindowProxy;
-
-  setup(function() {
-    metrics = fakeMetricsPrivate();
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-    loadTimeData.overrideValues({
-      // Required to show the plus address management entry.
-      plusAddressEnabled: true,
-      plusAddressManagementUrl: fakeUrl,
-    });
-  });
-
-  test('verifyPlusAddressManagementEntryExistence', async function() {
-    const autofillSection = await createAutofillSection([], {});
-
-    const plusAddressButton =
-        autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#plusAddressSettingsButton');
-    assertTrue(!!plusAddressButton);
-
-    autofillSection.remove();
-  });
-
-  test(
-      'verifyPlusAddressManagementEntryExistenceWhenNotEnabled',
-      async function() {
-        loadTimeData.overrideValues({
-          plusAddressEnabled: false,
-        });
-        const autofillSection = await createAutofillSection([], {});
-
-        const plusAddressButton =
-            autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-                '#plusAddressSettingsButton');
-        assertFalse(!!plusAddressButton);
-
-        autofillSection.remove();
-      });
-
-  test(
-      'verifyClickingPlusAddressManagementEntryOpensWebsite', async function() {
-        const autofillSection = await createAutofillSection([], {});
-
-        const plusAddressButton =
-            autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-                '#plusAddressSettingsButton');
-        assertTrue(!!plusAddressButton);
-        // Validate that, when present, the button results in opening the URL
-        // passed in via the `loadTimeData` override.
-        plusAddressButton.click();
-        const url = await openWindowProxy.whenCalled('openUrl');
-        assertEquals(url, fakeUrl);
-        assertEquals(
-            1, metrics.count('Settings.ManageOptionOnSettingsSelected'));
-        autofillSection.remove();
-      });
 });

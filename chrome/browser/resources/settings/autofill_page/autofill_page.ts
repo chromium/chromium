@@ -109,15 +109,6 @@ export class SettingsAutofillPageElement extends
     Router.getInstance().navigateTo(routes.AUTOFILL_AI);
   }
 
-  /**
-   * @returns the sublabel of the address entry.
-   */
-  private addressesSublabel_() {
-    return loadTimeData.getBoolean('plusAddressEnabled') ?
-        this.i18n('addressesSublabel') :
-        '';
-  }
-
   // SettingsViewMixin implementation.
   override getFocusConfig() {
     const map = new Map();

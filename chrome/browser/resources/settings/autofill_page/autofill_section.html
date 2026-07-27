@@ -11,10 +11,6 @@
       overflow: hidden;
     }
 
-    #plusAddressSettingsButton {
-      margin-top: 16px;
-    }
-
     #noEmailsLabel {
       padding-inline-start: var(--cr-section-indent-padding);
     }
@@ -165,15 +161,6 @@
             confirm-text="$i18n{remove}"
             on-close="onEmailRemoveConfirmationDialogClose_">
         </settings-simple-confirmation-dialog>
-      </template>
-      <template is="dom-if" if="[[isPlusAddressEnabled_]]">
-        <cr-link-row class="cr-row" id="plusAddressSettingsButton"
-            label="$i18n{plusAddressSettings}"
-            sub-label="$i18n{plusAddressSettingsSublabel}"
-            on-click="onPlusAddressClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"
-            external>
-        </cr-link-row>
       </template>
     </div>
     <div class="card">

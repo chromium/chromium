@@ -123,11 +123,6 @@ export class SettingsAutofillSectionElement extends
         computed: 'computeIsGoogleProfileAddress_(activeAddress)',
       },
 
-      isPlusAddressEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('plusAddressEnabled'),
-      },
-
       isEmailVerificationProtocolEnabled_: {
         type: Boolean,
         value: () =>
@@ -170,7 +165,6 @@ export class SettingsAutofillSectionElement extends
   declare private showEmailRemoveConfirmationDialog_: boolean;
   declare private activeEmailIssuer_: string;
   declare private isGoogleProfileAddress: boolean;
-  declare private isPlusAddressEnabled_: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
   declare private isYourSavedInfoSubpage_: boolean;
   declare private emailVerificationAddresses_: string[];
@@ -595,13 +589,6 @@ export class SettingsAutofillSectionElement extends
     chrome.metricsPrivate.recordEnumerationValue(
         'Autofill.Address.IsEnabled.Change', value,
         AutofillAddressOptInChange.COUNT);
-  }
-
-  private onPlusAddressClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'Settings.ManageOptionOnSettingsSelected');
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('plusAddressManagementUrl'));
   }
 
   private onGmailOtpFillingLinkClick_() {
