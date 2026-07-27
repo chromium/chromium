@@ -103,7 +103,6 @@ public class ExtensionsMenuItemViewBinder {
             @Status
             int status = model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS);
             View layout = view.findViewById(R.id.extensions_menu_item_site_permissions_layout);
-            TextView button = view.findViewById(R.id.extensions_menu_item_site_permissions_button);
             View icon = view.findViewById(R.id.extensions_menu_item_site_permissions_icon);
             View enterpriseIcon =
                     view.findViewById(R.id.extensions_menu_item_site_permissions_enterprise_icon);
@@ -111,7 +110,6 @@ public class ExtensionsMenuItemViewBinder {
             layout.setVisibility(View.VISIBLE);
             boolean isEnabled = status == Status.ENABLED;
             layout.setEnabled(isEnabled);
-            button.setEnabled(isEnabled);
             icon.setEnabled(isEnabled);
             enterpriseIcon.setEnabled(isEnabled);
 
