@@ -80,6 +80,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
 
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).
+      {"clearSearch", IDS_CLEAR},
       {"copyPoliciesJSON", IDS_COPY_POLICIES_JSON},
       {"exportPoliciesJSON", IDS_EXPORT_POLICIES_JSON},
       {"filterPlaceholder", IDS_POLICY_FILTER_PLACEHOLDER},

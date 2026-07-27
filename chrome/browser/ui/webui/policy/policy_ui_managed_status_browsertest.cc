@@ -96,20 +96,38 @@ constexpr char kInvalidLocale[] = "en-GB";
 
 constexpr char kPromotionBannerVisibilityJavaScript[] = R"(
   (function () {
-    const element =
-      document.getElementsByTagName('promotion-banner-section-container')[0];
+    let element =
+      document.querySelector('promotion-banner-section-container');
+    if (!element) {
+      const app = document.querySelector('policy-app');
+      if (app && app.shadowRoot) {
+        element = app.shadowRoot.querySelector(
+            'promotion-banner-section-container');
+      }
+    }
     return element ? 'visible' : 'hidden';
   })();
 )";
 
 constexpr char kPromotionBannerDismissJavaScript[] = R"(
-  const promotionContainer =
-    document.getElementsByTagName('promotion-banner-section-container')[0];
-  if (promotionContainer){
-    const dismissButton =
-      promotionContainer.shadowRoot.getElementById('promotion-dismiss-button');
-    dismissButton.click();
-  }
+  (function () {
+    let promotionContainer =
+      document.querySelector('promotion-banner-section-container');
+    if (!promotionContainer) {
+      const app = document.querySelector('policy-app');
+      if (app && app.shadowRoot) {
+        promotionContainer = app.shadowRoot.querySelector(
+            'promotion-banner-section-container');
+      }
+    }
+    if (promotionContainer) {
+      const dismissButton =
+        promotionContainer.shadowRoot.getElementById('promotion-dismiss-button');
+      if (dismissButton) {
+        dismissButton.click();
+      }
+    }
+  })();
 )";
 
 }  // namespace

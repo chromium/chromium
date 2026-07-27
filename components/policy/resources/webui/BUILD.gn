@@ -22,7 +22,8 @@ build_webui("build") {
     "logs/policy_logs_search.ts",
     "logs/types.ts",
     "policy.ts",
-    "policy_base.ts",
+    "policy_app.html.ts",
+    "policy_app.ts",
     "browser_proxy.ts",
     "policy_conflict.html.ts",
     "policy_conflict.ts",
@@ -48,6 +49,7 @@ build_webui("build") {
 
   css_files = [
     "logs/policy_logs_app.css",
+    "policy_app.css",
     "policy_conflict.css",
     "policy_precedence_row.css",
     "promotion_banner_section_container.css",

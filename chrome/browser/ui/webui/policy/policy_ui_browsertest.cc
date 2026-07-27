@@ -387,8 +387,10 @@ bool PolicyUIStatusTest::ReadStatusFor(
     (function() {
       function readStatus() {
         // Wait for the status box to appear in case page just loaded.
-        const statusSection = document.getElementById('status-section');
-        if (statusSection.hidden) {
+        const app = document.querySelector('policy-app');
+        const statusSection = app && app.shadowRoot ?
+            app.shadowRoot.querySelector('#status-section') : null;
+        if (!statusSection || statusSection.hidden) {
           return new Promise(resolve => {
             window.requestIdleCallback(resolve);
           }).then(readStatus);
@@ -441,26 +443,7 @@ bool PolicyUIStatusTest::ReloadPolicies() {
 }
 
 bool PolicyUIStatusTest::ReloadPolicies(content::WebContents* contents) {
-  const std::string javascript = R"JS(
-    (function() {
-      const reloadPoliciesBtn = document.getElementById('reload-policies');
-      reloadPoliciesBtn.click();
-      // Wait until reload button becomes enabled again, i.e. policies reloaded.
-      function waitForPoliciesToReload() {
-        if (reloadPoliciesBtn.disabled) {
-          return new Promise(resolve => {
-            window.requestIdleCallback(resolve);
-          }).then(waitForPoliciesToReload);
-        } else {
-          return true;
-        }
-      }
-      return new Promise(resolve => {
-        window.requestIdleCallback(resolve);
-      }).then(waitForPoliciesToReload);
-    })();
-  )JS";
-  return content::ExecJs(contents, javascript);
+  return content::ExecJs(contents, "reloadPolicies()");
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -862,8 +845,17 @@ class PolicyPrecedenceUITest
 
   // Used to retrieve the contents of the policy precedence rows.
   const std::string kJavaScript =
-      "var precedence_row = getPrecedenceRowValue();"
-      "precedence_row.textContent;";
+      "new Promise(resolve => {"
+      "  const check = () => {"
+      "    const precedence_row = getPrecedenceRowValue();"
+      "    if (precedence_row && precedence_row.textContent.trim() !== '') {"
+      "      resolve(precedence_row.textContent.trim());"
+      "    } else {"
+      "      setTimeout(check, 50);"
+      "    }"
+      "  };"
+      "  check();"
+      "});";
 
  private:
   base::test::ScopedFeatureList feature_list_;

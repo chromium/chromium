@@ -140,16 +140,19 @@ class PolicyTestPageVisibilityTest
   // expected is true, or not visible if expected is false.
   void VerifyTestPageVisibility(bool expected) {
     if (expected) {  // Test page should be visible
-      // getElementById returns null if the element is not found and ExecJs
-      // returns whether an error was raised, so use .children here and below as
-      // calling .children on null raises an error.
-      const std::string kJavaScript =
-          "document.getElementById('top-buttons').children;";
-      EXPECT_TRUE(content::ExecJs(web_contents(), kJavaScript));
+      EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+        document.getElementById('top-buttons') !== null;
+      )"));
     } else {  // Main policy page should be visible.
-      const std::string kJavaScript =
-          "document.getElementById('topbar').children;";
-      EXPECT_TRUE(content::ExecJs(web_contents(), kJavaScript));
+      EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+        (async () => {
+          await customElements.whenDefined('policy-app');
+          const app = document.querySelector('policy-app');
+          if (!app) return false;
+          await app.updateComplete;
+          return app.shadowRoot.querySelector('cr-toolbar') !== null;
+        })();
+      )"));
     }
   }
 };
@@ -174,6 +177,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestPageVisibilityTest,
     EXPECT_EQ(web_contents()->GetVisibleURL(),
               GURL(chrome::kChromeUIPolicyTestURL));
   } else {
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
     EXPECT_EQ(web_contents()->GetVisibleURL(),
               GURL(chrome::kChromeUIPolicyURL));
   }

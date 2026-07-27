@@ -1,0 +1,102 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+cr-toolbar {
+  flex-shrink: 0;
+}
+
+main {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#policy-ui {
+  padding: 24px;
+}
+
+#status-box-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+status-box {
+  width: 380px;
+}
+
+.action-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--cr-separator-color);
+  background-color: var(--page-background);
+}
+
+.action-row-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+cr-button {
+  --cr-button-height: 32px;
+}
+
+cr-checkbox {
+  margin-inline-start: 16px;
+  --cr-checkbox-label-padding-start: 8px;
+}
+
+a {
+  color: var(--link-color);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#toast-container {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+}
+
+.toast {
+  background-color: var(--toast-background);
+  border: 1px solid var(--table-border);
+  border-radius: 15px;
+  color: var(--toast-text-color);
+  margin: 0 auto 5px auto;
+  padding: 20px;
+  text-align: center;
+  width: 240px;
+  max-width: 100%;
+  z-index: 999;
+}
+
+@media only screen and (max-width: 480px) {
+  status-box {
+    width: 100%;
+  }
+}
+
+
