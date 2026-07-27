@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
@@ -54,8 +53,7 @@ class VerticalTabStripRegionView final
     : public BaseTabStripRegionView,
       public views::ResizeAreaDelegate,
       public OmniboxTabHelper::Observer,
-      public tabs::VerticalTabStripStateController::Delegate,
-      public views::WidgetObserver {
+      public tabs::VerticalTabStripStateController::Delegate {
   METADATA_HEADER(VerticalTabStripRegionView, BaseTabStripRegionView)
 
  public:
@@ -137,9 +135,6 @@ class VerticalTabStripRegionView final
       base::RepeatingCallback<void(bool)> callback) override;
   bool IsCollapsing() override;
   void RequestCollapse(bool collapse) override;
-
-  // views::WidgetObserver:
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view() ? tab_strip_view()->GetTabsSeparator() : nullptr;
@@ -300,9 +295,6 @@ class VerticalTabStripRegionView final
   // The mouse exit event debounce timer.
   base::OneShotTimer mouse_exit_timer_;
 
-  bool is_first_window_presentation_ = true;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
   base::CallbackListSubscription paint_as_active_subscription_;
 };
 

@@ -343,6 +343,7 @@ bool VerticalTabStripRegionView::WillWrapDueToOverflow(
 }
 
 void VerticalTabStripRegionView::AddedToWidget() {
+  BaseTabStripRegionView::AddedToWidget();
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           [](VerticalTabStripRegionView* view) {
@@ -350,31 +351,16 @@ void VerticalTabStripRegionView::AddedToWidget() {
             view->UpdateExpandOnHoverState();
           },
           base::Unretained(this)));
-  widget_observation_.Observe(GetWidget());
   if (GetFocusManager()) {
     GetFocusManager()->AddFocusChangeListener(&focus_listener_);
   }
 }
 
 void VerticalTabStripRegionView::RemovedFromWidget() {
-  widget_observation_.Reset();
   if (GetFocusManager()) {
     GetFocusManager()->RemoveFocusChangeListener(&focus_listener_);
   }
   BaseTabStripRegionView::RemovedFromWidget();
-}
-
-void VerticalTabStripRegionView::OnWidgetVisibilityChanged(
-    views::Widget* widget,
-    bool visible) {
-  if (visible && is_first_window_presentation_) {
-    is_first_window_presentation_ = false;
-    // Only scroll-in the active tab for the first window presentation.
-    if (tab_strip_view()) {
-      tab_strip_view()->OnTabChanged(
-          root_node()->GetController()->GetActiveTab());
-    }
-  }
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
@@ -1121,6 +1107,7 @@ void VerticalTabStripRegionView::OnOmniboxPopupVisibilityChanged(bool is_open) {
 
 void VerticalTabStripRegionView::OnActiveTabChanged(
     const tabs::TabInterface* active_tab) {
+  BaseTabStripRegionView::OnActiveTabChanged(active_tab);
   omnibox_tab_helper_observation_.Reset();
 
   if (active_tab) {
@@ -1129,10 +1116,6 @@ void VerticalTabStripRegionView::OnActiveTabChanged(
     if (tab_helper) {
       omnibox_tab_helper_observation_.Observe(tab_helper);
     }
-  }
-
-  if (tab_strip_view()) {
-    tab_strip_view()->OnTabChanged(active_tab);
   }
 }
 

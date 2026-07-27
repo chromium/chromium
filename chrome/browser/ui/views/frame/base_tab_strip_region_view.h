@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
@@ -32,7 +33,8 @@ class TabCollectionNode;
 
 // Shared collection-based foundation for tabstrip region views. Manages
 // observers and controllers used for both horizontal and vertical orientations.
-class BaseTabStripRegionView : public TabStripRegionView {
+class BaseTabStripRegionView : public TabStripRegionView,
+                               public views::WidgetObserver {
   METADATA_HEADER(BaseTabStripRegionView, TabStripRegionView)
 
  public:
@@ -88,6 +90,13 @@ class BaseTabStripRegionView : public TabStripRegionView {
   void HandleDragUpdate(
       const std::optional<BrowserRootView::DropIndex>& index) override;
   void HandleDragExited() override;
+
+  // Views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void DisableTabStripEditingForTesting() override;
   gfx::Rect GetLinkDropBoundsForTesting(
@@ -157,6 +166,10 @@ class BaseTabStripRegionView : public TabStripRegionView {
       on_active_tab_changed_subscription_;
 
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
+
+  bool is_first_window_presentation_ = true;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BASE_TAB_STRIP_REGION_VIEW_H_
