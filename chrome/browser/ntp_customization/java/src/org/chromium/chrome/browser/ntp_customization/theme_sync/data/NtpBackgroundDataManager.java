@@ -130,13 +130,16 @@ public class NtpBackgroundDataManager {
                 currentGroup.remove(index);
             }
             currentGroup.add(0, backgroundData);
+            NtpBackgroundDataBase dataToRemove = null;
             if (currentGroup.size() > MAXIMUM_LOCAL_HISTORY) {
                 int indexToRemove = currentGroup.size() - 1;
-                NtpBackgroundDataBase dataToRemove = currentGroup.get(indexToRemove);
-                cleanUpForBackgroundData(dataToRemove);
+                dataToRemove = currentGroup.get(indexToRemove);
                 currentGroup.remove(indexToRemove);
             }
             writeToSharedPreference(currentGroup.toJsonArray(), platformTypeToSave);
+            if (dataToRemove != null) {
+                cleanUpForBackgroundData(dataToRemove);
+            }
         } catch (JSONException e) {
             Log.i(
                     TAG,

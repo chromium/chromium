@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,8 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHistoryCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -73,6 +76,7 @@ import org.chromium.ui.widget.ButtonCompat;
 @EnableFeatures(HOME_MODULE_PREF_REFACTOR)
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJni;
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationMediator mMediator;
@@ -114,6 +118,8 @@ public class NtpCustomizationCoordinatorUnitTest {
         FeedFeatures.setFakePrefsForTest(mMockPrefService);
         FeedServiceBridgeJni.setInstanceForTesting(mMockFeedServiceBridgeJni);
         when(mMockFeedServiceBridgeJni.isEnabled()).thenReturn(true);
+        NtpThemeCollectionBridgeJni.setInstanceForTesting(mNtpThemeCollectionBridgeJni);
+        when(mNtpThemeCollectionBridgeJni.init(any(), any())).thenReturn(1L);
 
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(

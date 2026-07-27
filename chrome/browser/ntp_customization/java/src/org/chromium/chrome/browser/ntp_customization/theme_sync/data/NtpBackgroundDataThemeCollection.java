@@ -34,6 +34,8 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
 
     private final CustomBackgroundInfo mCustomBackgroundInfo;
 
+    private @Nullable Bitmap mPreviewBitmap;
+
     /**
      * Constructor.
      *
@@ -55,9 +57,35 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         mCustomBackgroundInfo = customBackgroundInfo;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param platformType The platform type of the device.
+     * @param customBackgroundInfo The custom background info.
+     * @param previewBitmap The bitmap for preview, not synced.
+     */
+    public NtpBackgroundDataThemeCollection(
+            @PlatformType int platformType,
+            CustomBackgroundInfo customBackgroundInfo,
+            @Nullable Bitmap previewBitmap) {
+        this(
+                platformType,
+                customBackgroundInfo,
+                /* backgroundImageInfo= */ null,
+                /* bitmap= */ null,
+                /* primaryColor= */ null,
+                /* fileIdHash= */ null);
+        mPreviewBitmap = previewBitmap;
+    }
+
     /** Returns the {@link CustomBackgroundInfo}. */
     public CustomBackgroundInfo getCustomBackgroundInfo() {
         return mCustomBackgroundInfo;
+    }
+
+    @Override
+    public @Nullable Bitmap getPreviewBitmap() {
+        return mPreviewBitmap;
     }
 
     // NtpBackgroundDataImageBase implementations.
