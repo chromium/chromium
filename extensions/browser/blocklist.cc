@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -31,6 +33,10 @@
 #include "extensions/common/extension_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace safe_browsing {
+class V5GetHashProtocolManager;
+}
 
 using content::BrowserThread;
 using safe_browsing::SafeBrowsingDatabaseManager;
@@ -92,6 +98,17 @@ class SafeBrowsingClientImpl
         std::move(pass_key), extension_ids, std::move(callback)));
     safe_browsing_client->StartCheck(g_database_manager.Get().get(),
                                      extension_ids);
+  }
+
+  // SafeBrowsingDatabaseManager::Client impl:
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  GetV5GetHashProtocolManager() override {
+    // Extension blocklist checks just check the local database; they don't
+    // make get hash requests. So, there's no need to provide a
+    // V5GetHashProtocolManager.
+    // TODO(crbug.com/372395685): Refactor so this override is unneeded once the
+    // v4 code is deprecated.
+    NOTREACHED();
   }
 
  private:
