@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -504,6 +505,158 @@ TEST_F(ActorTaskTest, MultipleActions) {
   EXPECT_EQ(future.Get().size(), 2u);
   EXPECT_EQ(future.Get()[0].result->code, mojom::ActionResultCode::kOk);
   EXPECT_EQ(future.Get()[1].result->code, mojom::ActionResultCode::kOk);
+}
+
+class ActorTaskCompletionMetricsTest : public testing::Test {
+ public:
+  ActorTaskCompletionMetricsTest()
+      : task_environment_(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActor);
+  }
+
+  void SetUp() override {
+    profile_ =
+        TestingProfile::Builder()
+            .AddTestingFactory(
+                ActorKeyedServiceFactory::GetInstance(),
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<ActorKeyedServiceFake>(
+                      Profile::FromBrowserContext(context));
+                }))
+            .Build();
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  MockActorTaskDelegate mock_delegate_;
+};
+
+TEST_F(ActorTaskCompletionMetricsTest,
+       InvocationSourceCompletionMetrics_UniversalCart) {
+  base::HistogramTester histograms;
+
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->title = "Completion Metrics Task";
+
+  auto* service = ActorKeyedService::Get(profile_.get());
+  auto mock_ui_event_dispatcher =
+      std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+  TaskId task_id = service->CreateTaskForTesting(
+      std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
+      NoEnterprisePolicyChecker(), std::move(task_options),
+      mock_delegate_.GetWeakPtr(),
+      glic::mojom::InvocationSource::kUniversalCart);
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->initial_invocation_source(),
+            glic::mojom::InvocationSource::kUniversalCart);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kActorRecordInvocationSourceCompletionMetrics);
+
+  task->Stop(ActorTask::StoppedReason::kTaskComplete);
+
+  histograms.ExpectTotalCount(
+      "Actor.Task.Duration.WallClock.Completed.UniversalCart", 1);
+  histograms.ExpectTotalCount("Actor.Task.Duration.Completed.UniversalCart", 1);
+  histograms.ExpectTotalCount("Actor.Task.Count.Completed.UniversalCart", 1);
+}
+
+TEST_F(ActorTaskCompletionMetricsTest,
+       InvocationSourceCompletionMetrics_Other) {
+  base::HistogramTester histograms;
+
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->title = "Completion Metrics Task";
+
+  auto* service = ActorKeyedService::Get(profile_.get());
+  auto mock_ui_event_dispatcher =
+      std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+  TaskId task_id = service->CreateTaskForTesting(
+      std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
+      NoEnterprisePolicyChecker(), std::move(task_options),
+      mock_delegate_.GetWeakPtr(), glic::mojom::InvocationSource::kOsButton);
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->initial_invocation_source(),
+            glic::mojom::InvocationSource::kOsButton);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kActorRecordInvocationSourceCompletionMetrics);
+
+  task->Stop(ActorTask::StoppedReason::kTaskComplete);
+
+  histograms.ExpectTotalCount("Actor.Task.Duration.WallClock.Completed.Other",
+                              1);
+  histograms.ExpectTotalCount("Actor.Task.Duration.Completed.Other", 1);
+  histograms.ExpectTotalCount("Actor.Task.Count.Completed.Other", 1);
+}
+
+TEST_F(ActorTaskCompletionMetricsTest,
+       InvocationSourceCompletionMetrics_Disabled) {
+  base::HistogramTester histograms;
+
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->title = "Completion Metrics Task";
+
+  auto* service = ActorKeyedService::Get(profile_.get());
+  auto mock_ui_event_dispatcher =
+      std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+  TaskId task_id = service->CreateTaskForTesting(
+      std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
+      NoEnterprisePolicyChecker(), std::move(task_options),
+      mock_delegate_.GetWeakPtr(),
+      glic::mojom::InvocationSource::kUniversalCart);
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_NE(task, nullptr);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kActorRecordInvocationSourceCompletionMetrics);
+
+  task->Stop(ActorTask::StoppedReason::kTaskComplete);
+
+  histograms.ExpectTotalCount(
+      "Actor.Task.Duration.WallClock.Completed.UniversalCart", 0);
+  histograms.ExpectTotalCount("Actor.Task.Duration.Completed.UniversalCart", 0);
+  histograms.ExpectTotalCount("Actor.Task.Count.Completed.UniversalCart", 0);
+}
+
+TEST_F(ActorTaskCompletionMetricsTest,
+       InvocationSourceCompletionMetrics_DefaultInvocationSource) {
+  base::HistogramTester histograms;
+
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->title = "Completion Metrics Task";
+
+  auto* service = ActorKeyedService::Get(profile_.get());
+  auto mock_ui_event_dispatcher =
+      std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+  TaskId task_id = service->CreateTaskForTesting(
+      std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
+      NoEnterprisePolicyChecker(), std::move(task_options),
+      mock_delegate_.GetWeakPtr());
+  ActorTask* task = service->GetTask(task_id);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->initial_invocation_source(), std::nullopt);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kActorRecordInvocationSourceCompletionMetrics);
+
+  task->Stop(ActorTask::StoppedReason::kTaskComplete);
+
+  // Do not record any histograms if invocation source is not set.
+  histograms.ExpectTotalCount("Actor.Task.Duration.WallClock.Completed.Other",
+                              0);
+  histograms.ExpectTotalCount("Actor.Task.Duration.Completed.Other", 0);
+  histograms.ExpectTotalCount("Actor.Task.Count.Completed.Other", 0);
 }
 
 }  // namespace

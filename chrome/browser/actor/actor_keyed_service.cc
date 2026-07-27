@@ -362,10 +362,11 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate) {
+    base::WeakPtr<ActorTaskDelegate> delegate,
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
   return CreateTaskImpl(ui::NewUiEventDispatcher(GetActorUiStateManager()),
                         source_info, policy_checker, std::move(options),
-                        std::move(delegate));
+                        std::move(delegate), initial_invocation_source);
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
@@ -373,10 +374,11 @@ TaskId ActorKeyedService::CreateTaskForTesting(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate) {
+    base::WeakPtr<ActorTaskDelegate> delegate,
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
   return CreateTaskImpl(std::move(ui_event_dispatcher), source_info,
-                        policy_checker, std::move(options),
-                        std::move(delegate));
+                        policy_checker, std::move(options), std::move(delegate),
+                        initial_invocation_source);
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
@@ -384,7 +386,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate) {
+    base::WeakPtr<ActorTaskDelegate> delegate,
+    std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
@@ -392,7 +395,7 @@ TaskId ActorKeyedService::CreateTaskImpl(
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
       std::move(ui_event_dispatcher), std::move(options), source_info,
-      policy_checker, std::move(delegate));
+      policy_checker, std::move(delegate), initial_invocation_source);
 
   active_tasks_[task_id] = std::move(actor_task);
 

@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/actor/action_result.h"
@@ -90,13 +91,17 @@ class ActorKeyedService : public KeyedService,
   TaskId CreateTaskWithOptions(const TaskSourceInfo& source_info,
                                const EnterprisePolicyChecker* policy_checker,
                                webui::mojom::TaskOptionsPtr options,
-                               base::WeakPtr<ActorTaskDelegate> delegate);
+                               base::WeakPtr<ActorTaskDelegate> delegate,
+                               std::optional<glic::mojom::InvocationSource>
+                                   initial_invocation_source = std::nullopt);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
-      base::WeakPtr<ActorTaskDelegate> delegate);
+      base::WeakPtr<ActorTaskDelegate> delegate,
+      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
+          std::nullopt);
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
@@ -214,7 +219,8 @@ class ActorKeyedService : public KeyedService,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
       webui::mojom::TaskOptionsPtr options,
-      base::WeakPtr<ActorTaskDelegate> delegate);
+      base::WeakPtr<ActorTaskDelegate> delegate,
+      std::optional<glic::mojom::InvocationSource> initial_invocation_source);
 
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(

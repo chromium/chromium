@@ -196,4 +196,7 @@ BASE_FEATURE(kActorScriptToolSkipScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorScriptToolSkipPageContent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorRecordInvocationSourceCompletionMetrics,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace actor

@@ -10,6 +10,7 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 
@@ -55,11 +56,13 @@ void RecordActorTaskVisibilityDurationHistograms(
     ActorTask::StoppedReason stopped_reason);
 
 // Record task completion metrics.
-void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
-                               base::TimeDelta total_time,
-                               base::TimeDelta controlled_time,
-                               size_t interruptions_count,
-                               size_t actions_count);
+void RecordActorTaskCompletion(
+    ActorTask::StoppedReason stopped_reason,
+    base::TimeDelta total_time,
+    base::TimeDelta controlled_time,
+    size_t interruptions_count,
+    size_t actions_count,
+    std::optional<glic::mojom::InvocationSource> invocation_source);
 
 // Recorded when a ActorTask is successfully created for the first time or not.
 void RecordActorTaskCreated(bool success);

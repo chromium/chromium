@@ -249,7 +249,8 @@ void GlicActorClientSession::CreateTask(
   current_task_id_ = actor_keyed_service().CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             conversation_id),
-      &actor_policy_checker(), std::move(options), GetWeakPtr());
+      &actor_policy_checker(), std::move(options), GetWeakPtr(),
+      instance_metrics().initial_invocation_source());
   CHECK(!current_task_id_.is_null());
 
   if (manager_->delegate_) {

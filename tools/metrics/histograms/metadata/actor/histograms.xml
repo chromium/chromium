@@ -38,6 +38,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State, enums.xml:ActorTaskState) -->
 
+<!-- LINT.IfChange(GlicInvocationSourceForActor) -->
+
+<variants name="GlicInvocationSourceForActor">
+  <variant name="Other"/>
+  <variant name="UniversalCart"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ToString) -->
+
 <!-- LINT.IfChange(StoppedReason) -->
 
 <variants name="StoppedReason">
@@ -843,6 +852,22 @@ chromium-metrics-reviews@google.com.
   <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
+<histogram name="Actor.Task.Count.{StoppedReason}.{GlicInvocationSource}"
+    units="count" expires_after="2026-10-11">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    number of the actions in the task. Only recorded when
+    ActorRecordInvocationSourceCompletionMetrics is enabled and the task was
+    created through Glic with a supported invocation source. Sources not listed
+    in GlicInvocationSourceForActor are bucketed as Other.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+  <token key="GlicInvocationSource" variants="GlicInvocationSourceForActor"/>
+</histogram>
+
 <histogram name="Actor.Task.Created" enum="Boolean" expires_after="2026-12-16">
   <owner>kenok@google.com</owner>
   <owner>chrstne@google.com</owner>
@@ -910,6 +935,25 @@ chromium-metrics-reviews@google.com.
   <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
+<histogram
+    name="Actor.Task.Duration.WallClock.{StoppedReason}.{GlicInvocationSource}"
+    units="ms" expires_after="2026-10-11">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    runtime of the task including any paused state. Broken down by the
+    invocation source that initially opened the Glic instance which created the
+    task. Only recorded when ActorRecordInvocationSourceCompletionMetrics is
+    enabled and the task was created through Glic with a supported invocation
+    source. Sources not listed in GlicInvocationSourceForActor are bucketed as
+    Other.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+  <token key="GlicInvocationSource" variants="GlicInvocationSourceForActor"/>
+</histogram>
+
 <histogram name="Actor.Task.Duration.{StoppedReason}" units="ms"
     expires_after="2026-12-16">
   <owner>dtapuska@google.com</owner>
@@ -920,6 +964,22 @@ chromium-metrics-reviews@google.com.
     runtime of the task excluding any paused state.
   </summary>
   <token key="StoppedReason" variants="StoppedReason"/>
+</histogram>
+
+<histogram name="Actor.Task.Duration.{StoppedReason}.{GlicInvocationSource}"
+    units="ms" expires_after="2026-10-11">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    runtime of the task excluding any paused state. Only recorded when
+    ActorRecordInvocationSourceCompletionMetrics is enabled and the task was
+    created through Glic with a supported invocation source. Sources not listed
+    in GlicInvocationSourceForActor are bucketed as Other.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+  <token key="GlicInvocationSource" variants="GlicInvocationSourceForActor"/>
 </histogram>
 
 <histogram name="Actor.Task.Interruptions.{StoppedReason}" units="count"

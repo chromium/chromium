@@ -24,6 +24,7 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -79,7 +80,9 @@ class ActorTask : public base::SupportsUserData {
             webui::mojom::TaskOptionsPtr options,
             const TaskSourceInfo& source_info,
             const EnterprisePolicyChecker* policy_checker,
-            base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
+            base::WeakPtr<ActorTaskDelegate> delegate = nullptr,
+            std::optional<glic::mojom::InvocationSource>
+                initial_invocation_source = std::nullopt);
   ~ActorTask() override;
 
   ActorTask() = delete;
@@ -93,13 +96,20 @@ class ActorTask : public base::SupportsUserData {
       webui::mojom::TaskOptionsPtr options,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
-      base::WeakPtr<ActorTaskDelegate> delegate);
+      base::WeakPtr<ActorTaskDelegate> delegate,
+      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
+          std::nullopt);
 
   TaskId id() const { return id_; }
 
   const TaskSourceInfo& source_info() const { return source_info_; }
 
   glic::mojom::FeatureMode feature_mode() const { return feature_mode_; }
+
+  std::optional<glic::mojom::InvocationSource> initial_invocation_source()
+      const {
+    return initial_invocation_source_;
+  }
 
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
@@ -376,6 +386,10 @@ class ActorTask : public base::SupportsUserData {
 
   // The feature mode for the task.
   const glic::mojom::FeatureMode feature_mode_;
+
+  // Invocation source that first opened the Glic instance this task was
+  // created from. nullopt for tasks not created via Glic.
+  const std::optional<glic::mojom::InvocationSource> initial_invocation_source_;
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;

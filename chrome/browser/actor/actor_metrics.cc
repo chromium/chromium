@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
@@ -54,6 +55,19 @@ std::string_view ToString(ApcSource source) {
   }
   NOTREACHED();
 }
+
+// LINT.IfChange(ToString)
+// Not using GetInvocationSourceString from metrics_types.h here because only a
+// subset of invocation sources are recorded.
+std::string_view ToString(glic::mojom::InvocationSource invocation_source) {
+  switch (invocation_source) {
+    case glic::mojom::InvocationSource::kUniversalCart:
+      return "UniversalCart";
+    default:
+      return "Other";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:GlicInvocationSourceForActor)
 
 }  // namespace
 
@@ -98,11 +112,13 @@ void RecordActorTaskVisibilityDurationHistograms(
       non_visible_duration);
 }
 
-void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
-                               base::TimeDelta total_time,
-                               base::TimeDelta controlled_time,
-                               size_t interruptions_count,
-                               size_t actions_count) {
+void RecordActorTaskCompletion(
+    ActorTask::StoppedReason stopped_reason,
+    base::TimeDelta total_time,
+    base::TimeDelta controlled_time,
+    size_t interruptions_count,
+    size_t actions_count,
+    std::optional<glic::mojom::InvocationSource> invocation_source) {
   base::UmaHistogramLongTimes100(base::StrCat({"Actor.Task.Duration.WallClock.",
                                                ToString(stopped_reason)}),
                                  total_time);
@@ -116,6 +132,26 @@ void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
       base::StrCat({"Actor.Task.Count.", ToString(stopped_reason)}),
       actions_count);
   base::UmaHistogramEnumeration("Actor.Task.StoppedReason", stopped_reason);
+
+  if (base::FeatureList::IsEnabled(
+          kActorRecordInvocationSourceCompletionMetrics) &&
+      invocation_source.has_value()) {
+    glic::mojom::InvocationSource invocation_source_value =
+        invocation_source.value();
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"Actor.Task.Duration.WallClock.",
+                      ToString(stopped_reason), ".",
+                      ToString(invocation_source_value)}),
+        total_time);
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"Actor.Task.Duration.", ToString(stopped_reason), ".",
+                      ToString(invocation_source_value)}),
+        controlled_time);
+    base::UmaHistogramCounts1000(
+        base::StrCat({"Actor.Task.Count.", ToString(stopped_reason), ".",
+                      ToString(invocation_source_value)}),
+        actions_count);
+  }
 }
 
 void RecordActorTaskCreated(bool success) {
