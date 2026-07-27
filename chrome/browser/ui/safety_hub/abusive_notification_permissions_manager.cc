@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -176,11 +177,14 @@ bool ShouldCheckSuspiciousContentRevocationThreshold(
 
 AbusiveNotificationPermissionsManager::AbusiveNotificationPermissionsManager(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+        v5_get_hash_protocol_manager,
     scoped_refptr<HostContentSettingsMap> hcsm,
     PrefService* pref_service)
     : database_manager_(database_manager),
       hcsm_(hcsm),
       pref_service_(pref_service),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
       safe_browsing_check_delay_(kCheckUrlTimeoutMs) {}
 
 AbusiveNotificationPermissionsManager::
@@ -519,6 +523,8 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
         base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
             pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
+        base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+            v5_get_hash_protocol_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>
             safe_browsing_request_clients,
@@ -529,6 +535,7 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
         const base::Clock* clock)
     : safe_browsing::SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
       database_manager_(database_manager),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
       safe_browsing_request_clients_(safe_browsing_request_clients),
       hcsm_(hcsm),
       pref_service_(pref_service),
@@ -543,6 +550,12 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     database_manager_->CancelCheck(this);
     timer_.Stop();
   }
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
+    GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }
 
 void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
@@ -628,8 +641,9 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
   DCHECK(database_manager_);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
       safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
-      database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
-      pref_service_, url, safe_browsing_check_delay_, GetClock());
+      database_manager_.get(), v5_get_hash_protocol_manager_,
+      &safe_browsing_request_clients_, hcsm_.get(), pref_service_, url,
+      safe_browsing_check_delay_, GetClock());
   auto new_sb_check_ptr = new_sb_check.get();
   safe_browsing_request_clients_[new_sb_check_ptr] = std::move(new_sb_check);
   new_sb_check_ptr->CheckSocialEngineeringBlocklist();
