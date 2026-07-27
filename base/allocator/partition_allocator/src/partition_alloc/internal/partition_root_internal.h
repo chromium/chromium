@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_INTERNAL_H_
 #define PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_INTERNAL_H_
 
+#include <bit>
 #include <cstring>
 
 #include "partition_alloc/address_pool_manager_types.h"
@@ -314,7 +315,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart PartitionRoot::AllocFromBucket(
     size_t* slot_size,
     bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
-            internal::base::bits::HasSingleBit(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
   SlotSpanMetadata* slot_span = bucket->active_slot_spans_head;
   // There always must be a slot span on the active list (could be a sentinel).
   PA_DCHECK(slot_span);
@@ -1271,7 +1272,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
     slot_span_alignment = std::max(alignment, internal::PartitionPageSize());
   }
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
-            internal::base::bits::HasSingleBit(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
   static_assert(!ContainsFlags(
       flags, AllocFlags::kMemoryShouldBeTaggedForMte));  // Internal only.
 
@@ -1581,7 +1582,7 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
   // crbug.com/1185484.
 
   // This is mandated by |posix_memalign()|, so should never fire.
-  PA_CHECK(internal::base::bits::HasSingleBit(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= internal::kMaxSupportedAlignment);
 
@@ -1609,7 +1610,7 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
           << (int{sizeof(size_t) * 8} -
               partition_alloc::internal::base::bits::CountlZero(raw_size - 1));
     }
-    PA_DCHECK(internal::base::bits::HasSingleBit(raw_size));
+    PA_DCHECK(std::has_single_bit(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
   }

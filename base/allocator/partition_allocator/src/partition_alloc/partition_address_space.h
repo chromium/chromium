@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_
 #define PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_
 
+#include <bit>
 #include <cstddef>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator_constants.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -319,16 +319,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // region. One use case for this Pool is V8 Sandbox, which requires that
   // ArrayBuffers be located inside of it.
   static constexpr size_t kCorePoolSize = kPoolMaxSize;
-  static_assert(base::bits::HasSingleBit(kCorePoolSize));
+  static_assert(std::has_single_bit(kCorePoolSize));
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
-  static_assert(base::bits::HasSingleBit(kThreadIsolatedPoolSize));
+  static_assert(std::has_single_bit(kThreadIsolatedPoolSize));
 #endif
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
-  static_assert(base::bits::HasSingleBit(kConfigurablePoolMaxSize));
-  static_assert(base::bits::HasSingleBit(kConfigurablePoolMinSize));
+  static_assert(std::has_single_bit(kConfigurablePoolMaxSize));
+  static_assert(std::has_single_bit(kConfigurablePoolMinSize));
 
 #if PA_BUILDFLAG(IS_IOS)
 
@@ -340,11 +340,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // crbug.com/1250788).
   static constexpr size_t kCorePoolSizeForIOSTestProcess = kGiB / 4;
   static_assert(kCorePoolSizeForIOSTestProcess < kCorePoolSize);
-  static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSTestProcess));
+  static_assert(std::has_single_bit(kCorePoolSizeForIOSTestProcess));
   static constexpr size_t kCorePoolSizeForIOSReducedPoolSize =
       kCorePoolSize / 2;
   static_assert(kCorePoolSizeForIOSReducedPoolSize < kCorePoolSize);
-  static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSReducedPoolSize));
+  static_assert(std::has_single_bit(kCorePoolSizeForIOSReducedPoolSize));
 #endif  // PA_BUILDFLAG(IS_IOS)
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

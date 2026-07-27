@@ -6,6 +6,7 @@
 
 #include <array>
 #include <atomic>
+#include <bit>
 #include <cstddef>
 #include <cstring>
 #include <map>
@@ -18,7 +19,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
@@ -207,7 +207,7 @@ void* AllocateAlignedMemory(size_t alignment,
   // time.
   if (alignment <= partition_alloc::internal::kAlignment) {
     // This is mandated by |posix_memalign()| and friends, so should never fire.
-    PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
+    PA_CHECK(std::has_single_bit(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
     return Allocator(alloc_token)->Alloc<flags>(size);

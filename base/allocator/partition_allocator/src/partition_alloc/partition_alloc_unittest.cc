@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
+#include "partition_alloc/buildflags.h"
 
-#include "partition_alloc/bucket_lookup.h"
-#include "partition_alloc/slot_start.h"
 #if !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include <algorithm>
+#include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -23,8 +23,8 @@
 
 #include "partition_alloc/address_space_randomization.h"
 #include "partition_alloc/bounds_checks.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/internal/partition_root_internal.h"
@@ -53,6 +53,7 @@
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/slot_address_and_size.h"
+#include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 #include "partition_alloc/use_death_tests.h"
@@ -6011,7 +6012,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
   const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
   for (size_t pool_size = max_pool_size; pool_size >= min_pool_size;
        pool_size /= 2) {
-    PA_DCHECK(base::bits::HasSingleBit(pool_size));
+    PA_DCHECK(std::has_single_bit(pool_size));
     EXPECT_FALSE(IsConfigurablePoolAvailable());
     uintptr_t pool_base =
         AllocPages(pool_size, pool_size,

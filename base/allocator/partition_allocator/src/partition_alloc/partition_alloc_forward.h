@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_FORWARD_H_
 
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
@@ -32,7 +33,7 @@ namespace internal {
 constexpr inline size_t kAlignment =
     std::max(alignof(max_align_t),
              static_cast<size_t>(__STDCPP_DEFAULT_NEW_ALIGNMENT__));
-static_assert(base::bits::HasSingleBit(kAlignment),
+static_assert(std::has_single_bit(kAlignment),
               "Alignment must be power of two.");
 static_assert(kAlignment <= 16,
               "PartitionAlloc doesn't support a fundamental alignment larger "

@@ -7,6 +7,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_BITS_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_BITS_H_
 
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -19,25 +20,11 @@
 
 namespace partition_alloc::internal::base::bits {
 
-// Backport of C++20 std::has_single_bit in <bit>.
-//
-// Returns true iff |value| is a power of 2.
-template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
-constexpr bool HasSingleBit(T value) {
-  // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
-  //
-  // Only positive integers with a single bit set are powers of two. If only one
-  // bit is set in x (e.g. 0b00000100000000) then |x-1| will have that bit set
-  // to zero and all bits to its right set to 1 (e.g. 0b00000011111111). Hence
-  // |x & (x-1)| is 0 iff x is a power of two.
-  return value > 0 && (value & (value - 1)) == 0;
-}
-
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
 inline constexpr T AlignDown(T size, T alignment) {
   static_assert(std::is_unsigned_v<T>);
-  PA_BASE_DCHECK(HasSingleBit(alignment));
+  PA_BASE_DCHECK(std::has_single_bit(alignment));
   return size & ~(alignment - 1);
 }
 
@@ -53,7 +40,7 @@ inline T* AlignDown(T* ptr, size_t alignment) {
 template <typename T>
 inline constexpr T AlignUp(T size, T alignment) {
   static_assert(std::is_unsigned_v<T>);
-  PA_BASE_DCHECK(HasSingleBit(alignment));
+  PA_BASE_DCHECK(std::has_single_bit(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
 

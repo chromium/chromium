@@ -4,6 +4,7 @@
 
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
+#include <bit>
 #include <cstring>
 
 #include "partition_alloc/partition_alloc_base/bits.h"
@@ -15,7 +16,7 @@ namespace allocator_shim {
 namespace {
 
 bool IsPtrAligned(void* ptr, size_t alignment) {
-  PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
   return partition_alloc::internal::base::bits::AlignUp(address, alignment) ==
          address;

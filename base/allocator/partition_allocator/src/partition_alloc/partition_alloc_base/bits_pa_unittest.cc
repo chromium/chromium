@@ -116,19 +116,6 @@ TEST(BitsTestPA, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
 }
 
-TEST(BitsTestPA, PowerOfTwo) {
-  EXPECT_FALSE(HasSingleBit(0u));
-  EXPECT_TRUE(HasSingleBit(1u));
-  EXPECT_TRUE(HasSingleBit(2u));
-  // Unsigned 64 bit cases.
-  for (uint32_t i = 2; i < 64; i++) {
-    const uint64_t val = uint64_t{1} << i;
-    EXPECT_FALSE(HasSingleBit(val - 1));
-    EXPECT_TRUE(HasSingleBit(val));
-    EXPECT_FALSE(HasSingleBit(val + 1));
-  }
-}
-
 TEST(BitsTestPA, CountlZero8) {
   EXPECT_EQ(8, CountlZero(uint8_t{0}));
   EXPECT_EQ(7, CountlZero(uint8_t{1}));

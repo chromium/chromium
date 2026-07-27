@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_bucket.h"
 
+#include <bit>
 #include <cstdint>
 #include <tuple>
 
@@ -179,7 +180,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                                      size_t raw_size,
                                      size_t slot_span_alignment) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            base::bits::HasSingleBit(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
 
   // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
   // scoped unlocking.
@@ -1272,7 +1273,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
                                          SlotSpanMetadata** slot_span,
                                          bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            base::bits::HasSingleBit(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
 
   // The slow path is called when the freelist is empty. The only exception is
   // when a higher-order alignment is requested, in which case the freelist

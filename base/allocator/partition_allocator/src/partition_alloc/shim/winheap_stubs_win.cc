@@ -13,6 +13,7 @@
 #include <malloc.h>
 #include <new.h>
 
+#include <bit>
 #include <climits>
 #include <cstring>
 #include <limits>
@@ -144,7 +145,7 @@ void* UnalignAllocation(void* ptr) {
 }  // namespace
 
 void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
-  PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
 
   size_t adjusted = AdjustedSize(size, alignment);
 
@@ -157,7 +158,7 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
 }
 
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
-  PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
 
   if (!ptr) {
     return WinHeapAlignedMalloc(size, alignment);
