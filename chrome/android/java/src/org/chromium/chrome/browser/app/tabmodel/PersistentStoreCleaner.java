@@ -100,6 +100,8 @@ public class PersistentStoreCleaner {
         if (storeDoesNotExist(orchestrator, StoreType.TAB_STATE_STORE)) {
             maybeClearTabStateStore(orchestrator);
         }
+
+        TabStoreMetricsService.clearAllTabStoreCounts();
     }
 
     /**
@@ -119,6 +121,9 @@ public class PersistentStoreCleaner {
         if (storeDoesNotExist(orchestrator, StoreType.TAB_STATE_STORE)) {
             maybeCleanTabStateStore(windowIdToClean, orchestrator);
         }
+
+        TabStoreMetricsService.clearTabStoreCountsForProfileAndWindow(
+                mProfile, String.valueOf(windowIdToClean));
     }
 
     private void cleanPersistentStoreImpl(int windowIdToClean) {

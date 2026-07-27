@@ -3503,6 +3503,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.GroupCountDelta.Negative" units="groups"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the decrease in stored tab group count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.GroupCountDelta.Positive" units="groups"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the increase in stored tab group count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabStateStore.InternalTabCountDelta.CounterHigher"
     units="tabs" expires_after="2026-12-27">
   <owner>mfiaz@google.com</owner>
@@ -3559,6 +3581,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.PinnedTabCountDelta.Negative" units="tabs"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the decrease in stored pinned tab count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.PinnedTabCountDelta.Positive" units="tabs"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the increase in stored pinned tab count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabStateStore.RegularFallbackTabCount" units="tabs"
     expires_after="2026-12-27">
   <owner>mfiaz@google.com</owner>
@@ -3607,6 +3651,28 @@ chromium-metrics-reviews@google.com.
     orchestrator.
   </summary>
   <token key="TabModelOrchestratorType" variants="TabModelOrchestratorType"/>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TabCountDelta.Negative" units="tabs"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the decrease in stored total tab count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TabCountDelta.Positive" units="tabs"
+    expires_after="2027-01-03">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the increase in stored total tab count in TabStateStore
+    when shadow store catch-up completes. Recorded when both models have
+    finished loading.
+  </summary>
 </histogram>
 
 <histogram

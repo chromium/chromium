@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabmodel.TabStoreMetricsService.MetricsBucket;
@@ -103,7 +105,7 @@ public class TabStoreMetricsServiceUnitTest {
                 TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
 
         List<TabCreationData> authFrozen = new ArrayList<>();
-        authFrozen.add(new TabCreationData(1, "http://url1.com", 1000, false, null));
+        authFrozen.add(new TabCreationData(1, "http://url1.com", 1000L, false, null));
         List<TabCreationData> authNew = new ArrayList<>();
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();
@@ -147,7 +149,7 @@ public class TabStoreMetricsServiceUnitTest {
                 TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
 
         List<TabCreationData> authFrozen = new ArrayList<>();
-        authFrozen.add(new TabCreationData(1, "http://url-auth.com", 2000, false, null));
+        authFrozen.add(new TabCreationData(1, "http://url-auth.com", 2000L, false, null));
         List<TabCreationData> authNew = new ArrayList<>();
         List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
         List<CreateNewTabArguments> shadowNew = new ArrayList<>();
@@ -168,5 +170,110 @@ public class TabStoreMetricsServiceUnitTest {
 
         tracker.recordDiffMetrics(authFrozen, authNew, shadowFrozen, shadowNew, true, 0);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordDiffMetrics_GatedDirectCountRecording() {
+        WindowMetricsTracker tracker =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "WinTag", "Tag"));
+
+        Token groupId1 = new Token(10L, 20L);
+        Token groupId2 = new Token(30L, 40L);
+
+        List<TabCreationData> authFrozen = new ArrayList<>();
+        authFrozen.add(
+                new TabCreationData(1, "http://url1.com", 1000L, /* isPinned= */ true, groupId1));
+        authFrozen.add(
+                new TabCreationData(2, "http://url2.com", 2000L, /* isPinned= */ false, groupId1));
+
+        List<TabCreationData> authNew = new ArrayList<>();
+        authNew.add(new TabCreationData(3, "http://url3.com", 0L, /* isPinned= */ true, groupId2));
+
+        List<CreateFrozenTabArguments> shadowFrozen = new ArrayList<>();
+        List<CreateNewTabArguments> shadowNew = new ArrayList<>();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Tabs.TabStateStore.TabCountDelta.Positive", 3)
+                        .expectIntRecord("Tabs.TabStateStore.GroupCountDelta.Positive", 2)
+                        .expectIntRecord("Tabs.TabStateStore.PinnedTabCountDelta.Positive", 2)
+                        .build();
+
+        // When shadowStoreCaughtUp is false, no counts should be recorded.
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ false, 0);
+        assertEquals(0, tracker.getTabCount());
+        assertEquals(0, tracker.getGroupCount());
+        assertEquals(0, tracker.getPinnedTabCount());
+
+        // When shadowStoreCaughtUp is true, direct counts should be recorded.
+        tracker.recordDiffMetrics(
+                authFrozen, authNew, shadowFrozen, shadowNew, /* shadowStoreCaughtUp= */ true, 0);
+        assertEquals(3, tracker.getTabCount());
+        assertEquals(2, tracker.getGroupCount());
+        assertEquals(2, tracker.getPinnedTabCount());
+        histogramWatcher.assertExpected();
+
+        // Verify clearing tab store counts resets stored metrics.
+        tracker.clearTabStoreCounts();
+        assertEquals(0, tracker.getTabCount());
+        assertEquals(0, tracker.getGroupCount());
+        assertEquals(0, tracker.getPinnedTabCount());
+    }
+
+    @Test
+    public void testClearTabStoreCounts() {
+        when(mProfile1.isOffTheRecord()).thenReturn(false);
+        when(mProfile2.isOffTheRecord()).thenReturn(true);
+
+        WindowMetricsTracker trackerReg0 =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "0", "TabGroup"));
+        WindowMetricsTracker trackerReg1 =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile1, "1", "TabGroup"));
+        WindowMetricsTracker trackerInc0 =
+                TabStoreMetricsService.getForBucket(new MetricsBucket(mProfile2, "0", "TabGroup"));
+
+        trackerReg0.recordTabCount(10);
+        trackerReg0.recordGroupCount(5);
+        trackerReg0.recordPinnedTabCount(2);
+
+        trackerReg1.recordTabCount(10);
+        trackerReg1.recordGroupCount(5);
+        trackerReg1.recordPinnedTabCount(2);
+
+        trackerInc0.recordTabCount(10);
+        trackerInc0.recordGroupCount(5);
+        trackerInc0.recordPinnedTabCount(2);
+
+        // 1. Clear window 0 for regular profile (mProfile1).
+        TabStoreMetricsService.clearTabStoreCountsForProfileAndWindow(mProfile1, "0");
+        assertEquals(0, trackerReg0.getTabCount());
+        assertEquals(0, trackerReg0.getGroupCount());
+        assertEquals(0, trackerReg0.getPinnedTabCount());
+
+        // Ensure regular window 1 and incognito window 0 remain untouched.
+        assertEquals(10, trackerReg1.getTabCount());
+        assertEquals(5, trackerReg1.getGroupCount());
+        assertEquals(2, trackerReg1.getPinnedTabCount());
+        assertEquals(10, trackerInc0.getTabCount());
+        assertEquals(5, trackerInc0.getGroupCount());
+        assertEquals(2, trackerInc0.getPinnedTabCount());
+
+        // 2. Clear via WindowMetricsTracker instance.
+        trackerReg1.clearTabStoreCounts();
+        assertEquals(0, trackerReg1.getTabCount());
+        assertEquals(0, trackerReg1.getGroupCount());
+        assertEquals(0, trackerReg1.getPinnedTabCount());
+
+        // Ensure incognito window 0 remains untouched.
+        assertEquals(10, trackerInc0.getTabCount());
+        assertEquals(5, trackerInc0.getGroupCount());
+        assertEquals(2, trackerInc0.getPinnedTabCount());
+
+        // 3. Clear all tab store counts across all profiles and windows.
+        trackerReg1.recordTabCount(10);
+        TabStoreMetricsService.clearAllTabStoreCounts();
+        assertEquals(0, trackerReg1.getTabCount());
+        assertEquals(0, trackerInc0.getTabCount());
     }
 }

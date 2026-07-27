@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,9 +20,11 @@ import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateNewTabA
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A profile + window tag-keyed service for collecting and reporting metrics from the
@@ -37,6 +40,15 @@ public class TabStoreMetricsService {
 
     /** SharedPreferences key suffix for recording stored pinned tab count. */
     public static final String PINNED_TAB_COUNT_KEY_SUFFIX = "PinnedTabCount";
+
+    /** Histogram name prefix for recording total tab count delta. */
+    public static final String HISTOGRAM_TAB_COUNT = "Tabs.TabStateStore.TabCount";
+
+    /** Histogram name prefix for recording total tab group count delta. */
+    public static final String HISTOGRAM_GROUP_COUNT = "Tabs.TabStateStore.GroupCount";
+
+    /** Histogram name prefix for recording total pinned tab count delta. */
+    public static final String HISTOGRAM_PINNED_TAB_COUNT = "Tabs.TabStateStore.PinnedTabCount";
 
     /** A bucket of metrics for a specific profile, window tag, and orchestrator type. */
     public static class MetricsBucket {
@@ -106,12 +118,36 @@ public class TabStoreMetricsService {
         return tracker;
     }
 
+    /** Clears all saved tab store count metrics from SharedPreferences across all profiles. */
+    public static void clearAllTabStoreCounts() {
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(ChromePreferenceKeys.TAB_STORE_METRICS);
+    }
+
+    /**
+     * Clears saved tab store count metrics from SharedPreferences for a specific profile and window
+     * tag.
+     *
+     * @param profile The profile whose count metrics should be cleared.
+     * @param windowTag The window tag (e.g. window ID) whose count metrics should be cleared.
+     */
+    public static void clearTabStoreCountsForProfileAndWindow(Profile profile, String windowTag) {
+        String profileTag = profile.isOffTheRecord() ? "Incognito" : "Regular";
+        String infix = profileTag + "." + windowTag + ".";
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(ChromePreferenceKeys.TAB_STORE_METRICS, infix);
+    }
+
     /** Tracks metrics for a single window instance. */
     public static class WindowMetricsTracker {
+        private final Profile mProfile;
+        private final String mWindowTag;
         private final String mOrchestratorTagSuffix;
         private final String mBucketTag;
 
         private WindowMetricsTracker(MetricsBucket bucket) {
+            mProfile = bucket.profile;
+            mWindowTag = bucket.windowTag;
             mOrchestratorTagSuffix = "." + bucket.orchestratorTag;
             mBucketTag = bucket.getTag();
         }
@@ -194,6 +230,41 @@ public class TabStoreMetricsService {
             return getCountPref(PINNED_TAB_COUNT_KEY_SUFFIX);
         }
 
+        /** Clears all saved tab store count metrics from SharedPreferences for this window. */
+        public void clearTabStoreCounts() {
+            TabStoreMetricsService.clearTabStoreCountsForProfileAndWindow(mProfile, mWindowTag);
+        }
+
+        private void recordCountDelta(String baseHistogram, int oldCount, int newCount) {
+            int delta = newCount - oldCount;
+            if (delta > 0) {
+                RecordHistogram.recordCount1000Histogram(baseHistogram + "Delta.Positive", delta);
+            } else if (delta < 0) {
+                RecordHistogram.recordCount1000Histogram(baseHistogram + "Delta.Negative", -delta);
+            }
+        }
+
+        /**
+         * Counts pinned tabs and collects unique group IDs from tab creation data.
+         *
+         * @param dataList The list of tab creation data to analyze.
+         * @param groupIds The set to collect unique tab group IDs into.
+         * @return The count of pinned tabs in dataList.
+         */
+        private int countPinnedTabsAndCollectGroupIds(
+                List<TabCreationData> dataList, Set<Token> groupIds) {
+            int pinnedCount = 0;
+            for (TabCreationData data : dataList) {
+                if (data.isPinned) {
+                    pinnedCount++;
+                }
+                if (data.tabGroupId != null) {
+                    groupIds.add(data.tabGroupId);
+                }
+            }
+            return pinnedCount;
+        }
+
         /**
          * Reports fallback count and store discrepancies.
          *
@@ -212,6 +283,24 @@ public class TabStoreMetricsService {
                 boolean shadowStoreCaughtUp,
                 int fallbackTabCount) {
             if (!shadowStoreCaughtUp) return;
+
+            int authTabCount = authFrozenData.size() + authNewTabData.size();
+            Set<Token> groupIds = new HashSet<>();
+            int authPinnedCount = countPinnedTabsAndCollectGroupIds(authFrozenData, groupIds);
+            authPinnedCount += countPinnedTabsAndCollectGroupIds(authNewTabData, groupIds);
+            int authGroupCount = groupIds.size();
+
+            int oldTabCount = getTabCount();
+            int oldGroupCount = getGroupCount();
+            int oldPinnedTabCount = getPinnedTabCount();
+
+            recordTabCount(authTabCount);
+            recordGroupCount(authGroupCount);
+            recordPinnedTabCount(authPinnedCount);
+
+            recordCountDelta(HISTOGRAM_TAB_COUNT, oldTabCount, authTabCount);
+            recordCountDelta(HISTOGRAM_GROUP_COUNT, oldGroupCount, authGroupCount);
+            recordCountDelta(HISTOGRAM_PINNED_TAB_COUNT, oldPinnedTabCount, authPinnedCount);
 
             int tabCountDelta =
                     (authNewTabData.size() + authFrozenData.size())
