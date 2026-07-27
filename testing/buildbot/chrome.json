@@ -694,6 +694,23 @@
         "autotest_name": "chromium",
         "cros_board": "betty",
         "dut_pool": "vmlab",
+        "experiment_percentage": 100,
+        "module_name": "//rlz:rlz_unittests",
+        "module_scheme": "gtest",
+        "name": "rlz_unittests LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
+        "test": "rlz_unittests",
+        "test_id_prefix": "ninja://rlz:rlz_unittests/",
+        "timeout_sec": 5400,
+        "use_lkgm": true,
+        "variant_id": "LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "betty",
+        "dut_pool": "vmlab",
         "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
         "module_scheme": "gtest",
         "name": "rust_gtest_interop_unittests LKGM",
@@ -1216,6 +1233,23 @@
         "shard_level_retries_on_ctp": 1,
         "test": "profile_provider_unittest",
         "test_id_prefix": "ninja://chrome/browser/metrics/perf:profile_provider_unittest/",
+        "timeout_sec": 5400,
+        "use_lkgm": true,
+        "variant_id": "LKGM"
+      },
+      {
+        "autotest_name": "chromium",
+        "cros_board": "betty",
+        "dut_pool": "vmlab",
+        "experiment_percentage": 100,
+        "module_name": "//rlz:rlz_unittests",
+        "module_scheme": "gtest",
+        "name": "rlz_unittests LKGM",
+        "resultdb": {
+          "result_format": "gtest"
+        },
+        "test": "rlz_unittests",
+        "test_id_prefix": "ninja://rlz:rlz_unittests/",
         "timeout_sec": 5400,
         "use_lkgm": true,
         "variant_id": "LKGM"

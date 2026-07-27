@@ -2067,6 +2067,13 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.console_test_launcher(
+    name = "rlz_unittests",
+    label = "//rlz:rlz_unittests",
+    module_scheme = "gtest",
+    skip_usage_check = True,
+)
+
+targets.binaries.console_test_launcher(
     name = "rust_gtest_interop_unittests",
     label = "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
     module_scheme = "gtest",

@@ -2185,6 +2185,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
+    name = "rlz_unittests",
+)
+
+targets.tests.gtest_test(
     name = "rust_gtest_interop_unittests",
 )
 

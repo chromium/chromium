@@ -522,6 +522,13 @@ targets.legacy_basic_suite(
                 "--test-launcher-jobs=1",
             ],
         ),
+        "rlz_unittests": targets.legacy_test_config(
+            skylab = targets.skylab(
+                autotest_name = "chromium",
+                timeout_sec = 5400,
+            ),
+            experiment_percentage = 100,
+        ),
         "rust_gtest_interop_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",

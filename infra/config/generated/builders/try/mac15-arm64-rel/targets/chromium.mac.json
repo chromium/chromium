@@ -1270,6 +1270,29 @@
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
       },
       {
+        "experiment_percentage": 100,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//rlz:rlz_unittests",
+        "module_scheme": "gtest",
+        "name": "rlz_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15|Mac-26"
+          },
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "rlz_unittests",
+        "test_id_prefix": "ninja://rlz:rlz_unittests/"
+      },
+      {
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

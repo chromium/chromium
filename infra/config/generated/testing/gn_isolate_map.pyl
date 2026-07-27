@@ -1844,6 +1844,12 @@
     "module_scheme": "single",
     "skip_usage_check": True,
   },
+  "rlz_unittests": {
+    "label": "//rlz:rlz_unittests",
+    "type": "console_test_launcher",
+    "module_scheme": "gtest",
+    "skip_usage_check": True,
+  },
   "rust_build_tests": {
     "label": "//build/rust/tests",
     "type": "additional_compile_target",

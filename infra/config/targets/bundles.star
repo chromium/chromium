@@ -1542,6 +1542,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_gtests_for_win_mac_ios_and_cros",
+    targets = [
+        "rlz_unittests",
+    ],
+    per_test_modifications = {
+        "rlz_unittests": targets.mixin(
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",
@@ -1977,6 +1989,7 @@ targets.bundle(
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "chromium_gtests_for_linux_and_mac_only",
+        "chromium_gtests_for_win_mac_ios_and_cros",
         "mac_specific_chromium_gtests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
         "non_android_chromium_gtests_no_nacl",
@@ -2182,6 +2195,7 @@ targets.bundle(
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "chromium_gtests_for_win_and_linux_only",
+        "chromium_gtests_for_win_mac_ios_and_cros",
         "fieldtrial_browser_tests",
         "non_android_and_cast_and_chromeos_chromium_gtests",
         "non_android_chromium_gtests_no_nacl",
@@ -2210,6 +2224,7 @@ targets.bundle(
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "chromium_gtests_for_win_and_linux_only",
+        "chromium_gtests_for_win_mac_ios_and_cros",
         "non_android_and_cast_and_chromeos_chromium_gtests",
         "non_android_chromium_gtests_no_nacl",
         "vr_platform_specific_chromium_gtests",
@@ -5135,6 +5150,7 @@ targets.bundle(
         "ios_net_unittests",
         "ios_testing_unittests",
         "net_unittests",
+        "rlz_unittests",
         # TODO(https://bugs.chromium.org/p/gn/issues/detail?id=340): Enable this.
         # "rust_gtest_interop_unittests",
         "services_unittests",
@@ -5146,6 +5162,9 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 3,
             ),
+        ),
+        "rlz_unittests": targets.mixin(
+            experiment_percentage = 100,
         ),
     },
 )

@@ -925,6 +925,13 @@
           'autotest_name': 'chromium',
         },
       },
+      'rlz_unittests': {
+        'skylab': {
+          'timeout_sec': 5400,
+          'autotest_name': 'chromium',
+        },
+        'experiment_percentage': 100,
+      },
       'rust_gtest_interop_unittests': {
         'skylab': {
           'timeout_sec': 5400,
