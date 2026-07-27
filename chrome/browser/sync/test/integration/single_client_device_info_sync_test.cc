@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -759,7 +760,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 // PRE_* tests aren't supported on Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/40846416): Re-enable this test on Windows.
+// TODO(crbug.com/537189155): Re-enable this test on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart \
   DISABLED_PRE_ShouldNotSendDeviceInfoAfterBrowserRestart
@@ -782,27 +783,17 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
   const std::vector<sync_pb::SyncEntity> entities_before =
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_TRUE(GetClient(0)->AwaitInvalidationsStatus(/*expected_status=*/true));
 
-  bool has_local_changes = false;
-  base::RunLoop run_loop;
-  GetSyncService(0)->HasUnsyncedItemsForTest(
-      base::BindLambdaForTesting([&has_local_changes, &run_loop](bool result) {
-        has_local_changes = result;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  // Ensure any pending local changes are committed.
+  CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait();
 
+  // Verify that no DeviceInfo has been committed to the server.
   const std::vector<sync_pb::SyncEntity> entities_after =
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_EQ(1U, entities_before.size());
   ASSERT_EQ(1U, entities_after.size());
-
-  // Check that there are no local changes and nothing has been committed to the
-  // server.
-  EXPECT_FALSE(has_local_changes);
   EXPECT_EQ(entities_before.front().mtime(), entities_after.front().mtime());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
