@@ -2617,20 +2617,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_FEATURE_SHOWCASE_LENS_OVERLAY_DISCLOSURE" desc="This is a technical disclosure for the Lens Overlay. It specifies that PDFs are also part of the shared data. The tone should be informative.">
           When you use Image Search on desktop, the page title, URL, and content, including PDFs, are sent to the server
         </message>
+
         <!-- Feature Showcase - Gemini -->
-        <!-- TODO(crbug.com/506845213): Update strings with hyperlinks. -->
         <message name="IDS_FEATURE_SHOWCASE_GEMINI_TITLE" desc="" translateable="false">
-          Get help with your tabs and tasks with Gemini in Chromium
+          Ask anything, right where you are, with Gemini in Chromium
         </message>
-        <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1" desc="" translateable="false">
-          Google uses the content and URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime.
-        </message>
-        <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2" desc="" translateable="false">
-          Neither your conversations with Gemini nor your Google Workspace data will be reviewed or used to improve generative AI models. Gemini is AI and can make mistakes. Some content may not be suitable for everyone.
-        </message>
-        <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3" desc="" translateable="false">
-          Google Terms and the Gemini Apps Privacy Notice apply
-        </message>
+
       </if>
 
       <!-- Feature Showcase - Themes -->

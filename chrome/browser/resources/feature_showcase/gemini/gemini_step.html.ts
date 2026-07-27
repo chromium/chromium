@@ -17,8 +17,8 @@ export function getHtml(this: FeatureShowcaseGeminiStepElement) {
   <span slot="description">$i18n{geminiSubtitle}</span>
   <div slot="disclosure" class="disclosure">
     <p>$i18n{geminiDisclosure1}</p>
-    <p>$i18n{geminiDisclosure2}</p>
-    <p>$i18n{geminiDisclosure3}</p>
+    <p>$i18nRaw{geminiDisclosure2}</p>
+    <p>$i18nRaw{geminiDisclosure3}</p>
   </div>
   <if expr="is_win">
     <cr-button slot="button" id="confirm-button"
@@ -32,7 +32,7 @@ export function getHtml(this: FeatureShowcaseGeminiStepElement) {
         class="tonal-button"
         @click="${this.onSkipClick_}"
         ?disabled="${this.buttonsDisabled}">
-      $i18n{geminiNoThanks}
+      $i18n{geminiNotNow}
     </cr-button>
   <if expr="not is_win">
     <cr-button slot="button" id="confirm-button"

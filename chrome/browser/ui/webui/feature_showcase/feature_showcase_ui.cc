@@ -8,8 +8,11 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -18,10 +21,12 @@
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/default_browser_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_handler.h"
+#include "chrome/browser/ui/webui/feature_showcase/gemini_disclosure.h"
 #include "chrome/browser/ui/webui/feature_showcase/gemini_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/google_lens_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/password_manager_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/themes_and_customization_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -33,6 +38,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -40,6 +46,7 @@
 #include "ui/webui/webui_util.h"
 
 namespace {
+
 void AddDefaultBrowserStepResources(content::WebUIDataSource* source) {
   source->AddLocalizedStrings({
       {"refreshDefaultBrowserTitle", IDS_FRE_REFRESH_DEFAULT_BROWSER_TITLE},
@@ -78,16 +85,28 @@ void AddGoogleLensStepResources(content::WebUIDataSource* source) {
 #endif
 }
 
-void AddGeminiStepResources(content::WebUIDataSource* source) {
-  // TODO(crbug.com/506845213): Handle different regions.
+void AddGeminiStepResources(content::WebUIDataSource* source, bool is_managed) {
+  std::string country_code;
+  if (base::FeatureList::IsEnabled(
+          features::kGlicUseSessionCountryForFiltering)) {
+    country_code = g_browser_process->variations_service()->GetLatestCountry();
+  } else {
+    country_code =
+        g_browser_process->variations_service()->GetStoredPermanentCountry();
+  }
+
+  const GeminiDisclosure disclosure =
+      GetGeminiDisclosure(country_code, is_managed);
+
+  source->AddString("geminiDisclosure1", disclosure.first_paragraph);
+  source->AddString("geminiDisclosure2", disclosure.second_paragraph);
+  source->AddString("geminiDisclosure3", disclosure.third_paragraph);
+
   source->AddLocalizedStrings({
       {"geminiTitle", IDS_FEATURE_SHOWCASE_GEMINI_TITLE},
       {"geminiSubtitle", IDS_FEATURE_SHOWCASE_GEMINI_SUBTITLE},
-      {"geminiDisclosure1", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1},
-      {"geminiDisclosure2", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2},
-      {"geminiDisclosure3", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3},
       {"geminiYesImIn", IDS_FEATURE_SHOWCASE_GEMINI_YES_IM_IN},
-      {"geminiNoThanks", IDS_FEATURE_SHOWCASE_GEMINI_NO_THANKS},
+      {"geminiNotNow", IDS_FEATURE_SHOWCASE_GEMINI_NOT_NOW},
   });
 }
 
@@ -166,7 +185,8 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
                              IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL);
 
   AddDefaultBrowserStepResources(source);
-  AddGeminiStepResources(source);
+  AddGeminiStepResources(source, glic::GlicEnabling::IsEnterpriseAccount(
+                                     Profile::FromWebUI(web_ui)));
   AddGoogleLensStepResources(source);
   AddPasswordManagerStepResources(source);
   AddThemesAndCustomizationStepResources(source);

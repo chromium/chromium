@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -29,6 +30,10 @@ feature-showcase-step {
   font-size: 11px;
   line-height: 16px;
   white-space: normal;
+}
+
+.disclosure a {
+  color: var(--cr-fallback-color-primary);
 }
 
 .disclosure p {
