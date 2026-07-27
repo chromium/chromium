@@ -53,13 +53,6 @@ class ProcessorEntityMetadata {
   // Returns the underlying proto metadata.
   const sync_pb::EntityMetadata& proto() const { return metadata_; }
 
-  // Returns a mutable pointer to the underlying proto metadata.
-  // Prefer using the high-level mutation APIs below instead of modifying the
-  // proto directly.
-  // TODO(crbug.com/40823197): Remove this API once bookmarks are fully
-  // refactored.
-  sync_pb::EntityMetadata* mutable_proto() { return &metadata_; }
-
   // Returns true if the entity is deleted.
   bool IsDeleted() const;
 
@@ -108,6 +101,10 @@ class ProcessorEntityMetadata {
   // `specifics`. The entity must not be deleted.
   bool MatchesSpecificsHash(const sync_pb::EntitySpecifics& specifics) const;
 
+  // Returns true if `favicon_png_bytes` matches the tracked favicon hash.
+  // The entity must not be deleted.
+  bool MatchesFaviconHash(const std::string& favicon_png_bytes) const;
+
   // Updates the specifics hash in the metadata based on `specifics`.
   void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
 
@@ -132,10 +129,14 @@ class ProcessorEntityMetadata {
   void RecordCommitResponse(const CommitResponseData& data);
 
   // Updates the metadata fields (sequence_number, specifics_hash,
-  // modification_time, is_deleted) for a local update.
+  // modification_time, is_deleted, unique_position) for a local update.
   // Used by bookmarks to perform custom local updates.
-  void UpdateMetadataForLocalUpdate(const sync_pb::EntitySpecifics& specifics,
-                                    base::Time modification_time);
+  // TODO(crbug.com/40823197): Consider removing this method and having
+  // bookmarks use RecordLocalUpdate() instead.
+  void UpdateMetadataForLocalUpdate(
+      const sync_pb::EntitySpecifics& specifics,
+      base::Time modification_time,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Performs a local update based on the provided `data`, updating metadata
   // fields.
@@ -152,12 +153,6 @@ class ProcessorEntityMetadata {
 
   // Sets the creation time.
   void SetCreationTime(base::Time time);
-
-  // Sets the unique position.
-  void SetUniquePosition(const sync_pb::UniquePosition& unique_position);
-
-  // Clears the unique position.
-  void ClearUniquePosition();
 
  private:
   explicit ProcessorEntityMetadata(sync_pb::EntityMetadata metadata);

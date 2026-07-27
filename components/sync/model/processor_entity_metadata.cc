@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
@@ -152,12 +153,24 @@ bool ProcessorEntityMetadata::MatchesSpecificsHash(
   return HashSpecifics(specifics) == metadata_.specifics_hash();
 }
 
+bool ProcessorEntityMetadata::MatchesFaviconHash(
+    const std::string& favicon_png_bytes) const {
+  DCHECK(!metadata_.is_deleted());
+  return metadata_.bookmark_favicon_hash() ==
+         base::PersistentHash(favicon_png_bytes);
+}
+
 void ProcessorEntityMetadata::UpdateSpecificsHash(
     const sync_pb::EntitySpecifics& specifics) {
   if (specifics.ByteSizeLong() > 0) {
     metadata_.set_specifics_hash(HashSpecifics(specifics));
+    if (specifics.has_bookmark()) {
+      metadata_.set_bookmark_favicon_hash(
+          base::PersistentHash(specifics.bookmark().favicon()));
+    }
   } else {
     metadata_.clear_specifics_hash();
+    metadata_.clear_bookmark_favicon_hash();
   }
 }
 
@@ -225,11 +238,17 @@ void ProcessorEntityMetadata::RecordCommitResponse(
 
 void ProcessorEntityMetadata::UpdateMetadataForLocalUpdate(
     const sync_pb::EntitySpecifics& specifics,
-    base::Time modification_time) {
+    base::Time modification_time,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   IncrementSequenceNumber();
   UpdateSpecificsHash(specifics);
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
   metadata_.set_is_deleted(false);
+  if (unique_position.has_value()) {
+    *metadata_.mutable_unique_position() = std::move(unique_position).value();
+  } else {
+    metadata_.clear_unique_position();
+  }
 }
 
 void ProcessorEntityMetadata::RecordLocalUpdate(
@@ -240,7 +259,8 @@ void ProcessorEntityMetadata::RecordLocalUpdate(
                                      ? data.modification_time
                                      : base::Time::Now();
 
-  UpdateMetadataForLocalUpdate(data.specifics, modification_time);
+  UpdateMetadataForLocalUpdate(data.specifics, modification_time,
+                               std::move(unique_position));
 
   SetPossiblyTrimmedBaseSpecifics(std::move(trimmed_specifics));
 
@@ -268,12 +288,6 @@ void ProcessorEntityMetadata::RecordLocalUpdate(
     CHECK_EQ(metadata_.collaboration().collaboration_id(),
              data.collaboration_metadata->collaboration_id().value());
   }
-
-  if (unique_position) {
-    SetUniquePosition(unique_position.value());
-  } else {
-    ClearUniquePosition();
-  }
 }
 
 void ProcessorEntityMetadata::RecordLocalDeletion(
@@ -282,6 +296,7 @@ void ProcessorEntityMetadata::RecordLocalDeletion(
   metadata_.set_modification_time(TimeToProtoTime(base::Time::Now()));
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
+  metadata_.clear_bookmark_favicon_hash();
   metadata_.clear_possibly_trimmed_base_specifics();
   metadata_.clear_unique_position();
 
@@ -301,15 +316,6 @@ void ProcessorEntityMetadata::SetPossiblyTrimmedBaseSpecifics(
 
 void ProcessorEntityMetadata::SetCreationTime(base::Time time) {
   metadata_.set_creation_time(TimeToProtoTime(time));
-}
-
-void ProcessorEntityMetadata::SetUniquePosition(
-    const sync_pb::UniquePosition& unique_position) {
-  *metadata_.mutable_unique_position() = unique_position;
-}
-
-void ProcessorEntityMetadata::ClearUniquePosition() {
-  metadata_.clear_unique_position();
 }
 
 }  // namespace syncer

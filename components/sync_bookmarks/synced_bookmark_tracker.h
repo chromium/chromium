@@ -156,7 +156,9 @@ class SyncedBookmarkTracker {
   // this tracker.
   void UndeleteTombstoneForBookmarkNode(
       const SyncedBookmarkTrackerEntity* entity,
-      const bookmarks::BookmarkNode* node);
+      const bookmarks::BookmarkNode* node,
+      const sync_pb::EntitySpecifics& specifics,
+      base::Time modification_time);
 
   // Whether the tracker is empty or not.
   bool IsEmpty() const;

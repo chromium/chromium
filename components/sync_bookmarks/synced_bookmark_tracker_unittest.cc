@@ -576,7 +576,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
       Eq(entity));
 
   // Undelete it.
-  tracker->UndeleteTombstoneForBookmarkNode(entity, &node);
+  tracker->UndeleteTombstoneForBookmarkNode(entity, &node, specifics,
+                                            base::Time::Now());
 
   EXPECT_THAT(entity->bookmark_node(), NotNull());
   EXPECT_FALSE(entity->metadata().is_deleted());

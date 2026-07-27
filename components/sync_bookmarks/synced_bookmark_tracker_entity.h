@@ -124,8 +124,11 @@ class SyncedBookmarkTrackerEntity {
 
   // Re-associates a placeholder tombstone with a real bookmark node (e.g. undo
   // deletion).
-  void UndeleteTombstoneForBookmarkNode(PassKey,
-                                        const bookmarks::BookmarkNode* node);
+  void UndeleteTombstoneForBookmarkNode(
+      PassKey,
+      const bookmarks::BookmarkNode* node,
+      const sync_pb::EntitySpecifics& specifics,
+      base::Time modification_time);
 
  private:
   // Null for tombstones.

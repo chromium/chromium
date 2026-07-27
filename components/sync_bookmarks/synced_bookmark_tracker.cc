@@ -698,7 +698,9 @@ void SyncedBookmarkTracker::TraverseAndAppend(
 
 void SyncedBookmarkTracker::UndeleteTombstoneForBookmarkNode(
     const SyncedBookmarkTrackerEntity* entity,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const sync_pb::EntitySpecifics& specifics,
+    base::Time modification_time) {
   DCHECK(entity);
   DCHECK(node);
   DCHECK(entity->IsDeleted());
@@ -713,7 +715,8 @@ void SyncedBookmarkTracker::UndeleteTombstoneForBookmarkNode(
   SyncedBookmarkTrackerEntity* mutable_entity = AsMutableEntity(entity);
   std::erase(ordered_local_tombstones_, mutable_entity);
   mutable_entity->UndeleteTombstoneForBookmarkNode(
-      SyncedBookmarkTrackerEntity::PassKey(), node);
+      SyncedBookmarkTrackerEntity::PassKey(), node, specifics,
+      modification_time);
   bookmark_node_to_entities_map_[node] = mutable_entity;
 }
 

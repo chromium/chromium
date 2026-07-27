@@ -198,8 +198,8 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
     // the same bookmark GUID), it must be a tombstone. Otherwise it means
     // the bookmark model contains to bookmarks with the same GUID.
     DCHECK(!entity->bookmark_node()) << "Added bookmark with duplicate GUID";
-    bookmark_tracker_->UndeleteTombstoneForBookmarkNode(entity, node);
-    entity->RecordLocalUpdate(specifics, creation_time);
+    bookmark_tracker_->UndeleteTombstoneForBookmarkNode(entity, node, specifics,
+                                                        creation_time);
   } else {
     entity = bookmark_tracker_->AddLocalCreation(
         node, node->uuid().AsLowercaseString(), creation_time, specifics);
