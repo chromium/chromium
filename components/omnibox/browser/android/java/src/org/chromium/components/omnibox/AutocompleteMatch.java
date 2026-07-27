@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplat
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.TypesProto.SuggestSubtype;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 
@@ -92,11 +93,13 @@ public class AutocompleteMatch {
     private final Map<String, String> mExtraHeaders;
     private byte @Nullable [] mPostData;
     private final int mGroupId;
+    private final boolean mSwapContentsAndDescription;
     private byte @Nullable [] mClipboardImageData;
     private final boolean mHasTabMatch;
     private final int mAndroidTabId;
     private long mNativeMatch;
     private final List<OmniboxAction> mActions;
+    private final @Nullable OmniboxAction mTakeoverAction;
     private final boolean mAllowedToBeDefaultMatch;
     private final String mInlineAutocompletion;
     private final String mAdditionalText;
@@ -128,10 +131,12 @@ public class AutocompleteMatch {
             @Nullable String postContentType,
             byte @Nullable [] postData,
             int groupId,
+            boolean swapContentsAndDescription,
             byte @Nullable [] clipboardImageData,
             boolean hasTabMatch,
             int androidTabId,
             @Nullable List<OmniboxAction> actions,
+            @Nullable OmniboxAction takeoverAction,
             boolean allowedToBeDefaultMatch,
             String inlineAutocompletion,
             String additionalText,
@@ -171,10 +176,12 @@ public class AutocompleteMatch {
         mExtraHeaders = new ArrayMap<>();
         mPostData = postData;
         mGroupId = groupId;
+        mSwapContentsAndDescription = swapContentsAndDescription;
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
         mAndroidTabId = androidTabId;
         mActions = actions != null ? actions : Arrays.asList();
+        mTakeoverAction = takeoverAction;
         mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
         mInlineAutocompletion = inlineAutocompletion;
         mAdditionalText = additionalText;
@@ -234,10 +241,12 @@ public class AutocompleteMatch {
             @JniType("std::string") String postContentType,
             byte[] postData,
             int groupId,
+            boolean swapContentsAndDescription,
             byte[] clipboardImageData,
             boolean hasTabMatch,
             int androidTabId,
             @JniType("std::vector") List<OmniboxAction> actions,
+            @Nullable OmniboxAction takeoverAction,
             boolean allowedToBeDefaultMatch,
             @JniType("std::u16string") String inlineAutocompletion,
             @JniType("std::u16string") String additionalText,
@@ -281,10 +290,12 @@ public class AutocompleteMatch {
                         postContentType,
                         postData,
                         groupId,
+                        swapContentsAndDescription,
                         clipboardImageData,
                         hasTabMatch,
                         androidTabId,
                         actions,
+                        takeoverAction,
                         allowedToBeDefaultMatch,
                         inlineAutocompletion,
                         additionalText,
@@ -468,6 +479,13 @@ public class AutocompleteMatch {
         return mPostData;
     }
 
+    /**
+     * @return Whether the suggestion's contents and description should be swapped.
+     */
+    public boolean shouldSwapContentsAndDescription() {
+        return mSwapContentsAndDescription;
+    }
+
     public boolean hasTabMatch() {
         return mHasTabMatch;
     }
@@ -478,6 +496,21 @@ public class AutocompleteMatch {
 
     public List<OmniboxAction> getActions() {
         return mActions;
+    }
+
+    /**
+     * @return The takeover action for this suggestion, if any.
+     */
+    public @Nullable OmniboxAction getTakeoverAction() {
+        return mTakeoverAction;
+    }
+
+    /**
+     * @param actionId The ID of the action to check for.
+     * @return Whether the suggestion has a takeover action with the given ID.
+     */
+    public boolean hasTakeoverAction(@OmniboxActionId int actionId) {
+        return mTakeoverAction != null && mTakeoverAction.actionId == actionId;
     }
 
     public boolean allowedToBeDefaultMatch() {
@@ -520,6 +553,8 @@ public class AutocompleteMatch {
                         + 2017 * displayTextHash
                         + 1901 * fillIntoEditHash
                         + (mIsDeletable ? 1 : 0);
+        hash = 31 * hash + (mSwapContentsAndDescription ? 1 : 0);
+        hash = 31 * hash + (mTakeoverAction != null ? mTakeoverAction.hashCode() : 0);
         return hash;
     }
 
@@ -552,12 +587,14 @@ public class AutocompleteMatch {
                 && ObjectsCompat.equals(mExtraHeaders, suggestion.mExtraHeaders)
                 && Arrays.equals(mPostData, suggestion.mPostData)
                 && mGroupId == suggestion.mGroupId
+                && mSwapContentsAndDescription == suggestion.mSwapContentsAndDescription
                 && mAnswerType == suggestion.mAnswerType
                 && mAndroidTabId == suggestion.mAndroidTabId
                 && answerTemplateIsEqual
                 && suggestTemplateIsEqual
                 && ObjectsCompat.equals(mTabGroupUuid, suggestion.mTabGroupUuid)
-                && ObjectsCompat.equals(mAssociatedKeyword, suggestion.mAssociatedKeyword);
+                && ObjectsCompat.equals(mAssociatedKeyword, suggestion.mAssociatedKeyword)
+                && ObjectsCompat.equals(mTakeoverAction, suggestion.mTakeoverAction);
     }
 
     /**
@@ -707,10 +744,12 @@ public class AutocompleteMatch {
                 /* postContentType= */ null,
                 /* postData= */ null,
                 input.getGroupId(),
+                /* swapContentsAndDescription= */ false,
                 /* clipboardImageData= */ null,
                 /* hasTabMatch= */ false,
                 /* androidTabId= */ 0,
                 /* actions= */ null,
+                /* takeoverAction= */ null,
                 input.getAllowedToBeDefaultMatch(),
                 input.getInlineAutocompletion(),
                 input.getAdditionalText(),
