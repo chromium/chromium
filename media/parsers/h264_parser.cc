@@ -1335,6 +1335,7 @@ H264Parser::Result H264Parser::ParsePredWeightTable(const H264SPS& sps,
 
 H264Parser::Result H264Parser::ParseDecRefPicMarking(H264SliceHeader* shdr) {
   size_t bits_left_at_start = br_.NumBitsLeft();
+  size_t epb_at_start = br_.NumEmulationPreventionBytesRead();
 
   if (shdr->idr_pic_flag) {
     READ_BOOL_OR_RETURN(&shdr->no_output_of_prior_pics_flag);
@@ -1399,7 +1400,9 @@ H264Parser::Result H264Parser::ParseDecRefPicMarking(H264SliceHeader* shdr) {
     }
   }
 
-  shdr->dec_ref_pic_marking_bit_size = bits_left_at_start - br_.NumBitsLeft();
+  shdr->dec_ref_pic_marking_bit_size =
+      (bits_left_at_start - br_.NumBitsLeft()) -
+      8 * (br_.NumEmulationPreventionBytesRead() - epb_at_start);
   return kOk;
 }
 
@@ -1469,6 +1472,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   }
 
   size_t bits_left_at_pic_order_cnt_start = br_.NumBitsLeft();
+  size_t epb_at_pic_order_cnt_start = br_.NumEmulationPreventionBytesRead();
   if (sps->pic_order_cnt_type == 0) {
     READ_BITS_OR_RETURN(sps->log2_max_pic_order_cnt_lsb_minus4 + 4,
                         &shdr->pic_order_cnt_lsb);
@@ -1485,7 +1489,8 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   }
 
   shdr->pic_order_cnt_bit_size =
-      bits_left_at_pic_order_cnt_start - br_.NumBitsLeft();
+      (bits_left_at_pic_order_cnt_start - br_.NumBitsLeft()) -
+      8 * (br_.NumEmulationPreventionBytesRead() - epb_at_pic_order_cnt_start);
 
   if (pps->redundant_pic_cnt_present_flag) {
     READ_UE_OR_RETURN(&shdr->redundant_pic_cnt);

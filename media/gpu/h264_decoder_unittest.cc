@@ -1374,4 +1374,48 @@ TEST_F(H264DecoderTest, InvalidCropRectResetsToPicSize) {
   EXPECT_EQ(gfx::Rect(320, 192), decoder_->GetVisibleRect());
 }
 
+TEST_F(H264DecoderTest, DecRefPicMarkingBitSize) {
+  const uint8_t kStream[] = {
+      0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x0a, 0xda, 0x71, 0x00,
+      0x00, 0x00, 0x01, 0x68, 0xce, 0x38, 0x80, 0x00, 0x00, 0x00, 0x01,
+      0x65, 0x88, 0x84, 0xc0, 0x00, 0x00, 0x00, 0x01, 0x61, 0xb8, 0x50,
+      0x00, 0x04, 0x00, 0x01, 0x00, 0x00, 0x03, 0x40, 0x00, 0x10, 0x00,
+      0x04, 0x00, 0x01, 0x00, 0x00, 0x40, 0x00, 0x38,
+  };
+  constexpr size_t kDecRefPicMarkingRbspBits = 146;
+  constexpr size_t kHeaderRbspBits = 164;
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH264Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H264Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+
+  EXPECT_CALL(*accelerator_, SubmitDecode(_))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(true));
+
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
+      .WillRepeatedly([=](const H264PPS* pps, const H264SliceHeader* slice_hdr,
+                          const H264Picture::Vector& ref_pic_list0,
+                          const H264Picture::Vector& ref_pic_list1,
+                          scoped_refptr<H264Picture> pic, const uint8_t* data,
+                          size_t size,
+                          const std::vector<SubsampleEntry>& subsamples) {
+        if (!slice_hdr->idr_pic_flag) {
+          EXPECT_EQ(slice_hdr->dec_ref_pic_marking_bit_size,
+                    kDecRefPicMarkingRbspBits);
+          EXPECT_EQ(slice_hdr->header_bit_size, kHeaderRbspBits);
+        }
+        return H264Decoder::H264Accelerator::Status::kOk;
+      });
+
+  decoder_->SetStream(0, DecoderBuffer::CopyFrom(base::span(kStream)));
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 }  // namespace media
