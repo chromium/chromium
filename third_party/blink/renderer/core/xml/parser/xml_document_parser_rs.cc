@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/xml/document_xml_tree_viewer.h"
 #include "third_party/blink/renderer/core/xml/parser/xhtml_subset.h"
+#include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -389,6 +390,11 @@ void XMLDocumentParserRs::StartElementNs(
 
   bool is_first_element = !saw_first_element_;
   saw_first_element_ = true;
+
+  if (!parsing_fragment_ && is_first_element && local_name == "alert" &&
+      has_ns && IsCAPAlertNamespace(RustStrToAtomicString(ns))) {
+    UseCounter::Count(document_, WebFeature::kXmlCAPAlert);
+  }
 
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
   bool encountered_namespace_reset = false;

@@ -155,6 +155,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
+#include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
@@ -3556,6 +3557,13 @@ void DocumentLoader::ResumeParser() {
     finish_loading_when_parser_resumed_ = false;
     parser_->Finish();
     parser_.Clear();
+  }
+}
+
+void DocumentLoader::InheritXsltUseCountersFrom(DocumentLoader* other) {
+  DCHECK(XSLTProcessor::IsXSLTEnabled(frame_ ? frame_->DomWindow() : nullptr));
+  if (other) {
+    use_counter_.InheritXsltUseCountersFrom(other->use_counter_);
   }
 }
 

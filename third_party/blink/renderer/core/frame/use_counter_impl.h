@@ -133,6 +133,12 @@ class CORE_EXPORT UseCounterImpl final {
   bool IsWebDXFeatureCounted(WebDXFeature) const;
   bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
 
+  // Inherits selected UseCounters recorded on a pre-XSLT document loader
+  // into a new document loader committed via an XSLT transformation, ensuring
+  // initial parsing metrics (e.g. kXmlCAPAlert) are preserved when the new
+  // document replaces the initial XML document.
+  void InheritXsltUseCountersFrom(const UseCounterImpl& other);
+
   // Retains a reference to the observer to notify of UseCounterImpl changes.
   void AddObserver(Observer*);
 

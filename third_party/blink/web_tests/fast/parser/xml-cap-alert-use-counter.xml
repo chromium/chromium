@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <script xmlns="http://www.w3.org/1999/xhtml" src="../../resources/testharness.js"></script>
+  <script xmlns="http://www.w3.org/1999/xhtml" src="../../resources/testharnessreport.js"></script>
+  <script xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
+    const kXmlCAPAlert = 5973;
+    const kXmlCAPAlertWithXSLT = 5974;
+
+    test(() => {
+      assert_true(internals.isUseCounted(document, kXmlCAPAlert), "kXmlCAPAlert should trip when loading XML document with root <alert xmlns='urn:oasis:names:tc:emergency:cap:1.2'>");
+      assert_false(internals.isUseCounted(document, kXmlCAPAlertWithXSLT), "kXmlCAPAlertWithXSLT should not trip when no XSLT stylesheet is present");
+    }, "XML parser trips kXmlCAPAlert use counter for root <alert> with CAP namespace");
+
+    test(() => {
+      const parser = new DOMParser();
+
+      // <alert> with :cap:1.2
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      internals.clearUseCounter(document, kXmlCAPAlertWithXSLT);
+      parser.parseFromString('<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2"/>', 'text/xml');
+      assert_true(internals.isUseCounted(document, kXmlCAPAlert), "<alert xmlns='urn:oasis:names:tc:emergency:cap:1.2'>");
+      assert_false(internals.isUseCounted(document, kXmlCAPAlertWithXSLT), "<alert xmlns='urn:oasis:names:tc:emergency:cap:1.2'> without XSLT");
+
+      // <alert> with :cap (no version)
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      parser.parseFromString('<alert xmlns="urn:oasis:names:tc:emergency:cap"/>', 'text/xml');
+      assert_true(internals.isUseCounted(document, kXmlCAPAlert), "<alert xmlns='urn:oasis:names:tc:emergency:cap'>");
+
+      // <alert> with :cap:1.0
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      parser.parseFromString('<alert xmlns="urn:oasis:names:tc:emergency:cap:1.0"/>', 'text/xml');
+      assert_true(internals.isUseCounted(document, kXmlCAPAlert), "<alert xmlns='urn:oasis:names:tc:emergency:cap:1.0'>");
+
+      // <alert> with non-CAP namespace
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      parser.parseFromString('<alert xmlns="http://example.com"/>', 'text/xml');
+      assert_false(internals.isUseCounted(document, kXmlCAPAlert), "<alert xmlns='http://example.com'>");
+
+      // Non-<alert> root element with CAP namespace
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      parser.parseFromString('<other xmlns="urn:oasis:names:tc:emergency:cap:1.2"/>', 'text/xml');
+      assert_false(internals.isUseCounted(document, kXmlCAPAlert), "<other xmlns='urn:oasis:names:tc:emergency:cap:1.2'>");
+
+      // <alert> as non-root element
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      parser.parseFromString('<root><alert xmlns="urn:oasis:names:tc:emergency:cap:1.2"/></root>', 'text/xml');
+      assert_false(internals.isUseCounted(document, kXmlCAPAlert), "non-root <alert>");
+    }, "DOMParser tests for kXmlCAPAlert");
+
+    test(() => {
+      const parser = new DOMParser();
+
+      // <alert> with XSLT stylesheet
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      internals.clearUseCounter(document, kXmlCAPAlertWithXSLT);
+      parser.parseFromString('<?xml-stylesheet type="text/xsl" href="dummy.xsl"?><alert xmlns="urn:oasis:names:tc:emergency:cap:1.2"/>', 'text/xml');
+      assert_true(internals.isUseCounted(document, kXmlCAPAlert), "<alert> with XSLT should trip kXmlCAPAlert");
+      // DOMParser documents do not have a frame, so ProcessingInstruction::IsXSL() is false and XSLT transforms are not processed.
+      assert_false(internals.isUseCounted(document, kXmlCAPAlertWithXSLT), "<alert> with XSLT via DOMParser should not trip kXmlCAPAlertWithXSLT");
+
+      // Non-CAP alert root element with XSLT stylesheet
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      internals.clearUseCounter(document, kXmlCAPAlertWithXSLT);
+      parser.parseFromString('<?xml-stylesheet type="text/xsl" href="dummy.xsl"?><other xmlns="urn:oasis:names:tc:emergency:cap:1.2"/>', 'text/xml');
+      assert_false(internals.isUseCounted(document, kXmlCAPAlert), "<other> with XSLT should not trip kXmlCAPAlert");
+      assert_false(internals.isUseCounted(document, kXmlCAPAlertWithXSLT), "<other> with XSLT should not trip kXmlCAPAlertWithXSLT");
+
+      // <alert> with non-CAP namespace with XSLT stylesheet
+      internals.clearUseCounter(document, kXmlCAPAlert);
+      internals.clearUseCounter(document, kXmlCAPAlertWithXSLT);
+      parser.parseFromString('<?xml-stylesheet type="text/xsl" href="dummy.xsl"?><alert xmlns="http://example.com"/>', 'text/xml');
+      assert_false(internals.isUseCounted(document, kXmlCAPAlert), "<alert> non-CAP namespace with XSLT should not trip kXmlCAPAlert");
+      assert_false(internals.isUseCounted(document, kXmlCAPAlertWithXSLT), "<alert> non-CAP namespace with XSLT should not trip kXmlCAPAlertWithXSLT");
+    }, "DOMParser tests for kXmlCAPAlertWithXSLT");
+  ]]></script>
+</alert>

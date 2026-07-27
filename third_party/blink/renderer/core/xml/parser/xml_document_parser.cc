@@ -1099,6 +1099,11 @@ void XMLDocumentParser::StartElementNs(
   bool is_first_element = !saw_first_element_;
   saw_first_element_ = true;
 
+  if (!parsing_fragment_ && is_first_element && local_name == "alert" &&
+      IsCAPAlertNamespace(uri)) {
+    UseCounter::Count(document_, WebFeature::kXmlCAPAlert);
+  }
+
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
   bool encountered_namespace_reset = false;
   if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,

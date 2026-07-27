@@ -296,6 +296,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void StartLoading();
   void StopLoading();
 
+  void InheritXsltUseCountersFrom(DocumentLoader* other);
+
   // CommitNavigation() does the work of creating a Document and
   // DocumentParser, as well as creating a new LocalDOMWindow if needed. It also
   // initializes a bunch of state on the Document (e.g., the state based on

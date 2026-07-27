@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/460581850">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<iframe src="resources/cap-alert-xslt.xml"></iframe>
+
+<script>
+const kXmlCAPAlert = 5973;
+const kXmlCAPAlertWithXSLT = 5974;
+
+promise_test(async () => {
+  const iframe = document.querySelector('iframe');
+  await new Promise(resolve => {
+    iframe.onload = () => {
+      if (iframe.contentDocument && iframe.contentDocument.querySelector('p')) {
+        resolve();
+      } else {
+        setTimeout(resolve, 200);
+      }
+    };
+  });
+  const isXSLTEnabled = iframe.contentDocument && iframe.contentDocument.querySelector('p') !== null;
+  assert_true(internals.isUseCounted(iframe.contentDocument, kXmlCAPAlert), "kXmlCAPAlert should trip for XML document");
+  assert_equals(internals.isUseCounted(iframe.contentDocument, kXmlCAPAlertWithXSLT), isXSLTEnabled, "kXmlCAPAlertWithXSLT should match XSLT enabled status");
+}, "XML parser trips kXmlCAPAlert and kXmlCAPAlertWithXSLT correctly");
+</script>

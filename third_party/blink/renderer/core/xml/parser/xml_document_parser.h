@@ -77,6 +77,12 @@ class XMLParserContext : public RefCounted<XMLParserContext> {
   xmlParserCtxtPtr context_;
 };
 
+inline bool IsCAPAlertNamespace(StringView uri) {
+  return !uri.IsNull() &&
+         (uri == "urn:oasis:names:tc:emergency:cap" ||
+          uri.starts_with("urn:oasis:names:tc:emergency:cap:"));
+}
+
 class XMLDocumentParser final : public ScriptableDocumentParser,
                                 public XMLParserScriptRunnerHost {
  public:

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/webdx_feature_tracing.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
@@ -198,6 +199,21 @@ bool UseCounterImpl::IsCounted(const UseCounterFeature& feature) const {
     return false;
 
   return feature_tracker_.Test(feature);
+}
+
+void UseCounterImpl::InheritXsltUseCountersFrom(const UseCounterImpl& other) {
+  DCHECK(XSLTProcessor::IsXSLTEnabled(nullptr));
+  static constexpr WebFeature kFeaturesToInherit[] = {
+      WebFeature::kXmlCAPAlert,
+      WebFeature::kXmlCAPAlertWithXSLT,
+  };
+  for (WebFeature feature : kFeaturesToInherit) {
+    UseCounterFeature ucf(mojom::blink::UseCounterFeatureType::kWebFeature,
+                          static_cast<uint32_t>(feature));
+    if (other.IsCounted(ucf)) {
+      feature_tracker_.TestAndSet(ucf);
+    }
+  }
 }
 
 void UseCounterImpl::AddObserver(Observer* observer) {
