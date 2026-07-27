@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -52,7 +53,7 @@ public class WebApkInstallNotificationTest {
 
     @Before
     public void setUp() {
-
+        DeviceInfo.setIsDesktopForTesting(false);
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
         mShadowNotificationManager =
@@ -88,7 +89,7 @@ public class WebApkInstallNotificationTest {
 
     @Test
     public void testCompleteNotification() {
-        WebApkInstallService.showInstalledNotification(
+        WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
                 PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
@@ -147,5 +148,16 @@ public class WebApkInstallNotificationTest {
         Assert.assertEquals(
                 mContext.getString(R.string.webapk_install_failed_action_open), actions[0].title);
         Assert.assertNotNull(actions[0].actionIntent);
+    }
+
+    @Test
+    public void testCompleteNotification_desktopAutoLaunch() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
+                PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
+
+        Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
+        Assert.assertNotNull(notification);
     }
 }

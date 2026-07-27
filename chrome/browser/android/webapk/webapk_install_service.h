@@ -101,14 +101,15 @@ class WebApkInstallService : public KeyedService {
 
   // Removes current notifications about an ongoing install and adds a
   // installed-notification if the installation was successful.
-  void HandleFinishInstallNotifications(const GURL& manifest_url,
-                                        const GURL& url,
-                                        const std::u16string& short_name,
-                                        const SkBitmap& primary_icon,
-                                        bool is_primary_icon_maskable,
-                                        webapps::WebApkInstallResult result,
-                                        const std::string& webapk_package_name,
-                                        bool show_failure_notification);
+  void HandleFinishInstallNotificationsAndMaybeLaunch(
+      const GURL& manifest_url,
+      const GURL& url,
+      const std::u16string& short_name,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      webapps::WebApkInstallResult result,
+      const std::string& webapk_package_name,
+      bool show_failure_notification);
 
   // Shows a notification that an install is in progress.
   static void ShowInstallInProgressNotification(
@@ -119,12 +120,13 @@ class WebApkInstallService : public KeyedService {
       bool is_primary_icon_maskable);
 
   // Shows a notification that an install is completed.
-  static void ShowInstalledNotification(const GURL& manifest_url,
-                                        const std::u16string& short_name,
-                                        const GURL& url,
-                                        const SkBitmap& primary_icon,
-                                        bool is_primary_icon_maskable,
-                                        const std::string& package_name);
+  static void ShowInstalledNotificationAndMaybeLaunch(
+      const GURL& manifest_url,
+      const std::u16string& short_name,
+      const GURL& url,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      const std::string& package_name);
 
   // Shows a notification that an install is failed.
   static void ShowInstallFailedNotification(
