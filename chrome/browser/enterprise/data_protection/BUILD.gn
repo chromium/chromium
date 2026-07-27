@@ -59,7 +59,10 @@ source_set("unit_tests") {
 
   if (enterprise_data_controls) {
     sources += [ "data_protection_clipboard_utils_unittest.cc" ]
-    deps += [ "//components/enterprise/data_controls/core/browser:features" ]
+    deps += [
+      "//components/enterprise/data_controls/content/browser",
+      "//components/enterprise/data_controls/core/browser:features",
+    ]
     if (!is_android) {
       sources += [ "clipboard_toast_tracker_unittest.cc" ]
     }

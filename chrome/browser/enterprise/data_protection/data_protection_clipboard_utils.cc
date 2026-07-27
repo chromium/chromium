@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
@@ -188,32 +189,6 @@ void OnIsClipboardOwnerByContentAnalysis(
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
-    bool is_owner);
-
-void PasteIfAllowedByContentAnalysis(
-    content::WebContents* web_contents,
-    const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
-    const ui::ClipboardMetadata& metadata,
-    content::ClipboardPasteData clipboard_paste_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(web_contents);
-  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
-
-  // Always allow if the source of the last clipboard commit was this host.
-  destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
-      metadata.seqno,
-      base::BindOnce(&OnIsClipboardOwnerByContentAnalysis, source, destination,
-                     metadata, std::move(clipboard_paste_data),
-                     std::move(callback)));
-}
-
-void OnIsClipboardOwnerByContentAnalysis(
-    const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination,
-    const ui::ClipboardMetadata& metadata,
-    content::ClipboardPasteData clipboard_paste_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
     bool is_owner) {
   if (is_owner) {
     ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno,
@@ -223,6 +198,20 @@ void OnIsClipboardOwnerByContentAnalysis(
   }
 
   Profile* profile = Profile::FromBrowserContext(destination.browser_context());
+
+  // Block pastes if the clipboard data was replaced and
+  // the copy was either permanently blocked or is still actively undergoing an
+  // asynchronous cloud scan.
+  if (metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    auto level =
+        data_controls::GetLastReplacedClipboardData().restriction_level;
+    if (level == data_controls::CopyRestrictionLevel::kBlocked ||
+        level == data_controls::CopyRestrictionLevel::kOngoingScan) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+  }
+
   if (!profile) {
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
@@ -262,6 +251,108 @@ void OnIsClipboardOwnerByContentAnalysis(
                      std::move(clipboard_paste_data), std::move(dialog_data),
                      std::move(callback));
   }
+}
+
+void PasteIfAllowedByContentAnalysis(
+    content::WebContents* web_contents,
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+  DCHECK(web_contents);
+  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
+
+  // Always allow if the source of the last clipboard commit was this host.
+  destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
+      metadata.seqno,
+      base::BindOnce(&OnIsClipboardOwnerByContentAnalysis, source, destination,
+                     metadata, std::move(clipboard_paste_data),
+                     std::move(callback)));
+}
+
+void OnCopyDeepScanComplete(
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
+    ui::ClipboardFormatType format_type,
+    base::WeakPtr<content::WebContents> web_contents,
+    const enterprise_connectors::ContentAnalysisDelegate::Data& delegate_data,
+    enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+  bool text_blocked = !result.text_results.empty() && !result.text_results[0];
+  bool image_blocked =
+      !clipboard_paste_data.png.empty() && !result.image_result;
+
+  if (text_blocked || image_blocked) {
+    // In copy case, this could be a KeptInManagedChrome result, so we need to
+    // check the result type to determine the enforcement level.
+    data_controls::LastReplacedClipboardDataObserver::GetInstance()
+        ->AddDataToNextSeqno(
+            std::move(clipboard_paste_data),
+            result.is_kept_in_managed_chrome
+                ? data_controls::CopyRestrictionLevel::kKeptInManagedChrome
+                : data_controls::CopyRestrictionLevel::kBlocked);
+    // TODO(b/325455508) The message is being overridden regardless of the
+    // most restrictive enforcement level, this needs to be fixed to override
+    // after all scans are completed.
+    std::move(callback).Run(
+        format_type, content::ClipboardPasteData(),
+        l10n_util::GetStringUTF16(
+            result.is_kept_in_managed_chrome
+                ? IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_KEPT_IN_MANAGED_CHROME_MESSAGE
+                : IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+    return;
+  }
+  std::move(callback).Run(format_type, std::move(clipboard_paste_data),
+                          std::nullopt);
+}
+void CopyIfAllowedByContentAnalysis(
+    content::WebContents* web_contents,
+    const content::ClipboardEndpoint& source,
+    const ui::ClipboardMetadata& metadata,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  DCHECK(web_contents);
+  Profile* profile = Profile::FromBrowserContext(source.browser_context());
+  if (!profile) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
+  enterprise_connectors::ContentAnalysisDelegate::Data delegate_data;
+  if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+          profile, GetUrlFromEndpoint(source), &delegate_data,
+          enterprise_connectors::AnalysisConnector::DATA_COPIED)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+  delegate_data.reason =
+      enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_COPY;
+
+  delegate_data.clipboard_source =
+      data_controls::ChromeClipboardContext::GetClipboardSource(
+          source, enterprise_connectors::kOnBulkDataEntryScopePref);
+  delegate_data.source_content_area_email =
+      enterprise_connectors::ContentAreaUserProvider::GetUser(source);
+  delegate_data.AddClipboardData(data);
+
+  // Write a placeholder to the OS clipboard while the scan is ongoing.
+  // The original data is saved to be pasted if the user pastes in the same tab.
+  {
+    data_controls::LastReplacedClipboardDataObserver::GetInstance()
+        ->AddDataToNextSeqno(data,
+                             data_controls::CopyRestrictionLevel::kOngoingScan);
+    ui::ScopedClipboardWriter scw(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>(GetUrlFromEndpoint(source)));
+    scw.WriteText(l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_SCANNING_MESSAGE));
+  }
+
+  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+      web_contents, std::move(delegate_data),
+      base::BindOnce(&OnCopyDeepScanComplete, data, std::move(callback),
+                     metadata.format_type, web_contents->GetWeakPtr()),
+      enterprise_connectors::DeepScanAccessPoint::COPY);
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -437,10 +528,10 @@ void OnDataControlsPasteWarning(
   }
 
   // If the data currently being pasted was replaced when it was initially
-  // copied from Chrome, replace it back since the warn rule was bypassed. Only do this if
-  // `source` has a known browser context to ensure we're not letting through
-  // data that was replaced by policies that are no longer applicable due to the
-  // profile being closed.
+  // copied from Chrome, replace it back since the warn rule was bypassed. Only
+  // do this if `source` has a known browser context to ensure we're not letting
+  // through data that was replaced by policies that are no longer applicable
+  // due to the profile being closed.
   if (source.browser_context() &&
       metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
     clipboard_paste_data =
@@ -590,11 +681,23 @@ void IsCopyToOSClipboardRestricted(
         ->AddDataToNextSeqno(
             data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
     std::move(callback).Run(metadata.format_type, data, replacement);
-
+    // TODO(b/325455508): This early return skips copy content analysis if there
+    // is a Data Controls replacement verdict. This should be updated in the
+    // future.
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kContentAnalysisClipboardCopy)) {
+    CopyIfAllowedByContentAnalysis(source.web_contents(), source, metadata,
+                                   data, std::move(callback));
+  } else {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+  }
+#else
   std::move(callback).Run(metadata.format_type, data, std::nullopt);
+#endif
 }
 
 void OnDataControlsCopyWarning(

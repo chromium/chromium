@@ -14,6 +14,8 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 
+class Profile;
+
 namespace content {
 class ClipboardEndpoint;
 class RenderFrameHost;
@@ -26,8 +28,8 @@ namespace enterprise_data_protection {
 // This function checks if a paste is allowed to proceed according to the
 // following policies:
 // - DataLeakPreventionRulesList
-// - OnBulkDataEntryEnterpriseConnector
 // - DataControlsRules
+// - OnBulkDataEntryEnterpriseConnector
 //
 // This function will always call `callback` after policies are evaluated with
 // true if the paste is allowed to proceed and false if it is not. However, if
@@ -68,6 +70,7 @@ bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
 // written to the OS clipboard according to the following policies:
 // - CopyPreventionSettings
 // - DataControlsRules
+// - CopyIfAllowedByContentAnalysis
 //
 // If the copy is not allowed, `callback` is called with a replacement string
 // that should instead be put into the OS clipboard.
