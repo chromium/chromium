@@ -207,24 +207,26 @@ suite('AppReceivesToolbarChanges', () => {
     const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
-    let expectedData = LineFocusStyle.UNDERLINE;
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+    await microtasksFinished();
+
+    const expectedData = LineFocusStyle.UNDERLINE;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE, {detail: {data: expectedData}});
     await microtasksFinished();
     assertEquals('block', window.getComputedStyle(lineFocus).display);
     assertEquals(expectedData, lineFocusController.getCurrentLineFocusStyle());
 
-    expectedData = LineFocusStyle.OFF;
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE, {detail: {data: expectedData}});
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
     await microtasksFinished();
     assertEquals('none', window.getComputedStyle(lineFocus).display);
-    assertEquals(expectedData, lineFocusController.getCurrentLineFocusStyle());
+    assertFalse(lineFocusController.isEnabled());
   });
 
   test('line focus style change updates padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     app.connectedCallback();
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
@@ -241,9 +243,7 @@ suite('AppReceivesToolbarChanges', () => {
         +window.getComputedStyle(app.$.container).paddingTop.replace('px', '');
     assertLT(0, padding);
 
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.OFF}});
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
     await microtasksFinished();
     assertEquals('0px', window.getComputedStyle(app.$.container).paddingTop);
   });
@@ -269,6 +269,7 @@ suite('AppReceivesToolbarChanges', () => {
   test('line focus movement change updates padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     app.connectedCallback();
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -297,6 +298,9 @@ suite('AppReceivesToolbarChanges', () => {
     const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+    await microtasksFinished();
+
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -324,6 +328,9 @@ suite('AppReceivesToolbarChanges', () => {
     const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
+    await microtasksFinished();
+
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -345,9 +352,7 @@ suite('AppReceivesToolbarChanges', () => {
       'line focus movement change does nothing with line focus off',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.OFF}});
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         // The app needs content so it has a non-zero height.
         app.updateContent();
 
@@ -383,6 +388,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('font size change updates line focus line height', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -401,6 +407,7 @@ suite('AppReceivesToolbarChanges', () => {
   test(
       'font size change does not change line focus window height', async () => {
         chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.SMALL_WINDOW}});

@@ -31,7 +31,7 @@ export class LineFocusController implements MoveModeDelegate {
 
   constructor(private model_: LineFocusModel = new LineFocusModel()) {
     const styleMode =
-        new LineFocusNoneStyleMode(LineFocusStyle.OFF, this.model_);
+        new LineFocusNoneStyleMode(LineFocusStyle.defaultValue(), this.model_);
     this.model_.setCurrentStyleMode(styleMode);
     this.model_.setCurrentMoveMode(new LineFocusNoneMoveMode(
         this.model_, styleMode, this, LineFocusMovement.STATIC));
@@ -134,11 +134,6 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onStyleChange(style: LineFocusStyle, container: HTMLElement, height: number) {
-    const isOn = style !== LineFocusStyle.OFF;
-    if (!isOn && this.model_.isSessionActive()) {
-      this.onSessionEnd();
-    }
-    this.model_.setSessionActive(isOn);
     this.setStyleAndMovement_(
         style, this.getCurrentLineFocusMovement(), container, height);
   }
@@ -219,12 +214,9 @@ export class LineFocusController implements MoveModeDelegate {
     }
 
     this.model_.setSessionActive(isOn);
-    const currentStyle = this.getCurrentLineFocusStyle();
-    const newStyle = (isOn && currentStyle === LineFocusStyle.OFF) ?
-        LineFocusStyle.defaultValue() :
-        currentStyle;
     this.setStyleAndMovement_(
-        newStyle, this.getCurrentLineFocusMovement(), container, height);
+        this.getCurrentLineFocusStyle(), this.getCurrentLineFocusMovement(),
+        container, height);
     this.listeners_.forEach(l => l.onLineFocusModesChanged());
   }
 

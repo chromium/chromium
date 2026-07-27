@@ -376,7 +376,7 @@ suite('LineFocusStyleMode', () => {
 
   suite('off mode', () => {
     let mode: LineFocusNoneStyleMode;
-    const style = LineFocusStyle.OFF;
+    const style = LineFocusStyle.defaultValue();
 
     setup(() => {
       mode = new LineFocusNoneStyleMode(style, model);

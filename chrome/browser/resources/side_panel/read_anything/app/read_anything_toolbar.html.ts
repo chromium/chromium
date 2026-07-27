@@ -274,6 +274,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .nonModal="${this.isImmersiveEnabled_}"
       .settingsPrefs="${this.settingsPrefs}"
       .lineFocusStyle="${this.lineFocusStyle}"
+      .lineFocusEnabled="${this.lineFocusEnabled}"
       .lineFocusMovement="${this.lineFocusMovement}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </line-focus-menu>

@@ -16,6 +16,7 @@ export function getHtml(this: LineFocusMenuElement) {
     .nonModal="${this.nonModal}"
     .closeOnClick="${false}"
     @line-focus-style-change="${this.onLineFocusStyleChange_}"
+    @line-focus-toggle-change="${this.onLineFocusToggleChange_}"
     @line-focus-movement-change="${this.onLineFocusMovementChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;

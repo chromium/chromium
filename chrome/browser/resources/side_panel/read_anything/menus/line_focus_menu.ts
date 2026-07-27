@@ -42,6 +42,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       settingsPrefs: {type: Object},
       nonModal: {type: Boolean},
       lineFocusStyle: {type: Object},
+      lineFocusEnabled: {type: Boolean},
       lineFocusMovement: {type: Number},
       groups_: {type: Array},
     };
@@ -50,13 +51,21 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
   accessor lineFocusStyle: LineFocusStyle|null = null;
+  accessor lineFocusEnabled: boolean = false;
   accessor lineFocusMovement: LineFocusMovement|null = null;
 
-  private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
+  private toggleOptions_: Array<MenuStateItem<boolean>> = [
     {
       title: loadTimeData.getString('lineFocusOffTitle'),
-      data: LineFocusStyle.OFF,
+      data: false,
     },
+    {
+      title: loadTimeData.getString('lineFocusOnTitle'),
+      data: true,
+    },
+  ];
+
+  private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
     {
       title: loadTimeData.getString('lineFocusUnderlineTitle'),
       data: LineFocusStyle.UNDERLINE,
@@ -87,11 +96,19 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   ];
 
   protected accessor groups_:
-      Array<MenuGroup<LineFocusStyle|LineFocusMovement>> = [
+      Array<MenuGroup<LineFocusStyle|LineFocusMovement|boolean>> = [
+        {
+          header: {
+            title: loadTimeData.getString('lineFocusLabel'),
+            separator: false,
+          },
+          items: this.toggleOptions_,
+          eventName: ToolbarEvent.LINE_FOCUS_TOGGLE,
+        },
         {
           header: {
             title: loadTimeData.getString('lineFocusStyleHeading'),
-            separator: false,
+            separator: true,
           },
           items: this.styleOptions_,
           eventName: ToolbarEvent.LINE_FOCUS_STYLE,
@@ -110,6 +127,9 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
+    if (changedProperties.has('lineFocusEnabled')) {
+      this.updateOptionsForToggle_(this.lineFocusEnabled);
+    }
     if (changedProperties.has('lineFocusStyle') &&
         this.lineFocusStyle !== null) {
       this.updateOptionsForStyle_(this.lineFocusStyle);
@@ -118,7 +138,8 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
         this.lineFocusMovement !== null) {
       this.updateOptionsForMovement_(this.lineFocusMovement);
     }
-    if (changedProperties.has('lineFocusStyle') ||
+    if (changedProperties.has('lineFocusEnabled') ||
+        changedProperties.has('lineFocusStyle') ||
         changedProperties.has('lineFocusMovement')) {
       this.groups_ = [...this.groups_];
     }
@@ -137,9 +158,20 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
         ReadAnythingSettingsChange.LINE_FOCUS_STYLE_CHANGE);
   }
 
+  protected onLineFocusToggleChange_() {
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE);
+  }
+
   protected onLineFocusMovementChange_() {
     this.logger_.logTextSettingsChange(
         ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE);
+  }
+
+  private updateOptionsForToggle_(isEnabled: boolean) {
+    this.toggleOptions_.forEach(option => {
+      option.selected = option.data === isEnabled;
+    });
   }
 
   private updateOptionsForStyle_(newStyle: LineFocusStyle) {

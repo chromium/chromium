@@ -88,6 +88,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       pageLanguage_: {type: String},
       presentationState_: {type: Number},
       lineFocusStyle_: {type: Object},
+      lineFocusEnabled_: {type: Boolean},
       lineFocusMovement_: {type: Number},
       isDocsLoadMoreButtonVisible_: {type: Boolean},
       hasValidSelection_: {type: Boolean},
@@ -98,6 +99,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected accessor contentState_: ContentState;
   protected accessor lineFocusStyle_: LineFocusStyle|null = null;
+  protected accessor lineFocusEnabled_: boolean = false;
   protected accessor lineFocusMovement_: LineFocusMovement|null = null;
 
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
@@ -791,7 +793,17 @@ export class AppElement extends AppElementBase implements SpeechListener,
     }
   }
 
+  protected onLineFocusToggleChange_(event: CustomEvent<{data: boolean}>) {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.toggle(
+          event.detail.data, this.$.container,
+          this.$.appFlexParent.clientHeight);
+      this.updateLineFocusState_();
+    }
+  }
+
   private updateLineFocusState_() {
+    this.lineFocusEnabled_ = this.lineFocusController_.isEnabled();
     this.lineFocusStyle_ = this.lineFocusController_.getCurrentLineFocusStyle();
     this.setLineFocusStyle_();
 

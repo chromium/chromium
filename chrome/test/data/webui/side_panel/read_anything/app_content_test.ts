@@ -131,6 +131,7 @@ suite('AppContent', () => {
   test('new content updates padding for line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     app.connectedCallback();
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
@@ -174,9 +175,7 @@ suite('AppContent', () => {
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.STATIC}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.OFF}});
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         await microtasksFinished();
         assertEquals(0, getLineFocusPadding());
 
@@ -236,6 +235,7 @@ suite('AppContent', () => {
     app.connectedCallback();
     await microtasksFinished();
     // Start with static line focus on.
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.STATIC}});
@@ -281,6 +281,7 @@ suite('AppContent', () => {
           'has content',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -297,6 +298,7 @@ suite('AppContent', () => {
       'onContentStateChange disables line focus style when no content',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -311,6 +313,7 @@ suite('AppContent', () => {
 
   test('onContentStateChange line focus showing if has content', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -326,9 +329,7 @@ suite('AppContent', () => {
       'onContentStateChange line focus not showing if off but has content',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.OFF}});
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         await microtasksFinished();
 
         contentController.setState(ContentType.HAS_CONTENT);
@@ -340,6 +341,7 @@ suite('AppContent', () => {
   test(
       'onContentStateChange line focus not showing if no content', async () => {
         chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -363,6 +365,7 @@ suite('AppContent', () => {
 
   test('showLoading marks line focus showing if enabled', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
@@ -376,9 +379,7 @@ suite('AppContent', () => {
 
   test('showLoading does not mark line focus showing if disabled', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    emitEvent(
-        app, ToolbarEvent.LINE_FOCUS_STYLE,
-        {detail: {data: LineFocusStyle.OFF}});
+    emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
     await microtasksFinished();
 
     app.showLoading();

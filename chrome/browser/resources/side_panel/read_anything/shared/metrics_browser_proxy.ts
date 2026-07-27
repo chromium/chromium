@@ -83,9 +83,10 @@ export enum ReadAnythingSettingsChange {
   // LINE_FOCUS_CHANGE = 7, // no longer used, split into style and movement
   LINE_FOCUS_STYLE_CHANGE = 8,
   LINE_FOCUS_MOVEMENT_CHANGE = 9,
+  LINE_FOCUS_TOGGLE = 10,
 
   // Must be last.
-  COUNT = 10,
+  COUNT = 11,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsChange)
 

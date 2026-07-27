@@ -43,25 +43,33 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.lineFocusStyle = window;
     await microtasksFinished();
     let selectedItems =
-        lineFocusMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+        lineFocusMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
     assertEquals(1, selectedItems.length, 'selected');
     assertEquals(window, selectedItems[0]!.data, 'data');
-
-    const off = LineFocusStyle.OFF;
-    lineFocusMenu.lineFocusStyle = off;
-    await microtasksFinished();
-    selectedItems =
-        lineFocusMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
-    assertEquals(1, selectedItems.length, 'selected off');
-    assertEquals(off, selectedItems[0]!.data, 'data off');
 
     const line = LineFocusStyle.UNDERLINE;
     lineFocusMenu.lineFocusStyle = line;
     await microtasksFinished();
     selectedItems =
-        lineFocusMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+        lineFocusMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
     assertEquals(1, selectedItems.length, 'selected line');
     assertEquals(line, selectedItems[0]!.data, 'data line');
+  });
+
+  test('line focus enabled prop update changes selected items', async () => {
+    lineFocusMenu.lineFocusEnabled = true;
+    await microtasksFinished();
+    let selectedItems =
+        lineFocusMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+    assertEquals(1, selectedItems.length, 'selected true');
+    assertEquals(true, selectedItems[0]!.data);
+
+    lineFocusMenu.lineFocusEnabled = false;
+    await microtasksFinished();
+    selectedItems =
+        lineFocusMenu.$.menu.menuGroups[0]!.items.filter(item => item.selected);
+    assertEquals(1, selectedItems.length, 'selected false');
+    assertEquals(false, selectedItems[0]!.data);
   });
 
   test('on line focus style change', async () => {
@@ -85,7 +93,7 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.lineFocusMovement = cursor;
     await microtasksFinished();
     let selectedItems =
-        lineFocusMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
+        lineFocusMenu.$.menu.menuGroups[2]!.items.filter(item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(cursor, selectedItems[0]!.data);
 
@@ -93,7 +101,7 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.lineFocusMovement = staticMovement;
     await microtasksFinished();
     selectedItems =
-        lineFocusMenu.$.menu.menuGroups[1]!.items.filter(item => item.selected);
+        lineFocusMenu.$.menu.menuGroups[2]!.items.filter(item => item.selected);
     assertEquals(1, selectedItems.length);
     assertEquals(staticMovement, selectedItems[0]!.data);
   });
@@ -110,6 +118,21 @@ suite('LineFocusMenuElement', () => {
 
     assertEquals(
         ReadAnythingSettingsChange.LINE_FOCUS_MOVEMENT_CHANGE,
+        await metrics.whenCalled('recordTextSettingsChange'));
+    assertEquals(0, closeAllMenusCount);
+  });
+
+  test('on line focus toggle change', async () => {
+    let closeAllMenusCount = 0;
+    document.addEventListener(
+        ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
+
+    lineFocusMenu.$.menu.dispatchEvent(new CustomEvent(
+        ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}}));
+    await microtasksFinished();
+
+    assertEquals(
+        ReadAnythingSettingsChange.LINE_FOCUS_TOGGLE,
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(0, closeAllMenusCount);
   });

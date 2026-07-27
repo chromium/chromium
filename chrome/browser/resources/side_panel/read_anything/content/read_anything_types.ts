@@ -27,7 +27,6 @@ export enum LineFocusMovement {
 }
 
 export class LineFocusStyle {
-  static readonly OFF = new LineFocusStyle(LineFocusType.NONE, 0);
   static readonly SMALL_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 1);
   static readonly MEDIUM_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 3);
   static readonly LARGE_WINDOW = new LineFocusStyle(LineFocusType.WINDOW, 5);
@@ -55,11 +54,6 @@ interface LineFocusValue {
 
 export const getLineFocusValues = (): Record<number, LineFocusValue> => {
   return {
-    [chrome.readingMode.lineFocusOff]: {
-      value: chrome.readingMode.lineFocusOff,
-      style: LineFocusStyle.OFF,
-      movement: LineFocusMovement.STATIC,
-    },
     [chrome.readingMode.lineFocusSmallCursorWindow]: {
       value: chrome.readingMode.lineFocusSmallCursorWindow,
       style: LineFocusStyle.SMALL_WINDOW,
@@ -126,6 +120,7 @@ export enum ToolbarEvent {
   VOICE_MENU_CLOSE = 'voice-menu-close',
   LINE_FOCUS_STYLE = 'line-focus-style-change',
   LINE_FOCUS_MOVEMENT = 'line-focus-movement-change',
+  LINE_FOCUS_TOGGLE = 'line-focus-toggle-change',
   CLOSE_ALL_MENUS = 'close-all-menus',
   OPEN_SETTINGS_SUBMENU = 'open-settings-submenu',
   PRESENTATION_CHANGE = 'presentation-change',
