@@ -436,8 +436,8 @@ class LocationBarPhone extends LocationBarLayout {
             return false;
         }
 
-        // Do not center when the URL bar is focused or in transition.
-        if (mUrlBar == null || mUrlBarLaidOutAtFocusedWidth) {
+        // Do not center when the URL bar is focused.
+        if (mUrlBar == null || mUrlBar.hasFocus()) {
             return false;
         }
         if (mLocationBarDataProvider == null) {
