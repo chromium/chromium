@@ -67,12 +67,21 @@ class SqlPersistentStoreTestBase : public testing::Test {
  public:
   // Sets up a temporary directory and a background task runner for each test.
   void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kDiskCacheBackendExperiment,
-          {{net::features::kDiskCacheBackendParam.name, "sql"},
-           {net::features::kSqlDiskCacheWalMode.name,
-            IsWalModeEnabled() ? "true" : "false"}}}},
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {net::features::kDiskCacheBackendExperiment,
+         {{net::features::kDiskCacheBackendParam.name, "sql"},
+          {net::features::kSqlDiskCacheWalMode.name,
+           IsWalModeEnabled() ? "true" : "false"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsRendererAccessibleHttpCacheEnabled()) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          net::features::kRendererAccessibleHttpCache, {}));
+    } else {
+      disabled_features.emplace_back(
+          net::features::kRendererAccessibleHttpCache);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     background_task_runners_.emplace_back(
@@ -738,6 +747,7 @@ class SqlPersistentStoreTestBase : public testing::Test {
 
  protected:
   virtual bool IsWalModeEnabled() const = 0;
+  virtual bool IsRendererAccessibleHttpCacheEnabled() const { return false; }
 
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
@@ -7013,5 +7023,72 @@ INSTANTIATE_TEST_SUITE_P(
     SqlPersistentStoreIncrementalVacuumTest,
     testing::Bool(),
     SqlPersistentStoreIncrementalVacuumTest::ParamToString);
+
+class SqlPersistentStoreSharedCacheTest
+    : public SqlPersistentStoreTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  static std::string ParamToString(const testing::TestParamInfo<bool>& info) {
+    return info.param ? "Wal" : "NonWal";
+  }
+
+ protected:
+  bool IsWalModeEnabled() const override { return GetParam(); }
+  bool IsRendererAccessibleHttpCacheEnabled() const override { return true; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SqlPersistentStoreSharedCacheTest,
+                         testing::Bool(),
+                         SqlPersistentStoreSharedCacheTest::ParamToString);
+
+TEST_P(SqlPersistentStoreSharedCacheTest, MoveBlobsToSharedCache) {
+  CreateAndInitStore();
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+  const std::string kData = "some data";
+  WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+
+  // Verify initial state.
+  CheckBlobData(res_id, {{0, kData}});
+  auto details = GetResourceEntryDetails(kKey);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(details->bytes_usage,
+            static_cast<int64_t>(kKey.string().size() + kData.size()));
+
+  // Manually move blobs to shared cache.
+  const SqlSharedCacheResourceId kSharedResourceId{SqlSharedCacheDbId(12345),
+                                                   SqlSharedCacheRowId(67890)};
+  base::test::TestFuture<SqlPersistentStore::Error> move_future;
+  store_->MoveBlobsToSharedCache(kKey, res_id, kSharedResourceId,
+                                 move_future.GetCallback());
+  ASSERT_EQ(move_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // Verify blobs are gone and shared_cache_db_id/row_id is set.
+  CheckBlobData(res_id, {});
+
+  {
+    auto db_handle = ManuallyOpenDatabase();
+    sql::Statement s(db_handle->GetUniqueStatement(
+        "SELECT shared_cache_db_id, shared_cache_row_id, bytes_usage "
+        "FROM resources WHERE res_id=?"));
+    s.BindInt64(0, res_id.value());
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(s.ColumnInt64(0), kSharedResourceId.db_id.value());
+    EXPECT_EQ(s.ColumnInt64(1), kSharedResourceId.row_id.value());
+    // bytes_usage should not be updated (blobs size removed).
+    EXPECT_EQ(s.ColumnInt64(2),
+              static_cast<int64_t>(kKey.string().size() + kData.size()));
+  }
+
+  // Verify GetSizeOfAllEntries is unchanged.
+  EXPECT_EQ(GetSizeOfAllEntries(),
+            static_cast<int64_t>(kSqlBackendStaticResourceSize +
+                                 kKey.string().size() + kData.size()));
+}
 
 }  // namespace disk_cache

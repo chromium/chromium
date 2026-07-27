@@ -538,6 +538,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                      bool sparse_reading,
                      ReadResultOrErrorCallback callback);
 
+  // Moves the entry's blob data to the shared cache.
+  // Deletes all blobs associated with `res_id` from the `blobs` table and
+  // updates the `resources` table entry with `shared_cache_resource_id`.
+  // `callback` will be invoked with `Error::kOk` on success, or an error code.
+  void MoveBlobsToSharedCache(const CacheEntryKey& key,
+                              ResId res_id,
+                              SqlSharedCacheResourceId shared_cache_resource_id,
+                              ErrorCallback callback);
+
   // Finds the available contiguous range of data for a given entry.
   // `res_id` identifies the entry.
   // `offset` is the starting position of the range to check.

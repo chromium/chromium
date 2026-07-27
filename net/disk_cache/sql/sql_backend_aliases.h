@@ -29,6 +29,13 @@ using SqlSharedCacheDbId =
 using SqlSharedCacheRowId =
     base::StrongAlias<class SqlSharedCacheRowIdTag, int64_t>;
 
+// Uniquely identifies a resource entry stored within the SqlSharedCache
+// isolated database.
+struct SqlSharedCacheResourceId {
+  SqlSharedCacheDbId db_id;
+  SqlSharedCacheRowId row_id;
+};
+
 // The 32-bit hash of a resource URL, used for fast indexing and lookups within
 // the SqlSharedCache databases.
 using SqlSharedCacheUrlHash =

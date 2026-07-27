@@ -108,6 +108,11 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
                                   int64_t body_end,
                                   bool sparse_reading,
                                   base::TimeTicks start_time);
+  ErrorAndStoreStatus MoveBlobsToSharedCache(
+      const CacheEntryKey& key,
+      ResId res_id,
+      SqlSharedCacheResourceId shared_cache_resource_id,
+      base::TimeTicks start_time);
   RangeResult GetEntryAvailableRange(ResId res_id,
                                      int64_t offset,
                                      int len,
@@ -465,6 +470,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
   Error MaybeRunIncrementalVacuumInternal(
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       int& pages_vacuumed);
+
+  Error MoveBlobsToSharedCacheInternal(
+      ResId res_id,
+      SqlSharedCacheResourceId shared_cache_resource_id);
 
   base::FilePath GetDatabaseFilePath() const;
 

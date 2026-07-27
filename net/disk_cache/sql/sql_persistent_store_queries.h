@@ -418,6 +418,18 @@ inline constexpr const char kWriteEntryData_UpdateResource[] =
         "last_used";                  // 3
 // clang-format on
 
+inline constexpr const char kMoveBlobsToSharedCache_UpdateResource[] =
+    // clang-format off
+    "UPDATE resources "
+    "SET "
+        "shared_cache_db_id=?, "   // 0
+        "shared_cache_row_id=? "   // 1
+    "WHERE "
+        "res_id=? AND "            // 2
+        "doomed=0 "
+    "RETURNING 1";
+// clang-format on
+
 inline constexpr const char kTrimOverlappingBlobs_DeleteContained[] =
     // clang-format off
     "DELETE FROM blobs "
@@ -613,6 +625,7 @@ enum class Query {
   kUpdateLastUsedBodyHeader,
   kUpdateLastUsedBodyHeaderHints,
   kWriteEntryData_UpdateResource,
+  kMoveBlobsToSharedCache_UpdateResource,
   kTrimOverlappingBlobs_DeleteContained,
   kTrimOverlappingBlobs_SelectOverlapping,
   kTruncateBlobsAfter_DeleteAfter,
@@ -700,6 +713,8 @@ inline base::cstring_view GetQuery(Query query, bool shared_cache_enabled) {
       return internal::kUpdateLastUsedBodyHeaderHints;
     case Query::kWriteEntryData_UpdateResource:
       return internal::kWriteEntryData_UpdateResource;
+    case Query::kMoveBlobsToSharedCache_UpdateResource:
+      return internal::kMoveBlobsToSharedCache_UpdateResource;
     case Query::kTrimOverlappingBlobs_DeleteContained:
       return internal::kTrimOverlappingBlobs_DeleteContained;
     case Query::kTrimOverlappingBlobs_SelectOverlapping:

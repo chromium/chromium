@@ -2322,6 +2322,68 @@ ReadResultOrError SqlPersistentStore::Backend::ReadEntryDataInternal(
   return read_result;
 }
 
+ErrorAndStoreStatus SqlPersistentStore::Backend::MoveBlobsToSharedCache(
+    const CacheEntryKey& key,
+    ResId res_id,
+    SqlSharedCacheResourceId shared_cache_resource_id,
+    base::TimeTicks start_time) {
+  const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.MoveBlobsToSharedCache", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("key", key.string());
+                       PopulateTraceDetails(store_status_, dict);
+                     });
+
+  base::ElapsedTimer timer;
+  auto error = MoveBlobsToSharedCacheInternal(res_id, shared_cache_resource_id);
+  RecordTimeAndErrorResultHistogram("MoveBlobsToSharedCache", posting_delay,
+                                    timer.Elapsed(), error,
+                                    /*corruption_detected=*/false);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.MoveBlobsToSharedCache", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     dict.Add("error", error);
+                     PopulateTraceDetails(store_status_, dict);
+                   });
+  return ErrorAndStoreStatus(error, store_status_);
+}
+
+Error SqlPersistentStore::Backend::MoveBlobsToSharedCacheInternal(
+    ResId res_id,
+    SqlSharedCacheResourceId shared_cache_resource_id) {
+  CHECK(shared_cache_enabled_);
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return db_error;
+  }
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToStartTransaction;
+  }
+
+  if (auto error = DeleteBlobsByResId(res_id); error != Error::kOk) {
+    return error;
+  }
+
+  {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kMoveBlobsToSharedCache_UpdateResource)));
+    statement.BindInt64(0, shared_cache_resource_id.db_id.value());
+    statement.BindInt64(1, shared_cache_resource_id.row_id.value());
+    statement.BindInt64(2, res_id.value());
+
+    if (!statement.Step()) {
+      return Error::kFailedToExecute;
+    }
+  }
+
+  if (!transaction.Commit()) {
+    return Error::kFailedToCommitTransaction;
+  }
+  return Error::kOk;
+}
+
 RangeResult SqlPersistentStore::Backend::GetEntryAvailableRange(
     ResId res_id,
     int64_t offset,

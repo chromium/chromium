@@ -177,6 +177,9 @@ TEST_P(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kWriteEntryData_UpdateResource,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
+           {Query::kMoveBlobsToSharedCache_UpdateResource,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kTrimOverlappingBlobs_DeleteContained,
             "`--SEARCH blobs USING "
             "INDEX index_blobs_res_id_start "
@@ -230,6 +233,10 @@ TEST_P(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
   for (const auto& it : kAllQueriesAndPlans) {
+    if (!GetParam() &&
+        it.first == Query::kMoveBlobsToSharedCache_UpdateResource) {
+      continue;
+    }
     const base::cstring_view query_string = GetQuery(it.first, GetParam());
     SCOPED_TRACE(query_string);
     EXPECT_EQ(GetQueryPlan(query_string), it.second);

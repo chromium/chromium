@@ -104,6 +104,10 @@ class SqlPersistentStore::BackendShard {
                      int64_t body_end,
                      bool sparse_reading,
                      SqlPersistentStore::ReadResultOrErrorCallback callback);
+  void MoveBlobsToSharedCache(const CacheEntryKey& key,
+                              ResId res_id,
+                              SqlSharedCacheResourceId shared_cache_resource_id,
+                              ErrorCallback callback);
 
   void GetEntryAvailableRange(const CacheEntryKey& key,
                               ResId res_id,

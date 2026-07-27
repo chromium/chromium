@@ -344,6 +344,15 @@ void SqlPersistentStore::ReadEntryData(const CacheEntryKey& key,
                               body_end, sparse_reading, std::move(callback));
 }
 
+void SqlPersistentStore::MoveBlobsToSharedCache(
+    const CacheEntryKey& key,
+    ResId res_id,
+    SqlSharedCacheResourceId shared_cache_resource_id,
+    ErrorCallback callback) {
+  GetShard(key).MoveBlobsToSharedCache(key, res_id, shared_cache_resource_id,
+                                       std::move(callback));
+}
+
 void SqlPersistentStore::GetEntryAvailableRange(const CacheEntryKey& key,
                                                 ResId res_id,
                                                 int64_t offset,

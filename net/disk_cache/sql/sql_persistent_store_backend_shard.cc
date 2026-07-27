@@ -282,6 +282,16 @@ void SqlPersistentStore::BackendShard::ReadEntryData(
       .Then(WrapCallback(std::move(callback)));
 }
 
+void SqlPersistentStore::BackendShard::MoveBlobsToSharedCache(
+    const CacheEntryKey& key,
+    ResId res_id,
+    SqlSharedCacheResourceId shared_cache_resource_id,
+    ErrorCallback callback) {
+  backend_.AsyncCall(&SqlPersistentStore::Backend::MoveBlobsToSharedCache)
+      .WithArgs(key, res_id, shared_cache_resource_id, base::TimeTicks::Now())
+      .Then(WrapCallbackWithStoreStatus(std::move(callback)));
+}
+
 void SqlPersistentStore::BackendShard::GetEntryAvailableRange(
     const CacheEntryKey& key,
     ResId res_id,
