@@ -133,8 +133,23 @@ ElementSelector* ReloadPoliciesButton() {
 }
 
 ElementSelector* RefreshLogsButton() {
-  return [ElementSelector
-      selectorWithElementID:base::SysNSStringToUTF8(kRefreshLogsButton)];
+  NSString* script =
+      @"(function() {"
+       "  var app = document.querySelector('policy-logs-app');"
+       "  return app ? app.shadowRoot.getElementById('logs-refresh') : null;"
+       "})()";
+  return [ElementSelector selectorWithScript:script
+                         selectorDescription:@"'logs-refresh' button"];
+}
+
+ElementSelector* ExportLogsButton() {
+  NSString* script =
+      @"(function() {"
+       "  var app = document.querySelector('policy-logs-app');"
+       "  return app ? app.shadowRoot.getElementById('logs-dump') : null;"
+       "})()";
+  return [ElementSelector selectorWithScript:script
+                         selectorDescription:@"'logs-dump' button"];
 }
 
 ElementSelector* ApplyPoliciesButton() {
@@ -227,7 +242,9 @@ id<GREYMatcher> DownloadButton() {
 - (void)testPolicyLogsPageLoadsCorrectly {
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
   [ChromeEarlGrey waitForWebStateContainingElement:RefreshLogsButton()];
-  [ChromeEarlGrey tapWebStateElementWithID:kRefreshLogsButton];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.querySelector('policy-logs-app').shadowRoot."
+                      @"getElementById('logs-refresh').click();"];
 
   // Open in new incognito tab.
   [ChromeEarlGrey openNewIncognitoTab];
@@ -362,8 +379,11 @@ id<GREYMatcher> DownloadButton() {
     EARL_GREY_TEST_SKIPPED(@"Disabled on iPad");
   }
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
+  [ChromeEarlGrey waitForWebStateContainingElement:ExportLogsButton()];
   // Click "Export Logs to JSON" button
-  [ChromeEarlGrey tapWebStateElementWithID:kExportLogsButton];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"document.querySelector('policy-logs-app').shadowRoot."
+                      @"getElementById('logs-dump').click();"];
   // Verify the download button at the bottom shows.
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]

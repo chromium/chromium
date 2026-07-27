@@ -24,6 +24,9 @@ build_webui("build") {
 
   ts_files = [
     "logs/policy_logs.ts",
+    "logs/policy_logs_app.html.ts",
+    "logs/policy_logs_app.ts",
+    "logs/policy_logs_search.ts",
     "logs/types.ts",
     "policy.ts",
     "policy_base.ts",
@@ -47,6 +50,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "logs/policy_logs_app.css",
     "policy_conflict.css",
     "policy_precedence_row.css",
     "promotion_banner_section_container.css",
@@ -56,10 +60,8 @@ build_webui("build") {
     "policy_table_header_cell.css",
   ]
 
-  mojo_files = [
-    "$root_gen_dir/components/policy/resources/webui/" +
-    "mojom/policy.mojom-webui.ts",
-  ]
+  mojo_files = [ "$root_gen_dir/components/policy/resources/webui/" +
+                 "mojom/policy.mojom-webui.ts" ]
   mojo_files_deps = [
     "//components/policy/resources/webui/mojom:mojo_bindings_ts__generator",
   ]
