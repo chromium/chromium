@@ -15,8 +15,8 @@
 
 class WDTypedResult;
 
-// TODO(crbug.com/507327886): Remove AUTOFILL_VALUE_RESULT once the
-// label-sensitive autocomplete is launched.
+// TODO(crbug.com/507327886): Remove AUTOFILL_VALUE_RESULT once
+// kAutofillLabelSensitiveAutocomplete is launched.
 //
 // Result types for WebDataService.
 //

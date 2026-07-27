@@ -1505,7 +1505,7 @@ TEST_F(AutofillExternalDelegateTest, RemoveAutocompleteSuggestion_LabelPassed) {
                                                         .value = kValue}}};
   IssueOnQuery(form_description);
 
-  auto suggestion = CreateAutofillSuggestion(
+  const Suggestion suggestion = CreateAutofillSuggestion(
       SuggestionType::kAutocompleteEntry, kValue,
       AutocompleteSearchResultLabelSensitive(kValue, MatchingType::kUnknown,
                                              kName, kLabel, /*count=*/0));

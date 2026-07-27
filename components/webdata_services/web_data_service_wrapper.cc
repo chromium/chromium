@@ -58,8 +58,9 @@ void InitAutofillSyncBridgesOnDBSequence(
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
-  // TODO(crbug.com/507327886): Remove AutocompleteSyncBridge after feature
-  // launch. Sync is not implemented for the label-sensitive autocomplete table.
+  // TODO(crbug.com/507327886): Remove AutocompleteSyncBridge after
+  // kAutofillLabelSensitiveAutocomplete launch. Sync is not implemented for the
+  // label-sensitive autocomplete table.
   autofill::AutocompleteSyncBridge::CreateForWebDataServiceAndBackend(
       autofill_web_data.get(), autofill_backend);
   autofill::AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
@@ -152,8 +153,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   // be added here.
   profile_database_->AddTable(
       std::make_unique<autofill::AddressAutofillTable>());
-  // TODO(crbug.com/507327886): Remove the autocomplete table once the
-  // label-sensitive autocomplete is launched.
+  // TODO(crbug.com/507327886): Remove the autocomplete table once
+  // kAutofillLabelSensitiveAutocomplete is launched.
   profile_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
   profile_database_->AddTable(
       std::make_unique<autofill::AutocompleteTableLabelSensitive>());

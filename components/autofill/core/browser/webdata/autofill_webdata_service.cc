@@ -58,7 +58,8 @@ void AutofillWebDataService::AddFormFields(
                                 autofill_backend_, fields));
 }
 
-// TODO(crbug.com/507327886): Remove after feature launch.
+// TODO(crbug.com/507327886): Remove after kAutofillLabelSensitiveAutocomplete
+// launch.
 WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
     const std::u16string& name,
     const std::u16string& prefix,
@@ -224,9 +225,9 @@ AutofillWebDataService::GetCountOfValuesContainedBetween(
       std::move(consumer));
 }
 
-// TODO(crbug.com/507327886): Remove after feature launch. There is no update
-// action for label sensitive autocomplete. Update was used only by sync. Sync
-// for label sensitive autocomplete is turned off.
+// TODO(crbug.com/507327886): Remove after kAutofillLabelSensitiveAutocomplete
+// launch. There is no update action for label-sensitive autocomplete. Update
+// was used only by sync. Sync for label-sensitive autocomplete is turned off.
 void AutofillWebDataService::UpdateAutocompleteEntries(
     const std::vector<AutocompleteEntry>& autocomplete_entries) {
   wdbs_->ScheduleDBTask(

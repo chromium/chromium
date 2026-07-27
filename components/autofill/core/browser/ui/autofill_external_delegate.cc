@@ -1155,7 +1155,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
         manager_->client()
             .GetSingleFieldFillRouter()
             .OnRemoveCurrentSingleFieldSuggestion(
-                entry.key().name(), u"", entry.key().value(), suggestion.type);
+                entry.key().name(), /*field_label=*/u"", entry.key().value(),
+                suggestion.type);
       }
       return true;
     }

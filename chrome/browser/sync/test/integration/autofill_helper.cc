@@ -94,7 +94,8 @@ void RemoveKeyDontBlockForSync(int profile, const AutocompleteKey& key) {
   wds->GetDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(add_observer_func, wds, &mock_observer));
 
-  wds->RemoveFormValueForElementNameAndLabel(key.name(), u"", key.value());
+  wds->RemoveFormValueForElementNameAndLabel(key.name(), /*label=*/u"",
+                                             key.value());
   done_event.Wait();
 
   void (AutofillWebDataService::*remove_observer_func)(

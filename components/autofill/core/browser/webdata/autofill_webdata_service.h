@@ -56,10 +56,10 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Schedules a task to add form fields to the web database.
   virtual void AddFormFields(const std::vector<FormFieldData>& fields);
 
-  // Initiates the request for a vector of values which have been entered in
-  // form input fields named |name|. The method OnWebDataServiceRequestDone of
-  // |consumer| gets called back when the request is finished, with the vector
-  // included in the argument |result|.
+  // Initiates a request for autocomplete entries in the legacy
+  // non-label-sensitive table matching `name` and `prefix`.
+  // `consumer::OnWebDataServiceRequestDone` is called when the request
+  // finishes.
   virtual WebDataServiceBase::Handle GetFormValuesForElementName(
       const std::u16string& name,
       const std::u16string& prefix,
