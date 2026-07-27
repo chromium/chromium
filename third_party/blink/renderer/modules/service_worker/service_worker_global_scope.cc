@@ -830,9 +830,6 @@ void ServiceWorkerGlobalScope::MaybeRecordFetchError(
     int net_error_code,
     const FetchRequestData* request_data) {
   DCHECK(IsContextThread());
-  if (active_fetch_respond_with_observers_.empty()) {
-    return;
-  }
   if (request_data && request_data->ServiceWorkerRaceNetworkRequestToken()) {
     base::UnguessableToken token =
         request_data->ServiceWorkerRaceNetworkRequestToken();
@@ -843,11 +840,12 @@ void ServiceWorkerGlobalScope::MaybeRecordFetchError(
         return;
       }
     }
-    // TODO(crbug.com/532760255): If a race fetch error occurs after the
-    // matching observer was erased (e.g., fetch() called after respondWith()
-    // settled), we should record this error using another telemetry mechanism
-    // in the future to better understand the root cause of "failed to fetch"
-    // issues.
+    base::UmaHistogramSparse(
+        "ServiceWorker.FetchInFetchHandler.PostRespondWithRaceFetchNetError",
+        -net_error_code);
+    return;
+  }
+  if (active_fetch_respond_with_observers_.empty()) {
     return;
   }
   if (request_data) {

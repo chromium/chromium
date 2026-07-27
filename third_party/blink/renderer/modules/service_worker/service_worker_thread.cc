@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_proxy.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -59,12 +61,40 @@ ServiceWorkerThread::ServiceWorkerThread(
       cache_storage_remote_(std::move(cache_storage_remote)),
       service_worker_token_(service_worker_token) {}
 
+ServiceWorkerThread::ServiceWorkerThread(
+    WorkerReportingProxy& worker_reporting_proxy,
+    std::unique_ptr<ServiceWorkerInstalledScriptsManager>
+        installed_scripts_manager,
+    mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        parent_thread_default_task_runner,
+    const blink::ServiceWorkerToken& service_worker_token)
+    : WorkerThread(worker_reporting_proxy,
+                   parent_thread_default_task_runner
+                       ? std::move(parent_thread_default_task_runner)
+                       : ThreadScheduler::Current()->CleanupTaskRunner()),
+      worker_backing_thread_(std::make_unique<WorkerBackingThread>(
+          ThreadCreationParams(GetThreadType()))),
+      installed_scripts_manager_(std::move(installed_scripts_manager)),
+      cache_storage_remote_(std::move(cache_storage_remote)),
+      service_worker_token_(service_worker_token) {
+  CHECK_IS_TEST();
+}
+
 ServiceWorkerThread::~ServiceWorkerThread() {
-  global_scope_proxy_->Detach();
+  if (global_scope_proxy_) {
+    global_scope_proxy_->Detach();
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 void ServiceWorkerThread::TerminateForTesting() {
-  global_scope_proxy_->TerminateWorkerContext();
+  if (global_scope_proxy_) {
+    global_scope_proxy_->TerminateWorkerContext();
+  } else {
+    CHECK_IS_TEST();
+  }
   WorkerThread::TerminateForTesting();
 }
 

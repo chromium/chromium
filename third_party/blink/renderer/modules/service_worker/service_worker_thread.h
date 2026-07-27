@@ -31,6 +31,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_THREAD_H_
 
 #include <memory>
+
+#include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -65,6 +67,19 @@ class MODULES_EXPORT ServiceWorkerThread final : public WorkerThread {
   void TerminateForTesting() override;
 
  private:
+  friend class ServiceWorkerGlobalScopeTest;
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerGlobalScopeTest,
+                           PostRespondWithRaceFetchNetErrorHistogram);
+
+  // For testing.
+  ServiceWorkerThread(
+      WorkerReportingProxy& worker_reporting_proxy,
+      std::unique_ptr<ServiceWorkerInstalledScriptsManager>
+          installed_scripts_manager,
+      mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          parent_thread_default_task_runner,
+      const ServiceWorkerToken& service_worker_token);
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams>) override;
 

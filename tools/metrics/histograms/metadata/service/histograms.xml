@@ -648,6 +648,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ServiceWorker.FetchInFetchHandler.PostRespondWithRaceFetchNetError"
+    enum="NetErrorCodes" expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records net::Error code (as a positive integer) when a Service Worker race
+    network request fetch fails after its matching respondWith observer has
+    already settled/been erased.
+  </summary>
+</histogram>
+
+<histogram
     name="ServiceWorker.FindRegistrationForClientUrl.IsCalledForNavigation"
     enum="Boolean" expires_after="2027-01-10">
   <owner>chikamune@chromium.org</owner>
