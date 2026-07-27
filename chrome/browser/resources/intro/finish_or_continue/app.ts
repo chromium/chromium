@@ -6,19 +6,19 @@ import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
+import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
-
+import {browserProxyFactory as finishOrContinueMojoProxyFactory} from '../finish_or_continue.mojom-webui.js';
+import type {BrowserProxy as FinishOrContinueBrowserProxy} from '../finish_or_continue.mojom-webui.js';
 import type {IntroBrowserProxy} from '../intro_browser_proxy.js';
 import {IntroBrowserProxyImpl} from '../intro_browser_proxy.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-
-import type {FinishOrContinueBrowserProxy} from './finish_or_continue_browser_proxy.js';
-import {FinishOrContinueBrowserProxyImpl} from './finish_or_continue_browser_proxy.js';
+import type {MatchMediaProxy} from './match_media_proxy.js';
+import {MatchMediaProxyImpl} from './match_media_proxy.js';
 
 export interface FinishOrContinueAppElement {
   $: {
@@ -56,8 +56,9 @@ export class FinishOrContinueAppElement extends CrLitElement {
       loadTimeData.getBoolean('disableAnimations');
 
   private isFeatureShowcaseEligible_: boolean = false;
+  private matchMediaProxy_: MatchMediaProxy = MatchMediaProxyImpl.getInstance();
   private browserProxy_: FinishOrContinueBrowserProxy =
-      FinishOrContinueBrowserProxyImpl.getInstance();
+      finishOrContinueMojoProxyFactory.getInstance();
   private introBrowserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
   private darkModeListener_: (e: MediaQueryListEvent) => void;
@@ -71,7 +72,7 @@ export class FinishOrContinueAppElement extends CrLitElement {
     this.isFeatureShowcaseEligible_ = params.get('showcase') === 'true';
 
     this.matchMedia_ =
-        this.browserProxy_.matchMedia('(prefers-color-scheme: dark)');
+        this.matchMediaProxy_.matchMedia('(prefers-color-scheme: dark)');
     this.isDarkMode_ = this.matchMedia_.matches;
     this.darkModeListener_ = (e) => {
       this.isDarkMode_ = e.matches;

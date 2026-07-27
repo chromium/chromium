@@ -36,7 +36,6 @@ build_webui("build") {
     "report_unsafe_site/icons.html.ts",
     "report_unsafe_site/report_unsafe_site_app.ts",
     "report_unsafe_site/report_unsafe_site_app.html.ts",
-    "report_unsafe_site/report_unsafe_site_browser_proxy.ts",
     "system_info_app.html.ts",
     "system_info_app.ts",
   ]

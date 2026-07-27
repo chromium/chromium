@@ -17,9 +17,9 @@ build_webui_tests("build") {
     "sign_in_celebration_test.ts",
     "sign_in_promo_refresh_test.ts",
     "sign_in_promo_test.ts",
-    "test_finish_or_continue_browser_proxy.ts",
     "test_intro_browser_proxy.ts",
     "test_intro_mojo_browser_proxy.ts",
+    "test_match_media_proxy.ts",
     "test_sign_in_promo_browser_proxy.ts",
   ]
 

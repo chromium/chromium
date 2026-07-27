@@ -19,10 +19,9 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {SearchEngineChoice} from './browser_proxy.js';
-import {SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
-import {PageHandler_ScrollState} from './search_engine_choice.mojom-webui.js';
-import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
+import type {SearchEngineChoice} from './search_engine_choice.js';
+import {browserProxyFactory, PageHandler_ScrollState} from './search_engine_choice.mojom-webui.js';
+import type {PageHandlerInterface} from './search_engine_choice.mojom-webui.js';
 
 export interface AppElement {
   $: {
@@ -83,8 +82,8 @@ export class AppElement extends AppElementBase {
   protected accessor saveGuestModeSearchEngineChoice_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
-  private pageHandler_: PageHandlerRemote =
-      SearchEngineChoiceBrowserProxy.getInstance().handler;
+  private pageHandler_: PageHandlerInterface =
+      browserProxyFactory.getInstance().handler;
 
   override connectedCallback() {
     super.connectedCallback();

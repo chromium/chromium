@@ -4,20 +4,24 @@
 
 import 'chrome://intro/finish_or_continue/app.js';
 
+import {browserProxyFactory as finishOrContinueMojoProxyFactory, FinishOrContinuePageHandlerRemote} from 'chrome://intro/finish_or_continue.mojom-webui.js';
 import type {FinishOrContinueAppElement} from 'chrome://intro/finish_or_continue/app.js';
-import {FinishOrContinueBrowserProxyImpl} from 'chrome://intro/finish_or_continue/finish_or_continue_browser_proxy.js';
+import {MatchMediaProxyImpl} from 'chrome://intro/finish_or_continue/match_media_proxy.js';
 import {IntroBrowserProxyImpl} from 'chrome://intro/intro_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestFinishOrContinueBrowserProxy} from './test_finish_or_continue_browser_proxy.js';
 import {TestIntroMojoBrowserProxy} from './test_intro_mojo_browser_proxy.js';
+import {TestMatchMediaProxy} from './test_match_media_proxy.js';
 
 suite('FinishOrContinueTest', function() {
   let testIntroMojoBrowserProxy: TestIntroMojoBrowserProxy;
-  let testBrowserProxy: TestFinishOrContinueBrowserProxy;
+  let testMatchMediaProxy: TestMatchMediaProxy;
+  let handler: TestMock<FinishOrContinuePageHandlerRemote>&
+      FinishOrContinuePageHandlerRemote;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -25,8 +29,11 @@ suite('FinishOrContinueTest', function() {
     testIntroMojoBrowserProxy = new TestIntroMojoBrowserProxy();
     IntroBrowserProxyImpl.setInstance(testIntroMojoBrowserProxy);
 
-    testBrowserProxy = new TestFinishOrContinueBrowserProxy();
-    FinishOrContinueBrowserProxyImpl.setInstance(testBrowserProxy);
+    testMatchMediaProxy = new TestMatchMediaProxy();
+    MatchMediaProxyImpl.setInstance(testMatchMediaProxy);
+
+    handler = TestMock.fromClass(FinishOrContinuePageHandlerRemote);
+    finishOrContinueMojoProxyFactory.setInstance({handler});
 
     loadTimeData.overrideValues({
       disableAnimations: false,
@@ -112,14 +119,14 @@ suite('FinishOrContinueTest', function() {
     assertTrue(!!rightAnimation);
     assertTrue(!!bottomAnimation);
 
-    testBrowserProxy.setMatchMediaMatches(false);
+    testMatchMediaProxy.setMatchMediaMatches(false);
     await microtasksFinished();
 
     assertTrue(leftAnimation.animationUrl.includes('light'));
     assertTrue(rightAnimation.animationUrl.includes('light'));
     assertTrue(bottomAnimation.animationUrl.includes('light'));
 
-    testBrowserProxy.setMatchMediaMatches(true);
+    testMatchMediaProxy.setMatchMediaMatches(true);
     await microtasksFinished();
 
     assertTrue(leftAnimation.animationUrl.includes('dark'));
@@ -194,13 +201,13 @@ suite('FinishOrContinueTest', function() {
     const testElement = await createElement();
     testElement.$.startBrowsingButton.click();
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.handler.getCallCount('startBrowsing'));
+    assertEquals(1, handler.getCallCount('startBrowsing'));
   });
 
   test('ContinueEducationClicked', async function() {
     const testElement = await createElement();
     testElement.$.continueEducationButton.click();
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.handler.getCallCount('continueEducation'));
+    assertEquals(1, handler.getCallCount('continueEducation'));
   });
 });

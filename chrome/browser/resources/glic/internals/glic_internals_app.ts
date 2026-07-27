@@ -9,8 +9,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ActuationEligibility, ActuationTarget, FormFactor, FreOverride, GlicExperimentalTriggeringState, InvocationSource, Platform} from '../glic.mojom-webui.js';
 import {FeatureMode} from '../glic_enums.mojom-webui.js';
-import {FreCompletionWaitMode, InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
-import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
+import {browserProxyFactory, FreCompletionWaitMode} from '../glic_internals.mojom-webui.js';
+import type {BrowserProxy, InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
 import {getHtml} from './glic_internals_app.html.js';
@@ -116,14 +116,11 @@ export class GlicInternalsAppElement extends CrLitElement {
 
 
 
-  private pageHandler_ = new InternalsPageHandlerRemote();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
-    InternalsPageHandlerFactory.getRemote().createInternalsPageHandler(
-        this.pageHandler_.$.bindNewPipeAndPassReceiver());
-
-    this.pageHandler_.getInternalsDataPayload().then(
+    this.browserProxy_.handler.getInternalsDataPayload().then(
         ({internalsData}: {internalsData: InternalsDataPayload}) => {
           this.data_ = internalsData;
         });
@@ -132,11 +129,11 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onShowErrorAllowedChange(e: Event) {
     const allowed = (e.target as HTMLInputElement).checked;
     this.data_!.showErrorAllowed = allowed;
-    this.pageHandler_.setShowErrorAllowed(allowed);
+    this.browserProxy_.handler.setShowErrorAllowed(allowed);
   }
 
   protected onExperimentalOptInClick_() {
-    this.pageHandler_.showExperimentalOptIn();
+    this.browserProxy_.handler.showExperimentalOptIn();
   }
 
   protected onAutopushInputChange(e: Event) {
@@ -172,7 +169,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       return;
     }
     errorMsg!.classList.add('hiddenElement');
-    this.pageHandler_.setGuestUrlPresets(
+    this.browserProxy_.handler.setGuestUrlPresets(
         this.data_!.config.autopushGuestUrl, this.data_!.config.stagingGuestUrl,
         this.data_!.config.preprodGuestUrl, this.data_!.config.prodGuestUrl);
   }
@@ -195,7 +192,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       return;
     }
     errorMsg!.classList.add('hiddenElement');
-    this.pageHandler_.setWebContinuityOriginatingHostUrlPreset(url);
+    this.browserProxy_.handler.setWebContinuityOriginatingHostUrlPreset(url);
   }
 
   protected getActuationEligibilityString_(eligibility: ActuationEligibility):
@@ -338,7 +335,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   }
 
   protected async refreshOpenTabs_() {
-    const {tabTitles} = await this.pageHandler_.getOpenTabs();
+    const {tabTitles} = await this.browserProxy_.handler.getOpenTabs();
     this.availableTabs_ = tabTitles;
     this.invokeSpecificTabIndex_ = 0;
   }
@@ -526,7 +523,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     ];
     console.info(this.invokeLogs_[0]);
 
-    this.pageHandler_.triggerInvokeFromInternalsAction(options).then(
+    this.browserProxy_.handler.triggerInvokeFromInternalsAction(options).then(
         ({success, errorMessage}: {success: boolean, errorMessage: string}) => {
           const timestamp = new Date().toLocaleTimeString();
           const logEntry = `[${timestamp}] ${

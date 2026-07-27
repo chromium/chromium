@@ -13,9 +13,10 @@ import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_che
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory} from '../report_unsafe_site.mojom-webui.js';
+
 import {getCss} from './report_unsafe_site_app.css.js';
 import {getHtml} from './report_unsafe_site_app.html.js';
-import {ReportUnsafeSiteBrowserProxyImpl} from './report_unsafe_site_browser_proxy.js';
 
 export interface ReportUnsafeSiteAppElement {
   $: {
@@ -55,8 +56,7 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
 
   override async connectedCallback() {
     super.connectedCallback();
-    const pageHandler =
-        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    const pageHandler = browserProxyFactory.getInstance().handler;
     const pageInfo = await pageHandler.getTriggeringPageInfo();
     this.pageUrl_ = pageInfo.pageUrl;
     this.screenshotDataUri_ = pageInfo.screenshotDataUri;
@@ -64,8 +64,7 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
   }
 
   override firstUpdated() {
-    const pageHandler =
-        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    const pageHandler = browserProxyFactory.getInstance().handler;
     pageHandler.showUi();
 
     const title = this.shadowRoot.querySelector<HTMLElement>('.dialog-title');
@@ -81,17 +80,14 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
 
   protected async onActionButtonClick_() {
     this.isSendingCsdPing_ = true;
-    const pageHandler =
-        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    const pageHandler = browserProxyFactory.getInstance().handler;
     await pageHandler.sendReport(this.includeScreenshot_);
     pageHandler.closeDialog();
     this.isSendingCsdPing_ = false;
   }
 
   protected onCancelButtonClick_() {
-    ReportUnsafeSiteBrowserProxyImpl.getInstance()
-        .getPageHandler()
-        .closeDialog();
+    browserProxyFactory.getInstance().handler.closeDialog();
   }
 }
 

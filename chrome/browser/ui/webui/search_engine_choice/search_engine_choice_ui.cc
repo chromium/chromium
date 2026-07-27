@@ -33,6 +33,8 @@
 #include "ui/webui/webui_util.h"
 
 namespace {
+
+// LINT.IfChange
 std::string GetChoiceListJSON(
     SearchEngineChoiceDialogService& search_engine_choice_dialog_service) {
   base::ListValue choice_value_list;
@@ -54,6 +56,8 @@ std::string GetChoiceListJSON(
   }
   return base::WriteJson(choice_value_list).value_or("");
 }
+// LINT.ThenChange(/chrome/browser/resources/search_engine_choice/search_engine_choice.ts:SearchEngineChoice)
+
 }  // namespace
 
 bool SearchEngineChoiceUIConfig::IsWebUIEnabled(

@@ -60,7 +60,7 @@ build_webui("build") {
     ts_files += [
       "finish_or_continue/app.html.ts",
       "finish_or_continue/app.ts",
-      "finish_or_continue/finish_or_continue_browser_proxy.ts",
+      "finish_or_continue/match_media_proxy.ts",
       "sign_in_celebration/app.html.ts",
       "sign_in_celebration/app.ts",
       "sign_in_celebration/sign_in_celebration_browser_proxy.ts",

@@ -24,7 +24,7 @@ build_webui("build") {
     "app.ts",
     "app_refresh.html.ts",
     "app_refresh.ts",
-    "browser_proxy.ts",
+    "search_engine_choice.ts",
   ]
 
   css_files = [
