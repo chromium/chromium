@@ -618,10 +618,6 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
   return NO;
 }
 
-- (void)didChangeOmniboxPosition:(NewTabPageHeaderView*)headerView {
-  // TODO(crbug.com/526677926): To be implemented in Phase 2.
-}
-
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {

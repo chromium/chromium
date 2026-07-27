@@ -1198,7 +1198,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (IsSplitToolbarMode(self)) {
     [self resetSplitToolbarResizing];
   }
-  [self.delegate didChangeOmniboxPosition:self];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {

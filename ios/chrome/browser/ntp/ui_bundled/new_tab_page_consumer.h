@@ -68,6 +68,9 @@
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
+// Sets whether the omnibox is in the bottom position.
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_

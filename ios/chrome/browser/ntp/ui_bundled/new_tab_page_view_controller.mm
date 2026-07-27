@@ -191,6 +191,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NewTabPageQuickActionsViewController* _quickActionsViewController;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
+  // Whether the omnibox is in bottom position.
+  BOOL _isBottomOmnibox;
 }
 
 // Properties synthesized from NewTabPageConsumer.
@@ -803,11 +805,17 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _isAIMAllowed = allowed;
 }
 
-#pragma mark - NewTabPageHeaderViewDelegate
-
-- (void)didChangeOmniboxPosition:(NewTabPageHeaderView*)headerView {
-  CHECK_EQ(headerView, self.headerView);
-  [self updateFakeOmniboxForScrollPosition];
+- (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  if (_isBottomOmnibox == isBottomOmnibox) {
+    return;
+  }
+  _isBottomOmnibox = isBottomOmnibox;
+  if (self.viewDidFinishLoading) {
+    if (!self.feedVisible) {
+      [self setMinimumHeight];
+    }
+    [self updateFakeOmniboxForScrollPosition];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1825,6 +1833,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     if ([self shouldPinFakeOmnibox]) {
       minimumHeight -= [self stickyOmniboxHeight];
     } else {
+      // Adjust the minimumHeight when the top toolbar is visible and the
+      // Discover feed is turned off so Quick Actions remain visible.
+      if (!_isBottomOmnibox && !self.feedVisible) {
+        minimumHeight -= [self stickyOmniboxHeight];
+      }
       // Add in half of the margin between the fakebox and the rest of the
       // content suggestions, to ensure there is enough height to fully
       // finish the fakebox to omnibox transition.

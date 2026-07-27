@@ -464,6 +464,13 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   return self;
 }
 
+- (void)setConsumer:(id<NewTabPageConsumer>)consumer {
+  _consumer = consumer;
+  if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
+    [self.consumer setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
+  }
+}
+
 - (void)setHeaderConsumer:(id<NewTabPageHeaderConsumer>)headerConsumer {
   _headerConsumer = headerConsumer;
   if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
@@ -637,6 +644,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   CHECK(IsChromeNextIaEnabled());
   if (observableBoolean == _bottomOmniboxEnabled) {
     CHECK(IsBottomOmniboxAvailable());
+    [self.consumer setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
     [self.headerConsumer
         setOmniboxInBottomPosition:_bottomOmniboxEnabled.value];
   }

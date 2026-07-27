@@ -18,10 +18,6 @@
 // Whether the fake omnibox should pin to the top.
 - (BOOL)shouldPinFakeOmnibox;
 
-// Notifies the delegate when the omnibox position is updated in the
-// `headerView`.
-- (void)didChangeOmniboxPosition:(NewTabPageHeaderView*)headerView;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_DELEGATE_H_
