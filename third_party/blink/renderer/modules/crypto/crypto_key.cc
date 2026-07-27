@@ -241,8 +241,8 @@ bool CryptoKey::ParseFormat(const String& format_string,
     return true;
   }
 
-  exception_state.ThrowTypeError("Invalid keyFormat argument: " +
-                                 format_string);
+  exception_state.ThrowTypeError(
+      StrCat({"Invalid keyFormat argument: ", format_string}));
   return false;
 }
 

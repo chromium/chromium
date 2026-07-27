@@ -73,7 +73,7 @@ bool IsOriginAllowedToClaimRelyingPartyId(const SecurityOrigin* origin,
     return false;
   }
   String host = origin->Host();
-  return host == rp_id || host.EndsWithIgnoringAsciiCase(String("." + rp_id));
+  return host == rp_id || host.EndsWithIgnoringAsciiCase(StrCat({".", rp_id}));
 }
 
 }  // namespace

@@ -128,7 +128,7 @@ void RecordWebAuthnCspMetric(ExecutionContext* context,
   if (!policy) {
     return;
   }
-  String rp_url_string = "https://" + rp_id;
+  String rp_url_string = StrCat({"https://", rp_id});
   KURL rp_url(rp_url_string);
   if (!rp_url.IsValid()) {
     return;

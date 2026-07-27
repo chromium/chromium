@@ -548,7 +548,7 @@ bool AudioWorkletProcessor::Process(
   if (!CopyParamValueMapToObject(isolate, context, param_value_map, params_)) {
     AudioWorkletProcessorErrorDetails error_details(
         AudioWorkletProcessorErrorState::kProcessError,
-        name_ + " process(): Failed to copy parameter data.",
+        StrCat({name_, " process(): Failed to copy parameter data."}),
         /*source_url=*/"",
         /*line_number=*/0,
         /*column_number=*/0,
@@ -574,7 +574,7 @@ bool AudioWorkletProcessor::Process(
         !process_v8_value->IsFunction()) {
       AudioWorkletProcessorErrorDetails error_details(
           AudioWorkletProcessorErrorState::kProcessMethodUndefinedError,
-          name_ + " process() method undefined.",
+          StrCat({name_, " process() method undefined."}),
           /*source_url=*/"",
           /*line_number=*/0,
           /*column_number=*/0,

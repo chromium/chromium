@@ -256,7 +256,7 @@ void AudioWorkletHandler::SetProcessorOnRenderThread(
   } else {
     AudioWorkletProcessorErrorDetails error_details(
         AudioWorkletProcessorErrorState::kConstructionError,
-        name_ + " invoking user-supplied constructor failed",
+        StrCat({name_, " invoking user-supplied constructor failed"}),
         /*source_url=*/"",
         /*line_number=*/0,
         /*column_number=*/0,

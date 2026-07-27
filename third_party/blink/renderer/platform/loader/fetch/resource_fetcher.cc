@@ -2459,7 +2459,7 @@ void ResourceFetcher::RecordPreconnect(const KURL& url,
   // Preconnects with distinct crossorigin values to the same origin are
   // reported separately.
   const String key =
-      origin + "|" + String::Number(static_cast<int>(crossorigin));
+      StrCat({origin, "|", String::Number(static_cast<int>(crossorigin))});
   auto it = preconnect_records_.find(key);
   if (it == preconnect_records_.end()) {
     PreconnectInfo info;

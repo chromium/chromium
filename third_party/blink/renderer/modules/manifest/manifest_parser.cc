@@ -2385,8 +2385,9 @@ void ManifestParser::CheckIsolatedAppPermissions(const JSONObject* object) {
   JSONObject* permissions_dict = JSONObject::Cast(json_value);
   if (!permissions_dict) {
     AddErrorInfo(
-        "property 'permissions_policy' invalid: object expected, found: " +
-            json_value->ToJSONString(),
+        StrCat(
+            {"property 'permissions_policy' invalid: object expected, found: ",
+             json_value->ToJSONString()}),
         /*critical=*/true);
     failed_ = true;
     return;
@@ -2399,8 +2400,9 @@ void ManifestParser::CheckIsolatedAppPermissions(const JSONObject* object) {
     JSONArray* origin_allowlist = JSONArray::Cast(entry.second);
     if (!origin_allowlist) {
       AddErrorInfo(
-          "property 'permissions_policy' invalid: allowlist for '" + feature +
-              "': array expected, found: " + entry.second->ToJSONString(),
+          StrCat({"property 'permissions_policy' invalid: allowlist for '",
+                  feature,
+                  "': array expected, found: ", entry.second->ToJSONString()}),
           /*critical=*/true);
       failed_ = true;
       return;
@@ -2409,11 +2411,11 @@ void ManifestParser::CheckIsolatedAppPermissions(const JSONObject* object) {
     for (const JSONValue& origin_value : *origin_allowlist) {
       String origin_string;
       if (!origin_value.AsString(&origin_string)) {
-        AddErrorInfo("property 'permissions_policy' invalid: allowlist for '" +
-                         feature +
-                         "': invalid element: string expected, found: " +
-                         origin_value.ToJSONString(),
-                     /*critical=*/true);
+        AddErrorInfo(
+            StrCat({"property 'permissions_policy' invalid: allowlist for '",
+                    feature, "': invalid element: string expected, found: ",
+                    origin_value.ToJSONString()}),
+            /*critical=*/true);
         failed_ = true;
         return;
       }
