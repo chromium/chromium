@@ -208,6 +208,41 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "omnibox_popup_view_views_test.cc",
+    "omnibox_popup_view_views_test.h",
+  ]
+
+  public_deps = [
+    ":omnibox",
+    "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/themes",
+    "//chrome/browser/themes:test_support",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//ui/native_theme:test_support",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//content/test:test_support",
+    "//ui/base",
+  ]
+
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -224,6 +259,7 @@ source_set("browser_tests") {
 
   deps = [
     ":omnibox",
+    ":test_support",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/extensions:test_support",
@@ -274,6 +310,7 @@ if (!is_chromeos_device) {
 
     deps = [
       ":omnibox",
+      ":test_support",
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/external_protocol",
