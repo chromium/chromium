@@ -129,6 +129,18 @@ BASE_FEATURE_PARAM(std::string,
 // i.e., https://other.autofill.server:port/tbproxy/af/
 BASE_FEATURE(kAutofillServerCommunication, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When set to a non-zero value, the value is attached as an experiment ID to
+// all predictions requests to the Autofill server, as if it were an active GWS
+// experiment. Note that the same result can be archived using
+// --force-variation-ids. Using this flag parameter has the advantage that it
+// can be tied to Chrome flags and that it can be rolled out without a
+// GWS-visible experiment.
+BASE_FEATURE_PARAM(int,
+                   kAutofillServerCommunicationExperimentId,
+                   &kAutofillServerCommunication,
+                   "experiment_id",
+                   0);
+
 // Controls attaching the autofill type predictions to their respective
 // element in the DOM.
 BASE_FEATURE(kAutofillShowTypePredictions, base::FEATURE_DISABLED_BY_DEFAULT);

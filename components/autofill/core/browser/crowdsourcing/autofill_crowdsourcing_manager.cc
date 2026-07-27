@@ -614,6 +614,11 @@ void InitActiveExperiments() {
       std::unique(active_experiments.begin(), active_experiments.end()),
       active_experiments.end());
 
+  if (features::debug::kAutofillServerCommunicationExperimentId.Get()) {
+    active_experiments.push_back(
+        features::debug::kAutofillServerCommunicationExperimentId.Get());
+  }
+
   GetActiveExperiments() = std::move(active_experiments);
 }
 
