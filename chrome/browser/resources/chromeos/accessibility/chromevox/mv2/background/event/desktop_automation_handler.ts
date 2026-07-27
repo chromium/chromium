@@ -762,7 +762,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           target.className === 'PopupRowView' ||
           target.className === 'PopupRowWithButtonView' ||
           target.className === 'PopupRowContentView' ||
-          target.className === 'PopupBnplFootnoteView') {
+          target.className === 'PopupBnplFootnoteView' ||
+          target.className === 'PopupPersonalContextNoticeView') {
         override = true;
       }
 

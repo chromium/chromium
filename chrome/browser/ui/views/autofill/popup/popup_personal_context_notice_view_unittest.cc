@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -28,6 +29,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -66,8 +69,8 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   void ShowView() {
     view_ = widget_->SetContentsView(
         std::make_unique<PopupPersonalContextNoticeView>(
-            mock_a11y_selection_delegate_, controller().GetWeakPtr(),
-            kNoticePosition));
+            mock_a11y_selection_delegate_, mock_announce_callback_.Get(),
+            controller().GetWeakPtr(), kNoticePosition));
 
     // Assign manual bounds so the widget has a physical size.
     // In test env, this is required to position child views
@@ -91,6 +94,14 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   TestingProfile* profile() { return profile_; }
   views::Widget& widget() { return *widget_; }
   ui::test::EventGenerator& generator() { return *generator_; }
+  MockAccessibilitySelectionDelegate& mock_a11y_selection_delegate() {
+    return mock_a11y_selection_delegate_;
+  }
+  base::MockCallback<
+      base::RepeatingCallback<void(const std::u16string&, bool)>>&
+  mock_announce_callback() {
+    return mock_announce_callback_;
+  }
 
   // Verifies that the description is visible and has the correct text.
   [[nodiscard]] testing::AssertionResult VerifyDescription(
@@ -193,6 +204,12 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
     return testing::AssertionSuccess();
   }
 
+  bool IsViewSelected() {
+    ui::AXNodeData node_data;
+    view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  }
+
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
@@ -203,6 +220,8 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   testing::NiceMock<MockAutofillPopupController> controller_;
   testing::NiceMock<MockAccessibilitySelectionDelegate>
       mock_a11y_selection_delegate_;
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      mock_announce_callback_;
   raw_ptr<PopupPersonalContextNoticeView> view_ = nullptr;
 };
 
@@ -677,6 +696,46 @@ TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnNoFocusedElement) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   return_event.windows_key_code = ui::VKEY_RETURN;
   EXPECT_FALSE(view().HandleKeyPressEvent(return_event));
+}
+
+// Tests that focusing elements in the notice triggers AX selection and
+// announcements.
+TEST_F(PopupPersonalContextNoticeViewTest,
+       AccessibilitySelectionAndAnnouncements) {
+  ShowView();
+
+  std::u16string expected_link = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+  std::u16string expected_ok = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
+
+  // Expect AX selection notification and screen reader announcement for the
+  // link.
+  EXPECT_CALL(mock_a11y_selection_delegate(),
+              NotifyAXSelection(testing::Ref(view())));
+  EXPECT_CALL(mock_announce_callback(), Run(expected_link, /*polite=*/false));
+
+  view().SetSelectedCell(PopupInteractiveRowView::CellType::kContent);
+  EXPECT_TRUE(IsViewSelected());
+
+  // Navigate to the "Got it" button.
+  input::NativeWebKeyboardEvent right_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  right_event.windows_key_code = ui::VKEY_RIGHT;
+
+  // Expect AX selection notification and announcement for the button.
+  EXPECT_CALL(mock_a11y_selection_delegate(),
+              NotifyAXSelection(testing::Ref(view())));
+  EXPECT_CALL(mock_announce_callback(), Run(expected_ok, /*polite=*/false));
+
+  EXPECT_TRUE(view().HandleKeyPressEvent(right_event));
+  EXPECT_TRUE(IsViewSelected());
+
+  // Unfocusing clears the selection state.
+  view().SetSelectedCell(std::nullopt);
+  EXPECT_FALSE(IsViewSelected());
 }
 
 }  // namespace

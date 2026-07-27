@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -59,6 +60,8 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
  public:
   PopupPersonalContextNoticeView(
       PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+      base::RepeatingCallback<void(const std::u16string&, bool)>
+          announce_callback,
       base::WeakPtr<AutofillPopupController> controller,
       int line_number);
 
@@ -138,6 +141,9 @@ class PopupPersonalContextNoticeView : public PopupInteractiveRowView {
 
   // The position of this notice in the vertical list of suggestions.
   const int line_number_;
+
+  const base::RepeatingCallback<void(const std::u16string&, bool)>
+      announce_callback_;
 
   const raw_ref<PopupRowView::AccessibilitySelectionDelegate>
       a11y_selection_delegate_;

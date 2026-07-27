@@ -121,10 +121,13 @@ bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
 
 PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number)
     : controller_(std::move(controller)),
       line_number_(line_number),
+      announce_callback_(std::move(announce_callback)),
       a11y_selection_delegate_(a11y_selection_delegate) {
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -308,6 +311,12 @@ void PopupPersonalContextNoticeView::FocusLink() {
   if (description_) {
     is_link_focused_ = true;
     UpdateLinkBorders(/*focused=*/true);
+    a11y_selection_delegate_->NotifyAXSelection(*this);
+    GetViewAccessibility().NotifyEvent(ax::mojom::Event::kFocus, true);
+    GetViewAccessibility().SetIsSelected(true);
+    if (views::Link* link = GetSettingsLink()) {
+      announce_callback_.Run(std::u16string(link->GetText()), /*polite=*/false);
+    }
   }
 }
 
@@ -315,6 +324,7 @@ void PopupPersonalContextNoticeView::UnfocusLink() {
   if (description_) {
     is_link_focused_ = false;
     UpdateLinkBorders(/*focused=*/false);
+    GetViewAccessibility().SetIsSelected(false);
   }
 }
 
@@ -339,6 +349,11 @@ void PopupPersonalContextNoticeView::FocusButton() {
     if (views::FocusRing* focus_ring = views::FocusRing::Get(got_it_button_)) {
       focus_ring->Refresh();
     }
+    a11y_selection_delegate_->NotifyAXSelection(*this);
+    GetViewAccessibility().NotifyEvent(ax::mojom::Event::kFocus, true);
+    GetViewAccessibility().SetIsSelected(true);
+    announce_callback_.Run(std::u16string(got_it_button_->GetText()),
+                           /*polite=*/false);
   }
 }
 
@@ -349,6 +364,7 @@ void PopupPersonalContextNoticeView::UnfocusButton() {
     if (views::FocusRing* focus_ring = views::FocusRing::Get(got_it_button_)) {
       focus_ring->Refresh();
     }
+    GetViewAccessibility().SetIsSelected(false);
   }
 }
 

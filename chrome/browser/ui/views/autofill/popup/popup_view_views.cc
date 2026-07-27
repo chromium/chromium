@@ -1245,8 +1245,8 @@ void PopupViewViews::CreateSuggestionViews() {
         case SuggestionType::kPersonalContextNotice: {
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupPersonalContextNoticeView>(
-                  /*a11y_selection_delegate=*/*this, controller(),
-                  current_line_number)));
+                  /*a11y_selection_delegate=*/*this, a11y_announcer_,
+                  controller(), current_line_number)));
           break;
         }
         // The default section contains all selectable rows and includes
