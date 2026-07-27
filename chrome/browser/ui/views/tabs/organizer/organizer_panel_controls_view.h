@@ -20,18 +20,18 @@ namespace views {
 class LabelButton;
 }  // namespace views
 
-// Contains the controls for the projects panel, including the
+// Contains the controls for the organizer panel, including the
 // button to close the panel.
-class ProjectsPanelControlsView : public views::View,
-                                  public views::LayoutDelegate {
-  METADATA_HEADER(ProjectsPanelControlsView, views::View)
+class OrganizerPanelControlsView : public views::View,
+                                   public views::LayoutDelegate {
+  METADATA_HEADER(OrganizerPanelControlsView, views::View)
 
  public:
-  explicit ProjectsPanelControlsView(actions::ActionItem* root_action_item);
-  ProjectsPanelControlsView(const ProjectsPanelControlsView&) = delete;
-  ProjectsPanelControlsView& operator=(const ProjectsPanelControlsView&) =
+  explicit OrganizerPanelControlsView(actions::ActionItem* root_action_item);
+  OrganizerPanelControlsView(const OrganizerPanelControlsView&) = delete;
+  OrganizerPanelControlsView& operator=(const OrganizerPanelControlsView&) =
       delete;
-  ~ProjectsPanelControlsView() override;
+  ~OrganizerPanelControlsView() override;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -46,13 +46,15 @@ class ProjectsPanelControlsView : public views::View,
   // Sets the opacity of any buttons in this view.
   void SetButtonOpacity(float opacity);
 
-  views::LabelButton* projects_button_for_testing() { return projects_button_; }
+  views::LabelButton* organizer_button_for_testing() {
+    return organizer_button_;
+  }
 
  private:
   void OnCloseButtonPressed();
 
-  raw_ptr<views::LabelButton> projects_button_ = nullptr;
-  raw_ptr<actions::ActionItem> toggle_projects_panel_action_item_ = nullptr;
+  raw_ptr<views::LabelButton> organizer_button_ = nullptr;
+  raw_ptr<actions::ActionItem> toggle_organizer_panel_action_item_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLS_VIEW_H_

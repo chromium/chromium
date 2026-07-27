@@ -9,11 +9,11 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace projects {
+namespace organizer {
 
-// Registers Projects Panel specific prefs.
+// Registers Organizer Panel specific prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-}  // namespace projects
+}  // namespace organizer
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PREFS_H_

@@ -28,7 +28,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 
-class ProjectsPanelViewTest : public ChromeViewsTestBase {
+class OrganizerPanelViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -39,14 +39,14 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
     root_action_item_ =
         actions::ActionItem::Builder()
             .AddChildren(actions::ActionItem::Builder().SetActionId(
-                kActionToggleProjectsPanel))
+                kActionToggleOrganizerPanel))
             .Build();
 
     // Create a real State Controller.
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
 
-    state_controller_ = std::make_unique<ProjectsPanelStateController>(
+    state_controller_ = std::make_unique<OrganizerPanelStateController>(
         &mock_browser_window_interface_, root_action_item_.get());
 
     EXPECT_CALL(mock_browser_window_interface_, GetProfile())
@@ -54,7 +54,7 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
   }
 
   void CreateView() {
-    auto view = std::make_unique<ProjectsPanelView>(
+    auto view = std::make_unique<OrganizerPanelView>(
         &mock_browser_window_interface_, root_action_item_.get(),
         state_controller_.get());
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -80,11 +80,11 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
   TestingProfile* profile() { return profile_.get(); }
 
  protected:
-  ProjectsPanelStateController* state_controller() {
+  OrganizerPanelStateController* state_controller() {
     return state_controller_.get();
   }
 
-  ProjectsPanelView* projects_panel_view() { return view_; }
+  OrganizerPanelView* organizer_panel_view() { return view_; }
 
   base::MockCallback<base::OnceClosure> panel_closed_callback_;
 
@@ -93,66 +93,66 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<actions::ActionItem> root_action_item_;
-  std::unique_ptr<ProjectsPanelStateController> state_controller_;
+  std::unique_ptr<OrganizerPanelStateController> state_controller_;
 
   // Widget owns the view.
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<ProjectsPanelView> view_ = nullptr;
+  raw_ptr<OrganizerPanelView> view_ = nullptr;
 };
 
-TEST_F(ProjectsPanelViewTest, CallbackRunsWhenAnimationsDisabled) {
+TEST_F(OrganizerPanelViewTest, CallbackRunsWhenAnimationsDisabled) {
   CreateView();
-  ProjectsPanelView::disable_animations_for_testing();
+  OrganizerPanelView::disable_animations_for_testing();
 
   // Show the panel (animations disabled -> instant show)
-  state_controller()->SetProjectsVisible(true);
-  EXPECT_TRUE(state_controller()->IsProjectsPanelVisible());
-  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
-  EXPECT_TRUE(projects_panel_view()->GetVisible());
+  state_controller()->SetOrganizerVisible(true);
+  EXPECT_TRUE(state_controller()->IsOrganizerPanelVisible());
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
+  EXPECT_TRUE(organizer_panel_view()->GetVisible());
 
-  projects_panel_view()->set_on_close_animation_ended_callback_for_testing(
+  organizer_panel_view()->set_on_close_animation_ended_callback_for_testing(
       panel_closed_callback_.Get());
 
   EXPECT_CALL(panel_closed_callback_, Run());
 
   // Hide the panel (animations disabled -> instant hide & callback run)
-  state_controller()->SetProjectsVisible(false);
-  EXPECT_FALSE(state_controller()->IsProjectsPanelVisible());
-  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
+  state_controller()->SetOrganizerVisible(false);
+  EXPECT_FALSE(state_controller()->IsOrganizerPanelVisible());
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
 
-  EXPECT_FALSE(projects_panel_view()->GetVisible());
+  EXPECT_FALSE(organizer_panel_view()->GetVisible());
 }
 
-TEST_F(ProjectsPanelViewTest, CallbackDoesNotRunWhenVisible) {
+TEST_F(OrganizerPanelViewTest, CallbackDoesNotRunWhenVisible) {
   CreateView();
-  ProjectsPanelView::disable_animations_for_testing();
+  OrganizerPanelView::disable_animations_for_testing();
 
   // Show the panel
-  state_controller()->SetProjectsVisible(true);
-  EXPECT_TRUE(state_controller()->IsProjectsPanelVisible());
-  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
+  state_controller()->SetOrganizerVisible(true);
+  EXPECT_TRUE(state_controller()->IsOrganizerPanelVisible());
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
 
-  projects_panel_view()->set_on_close_animation_ended_callback_for_testing(
+  organizer_panel_view()->set_on_close_animation_ended_callback_for_testing(
       panel_closed_callback_.Get());
 
   EXPECT_CALL(panel_closed_callback_, Run()).Times(0);
 
   // Re-trigger show (should not run callback)
-  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
+  organizer_panel_view()->OnOrganizerPanelStateChanged(state_controller());
 
-  EXPECT_TRUE(projects_panel_view()->GetVisible());
+  EXPECT_TRUE(organizer_panel_view()->GetVisible());
 }
 
-class ProjectsPanelViewRTLTest : public ProjectsPanelViewTest {
+class OrganizerPanelViewRTLTest : public OrganizerPanelViewTest {
  public:
   void SetUp() override {
     original_locale_ = base::i18n::GetConfiguredLocale();
     base::i18n::SetICUDefaultLocale("ar");
-    ProjectsPanelViewTest::SetUp();
+    OrganizerPanelViewTest::SetUp();
   }
 
   void TearDown() override {
-    ProjectsPanelViewTest::TearDown();
+    OrganizerPanelViewTest::TearDown();
     base::i18n::SetICUDefaultLocale(original_locale_);
   }
 
@@ -160,12 +160,12 @@ class ProjectsPanelViewRTLTest : public ProjectsPanelViewTest {
   std::string original_locale_;
 };
 
-TEST_F(ProjectsPanelViewRTLTest, RoundedCornersInRTL) {
+TEST_F(OrganizerPanelViewRTLTest, RoundedCornersInRTL) {
   ASSERT_TRUE(base::i18n::IsRTL());
   CreateView();
-  projects_panel_view()->SetIsElevated(true);
+  organizer_panel_view()->SetIsElevated(true);
 
-  auto radii = projects_panel_view()
+  auto radii = organizer_panel_view()
                    ->content_container_for_testing()
                    ->layer()
                    ->rounded_corner_radii();
@@ -177,57 +177,57 @@ TEST_F(ProjectsPanelViewRTLTest, RoundedCornersInRTL) {
   EXPECT_EQ(radii.lower_right(), 0);
 }
 
-TEST_F(ProjectsPanelViewRTLTest, ClipRectInRTL) {
+TEST_F(OrganizerPanelViewRTLTest, ClipRectInRTL) {
   ASSERT_TRUE(base::i18n::IsRTL());
   CreateView();
 
   // Set some width to trigger layout.
-  projects_panel_view()->SetBounds(0, 0, 100, 600);
-  projects_panel_view()->SetTargetWidth(300);
+  organizer_panel_view()->SetBounds(0, 0, 100, 600);
+  organizer_panel_view()->SetTargetWidth(300);
 
-  auto clip_rect = projects_panel_view()->layer()->clip_rect();
+  auto clip_rect = organizer_panel_view()->layer()->clip_rect();
 
   // In RTL, we expect the clip rect to extend to the left to allow the shadow.
   EXPECT_LT(clip_rect.x(), 0);
 }
 
-TEST_F(ProjectsPanelViewTest, CloseButtonFadeWhenExpandingOnMac) {
+TEST_F(OrganizerPanelViewTest, CloseButtonFadeWhenExpandingOnMac) {
   CreateView();
-  auto* controls_view = projects_panel_view()->controls_view_for_testing();
-  auto* projects_button = controls_view->projects_button_for_testing();
-  gfx::SlideAnimation animation(projects_panel_view());
+  auto* controls_view = organizer_panel_view()->controls_view_for_testing();
+  auto* organizer_button = controls_view->organizer_button_for_testing();
+  gfx::SlideAnimation animation(organizer_panel_view());
 
 #if BUILDFLAG(IS_MAC)
   // At 0.5 or less, opacity should be 0.
   animation.Reset(0.0);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(0.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.0f, organizer_button->layer()->opacity());
 
   animation.Reset(0.5);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(0.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.0f, organizer_button->layer()->opacity());
 
   // At 0.75, opacity should be 0.5.
   animation.Reset(0.75);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(0.5f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.5f, organizer_button->layer()->opacity());
 
   // At 1.0, opacity should be 1.0.
   animation.Reset(1.0);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, organizer_button->layer()->opacity());
 #else
   // On other platforms, it should always be 1.0.
   animation.Reset(0.0);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, organizer_button->layer()->opacity());
 
   animation.Reset(0.5);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, organizer_button->layer()->opacity());
 
   animation.Reset(1.0);
-  projects_panel_view()->AnimationProgressed(&animation);
-  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+  organizer_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, organizer_button->layer()->opacity());
 #endif
 }

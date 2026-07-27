@@ -432,7 +432,7 @@ enum {
   kPinContextualTaskButton = 100369,
   kAccessibilityReadAnythingOmniboxChipIgnoredCount = 100370,
   kAccessibilityReadAnythingLineFocus = 100371,
-  kProjectsPanelEntrypointEnabled = 100372,
+  kOrganizerPanelEntrypointEnabled = 100372,
   kDesktopToiOSTabGroupsPromoLastImpressionTimestamp = 100373,
   kDesktopToiOSTabGroupsPromoImpressionsCounter = 100374,
   kDesktopToiOSTabGroupsPromoOptOut = 100375,
@@ -648,7 +648,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kOrganizerPanelEntrypointEnabled,
-     {syncable_prefs_ids::kProjectsPanelEntrypointEnabled, syncer::PREFERENCES,
+     {syncable_prefs_ids::kOrganizerPanelEntrypointEnabled, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)

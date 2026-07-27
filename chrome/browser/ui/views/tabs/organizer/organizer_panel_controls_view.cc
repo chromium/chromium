@@ -24,40 +24,41 @@
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
-ProjectsPanelControlsView::ProjectsPanelControlsView(
+OrganizerPanelControlsView::OrganizerPanelControlsView(
     actions::ActionItem* root_action_item) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  toggle_projects_panel_action_item_ = actions::ActionManager::Get().FindAction(
-      kActionToggleProjectsPanel, root_action_item);
-  CHECK(toggle_projects_panel_action_item_);
+  toggle_organizer_panel_action_item_ =
+      actions::ActionManager::Get().FindAction(kActionToggleOrganizerPanel,
+                                               root_action_item);
+  CHECK(toggle_organizer_panel_action_item_);
 
-  projects_button_ = AddChildView(std::make_unique<TopContainerButton>());
-  projects_button_->SetPaintToLayer();
-  projects_button_->layer()->SetFillsBoundsOpaquely(false);
-  projects_button_->SetCallback(
-      base::BindRepeating(&ProjectsPanelControlsView::OnCloseButtonPressed,
+  organizer_button_ = AddChildView(std::make_unique<TopContainerButton>());
+  organizer_button_->SetPaintToLayer();
+  organizer_button_->layer()->SetFillsBoundsOpaquely(false);
+  organizer_button_->SetCallback(
+      base::BindRepeating(&OrganizerPanelControlsView::OnCloseButtonPressed,
                           base::Unretained(this)));
-  projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  projects_button_->SetImageModel(
+  organizer_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  organizer_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? kCloseSmallIcon
                                          : kCloseChromeRefreshOldIcon,
                                      ui::kColorIcon));
-  projects_button_->SetProperty(views::kElementIdentifierKey,
-                                kProjectsPanelButtonElementId);
+  organizer_button_->SetProperty(views::kElementIdentifierKey,
+                                 kOrganizerPanelButtonElementId);
   UpdateTooltipText();
 
-  ConfigureInkDrop(projects_button_);
+  ConfigureInkDrop(organizer_button_);
 
   SetProperty(views::kElementIdentifierKey,
-              kProjectsPanelControlsViewElementId);
+              kOrganizerPanelControlsViewElementId);
 }
 
-ProjectsPanelControlsView::~ProjectsPanelControlsView() = default;
+OrganizerPanelControlsView::~OrganizerPanelControlsView() = default;
 
-views::ProposedLayout ProjectsPanelControlsView::CalculateProposedLayout(
+views::ProposedLayout OrganizerPanelControlsView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
   gfx::Size host_size =
@@ -66,56 +67,56 @@ views::ProposedLayout ProjectsPanelControlsView::CalculateProposedLayout(
                 GetLayoutConstant(
                     LayoutConstant::kVerticalTabStripTopButtonContainerHeight));
 
-  CHECK(projects_button_);
+  CHECK(organizer_button_);
 
-  const gfx::Size projects_button_pref_size =
-      projects_button_->GetPreferredSize();
+  const gfx::Size organizer_button_pref_size =
+      organizer_button_->GetPreferredSize();
 
   int current_x = host_size.width();
   int current_y = host_size.height();
 
   // Calculate bounds to right-align the button horizontally and center it
   // vertically within the available space.
-  gfx::Rect projects_button_bounds(
-      current_x - projects_button_pref_size.width(),
+  gfx::Rect organizer_button_bounds(
+      current_x - organizer_button_pref_size.width(),
       current_y -
           (GetLayoutConstant(
                LayoutConstant::kVerticalTabStripTopButtonContainerHeight) +
-           projects_button_pref_size.height()) /
+           organizer_button_pref_size.height()) /
               2,
-      projects_button_pref_size.width(), projects_button_pref_size.height());
+      organizer_button_pref_size.width(), organizer_button_pref_size.height());
   layout.child_layouts.emplace_back(
-      projects_button_.get(), projects_button_->GetVisible(),
-      projects_button_bounds, views::SizeBounds(projects_button_pref_size));
+      organizer_button_.get(), organizer_button_->GetVisible(),
+      organizer_button_bounds, views::SizeBounds(organizer_button_pref_size));
 
   layout.host_size = host_size;
 
   return layout;
 }
 
-bool ProjectsPanelControlsView::IsPositionInWindowCaption(
+bool OrganizerPanelControlsView::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  if (projects_button_ && IsHitInView(projects_button_, point)) {
+  if (organizer_button_ && IsHitInView(organizer_button_, point)) {
     return false;
   }
 
   return true;
 }
 
-void ProjectsPanelControlsView::UpdateTooltipText() {
-  auto projects_button_text =
-      std::u16string(toggle_projects_panel_action_item_->GetText());
-  projects_button_->GetViewAccessibility().SetName(projects_button_text);
-  projects_button_->SetTooltipText(projects_button_text);
+void OrganizerPanelControlsView::UpdateTooltipText() {
+  auto organizer_button_text =
+      std::u16string(toggle_organizer_panel_action_item_->GetText());
+  organizer_button_->GetViewAccessibility().SetName(organizer_button_text);
+  organizer_button_->SetTooltipText(organizer_button_text);
 }
 
-void ProjectsPanelControlsView::SetButtonOpacity(float opacity) {
-  projects_button_->layer()->SetOpacity(opacity);
+void OrganizerPanelControlsView::SetButtonOpacity(float opacity) {
+  organizer_button_->layer()->SetOpacity(opacity);
 }
 
-void ProjectsPanelControlsView::OnCloseButtonPressed() {
-  toggle_projects_panel_action_item_->InvokeAction();
+void OrganizerPanelControlsView::OnCloseButtonPressed() {
+  toggle_organizer_panel_action_item_->InvokeAction();
 }
 
-BEGIN_METADATA(ProjectsPanelControlsView)
+BEGIN_METADATA(OrganizerPanelControlsView)
 END_METADATA

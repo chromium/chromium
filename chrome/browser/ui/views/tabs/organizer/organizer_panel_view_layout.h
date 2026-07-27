@@ -7,7 +7,7 @@
 
 #include "ui/views/layout/layout_manager_base.h"
 
-// Custom layout manager for the project panel that handles tab groups and
+// Custom layout manager for the organizer panel that handles tab groups and
 // threads section sizing as follows:
 // - If the combined preferred height of tab groups and threads is shorter than
 //   the panel height, lay them out at their preferred heights.
@@ -15,10 +15,10 @@
 //   the taller section by the overflow height amount.
 //   - If this causes the taller section to become shorter than the shorter
 //     section, split the height evenly between both sections.
-class ProjectsPanelViewLayout : public views::LayoutManagerBase {
+class OrganizerPanelViewLayout : public views::LayoutManagerBase {
  public:
-  explicit ProjectsPanelViewLayout(views::View* controls_view);
-  ~ProjectsPanelViewLayout() override;
+  explicit OrganizerPanelViewLayout(views::View* controls_view);
+  ~OrganizerPanelViewLayout() override;
 
   // views::LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(

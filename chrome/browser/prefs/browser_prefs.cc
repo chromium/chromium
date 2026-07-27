@@ -2188,7 +2188,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
   actor::ui::RegisterProfilePrefs(registry);
 
-  projects::RegisterProfilePrefs(registry);
+  organizer::RegisterProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(webauthn::pref_names::kAllowWithBrokenCerts,

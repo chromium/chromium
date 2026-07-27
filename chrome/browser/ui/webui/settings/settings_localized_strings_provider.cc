@@ -586,7 +586,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_BOOKMARKS_BAR_ONLY_SHOW_ON_NTP},
       {"bookmarksBarAlwaysHide", IDS_SETTINGS_BOOKMARKS_BAR_ALWAYS_HIDE},
       {"showTabSearchButton", IDS_SETTINGS_SHOW_TAB_SEARCH_BUTTON},
-      {"showProjectsPanelButton", IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON},
+      {"showOrganizerPanelButton", IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON},
       {"showEverythingMenuButton", IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON},
       {"tabStripPosition", IDS_SETTINGS_TAB_STRIP_POSITION},
       {"showVerticalTabsExpandOnHover",
@@ -664,8 +664,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           features::IsGlassFrameEnabled());
   html_source->AddBoolean("showVerticalTabsExpandOnHoverEnabled",
                           tabs::IsVerticalTabsExpandOnHoverFeatureEnabled());
-  html_source->AddBoolean("showProjectsPanelEnabled",
-                          tab_groups::IsProjectsPanelFeatureEnabled());
+  html_source->AddBoolean("showOrganizerPanelEnabled",
+                          tab_groups::IsOrganizerPanelFeatureEnabled());
   html_source->AddBoolean(
       "showEverythingMenuEnabled",
       tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile));

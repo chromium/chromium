@@ -172,7 +172,7 @@ export class SettingsAppearancePageElement extends
       ntpSimplificationBookmarksBarEnabled_: {type: Boolean},
       bookmarksBarOptions_: {type: Array},
       showVerticalTabsExpandOnHoverEnabled_: {type: Boolean},
-      showProjectsPanelEnabled_: {type: Boolean},
+      showOrganizerPanelEnabled_: {type: Boolean},
       showEverythingMenuEnabled_: {type: Boolean},
       showResetPinnedActionsButton_: {type: Boolean},
       showCtrlTabMru_: {type: Boolean},
@@ -302,8 +302,8 @@ export class SettingsAppearancePageElement extends
       loadTimeData.getBoolean('ntpSimplificationBookmarksBarEnabled');
   protected accessor showVerticalTabsExpandOnHoverEnabled_: boolean =
       loadTimeData.getBoolean('showVerticalTabsExpandOnHoverEnabled');
-  protected accessor showProjectsPanelEnabled_: boolean =
-      loadTimeData.getBoolean('showProjectsPanelEnabled');
+  protected accessor showOrganizerPanelEnabled_: boolean =
+      loadTimeData.getBoolean('showOrganizerPanelEnabled');
   protected accessor showEverythingMenuEnabled_: boolean =
       loadTimeData.getBoolean('showEverythingMenuEnabled');
   protected accessor showResetPinnedActionsButton_: boolean = false;
@@ -621,7 +621,7 @@ export class SettingsAppearancePageElement extends
   }
 
   protected showEverythingMenuToggle_(): boolean {
-    return !this.showProjectsPanelEnabled_ && this.showEverythingMenuEnabled_;
+    return !this.showOrganizerPanelEnabled_ && this.showEverythingMenuEnabled_;
   }
 
   protected onShowTabSearchButtonChange_(event: CustomEvent<boolean>) {
@@ -630,10 +630,10 @@ export class SettingsAppearancePageElement extends
                        'TabStripComboButton.TabSearch.Unpinned');
   }
 
-  protected onShowProjectsPanelButtonChange_(event: CustomEvent<boolean>) {
+  protected onShowOrganizerPanelButtonChange_(event: CustomEvent<boolean>) {
     this.metricsBrowserProxy_.recordAction(
-        event.detail ? 'TabStripComboButton.ProjectsPanel.Pinned' :
-                       'TabStripComboButton.ProjectsPanel.Unpinned');
+        event.detail ? 'TabStripComboButton.OrganizerPanel.Pinned' :
+                       'TabStripComboButton.OrganizerPanel.Unpinned');
   }
 
   protected onShowEverythingMenuButtonChange_(event: CustomEvent<boolean>) {

@@ -51,10 +51,10 @@ static bool disable_animations_for_testing_ = false;
 
 }  // namespace
 
-ProjectsPanelView::ProjectsPanelView(
+OrganizerPanelView::OrganizerPanelView(
     BrowserWindowInterface* browser,
     actions::ActionItem* root_action_item,
-    ProjectsPanelStateController* state_controller)
+    OrganizerPanelStateController* state_controller)
     : browser_(browser),
       root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()),
@@ -78,10 +78,10 @@ ProjectsPanelView::ProjectsPanelView(
   SetIsElevated(true);
 
   controls_view_ = content_container_->AddChildView(
-      std::make_unique<ProjectsPanelControlsView>(root_action_item_.get()));
+      std::make_unique<OrganizerPanelControlsView>(root_action_item_.get()));
 
   content_container_->SetLayoutManager(
-      std::make_unique<ProjectsPanelViewLayout>(controls_view_));
+      std::make_unique<OrganizerPanelViewLayout>(controls_view_));
 
   resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
@@ -93,13 +93,13 @@ ProjectsPanelView::ProjectsPanelView(
   SetFocusBehavior(FocusBehavior::NEVER);
 
   SetVisible(false);
-  SetPreferredSize(gfx::Size(projects_panel::kProjectsPanelMinWidth, 0));
-  SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
+  SetPreferredSize(gfx::Size(organizer_panel::kOrganizerPanelMinWidth, 0));
+  SetProperty(views::kElementIdentifierKey, kOrganizerPanelViewElementId);
 }
 
-ProjectsPanelView::~ProjectsPanelView() = default;
+OrganizerPanelView::~OrganizerPanelView() = default;
 
-bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
+bool OrganizerPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
   gfx::Point point_in_target = point;
   views::View::ConvertPointToTarget(this, controls_view_, &point_in_target);
   if (controls_view_->HitTestPoint(point_in_target)) {
@@ -109,12 +109,12 @@ bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
   return false;
 }
 
-void ProjectsPanelView::OnProjectsPanelStateChanged(
-    ProjectsPanelStateController* state_controller) {
+void OrganizerPanelView::OnOrganizerPanelStateChanged(
+    OrganizerPanelStateController* state_controller) {
   TooltipTextChanged();
   controls_view_->UpdateTooltipText();
 
-  const bool visible = state_controller->IsProjectsPanelVisible();
+  const bool visible = state_controller->IsOrganizerPanelVisible();
 
   if (visible) {
     views::Widget* widget = GetWidget();
@@ -173,11 +173,11 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
   }
 }
 
-double ProjectsPanelView::GetResizeAnimationValue() const {
+double OrganizerPanelView::GetResizeAnimationValue() const {
   return resize_animation_.GetCurrentValue();
 }
 
-void ProjectsPanelView::SetTargetWidth(int target_width) {
+void OrganizerPanelView::SetTargetWidth(int target_width) {
   if (target_width_ == target_width) {
     return;
   }
@@ -186,7 +186,7 @@ void ProjectsPanelView::SetTargetWidth(int target_width) {
   InvalidateLayout();
 }
 
-void ProjectsPanelView::SetIsElevated(bool elevated) {
+void OrganizerPanelView::SetIsElevated(bool elevated) {
   if (elevated_ == elevated) {
     return;
   }
@@ -205,12 +205,12 @@ void ProjectsPanelView::SetIsElevated(bool elevated) {
 
   content_container_->layer()->SetRoundedCornerRadius(radii);
   content_container_->SetBackground(views::CreateRoundedRectBackground(
-      projects_panel::kProjectsPanelBackgroundColor, radii));
+      organizer_panel::kOrganizerPanelBackgroundColor, radii));
 
   InvalidateLayout();
 }
 
-void ProjectsPanelView::Layout(PassKey) {
+void OrganizerPanelView::Layout(PassKey) {
   const int visible_width = width();
   content_container_->SetBounds(-(target_width_ - visible_width), 0,
                                 target_width_, height());
@@ -228,14 +228,15 @@ void ProjectsPanelView::Layout(PassKey) {
   layer()->SetClipRect(clip_rect);
 }
 
-void ProjectsPanelView::RemovedFromWidget() {
+void OrganizerPanelView::RemovedFromWidget() {
   if (observing_focus_manager_ && GetFocusManager()) {
     GetFocusManager()->RemoveFocusChangeListener(this);
     observing_focus_manager_ = false;
   }
 }
 
-bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+bool OrganizerPanelView::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ESCAPE) {
     ClosePanel();
     return true;
@@ -243,23 +244,23 @@ bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return false;
 }
 
-views::FocusTraversable* ProjectsPanelView::GetPaneFocusTraversable() {
+views::FocusTraversable* OrganizerPanelView::GetPaneFocusTraversable() {
   return this;
 }
 
-views::FocusSearch* ProjectsPanelView::GetFocusSearch() {
+views::FocusSearch* OrganizerPanelView::GetFocusSearch() {
   return focus_search_.get();
 }
 
-views::FocusTraversable* ProjectsPanelView::GetFocusTraversableParent() {
+views::FocusTraversable* OrganizerPanelView::GetFocusTraversableParent() {
   return parent() ? parent()->GetFocusTraversable() : nullptr;
 }
 
-views::View* ProjectsPanelView::GetFocusTraversableParentView() {
+views::View* OrganizerPanelView::GetFocusTraversableParentView() {
   return this;
 }
 
-void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
+void OrganizerPanelView::AnimationProgressed(const gfx::Animation* animation) {
 #if BUILDFLAG(IS_MAC)
   // On Mac, start fading in the close button when the panel has completed half
   // of its opening animation. Similarly when closing, fade out the button until
@@ -272,7 +273,7 @@ void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
   InvalidateLayout();
 }
 
-void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
+void OrganizerPanelView::AnimationEnded(const gfx::Animation* animation) {
   if (animation->GetCurrentValue() == 0.0) {
     SetVisible(false);
     if (on_close_animation_ended_callback_) {
@@ -284,16 +285,16 @@ void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
 // We must also call AnimationEnded when an animation is canceled (which happens
 // when the view is destroyed or a new animation is started mid-flight) to
 // guarantee that the state is properly set to hidden.
-void ProjectsPanelView::AnimationCanceled(const gfx::Animation* animation) {
+void OrganizerPanelView::AnimationCanceled(const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
 
 // static
-void ProjectsPanelView::disable_animations_for_testing() {
+void OrganizerPanelView::disable_animations_for_testing() {
   disable_animations_for_testing_ = true;
 }
 
-void ProjectsPanelView::ClosePanel(bool caused_by_focus_lost) {
+void OrganizerPanelView::ClosePanel(bool caused_by_focus_lost) {
   // If the panel is closing due to focus being lost (e.g., a tab group was
   // focused or a tab was activated), the last focused view before the panel was
   // opened should not be refocused.
@@ -307,19 +308,19 @@ void ProjectsPanelView::ClosePanel(bool caused_by_focus_lost) {
   }
 
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
-      kActionToggleProjectsPanel, root_action_item_);
+      kActionToggleOrganizerPanel, root_action_item_);
   if (action_item) {
     action_item->InvokeAction();
   }
 }
 
-ProjectsPanelView::MouseEventHandler::MouseEventHandler(
-    ProjectsPanelView* owning_view)
+OrganizerPanelView::MouseEventHandler::MouseEventHandler(
+    OrganizerPanelView* owning_view)
     : owning_view_(owning_view) {}
 
-ProjectsPanelView::MouseEventHandler::~MouseEventHandler() = default;
+OrganizerPanelView::MouseEventHandler::~MouseEventHandler() = default;
 
-void ProjectsPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
+void OrganizerPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
   // Ignore mouse events when the panel is closed.
   if (!owning_view_->GetVisible()) {
     return;
@@ -342,11 +343,11 @@ void ProjectsPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
   }
 }
 
-void ProjectsPanelView::OnWillChangeFocus(views::View* focused_before,
-                                          views::View* focused_now) {}
+void OrganizerPanelView::OnWillChangeFocus(views::View* focused_before,
+                                           views::View* focused_now) {}
 
-void ProjectsPanelView::OnDidChangeFocus(views::View* focused_before,
-                                         views::View* focused_now) {
+void OrganizerPanelView::OnDidChangeFocus(views::View* focused_before,
+                                          views::View* focused_now) {
   if (!GetVisible() || Contains(focused_now)) {
     return;
   }
@@ -354,5 +355,5 @@ void ProjectsPanelView::OnDidChangeFocus(views::View* focused_before,
   ClosePanel();
 }
 
-BEGIN_METADATA(ProjectsPanelView)
+BEGIN_METADATA(OrganizerPanelView)
 END_METADATA

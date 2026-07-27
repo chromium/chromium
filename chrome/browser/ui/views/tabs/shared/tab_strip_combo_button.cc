@@ -51,7 +51,7 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
                                       kTabSearchUnpinMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
-                                      kProjectsPanelUnpinMenuItem);
+                                      kOrganizerPanelUnpinMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
                                       kEverythingMenuUnpinMenuItem);
 
@@ -73,13 +73,14 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
 
   std::unique_ptr<TabStripFlatEdgeButton> start_button;
   if (context_ == Context::kVerticalTabStrip) {
-    if (projects_panel::IsProjectsPanelVisibleForProfile(
+    if (organizer_panel::IsOrganizerPanelVisibleForProfile(
             browser->GetProfile())) {
-      start_button = CreateFlatEdgeButtonFor(
-          kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
-      projects_panel_button_subscription_ =
+      start_button =
+          CreateFlatEdgeButtonFor(kActionToggleOrganizerPanel,
+                                  kVerticalTabStripOrganizerButtonElementId);
+      organizer_panel_button_subscription_ =
           start_button->RegisterWillInvokeActionCallback(base::BindRepeating(
-              &TabStripComboButton::OnProjectsPanelButtonPressed,
+              &TabStripComboButton::OnOrganizerPanelButtonPressed,
               base::Unretained(this)));
     } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
                    browser_->GetProfile())) {
@@ -149,7 +150,7 @@ void TabStripComboButton::UpdateButtonsVisibility() {
 
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   const std::string_view pref_name =
-      tab_groups::IsProjectsPanelFeatureEnabled()
+      tab_groups::IsOrganizerPanelFeatureEnabled()
           ? prefs::kOrganizerPanelPinnedToTabstrip
           : prefs::kEverythingMenuPinnedToTabstrip;
 
@@ -219,9 +220,9 @@ void TabStripComboButton::ShowEverythingMenu() {
   everything_menu_->RunMenu();
 }
 
-void TabStripComboButton::OnProjectsPanelButtonPressed() {
+void TabStripComboButton::OnOrganizerPanelButtonPressed() {
   base::RecordAction(
-      base::UserMetricsAction("ProjectsPanel.OpenButtonPressed"));
+      base::UserMetricsAction("OrganizerPanel.OpenButtonPressed"));
 }
 
 std::unique_ptr<TabStripFlatEdgeButton>
@@ -293,13 +294,13 @@ void TabStripComboButton::ShowContextMenuForViewImpl(
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
 
   if (source == start_button_) {
-    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-      command_id = IDC_PROJECTS_PANEL_TOGGLE_PIN;
+    if (tab_groups::IsOrganizerPanelFeatureEnabled()) {
+      command_id = IDC_ORGANIZER_PANEL_TOGGLE_PIN;
       pref_name = prefs::kOrganizerPanelPinnedToTabstrip;
       string_id = prefs->GetBoolean(pref_name)
                       ? IDS_PROJECTS_PANEL_BUTTON_CXMENU_UNPIN
                       : IDS_PROJECTS_PANEL_BUTTON_CXMENU_PIN;
-      element_id = kProjectsPanelUnpinMenuItem;
+      element_id = kOrganizerPanelUnpinMenuItem;
     } else {
       command_id = IDC_EVERYTHING_MENU_TOGGLE_PIN;
       pref_name = prefs::kEverythingMenuPinnedToTabstrip;
@@ -363,7 +364,7 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
 
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   std::string_view pref_name;
-  if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
+  if (command_id == IDC_ORGANIZER_PANEL_TOGGLE_PIN) {
     pref_name = prefs::kOrganizerPanelPinnedToTabstrip;
   } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
     pref_name = prefs::kEverythingMenuPinnedToTabstrip;
@@ -372,10 +373,10 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   }
 
   const bool is_pinned = prefs->GetBoolean(pref_name);
-  if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
+  if (command_id == IDC_ORGANIZER_PANEL_TOGGLE_PIN) {
     base::RecordAction(base::UserMetricsAction(
-        is_pinned ? "TabStripComboButton.ProjectsPanel.Unpinned"
-                  : "TabStripComboButton.ProjectsPanel.Pinned"));
+        is_pinned ? "TabStripComboButton.OrganizerPanel.Unpinned"
+                  : "TabStripComboButton.OrganizerPanel.Pinned"));
   } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
     base::RecordAction(base::UserMetricsAction(
         is_pinned ? "TabStripComboButton.EverythingMenu.Unpinned"
@@ -462,8 +463,8 @@ bool TabStripComboButton::IsTabSearchPinned() {
 
 actions::ActionItem* TabStripComboButton::GetStartButtonActionItem() {
   const actions::ActionId start_action_id =
-      tab_groups::IsProjectsPanelFeatureEnabled() ? kActionToggleProjectsPanel
-                                                  : kActionTabGroupsMenu;
+      tab_groups::IsOrganizerPanelFeatureEnabled() ? kActionToggleOrganizerPanel
+                                                   : kActionTabGroupsMenu;
   return actions::ActionManager::Get().FindAction(
       start_action_id, browser_->GetActions()->root_action_item());
 }

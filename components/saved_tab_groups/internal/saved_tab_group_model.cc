@@ -50,13 +50,13 @@ void RecordGroupDeletedMetric(const SavedTabGroup& removed_group) {
 
 // Compare function for 2 SavedTabGroup.
 //
-// If projects panel is disabled:
+// If organizer panel is disabled:
 // SaveTabGroup with position set is always placed before the one without
 // position set. If both have position set, the one with lower position number
 // should place before. If both positions are the same or both are not set, the
 // one with more recent update time should place before.
 //
-// If projects panel is enabled:
+// If organizer panel is enabled:
 // Unpositioned groups are placed before positioned groups and ordered by
 // most to least recent creation time.
 bool ShouldPlaceBefore(const SavedTabGroup& group1,

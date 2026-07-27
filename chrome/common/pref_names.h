@@ -1196,8 +1196,8 @@ inline constexpr char kSuppressDifferentOriginSubframeJSDialogs[] =
 inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 
 #if !BUILDFLAG(IS_ANDROID)
-// Boolean determining whether the projects panel entrypoint is displayed in the
-// tab strip.
+// Boolean determining whether the organizer panel entrypoint is displayed in
+// the tab strip.
 inline constexpr char kOrganizerPanelEntrypointEnabled[] =
     "organizer_panel.entrypoint_enabled";
 inline constexpr char kProjectsPanelEntrypointEnabled[] =

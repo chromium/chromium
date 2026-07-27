@@ -7842,6 +7842,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "organizer-panel",
+    "owners": [
+      "kunaldaftari@google.com",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "origin-agent-cluster-default",
     "owners": [ "vogelheim@chromium.org", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 130
@@ -8348,16 +8356,6 @@
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 146
-  },
-  {
-    "name": "projects-panel",
-    "owners": [
-      "chazzy@chromium.org",
-      "davidjm@google.com",
-      "chrome-shopping-eng@google.com",
-      "top-chrome-desktop-ui@google.com"
-    ],
-    "expiry_milestone": 155
   },
   {
     "name": "prompt-api",

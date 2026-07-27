@@ -20,7 +20,7 @@ constexpr int kControlsViewPreferredHeight = 50;
 constexpr int kHostViewWidth = 300;
 }  // namespace
 
-class ProjectsPanelViewLayoutTest : public ChromeViewsTestBase {
+class OrganizerPanelViewLayoutTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -31,34 +31,34 @@ class ProjectsPanelViewLayoutTest : public ChromeViewsTestBase {
         gfx::Size(kControlsViewPreferredWidth, kControlsViewPreferredHeight));
 
     layout_ = host_->SetLayoutManager(
-        std::make_unique<ProjectsPanelViewLayout>(controls_view_));
+        std::make_unique<OrganizerPanelViewLayout>(controls_view_));
   }
 
  protected:
   std::unique_ptr<views::View> host_;
   raw_ptr<views::View> controls_view_;
-  raw_ptr<ProjectsPanelViewLayout> layout_;
+  raw_ptr<OrganizerPanelViewLayout> layout_;
 };
 
-TEST_F(ProjectsPanelViewLayoutTest, PreferredSize) {
+TEST_F(OrganizerPanelViewLayoutTest, PreferredSize) {
   const int expected_height =
       kControlsViewPreferredHeight +
-      projects_panel::kProjectsPanelRegionInteriorMargins.height();
+      organizer_panel::kOrganizerPanelRegionInteriorMargins.height();
 
   gfx::Size pref_size = host_->GetPreferredSize();
   EXPECT_EQ(pref_size.height(), expected_height);
-  EXPECT_EQ(pref_size.width(), projects_panel::kProjectsPanelMinWidth);
+  EXPECT_EQ(pref_size.width(), organizer_panel::kOrganizerPanelMinWidth);
 }
 
-TEST_F(ProjectsPanelViewLayoutTest, LayoutControlsView) {
+TEST_F(OrganizerPanelViewLayoutTest, LayoutControlsView) {
   host_->SetBounds(0, 0, kHostViewWidth, 500);
   views::test::RunScheduledLayout(host_.get());
 
   int expected_width =
       kHostViewWidth -
-      projects_panel::kProjectsPanelRegionInteriorMargins.width();
-  int x = projects_panel::kProjectsPanelRegionInteriorMargins.left();
-  int y = projects_panel::kProjectsPanelRegionInteriorMargins.top();
+      organizer_panel::kOrganizerPanelRegionInteriorMargins.width();
+  int x = organizer_panel::kOrganizerPanelRegionInteriorMargins.left();
+  int y = organizer_panel::kOrganizerPanelRegionInteriorMargins.top();
 
   // Controls view.
   EXPECT_EQ(controls_view_->bounds(),

@@ -846,34 +846,34 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   }
 
   // TODO(crbug.com/469425263): Ensure correct layout calculations for the
-  // Project Panel Container.
-  if (IsParentedToAndVisible(views().projects_panel_container,
+  // Organizer Panel Container.
+  if (IsParentedToAndVisible(views().organizer_panel_container,
                              views().browser_view)) {
-    int target_width = projects_panel::kProjectsPanelMinWidth;
-    bool projects_panel_should_appear_elevated = true;
+    int target_width = organizer_panel::kOrganizerPanelMinWidth;
+    bool organizer_panel_should_appear_elevated = true;
     if (layout_data_->tab_strip_type == TabStripType::kVertical) {
-      projects_panel_should_appear_elevated =
+      organizer_panel_should_appear_elevated =
           horizontal_layout.vertical_tab_strip_width <
-          projects_panel::kProjectsPanelMinWidth;
-      if (!projects_panel_should_appear_elevated) {
+          organizer_panel::kOrganizerPanelMinWidth;
+      if (!organizer_panel_should_appear_elevated) {
         target_width = std::max(target_width - views::Separator::kThickness,
                                 horizontal_layout.vertical_tab_strip_width -
                                     views::Separator::kThickness);
       }
     }
-    views().projects_panel_container->SetTargetWidth(target_width);
-    views().projects_panel_container->SetIsElevated(
-        projects_panel_should_appear_elevated);
+    views().organizer_panel_container->SetTargetWidth(target_width);
+    views().organizer_panel_container->SetIsElevated(
+        organizer_panel_should_appear_elevated);
 
     const double reveal_amount =
-        views().projects_panel_container->GetResizeAnimationValue();
+        views().organizer_panel_container->GetResizeAnimationValue();
     const int visible_width = base::ClampFloor(target_width * reveal_amount);
 
-    gfx::Rect projects_panel_bounds =
+    gfx::Rect organizer_panel_bounds =
         gfx::Rect(browser_params.visual_client_area.x(),
                   browser_params.visual_client_area.y(), visible_width,
                   browser_params.visual_client_area.height());
-    layout.AddChild(views().projects_panel_container, projects_panel_bounds);
+    layout.AddChild(views().organizer_panel_container, organizer_panel_bounds);
   }
 
   // When the tabstrip isn't at the top or in constrained widths, the top
@@ -1492,20 +1492,20 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
 
     vertical_tabs_background->SetCorners(vertical_tabs_corners);
 
-    // When the projects panel is animating open or closed and does not appear
+    // When the organizer panel is animating open or closed and does not appear
     // elevated, the background of vertical tabs should fade to match the
     // background color of the panel.
-    if (delegate().IsProjectsPanelVisible()) {
+    if (delegate().IsOrganizerPanelVisible()) {
       CustomFloatingCorner* const vertical_tabs_top_corner =
           views().vertical_tab_strip_top_corner;
       CustomFloatingCorner* const vertical_tabs_bottom_corner =
           views().vertical_tab_strip_bottom_corner;
-      if (!views().projects_panel_container->is_elevated()) {
-        auto projects_panel_reveal_amount =
-            views().projects_panel_container->GetResizeAnimationValue();
+      if (!views().organizer_panel_container->is_elevated()) {
+        auto organizer_panel_reveal_amount =
+            views().organizer_panel_container->GetResizeAnimationValue();
         CustomCorners::ColorChoiceWithAlpha const fade_background{
-            projects_panel::kProjectsPanelBackgroundColor,
-            static_cast<float>(projects_panel_reveal_amount)};
+            organizer_panel::kOrganizerPanelBackgroundColor,
+            static_cast<float>(organizer_panel_reveal_amount)};
         vertical_tabs_background->SetFadeBackground(fade_background);
         vertical_tabs_top_corner->SetFadeBackground(fade_background);
         vertical_tabs_bottom_corner->SetFadeBackground(fade_background);

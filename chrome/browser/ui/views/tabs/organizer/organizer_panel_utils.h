@@ -7,12 +7,12 @@
 
 class Profile;
 
-namespace projects_panel {
+namespace organizer_panel {
 
-// Returns whether the Projects Panel and its entrypoints should be visible in
+// Returns whether the Organizer Panel and its entrypoints should be visible in
 // the UI for the profile.
-bool IsProjectsPanelVisibleForProfile(Profile* profile);
+bool IsOrganizerPanelVisibleForProfile(Profile* profile);
 
-}  // namespace projects_panel
+}  // namespace organizer_panel
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_

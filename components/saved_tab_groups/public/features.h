@@ -27,9 +27,7 @@ BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);
 
-BASE_DECLARE_FEATURE(kProjectsPanel);
-
-extern const base::FeatureParam<bool> kProjectsPanelWithThreads;
+BASE_DECLARE_FEATURE(kOrganizerPanel);
 
 extern bool IsTabGroupSyncDelegateAndroidEnabled();
 
@@ -51,9 +49,7 @@ extern bool IsOriginatingSavedGroupCleanUpEnabled();
 
 extern base::TimeDelta GetOriginatingSavedGroupCleanUpTimeInterval();
 
-extern bool IsProjectsPanelFeatureEnabled();
-
-extern bool IsThreadsInProjectsPanelEnabled();
+extern bool IsOrganizerPanelFeatureEnabled();
 
 }  // namespace tab_groups
 

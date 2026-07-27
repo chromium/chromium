@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
@@ -19,17 +20,17 @@
 
 namespace base::test {
 
-class ProjectsPanelStateControllerInteractiveUiTest
+class OrganizerPanelStateControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
-  ProjectsPanelStateControllerInteractiveUiTest() {
+  OrganizerPanelStateControllerInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(/* enabled_features */
                                           {tabs::kVerticalTabs,
-                                           tab_groups::kProjectsPanel},
+                                           tab_groups::kOrganizerPanel},
                                           /* disabled_features */ {});
-    ProjectsPanelView::disable_animations_for_testing();
+    OrganizerPanelView::disable_animations_for_testing();
   }
-  ~ProjectsPanelStateControllerInteractiveUiTest() override = default;
+  ~OrganizerPanelStateControllerInteractiveUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -40,46 +41,49 @@ class ProjectsPanelStateControllerInteractiveUiTest
     RunScheduledLayouts();
   }
 
-  ProjectsPanelStateController* projects_panel_state_controller() {
-    return ProjectsPanelStateController::From(browser());
+  OrganizerPanelStateController* organizer_panel_state_controller() {
+    return OrganizerPanelStateController::From(browser());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test checks that we can click the projects panel button.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelStateControllerInteractiveUiTest,
-                       VerifyProjectsPanelButton) {
+// This test checks that we can click the organizer panel button.
+IN_PROC_BROWSER_TEST_F(OrganizerPanelStateControllerInteractiveUiTest,
+                       VerifyOrganizerPanelButton) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
-      // Verify Initial State for Projects Panel.
+      // Verify Initial State for Organizer Panel.
       CheckResult(
           [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
+            return organizer_panel_state_controller()
+                ->IsOrganizerPanelVisible();
           },
           false),
-      // Click Projects Panel Button and Verify Visibilities.
-      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
-      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
+      // Click Organizer Panel Button and Verify Visibilities.
+      EnsurePresent(kVerticalTabStripOrganizerButtonElementId),
+      MoveMouseTo(kVerticalTabStripOrganizerButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
+            return organizer_panel_state_controller()
+                ->IsOrganizerPanelVisible();
           },
           true),
       Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kProjectsPanelViewElementId),
-      // Click Projects Panel Button and Verify Visibilities.
-      MoveMouseTo(kProjectsPanelButtonElementId), ClickMouse(),
+      WaitForShow(kOrganizerPanelViewElementId),
+      // Click Organizer Panel Button and Verify Visibilities.
+      MoveMouseTo(kOrganizerPanelButtonElementId), ClickMouse(),
       CheckResult(
           [this]() {
-            return projects_panel_state_controller()->IsProjectsPanelVisible();
+            return organizer_panel_state_controller()
+                ->IsOrganizerPanelVisible();
           },
           false),
       Do([this]() { RunScheduledLayouts(); }),
-      WaitForHide(kProjectsPanelViewElementId),
-      WaitForHide(kProjectsPanelButtonElementId));
+      WaitForHide(kOrganizerPanelViewElementId),
+      WaitForHide(kOrganizerPanelButtonElementId));
 }
 
 }  // namespace base::test

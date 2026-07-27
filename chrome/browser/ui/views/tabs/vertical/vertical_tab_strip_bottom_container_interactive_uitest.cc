@@ -34,7 +34,7 @@ class VerticalTabStripBottomContainerInteractiveUiTest
   using VerticalTabsInteractiveTestMixin::VerticalTabsInteractiveTestMixin;
 
   const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {tab_groups::kProjectsPanel};
+    return {tab_groups::kOrganizerPanel};
   }
 
  private:

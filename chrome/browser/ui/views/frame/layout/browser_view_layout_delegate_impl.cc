@@ -248,8 +248,8 @@ int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
   return 0;
 }
 
-bool BrowserViewLayoutDelegateImpl::IsProjectsPanelVisible() const {
-  return projects_panel::IsProjectsPanelVisibleForProfile(
+bool BrowserViewLayoutDelegateImpl::IsOrganizerPanelVisible() const {
+  return organizer_panel::IsOrganizerPanelVisibleForProfile(
       browser_view_->GetProfile());
 }
 

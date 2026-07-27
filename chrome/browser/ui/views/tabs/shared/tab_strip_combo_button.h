@@ -50,7 +50,7 @@ class TabStripComboButton : public views::View,
   };
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabSearchUnpinMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelUnpinMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOrganizerPanelUnpinMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEverythingMenuUnpinMenuItem);
 
   explicit TabStripComboButton(BrowserWindowInterface* browser,
@@ -95,7 +95,7 @@ class TabStripComboButton : public views::View,
  private:
   void ShowEverythingMenu();
 
-  void OnProjectsPanelButtonPressed();
+  void OnOrganizerPanelButtonPressed();
 
   void UpdateButtonsVisibility();
 
@@ -144,7 +144,7 @@ class TabStripComboButton : public views::View,
 
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
-  base::CallbackListSubscription projects_panel_button_subscription_;
+  base::CallbackListSubscription organizer_panel_button_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_

@@ -9,12 +9,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 
-namespace projects {
+namespace organizer {
 
-bool IsProjectsPanelEntrypointEnabled(const Profile* profile) {
-  return tab_groups::IsProjectsPanelFeatureEnabled() &&
+bool IsOrganizerPanelEntrypointEnabled(const Profile* profile) {
+  return tab_groups::IsOrganizerPanelFeatureEnabled() &&
          profile->GetPrefs()->GetBoolean(
              prefs::kOrganizerPanelEntrypointEnabled);
 }
 
-}  // namespace projects
+}  // namespace organizer

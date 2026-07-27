@@ -1007,17 +1007,17 @@ BrowserView::BrowserView(Browser* browser)
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
-  auto* const projects_panel_state_controller =
-      ProjectsPanelStateController::From(browser_);
-  if (projects_panel_state_controller) {
-    auto projects_panel_container = std::make_unique<ProjectsPanelView>(
+  auto* const organizer_panel_state_controller =
+      OrganizerPanelStateController::From(browser_);
+  if (organizer_panel_state_controller) {
+    auto organizer_panel_container = std::make_unique<OrganizerPanelView>(
         browser_.get(), browser_->GetActions()->root_action_item(),
-        projects_panel_state_controller);
-    projects_panel_container_ =
-        AddChildView(std::move(projects_panel_container));
-    projects_panel_subscription_ =
-        projects_panel_state_controller->RegisterOnStateChanged(
-            base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,
+        organizer_panel_state_controller);
+    organizer_panel_container_ =
+        AddChildView(std::move(organizer_panel_container));
+    organizer_panel_subscription_ =
+        organizer_panel_state_controller->RegisterOnStateChanged(
+            base::BindRepeating(&BrowserView::OnOrganizerPanelStateChanged,
                                 base::Unretained(this)));
   }
 
@@ -1136,7 +1136,7 @@ BrowserView::~BrowserView() {
   vertical_tab_strip_background_blur_backdrop_ = nullptr;
   vertical_tab_strip_top_corner_ = nullptr;
   vertical_tab_strip_bottom_corner_ = nullptr;
-  projects_panel_container_ = nullptr;
+  organizer_panel_container_ = nullptr;
   side_panel_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
@@ -1558,9 +1558,9 @@ void BrowserView::OnVerticalTabStripModeChanged(
   InvalidateLayout();
 }
 
-void BrowserView::OnProjectsPanelStateChanged(
-    ProjectsPanelStateController* controller) {
-  projects_panel_container_->OnProjectsPanelStateChanged(controller);
+void BrowserView::OnOrganizerPanelStateChanged(
+    OrganizerPanelStateController* controller) {
+  organizer_panel_container_->OnOrganizerPanelStateChanged(controller);
   InvalidateLayout();
 }
 
@@ -4601,11 +4601,11 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   }
 
   // See if the mouse pointer is within the bounds of the
-  // ProjectsPanelView.
-  if (projects_panel_container_ && projects_panel_container_->GetVisible()) {
+  // OrganizerPanelView.
+  if (organizer_panel_container_ && organizer_panel_container_->GetVisible()) {
     gfx::Point test_point(point);
-    if (ConvertedHitTest(parent(), projects_panel_container_, &test_point)) {
-      if (projects_panel_container_->IsPositionInWindowCaption(test_point)) {
+    if (ConvertedHitTest(parent(), organizer_panel_container_, &test_point)) {
+      if (organizer_panel_container_->IsPositionInWindowCaption(test_point)) {
         return HTCAPTION;
       }
       return HTCLIENT;
@@ -4957,7 +4957,7 @@ void BrowserView::AddedToWidget() {
   layout_views.vertical_tab_strip_bottom_corner =
       vertical_tab_strip_bottom_corner_;
   layout_views.vertical_tab_strip_top_corner = vertical_tab_strip_top_corner_;
-  layout_views.projects_panel_container = projects_panel_container_;
+  layout_views.organizer_panel_container = organizer_panel_container_;
   layout_views.toolbar = toolbar_;
   layout_views.infobar_container = infobar_container_;
   layout_views.contents_container = contents_container_;

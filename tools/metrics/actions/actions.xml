@@ -38370,6 +38370,14 @@ should be able to be added at any place in this file.
   <description>Settings: Users: Remove a whitelisted user</description>
 </action>
 
+<action name="OrganizerPanel.OpenButtonPressed">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the organizer panel via the tab strip entrypoint.
+  </description>
+</action>
+
 <action name="OriginChipPress">
   <obsolete>This flag no longer exists.</obsolete>
   <owner>macourteau@chromium.org</owner>
@@ -40770,14 +40778,6 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@google.com</owner>
   <description>
     The user clicked the three dotted menu in chrome://profile-picker.
-  </description>
-</action>
-
-<action name="ProjectsPanel.OpenButtonPressed">
-  <owner>chazzy@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    The user opened the projects panel via the tab strip entrypoint.
   </description>
 </action>
 
@@ -53671,19 +53671,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="TabStripComboButton.ProjectsPanel.Pinned">
+<action name="TabStripComboButton.OrganizerPanel.Pinned">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    User pinned the Projects Panel button to the tabstrip.
+    User pinned the Organizer Panel button to the tabstrip.
   </description>
 </action>
 
-<action name="TabStripComboButton.ProjectsPanel.Unpinned">
+<action name="TabStripComboButton.OrganizerPanel.Unpinned">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
-    User unpinned the Projects Panel button from the tabstrip.
+    User unpinned the Organizer Panel button from the tabstrip.
   </description>
 </action>
 

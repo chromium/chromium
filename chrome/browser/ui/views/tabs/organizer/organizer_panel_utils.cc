@@ -7,11 +7,11 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "components/saved_tab_groups/public/features.h"
 
-namespace projects_panel {
+namespace organizer_panel {
 
-bool IsProjectsPanelVisibleForProfile(Profile* profile) {
-  return tab_groups::IsProjectsPanelFeatureEnabled() &&
+bool IsOrganizerPanelVisibleForProfile(Profile* profile) {
+  return tab_groups::IsOrganizerPanelFeatureEnabled() &&
          tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile);
 }
 
-}  // namespace projects_panel
+}  // namespace organizer_panel

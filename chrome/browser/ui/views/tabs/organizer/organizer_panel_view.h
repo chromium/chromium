@@ -30,28 +30,30 @@ class ViewShadow;
 }  // namespace views
 
 class BrowserWindowInterface;
-class ProjectsPanelStateController;
+class OrganizerPanelStateController;
 
-class ProjectsPanelView : public views::View,
-                          public views::FocusChangeListener,
-                          public views::FocusTraversable,
-                          public gfx::AnimationDelegate {
-  METADATA_HEADER(ProjectsPanelView, views::View)
+// Parent view of the Organizer Panel - holds together the views
+// hierarchy including controls and close action.
+class OrganizerPanelView : public views::View,
+                           public views::FocusChangeListener,
+                           public views::FocusTraversable,
+                           public gfx::AnimationDelegate {
+  METADATA_HEADER(OrganizerPanelView, views::View)
 
  public:
-  ProjectsPanelView(BrowserWindowInterface* browser,
-                    actions::ActionItem* root_action_item,
-                    ProjectsPanelStateController* state_controller);
-  ProjectsPanelView(const ProjectsPanelView&) = delete;
-  ProjectsPanelView& operator=(const ProjectsPanelView&) = delete;
-  ~ProjectsPanelView() override;
+  OrganizerPanelView(BrowserWindowInterface* browser,
+                     actions::ActionItem* root_action_item,
+                     OrganizerPanelStateController* state_controller);
+  OrganizerPanelView(const OrganizerPanelView&) = delete;
+  OrganizerPanelView& operator=(const OrganizerPanelView&) = delete;
+  ~OrganizerPanelView() override;
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  // Called when the projects panel state changes. Updates the visibility and
+  // Called when the organizer panel state changes. Updates the visibility and
   // tooltips to match the new state.
-  void OnProjectsPanelStateChanged(
-      ProjectsPanelStateController* state_controller);
+  void OnOrganizerPanelStateChanged(
+      OrganizerPanelStateController* state_controller);
 
   double GetResizeAnimationValue() const;
 
@@ -87,7 +89,7 @@ class ProjectsPanelView : public views::View,
   void AnimationCanceled(const gfx::Animation* animation) override;
 
   views::View* content_container_for_testing() { return content_container_; }
-  ProjectsPanelControlsView* controls_view_for_testing() {
+  OrganizerPanelControlsView* controls_view_for_testing() {
     return controls_view_;
   }
 
@@ -103,7 +105,7 @@ class ProjectsPanelView : public views::View,
   // Detects if mouse presses occur outside of the panel.
   class MouseEventHandler : public ui::EventObserver {
    public:
-    explicit MouseEventHandler(ProjectsPanelView* owning_view);
+    explicit MouseEventHandler(OrganizerPanelView* owning_view);
     MouseEventHandler(const MouseEventHandler&) = delete;
     MouseEventHandler& operator=(const MouseEventHandler&) = delete;
     ~MouseEventHandler() override;
@@ -111,7 +113,7 @@ class ProjectsPanelView : public views::View,
     void OnEvent(const ui::Event& event) override;
 
    private:
-    raw_ptr<ProjectsPanelView> owning_view_ = nullptr;
+    raw_ptr<OrganizerPanelView> owning_view_ = nullptr;
   };
 
   void ClosePanel(bool caused_by_focus_lost = false);
@@ -120,12 +122,12 @@ class ProjectsPanelView : public views::View,
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
 
   raw_ptr<views::View> content_container_ = nullptr;
-  raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
+  raw_ptr<OrganizerPanelControlsView> controls_view_ = nullptr;
 
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
-  const raw_ptr<ProjectsPanelStateController> state_controller_ = nullptr;
+  const raw_ptr<OrganizerPanelStateController> state_controller_ = nullptr;
 
   // Animation when opening and closing the panel.
   gfx::SlideAnimation resize_animation_;
@@ -139,7 +141,7 @@ class ProjectsPanelView : public views::View,
 
   // The target width of the panel when expanded. Used when vertical tabs is
   // enabled since the panel width needs to match when expanded.
-  int target_width_ = projects_panel::kProjectsPanelMinWidth;
+  int target_width_ = organizer_panel::kOrganizerPanelMinWidth;
 
   // Whether the panel should show with an elevation shadow and rounded borders.
   // The default appearance of the panel is elevated, but this must be false
@@ -147,7 +149,8 @@ class ProjectsPanelView : public views::View,
   bool elevated_ = false;
 
   // Prevents attempting to (un)observe the focus manager more than once if
-  // OnProjectsPanelStateChanged is called twice with the same visibility value.
+  // OnOrganizerPanelStateChanged is called twice with the same visibility
+  // value.
   bool observing_focus_manager_ = false;
 
   // Records the last time the panel was opened. Used for recording how long the
@@ -158,7 +161,7 @@ class ProjectsPanelView : public views::View,
   // restored when the panel is closed.
   views::ViewTracker last_focused_view_before_opening_;
 
-  base::WeakPtrFactory<ProjectsPanelView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OrganizerPanelView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_VIEW_H_

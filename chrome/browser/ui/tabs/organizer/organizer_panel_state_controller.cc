@@ -11,30 +11,30 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 
-DEFINE_USER_DATA(ProjectsPanelStateController);
+DEFINE_USER_DATA(OrganizerPanelStateController);
 
-ProjectsPanelStateController::ProjectsPanelStateController(
+OrganizerPanelStateController::OrganizerPanelStateController(
     BrowserWindowInterface* browser_window,
     actions::ActionItem* root_action_item)
     : root_action_item_(root_action_item),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
-  UpdateProjectsActionItem();
+  UpdateOrganizerActionItem();
 }
 
-ProjectsPanelStateController::~ProjectsPanelStateController() = default;
+OrganizerPanelStateController::~OrganizerPanelStateController() = default;
 
 // static
-ProjectsPanelStateController* ProjectsPanelStateController::From(
+OrganizerPanelStateController* OrganizerPanelStateController::From(
     BrowserWindowInterface* browser_window) {
   return Get(browser_window->GetUnownedUserDataHost());
 }
 
-bool ProjectsPanelStateController::IsProjectsPanelVisible() const {
+bool OrganizerPanelStateController::IsOrganizerPanelVisible() const {
   return is_visible_;
 }
 
-void ProjectsPanelStateController::SetProjectsVisible(bool visible) {
+void OrganizerPanelStateController::SetOrganizerVisible(bool visible) {
   if (is_visible_ == visible) {
     return;
   }
@@ -44,27 +44,27 @@ void ProjectsPanelStateController::SetProjectsVisible(bool visible) {
 }
 
 base::CallbackListSubscription
-ProjectsPanelStateController::RegisterOnStateChanged(
+OrganizerPanelStateController::RegisterOnStateChanged(
     StateChangedCallback callback) {
   return on_state_changed_callback_list_.Add(std::move(callback));
 }
 
-void ProjectsPanelStateController::NotifyStateChanged() {
-  UpdateProjectsActionItem();
+void OrganizerPanelStateController::NotifyStateChanged() {
+  UpdateOrganizerActionItem();
   on_state_changed_callback_list_.Notify(this);
 }
 
-void ProjectsPanelStateController::UpdateProjectsActionItem() {
-  const auto& text = IsProjectsPanelVisible() ? IDS_HIDE_PROJECTS_PANEL
-                                              : IDS_VIEW_PROJECTS_PANEL;
+void OrganizerPanelStateController::UpdateOrganizerActionItem() {
+  const auto& text = IsOrganizerPanelVisible() ? IDS_HIDE_PROJECTS_PANEL
+                                               : IDS_VIEW_PROJECTS_PANEL;
 
-  actions::ActionItem* projects_action =
-      actions::ActionManager::Get().FindAction(kActionToggleProjectsPanel,
+  actions::ActionItem* organizer_action =
+      actions::ActionManager::Get().FindAction(kActionToggleOrganizerPanel,
                                                root_action_item_);
-  if (projects_action) {
-    projects_action->SetText(
+  if (organizer_action) {
+    organizer_action->SetText(
         chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
-    projects_action->SetTooltipText(
+    organizer_action->SetTooltipText(
         chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
   }
 }

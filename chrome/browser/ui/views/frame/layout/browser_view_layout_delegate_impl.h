@@ -49,7 +49,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
       const gfx::Rect& available_titlebar_area) override;
   bool ShouldLayoutTabStrip() const override;
   int GetExtraInfobarOffset() const override;
-  bool IsProjectsPanelVisible() const override;
+  bool IsOrganizerPanelVisible() const override;
 
  protected:
   BrowserView& browser_view() { return browser_view_.get(); }

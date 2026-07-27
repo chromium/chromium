@@ -11,10 +11,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
-class ProjectsPanelStateControllerTest : public testing::Test {
+class OrganizerPanelStateControllerTest : public testing::Test {
  public:
-  ProjectsPanelStateControllerTest() = default;
-  ~ProjectsPanelStateControllerTest() override = default;
+  OrganizerPanelStateControllerTest() = default;
+  ~OrganizerPanelStateControllerTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -24,8 +24,9 @@ class ProjectsPanelStateControllerTest : public testing::Test {
     EXPECT_CALL(mock_browser_window_interface_, GetProfile())
         .WillRepeatedly(testing::Return(&profile_));
 
-    // Action items like ToggleProjectsPanel are tested in interactive ui tests.
-    controller_ = std::make_unique<ProjectsPanelStateController>(
+    // Action items like ToggleOrganizerPanel are tested in interactive ui
+    // tests.
+    controller_ = std::make_unique<OrganizerPanelStateController>(
         &mock_browser_window_interface_, /*root_action_item=*/nullptr);
   }
 
@@ -34,43 +35,43 @@ class ProjectsPanelStateControllerTest : public testing::Test {
     testing::Test::TearDown();
   }
 
-  ProjectsPanelStateController* controller() { return controller_.get(); }
+  OrganizerPanelStateController* controller() { return controller_.get(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<ProjectsPanelStateController> controller_;
+  std::unique_ptr<OrganizerPanelStateController> controller_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
-TEST_F(ProjectsPanelStateControllerTest, Initial) {
-  EXPECT_FALSE(controller()->IsProjectsPanelVisible());
+TEST_F(OrganizerPanelStateControllerTest, Initial) {
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
 }
 
-TEST_F(ProjectsPanelStateControllerTest, ProjectsPanelEnabled) {
-  controller()->SetProjectsVisible(true);
-  EXPECT_TRUE(controller()->IsProjectsPanelVisible());
+TEST_F(OrganizerPanelStateControllerTest, OrganizerPanelEnabled) {
+  controller()->SetOrganizerVisible(true);
+  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
 
-  controller()->SetProjectsVisible(false);
-  EXPECT_FALSE(controller()->IsProjectsPanelVisible());
+  controller()->SetOrganizerVisible(false);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
 }
 
-TEST_F(ProjectsPanelStateControllerTest, Subscription) {
+TEST_F(OrganizerPanelStateControllerTest, Subscription) {
   int call_count = 0;
   auto subscription = controller()->RegisterOnStateChanged(base::BindRepeating(
-      [](int* call_count, ProjectsPanelStateController* controller) {
+      [](int* call_count, OrganizerPanelStateController* controller) {
         (*call_count)++;
-        EXPECT_TRUE(controller->IsProjectsPanelVisible());
+        EXPECT_TRUE(controller->IsOrganizerPanelVisible());
       },
       &call_count));
 
-  controller()->SetProjectsVisible(true);
+  controller()->SetOrganizerVisible(true);
 
-  EXPECT_TRUE(controller()->IsProjectsPanelVisible());
+  EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
   EXPECT_EQ(1, call_count);
 
   // Setting to same value should not trigger a notification.
-  controller()->SetProjectsVisible(true);
+  controller()->SetOrganizerVisible(true);
   EXPECT_EQ(1, call_count);
 }

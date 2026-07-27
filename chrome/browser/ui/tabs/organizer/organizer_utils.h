@@ -7,9 +7,9 @@
 
 class Profile;
 
-namespace projects {
+namespace organizer {
 
-bool IsProjectsPanelEntrypointEnabled(const Profile* profile);
+bool IsOrganizerPanelEntrypointEnabled(const Profile* profile);
 
 }
 

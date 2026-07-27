@@ -7,24 +7,24 @@
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "ui/views/view.h"
 
-ProjectsPanelViewLayout::ProjectsPanelViewLayout(views::View* controls_view)
+OrganizerPanelViewLayout::OrganizerPanelViewLayout(views::View* controls_view)
     : controls_view_(controls_view) {}
 
-ProjectsPanelViewLayout::~ProjectsPanelViewLayout() = default;
+OrganizerPanelViewLayout::~OrganizerPanelViewLayout() = default;
 
-views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
+views::ProposedLayout OrganizerPanelViewLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
 
   // Determine the host size.
   int host_width =
-      size_bounds.width().value_or(projects_panel::kProjectsPanelMinWidth);
+      size_bounds.width().value_or(organizer_panel::kOrganizerPanelMinWidth);
 
-  int x = projects_panel::kProjectsPanelRegionInteriorMargins.left();
-  int y = projects_panel::kProjectsPanelRegionInteriorMargins.top();
+  int x = organizer_panel::kOrganizerPanelRegionInteriorMargins.left();
+  int y = organizer_panel::kOrganizerPanelRegionInteriorMargins.top();
   int width = std::max(
-      0,
-      host_width - projects_panel::kProjectsPanelRegionInteriorMargins.width());
+      0, host_width -
+             organizer_panel::kOrganizerPanelRegionInteriorMargins.width());
 
   int controls_height = 0;
   if (controls_view_ && controls_view_->GetVisible()) {
@@ -36,7 +36,7 @@ views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
 
   int total_height =
       y + controls_height +
-      projects_panel::kProjectsPanelRegionInteriorMargins.bottom();
+      organizer_panel::kOrganizerPanelRegionInteriorMargins.bottom();
 
   int host_height = size_bounds.height().value_or(total_height);
   layout.host_size = gfx::Size(host_width, host_height);

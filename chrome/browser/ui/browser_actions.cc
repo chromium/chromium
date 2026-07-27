@@ -1136,16 +1136,16 @@ void BrowserActions::InitializeChromeMenuActions() {
             .Build());
   }
 
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+  if (tab_groups::IsOrganizerPanelFeatureEnabled()) {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  auto* controller = ProjectsPanelStateController::From(bwi);
+                  auto* controller = OrganizerPanelStateController::From(bwi);
                   if (controller) {
-                    controller->SetProjectsVisible(
-                        !controller->IsProjectsPanelVisible());
+                    controller->SetOrganizerVisible(
+                        !controller->IsOrganizerPanelVisible());
                   }
 
                   // Dismiss the IPH promo if it is currently showing, or abort
@@ -1164,7 +1164,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                   }
                 },
                 bwi))
-            .SetActionId(kActionToggleProjectsPanel)
+            .SetActionId(kActionToggleOrganizerPanel)
             .SetImage(ui::ImageModel::FromVectorIcon(
                 features::IsRoundedIconsEnabled()
                     ? kGridViewIcon
