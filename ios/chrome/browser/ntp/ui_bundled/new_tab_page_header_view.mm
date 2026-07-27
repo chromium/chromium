@@ -95,7 +95,7 @@ constexpr CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
 constexpr CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
-constexpr CGFloat kEndButtonFakeboxWithPlusTrailingSpace = 18.0;
+constexpr CGFloat kEndButtonFakeboxIPadTrailingSpace = 18.0;
 constexpr CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
 constexpr CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
@@ -109,6 +109,7 @@ constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
 constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
 
 // The constants for the search engine image.
+constexpr CGFloat kFakeboxIPadExtraLeadingSpace = 5.0;
 constexpr CGFloat kFakeboxImageLeadingSpace = 13.0;
 constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
 constexpr CGFloat kOmniboxImageLeadingSpace = 22.0;
@@ -648,6 +649,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (CGFloat)fakeboxLeadingSpace {
   if ([self shouldShowPlusButton]) {
     return kFakeboxPlusLeadingSpace;
+  } else if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+    return kFakeboxImageLeadingSpace + kFakeboxIPadExtraLeadingSpace;
   } else {
     return kFakeboxImageLeadingSpace;
   }
@@ -1648,8 +1651,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Adjust the iPad voice button spacing to mirror the leading padding when no
   // other buttons are present.
   BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
-  if ([self shouldShowPlusButton] && !isSplitToolbarMode) {
-    return kEndButtonFakeboxWithPlusTrailingSpace;
+  if (!isSplitToolbarMode) {
+    return kEndButtonFakeboxIPadTrailingSpace;
   }
   // Common trailing space.
   return kEndButtonFakeboxTrailingSpace;
@@ -1702,6 +1705,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (CGFloat)hintLabelFakeboxLeadingSpace {
   if ([self shouldShowPlusButton]) {
     return kHintLabelFakeboxLeadingSpaceWithPlus;
+  } else if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+    return kHintLabelFakeboxLeadingSpaceWithIcon +
+           kFakeboxIPadExtraLeadingSpace;
   } else {
     return kHintLabelFakeboxLeadingSpaceWithIcon;
   }
