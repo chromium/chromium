@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/passwords/infobars/model/ios_chrome_password_saved_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/infobars/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -318,6 +319,30 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)removePasswordInfoBarManualFallback:(BOOL)manual {
   [self removeInfoBarOfType:PasswordInfoBarType::SAVE manual:manual];
   [self removeInfoBarOfType:PasswordInfoBarType::UPDATE manual:manual];
+}
+
+- (void)showPasswordSavedInfoBar {
+  if (!_webState) {
+    return;
+  }
+
+  CHECK(self.profile);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile(self.profile);
+  const std::optional<std::string> accountToStorePassword =
+      password_manager::sync_util::GetAccountForSaving(syncService);
+
+  // This infobar should only be shown when password is being saved to the
+  // account.
+  if (!accountToStorePassword.has_value()) {
+    return;
+  }
+
+  auto delegate = std::make_unique<IOSChromePasswordSavedInfoBarDelegate>(
+      base::UTF8ToUTF16(*accountToStorePassword));
+  auto infobar = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeConfirm,
+                                              std::move(delegate));
+  InfoBarManagerImpl::FromWebState(_webState)->AddInfoBar(std::move(infobar));
 }
 
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.

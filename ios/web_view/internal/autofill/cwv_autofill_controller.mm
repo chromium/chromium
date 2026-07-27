@@ -1241,6 +1241,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                     }];
 }
 
+- (void)showPasswordSavedInfoBar {
+  // No op.
+}
+
 - (void)removePasswordInfoBarManualFallback:(BOOL)manual {
   // No op.
 }

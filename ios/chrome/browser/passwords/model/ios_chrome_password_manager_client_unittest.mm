@@ -15,6 +15,8 @@
 #import "components/device_reauth/mock_device_authenticator.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_delegate.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -23,6 +25,9 @@
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
@@ -34,6 +39,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -92,6 +99,8 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
         base::BindOnce(&MakeMockRouter));
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     reporting_event_router_ = static_cast<MockRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
@@ -299,4 +308,67 @@ TEST_F(IOSChromePasswordManagerClientTest, GetDeviceAuthenticator) {
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       client->GetDeviceAuthenticator();
   EXPECT_TRUE(authenticator);
+}
+
+// Tests that `AutomaticPasswordSave` displays the password saved infobar.
+TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest) {
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  CoreAccountInfo account_info;
+  account_info.email = "user@example.com";
+  sync_service->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+
+  client->AutomaticPasswordSave(nullptr, /*is_update_confirmation=*/false);
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  ASSERT_EQ(infobar_manager->infobars().size(), 1u);
+  EXPECT_EQ(infobar_manager->infobars()[0]->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::PASSWORD_SAVED_INFOBAR_DELEGATE_IOS);
+}
+
+// Tests that `AutomaticPasswordSave` does not display the password saved
+// infobar when `kPasswordSavedInfobar` is disabled.
+TEST_F(IOSChromePasswordManagerClientTest, AutomaticPasswordSaveTest_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kPasswordSavedInfobar);
+
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  CoreAccountInfo account_info;
+  account_info.email = "user@example.com";
+  sync_service->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+
+  client->AutomaticPasswordSave(nullptr, /*is_update_confirmation=*/false);
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
+}
+
+// Tests that `AutomaticPasswordSave` does not display the password saved
+// infobar when the user is signed out.
+TEST_F(IOSChromePasswordManagerClientTest,
+       AutomaticPasswordSaveTest_SignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPasswordSavedInfobar);
+
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  sync_service->SetSignedOut();
+
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+
+  client->AutomaticPasswordSave(nullptr, /*is_update_confirmation=*/false);
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state());
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
 }

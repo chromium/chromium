@@ -52,6 +52,9 @@ using password_manager::CredentialLeakType;
                 formToUpdate
                            manual:(BOOL)manual;
 
+// Shows UI confirming to the user that the password was saved.
+- (void)showPasswordSavedInfoBar;
+
 // Removes the saving/updating password Infobar from the InfobarManager.
 // This also causes the UI to be dismissed.
 - (void)removePasswordInfoBarManualFallback:(BOOL)manual;
