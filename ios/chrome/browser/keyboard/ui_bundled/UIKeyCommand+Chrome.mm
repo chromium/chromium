@@ -26,7 +26,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 #pragma mark - Specific Keyboard Commands
 
 + (UIKeyCommand*)cr_openNewTab {
-  UIImage* image = DefaultSymbolWithConfiguration(kPlusInCircleSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolPlusInCircle, nil);
   return [self cr_commandWithInput:@"t"
                      modifierFlags:Command
                             action:@selector(keyCommand_openNewTab)
@@ -41,7 +41,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoTab {
-  UIImage* image = CustomSymbolWithConfiguration(kIncognitoSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolIncognito, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_openNewIncognitoTab)
@@ -50,7 +50,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openNewWindow {
-  UIImage* image = DefaultSymbolWithConfiguration(kPlusRectangleSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolPlusRectangle, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_openNewWindow)
@@ -59,7 +59,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoWindow {
-  UIImage* image = CustomSymbolWithConfiguration(kIncognitoRectangle, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolIncognitoRectangle, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltShiftCommand
                             action:@selector(keyCommand_openNewIncognitoWindow)
@@ -68,8 +68,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reopenLastClosedTab {
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kArrowUTurnForwardSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowUTurnForward, nil);
   return [self cr_commandWithInput:@"t"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reopenLastClosedTab)
@@ -99,7 +98,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openLocation {
-  UIImage* image = DefaultSymbolWithConfiguration(kGlobeSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolGlobe, nil);
   return [self cr_commandWithInput:@"l"
                      modifierFlags:Command
                             action:@selector(keyCommand_openLocation)
@@ -108,7 +107,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_closeTab {
-  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSquareSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolXMarkSquare, nil);
   return [self cr_commandWithInput:@"w"
                      modifierFlags:Command
                             action:@selector(keyCommand_closeTab)
@@ -117,7 +116,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showNextTab {
-  UIImage* image = DefaultSymbolWithConfiguration(kArrowRightSquareSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowRightSquare, nil);
   UIKeyCommand* keyCommand =
       [self cr_commandWithInput:@"\t"
                   modifierFlags:Control
@@ -129,7 +128,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showPreviousTab {
-  UIImage* image = DefaultSymbolWithConfiguration(kArrowLeftSquareSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowLeftSquare, nil);
   UIKeyCommand* keyCommand =
       [self cr_commandWithInput:@"\t"
                   modifierFlags:ControlShift
@@ -173,7 +172,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showBookmarks {
-  UIImage* image = DefaultSymbolWithConfiguration(kBookmarksSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolBookmarks, nil);
   return [self cr_commandWithInput:@"b"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showBookmarks)
@@ -182,8 +181,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_addToBookmarks {
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kStarLeadingHalfFilledSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolStarLeadingHalfFilled, nil);
   return [self cr_commandWithInput:@"d"
                      modifierFlags:Command
                             action:@selector(keyCommand_addToBookmarks)
@@ -192,7 +190,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reload {
-  UIImage* image = CustomSymbolWithConfiguration(kArrowClockWiseSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowClockWise, nil);
   return [self cr_commandWithInput:@"r"
                      modifierFlags:Command
                             action:@selector(keyCommand_reload)
@@ -203,7 +201,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 + (UIKeyCommand*)cr_back {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
-  UIImage* image = DefaultSymbolWithConfiguration(kArrowLeftSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowLeft, nil);
   return [self cr_commandWithInput:@"["
                      modifierFlags:Command
                             action:@selector(keyCommand_back)
@@ -214,7 +212,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 + (UIKeyCommand*)cr_forward {
   // iOS 15+ supports -[UIKeyCommand allowsAutomaticMirroring], which is true
   // by default. It handles flipping the direction of brackets.
-  UIImage* image = DefaultSymbolWithConfiguration(kArrowRightSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowRight, nil);
   return [self cr_commandWithInput:@"]"
                      modifierFlags:Command
                             action:@selector(keyCommand_forward)
@@ -249,7 +247,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_voiceSearch {
-  UIImage* image = DefaultSymbolWithConfiguration(kMicrophoneSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolMicrophone, nil);
   return [self cr_commandWithInput:@"."
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_voiceSearch)
@@ -268,7 +266,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
   if (@available(iOS 26, *)) {
     titleID = @"IDS_IOS_KEYBOARD_SETTINGS";
   }
-  UIImage* image = DefaultSymbolWithConfiguration(@"gearshape", nil);
+  UIImage* image = SymbolWithConfiguration(SymbolSettings, nil);
   return [self cr_commandWithInput:@","
                      modifierFlags:Command
                             action:@selector(keyCommand_showSettings)
@@ -277,7 +275,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_stop {
-  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolXMark, nil);
   return [self cr_commandWithInput:@"."
                      modifierFlags:Command
                             action:@selector(keyCommand_stop)
@@ -286,7 +284,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showHelp {
-  UIImage* image = DefaultSymbolWithConfiguration(kHelpSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolHelp, nil);
   return [self cr_commandWithInput:@"?"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showHelp)
@@ -295,7 +293,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showDownloads {
-  UIImage* image = DefaultSymbolWithConfiguration(kDownloadSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolDownload, nil);
   return [self cr_commandWithInput:@"l"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showDownloads)
@@ -310,8 +308,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_select1 {
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kArrowLeftToLineSquareSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowLeftToLineSquare, nil);
   UIKeyCommand* keyCommand =
       [self cr_commandWithInput:@"1"
                   modifierFlags:Command
@@ -371,8 +368,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_select9 {
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kArrowRightToLineSquareSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolArrowRightToLineSquare, nil);
   return [self cr_commandWithInput:@"9"
                      modifierFlags:Command
                             action:@selector(keyCommand_select9)
@@ -381,8 +377,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reportAnIssue {
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kExclamationMarkBubbleSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolExclamationMarkBubble, nil);
   return [self cr_commandWithInput:@"i"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reportAnIssue)
@@ -397,7 +392,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_addToReadingList {
-  UIImage* image = DefaultSymbolWithConfiguration(kReadLaterActionSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolReadLaterAction, nil);
   return [self cr_commandWithInput:@"d"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_addToReadingList)
@@ -406,7 +401,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showReadingList {
-  UIImage* image = CustomSymbolWithConfiguration(kReadingListSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolReadingList, nil);
   return [self cr_commandWithInput:@"r"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showReadingList)
@@ -415,7 +410,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_goToTabGrid {
-  UIImage* image = DefaultSymbolWithConfiguration(kTabsSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolTabs, nil);
   return [self cr_commandWithInput:@"\\"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_goToTabGrid)
@@ -424,7 +419,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_clearBrowsingData {
-  UIImage* image = DefaultSymbolWithConfiguration(@"trash", nil);
+  UIImage* image = SymbolWithConfiguration(SymbolTrash, nil);
   return [self cr_commandWithInput:UIKeyInputDelete
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_clearBrowsingData)
@@ -433,7 +428,7 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_closeAll {
-  UIImage* image = DefaultSymbolWithConfiguration(kXMarkSquareFillSymbol, nil);
+  UIImage* image = SymbolWithConfiguration(SymbolXMarkSquareFill, nil);
   return [self cr_commandWithInput:@"w"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_closeAll)
