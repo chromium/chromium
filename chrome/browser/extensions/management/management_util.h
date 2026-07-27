@@ -7,7 +7,8 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC));
+
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/management/management_service.h"
 
@@ -19,6 +20,5 @@ policy::ManagementAuthorityTrustworthiness
 GetHigherManagementAuthorityTrustworthiness(Profile* profile);
 
 }  // namespace extensions
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #endif  // CHROME_BROWSER_EXTENSIONS_MANAGEMENT_MANAGEMENT_UTIL_H_

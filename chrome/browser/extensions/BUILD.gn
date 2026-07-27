@@ -377,8 +377,6 @@ source_set("extensions") {
     "launch_util.cc",
     "launch_util.h",
     "managed_toolbar_pin_mode.h",
-    "management/management_util.cc",
-    "management/management_util.h",
     "menu_icon_loader.h",
     "menu_manager.cc",
     "menu_manager.h",
@@ -743,6 +741,8 @@ source_set("extensions") {
 
   if (is_win || is_mac) {
     sources += [
+      "management/management_util.cc",
+      "management/management_util.h",
       "policy_dse_ntp_override_metrics_reporter.cc",
       "policy_dse_ntp_override_metrics_reporter.h",
     ]

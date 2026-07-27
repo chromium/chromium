@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/management/management_util.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "build/build_config.h"
+
+static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC));
+
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -26,6 +29,5 @@ GetHigherManagementAuthorityTrustworthiness(Profile* profile) {
           ->GetManagementAuthorityTrustworthiness();
   return std::max(platform_trustworthiness, browser_trustworthiness);
 }
-}  // namespace extensions
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}  // namespace extensions
