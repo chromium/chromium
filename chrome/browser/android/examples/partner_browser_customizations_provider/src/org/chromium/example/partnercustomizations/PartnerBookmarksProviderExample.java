@@ -514,9 +514,10 @@ public class PartnerBookmarksProviderExample extends ContentProvider {
 
             /**
              * Builds a URI that points to a specific folder.
+             *
              * @param folderId the ID of the folder to point to
              */
-            public static final Uri buildFolderUri(long folderId) {
+            public static Uri buildFolderUri(long folderId) {
                 return ContentUris.withAppendedId(CONTENT_URI_PARTNER_BOOKMARKS_FOLDER, folderId);
             }
 

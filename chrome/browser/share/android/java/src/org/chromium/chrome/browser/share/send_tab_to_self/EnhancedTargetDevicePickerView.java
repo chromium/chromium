@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
@@ -79,7 +78,7 @@ class EnhancedTargetDevicePickerView extends BottomSheetListViewBase {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.send_tab_to_self_content_description);
     }
 

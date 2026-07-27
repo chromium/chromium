@@ -40,7 +40,7 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
 
     ProcessIdFeedbackSource() {}
 
-    private static final String processTypeToFeedbackKey(String type) {
+    private static String processTypeToFeedbackKey(String type) {
         return "Process IDs (" + type + ")";
     }
 
