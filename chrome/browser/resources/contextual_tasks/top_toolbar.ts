@@ -170,6 +170,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.registerHelpBubble(
         'kContextualTasksWebUIOverflowMenuElementId',
         '#overflowMenuButton');
+    this.registerHelpBubble(
+        'kContextualTasksSuperGButtonElementId', '.top-toolbar-logo');
   }
   // </if>
 

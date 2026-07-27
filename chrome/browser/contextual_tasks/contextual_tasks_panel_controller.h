@@ -131,6 +131,9 @@ class ContextualTasksPanelController {
   // Whether the side panel can expand to full tab.
   virtual bool CanExpandToFullTab() const = 0;
 
+  // Shows the native PageInfo bubble.
+  virtual void ShowPageInfoBubble() = 0;
+
   // Static.
   static ContextualTasksPanelController* From(BrowserWindowInterface* browser);
 };

@@ -987,6 +987,9 @@ void ContextualTasksPageHandler::ShowPageInfoBubble() {
   if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     return;
   }
+  if (panel_controller_) {
+    panel_controller_->ShowPageInfoBubble();
+  }
 }
 
 void ContextualTasksPageHandler::CreateNewThread() {

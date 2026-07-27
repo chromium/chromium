@@ -16,6 +16,7 @@ export function getHtml(this: TopToolbarElement) {
 <div class="top-toolbar-logo-container">
   ${this.isSidePanelRearchitectureEnabled_ ? html`
     <cr-button class="top-toolbar-logo-button clickable"
+        data-element-id="kContextualTasksSuperGButtonElementId"
         @click="${this.onLogoClick_}">
       ${getLogoHtml()}
     </cr-button>

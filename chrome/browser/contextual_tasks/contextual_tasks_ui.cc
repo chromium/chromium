@@ -440,7 +440,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                 kContextualTasksWebUIPinButtonElementId,
                 kContextualTasksWebUIToolbarElementId,
                 kContextualTasksWebUIOverflowMenuElementId,
-                kContextualTasksWebUIOverflowMenuPinButtonElementId});
+                kContextualTasksWebUIOverflowMenuPinButtonElementId,
+                kContextualTasksSuperGButtonElementId});
 }
 
 ContextualTasksUI::~ContextualTasksUI() {

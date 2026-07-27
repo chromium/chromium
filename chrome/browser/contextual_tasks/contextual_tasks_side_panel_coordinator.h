@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
@@ -19,6 +20,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
+#endif
 
 class BrowserWindowInterface;
 class PrefService;
@@ -137,6 +142,7 @@ class ContextualTasksSidePanelCoordinator
   void MoveTaskUiToNewTab() override;
   void NotifyExpandToFullTabStateChanged() override;
   bool CanExpandToFullTab() const override;
+  void ShowPageInfoBubble() override;
 
   // ContextualTasksPanelHost::Observer:
   void OnSurfaceStateChanged(
@@ -294,6 +300,11 @@ class ContextualTasksSidePanelCoordinator
       closing_entry_source_;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/536100150): Support this on Android Desktop
+  WebUIBubbleReopenSuppressor page_info_bubble_suppressor_;
+#endif
 
   base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{
       this};
