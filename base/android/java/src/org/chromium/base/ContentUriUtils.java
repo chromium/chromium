@@ -714,7 +714,7 @@ public abstract class ContentUriUtils {
         }
     }
 
-    public static boolean isUriFromThisApp(@Nullable Uri uri) {
+    public static boolean isUriFromThisApp(Uri uri) {
         return isUriFromThisApp(uri, ContextUtils.getApplicationContext());
     }
 
@@ -726,11 +726,7 @@ public abstract class ContentUriUtils {
      * @param context The context to retrieve package and provider info.
      * @return True if the URI is from the current application, false otherwise.
      */
-    public static boolean isUriFromThisApp(@Nullable Uri uri, Context context) {
-        if (uri == null) return false;
-        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-            return PathUtils.isPathUnderAppDir(uri.toString(), context);
-        }
+    public static boolean isUriFromThisApp(Uri uri, Context context) {
         String authority = uri.getAuthority();
         if (TextUtils.isEmpty(authority)) return false;
 

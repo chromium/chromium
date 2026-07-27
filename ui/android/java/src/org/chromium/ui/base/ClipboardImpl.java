@@ -104,13 +104,16 @@ public class ClipboardImpl extends Clipboard
         try {
             ClipData.Item item = mClipboardManager.getPrimaryClip().getItemAt(0);
 
-            // Reject URIs that point to this app when pasting as text. This prevents malicious
-            // apps from using us to read our own private files via coerceToText().
+            // Reject non-URIs or URIs that point to this app when pasting as text. This prevents
+            // malicious apps from using us to read our own private files via coerceToText().
             if (UiAndroidFeatureMap.isEnabled(
                     UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_TEXT)) {
                 Uri uri = item.getUri();
-                if (item.getText() == null && ContentUriUtils.isUriFromThisApp(uri)) {
-                    return null;
+                if (item.getText() == null && uri != null) {
+                    if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
+                            || ContentUriUtils.isUriFromThisApp(uri)) {
+                        return null;
+                    }
                 }
             }
 
@@ -314,6 +317,9 @@ public class ClipboardImpl extends Clipboard
         // copy operation. Other apps' URIs are bounded by the OS grant model.
         if (UiAndroidFeatureMap.isEnabled(
                 UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_IMAGES)) {
+            if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+                return null;
+            }
             if (ContentUriUtils.isUriFromThisApp(uri)
                     && !uri.equals(getImageUriIfSharedByThisApp())) {
                 return null;
@@ -393,14 +399,16 @@ public class ClipboardImpl extends Clipboard
             ClipData clipData = mClipboardManager.getPrimaryClip();
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 Uri uri = clipData.getItemAt(i).getUri();
-                // Reject URIs originating from this app to prevent the
-                // browser from opening private files on behalf of an untrusted paste request.
-                if (UiAndroidFeatureMap.isEnabled(
-                                UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
-                        && ContentUriUtils.isUriFromThisApp(uri)) {
-                    continue;
-                }
                 if (ContentUriUtils.isOpenableFile(uri)) {
+                    // Reject non-URIs or URIs originating from this app to prevent the
+                    // browser from opening private files on behalf of an untrusted paste request.
+                    if (UiAndroidFeatureMap.isEnabled(
+                            UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
+                        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
+                                || ContentUriUtils.isUriFromThisApp(uri)) {
+                            continue;
+                        }
+                    }
                     String uriString = uri.toString();
                     String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
                     if (displayName == null) {
@@ -423,14 +431,16 @@ public class ClipboardImpl extends Clipboard
             ClipData clipData = mClipboardManager.getPrimaryClip();
             for (int i = 0; i < clipData.getItemCount(); i++) {
                 Uri uri = clipData.getItemAt(i).getUri();
-                // Reject URIs originating from this app to prevent the browser from opening private
-                // files on behalf of an untrusted paste request.
-                if (UiAndroidFeatureMap.isEnabled(
-                                UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
-                        && ContentUriUtils.isUriFromThisApp(uri)) {
-                    continue;
-                }
                 if (ContentUriUtils.isOpenableFile(uri)) {
+                    // Reject non-URIs or URIs originating from this app to prevent the browser from
+                    // opening private iles on behalf of an untrusted paste request.
+                    if (UiAndroidFeatureMap.isEnabled(
+                            UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
+                        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
+                                || ContentUriUtils.isUriFromThisApp(uri)) {
+                            continue;
+                        }
+                    }
                     return true;
                 }
             }

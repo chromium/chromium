@@ -97,51 +97,6 @@ public abstract class PathUtils {
     }
 
     /**
-     * A path is canonical if it starts with a slash, does not contain null, and each component
-     * between slashes is not empty or a single dot (/./) or a double dot (/../).
-     *
-     * @path path Path to test for canonical form.
-     * @return whether the path is in canonical form.
-     */
-    public static boolean isPathCanonical(String path) {
-        if (path == null || path.isEmpty() || path.charAt(0) != '/' || path.indexOf('\0') != -1) {
-            return false;
-        }
-        if (path.equals("/")) {
-            return true;
-        }
-        while (true) {
-            int nextSlash = path.indexOf('/', 1);
-            int endComponent = nextSlash == -1 ? path.length() : nextSlash;
-            String component = path.substring(1, endComponent);
-            if (component.isEmpty() || component.equals(".") || component.equals("..")) {
-                return false;
-            }
-            if (nextSlash == -1) {
-                return true;
-            }
-            path = path.substring(nextSlash);
-        }
-    }
-
-    // TODO(crbug.com/41484704): Merge the Chrome and WebView implementations
-    // of isPathUnderAppDir into one.
-    public static boolean isPathUnderAppDir(String path, Context context) {
-        // Assume path is malicious and return true if path is not canonical.
-        if (!isPathCanonical(path)) {
-            return true;
-        }
-        File dataDir = context.getDataDir();
-        File externalDir = ContextUtils.getApplicationContext().getExternalFilesDir(null);
-        // Assume that dataDir and externalDir are already canonical paths and do simple
-        // String.startsWith() checks.  Also assume that the path input is not a symlink that clank
-        // will resolve to an internal file. Avoid File.getCanonicalPath() which blocks, or
-        // Path.getRealPath() which blocks and throws for non-existent paths.
-        return path.startsWith(dataDir.toString())
-                || (externalDir != null && path.startsWith(externalDir.toString()));
-    }
-
-    /**
      * Fetch the path of the directory where private data is to be stored by the application. This
      * is meant to be called in an FutureTask in setPrivateDataDirectorySuffix(), but if we need the
      * result before the FutureTask has had a chance to finish, then it's best to cancel the task

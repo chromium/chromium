@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.view.DragEvent;
@@ -30,8 +29,6 @@ import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.Surface;
 import android.view.View;
-
-import androidx.test.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,9 +47,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.util.MotionEventUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 /** Tests logic in the {@link EventForwarder} class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -289,25 +284,20 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"image/jpeg", "text/plain"},
                 new ClipData.Item[] {
-                    new ClipData.Item(Uri.parse("/foo/image.jpg")),
-                    new ClipData.Item(Uri.parse("/foo/hello.txt"))
+                    new ClipData.Item(Uri.parse("content://com.pkg/foo/image.jpg")),
+                    new ClipData.Item(Uri.parse("content://com.pkg/foo/hello.txt"))
                 },
                 /* expectedFilenames= */ new String[][] {
-                    {"/foo/image.jpg", ""}, {"/foo/hello.txt", ""}
+                    {"content://com.pkg/foo/image.jpg", ""}, {"content://com.pkg/foo/hello.txt", ""}
                 },
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
                 /* expectedUrl= */ null);
 
-        // Internal Files disallowed.
-        Context context = InstrumentationRegistry.getTargetContext();
-        File fileUnderDataDir = new File(context.getDataDir(), "test.txt");
-        Files.writeString(fileUnderDataDir.toPath(), "file content");
+        // Non content-URIs disallowed.
         validateDragDropEvent(
                 new String[] {"text/plain"},
-                new ClipData.Item[] {
-                    new ClipData.Item(Uri.parse(fileUnderDataDir.getAbsolutePath())),
-                },
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("/foo/image.jpg"))},
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
