@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/service_worker_registration_information.h"
@@ -139,6 +140,18 @@ void DidStartWorker(
     return;
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
+  if (!RenderProcessHost::FromID(instance->process_id())) {
+    // No live RenderProcessHost backs the process id this worker reports, even
+    // though the start resolved successfully. There is no usable process to run
+    // the worker, so reporting success would be wrong. Resolve the start as a
+    // failure instead. This is the proper fix for crbug.com/536945271:
+    // the service worker layer must not deliver a start "success" with a
+    // process that is already gone.
+    std::move(failure_callback)
+        .Run(StatusCodeResponse{
+            .status_code = blink::ServiceWorkerStatusCode::kErrorAbort});
+    return;
+  }
   std::move(info_callback)
       .Run(version->version_id(), instance->process_id(), instance->thread_id(),
            version->worker_host()->token());

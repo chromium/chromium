@@ -12,7 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
+#include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -24,9 +27,11 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_types.h"
@@ -697,6 +702,77 @@ TEST_F(ServiceWorkerContextTest, Register) {
                      blink::ServiceWorkerStatusCode::kOk,
                      false /* expect_waiting */, true /* expect_active */));
   base::RunLoop().RunUntilIdle();
+}
+
+// When the worker's render process has already gone away, StartWorkerForScope
+// must resolve as a failure rather than delivering a "started" callback
+// carrying a process id whose render process is gone. Regression test for
+// crbug.com/536945271.
+TEST_F(ServiceWorkerContextTest, StartWorkerForScopeFailsWhenProcessGone) {
+  GURL scope("https://www.example.com/");
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope));
+  GURL script_url("https://www.example.com/service_worker.js");
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = scope;
+
+  helper_->AddNewPendingInstanceClient<RecordableEmbeddedWorkerInstanceClient>(
+      helper_.get());
+  helper_->AddNewPendingServiceWorker<InstallActivateWorker>(helper_.get());
+
+  int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
+  bool registered = false;
+  context()->RegisterServiceWorker(
+      script_url, key, options, CreateFetchClientSettingsObject(),
+      MakeRegisteredCallback(&registered, &registration_id),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return registered; }));
+  ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context()->GetLiveRegistration(registration_id);
+  ASSERT_TRUE(registration);
+  ServiceWorkerVersion* version = registration->active_version();
+  ASSERT_TRUE(version);
+
+  // Activation leaves the worker idle. Drive it to kRunning so that
+  // StartWorkerForScope takes the synchronous already-running branch in
+  // ServiceWorkerVersion::RunAfterStartWorker.
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, StartServiceWorker(version));
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  const ChildProcessId process_id = version->embedded_worker()->process_id();
+  ASSERT_TRUE(RenderProcessHost::FromID(process_id));
+
+  // Unregister the render process host from the global registry, so
+  // RenderProcessHost::FromID() returns null while the version still reports
+  // kRunning.
+  helper_->mock_render_process_host()->Cleanup();
+  ASSERT_FALSE(RenderProcessHost::FromID(process_id));
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  bool success_called = false;
+  bool failure_called = false;
+  blink::ServiceWorkerStatusCode failure_status =
+      blink::ServiceWorkerStatusCode::kOk;
+  context_wrapper()->StartWorkerForScope(
+      scope, key,
+      base::BindLambdaForTesting(
+          [&](int64_t, ChildProcessId, int, const blink::ServiceWorkerToken&) {
+            success_called = true;
+          }),
+      base::BindLambdaForTesting([&](StatusCodeResponse response) {
+        failure_called = true;
+        failure_status = response.status_code;
+      }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return success_called || failure_called; }));
+
+  // The regression check - the failure callback should be called in this case.
+  EXPECT_FALSE(success_called);
+  EXPECT_TRUE(failure_called);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, failure_status);
 }
 
 // Test registration when the service worker rejects the install event. The
