@@ -67,6 +67,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsFetchCompleted() const override;
   bool IsMovableToAccountStore() const override;
   void Save() override;
+  bool IsPasswordUpdate() const override;
   bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const override;
   void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
   void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
@@ -163,6 +164,12 @@ bool PasswordDataForUI::IsMovableToAccountStore() const {
 
 void PasswordDataForUI::Save() {
   bubble_interaction_cb_.Run(true, pending_form_);
+}
+
+bool PasswordDataForUI::IsPasswordUpdate() const {
+  // A generated password can cause a password update, but that is handled in a
+  // different UI.
+  return false;
 }
 
 bool PasswordDataForUI::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()

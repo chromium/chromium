@@ -156,6 +156,8 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 bool IsSavingBlockedByTrustedVaultError(
     const password_manager::PasswordManagerClient* client,
     const password_manager::PasswordFormManagerForUI* form_manager) {
+  // If the user disabled password syncing the passwords will be saved locally,
+  // and saving should not be blocked by trusted vault errors in this case.
   if (!password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
     return false;
@@ -169,6 +171,16 @@ bool IsSavingBlockedByTrustedVaultError(
          base::FeatureList::IsEnabled(
              password_manager::features::kPasswordSaveInContextErrorResolution);
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // The updates of the locally stored passwords should not be blocked by
+  // trusted vault errors.
+  // TODO(crbug.com/538573597): Allow updating locally saved passwords despite
+  // the trusted vault error on Android.
+  // TODO(crbug.com/538569490): Allow updating locally saved passwords despite
+  // the trusted vault error on iOS.
+  if (form_manager->IsPasswordUpdate() &&
+      !form_manager->IsUpdateAffectingPasswordsStoredInTheGoogleAccount()) {
+    return false;
+  }
   bool has_trusted_vault_error = false;
   bool has_other_blocking_errors = false;
   // It might be that the credential is updated in both stores. In this case

@@ -968,6 +968,18 @@ TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
 
   EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&client_, &form_manager));
 }
+
+TEST_F(PasswordManagerUtilTrustedVaultErrorPreventsFromSavingTest,
+       IsSavingBlockedByTrustedVaultError_LocalPasswordUpdate) {
+  testing::NiceMock<password_manager::MockPasswordFormManagerForUI>
+      form_manager;
+  EXPECT_CALL(form_manager, IsPasswordUpdate()).WillRepeatedly(Return(true));
+  EXPECT_CALL(form_manager,
+              IsUpdateAffectingPasswordsStoredInTheGoogleAccount())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_FALSE(IsSavingBlockedByTrustedVaultError(&client_, &form_manager));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

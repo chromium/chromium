@@ -70,6 +70,9 @@ class PasswordFormManagerForUI {
   // Handles save-as-new or update of the form managed by this manager.
   virtual void Save() = 0;
 
+  // Returns true if the current UI represents a password update.
+  virtual bool IsPasswordUpdate() const = 0;
+
   // This method returns true if the current "update" is to a password that is
   // saved in Google Account.
   virtual bool IsUpdateAffectingPasswordsStoredInTheGoogleAccount() const = 0;
