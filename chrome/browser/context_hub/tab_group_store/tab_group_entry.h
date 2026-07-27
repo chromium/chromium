@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace context_hub {
@@ -32,6 +33,12 @@ struct TabGroupEntry {
 
   // Fully resolved tab objects for UI presentation.
   std::vector<TabData> tabs;
+
+  // Timestamp when a tab within this group was activated or when created/modified.
+  base::Time last_accessed_timestamp;
+
+  // Timestamp when the group was initially created.
+  base::Time created_timestamp;
 };
 
 }  // namespace context_hub

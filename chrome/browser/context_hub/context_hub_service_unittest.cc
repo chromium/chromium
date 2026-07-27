@@ -264,8 +264,11 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
       stored_groups_future.GetCallback());
   EXPECT_THAT(
       stored_groups_future.Get(),
-      ElementsAre(FieldsAre("group_1", "Group 1", ElementsAre(1, 2), _),
-                  FieldsAre("group_2", "Group 2", ElementsAre(3, 4), _)));
+      ElementsAre(
+          FieldsAre("group_1", "Group 1", ElementsAre(1, 2), _,
+                    testing::Ne(base::Time()), testing::Ne(base::Time())),
+          FieldsAre("group_2", "Group 2", ElementsAre(3, 4), _,
+                    testing::Ne(base::Time()), testing::Ne(base::Time()))));
 }
 
 TEST_F(ContextHubServiceTest, GroupTabs_MESError) {

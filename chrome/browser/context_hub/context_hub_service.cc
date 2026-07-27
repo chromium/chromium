@@ -214,6 +214,8 @@ void ContextHubService::HandleModelExecutionResult(
     if (valid_tab_ids.size() >= 2) {
       TabGroupEntry entry;
       entry.label = group_proto.label();
+      entry.created_timestamp = base::Time::Now();
+      entry.last_accessed_timestamp = entry.created_timestamp;
       for (int32_t tab_id : valid_tab_ids) {
         entry.tab_ids.push_back(tab_id);
         if (tab_index_map.contains(tab_id)) {

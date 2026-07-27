@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
 
@@ -28,8 +29,25 @@ class InMemoryTabGroupStore : public TabGroupStore {
   void AddAllGroups(std::vector<TabGroupEntry> groups,
                     OperationCallback callback) override;
   void DeleteAllGroups(OperationCallback callback) override;
+  void AddOrUpdateGroup(TabGroupEntry group,
+                        OperationCallback callback) override;
+  void DeleteGroup(const std::string& group_id,
+                   OperationCallback callback) override;
+  void PruneTabFromAllGroups(int64_t tab_id,
+                             OperationCallback callback) override;
+  void AddTabToGroup(const std::string& group_id,
+                     int64_t tab_id,
+                     OperationCallback callback) override;
+  void UpdateGroupTimestampForTab(int64_t tab_id,
+                                  base::Time timestamp,
+                                  OperationCallback callback) override;
 
  private:
+  // Defensive check utility to check and remove tab_ids from any OTHER existing
+  // groups to ensure a tab belongs to only one group.
+  void PruneTabsFromOtherGroups(base::span<const int64_t> tab_ids,
+                                const std::string& excluded_group_id);
+
   base::LRUCache<std::string, TabGroupEntry> groups_;
   int64_t next_group_id_ = 1;
 };
