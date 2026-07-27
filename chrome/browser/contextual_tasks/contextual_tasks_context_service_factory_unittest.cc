@@ -47,6 +47,28 @@ TEST_F(ContextualTasksContextServiceFactoryTest, CreatesServiceForProfile) {
       ContextualTasksContextServiceFactory::GetForProfile(profile.get());
   EXPECT_NE(nullptr, service);
 }
+
+// Regression test for a crash: when the OptimizationGuideKeyedService is
+// unavailable (e.g. --disable-features=OptimizationHints), the factory must
+// not build the service. Otherwise ContextualTasksContextService hands a null
+// OptimizationGuideModelProvider to the optimization_guide::ModelHandler
+// constructor, which dereferences it and crashes in release builds.
+TEST_F(ContextualTasksContextServiceFactoryTest,
+       DoesNotCreateServiceWhenOptimizationGuideUnavailable) {
+  feature_list_.InitWithFeatures(
+      {kContextualTasksContext, passage_embeddings::kPassageEmbedder}, {});
+  TestingProfile::Builder builder;
+  // No OptimizationGuideKeyedService for this profile.
+  builder.AddTestingFactory(
+      OptimizationGuideKeyedServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> { return nullptr; }));
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  ContextualTasksContextService* service =
+      ContextualTasksContextServiceFactory::GetForProfile(profile.get());
+  EXPECT_EQ(nullptr, service);
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ContextualTasksContextServiceFactoryTest,

@@ -75,10 +75,10 @@ class ModelHandler : public OptimizationTargetModelObserver {
         optimization_target_(optimization_target),
         model_executor_(std::move(model_executor)),
         model_task_runner_(model_task_runner) {
-    DCHECK(model_provider_);
-    DCHECK(model_executor_);
-    DCHECK_NE(optimization_target_,
-              proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
+    CHECK(model_provider_);
+    CHECK(model_executor_);
+    CHECK_NE(optimization_target_,
+             proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
     base::UmaHistogramBoolean(
         base::StrCat(
