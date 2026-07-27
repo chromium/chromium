@@ -8,9 +8,42 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace {
+
+class V5TestingDatabaseManager : public MockSafeBrowsingDatabaseManager {
+ public:
+  V5TestingDatabaseManager() = default;
+
+  bool CheckBrowseUrl(const GURL& gurl,
+                      const safe_browsing::SBThreatTypeSet& threat_types,
+                      Client* client,
+                      safe_browsing::CheckBrowseUrlType check_type) override {
+    if (client) {
+      v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+    }
+    return MockSafeBrowsingDatabaseManager::CheckBrowseUrl(gurl, threat_types,
+                                                           client, check_type);
+  }
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+  v5_manager_from_client() const {
+    return v5_manager_from_client_;
+  }
+
+ private:
+  ~V5TestingDatabaseManager() override = default;
+
+  base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+      v5_manager_from_client_;
+};
+
+}  // namespace
 
 class AutoPictureInPictureSafeBrowsingCheckerClientTest
     : public ::testing::Test {
@@ -25,8 +58,8 @@ class AutoPictureInPictureSafeBrowsingCheckerClientTest
 
     safe_browsing_check_client_ =
         std::make_unique<AutoPictureInPictureSafeBrowsingCheckerClient>(
-            mock_database_manager(), kSafeBrowsingCheckDelay,
-            report_url_safety_cb().Get());
+            mock_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+            kSafeBrowsingCheckDelay, report_url_safety_cb().Get());
   }
 
   void TearDown() override { mock_database_manager_.reset(); }
@@ -62,8 +95,8 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest, InvalidDelay) {
   EXPECT_DEATH_IF_SUPPORTED(
       std::ignore =
           std::make_unique<AutoPictureInPictureSafeBrowsingCheckerClient>(
-              mock_database_manager(), base::Milliseconds(1),
-              report_url_safety_cb().Get()),
+              mock_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr,
+              base::Milliseconds(1), report_url_safety_cb().Get()),
       "");
 }
 #endif  // DCHECK_IS_ON()
@@ -88,11 +121,33 @@ TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
 }
 
 TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
+       GetV5GetHashProtocolManager) {
+  scoped_refptr<V5TestingDatabaseManager> v5_db_manager =
+      base::MakeRefCounted<V5TestingDatabaseManager>();
+
+  safe_browsing::V5GetHashProtocolManager v5_protocol_manager(
+      /*url_loader_factory=*/nullptr,
+      safe_browsing::V4ProtocolConfig("test", false, "key", "1.0"),
+      /*cache=*/nullptr);
+
+  AutoPictureInPictureSafeBrowsingCheckerClient client(
+      v5_db_manager, v5_protocol_manager.GetWeakPtr(), kSafeBrowsingCheckDelay,
+      report_url_safety_cb().Get());
+
+  EXPECT_EQ(client.GetV5GetHashProtocolManager().get(), &v5_protocol_manager);
+
+  client.CheckUrlSafety(kPageUrl);
+
+  EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
+            &v5_protocol_manager);
+}
+
+TEST_F(AutoPictureInPictureSafeBrowsingCheckerClientTest,
        CheckPerformedSynchronously) {
   MockSafeBrowsingDatabaseManager::ScopedSimulateSafeSynchronousResponse
       synchronous_response_scope =
           mock_database_manager()->CreateSimulateSafeSynchronousResponseScope(
-              true);
+              /*simulate_safe_synchronous_response=*/true);
   EXPECT_TRUE(mock_database_manager()->SimulateSafeSynchronousResponse());
 
   EXPECT_CALL(report_url_safety_cb(), Run(true));

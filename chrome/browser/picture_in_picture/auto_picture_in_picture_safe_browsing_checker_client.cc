@@ -5,16 +5,20 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 AutoPictureInPictureSafeBrowsingCheckerClient::
     AutoPictureInPictureSafeBrowsingCheckerClient(
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
+        base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+            v5_get_hash_protocol_manager,
         base::TimeDelta safe_browsing_check_delay,
         ReportUrlSafetyCb report_url_safety_cb)
     : safe_browsing::SafeBrowsingDatabaseManager::Client(GetPassKey()),
       database_manager_(database_manager),
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
       safe_browsing_check_delay_(safe_browsing_check_delay),
       report_url_safety_cb_(std::move(report_url_safety_cb)),
       threat_types_(safe_browsing::CreateSBThreatTypeSet(
@@ -101,4 +105,9 @@ void AutoPictureInPictureSafeBrowsingCheckerClient::OnCheckBlocklistTimeout() {
 
   database_manager_->CancelCheck(this);
   report_url_safety_cb_.Run(false);
+}
+
+base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
+AutoPictureInPictureSafeBrowsingCheckerClient::GetV5GetHashProtocolManager() {
+  return v5_get_hash_protocol_manager_;
 }

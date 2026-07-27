@@ -38,6 +38,8 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
+#include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #endif
 
 using OcclusionState =
@@ -809,9 +811,16 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
   if (!safe_browsing_checker_client_) {
     // Create the AutoPiP safe browsing checker client, which will be used for
     // determining URL safety.
+    auto* v5_manager =
+        (web_contents() && web_contents()->GetBrowserContext())
+            ? safe_browsing::V5GetHashProtocolManagerFactory::
+                  GetForBrowserContext(web_contents()->GetBrowserContext())
+            : nullptr;
     safe_browsing_checker_client_ = std::make_unique<
         AutoPictureInPictureSafeBrowsingCheckerClient>(
         g_browser_process->safe_browsing_service()->database_manager().get(),
+        v5_manager ? v5_manager->GetWeakPtr()
+                   : /*v5_get_hash_protocol_manager=*/nullptr,
         kSafeBrowsingCheckDelay,
         base::BindRepeating(&AutoPictureInPictureTabHelper::OnUrlSafetyResult,
                             async_tasks_weak_factory_.GetWeakPtr()));

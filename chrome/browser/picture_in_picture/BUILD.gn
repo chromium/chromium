@@ -108,6 +108,7 @@ source_set("impl") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/permissions",
+    "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/buildflags",
@@ -224,6 +225,7 @@ source_set("unit_tests") {
       "//chrome/browser",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/safety_hub:test_support",
+      "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
       "//components/unified_consent",
       "//ui/events:test_support",
     ]
