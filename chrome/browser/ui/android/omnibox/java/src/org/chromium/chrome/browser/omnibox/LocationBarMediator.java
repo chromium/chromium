@@ -2474,6 +2474,11 @@ class LocationBarMediator
     }
 
     private void onAutocompleteStateChanged(@AutocompleteState int state) {
+        if (state == AutocompleteState.ENABLED) {
+            mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.WRAPPING);
+        } else {
+            mSelectionController.setSelectionMode(LocationBarSelectionController.Mode.SATURATING);
+        }
         updateShowStandbyRing();
         updateReparentingState();
     }
@@ -2662,14 +2667,14 @@ class LocationBarMediator
         }
 
         if (isBackwardsTab) {
-            mSelectionController.selectPreviousItem();
+            if (!mSelectionController.selectPreviousItem()) return false;
             if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved backwards to the autocomplete list. The last item of that list
                 // should be selected.
                 mAutocompleteCoordinator.selectLastItem();
             }
         } else if (isForwardTab) {
-            mSelectionController.selectNextItem();
+            if (!mSelectionController.selectNextItem()) return false;
             if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved forwards to the autocomplete list. The first item of that list
                 // should be selected.
