@@ -475,7 +475,22 @@ void ReadAnythingAppController::OnDestruct() {
 
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
-  if (tree->GetAXTreeID() != model_.active_tree_id()) {
+  // Node deletions are ignored for Readability because the Readability panel
+  // renders a static HTML snapshot and does not dynamically update its content
+  // on individual node deletions. The static DOM-to-AX mapping is still used
+  // for selection/links/read aloud:
+  // - Selection: If the deleted node is inside the selection range, selection
+  //   works normally. If the deleted node is the start or end of the selection,
+  //   the renderer's OnSelectionChange returns early and selection sync is
+  //   skipped.
+  // - Links: The browser ignores click events on non-existent node IDs.
+  // - Read Aloud: Text remains in the side panel's DOM and continues to be
+  //   read.
+  // TODO(crbug.com/538746675): Investigate whether this and the readability
+  // check in OnNodeDeleted are the right solution or if it impacts selection
+  // too much.
+  if (model_.is_readability_next_distillation_method() ||
+      tree->GetAXTreeID() != model_.active_tree_id()) {
     return;
   }
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
@@ -490,8 +505,8 @@ void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
 
 void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
                                               ui::AXNodeID node_id) {
-  // Ignore node deletions for Readability as there is no mapping to the
-  // AXTree for this distillation method.
+  // Node deletions are ignored for Readability because the Readability panel
+  // renders a static HTML snapshot and does not dynamically update its content.
   if (model_.is_readability_next_distillation_method()) {
     return;
   }
@@ -811,6 +826,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   ax_tree_ready_for_current_active_tree_measured_ = false;
   ax_tree_ready_for_current_active_tree_recorded_ = false;
   active_tree_changed_start_time_ = base::TimeTicks::Now();
+  waiting_for_tree_id_ = false;
 
   // If the previous tree was not unknown (e.g. this is not the first tree
   // seen), log session metrics for the previous tree.
@@ -827,7 +843,9 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.SetRootTreeId(tree_id);
   model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
   model_.set_is_pdf(is_pdf);
-  if (is_pdf && !IsHidden()) {
+  // Reset the PDF draw timer (even if RM is hidden). The debouncer will check
+  // the state of RM at that point again and only act if it's still relevant.
+  if (is_pdf) {
     pdf_draw_debouncer_->Reset();
   }
 
@@ -1108,7 +1126,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     return;
   }
   // Reset state, including the current side panel selection so we can update
-  // it based on the new main panel selection in PostProcessSelection below.ona
+  // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
   read_aloud_model_.ResetReadAloudState();
 
