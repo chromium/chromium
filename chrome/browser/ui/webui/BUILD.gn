@@ -80,6 +80,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/interstitials",
     "//chrome/browser/ui/webui/local_state",
     "//chrome/browser/ui/webui/location_internals",
+    "//chrome/browser/ui/webui/management",
     "//chrome/browser/ui/webui/media",
     "//chrome/browser/ui/webui/metrics_internals",
     "//chrome/browser/ui/webui/net_internals",
@@ -280,7 +281,6 @@ source_set("configs") {
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
     deps += [
       "//chrome/browser/ui/webui/discards",
-      "//chrome/browser/ui/webui/management",
     ]
   }
 

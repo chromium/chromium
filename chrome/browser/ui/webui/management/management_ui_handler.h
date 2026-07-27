@@ -17,13 +17,17 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 class Extension;
 }  // namespace extensions
+#endif
 
 namespace policy {
 class PolicyService;
@@ -51,7 +55,9 @@ class Profile;
 
 // The JavaScript message handler for the chrome://management page.
 class ManagementUIHandler : public content::WebUIMessageHandler,
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
                             public extensions::ExtensionRegistryObserver,
+#endif
                             public policy::PolicyService::Observer {
  public:
   explicit ManagementUIHandler(Profile* profile);
@@ -135,12 +141,14 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void NotifyBrowserReportingInfoUpdated();
   void NotifyProfileReportingInfoUpdated();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // extensions::ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
+#endif
 
   // policy::PolicyService::Observer
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -159,7 +167,9 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
 
   PrefChangeRegistrar pref_registrar_;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::set<extensions::ExtensionId> reporting_extension_ids_;
+#endif
 
   // List of observers for promotion eligibility.
   base::ObserverList<ManagementPromotionObserver>

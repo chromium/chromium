@@ -9,24 +9,22 @@ import type {ManagementUiElement} from './management_ui.js';
 export function getHtml(this: ManagementUiElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<if expr="not is_android">
 <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
     @search-changed="${this.onSearchChanged_}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}">
-  <if expr="is_android">
-    <!-- Android doesn't have full theme support; workaround for broken logo. -->
-    <picture slot="product-logo">
-      <img srcset="images/product_logo.png" role="presentation">
-    </picture>
-  </if>
 </cr-toolbar>
+</if>
 <main id="mainContent" class="cr-scrollable">
   <div class="cr-scrollable-top-shadow"></div>
   <div class="cr-centered-card-container">
     <div class="card">
       <section ?hidden="${!this.managed_}" class="page-subtitle">
+<if expr="not is_android">
         <cr-icon-button class="icon-arrow-back" id="closeButton"
             @click="${this.onBackClick_}" aria-label="$i18n{backButton}">
         </cr-icon-button>
+</if>
         <h2 class="cr-title-text">${this.subtitle_}</h2>
       </section>
       ${this.shouldShowPromotion_ ? html`

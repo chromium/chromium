@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -165,40 +166,51 @@ public class NativePageTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
-    public void testManagementNativePageType_FeatureDisabled() {
+    @DisableFeatures({
+        ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING,
+        ChromeFeatureList.MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE
+    })
+    public void testManagementPage_Mobile_FeatureDisabled() {
+        if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
+            return;
+        }
         GURL url = new GURL("chrome://management");
         Assert.assertEquals(
-                "Management page should be a native page when feature is disabled",
+                "Management page should be native on mobile when feature is disabled",
                 NativePageType.MANAGEMENT,
                 NativePage.nativePageType(url, null, false, false, false));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
-    public void testManagementNativePageType_FeatureEnabled() {
-        GURL url = new GURL("chrome://management");
-        Assert.assertEquals(
-                "Management page should NOT be a native page when feature is enabled",
-                NativePageType.NONE,
-                NativePage.nativePageType(url, null, false, false, false));
+        Assert.assertTrue(
+                "isNativePageUrl should be true on mobile when feature is disabled",
+                NativePage.isNativePageUrl(url, false, false));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
-    public void testIsNativePageUrl_Management_FeatureDisabled() {
+    @EnableFeatures(ChromeFeatureList.MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE)
+    public void testManagementPage_Mobile_FeatureEnabled() {
+        if (ExtensionsBuildflags.ENABLE_EXTENSIONS_CORE) {
+            return;
+        }
         GURL url = new GURL("chrome://management");
-        Assert.assertTrue(
-                "isNativePageUrl should be true for management host when feature is disabled",
+        Assert.assertEquals(
+                "Management page should be WebUI on mobile when feature is enabled",
+                NativePageType.NONE,
+                NativePage.nativePageType(url, null, false, false, false));
+        Assert.assertFalse(
+                "isNativePageUrl should be false on mobile when feature is enabled",
                 NativePage.isNativePageUrl(url, false, false));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
-    public void testIsNativePageUrl_Management_FeatureEnabled() {
+    public void testManagementPage_Desktop() {
         GURL url = new GURL("chrome://management");
+        Assert.assertEquals(
+                "Management page should be WebUI on desktop",
+                NativePageType.NONE,
+                NativePage.nativePageType(url, null, false, false, false));
         Assert.assertFalse(
-                "isNativePageUrl should be false for management host when feature is enabled",
+                "isNativePageUrl should be false on desktop",
                 NativePage.isNativePageUrl(url, false, false));
     }
 }

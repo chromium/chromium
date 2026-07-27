@@ -523,6 +523,8 @@ public abstract class ChromeFeatureList {
     public static final String MALICIOUS_APK_DOWNLOAD_CHECK = "MaliciousApkDownloadCheck";
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
+    public static final String MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE =
+            "MigrateManagementPageToWebUIOnMobile";
     public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER =
@@ -1075,6 +1077,11 @@ public abstract class ChromeFeatureList {
                     MALICIOUS_APK_DOWNLOAD_CHECK,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sMigrateManagementToWebUIOnMobile =
+            newCachedFlag(
+                    MIGRATE_MANAGEMENT_TO_WEBUI_ON_MOBILE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(
                     MOST_VISITED_TILES_CUSTOMIZATION,
@@ -1382,6 +1389,7 @@ public abstract class ChromeFeatureList {
                     sLockTopControlsOnLargeTabletsV2,
                     sLogoViewRefactor,
                     sMaliciousApkDownloadCheck,
+                    sMigrateManagementToWebUIOnMobile,
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
                     sMoveToFrontInLaunchIntentDispatcher,

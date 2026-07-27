@@ -1121,7 +1121,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_desktop_android) {
+  if (is_android) {
     allow_circular_includes_from += [
       # management includes headers from //chrome/browser/ui (e.g. managed_ui.h)
       # that can't be split out yet.
@@ -3257,10 +3257,11 @@ static_library("ui") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    deps += [
-      "//chrome/browser/ui/webui/discards",
-      "//chrome/browser/ui/webui/management",
-    ]
+    deps += [ "//chrome/browser/ui/webui/discards" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
+    deps += [ "//chrome/browser/ui/webui/management" ]
   }
 
   if (!is_android) {

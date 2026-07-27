@@ -217,9 +217,12 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/ui/webui/extensions",
-      "//chrome/browser/ui/webui/management",
       "//extensions/common",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
+    deps += [ "//chrome/browser/ui/webui/management" ]
   }
 
   if (enable_background_mode) {

@@ -55,8 +55,11 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#endif
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1679,6 +1682,7 @@ TEST_F(ManagementUIHandlerTests, HideDeskSyncCookiesNotice) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
   ResetTestConfig();
   ASSERT_TRUE(SetUpProfileAndHandler());
@@ -1686,6 +1690,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
       handler_.GetReportingInfo(/*can_collect_signals=*/false);
   EXPECT_EQ(reporting_info.size(), 0u);
 }
+#endif
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   ResetTestConfig();
@@ -1705,8 +1710,11 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin};
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+      kManagementExtensionReportExtensionsPlugin
+#endif
+  };
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   expected_messages.insert(kManagementExtensionReportVisitedUrl);
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1727,7 +1735,10 @@ TEST_F(ManagementUIHandlerTests, CloudProfileReportingPolicy) {
 
   std::set<std::string> expected_messages = {
       kProfileReportingOverview, kProfileReportingUsername,
-      kProfileReportingBrowser,  kProfileReportingExtension,
+      kProfileReportingBrowser,
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+      kProfileReportingExtension,
+#endif
       kProfileReportingPolicy,   kProfileReportingLearnMore};
 
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
@@ -1793,6 +1804,7 @@ TEST_F(ManagementUIHandlerTests, LegacyTechReport) {
                       expected_messages);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   ResetTestConfig();
   ASSERT_TRUE(SetUpProfileAndHandler());
@@ -1847,15 +1859,14 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportUserBrowsingData,
       kManagementExtensionReportPerfCrash,
       kManagementLegacyTechReport};
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   expected_messages.insert(kManagementExtensionReportVisitedUrl);
-#endif
 
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetReportingInfo(/*can_collect_signals=*/false),
                       expected_messages);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
@@ -1878,7 +1889,6 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
 }
 #endif
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   policy::PolicyMap chrome_policies;
   const policy::PolicyNamespace chrome_policies_namespace =
@@ -1901,14 +1911,18 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       base::UTF8ToUTF16(*info.FindString("description")));
 
   // When policies are set to uninteresting values, nothing to report.
+#if !BUILDFLAG(IS_ANDROID)
   SetConnectorPolicyValue(policy::key::kOnFileAttachedEnterpriseConnector, "[]",
                           chrome_policies);
+#endif
   SetConnectorPolicyValue(policy::key::kOnFileDownloadedEnterpriseConnector,
                           "[]", chrome_policies);
+#if !BUILDFLAG(IS_ANDROID)
   SetConnectorPolicyValue(policy::key::kOnBulkDataEntryEnterpriseConnector,
                           "[]", chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnPrintEnterpriseConnector, "[]",
                           chrome_policies);
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   SetConnectorPolicyValue(policy::key::kOnFileTransferEnterpriseConnector, "[]",
                           chrome_policies);
@@ -1927,18 +1941,22 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
+#if !BUILDFLAG(IS_ANDROID)
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_ATTACHED,
       "[{\"service_provider\":\"google\"}]");
+#endif
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
       "[{\"service_provider\":\"google\"}]");
+#if !BUILDFLAG(IS_ANDROID)
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
       "[{\"service_provider\":\"google\"}]");
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::PRINT,
       "[{\"service_provider\":\"google\"}]");
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
@@ -1968,6 +1986,8 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_);
 #if BUILDFLAG(IS_CHROMEOS)
   const size_t expected_size = 8u;
+#elif BUILDFLAG(IS_ANDROID)
+  const size_t expected_size = 4u;
 #else
   const size_t expected_size = 7u;
 #endif
@@ -1977,18 +1997,21 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       base::UTF8ToUTF16(*info.FindString("description")));
 
   base::ListValue expected_info;
+#if !BUILDFLAG(IS_ANDROID)
   {
     base::DictValue value;
     value.Set("title", kManagementOnFileAttachedEvent);
     value.Set("permission", kManagementOnFileAttachedVisibleData);
     expected_info.Append(std::move(value));
   }
+#endif
   {
     base::DictValue value;
     value.Set("title", kManagementOnFileDownloadedEvent);
     value.Set("permission", kManagementOnFileDownloadedVisibleData);
     expected_info.Append(std::move(value));
   }
+#if !BUILDFLAG(IS_ANDROID)
   {
     base::DictValue value;
     value.Set("title", kManagementOnBulkDataEntryEvent);
@@ -2001,6 +2024,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     value.Set("permission", kManagementOnPrintVisibleData);
     expected_info.Append(std::move(value));
   }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   {
     base::DictValue value;
@@ -2030,7 +2054,6 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {

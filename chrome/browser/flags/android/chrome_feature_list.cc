@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGlicBackgroundTriggering,
     &features::kHttpsFirstBalancedMode,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
+    &features::kMigrateManagementPageToWebUIOnMobile,
     &features::kNetworkServiceInProcess,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,

@@ -317,6 +317,10 @@ BASE_FEATURE(kEnterpriseReleaseNotes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kManagedProfileRequiredInterstitial,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMigrateManagementPageToWebUIOnMobile,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kViewsJSAppModalDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

@@ -15,6 +15,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace base {
 class RefCountedMemory;
@@ -31,6 +32,9 @@ class ManagementUIConfig : public content::DefaultWebUIConfig<ManagementUI> {
   ManagementUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIManagementHost) {}
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+#endif
 };
 
 // The Web UI controller for the chrome://management page.

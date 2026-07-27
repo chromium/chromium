@@ -16818,6 +16818,21 @@
             ]
         }
     ],
+    "MigrateManagementPageToWebUIOnMobile": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MigrateManagementPageToWebUIOnMobile"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateSyncingUserToSignedInDesktop": [
         {
             "platforms": [

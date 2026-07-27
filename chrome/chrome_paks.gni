@@ -501,14 +501,21 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
+    if (is_win || is_mac || is_linux || is_chromeos || is_android) {
       sources += [
-        "$root_gen_dir/chrome/discards_resources.pak",
         "$root_gen_dir/chrome/management_resources.pak",
       ]
       deps += [
-        "//chrome/browser/resources/discards:resources",
         "//chrome/browser/resources/management:resources",
+      ]
+    }
+
+    if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
+      sources += [
+        "$root_gen_dir/chrome/discards_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/discards:resources",
       ]
     }
 

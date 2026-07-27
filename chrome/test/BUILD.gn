@@ -7536,16 +7536,15 @@ test("unit_tests") {
         [ "//chrome/browser/extensions/api/safe_browsing_private:unit_tests" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    deps += [ "//chrome/browser/ui/webui/management:unit_tests" ]
+  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
+    deps += [
+      "../browser/enterprise/connectors/device_trust:test_support",
+      "//chrome/browser/ui/webui/management:unit_tests",
+    ]
   }
 
   if (enterprise_client_certificates) {
     deps += [ "../browser/enterprise/client_certificates:unit_tests" ]
-  }
-
-  if (is_linux || is_chromeos || is_mac || is_win || is_android) {
-    deps += [ "../browser/enterprise/connectors/device_trust:test_support" ]
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {

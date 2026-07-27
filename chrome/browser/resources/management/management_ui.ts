@@ -2,23 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// <if expr="not is_android">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+// </if>
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './promotion_banner.js';
 import '/strings.m.js';
 
+// <if expr="not is_android">
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// </if>
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+// <if expr="not is_android">
 import {assert} from 'chrome://resources/js/assert.js';
+// </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-// clang-format off
 import type {Application, BrowserReportingResponse, Extension, ManagementBrowserProxy, ThreatProtectionInfo} from './management_browser_proxy.js';
 import { ManagementBrowserProxyImpl, ReportingType} from './management_browser_proxy.js';
 // <if expr="is_chromeos">
@@ -178,12 +184,14 @@ export class ManagementUiElement extends ManagementUiElementBase {
     this.initReportingInfo_();
     this.getThreatProtectionInfo_();
 
+    // <if expr="not is_android">
     const enableWebuiRefresh2026 =
         loadTimeData.getString('webuiRefresh2026') !== '';
     if (enableWebuiRefresh2026) {
       this.addThemedColors_();
       ColorChangeUpdater.forDocument().start();
     }
+    // </if>
 
     this.addWebUiListener(
         'browser-reporting-info-updated',
@@ -509,6 +517,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
     }
   }
 
+  // <if expr="not is_android">
   /**
    * Handles the 'search-changed' event fired from the toolbar.
    * Redirects to the settings page initialized the the current
@@ -527,6 +536,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
       window.location.href = 'chrome://settings/help';
     }
   }
+  // </if>
 
   protected onPromotionDismissed_() {
     this.shouldShowPromotion_ = false;
@@ -563,6 +573,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
     });
   }
 
+  // <if expr="not is_android">
   private addThemedColors_() {
     assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
     const link = document.createElement('link');
@@ -570,6 +581,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
     link.href = 'chrome://theme/colors.css?sets=ui,chrome';
     document.body.appendChild(link);
   }
+  // </if>
 }
 
 declare global {

@@ -213,3 +213,14 @@ td > div {
   margin: 0;
   padding: 0;
 }
+
+@media (max-width: 550px) {
+  .cr-centered-card-container {
+    min-width: auto;
+  }
+
+  th,
+  td {
+    padding-inline-end: 12px;
+  }
+}

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/ui/webui/current_channel_logo.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/theme_source.h"
+#endif
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -329,3 +332,14 @@ void ManagementUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       policy::policy_prefs::kHasDismissedManagementPagePromotionBanner, false);
 }
+
+// Mobile Android is the only platform without extensions support.
+// On Mobile, chrome://management WebUI is guarded behind the
+// `features::kMigrateManagementPageToWebUIOnMobile` experiment flag.
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+bool ManagementUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(
+      features::kMigrateManagementPageToWebUIOnMobile);
+}
+#endif

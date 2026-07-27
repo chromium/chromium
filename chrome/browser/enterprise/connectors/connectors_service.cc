@@ -216,10 +216,14 @@ std::string ConnectorsService::GetManagementDomain() {
   std::optional<policy::PolicyScope> scope;
   for (const char* scope_pref :
        {enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+#if !BUILDFLAG(IS_ANDROID)
         AnalysisConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
+#endif
         AnalysisConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
+#if !BUILDFLAG(IS_ANDROID)
         AnalysisConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
         AnalysisConnectorScopePref(AnalysisConnector::PRINT),
+#endif
         kOnSecurityEventScopePref}) {
     std::optional<DmToken> dm_token = GetDmToken(scope_pref);
     if (dm_token.has_value()) {
