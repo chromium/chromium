@@ -25,6 +25,19 @@
 
 namespace critical_actions {
 
+// Outcome of resolving a navigation ID to a History Visit ID for critical
+// action entries.
+// LINT.IfChange(VisitIdResolutionOutcome)
+enum class VisitIdResolutionOutcome {
+  kSuccess = 0,
+  kEvictedCapacityExceeded = 1,
+  kEvictedNavigatedAway = 2,
+  kDroppedNoNavigationId = 3,
+  kEvictedServiceShutdown = 4,
+  kMaxValue = kEvictedServiceShutdown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionVisitIdResolutionOutcome)
+
 class CriticalActionBackend;
 
 // UI thread service for recording and retrieving critical action history.
@@ -62,6 +75,10 @@ class CriticalActionService : public KeyedService,
       const CriticalActionEntry& entry,
       int64_t navigation_id);
 
+  // UI thread entry point to notify that a navigation was discarded or
+  // navigated away before Visit ID resolution completed.
+  virtual void OnNavigationDiscarded(int64_t navigation_id);
+
   // UI thread entry point to retrieve a critical action record by ID.
   void GetCriticalAction(
       std::string_view critical_action_id,
@@ -89,6 +106,9 @@ class CriticalActionService : public KeyedService,
     std::optional<int64_t> visit_id;
     std::vector<CriticalActionEntry> pending_actions;
   };
+
+  void DropPendingActions(NavigationState& state,
+                          VisitIdResolutionOutcome reason);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::SequenceBound<CriticalActionBackend> backend_

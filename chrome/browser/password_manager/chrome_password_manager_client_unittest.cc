@@ -445,6 +445,7 @@ class MockCriticalActionService
               (const critical_actions::CriticalActionEntry& entry,
                int64_t navigation_id),
               (override));
+  MOCK_METHOD(void, OnNavigationDiscarded, (int64_t navigation_id), (override));
 };
 
 }  // namespace
@@ -1705,14 +1706,14 @@ class ChromePasswordManagerClientCriticalActionsTest
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
     // Setup the mock CriticalActionService factory.
-    auto mock_service = std::make_unique<MockCriticalActionService>(
+    auto mock_service = std::make_unique<NiceMock<MockCriticalActionService>>(
         db_path, backend_task_runner);
     mock_service_ = mock_service.get();
 
     critical_actions::CriticalActionFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindOnce(
-            [](std::unique_ptr<MockCriticalActionService> service,
+            [](std::unique_ptr<NiceMock<MockCriticalActionService>> service,
                content::BrowserContext* context)
                 -> std::unique_ptr<KeyedService> { return std::move(service); },
             std::move(mock_service)));
@@ -1726,6 +1727,7 @@ class ChromePasswordManagerClientCriticalActionsTest
   }
 
   void TearDown() override {
+    DeleteContents();
     mock_service_ = nullptr;
     ChromePasswordManagerClientTest::TearDown();
   }
@@ -1750,6 +1752,8 @@ TEST_F(ChromePasswordManagerClientCriticalActionsTest,
       .WillOnce([&](const critical_actions::CriticalActionEntry& entry,
                     int64_t navigation_id) {
         EXPECT_EQ(entry.action_type, critical_actions::ActionType::kFormFill);
+        EXPECT_EQ(entry.action_source,
+                  critical_actions::ActionSource::kPasswordManager);
         EXPECT_EQ(entry.url, test_url());
         EXPECT_EQ(navigation_id, nav_id());
 
@@ -1765,6 +1769,23 @@ TEST_F(ChromePasswordManagerClientCriticalActionsTest,
   GetClient()->OnPasswordFilled(
       nullptr, test_url(),
       PasswordManagerClient::PasswordFillTrigger::kPasswordManagerAutofill);
+}
+
+TEST_F(ChromePasswordManagerClientCriticalActionsTest,
+       NotifiesCriticalActionServiceOnUncommittedNavigation) {
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/other"), web_contents());
+  simulator->Start();
+  int64_t uncommitted_nav_id =
+      simulator->GetNavigationHandle()->GetNavigationId();
+
+  EXPECT_CALL(*mock_service(), OnNavigationDiscarded(uncommitted_nav_id));
+
+  simulator->Fail(net::ERR_ABORTED);
+
+  // Verify that the call happened and clear expectations so that
+  // TearDown's DeleteContents() doesn't trigger noise.
+  testing::Mock::VerifyAndClearExpectations(mock_service());
 }
 
 #if BUILDFLAG(IS_ANDROID)

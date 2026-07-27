@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -292,6 +293,99 @@ TEST_F(CriticalActionServiceTest,
   auto retrieved = get_future.Get();
   ASSERT_TRUE(retrieved.has_value());
   EXPECT_EQ(retrieved->visit_id, visit_id);
+}
+
+TEST_F(CriticalActionServiceTest, VisitIdResolutionOutcomeHistogramSuccess) {
+  base::HistogramTester histogram_tester;
+  int64_t nav_id = 2001;
+  int64_t visit_id = 12345;
+
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.action_source = ActionSource::kPasswordManager;
+  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+
+  history::URLRow url_row(GURL("https://example.com/login"));
+  history::VisitRow visit_row;
+  visit_row.visit_id = visit_id;
+  history::VisitedURLInfo visited_info(
+      url_row, visit_row, history::VisitResponseCodeCategory::kNot404, nav_id);
+  service_->OnURLVisitedWithNavigationId(nullptr, visited_info);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kSuccess, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       VisitIdResolutionOutcomeHistogramEvictedCapacityExceeded) {
+  base::HistogramTester histogram_tester;
+  int64_t nav_id_1 = 3001;
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.action_source = ActionSource::kPasswordManager;
+  service_->AddCriticalActionWithNavigationId(entry, nav_id_1);
+
+  // Exceed cache capacity (default 200) by adding 201 total navigation IDs
+  // (3001..3201).
+  for (int64_t nav_id = 3002; nav_id <= 3201; ++nav_id) {
+    service_->AddCriticalActionWithNavigationId(entry, nav_id);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kEvictedCapacityExceeded, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       VisitIdResolutionOutcomeHistogramEvictedNavigatedAway) {
+  base::HistogramTester histogram_tester;
+  int64_t nav_id = 4001;
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.action_source = ActionSource::kPasswordManager;
+  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+
+  service_->OnNavigationDiscarded(nav_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kEvictedNavigatedAway, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       VisitIdResolutionOutcomeHistogramDroppedNoNavigationId) {
+  base::HistogramTester histogram_tester;
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.action_source = ActionSource::kPasswordManager;
+
+  service_->AddCriticalActionWithNavigationId(entry, /*navigation_id=*/0);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kDroppedNoNavigationId, 1);
+}
+
+TEST_F(CriticalActionServiceTest,
+       VisitIdResolutionOutcomeHistogramEvictedServiceShutdown) {
+  base::HistogramTester histogram_tester;
+  int64_t nav_id = 5001;
+  CriticalActionEntry entry;
+  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  entry.action_type = ActionType::kFormFill;
+  entry.action_source = ActionSource::kPasswordManager;
+  service_->AddCriticalActionWithNavigationId(entry, nav_id);
+
+  service_->Shutdown();
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.VisitIdResolutionOutcome.PasswordManager",
+      VisitIdResolutionOutcome::kEvictedServiceShutdown, 1);
 }
 
 }  // namespace critical_actions

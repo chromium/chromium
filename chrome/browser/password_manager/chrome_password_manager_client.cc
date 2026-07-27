@@ -1389,6 +1389,7 @@ void ChromePasswordManagerClient::OnPasswordFilled(
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.timestamp = base::Time::Now();
   entry.action_type = critical_actions::ActionType::kFormFill;
+  entry.action_source = critical_actions::ActionSource::kPasswordManager;
   entry.url = url;
 
   std::string type = trigger_type == PasswordFillTrigger::kAgentTask
@@ -1403,14 +1404,6 @@ void ChromePasswordManagerClient::OnPasswordFilled(
   }
 
   int64_t navigation_id = GetNavigationIdForDriver(driver);
-  if (navigation_id == 0) {
-    // Navigated away or frame destroyed -> drop fill action to prevent
-    // misattribution.
-    // TODO(b/534705000): Register UMA metadata for Critical Actions Visit ID
-    // resolution.
-    return;
-  }
-
   critical_actions::CriticalActionService* service =
       critical_actions::CriticalActionFactory::GetForProfile(GetProfile());
   if (service) {
@@ -1969,16 +1962,29 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
 
 void ChromePasswordManagerClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->HasCommitted() &&
-      navigation_handle->IsInPrimaryMainFrame()) {
-    rfh_to_navigation_id_[navigation_handle->GetRenderFrameHost()] =
-        navigation_handle->GetNavigationId();
+  if (navigation_handle->HasCommitted()) {
+    if (navigation_handle->IsInPrimaryMainFrame()) {
+      rfh_to_navigation_id_[navigation_handle->GetRenderFrameHost()] =
+          navigation_handle->GetNavigationId();
+    }
+  } else if (auto* service =
+                 critical_actions::CriticalActionFactory::GetForProfile(
+                     GetProfile())) {
+    service->OnNavigationDiscarded(navigation_handle->GetNavigationId());
   }
 }
 
 void ChromePasswordManagerClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  rfh_to_navigation_id_.erase(render_frame_host);
+  auto it = rfh_to_navigation_id_.find(render_frame_host);
+  if (it != rfh_to_navigation_id_.end()) {
+    int64_t nav_id = it->second;
+    rfh_to_navigation_id_.erase(it);
+    if (auto* service = critical_actions::CriticalActionFactory::GetForProfile(
+            GetProfile())) {
+      service->OnNavigationDiscarded(nav_id);
+    }
+  }
 }
 
 void ChromePasswordManagerClient::WebContentsDestroyed() {

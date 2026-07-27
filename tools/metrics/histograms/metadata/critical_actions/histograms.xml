@@ -20,6 +20,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<histograms/>
+<histograms>
+
+<!-- LINT.IfChange(ActionSource) -->
+
+<histogram name="CriticalActions.VisitIdResolutionOutcome.{ActionSource}"
+    enum="CriticalActionVisitIdResolutionOutcome" expires_after="2026-11-01">
+  <owner>kutylbeky@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the resolution outcome of resolving a navigation ID to a History
+    Visit ID for a critical action triggered by {ActionSource}. Emitted either
+    when the navigation ID is resolved to a Visit ID or when the pending action
+    is dropped prior to persistence.
+  </summary>
+  <token key="ActionSource">
+    <variant name="PasswordManager" summary="password manager fill events"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:ActionSource) -->
+
+</histograms>
 
 </histogram-configuration>

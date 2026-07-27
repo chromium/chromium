@@ -25,6 +25,15 @@ enum class ActionType {
   kCredentialAccess = 4,
 };
 
+// Source features that generate critical actions.
+// LINT.IfChange(ActionSource)
+enum class ActionSource {
+  kUnknown = 0,
+  kPasswordManager = 1,
+  kMaxValue = kPasswordManager,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:ActionSource)
+
 // Represents a memory row copy of a single record in critical_actions database.
 struct CriticalActionEntry {
   CriticalActionEntry();
@@ -40,6 +49,7 @@ struct CriticalActionEntry {
   std::string conversation_id;  // References conversation context
   std::string actor_task_id;    // References agent task
   ActionType action_type = ActionType::kUnknown;
+  ActionSource action_source = ActionSource::kUnknown;
   GURL url;
   std::string metadata;  // Action-specific details in JSON format
 

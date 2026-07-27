@@ -6,16 +6,41 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/critical_actions/core/browser/critical_action_backend.h"
 #include "components/critical_actions/core/browser/features.h"
 
 namespace critical_actions {
+
+namespace {
+
+std::string_view ActionSourceToString(ActionSource source) {
+  switch (source) {
+    case ActionSource::kPasswordManager:
+      return "PasswordManager";
+    case ActionSource::kUnknown:
+      return "Unknown";
+  }
+  NOTREACHED();
+}
+
+void LogVisitIdResolutionOutcome(const CriticalActionEntry& entry,
+                                 VisitIdResolutionOutcome outcome) {
+  std::string_view source = ActionSourceToString(entry.action_source);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalActions.VisitIdResolutionOutcome.", source}),
+      outcome);
+}
+
+}  // namespace
 
 CriticalActionService::CriticalActionService(
     const base::FilePath& db_path,
@@ -36,36 +61,28 @@ CriticalActionService::~CriticalActionService() {
 void CriticalActionService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   history_service_observation_.Reset();
-  // TODO(b/534705000): Register UMA metadata with 'EvictedServiceShutdown'.
+  for (auto& [nav_id, state] : navigation_cache_) {
+    DropPendingActions(state,
+                       VisitIdResolutionOutcome::kEvictedServiceShutdown);
+  }
   navigation_cache_.Clear();
   backend_.Reset();
 }
 
-void CriticalActionService::AddCriticalAction(
-    const CriticalActionEntry& entry) {
+void CriticalActionService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!backend_) {
-    return;
+  if (deletion_info.IsAllHistory()) {
+    DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
+  } else if (deletion_info.time_range().IsValid()) {
+    DeleteCriticalActionsInTimeRange(deletion_info.time_range().begin(),
+                                     deletion_info.time_range().end());
+  } else if (!deletion_info.deleted_visit_ids().empty()) {
+    std::vector<int64_t> visit_ids(deletion_info.deleted_visit_ids().begin(),
+                                   deletion_info.deleted_visit_ids().end());
+    DeleteCriticalActionsByVisitIds(visit_ids);
   }
-  backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction).WithArgs(entry);
-}
-
-void CriticalActionService::AddCriticalActionWithNavigationId(
-    const CriticalActionEntry& entry,
-    int64_t navigation_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = navigation_cache_.Get(navigation_id);
-  if (it != navigation_cache_.end() && it->second.visit_id.has_value()) {
-    CriticalActionEntry resolved_entry = entry;
-    resolved_entry.visit_id = *it->second.visit_id;
-    AddCriticalAction(resolved_entry);
-    return;
-  }
-
-  if (it == navigation_cache_.end()) {
-    it = navigation_cache_.Put(navigation_id, NavigationState());
-  }
-  it->second.pending_actions.push_back(entry);
 }
 
 void CriticalActionService::OnURLVisitedWithNavigationId(
@@ -89,8 +106,64 @@ void CriticalActionService::OnURLVisitedWithNavigationId(
   for (auto& entry : state.pending_actions) {
     entry.visit_id = visit_id;
     AddCriticalAction(entry);
+    LogVisitIdResolutionOutcome(entry, VisitIdResolutionOutcome::kSuccess);
   }
   state.pending_actions.clear();
+}
+
+void CriticalActionService::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTREACHED();
+}
+
+void CriticalActionService::AddCriticalAction(
+    const CriticalActionEntry& entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!backend_) {
+    return;
+  }
+  backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction).WithArgs(entry);
+}
+
+void CriticalActionService::AddCriticalActionWithNavigationId(
+    const CriticalActionEntry& entry,
+    int64_t navigation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (navigation_id == 0) {
+    LogVisitIdResolutionOutcome(
+        entry, VisitIdResolutionOutcome::kDroppedNoNavigationId);
+    return;
+  }
+
+  auto it = navigation_cache_.Get(navigation_id);
+  if (it != navigation_cache_.end() && it->second.visit_id.has_value()) {
+    CriticalActionEntry resolved_entry = entry;
+    resolved_entry.visit_id = *it->second.visit_id;
+    AddCriticalAction(resolved_entry);
+    LogVisitIdResolutionOutcome(entry, VisitIdResolutionOutcome::kSuccess);
+    return;
+  }
+
+  if (it == navigation_cache_.end()) {
+    if (navigation_cache_.size() >= navigation_cache_.max_size() &&
+        !navigation_cache_.empty()) {
+      DropPendingActions(navigation_cache_.begin()->second,
+                         VisitIdResolutionOutcome::kEvictedCapacityExceeded);
+    }
+    it = navigation_cache_.Put(navigation_id, NavigationState());
+  }
+  it->second.pending_actions.push_back(entry);
+}
+
+void CriticalActionService::OnNavigationDiscarded(int64_t navigation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = navigation_cache_.Peek(navigation_id);
+  if (it != navigation_cache_.end()) {
+    DropPendingActions(it->second,
+                       VisitIdResolutionOutcome::kEvictedNavigatedAway);
+    navigation_cache_.Erase(it);
+  }
 }
 
 void CriticalActionService::GetCriticalAction(
@@ -152,26 +225,13 @@ void CriticalActionService::DeleteCriticalActionsByVisitIds(
       .WithArgs(visit_ids);
 }
 
-void CriticalActionService::OnHistoryDeletions(
-    history::HistoryService* history_service,
-    const history::DeletionInfo& deletion_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (deletion_info.IsAllHistory()) {
-    DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
-  } else if (deletion_info.time_range().IsValid()) {
-    DeleteCriticalActionsInTimeRange(deletion_info.time_range().begin(),
-                                     deletion_info.time_range().end());
-  } else if (!deletion_info.deleted_visit_ids().empty()) {
-    std::vector<int64_t> visit_ids(deletion_info.deleted_visit_ids().begin(),
-                                   deletion_info.deleted_visit_ids().end());
-    DeleteCriticalActionsByVisitIds(visit_ids);
+void CriticalActionService::DropPendingActions(
+    NavigationState& state,
+    VisitIdResolutionOutcome outcome) {
+  for (const auto& entry : state.pending_actions) {
+    LogVisitIdResolutionOutcome(entry, outcome);
   }
-}
-
-void CriticalActionService::HistoryServiceBeingDeleted(
-    history::HistoryService* history_service) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED();
+  state.pending_actions.clear();
 }
 
 }  // namespace critical_actions

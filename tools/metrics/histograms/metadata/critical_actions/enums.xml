@@ -20,6 +20,20 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<enums/>
+<enums>
+
+<!-- LINT.IfChange(CriticalActionVisitIdResolutionOutcome) -->
+
+<enum name="CriticalActionVisitIdResolutionOutcome">
+  <int value="0" label="Success: Event recorded with Visit ID"/>
+  <int value="1" label="Evicted: Navigation cache capacity exceeded"/>
+  <int value="2" label="Evicted: Navigated away before resolution"/>
+  <int value="3" label="Dropped: Early drop due to missing navigation ID"/>
+  <int value="4" label="Evicted: Service shutting down"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:CriticalActionVisitIdResolutionOutcome) -->
+
+</enums>
 
 </histogram-configuration>
