@@ -105,7 +105,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  self.view.backgroundColor = [UIColor systemBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   _scrollView = [[UIScrollView alloc] init];
   _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
