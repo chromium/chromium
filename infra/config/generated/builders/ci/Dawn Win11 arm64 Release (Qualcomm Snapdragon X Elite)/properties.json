@@ -72,6 +72,10 @@
         {
           "builder": "dawn-try-win11-arm64-snapdragon-x-elite-rel",
           "group": "tryserver.chromium.dawn"
+        },
+        {
+          "builder": "win11-arm64-dawn-rel",
+          "group": "tryserver.chromium.dawn"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)/targets"

@@ -357,6 +357,7 @@ dawn_win_builderless_builder(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Dawn Win11 arm64 DEPS Builder",
+        "ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)",
     ],
     gn_args = "ci/Dawn Win11 arm64 DEPS Builder",
     cq_settings = try_.cq_settings(
@@ -780,9 +781,13 @@ dawn_win_builderless_builder(
     name = "win11-arm64-dawn-rel",
     mirrors = [
         "ci/Dawn Win11 arm64 Builder",
+        "ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)",
     ],
     gn_args = "ci/Dawn Win11 arm64 Builder",
-    max_concurrent_builds = 6,
+    # Occasionally receives bursty CQ traffic from the Dawn repo, so increase
+    # the expiration/pending timeout to more gracefully handle that.
+    expiration_timeout = 4 * time.hour,
+    max_concurrent_builds = 3,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
