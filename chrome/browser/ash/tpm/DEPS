@@ -17,8 +17,13 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles/profile.h",
   "+chrome/common",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "tpm_firmware_update_notification\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+}

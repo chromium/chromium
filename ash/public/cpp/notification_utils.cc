@@ -4,12 +4,18 @@
 
 #include "ash/public/cpp/notification_utils.h"
 
+#include "base/strings/strcat.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
+
+std::string CreateUserScopedNotificationId(std::string_view notification_id,
+                                           std::string_view user_id_hash) {
+  return base::StrCat({notification_id, "#", user_id_hash});
+}
 
 message_center::Notification CreateSystemNotification(
     message_center::NotificationType type,

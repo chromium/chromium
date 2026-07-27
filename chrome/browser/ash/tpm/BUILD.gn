@@ -18,7 +18,6 @@ static_library("tpm") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -26,9 +25,10 @@ static_library("tpm") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/settings_ui",
     "//components/prefs",
+    "//components/user_manager",
     "//ui/base",
     "//ui/chromeos",
-    "//ui/message_center/public/cpp",
+    "//ui/message_center",
   ]
 }
 
