@@ -64,7 +64,7 @@ int64_t TimeToUS(const base::Time& time) {
 class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
                                  public ui::SimpleMenuModel::Delegate {
  public:
-  ReadLaterItemContextMenu(Browser* browser,
+  ReadLaterItemContextMenu(BrowserWindowInterface* browser,
                            ReadingListModel* reading_list_model,
                            GURL url)
       : ui::SimpleMenuModel(this),
@@ -145,7 +145,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
     kMarkAsUnread,
     kDelete,
   };
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<ReadingListModel> reading_list_model_;
   GURL url_;
 };
@@ -259,10 +259,9 @@ void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (embedder) {
-    embedder->ShowContextMenu(
-        gfx::Point(x, y),
-        std::make_unique<ReadLaterItemContextMenu>(
-            browser->GetBrowserForMigrationOnly(), reading_list_model_, url));
+    embedder->ShowContextMenu(gfx::Point(x, y),
+                              std::make_unique<ReadLaterItemContextMenu>(
+                                  browser, reading_list_model_, url));
   }
 }
 
@@ -456,7 +455,7 @@ void ReadingListPageHandler::UpdateCurrentPageActionButton() {
 
 std::unique_ptr<ui::SimpleMenuModel>
 ReadingListPageHandler::GetItemContextMenuModelForTesting(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ReadingListModel* reading_list_model,
     GURL url) {
   return std::make_unique<ReadLaterItemContextMenu>(browser, reading_list_model,

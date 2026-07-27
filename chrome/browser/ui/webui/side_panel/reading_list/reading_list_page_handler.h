@@ -28,7 +28,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class ReadingListUI;
 class ReadingListEntry;
@@ -83,7 +83,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   }
 
   std::unique_ptr<ui::SimpleMenuModel> GetItemContextMenuModelForTesting(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ReadingListModel* reading_list_model,
       GURL url);
 
