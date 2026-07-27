@@ -106,6 +106,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/subscription_eligibility/model/ios_subscription_eligibility_metrics_provider.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tracing/ios_chrome_background_tracing_metrics_provider.h"
@@ -465,6 +466,10 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<policy::EnterpriseManagementMetricsProvider>(
           policy::BrowserManagementServiceFactory::GetForPlatform(),
           base::BindRepeating(&GetEnterpriseManagementProfileStates)));
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<subscription_eligibility::
+                           IOSSubscriptionEligibilityMetricsProvider>());
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

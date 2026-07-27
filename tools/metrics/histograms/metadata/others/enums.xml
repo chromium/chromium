@@ -301,6 +301,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/push_messaging/push_messaging_notification_manager.h:SilentPushEvent) -->
 
+<!-- LINT.IfChange(SubscriptionEligibilityAiSubscriptionTierStatus) -->
+
 <enum name="SubscriptionEligibilityAiSubscriptionTierStatus">
   <int value="0" label="Value not set"/>
   <int value="1" label="No profiles have an AI subscription tier"/>
@@ -312,6 +314,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="All profiles subscribed for AI at tier=2"/>
   <int value="7" label="All profiles subscribed for AI at tier=3"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/subscription_eligibility/subscription_eligibility_metrics_util.h:AiSubscriptionTierStatus) -->
 
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:

@@ -4,6 +4,8 @@
 
 source_set("subscription_eligibility") {
   sources = [
+    "subscription_eligibility_metrics_util.cc",
+    "subscription_eligibility_metrics_util.h",
     "subscription_eligibility_prefs.cc",
     "subscription_eligibility_prefs.h",
     "subscription_eligibility_service.cc",
@@ -23,7 +25,10 @@ source_set("subscription_eligibility") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "subscription_eligibility_service_unittest.cc" ]
+  sources = [
+    "subscription_eligibility_metrics_util_unittest.cc",
+    "subscription_eligibility_service_unittest.cc",
+  ]
   deps = [
     ":subscription_eligibility",
     "//base",

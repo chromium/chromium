@@ -4,15 +4,40 @@
 
 source_set("model") {
   sources = [
+    "ios_subscription_eligibility_metrics_provider.h",
+    "ios_subscription_eligibility_metrics_provider.mm",
     "subscription_eligibility_service_factory.h",
     "subscription_eligibility_service_factory.mm",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/metrics",
     "//components/prefs",
     "//components/subscription_eligibility",
+    "//components/variations",
+    "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_subscription_eligibility_metrics_provider_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/subscription_eligibility",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/metrics_proto",
   ]
 }

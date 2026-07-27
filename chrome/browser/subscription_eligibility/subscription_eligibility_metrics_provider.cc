@@ -21,33 +21,6 @@
 
 namespace subscription_eligibility {
 
-namespace {
-
-std::string GetSyntheticTrialGroupName(AiSubscriptionTierStatus status) {
-  switch (status) {
-    case AiSubscriptionTierStatus::kValueNotSet:
-      NOTREACHED();
-    case AiSubscriptionTierStatus::kNoProfilesSubscribed:
-      return "NoProfilesSubscribed";
-    case AiSubscriptionTierStatus::kSomeProfilesSubscribed:
-      return "SomeProfilesSubscribed";
-    case AiSubscriptionTierStatus::kAllProfilesSubscribedButDifferentTiers:
-      return "AllProfilesSubscribedButDifferentTiers";
-    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals1:
-      return "Tier1";
-    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals2:
-      return "Tier2";
-    case AiSubscriptionTierStatus::kAllProfilesAtTierEquals3:
-      return "Tier3";
-    case AiSubscriptionTierStatus::kAllProfilesSubscribedForUnknownTier:
-      return "AllProfilesSubscribedForUnknownTier";
-  }
-}
-
-}  // namespace
-
-
-
 SubscriptionEligibilityMetricsProvider::
     SubscriptionEligibilityMetricsProvider() = default;
 SubscriptionEligibilityMetricsProvider::
@@ -77,42 +50,15 @@ void SubscriptionEligibilityMetricsProvider::ProvideCurrentSessionData(
         profile_subscription_tier >= 0 ? profile_subscription_tier : 0);
   }
 
-  AiSubscriptionTierStatus status = AiSubscriptionTierStatus::kValueNotSet;
-  bool nonzero_no_subscription = subscription_tiers.contains(0);
-  if (subscription_tiers.size() == 1 && nonzero_no_subscription) {
-    // All profiles not enabled.
-    status = AiSubscriptionTierStatus::kNoProfilesSubscribed;
-  } else if (subscription_tiers.size() > 1 && nonzero_no_subscription) {
-    // Some profiles enabled and some not enabled.
-    status = AiSubscriptionTierStatus::kSomeProfilesSubscribed;
-  } else if (subscription_tiers.size() > 1 && !nonzero_no_subscription) {
-    // All profiles enabled but at different tiers.
-    status = AiSubscriptionTierStatus::kAllProfilesSubscribedButDifferentTiers;
-  } else {
-    CHECK(subscription_tiers.size() == 1);
-    CHECK(!nonzero_no_subscription);
-
-    if (subscription_tiers.contains(1)) {
-      // All profiles enabled but at tier = 1.
-      status = AiSubscriptionTierStatus::kAllProfilesAtTierEquals1;
-    } else if (subscription_tiers.contains(2)) {
-      // All profiles enabled but at tier = 2.
-      status = AiSubscriptionTierStatus::kAllProfilesAtTierEquals2;
-    } else if (subscription_tiers.contains(3)) {
-      status = AiSubscriptionTierStatus::kAllProfilesAtTierEquals3;
-    } else {
-      // All profiles enabled but at unknown tier.
-      status = AiSubscriptionTierStatus::kAllProfilesSubscribedForUnknownTier;
-    }
-  }
+  AiSubscriptionTierStatus status =
+      ComputeAiSubscriptionTierStatus(subscription_tiers);
 
   CHECK_NE(status, AiSubscriptionTierStatus::kValueNotSet);
-  base::UmaHistogramEnumeration(
-      "SubscriptionEligibility.AiSubscriptionTierStatus", status);
+  base::UmaHistogramEnumeration(kAiSubscriptionTierStatusHistogramName, status);
 
   std::string group_name = GetSyntheticTrialGroupName(status);
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "AiSubscriptionTier", group_name,
+      kAiSubscriptionTierSyntheticTrialName, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
