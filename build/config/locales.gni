@@ -207,18 +207,15 @@ if (is_chromeos) {
   platform_pak_locales -= [
     "af",
     "am",
-    "bn",
     "et",
     "fil",
-    "gu",
-    "kn",
     "lv",
-    "ml",
-    "mr",
-    "sl",
     "sw",
-    "ta",
-    "te",
+  ]
+  platform_pak_locales += [
+    "gl",
+    "or",
+    "pa",
   ]
 }
 
