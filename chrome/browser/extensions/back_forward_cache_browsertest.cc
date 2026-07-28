@@ -27,6 +27,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -1092,6 +1094,65 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
 
   // Extension should no longer be able to change title, since the permission
   // should not revive with BFCache navigation to a.com.
+  ExpectTitleChangeFail(*extension);
+}
+
+// Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ActiveTabPermissionClearedOnBFCacheRestore \
+  DISABLED_ActiveTabPermissionClearedOnBFCacheRestore
+#else
+#define MAYBE_ActiveTabPermissionClearedOnBFCacheRestore \
+  ActiveTabPermissionClearedOnBFCacheRestore
+#endif
+// Test that an activeTab permission granted to an extension for a page is
+// cleared when a cross-origin page activation (restoring a BFCache entry)
+// commits.
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       MAYBE_ActiveTabPermissionClearedOnBFCacheRestore) {
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("active_tab"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url_a));
+  content::RenderFrameHostWrapper render_frame_host_a(
+      web_contents->GetPrimaryMainFrame());
+
+  // Navigate to B.
+  ASSERT_TRUE(NavigateToURL(web_contents, url_b));
+
+  // Ensure that `render_frame_host_a` is in the cache.
+  EXPECT_FALSE(render_frame_host_a.IsDestroyed());
+  EXPECT_EQ(render_frame_host_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Grant the activeTab permission on B.
+  ExtensionActionRunner::GetForWebContents(web_contents)
+      ->RunAction(extension.get(), /*grant_tab_permissions=*/true);
+
+  ExpectTitleChangeSuccess(*extension, "changed_title_on_b");
+
+  // Go back to A (page activation from BFCache).
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Verify the tab-specific permission grant is cleared.
+  EXPECT_FALSE(extension->permissions_data()->HasAPIPermissionForTab(
+      GetActiveTabId(), mojom::APIPermissionID::kTab));
+
+  // Go forward to B again from BFCache.
+  web_contents->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Verify the extension can no longer script B without re-requesting activeTab
+  // permission.
   ExpectTitleChangeFail(*extension);
 }
 

@@ -157,19 +157,22 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
   bool has_permission = false;
 
   if (extension) {
-    bool api_permission = false;
-    if (tab_id == api::tabs::TAB_ID_NONE) {
-      api_permission = extension->permissions_data()->HasAPIPermission(
-          APIPermissionID::kTab);
-    } else {
-      api_permission = extension->permissions_data()->HasAPIPermissionForTab(
-          tab_id, APIPermissionID::kTab);
+    const PermissionsData* permissions = extension->permissions_data();
+    if (permissions->HasAPIPermission(APIPermissionID::kTab)) {
+      // Global "tabs" permission allows access to any URL.
+      has_permission = true;
+    } else if (tab_id != api::tabs::TAB_ID_NONE &&
+               permissions->HasAPIPermissionForTab(tab_id,
+                                                   APIPermissionID::kTab) &&
+               permissions->HasTabPermissionsForSecurityOrigin(tab_id, url)) {
+      // Tab-specific permission (e.g. activeTab) allowed, and the origin
+      // matches.
+      has_permission = true;
+    } else if (permissions->active_permissions().HasExplicitAccessToOrigin(
+                   url)) {
+      // Explicit host permission allows access.
+      has_permission = true;
     }
-
-    bool host_permission = extension->permissions_data()
-                               ->active_permissions()
-                               .HasExplicitAccessToOrigin(url);
-    has_permission = api_permission || host_permission;
   }
 
   if (!has_permission) {
