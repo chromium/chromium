@@ -260,10 +260,6 @@ bool AutofillClient::IsAndroidLargeFormFactor() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void AutofillClient::ShowAtMemoryBottomSheet(
-    base::span<const Suggestion> suggestions,
-    base::WeakPtr<AutofillSuggestionDelegate> delegate) {}
-
 bool AutofillClient::ShowAmbientAutoFillNotice(
     base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
   return false;

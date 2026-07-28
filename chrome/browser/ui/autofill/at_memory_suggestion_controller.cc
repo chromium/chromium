@@ -6,12 +6,16 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 
 namespace autofill {
 
@@ -25,7 +29,7 @@ AtMemorySuggestionController::AtMemorySuggestionController(
     content::WebContents* web_contents,
     PopupControllerCommon controller_common)
     : delegate_(delegate),
-      web_contents_(web_contents->GetWeakPtr()),
+      web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
       controller_common_(std::move(controller_common)) {}
 
 AtMemorySuggestionController::~AtMemorySuggestionController() = default;
@@ -126,10 +130,16 @@ void AtMemorySuggestionController::Show(
   suggestions_ = std::move(suggestions);
   trigger_source_ = trigger_source;
 
-  if (auto* client =
-          ChromeAutofillClient::FromWebContents(web_contents_.get())) {
-    client->ShowAtMemoryBottomSheet(suggestions_, delegate_);
+  if (!bridge_) {
+    if (!web_contents_ || !web_contents_->GetTopLevelNativeWindow()) {
+      return;
+    }
+    bridge_ = std::make_unique<AtMemoryBottomSheetBridge>(
+        web_contents_->GetTopLevelNativeWindow(),
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()), this);
   }
+  bridge_->RequestShowContent(suggestions_);
+
   if (delegate_) {
     delegate_->OnSuggestionsShown(suggestions_, std::nullopt);
   }
@@ -151,11 +161,11 @@ void AtMemorySuggestionController::UpdateDataListValues(
 }
 
 void AtMemorySuggestionController::HideViewAndDie() {
-  if (auto* client =
-          ChromeAutofillClient::FromWebContents(web_contents_.get())) {
-    client->HideAtMemoryBottomSheet();
-  }
   ui_session_id_ = std::nullopt;
+
+  if (bridge_) {
+    bridge_->Hide();
+  }
 
   // Invalidates in particular ChromeAutofillClient's WeakPtr to `this`, which
   // prevents recursive calls triggered by hiding or destroying the view.
@@ -193,6 +203,96 @@ void AtMemorySuggestionController::Recycle(
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
   controller_common_ = std::move(controller_common);
+}
+
+void AtMemorySuggestionController::OnDismissed() {
+  Hide(SuggestionHidingReason::kUserAborted);
+}
+
+void AtMemorySuggestionController::OnQuerySubmitted(
+    const std::u16string& query) {
+  if (delegate_) {
+    delegate_->OnSearchSubmitted(query);
+  }
+}
+
+void AtMemorySuggestionController::OnQueryTextChanged(
+    const std::u16string& query) {
+  if (delegate_) {
+    delegate_->OnFilterChanged(query);
+  }
+}
+
+void AtMemorySuggestionController::OnSuggestionSelected(int position) {
+  AcceptSuggestion(position, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+}
+
+void AtMemorySuggestionController::OnSuggestionDismissed(int position) {
+  if (position < 0 ||
+      base::checked_cast<size_t>(position) >= suggestions_.size()) {
+    return;
+  }
+
+  if (delegate_ && delegate_->RemoveSuggestion(suggestions_[position])) {
+    suggestions_.erase(suggestions_.begin() + position);
+    if (bridge_) {
+      bridge_->RequestShowContent(suggestions_);
+    }
+  }
+}
+
+void AtMemorySuggestionController::OnChildSuggestionsShown(
+    int parent_position) {
+  if (parent_position < 0 ||
+      base::checked_cast<size_t>(parent_position) >= suggestions_.size()) {
+    return;
+  }
+
+  const Suggestion& parent_suggestion = suggestions_[parent_position];
+  if (delegate_) {
+    delegate_->OnSuggestionsShown(
+        parent_suggestion.children,
+        AutofillSuggestionDelegate::SuggestionMetadata{
+            .multi_index = {static_cast<size_t>(parent_position)}});
+  }
+}
+
+void AtMemorySuggestionController::OnChildSuggestionSelected(
+    int parent_position,
+    int child_position) {
+  if (parent_position < 0 ||
+      base::checked_cast<size_t>(parent_position) >= suggestions_.size()) {
+    return;
+  }
+
+  const Suggestion& parent_suggestion = suggestions_[parent_position];
+  if (child_position < 0 || base::checked_cast<size_t>(child_position) >=
+                                parent_suggestion.children.size()) {
+    return;
+  }
+
+  Suggestion suggestion = parent_suggestion.children[child_position];
+  if (delegate_) {
+    delegate_->DidAcceptSuggestion(
+        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
+                        .multi_index = {static_cast<size_t>(parent_position),
+                                        static_cast<size_t>(child_position)}});
+  }
+}
+
+bool AtMemorySuggestionController::IsSearching() const {
+  return delegate_ && delegate_->IsSearching();
+}
+
+void AtMemorySuggestionController::SetBridgeForTesting(  // IN-TEST
+    std::unique_ptr<AtMemoryBottomSheetBridge> bridge) {
+  bridge_ = std::move(bridge);
+}
+
+AtMemoryBottomSheetBridge*
+AtMemorySuggestionController::bridge_for_testing()  // IN-TEST
+    const {
+  return bridge_.get();
 }
 
 }  // namespace autofill

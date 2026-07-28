@@ -73,7 +73,6 @@ class AutofillAiSaveUpdateEntityFlowManager;
 class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 class AutofillDialogController;
-class AtMemoryBottomSheetBridge;
 class TouchToFillAutofillController;
 #endif
 
@@ -256,14 +255,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   void HideAmbientAutoFillNotice() override;
 
-  void ShowAtMemoryBottomSheet(
-      base::span<const Suggestion> suggestions,
-      base::WeakPtr<AutofillSuggestionDelegate> delegate) final;
-  void HideAtMemoryBottomSheet() final;
-
-  // Returns the AtMemoryBottomSheetBridge for the current tab.
-  AtMemoryBottomSheetBridge* GetOrCreateAtMemoryBottomSheetBridge();
-
   // The AutofillMessageController is used to show native Android messages via
   // the messages API.
   AutofillMessageController* GetAutofillMessageController();
@@ -431,7 +422,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
       save_update_address_profile_flow_manager_;
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;
-  std::unique_ptr<AtMemoryBottomSheetBridge> at_memory_bottom_sheet_bridge_;
   std::unique_ptr<TouchToFillAutofillController>
       touch_to_fill_autofill_controller_;
 #else   // BUILDFLAG(IS_ANDROID)

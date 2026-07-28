@@ -6,12 +6,13 @@
 
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +25,19 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+
+class MockAtMemoryBottomSheetBridge : public AtMemoryBottomSheetBridge {
+ public:
+  explicit MockAtMemoryBottomSheetBridge(
+      AtMemorySuggestionController* controller)
+      : AtMemoryBottomSheetBridge(controller) {}
+  ~MockAtMemoryBottomSheetBridge() override = default;
+
+  MOCK_METHOD(void,
+              RequestShowContent,
+              (base::span<const Suggestion>),
+              (override));
+};
 
 class TestAtMemorySuggestionControllerAutofillClient
     : public TestContentAutofillClient {
@@ -39,22 +53,32 @@ class TestAtMemorySuggestionControllerAutofillClient
                                 base::i18n::UNKNOWN_DIRECTION));
       suggestion_controller_ = controller->GetWeakPtr();
     }
+    EnsureMockBridge();
     return *suggestion_controller_;
+  }
+
+  void EnsureMockBridge() {
+    if (suggestion_controller_ &&
+        !suggestion_controller_->bridge_for_testing()) {
+      auto mock_bridge = std::make_unique<MockAtMemoryBottomSheetBridge>(
+          suggestion_controller_.get());
+      mock_bridge_ = mock_bridge.get();
+      suggestion_controller_->SetBridgeForTesting(std::move(mock_bridge));
+    }
   }
 
   base::WeakPtr<AtMemorySuggestionController> suggestion_controller() {
     return suggestion_controller_;
   }
 
-  MOCK_METHOD(void,
-              ShowAtMemoryBottomSheet,
-              (base::span<const Suggestion>,
-               base::WeakPtr<AutofillSuggestionDelegate>),
-              (override));
-  MOCK_METHOD(void, HideAtMemoryBottomSheet, (), (override));
+  MockAtMemoryBottomSheetBridge* mock_bridge() {
+    EnsureMockBridge();
+    return mock_bridge_;
+  }
 
  private:
   base::WeakPtr<AtMemorySuggestionController> suggestion_controller_;
+  raw_ptr<MockAtMemoryBottomSheetBridge> mock_bridge_ = nullptr;
 };
 
 class AtMemorySuggestionControllerTest
@@ -82,22 +106,21 @@ class AtMemorySuggestionControllerTest
   }
 };
 
-// Tests that the controller correctly shows suggestions via the Autofill
-// client.
+// Tests that the controller correctly shows suggestions via its bridge.
 TEST_F(AtMemorySuggestionControllerTest, ShowSuggestions) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
 
-  EXPECT_CALL(client(),
-              ShowAtMemoryBottomSheet(ElementsAreArray(suggestions), _));
-  EXPECT_CALL(
-      manager().external_delegate(),
-      OnSuggestionsShown(ElementsAreArray(suggestions), Eq(std::nullopt)));
+  client().suggestion_controller(manager());
+  EXPECT_CALL(*client().mock_bridge(),
+              RequestShowContent(ElementsAreArray(suggestions)));
+  EXPECT_CALL(manager().external_delegate(),
+              OnSuggestionsShown(ElementsAreArray(suggestions), _));
 
   ShowSuggestions(manager(), suggestions);
 }
 
-// Tests that the controller hides suggestions and notifies the delegate.
+// Tests that the controller dismisses the bridge and notifies the delegate.
 TEST_F(AtMemorySuggestionControllerTest, HideSuggestions) {
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
@@ -107,8 +130,9 @@ TEST_F(AtMemorySuggestionControllerTest, HideSuggestions) {
   EXPECT_CALL(manager().external_delegate(),
               OnSuggestionsHidden(SuggestionHidingReason::kUserAborted));
 
-  client().suggestion_controller(manager()).Hide(
-      SuggestionHidingReason::kUserAborted);
+  AtMemorySuggestionController& controller =
+      client().suggestion_controller(manager());
+  controller.Hide(SuggestionHidingReason::kUserAborted);
 }
 
 // Tests that the controller ignores focus loss and end editing hiding reasons.
@@ -129,8 +153,9 @@ TEST_F(AtMemorySuggestionControllerTest, IgnoreFocusLossAndEndEditing) {
 
   EXPECT_CALL(manager().external_delegate(),
               OnSuggestionsHidden(SuggestionHidingReason::kUserAborted));
-  client().suggestion_controller(manager()).Hide(
-      SuggestionHidingReason::kUserAborted);
+  AtMemorySuggestionController& controller =
+      client().suggestion_controller(manager());
+  controller.Hide(SuggestionHidingReason::kUserAborted);
 }
 
 // Tests that a new controller is created if the delegate changes (e.g.
@@ -216,13 +241,75 @@ TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
-TEST_F(AtMemorySuggestionControllerTest,
-       HideCallsClientHideAtMemoryBottomSheet) {
-  ShowSuggestions(manager(),
-                  {Suggestion(u"test", SuggestionType::kAddressEntry)});
-  EXPECT_CALL(client(), HideAtMemoryBottomSheet);
-  client().suggestion_controller(manager()).Hide(
-      SuggestionHidingReason::kViewDestroyed);
+// Tests that AtMemoryBottomSheetBridge methods correctly route to the
+// controller and delegate.
+TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
+  testing::NiceMock<MockAutofillSuggestionDelegate> mock_delegate;
+  auto* controller = new AtMemorySuggestionController(
+      mock_delegate.GetWeakPtr(), web_contents(),
+      PopupControllerCommon({}, gfx::RectF(), base::i18n::UNKNOWN_DIRECTION));
+
+  auto mock_bridge =
+      std::make_unique<MockAtMemoryBottomSheetBridge>(controller);
+  MockAtMemoryBottomSheetBridge* bridge_ptr = mock_bridge.get();
+  controller->SetBridgeForTesting(std::move(mock_bridge));
+
+  Suggestion child(u"child", SuggestionType::kAddressEntry);
+  Suggestion parent(u"parent", SuggestionType::kAddressEntry);
+  parent.children = {child};
+  std::vector<Suggestion> suggestions = {parent};
+  controller->Show(
+      AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+      suggestions, AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      AutoselectFirstSuggestion(false),
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  // OnQuerySubmitted routes to OnSearchSubmitted.
+  EXPECT_CALL(mock_delegate, OnSearchSubmitted(std::u16string(u"query")));
+  controller->OnQuerySubmitted(u"query");
+
+  // OnQueryTextChanged routes to OnFilterChanged.
+  EXPECT_CALL(mock_delegate, OnFilterChanged(std::u16string(u"query")));
+  controller->OnQueryTextChanged(u"query");
+
+  // OnSuggestionSelected routes to DidAcceptSuggestion.
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(
+          parent,
+          testing::Field(
+              &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
+              std::vector<size_t>{0})));
+  controller->OnSuggestionSelected(0);
+
+  // OnChildSuggestionsShown routes to OnSuggestionsShown with parent metadata.
+  EXPECT_CALL(mock_delegate,
+              OnSuggestionsShown(ElementsAreArray(parent.children), _));
+  controller->OnChildSuggestionsShown(0);
+
+  // OnChildSuggestionSelected routes to DidAcceptSuggestion for child.
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(
+          child,
+          testing::Field(
+              &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
+              std::vector<size_t>{0, 0})));
+  controller->OnChildSuggestionSelected(0, 0);
+
+  // IsSearching routes to IsSearching on delegate.
+  EXPECT_CALL(mock_delegate, IsSearching).WillOnce(testing::Return(true));
+  EXPECT_TRUE(controller->IsSearching());
+
+  // OnSuggestionDismissed calls RemoveSuggestion, erases item, and re-shows
+  // content.
+  EXPECT_CALL(mock_delegate, RemoveSuggestion(parent))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*bridge_ptr, RequestShowContent(testing::ElementsAre()));
+  controller->OnSuggestionDismissed(0);
+  EXPECT_TRUE(controller->GetSuggestions().empty());
+
+  controller->OnDismissed();
 }
 
 }  // namespace

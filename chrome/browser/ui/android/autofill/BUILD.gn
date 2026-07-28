@@ -8,8 +8,6 @@ source_set("autofill") {
   sources = [
     "at_memory_bottom_sheet_bridge.cc",
     "at_memory_bottom_sheet_bridge.h",
-    "at_memory_bottom_sheet_delegate_android.cc",
-    "at_memory_bottom_sheet_delegate_android.h",
     "authenticator_selection_dialog_view_android.cc",
     "authenticator_selection_dialog_view_android.h",
     "autofill_ai_save_update_entity_flow_manager.cc",
@@ -104,7 +102,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "at_memory_bottom_sheet_bridge_unittest.cc",
-    "at_memory_bottom_sheet_delegate_android_unittest.cc",
     "autofill_ai_save_update_entity_flow_manager_unittest.cc",
     "autofill_cvc_save_message_delegate_unittest.cc",
     "autofill_save_card_bottom_sheet_bridge_unittest.cc",

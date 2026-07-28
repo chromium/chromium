@@ -748,12 +748,6 @@ class AutofillClient {
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Shows the @memory bottom sheet. Triggered by keyboard accessory controller.
-  virtual void ShowAtMemoryBottomSheet(
-      base::span<const Suggestion> suggestions,
-      base::WeakPtr<AutofillSuggestionDelegate> delegate);
-  virtual void HideAtMemoryBottomSheet() {}
-
   // Shows the Personal Context ambient autofill notice. Returns whether the
   // notice was successfully shown.
   virtual bool ShowAmbientAutoFillNotice(

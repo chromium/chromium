@@ -183,14 +183,11 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
-#include "chrome/browser/autofill/android/at_memory_bottom_sheet_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view_impl.h"
-#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
-#include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
@@ -1131,38 +1128,6 @@ bool ChromeAutofillClient::IsAndroidLargeFormFactor() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::ShowAtMemoryBottomSheet(
-    base::span<const Suggestion> suggestions,
-    base::WeakPtr<AutofillSuggestionDelegate> delegate) {
-  if (AtMemoryBottomSheetBridge* bridge =
-          GetOrCreateAtMemoryBottomSheetBridge()) {
-    bridge->RequestShowContent(
-        std::make_unique<AtMemoryBottomSheetDelegateAndroid>(
-            this, delegate, base::ToVector(suggestions)),
-        suggestions);
-  }
-}
-
-void ChromeAutofillClient::HideAtMemoryBottomSheet() {
-  if (at_memory_bottom_sheet_bridge_) {
-    at_memory_bottom_sheet_bridge_->Hide();
-  }
-}
-
-AtMemoryBottomSheetBridge*
-ChromeAutofillClient::GetOrCreateAtMemoryBottomSheetBridge() {
-  if (!at_memory_bottom_sheet_bridge_) {
-    if (ui::WindowAndroid* window_android =
-            web_contents()->GetTopLevelNativeWindow()) {
-      at_memory_bottom_sheet_bridge_ =
-          std::make_unique<AtMemoryBottomSheetBridge>(
-              window_android,
-              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-    }
-  }
-  return at_memory_bottom_sheet_bridge_.get();
-}
-
 AutofillSnackbarControllerImpl*
 ChromeAutofillClient::GetAutofillSnackbarController() {
   if (!autofill_snackbar_controller_impl_) {
