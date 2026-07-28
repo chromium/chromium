@@ -523,6 +523,12 @@ class AutofillExternalDelegateTest : public testing::Test,
                           testing::Field(&Suggestion::Text::value, text));
   }
 
+  Matcher<const Suggestion&> HasMinorText(const std::u16string& text) {
+    return testing::Field(
+        &Suggestion::minor_texts,
+        testing::ElementsAre(testing::Field(&Suggestion::Text::value, text)));
+  }
+
   Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
     return testing::Field(
         &Suggestion::labels,
@@ -946,7 +952,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
               AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
               Field(&Suggestion::type, SuggestionType::kSeparator),
               AllOf(
-                  HasMainText(l10n_util::GetStringUTF16(
+                  HasMinorText(l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
                   Field(&Suggestion::type,
                         SuggestionType::kAtMemorySourceAttribution)),

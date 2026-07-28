@@ -41,7 +41,23 @@ namespace autofill {
 
 namespace {
 constexpr float kDisabledBnplOpacity = 0.38f;
+
+// Helper function to recursively find a `views::Label` with matching text
+// inside `view`.
+views::Label* FindLabelWithText(views::View* view, const std::u16string& text) {
+  for (views::View* child : view->children()) {
+    if (auto* label = views::AsViewClass<views::Label>(child)) {
+      if (label->GetText() == text) {
+        return label;
+      }
+    }
+    if (auto* found = FindLabelWithText(child, text)) {
+      return found;
+    }
+  }
+  return nullptr;
 }
+}  // namespace
 
 class PopupRowFactoryUtilsTest : public ChromeViewsTestBase {
  public:
@@ -260,27 +276,13 @@ TEST_F(PopupRowFactoryUtilsTest, AtMemorySuggestionIgnoresFilterMatchBolding) {
   AutofillPopupController::SuggestionFilterMatch filter_match{
       .main_text_match = gfx::Range(0, 25)};
 
-  // Helper lambda to recursively find the main text Label view.
-  auto find_main_text_label = [](auto& self,
-                                 views::View* view) -> views::Label* {
-    for (views::View* child : view->children()) {
-      if (auto* label = views::AsViewClass<views::Label>(child)) {
-        return label;
-      }
-      if (auto* found = self(self, child)) {
-        return found;
-      }
-    }
-    return nullptr;
-  };
-
   // Create content view directly WITH filter_match applied (bolded).
   std::unique_ptr<PopupRowContentView> content_view_with_bolding =
       CreatePopupRowContentView(atmemory_suggestion,
                                 /*show_new_badge=*/std::nullopt,
                                 FillingProduct::kAtMemory, filter_match);
-  views::Label* bolded_label = find_main_text_label(
-      find_main_text_label, content_view_with_bolding.get());
+  views::Label* bolded_label = FindLabelWithText(
+      content_view_with_bolding.get(), u"@memory query text search");
   ASSERT_THAT(bolded_label, NotNull());
   int bolded_width = bolded_label->GetPreferredSize().width();
 
@@ -290,14 +292,29 @@ TEST_F(PopupRowFactoryUtilsTest, AtMemorySuggestionIgnoresFilterMatchBolding) {
   auto row_view =
       CreatePopupRowView(controller().GetWeakPtr(), a11y_selection_delegate(),
                          selection_delegate(), 0, filter_match);
-  views::Label* atmemory_label =
-      find_main_text_label(find_main_text_label, &row_view->GetContentView());
+  views::Label* atmemory_label = FindLabelWithText(
+      &row_view->GetContentView(), u"@memory query text search");
   ASSERT_THAT(atmemory_label, NotNull());
   int atmemory_label_width = atmemory_label->GetPreferredSize().width();
 
   // Verify that AtMemory main text label is narrower than the bolded version
   // because filter_match bolding was ignored.
   EXPECT_LT(atmemory_label_width, bolded_width);
+}
+
+// Tests that kAtMemorySourceAttribution uses Body 4 text style and
+// onSurfaceSubtle text color.
+TEST_F(PopupRowFactoryUtilsTest, AtMemorySourceAttributionStyle) {
+  Suggestion suggestion(SuggestionType::kAtMemorySourceAttribution);
+  suggestion.minor_texts.emplace_back(u"Suggested by Gemini");
+  ShowSuggestion(suggestion);
+
+  views::Label* label =
+      FindLabelWithText(&row_view().GetContentView(), u"Suggested by Gemini");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_EQ(label->GetTextStyle(), views::style::STYLE_BODY_4);
+  EXPECT_EQ(label->GetEnabledColor(), row_view().GetColorProvider()->GetColor(
+                                          ui::kColorSysOnSurfaceSubtle));
 }
 
 }  // namespace autofill

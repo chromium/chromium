@@ -491,10 +491,9 @@ std::vector<Suggestion> CreateSecondarySuggestions(
 }
 
 Suggestion CreateSourceAttributionSuggestion() {
-  Suggestion source_info(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE),
-      SuggestionType::kAtMemorySourceAttribution);
+  Suggestion source_info(SuggestionType::kAtMemorySourceAttribution);
+  source_info.minor_texts.emplace_back(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE));
   source_info.acceptability = Suggestion::Acceptability::kUnacceptable;
   source_info.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   return source_info;

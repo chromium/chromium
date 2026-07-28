@@ -752,7 +752,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   switch (type) {
     // These `type` should never be displayed in a `PopupRowView`.
     case SuggestionType::kAtMemoryAiDisclosure:
-    case SuggestionType::kAtMemorySourceAttribution:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kSeparator:
@@ -811,7 +810,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
-    case SuggestionType::kAtMemorySearchResult: {
+    case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemorySourceAttribution: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreatePopupRowContentView(suggestion, show_new_badge,
