@@ -27,13 +27,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -98,33 +98,6 @@ const base::flat_set<AuthenticatorTransport> kAllTransportsWithoutCable = {
 
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
-
-class RequestCallbackReceiver {
- public:
-  base::RepeatingCallback<void(const std::string&)> Callback() {
-    return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
-                               weak_factory_.GetWeakPtr());
-  }
-
-  std::string WaitForResult() {
-    if (!authenticator_id_) {
-      run_loop_->Run();
-    }
-    std::string ret = std::move(*authenticator_id_);
-    authenticator_id_.reset();
-    run_loop_ = std::make_unique<base::RunLoop>();
-    return ret;
-  }
-
- private:
-  void OnRequest(const std::string& authenticator_id) {
-    authenticator_id_ = authenticator_id;
-    run_loop_->Quit();
-  }
-  std::optional<std::string> authenticator_id_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-  base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
-};
 
 class MockDialogModelObserver
     : public AuthenticatorRequestDialogModel::Observer {
@@ -345,32 +318,23 @@ AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
       metadata.source, metadata.user.id, metadata.last_used_time);
 }
 
-template <class Value>
+template <class Value, class ArgumentType = Value>
 class RepeatingValueCallbackReceiver {
  public:
-  base::RepeatingCallback<void(Value)> Callback() {
-    return base::BindRepeating(&RepeatingValueCallbackReceiver::OnCallback,
-                               base::Unretained(this));
+  base::RepeatingCallback<void(ArgumentType)> Callback() {
+    return future_.template GetRepeatingCallback<ArgumentType>();
   }
 
   Value WaitForResult() {
-    if (!value_) {
-      run_loop_->Run();
-    }
-    Value ret = std::move(*value_);
-    value_.reset();
-    run_loop_ = std::make_unique<base::RunLoop>();
-    return ret;
+    return future_.Take();
   }
 
  private:
-  void OnCallback(Value value) {
-    value_ = std::move(value);
-    run_loop_->Quit();
-  }
-  std::optional<Value> value_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+  base::test::TestFuture<Value> future_{base::test::TestFutureMode::kQueue};
 };
+
+using RequestCallbackReceiver =
+    RepeatingValueCallbackReceiver<std::string, const std::string&>;
 
 void UpdateModelBeforeStartFlow(AuthenticatorRequestDialogModel* model,
                                 TransportAvailabilityInfo tai,
@@ -1378,19 +1342,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCredMatchEmptyAllowList) {
   controller.saved_authenticators().emplace_back(
       kWinAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative);
-  base::RunLoop run_loop;
-  controller.SetRequestCallback(base::BindLambdaForTesting(
-      [&run_loop](const std::string& authenticator_id) {
-        EXPECT_EQ(kWinAuthenticatorId, authenticator_id);
-        run_loop.Quit();
-      }));
+  base::test::TestFuture<std::string> request_future;
+  controller.SetRequestCallback(
+      request_future.GetRepeatingCallback<const std::string&>());
   controller.SetAccountPreselectedCallback(base::BindLambdaForTesting(
       [](device::DiscoverableCredentialMetadata cred) {
         FAIL() << "Should not have narrowed the allow list";
       }));
   controller.StartFlow(std::move(tai), {});
   EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
-  run_loop.Run();
+  EXPECT_EQ(request_future.Get(), kWinAuthenticatorId);
 }
 #endif
 
@@ -2017,12 +1978,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
       /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther);
   controller.SetAccountPreselectedCallback(base::DoNothing());
-  base::RunLoop run_loop;
+  base::test::TestFuture<std::string> request_future;
   controller.SetRequestCallback(
-      base::BindLambdaForTesting([&](const std::string& authenticator_id) {
-        EXPECT_EQ(authenticator_id, "virtual-authenticator");
-        run_loop.Quit();
-      }));
+      request_future.GetRepeatingCallback<const std::string&>());
   TransportAvailabilityInfo transports_info;
   transports_info.user_verification_requirement =
       device::UserVerificationRequirement::kRequired;
@@ -2032,7 +1990,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   UpdateModelBeforeStartFlow(model.get(), transports_info,
                              /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
-  run_loop.Run();
+  EXPECT_EQ(request_future.Get(), "virtual-authenticator");
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -2333,6 +2291,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
 
     EXPECT_EQ(*test.type_of_priority_mechanism,
               model->mechanisms[*model->priority_mechanism_index].type);
+
+    account_preselected_callback.WaitForResult();
   }
 }
 
