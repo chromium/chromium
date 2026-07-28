@@ -299,7 +299,6 @@ TEST_F(FieldTrialUtilTest,
        AssociateParamsFromFieldTrialConfigWithEachPlatform) {
   const Study::Platform all_platforms[] = {
       Study::PLATFORM_ANDROID,  // Comment to prevent clang format bin packing.
-      Study::PLATFORM_ANDROID_WEBLAYER,
       Study::PLATFORM_ANDROID_WEBVIEW,
       Study::PLATFORM_CHROMEOS,
       Study::PLATFORM_FUCHSIA,

@@ -59,8 +59,6 @@ std::string PlatformToString(variations::Study::Platform platform) {
       return "WebView";
     case variations::Study::PLATFORM_FUCHSIA:
       return "Fuchsia";
-    case variations::Study::PLATFORM_ANDROID_WEBLAYER:
-      return "WebLayer";
   }
   NOTREACHED();
 }

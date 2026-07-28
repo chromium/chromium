@@ -236,8 +236,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyPlatform) {
   constexpr auto platforms = std::to_array<Study::Platform>(
       {Study::PLATFORM_WINDOWS, Study::PLATFORM_MAC, Study::PLATFORM_LINUX,
        Study::PLATFORM_CHROMEOS, Study::PLATFORM_ANDROID, Study::PLATFORM_IOS,
-       Study::PLATFORM_ANDROID_WEBLAYER, Study::PLATFORM_FUCHSIA,
-       Study::PLATFORM_ANDROID_WEBVIEW});
+       Study::PLATFORM_FUCHSIA, Study::PLATFORM_ANDROID_WEBVIEW});
   static_assert(platforms.size() == Study::Platform_ARRAYSIZE,
                 "|platforms| must include all platforms.");
   std::array<bool, platforms.size()> platform_added = {false};

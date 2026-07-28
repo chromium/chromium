@@ -258,6 +258,9 @@ message OmniboxEventProto {
     // Composebox everywhere.
     COMPOSEBOX_EVERYWHERE = 39;
 
+    // The searchbox in the Tab Search Overlay Side UI (similar to Hub Search).
+    ANDROID_TAB_SEARCH_OVERLAY = 40;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also
