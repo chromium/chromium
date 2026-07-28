@@ -7,16 +7,19 @@
 #include <optional>
 
 #include "base/hash/hash.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/timezone.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace optimization_guide {
 
@@ -49,8 +52,15 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
 
 std::string TimeToYYYYMMDDString(base::Time ts) {
   // Converts a Time object to a YYYY-MM-DD string.
-  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMMdd",
-                                                icu::TimeZone::getGMT());
+  using base::i18n::GetKnownLanguageTag;
+  using base::i18n::IcuBridge;
+  using base::i18n::TimeZone;
+  using base::i18n::datetime_options::YMD;
+
+  return base::UTF16ToUTF8(
+      IcuBridge::GetInstance().date_time_formatter().Format(
+          ts, GetKnownLanguageTag("en-US"),
+          YMD::Short().with_time_zone(TimeZone::GMT())));
 }
 
 int64_t ShiftAndHash(int64_t client_id, int64_t shift, base::Time day) {
