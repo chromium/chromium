@@ -177,6 +177,7 @@ source_set("unit_tests") {
     "tab_opener_unittest.mm",
     "task_orchestrator_unittest.mm",
     "task_request_shortcut_item_unittest.mm",
+    "task_request_url_context_unittest.mm",
     "task_request_user_activity_unittest.mm",
     "variations_app_state_agent_unittest.mm",
   ]
@@ -219,6 +220,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
     "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/intents/model:constants",
     "//ios/chrome/browser/main/ui_bundled",

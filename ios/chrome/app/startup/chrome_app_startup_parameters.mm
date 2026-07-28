@@ -881,6 +881,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   return params;
 }
 
+// LINT.IfChange(GetCallerApp)
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_url_context.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 - (MobileSessionCallerApp)callerApp {
   if ([_secureSourceApp
           isEqualToString:app_group::kOpenCommandSourceShareExtension]) {
@@ -939,6 +943,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
   return CALLER_APP_OTHER;
 }
+// LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm:GetCallerApp)
 
 - (first_run::ExternalLaunch)launchSource {
   if ([self callerApp] != CALLER_APP_APPLE_MOBILESAFARI) {

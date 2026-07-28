@@ -4,11 +4,14 @@
 
 #import "ios/chrome/app/task_request_url_context.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -16,6 +19,69 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+
+namespace {
+
+// Returns the MobileSessionCallerApp for the specified `source_app` and `url`.
+MobileSessionCallerApp GetCallerApp(NSString* source_app, NSURL* url) {
+  if (![source_app length]) {
+    if ([url.scheme isEqualToString:@"http"] ||
+        [url.scheme isEqualToString:@"https"]) {
+      return CALLER_APP_THIRD_PARTY;
+    }
+    return CALLER_APP_NOT_AVAILABLE;
+  }
+
+  if ([source_app
+          isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
+    return CALLER_APP_GOOGLE_CHROME;
+  }
+  if ([source_app isEqualToString:@"com.google.GoogleMobile"]) {
+    return CALLER_APP_GOOGLE_SEARCH;
+  }
+  if ([source_app isEqualToString:@"com.google.Gmail"]) {
+    return CALLER_APP_GOOGLE_GMAIL;
+  }
+  if ([source_app isEqualToString:@"com.google.Plus"]) {
+    return CALLER_APP_GOOGLE_PLUS;
+  }
+  if ([source_app isEqualToString:@"com.google.Drive"]) {
+    return CALLER_APP_GOOGLE_DRIVE;
+  }
+  if ([source_app isEqualToString:@"com.google.b612"]) {
+    return CALLER_APP_GOOGLE_EARTH;
+  }
+  if ([source_app isEqualToString:@"com.google.ios.youtube"]) {
+    return CALLER_APP_GOOGLE_YOUTUBE;
+  }
+  if ([source_app isEqualToString:@"com.google.Maps"]) {
+    return CALLER_APP_GOOGLE_MAPS;
+  }
+  if ([source_app hasPrefix:@"com.google."]) {
+    return CALLER_APP_GOOGLE_OTHER;
+  }
+  if ([source_app isEqualToString:@"com.apple.mobilesafari"]) {
+    return CALLER_APP_APPLE_MOBILESAFARI;
+  }
+  if ([source_app hasPrefix:@"com.apple."]) {
+    return CALLER_APP_APPLE_OTHER;
+  }
+
+  return CALLER_APP_OTHER;
+}
+
+// Records metrics for opening a URL context.
+void RecordMetrics(UIOpenURLContext* url_context) {
+  NSURL* url = url_context.URL;
+  NSString* source_application = url_context.options.sourceApplication;
+
+  MobileSessionCallerApp caller_app = GetCallerApp(source_application, url);
+
+  base::UmaHistogramEnumeration("Startup.MobileSessionStartFromApps",
+                                caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
+}
+
+}  // namespace
 
 @implementation TaskRequestForURLContext {
   UIOpenURLContext* _URLContext;
@@ -27,6 +93,7 @@
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
     [self extractGaiaID];
+    RecordMetrics(URLContext);
   }
   return self;
 }
