@@ -454,12 +454,15 @@ void AutofillControllerTest::SetUp() {
 }
 
 void AutofillControllerTest::TearDown() {
-  [accessory_mediator_ disconnect];
-  [suggestion_controller_ detachFromWebState];
+  @autoreleasepool {
+    [accessory_mediator_ disconnect];
+    [suggestion_controller_ detachFromWebState];
 
-  autofill_manager_injector_.reset();
+    autofill_manager_injector_.reset();
 
-  bottomsheet_tab_helper_ = nullptr;
+    bottomsheet_tab_helper_ = nullptr;
+    autofill_agent_ = nil;
+  }
 
   web::test::WaitForBackgroundTasks();
   web_state_.reset();
