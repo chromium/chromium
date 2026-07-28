@@ -69,6 +69,8 @@ std::string InvocationSourceToString(
       return "NtpActionChips";
     case LensOverlayInvocationSource::kAppBarAimButton:
       return "AppBarAimButton";
+    case LensOverlayInvocationSource::kOmniboxEverywhereComposebox:
+      return "OmniboxEverywhereComposebox";
   }
 }
 
@@ -514,6 +516,7 @@ void RecordTimeToFirstInteraction(
       // cobrowse toolbar button flow do not use the Lens Overlay Controller.
       break;
     case LensOverlayInvocationSource::kContextualTasksComposebox:
+    case LensOverlayInvocationSource::kOmniboxEverywhereComposebox:
       // TODO(crbug.com/469460311): Add metrics for Contextual Tasks lens
       // button.
       break;

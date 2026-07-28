@@ -269,12 +269,10 @@ OmniboxEverywhereUI::GetOrCreateContextualSessionHandle() {
     auto* contextual_search_service =
         ContextualSearchServiceFactory::GetForProfile(profile_);
     if (contextual_search_service) {
-      // TODO(crbug.com/526721235): Create new contextual search source and lens
-      // invocation source for everywhere omnibox.
       shared_session_handle_ = contextual_search_service->CreateSession(
           omnibox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kOmniboxEverywhere,
-          lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+          lens::LensOverlayInvocationSource::kOmniboxEverywhereComposebox);
       shared_session_handle_->CheckSearchContentSharingSettings(
           profile_->GetPrefs());
     }
