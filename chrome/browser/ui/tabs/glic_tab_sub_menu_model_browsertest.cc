@@ -699,4 +699,44 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
       service->active_instance_sharing_manager().IsTabPinned(tab->GetHandle()));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
+                       CreateNewChatWithMultipleTabsOrderMatchesTabStrip) {
+  // Ensure Glic is enabled for the profile.
+  EXPECT_TRUE(GlicEnabling::IsReadyForProfile(browser()->GetProfile()));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  for (int i = 1; i <= 5; i++) {
+    ASSERT_TRUE(
+        AddTabAtIndex(i, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  }
+
+  ui::ListSelectionModel selection;
+  for (int i = 0; i <= 5; i++) {
+    selection.AddIndexToSelection(i);
+  }
+  selection.set_active(0);
+  tab_strip_model->SetSelectionFromModel(selection);
+
+  auto submenu_model =
+      std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
+  submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
+
+  GlicKeyedService* service = GetGlicKeyedService();
+  std::vector<tabs::TabHandle> handles_to_wait_for;
+  for (int i = 0; i <= 5; i++) {
+    handles_to_wait_for.push_back(
+        tab_strip_model->GetTabAtIndex(i)->GetHandle());
+  }
+  glic::GlicTabPinningWaiter waiter(&service->active_instance_sharing_manager(),
+                                    handles_to_wait_for);
+  waiter.Wait();
+
+  auto pinned_tabs = service->active_instance_sharing_manager().GetPinnedTabs();
+  ASSERT_EQ(6u, pinned_tabs.size());
+
+  for (size_t i = 0; i <= 5; i++) {
+    EXPECT_EQ(tab_strip_model->GetTabAtIndex(i), pinned_tabs[i]);
+  }
+}
+
 }  // namespace glic

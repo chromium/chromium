@@ -66,12 +66,13 @@ bool GlicTabSubMenuModel::IsCommandIdEnabled(int command_id) const {
 void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   std::vector<tabs::TabInterface*> tabs;
   if (tab_strip_model_->IsTabSelected(context_index_)) {
-    const auto& selected_tabs =
-        tab_strip_model_->selection_model().selected_tabs();
-    tabs.assign(selected_tabs.begin(), selected_tabs.end());
+    for (size_t index : tab_strip_model_->selection_model()
+                            .GetListSelectionModel()
+                            .selected_indices()) {
+      tabs.push_back(tab_strip_model_->GetTabAtIndex(index));
+    }
   } else {
-    tabs.push_back(tabs::TabInterface::GetFromContents(
-        tab_strip_model_->GetWebContentsAt(context_index_)));
+    tabs.push_back(tab_strip_model_->GetTabAtIndex(context_index_));
   }
 
   GlicKeyedService* service =
