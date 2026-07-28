@@ -92,7 +92,7 @@ int AudioSocketService::AcceptOne() {
 
 void AudioSocketService::OnAcceptSuccess() {
   if (!use_socket_descriptor_) {
-    delegate_->HandleAcceptedSocket(std::move(accepted_socket_));
+    delegate_->HandleAcceptedSocket(std::move(accepted_socket_), "");
     return;
   }
 
@@ -112,24 +112,26 @@ void AudioSocketService::OnAcceptSuccess() {
 void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {
   fd_watcher_controllers_.erase(socket_fd);
 
-  uint8_t buffer[sizeof(kSocketMsg)];
+  uint8_t buffer[256];
   std::vector<base::ScopedFD> fds;
   ssize_t res = base::UnixDomainSocket::RecvMsg(socket_fd, buffer, &fds);
   CloseSocket(socket_fd);
-  if (res != sizeof(kSocketMsg)) {
+  if (res <= 0) {
     LOG(ERROR) << "Failed to receive message from the descriptor " << socket_fd;
     return;
   }
-  if (UNSAFE_TODO(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg))) != 0) {
-    LOG(ERROR) << "Received invalid message.";
-    return;
+  std::string session_id(reinterpret_cast<char*>(buffer), res);
+  if (session_id == kSocketMsg) {
+    session_id = "";
   }
+
   if (fds.empty()) {
     LOG(ERROR) << "No socket descriptors received.";
     return;
   }
   for (auto& fd : fds) {
-    delegate_->HandleAcceptedSocket(AdoptUnnamedSocketHandle(std::move(fd)));
+    delegate_->HandleAcceptedSocket(AdoptUnnamedSocketHandle(std::move(fd)),
+                                    session_id);
   }
 }
 

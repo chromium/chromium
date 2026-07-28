@@ -67,7 +67,7 @@ int AudioSocketService::AcceptOne() {
 }
 
 void AudioSocketService::OnAcceptSuccess() {
-  delegate_->HandleAcceptedSocket(std::move(accepted_socket_));
+  delegate_->HandleAcceptedSocket(std::move(accepted_socket_), "");
 }
 
 void AudioSocketService::ReceiveFdFromSocket(int socket_fd) {

@@ -35,8 +35,8 @@ class AudioSocketService {
   class Delegate {
    public:
     // Handles a newly accepted |socket|.
-    virtual void HandleAcceptedSocket(
-        std::unique_ptr<net::StreamSocket> socket) = 0;
+    virtual void HandleAcceptedSocket(std::unique_ptr<net::StreamSocket> socket,
+                                      const std::string& session_id) = 0;
 
    protected:
     virtual ~Delegate() = default;

@@ -102,10 +102,12 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
     ASSERT_NE(
         HANDLE_EINTR(fcntl(accepted_descriptor_, F_SETFL, flags & ~O_NONBLOCK)),
         -1);
+    std::string_view expected_msg(kSocketMsg);
     EXPECT_EQ(static_cast<size_t>(base::UnixDomainSocket::RecvMsg(
                   accepted_descriptor_, buffer, &fds)),
-              sizeof(kSocketMsg));
-    UNSAFE_TODO(EXPECT_EQ(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)), 0));
+              expected_msg.size());
+    UNSAFE_TODO(
+        EXPECT_EQ(memcmp(buffer, expected_msg.data(), expected_msg.size()), 0));
     EXPECT_THAT(fds, ::testing::SizeIs(1U));
     accepted_socket_ = AdoptUnnamedSocketHandle(std::move(fds[0]));
   }
