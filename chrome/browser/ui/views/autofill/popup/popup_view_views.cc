@@ -991,7 +991,7 @@ void PopupViewViews::SetSelectedCell(
         controller_->GetSuggestionAt(cell_index->first);
 
     bool can_open_sub_popup =
-        !suppress_popup &&
+        !suppress_popup && !suggestion.is_loading &&
         (cell_index->second == PopupRowView::CellType::kControl ||
          ContentCellShouldOpenSubPopupSuggestion(suggestion));
 

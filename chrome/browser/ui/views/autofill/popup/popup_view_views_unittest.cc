@@ -2441,6 +2441,43 @@ TEST_F(PopupViewViewsTest,
   task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
 }
 
+// Tests that selecting the control cell of a loading suggestion does not open a
+// sub-popup.
+TEST_F(PopupViewViewsTest,
+       SubPopupNotOpenForLoadingSuggestionControlSelection) {
+  Suggestion suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kAtMemorySearchResult,
+      {Suggestion(u"Child", SuggestionType::kAtMemorySearchResult)});
+  suggestion.is_loading = Suggestion::IsLoading(true);
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(), OpenSubPopup).Times(0);
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+}
+
+// Tests that selecting the content cell of an unacceptable loading suggestion
+// does not open a sub-popup.
+TEST_F(PopupViewViewsTest,
+       SubPopupNotOpenForLoadingSuggestionContentSelection) {
+  Suggestion suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kAtMemorySearchResult,
+      {Suggestion(u"Child", SuggestionType::kAtMemorySearchResult)});
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.is_loading = Suggestion::IsLoading(true);
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(), OpenSubPopup).Times(0);
+
+  view().SetSelectedCell(CellIndex{0, CellType::kContent},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+}
+
 // TODO(crbug.com/41496626): Rework into pixel tests and run on all available
 // platforms. The test below is a temporary solution to cover positioning
 // calculations in the popup. The exact numbers were obtained by observing
