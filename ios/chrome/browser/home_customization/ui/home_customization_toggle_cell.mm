@@ -97,8 +97,8 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     // cell is configured.
     _iconContainer = [[UIView alloc] init];
     _iconImageView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithPointSize(kSliderHorizontalSymbol,
-                                                 kToggleIconPointSize)];
+        initWithImage:SymbolWithPointSize(SymbolSliderHorizontal,
+                                          kToggleIconPointSize)];
     _iconImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [_iconContainer addSubview:_iconImageView];
     _iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -116,8 +116,8 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     // horizontally.
     _navigationIconContainer = [[UIView alloc] init];
     _navigationImageView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithPointSize(kChevronForwardSymbol,
-                                                 kToggleIconPointSize)];
+        initWithImage:SymbolWithPointSize(SymbolChevronForward,
+                                          kToggleIconPointSize)];
     _navigationImageView.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
     [_navigationIconContainer addSubview:_navigationImageView];
     _navigationIconContainer.translatesAutoresizingMaskIntoConstraints = NO;

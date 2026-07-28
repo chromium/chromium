@@ -62,8 +62,8 @@ const CGFloat kEyedropperSymbolSize = 15.0;
     [_borderWrapperView addSubview:_innerContentView];
 
     // Eye dropper icon.
-    UIImage* eyeDropperIcon = DefaultSymbolTemplateWithPointSize(
-        kEyedropperSymbol, kEyedropperSymbolSize);
+    UIImage* eyeDropperIcon =
+        SymbolTemplateWithPointSize(SymbolEyedropper, kEyedropperSymbolSize);
 
     _symbolImageView = [[UIImageView alloc] initWithImage:eyeDropperIcon];
     _symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;

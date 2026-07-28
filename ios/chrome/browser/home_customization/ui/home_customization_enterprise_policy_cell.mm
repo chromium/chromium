@@ -68,7 +68,7 @@ NSAttributedString* GetAttributedString(NSString* message) {
     // Create Icon
     UIImageView* iconImageView = [[UIImageView alloc]
         initWithImage:SymbolWithPalette(
-                          CustomSymbolWithPointSize(kEnterpriseSymbol, 18),
+                          SymbolWithPointSize(SymbolEnterprise, 18),
                           @[ [UIColor colorNamed:kTextSecondaryColor] ])];
     iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
     iconImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];

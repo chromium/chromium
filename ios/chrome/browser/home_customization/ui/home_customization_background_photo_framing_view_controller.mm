@@ -342,7 +342,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   [self.view addSubview:_pinchInstructionsView];
 
   // Pinch icon.
-  UIImage* pinchIcon = DefaultSymbolWithPointSize(kCropSymbol, kPinchIconSize);
+  UIImage* pinchIcon = SymbolWithPointSize(SymbolCrop, kPinchIconSize);
   UIImageView* pinchIconView = [[UIImageView alloc] initWithImage:pinchIcon];
   pinchIconView.tintColor = UIColor.whiteColor;
   pinchIconView.contentMode = UIViewContentModeScaleAspectFit;
