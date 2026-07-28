@@ -10,7 +10,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/personal_context/first_run/personal_context_first_run_types.h"
 
 namespace personal_context {
 

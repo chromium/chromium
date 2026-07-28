@@ -7,20 +7,6 @@
 
 namespace personal_context {
 
-// First run trigger result.
-enum class FirstRunTriggerResult {
-  kSuccess = 0,
-  kIgnoredNotEligible = 1,
-  kIgnoredAlreadyEnabled = 2,
-};
-
-// Notice action result. Used internally, not exposed to consuming features.
-enum class NoticeResult {
-  kAcknowledged = 0,     // User clicked "Got it"
-  kNotAcknowledged = 1,  // User hit 'ESC' or clicked elsewhere, closing the
-                         // notice without acknowledging.
-};
-
 // The outcome of a request to show the Personal Context notice dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -32,12 +18,6 @@ enum class NoticeShowRequestResult {
   kMaxValue = kDismissed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextNoticeInteractions)
-
-// Source of the first run invocation.
-enum class FirstRunInvocationSource {
-  kAutofill = 0,
-  kAutoTriggerPromo = 1,
-};
 
 }  // namespace personal_context
 
