@@ -139,7 +139,6 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kIOSCustomFileUploadMenu);
   config.features_enabled.push_back(kIOSChooseFromDrive);
   if ([self isRunningTest:@selector(testDriveInContextMenuWhenSignedOut)]) {
     config.features_enabled.push_back(kIOSChooseFromDriveSignedOut);

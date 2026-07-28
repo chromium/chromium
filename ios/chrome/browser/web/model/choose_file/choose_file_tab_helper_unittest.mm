@@ -13,7 +13,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/last_tap_location_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -239,9 +238,6 @@ TEST_F(ChooseFileTabHelperTest, PendingNavigationIgnoresChooseFileEvent) {
   EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
 
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     id parameters = [OCMockObject mockForClass:[WKOpenPanelParameters class]];
     __block bool completion_called = false;
     tab_helper_->RunOpenPanel(parameters, /*frame=*/nil,
@@ -287,9 +283,6 @@ TEST_F(ChooseFileTabHelperTest, WasHiddenResetsLastChooseFileEvent) {
 // file upload panel.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     EXPECT_FALSE(tab_helper_->IsChoosingFiles());
 
     ChooseFileEvent event = ChooseFileEvent::Builder()
@@ -334,9 +327,6 @@ TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {
 // Tests that `RunOpenPanel()` records histograms correctly.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanelHistograms) {
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     // No event.
     base::HistogramTester histogram_tester;
     id parameters = [OCMockObject mockForClass:[WKOpenPanelParameters class]];
@@ -401,9 +391,6 @@ TEST_F(ChooseFileTabHelperTest, RunOpenPanelHistograms) {
 // location when there is a recent touch interaction and VoiceOver is inactive.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanel_TapAnchoring) {
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     // Set up a recent native tap location at (150, 250) less than 1 second ago.
     CGPoint tap_location = CGPointMake(150, 250);
     SetLastTap(tap_location, base::TimeTicks::Now());
@@ -439,9 +426,6 @@ TEST_F(ChooseFileTabHelperTest, RunOpenPanel_TapAnchoring) {
 // tap is stale.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanel_StaleTapFallback) {
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     // Set up a stale native tap location at (150, 250) 5 seconds ago.
     CGPoint tap_location = CGPointMake(150, 250);
     SetLastTap(tap_location, base::TimeTicks::Now() - base::Seconds(5));
@@ -479,9 +463,6 @@ TEST_F(ChooseFileTabHelperTest, RunOpenPanel_StaleTapFallback) {
 // coordinates are CGPointZero, even if the tap is stale.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanel_StaleTapFallbackToDefault) {
   if (@available(iOS 18.4, *)) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kIOSCustomFileUploadMenu);
-
     // Set up a stale native tap location at (150, 250) 5 seconds ago.
     CGPoint tap_location = CGPointMake(150, 250);
     SetLastTap(tap_location, base::TimeTicks::Now() - base::Seconds(5));

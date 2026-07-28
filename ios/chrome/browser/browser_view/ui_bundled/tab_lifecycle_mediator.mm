@@ -298,13 +298,11 @@
     }
   }
 
-  if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-    ChooseFileTabHelper* chooseFileTabHelper =
-        ChooseFileTabHelper::FromWebState(webState);
-    if (chooseFileTabHelper) {
-      chooseFileTabHelper->SetFileUploadPanelHandler(
-          HandlerForProtocol(_commandDispatcher, FileUploadPanelCommands));
-    }
+  ChooseFileTabHelper* chooseFileTabHelper =
+      ChooseFileTabHelper::FromWebState(webState);
+  if (chooseFileTabHelper) {
+    chooseFileTabHelper->SetFileUploadPanelHandler(
+        HandlerForProtocol(_commandDispatcher, FileUploadPanelCommands));
   }
 }
 
@@ -442,12 +440,10 @@
     }
   }
 
-  if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-    ChooseFileTabHelper* chooseFileTabHelper =
-        ChooseFileTabHelper::FromWebState(webState);
-    if (chooseFileTabHelper) {
-      chooseFileTabHelper->SetFileUploadPanelHandler(nil);
-    }
+  ChooseFileTabHelper* chooseFileTabHelper =
+      ChooseFileTabHelper::FromWebState(webState);
+  if (chooseFileTabHelper) {
+    chooseFileTabHelper->SetFileUploadPanelHandler(nil);
   }
 }
 

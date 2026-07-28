@@ -1007,11 +1007,6 @@ inline constexpr char kIOSCobaltName[] = "IOS Cobalt";
 inline constexpr char kIOSCobaltDescription[] =
     "Enables the Cobalt feature on iOS.";
 
-inline constexpr char kIOSCustomFileUploadMenuName[] =
-    "Custom file upload menu";
-inline constexpr char kIOSCustomFileUploadMenuDescription[] =
-    "Enables the custom file upload menu implementation.";
-
 inline constexpr char kIOSDateToCalendarSignedOutName[] =
     "Date to Calendar Signed Out";
 inline constexpr char kIOSDateToCalendarSignedOutDescription[] =

@@ -394,13 +394,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher.Create<WebViewProxyTabHelper>();
 
-  attacher.CreateWhen<ChooseFileTabHelper>(
-      attacher.IsNotInTabHelperFilter() &&
-      (base::FeatureList::IsEnabled(kIOSChooseFromDrive) ||
-       base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)));
+  attacher.CreateWhen<ChooseFileTabHelper>(attacher.IsNotInTabHelperFilter());
   attacher.CreateWhen<LastTapLocationTabHelper>(
-      attacher.IsNotInTabHelperFilter() &&
-      base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
+      attacher.IsNotInTabHelperFilter());
 
   if (!attacher.IsOffTheRecord() && !attacher.IsForPrerender()) {
     if (IsModelBasedPageClassificationEnabled()) {

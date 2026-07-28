@@ -14090,21 +14090,6 @@
             ]
         }
     ],
-    "IOSCustomFileUploadMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSCustomFileUploadMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDarkModeDetection": [
         {
             "platforms": [

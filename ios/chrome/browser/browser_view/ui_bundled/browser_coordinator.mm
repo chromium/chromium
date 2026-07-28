@@ -2014,9 +2014,7 @@ const char kChromeAppStoreUrl[] =
   [self hideCobaltAlert];
   [self hideCobaltPopup];
   if (@available(iOS 18.4, *)) {
-    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-      [self hideFileUploadPanel];
-    }
+    [self hideFileUploadPanel];
   }
   [self hideContextualSheet];
   [self dismissEditAddressBottomSheet];
@@ -3196,9 +3194,7 @@ const char kChromeAppStoreUrl[] =
   [self hideCobaltAlert];
   [self hideCobaltPopup];
   if (@available(iOS 18.4, *)) {
-    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
-      [self hideFileUploadPanel];
-    }
+    [self hideFileUploadPanel];
   }
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
@@ -3709,7 +3705,6 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - FileUploadPanelCommands
 
 - (void)showFileUploadPanel API_AVAILABLE(ios(18.4)) {
-  CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
   ChooseFileTabHelper* tabHelper =
       ChooseFileTabHelper::FromWebState(self.activeWebState);
   if (!tabHelper || !tabHelper->IsChoosingFiles()) {
@@ -3725,7 +3720,6 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)hideFileUploadPanel API_AVAILABLE(ios(18.4)) {
-  CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
   [_fileUploadPanelCoordinator stop];
   _fileUploadPanelCoordinator = nil;
 }
