@@ -560,8 +560,14 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
+// TODO(crbug.com/539700715): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TwoTabsWithBubbleSwitch DISABLED_TwoTabsWithBubbleSwitch
+#else
+#define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
+#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       TwoTabsWithBubbleSwitch) {
+                       MAYBE_TwoTabsWithBubbleSwitch) {
   RunTestSequence(
       // 1. Show bubble on tab 0.
       Do([this]() { SetupPendingPassword(); }),
