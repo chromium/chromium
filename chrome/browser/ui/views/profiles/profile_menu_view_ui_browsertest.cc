@@ -356,6 +356,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix = "CrossDeviceSigninPromoNewBadge"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .with_cross_device_signin_promo = true,
+        .with_cross_device_signin_new_badge = true,
     },
 };
 

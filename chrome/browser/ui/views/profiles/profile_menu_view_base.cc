@@ -289,6 +289,16 @@ class MenuButtonRowView : public HoverButton {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     title()->SetEnabledColor(ui::kColorMenuItemForeground);
     title()->SetBackgroundColor(kColorProfileMenuBackground);
+
+    if (secondary_view()) {
+      const gfx::Insets* margin =
+          secondary_view()->GetProperty(views::kMarginsKey);
+      if (margin) {
+        secondary_view()->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(0, margin->left(), 0, margin->right()));
+      }
+    }
   }
   ~MenuButtonRowView() override = default;
 
@@ -344,8 +354,9 @@ class ProfileMenuNewBadge : public views::View {
     // styling.
     label->SetFontList(label->font_list().Derive(-1, gfx::Font::NORMAL,
                                                  gfx::Font::Weight::MEDIUM));
+    label->SetLineHeight(label->font_list().GetHeight());
     label->SetEnabledColor(ui::kColorBadgeForeground);
-    label->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(1, 4)));
+    label->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 4)));
 
     SetBackground(views::CreateRoundedRectBackground(
         ui::kColorBadgeBackground,
