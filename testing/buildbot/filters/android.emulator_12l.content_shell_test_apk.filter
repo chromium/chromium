@@ -1,0 +1,5 @@
+# https://crbug.com/540048447
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityE2ETest.fireGeneratedEvent_defaultActionVerbChanged_firesContentChanged
+
+# https://crbug.com/540049936
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityE2ETest.testAccessibilityServiceReceivesInitialEvent
