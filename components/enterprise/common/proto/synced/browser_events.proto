@@ -1414,7 +1414,7 @@ message UrlNavigationEvent {
       ;
 
   // Security agent installed on the device
-  repeated SecurityAgent security_agents = 5;
+  repeated SecurityAgent security_agents = 5 [deprecated = true];
 }
 
 // Event for suspicious site visits.
@@ -1441,7 +1441,7 @@ message SuspiciousURLEvent {
       ;
 
   // Security agent installed on the device
-  repeated SecurityAgent security_agents = 5;
+  repeated SecurityAgent security_agents = 5 [deprecated = true];
 }
 
 message TelomereEvent {
