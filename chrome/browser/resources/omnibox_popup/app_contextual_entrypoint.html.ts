@@ -35,6 +35,13 @@ export function getHtml(this: OmniboxPopupAppElement) {
         @lens-search-click="${this.onLensSearchClick_}">
     </cr-composebox-lens-search>
   ` : nothing}
+  ${this.isLensIconShown_ ? html`
+    <cr-composebox-lens-search id="lensSearchIcon"
+        is-icon
+        class="upload-button"
+        @lens-search-click="${this.onLensSearchClick_}">
+    </cr-composebox-lens-search>
+  ` : nothing}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

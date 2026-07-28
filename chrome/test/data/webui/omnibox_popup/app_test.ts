@@ -33,6 +33,7 @@ suite('AppTest', function() {
       omniboxShowContextButtonSuggestionLabel: false,
       addContext: 'Add tabs and more',
       contextButtonShapeIsOblong: false,
+      composeboxShowLensIcon: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -102,6 +103,37 @@ suite('AppTest', function() {
     const chip = app.shadowRoot.querySelector('composebox-current-tab-chip');
     assertTrue(!!chip);
     assertTrue(isVisible(chip));
+  });
+
+  test('LensIconShown', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowLensIcon: true,
+    });
+
+    // Re-create app to apply loadTimeData overrides.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('omnibox-popup-app');
+    document.body.appendChild(app);
+    testProxy.initVisibilityPrefs();
+    await microtasksFinished();
+
+    // Set eligibility.
+    testProxy.page.updateLensSearchEligibility(true);
+
+    // Set autocomplete result with empty input.
+    const result = createAutocompleteResultForTesting({
+      input: '',
+      matches: [],
+    });
+    testProxy.page.autocompleteResultChanged(result);
+    await microtasksFinished();
+
+    // Trigger show.
+    callbackRouter.onShow();
+    await microtasksFinished();
+
+    // Verify Lens Icon is shown.
+    assertTrue(isVisible(app.shadowRoot.querySelector('#lensSearchIcon')));
   });
 
   test('OnlyShowsDropdownIfVisibleMatches', async () => {

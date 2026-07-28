@@ -166,6 +166,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                          omnibox::kShowLensSearchChip.Get());
   source->AddBoolean("composeboxShowCurrentTabChip",
                      omnibox::kAskGCurrentTabChip.Get());
+  source->AddBoolean("composeboxShowLensIcon",
+                     omnibox::kAskGLensIcon.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());

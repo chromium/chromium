@@ -99,3 +99,8 @@
   display: block;
   width: 50%;
 }
+
+#lensSearchIcon {
+  margin-inline-start: auto;
+  margin-inline-end: 16px;
+}
