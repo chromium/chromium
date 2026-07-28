@@ -155,12 +155,6 @@
 namespace {
 
 
-// Deprecated 09/2025.
-inline constexpr char kNtpShownBookmarksFolder[] = "ntp.shown_bookmarks_folder";
-constexpr char kGaiaCookieLastListAccountsData[] =
-    "gaia_cookie.last_list_accounts_data";
-inline constexpr char kFRESourceTrial[] = "FileMetricsProviderFRESourceTrial";
-
 // Deprecated 10/2025
 inline constexpr char kSessionStorageFormatPref[] =
     "ios.session.storage.format";
@@ -913,11 +907,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preference associated with the Gemini Settings policy state.
   registry->RegisterIntegerPref(optimization_guide::prefs::kGeminiSettings, 0);
 
-  // Deprecated 09/2025.
-  registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 0);
-  registry->RegisterStringPref(kGaiaCookieLastListAccountsData, std::string());
-  registry->RegisterStringPref(kFRESourceTrial, std::string());
-
   // Deprecated 10/2025
   registry->RegisterIntegerPref(kSessionStorageFormatPref, 0);
   registry->RegisterIntegerPref(kSessionStorageMigrationStatusPref, 0);
@@ -1036,11 +1025,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
 
-
-  // Added 09/2025.
-  prefs->ClearPref(kNtpShownBookmarksFolder);
-  prefs->ClearPref(kGaiaCookieLastListAccountsData);
-  prefs->ClearPref(kFRESourceTrial);
 
   // Added 10/2025.
   prefs->ClearPref(kSessionStorageFormatPref);
