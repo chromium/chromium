@@ -324,16 +324,8 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chrome_branded &&
-      (is_mac || is_win || (is_posix && !is_android && !is_chromeos))) {
-    sources += [ "base/scoped_channel_override.h" ]
-    if (is_mac) {
-      sources += [ "base/scoped_channel_override_mac.cc" ]
-    } else if (is_win) {
-      sources += [ "base/scoped_channel_override_win.cc" ]
-    } else if (is_posix && !is_android && !is_chromeos) {
-      sources += [ "base/scoped_channel_override_posix.cc" ]
-    }
+  if (is_chrome_branded && (is_mac || is_win || is_linux)) {
+    public_deps += [ "//chrome/test/base:scoped_channel_override" ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
