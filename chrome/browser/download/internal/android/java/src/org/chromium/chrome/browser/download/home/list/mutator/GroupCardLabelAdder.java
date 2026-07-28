@@ -139,7 +139,7 @@ public class GroupCardLabelAdder implements ListConsumer {
         outList.add(createDivider(CardDividerListItem.Position.BOTTOM));
     }
 
-    private ListItem createDivider(CardDividerListItem.Position position) {
+    private ListItem createDivider(@CardDividerListItem.Position int position) {
         return new CardDividerListItem(mDividerIndexId++, position);
     }
 
