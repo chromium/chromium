@@ -69,6 +69,9 @@ class SBUpdateProtocolManager {
 
  protected:
   friend class V5UpdateProtocolManagerTest;
+  friend class SBLocalDatabaseManagerTest_V4V5;
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest_V4V5,
+                           TimeSinceLastUpdateResponseHistograms);
   FRIEND_TEST_ALL_PREFIXES(V4UpdateProtocolManagerTest,
                            TestGetUpdatesErrorHandlingNetwork);
   FRIEND_TEST_ALL_PREFIXES(V4UpdateProtocolManagerTest,

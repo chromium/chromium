@@ -165,6 +165,11 @@ class V5GetHashProtocolManager : public KeyedService {
       const std::string& response_body,
       const std::vector<std::string>& requested_prefixes);
 
+  // Handles the result of a request by updating the backoff entry and, on
+  // success, logging the count of skipped requests if backoff recovery
+  // occurred.
+  void HandleBackoffResult(bool succeeded);
+
   // In-flight loaders, owned by the protocol manager to ensure they are safely
   // aborted during teardown/Shutdown.
   std::set<std::unique_ptr<network::SimpleURLLoader>, base::UniquePtrComparator>
@@ -181,6 +186,10 @@ class V5GetHashProtocolManager : public KeyedService {
 
   // Enforces exponential backoff on requests.
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
+
+  // Number of GetHash attempts skipped due to backoff within the same backoff
+  // time window.
+  size_t num_requests_skipped_for_backoff_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

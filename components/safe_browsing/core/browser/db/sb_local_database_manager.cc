@@ -41,7 +41,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // TODO(crbug.com/362791941): Handle v4 references
-// TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
 // TODO(crbug.com/362791941): Convert |comments| to `comments`
 // TODO(crbug.com/362791941): Change DCHECKs to CHECKs
 namespace safe_browsing {
@@ -234,9 +233,31 @@ void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
   }
 
   base::TimeDelta time_since_update = base::Time::Now() - last_response_time;
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse",
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramLongTimes100(
+        "SafeBrowsing.V5LocalDatabaseManager.TimeSinceLastUpdateResponse",
+        time_since_update);
+  } else {
+    base::UmaHistogramLongTimes100(
+        "SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse",
+        time_since_update);
+  }
+  base::UmaHistogramLongTimes100(
+      "SafeBrowsing.SBLocalDatabaseManager.TimeSinceLastUpdateResponse",
       time_since_update);
+}
+
+void RecordCheckUrlTimeTaken(std::string_view step_name,
+                             base::TimeDelta delta) {
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    base::UmaHistogramTimes(
+        base::StrCat({"SafeBrowsing.V5CheckUrl.TimeTaken.", step_name}), delta);
+  } else {
+    base::UmaHistogramTimes(
+        base::StrCat({"SafeBrowsing.V4CheckUrl.TimeTaken.", step_name}), delta);
+  }
+  base::UmaHistogramTimes(
+      base::StrCat({"SafeBrowsing.SBCheckUrl.TimeTaken.", step_name}), delta);
 }
 
 void HandleUrlCallback(base::OnceCallback<void(bool)> callback,
@@ -960,12 +981,11 @@ void SBLocalDatabaseManager::HandleCheckContinuation(
     return;
   }
 
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
-      base::TimeTicks::Now() - check->local_db_lookup_start_time);
+  RecordCheckUrlTimeTaken("LocalLookup", base::TimeTicks::Now() -
+                                             check->local_db_lookup_start_time);
 
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+  RecordCheckUrlTimeTaken(
+      "LocalLookup.UiCallbackQueueDelay",
       base::TimeTicks::Now() - lookup_result.db_thread_end_time);
 
   const auto it = pending_checks_.find(check.get());
@@ -1074,10 +1094,8 @@ SBLocalDatabaseManager::GetPendingCheckForFullHashResponse(
     PendingCheck* check) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!check->get_full_hash_request_start_time.is_null()) {
-    // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
-    base::UmaHistogramTimes(
-        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashDuration",
-        now - check->get_full_hash_request_start_time);
+    RecordCheckUrlTimeTaken("GetFullHashDuration",
+                            now - check->get_full_hash_request_start_time);
   }
   CHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
@@ -1116,10 +1134,8 @@ void SBLocalDatabaseManager::FinishFullHashResponse(
     std::unique_ptr<PendingCheck> check,
     PendingChecks::const_iterator it,
     base::TimeTicks start_processing) {
-  // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.ResponseProcessingDuration",
-      base::TimeTicks::Now() - start_processing);
+  RecordCheckUrlTimeTaken("ResponseProcessingDuration",
+                          base::TimeTicks::Now() - start_processing);
 
   RemovePendingCheck(it);
   RespondToClient(std::move(check));
@@ -1161,9 +1177,8 @@ void SBLocalDatabaseManager::PerformFullHashCheck(
   }
 
   if (!check->get_full_hash_queue_start_time.is_null()) {
-    // TODO(crbug.com/362791941): Convert v4 histograms to v5 histograms
-    base::UmaHistogramTimes(
-        "SafeBrowsing.V4CheckUrl.TimeTaken.GetFullHashQueueDelay",
+    RecordCheckUrlTimeTaken(
+        "GetFullHashQueueDelay",
         base::TimeTicks::Now() - check->get_full_hash_queue_start_time);
   }
   check->get_full_hash_request_start_time = base::TimeTicks::Now();
@@ -1223,8 +1238,8 @@ void SBLocalDatabaseManager::ProcessQueuedChecks() {
     PendingCheck* check_ptr = it.get();
 
     if (!check_ptr->queue_start_time.is_null()) {
-      base::UmaHistogramTimes(
-          "SafeBrowsing.V4CheckUrl.TimeTaken.DatabaseNotReadyQueueDelay",
+      RecordCheckUrlTimeTaken(
+          "DatabaseNotReadyQueueDelay",
           base::TimeTicks::Now() - check_ptr->queue_start_time);
     }
     AddPendingCheck(check_ptr);
@@ -1244,12 +1259,11 @@ void SBLocalDatabaseManager::ProcessQueuedChecksContinuation(
     return;
   }
 
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup",
-      base::TimeTicks::Now() - check->local_db_lookup_start_time);
+  RecordCheckUrlTimeTaken("LocalLookup", base::TimeTicks::Now() -
+                                             check->local_db_lookup_start_time);
 
-  base::UmaHistogramTimes(
-      "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay",
+  RecordCheckUrlTimeTaken(
+      "LocalLookup.UiCallbackQueueDelay",
       base::TimeTicks::Now() - lookup_result.db_thread_end_time);
 
   const auto it = pending_checks_.find(check.get());

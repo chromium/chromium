@@ -222,6 +222,8 @@ TEST_F(V4GetHashProtocolManagerTest, TestBackoffErrorHistogramCount) {
 
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.V4GetHash.Result.BackoffErrorCount", 1);
+  histogram_tester.ExpectTotalCount(
+      "SafeBrowsing.SBGetHash.Result.BackoffErrorCount", 1);
 
   histogram_tester.ExpectBucketCount(
       "SafeBrowsing.SBGetHash.CacheHitAllPrefixes", /*sample=*/false,

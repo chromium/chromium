@@ -49,6 +49,13 @@ const net::BackoffEntry::Policy kV5GetHashBackoffPolicy = {
     false,                // always_use_initial_delay
 };
 
+void RecordNumRequestsSkippedDuringBackoff(size_t count) {
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.V5GetHash.NumRequestsSkippedDuringBackoff", count);
+  base::UmaHistogramCounts100("SafeBrowsing.SBGetHash.Result.BackoffErrorCount",
+                              count);
+}
+
 bool IsHashDetailRelevantForLocalChecks(
     const V5::FullHash::FullHashDetail& detail) {
   bool has_canary = false;
@@ -175,6 +182,7 @@ void V5GetHashProtocolManager::GetFullHashes(
 
   // If the service is in backoff mode, don't send a request.
   if (backoff_entry_->ShouldRejectRequest()) {
+    num_requests_skipped_for_backoff_++;
     CompleteLookup(std::move(callback), OperationOutcome::kBackoffError,
                    SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
@@ -337,6 +345,14 @@ void V5GetHashProtocolManager::OnURLLoaderComplete(
                  result.threat_type, result.metadata);
 }
 
+void V5GetHashProtocolManager::HandleBackoffResult(bool succeeded) {
+  if (succeeded && backoff_entry_->failure_count() > 0) {
+    RecordNumRequestsSkippedDuringBackoff(num_requests_skipped_for_backoff_);
+    num_requests_skipped_for_backoff_ = 0;
+  }
+  backoff_entry_->InformOfRequest(succeeded);
+}
+
 base::expected<v5_search_hashes_util::ParseResultSuccess,
                V5GetHashProtocolManager::OperationOutcome>
 V5GetHashProtocolManager::ParseResponseAndUpdateBackoff(
@@ -352,7 +368,7 @@ V5GetHashProtocolManager::ParseResponseAndUpdateBackoff(
   if (parse_info.has_value()) {
     base::UmaHistogramBoolean("SafeBrowsing.V5GetHash.FoundUnmatchedFullHashes",
                               parse_info->found_unmatched_full_hashes);
-    backoff_entry_->InformOfRequest(/*succeeded=*/true);
+    HandleBackoffResult(/*succeeded=*/true);
     return std::move(parse_info).value();
   }
 
@@ -360,10 +376,10 @@ V5GetHashProtocolManager::ParseResponseAndUpdateBackoff(
                                 parse_info.error());
   switch (parse_info.error()) {
     case safe_browsing::v5_search_hashes_util::ParseFailure::kNetworkError:
-      backoff_entry_->InformOfRequest(/*succeeded=*/false);
+      HandleBackoffResult(/*succeeded=*/false);
       return base::unexpected(OperationOutcome::kNetworkError);
     case safe_browsing::v5_search_hashes_util::ParseFailure::kHttpError:
-      backoff_entry_->InformOfRequest(/*succeeded=*/false);
+      HandleBackoffResult(/*succeeded=*/false);
       return base::unexpected(OperationOutcome::kHttpError);
     case safe_browsing::v5_search_hashes_util::ParseFailure::kRetriableError:
       // Retriable errors are ignored. Do not inform the backoff entry.
@@ -375,7 +391,7 @@ V5GetHashProtocolManager::ParseResponseAndUpdateBackoff(
         kIncorrectFullHashLengthError:
       // Parsing and validation errors do not count as server load issues,
       // so we treat them as successful requests to reset backoff.
-      backoff_entry_->InformOfRequest(/*succeeded=*/true);
+      HandleBackoffResult(/*succeeded=*/true);
       return base::unexpected(OperationOutcome::kParseError);
   }
 }

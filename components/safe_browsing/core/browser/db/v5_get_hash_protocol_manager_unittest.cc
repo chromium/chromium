@@ -7,9 +7,11 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -661,6 +663,116 @@ TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff) {
                          /*expected_threat_info_size=*/1,
                          /*expected_found_unmatched_full_hashes=*/false);
   }
+}
+
+TEST_F(V5GetHashProtocolManagerTest,
+       TestNumRequestsSkippedDuringBackoffHistogram) {
+  std::unique_ptr<V5GetHashProtocolManager> pm = CreateProtocolManager();
+
+  FullHashStr full_hash("12345678901234567890123456789012");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
+  full_hash_to_threat_types[full_hash] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash));
+
+  // 1. Trigger first failure to enter backoff.
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  // 2. Two requests during backoff should be rejected and count as skipped.
+  test_url_loader_factory_.ClearResponses();
+  for (int i = 0; i < 2; i++) {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  // Verify histograms are not logged yet before the success call.
+  histogram_tester_->ExpectTotalCount(
+      "SafeBrowsing.V5GetHash.NumRequestsSkippedDuringBackoff", 0);
+  histogram_tester_->ExpectTotalCount(
+      "SafeBrowsing.SBGetHash.Result.BackoffErrorCount", 0);
+
+  // 3. Fast forward past backoff and let next request succeed.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  std::vector<V5::FullHash> full_hashes = {
+      CreateFullHashProto(full_hash, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url, full_hashes);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.V5GetHash.NumRequestsSkippedDuringBackoff",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.Result.BackoffErrorCount",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
+
+  // Reset histogram tester to check the second backoff window independently.
+  ResetMetrics();
+
+  // 4. Trigger second failure to enter backoff again (using a new hash to avoid
+  // cache hit).
+  FullHashStr full_hash2("56789012345678901234567890123456");
+  std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types2;
+  full_hash_to_threat_types2[full_hash2] = {
+      SBThreatType::SB_THREAT_TYPE_URL_PHISHING};
+  std::string expected_url2 =
+      GetExpectedRequestUrl(SBProtocolManagerUtil::GetHashPrefix(full_hash2));
+
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(
+      GURL(expected_url2), network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  // 5. One request during second backoff should be rejected and count as
+  // skipped.
+  test_url_loader_factory_.ClearResponses();
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  // 6. Fast forward past backoff and let next request succeed.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  std::vector<V5::FullHash> full_hashes2 = {
+      CreateFullHashProto(full_hash2, {V5::ThreatType::SOCIAL_ENGINEERING},
+                          /*threat_attributes=*/std::nullopt)};
+  SetUpDefaultLookupResponse(expected_url2, full_hashes2);
+  {
+    base::test::TestFuture<SBThreatType, const ThreatMetadata&> future;
+    pm->GetFullHashes(full_hash_to_threat_types2, future.GetCallback());
+    std::ignore = future.Get();
+  }
+
+  // Histograms
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.V5GetHash.NumRequestsSkippedDuringBackoff",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      "SafeBrowsing.SBGetHash.Result.BackoffErrorCount",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(V5GetHashProtocolManagerTest, GetFullHashes_Backoff_RetriableErrors) {
