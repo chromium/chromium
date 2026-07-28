@@ -263,6 +263,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   auto codec_image_holder = std::move(record.codec_image_holder);
 
   CHECK(record.shared_image);
+  const bool has_scanout =
+      record.shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   gfx::ColorSpace color_space = record.shared_image->color_space();
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       pixel_format, std::move(record.shared_image), gpu::SyncToken(),
@@ -285,24 +287,9 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
 
   frame->metadata().copy_required = video_frame_copy_required;
 
-  const bool is_surface_control =
-      overlay_mode == OverlayMode::kSurfaceControlSecure ||
-      overlay_mode == OverlayMode::kSurfaceControlInsecure;
   const bool wants_promotion_hints =
       overlay_mode == OverlayMode::kRequestPromotionHints;
-
-  bool allow_overlay = false;
-  if (is_surface_control) {
-    DCHECK(is_texture_owner_backed);
-    allow_overlay = true;
-  } else {
-    // We unconditionally mark the picture as overlayable, even if
-    // |!is_texture_owner_backed|, if we want to get hints.  It's
-    // required, else we won't get hints.
-    allow_overlay = !is_texture_owner_backed || wants_promotion_hints;
-  }
-
-  frame->metadata().allow_overlay = allow_overlay;
+  frame->metadata().allow_overlay = has_scanout;
   frame->metadata().wants_promotion_hint = wants_promotion_hints;
   frame->metadata().in_surface_view = !is_texture_owner_backed;
 
