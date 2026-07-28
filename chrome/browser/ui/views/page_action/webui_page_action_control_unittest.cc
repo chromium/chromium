@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -30,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace page_actions {
@@ -169,6 +171,15 @@ TEST_F(WebUIPageActionControlTest, StateMapping) {
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   EXPECT_EQ(u"New Tooltip", states[0]->tooltip_text);
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  controller->OverrideImage(target_action_id,
+                            ui::ImageModel::FromVectorIcon(kZoomInIcon));
+
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_FALSE(states[0]->icon.is_null());
 
   EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
       .Times(testing::AtLeast(1));
