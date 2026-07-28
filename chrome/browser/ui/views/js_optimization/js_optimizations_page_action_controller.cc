@@ -58,6 +58,11 @@ JsOptimizationsPageActionController::~JsOptimizationsPageActionController() =
 
 void JsOptimizationsPageActionController::PrimaryPageChanged(
     content::Page& page) {
+  // The bubble's contents and action are scoped to the page it was opened for,
+  // so dismiss it when the primary page changes.
+  if (bubble_ && bubble_->GetWidget()) {
+    bubble_->GetWidget()->Close();
+  }
   UpdateIconVisibility();
 }
 

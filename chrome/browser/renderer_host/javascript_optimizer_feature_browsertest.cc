@@ -1583,6 +1583,47 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
+                       BubbleClosesOnNavigation) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("a.com", "/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+  ASSERT_TRUE(IsOmnibarIconVisible());
+
+  // Click on icon.
+  RunTestSequence(PressButton(kJsOptimizationsIconElementId));
+  // Assert that bubble is visible.
+  RunTestSequence(
+      WaitForShow(JsOptimizationsPageActionController::kBubbleBodyElementId));
+  EXPECT_TRUE(IsBubbleVisible());
+
+  // Navigate to a different site while the bubble is open.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("b.com", "/simple.html")));
+  ASSERT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
+
+  // The bubble was opened for the previous site, so it should now be closed.
+  RunTestSequence(
+      WaitForHide(JsOptimizationsPageActionController::kBubbleBodyElementId));
+  EXPECT_FALSE(IsBubbleVisible());
+
+  // No allow exception was written for either site.
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(
+                embedded_https_test_server().GetURL("a.com", "/"), GURL(),
+                ContentSettingsType::JAVASCRIPT_OPTIMIZER));
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(
+                embedded_https_test_server().GetURL("b.com", "/"), GURL(),
+                ContentSettingsType::JAVASCRIPT_OPTIMIZER));
+}
+
 // JS optimizations disabled by enterprise policy.
 class JavascriptOptimizerBubbleBrowserTest_WithPolicy
     : public JavascriptOptimizerBubbleBrowserTest {};
