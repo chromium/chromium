@@ -274,12 +274,12 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
     TextureManager* texture_manager,
     bool cleared);
 
-  void MarkAsComplete(unsigned state_id) {
+  void MarkAsComplete(uint64_t state_id) {
     UpdateDrawBufferMasks();
     framebuffer_complete_state_count_id_ = state_id;
   }
 
-  unsigned framebuffer_complete_state_count_id() const {
+  uint64_t framebuffer_complete_state_count_id() const {
     return framebuffer_complete_state_count_id_;
   }
 
@@ -303,7 +303,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   bool has_been_bound_;
 
   // state count when this framebuffer was last checked for completeness.
-  unsigned framebuffer_complete_state_count_id_;
+  uint64_t framebuffer_complete_state_count_id_;
 
   // A map of attachments.
   using AttachmentMap =
@@ -400,7 +400,7 @@ class GPU_GLES2_EXPORT FramebufferManager {
   void IncFramebufferStateChangeCount() {
     // make sure this is never 0.
     framebuffer_state_change_count_ =
-        (framebuffer_state_change_count_ + 1) | 0x80000000U;
+        (framebuffer_state_change_count_ + 1) | (uint64_t{1} << 63);
   }
 
  private:
@@ -419,7 +419,7 @@ class GPU_GLES2_EXPORT FramebufferManager {
 
   // Incremented anytime anything changes that might effect framebuffer
   // state.
-  unsigned framebuffer_state_change_count_;
+  uint64_t framebuffer_state_change_count_;
 
   // Counts the number of Framebuffer allocated with 'this' as its manager.
   // Allows to check no Framebuffer will outlive this.
