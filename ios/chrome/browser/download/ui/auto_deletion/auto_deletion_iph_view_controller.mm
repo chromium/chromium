@@ -31,8 +31,7 @@ constexpr CGFloat kSymbolContainerSize = 64;
 // Creates a UIView that contains the the IPH's icon as a subview.
 UIView* CreateIconContainer() {
   // Create the trash icon.
-  UIImage* symbol =
-      DefaultSymbolWithPointSize(kArrowUpTrashSymbol, kTrashSymbolSize);
+  UIImage* symbol = SymbolWithPointSize(SymbolArrowUpTrash, kTrashSymbolSize);
   UIImageView* symbolView = [[UIImageView alloc] initWithImage:symbol];
   symbolView.translatesAutoresizingMaskIntoConstraints = NO;
   [symbolView setTintColor:UIColor.whiteColor];

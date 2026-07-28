@@ -521,8 +521,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     [_leadingIconNotStarted
         setContentHuggingPriority:UILayoutPriorityRequired
                           forAxis:UILayoutConstraintAxisHorizontal];
-    _leadingIconNotStarted.image = DefaultSymbolTemplateWithPointSize(
-        kOpenInDownloadsSymbol, kSymbolDownloadInfobarPointSize);
+    _leadingIconNotStarted.image = SymbolTemplateWithPointSize(
+        SymbolOpenInDownloads, kSymbolDownloadInfobarPointSize);
   }
 
   return _leadingIconNotStarted;
@@ -697,13 +697,11 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (UIButton*)closeButton {
   if (!_closeButton) {
-    UIImage* closeButtonImage =
-        SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
-                                                     kCloseButtonIconSize),
-                          @[
-                            [UIColor colorNamed:kGrey600Color],
-                            [UIColor colorNamed:kGrey200Color],
-                          ]);
+    UIImage* closeButtonImage = SymbolWithPalette(
+        SymbolWithPointSize(SymbolXMarkCircleFill, kCloseButtonIconSize), @[
+          [UIColor colorNamed:kGrey600Color],
+          [UIColor colorNamed:kGrey200Color],
+        ]);
     UIButtonConfiguration* closeButtonConf =
         [UIButtonConfiguration plainButtonConfiguration];
     closeButtonConf.image = closeButtonImage;
