@@ -57,9 +57,13 @@ TabContextSyncServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  // `base::Unretained(profile)` is safe because `ProfileIOS` outlives all
+  // `KeyedService` instances associated with it.
   auto ephemeral_key_fetcher =
       std::make_unique<sync_tab_context::HttpRpcBasedEphemeralKeyFetcher>(
-          identity_manager, profile->GetSharedURLLoaderFactory(),
+          identity_manager,
+          base::BindRepeating(&ProfileIOS::GetSharedURLLoaderFactory,
+                              base::Unretained(profile)),
           sync_tab_context::GetEphemeralKeyServerUrl());
 
   return std::make_unique<sync_tab_context::TabContextSyncServiceImpl>(

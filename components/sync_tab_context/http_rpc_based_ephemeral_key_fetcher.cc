@@ -178,27 +178,29 @@ class HttpRpcBasedEphemeralKeyFetcher::Operation {
 
 HttpRpcBasedEphemeralKeyFetcher::HttpRpcBasedEphemeralKeyFetcher(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    UrlLoaderFactoryGetter url_loader_factory_getter,
     const GURL& server_url)
     : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)),
+      url_loader_factory_getter_(std::move(url_loader_factory_getter)),
       server_url_(server_url) {
   CHECK(identity_manager_);
-  CHECK(url_loader_factory_);
+  CHECK(url_loader_factory_getter_);
 }
 
 HttpRpcBasedEphemeralKeyFetcher::~HttpRpcBasedEphemeralKeyFetcher() = default;
 
 void HttpRpcBasedEphemeralKeyFetcher::FetchEphemeralKey(
     FetchCallback callback) {
-  if (!server_url_.is_valid()) {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      url_loader_factory_getter_.Run();
+  if (!server_url_.is_valid() || !url_loader_factory) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  auto op = std::make_unique<Operation>(identity_manager_, url_loader_factory_,
-                                        server_url_);
+  auto op = std::make_unique<Operation>(
+      identity_manager_, std::move(url_loader_factory), server_url_);
   Operation* op_ptr = op.get();
   ongoing_operations_.push_back(std::move(op));
 

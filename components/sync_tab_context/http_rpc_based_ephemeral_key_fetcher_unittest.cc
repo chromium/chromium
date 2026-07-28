@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -34,11 +35,22 @@ class HttpRpcBasedEphemeralKeyFetcherTest : public ::testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         fetcher_(identity_test_env_.identity_manager(),
-                 test_shared_loader_factory_,
+                 GetUrlLoaderFactoryGetter(),
                  GURL(kTestServerUrl)) {
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  // Returns a `UrlLoaderFactoryGetter` callback that returns
+  // `test_shared_loader_factory_`.
+  HttpRpcBasedEphemeralKeyFetcher::UrlLoaderFactoryGetter
+  GetUrlLoaderFactoryGetter() const {
+    return base::BindRepeating(
+        [](scoped_refptr<network::SharedURLLoaderFactory> factory) {
+          return factory;
+        },
+        test_shared_loader_factory_);
   }
 
   // Synchronously fetches an ephemeral key using `fetcher_`, simulating an
@@ -65,7 +77,7 @@ class HttpRpcBasedEphemeralKeyFetcherTest : public ::testing::Test {
 TEST_F(HttpRpcBasedEphemeralKeyFetcherTest,
        ShouldReturnNulloptWhenServerUrlIsInvalid) {
   HttpRpcBasedEphemeralKeyFetcher fetcher(identity_test_env_.identity_manager(),
-                                          test_shared_loader_factory_,
+                                          GetUrlLoaderFactoryGetter(),
                                           GURL("invalid-url"));
   base::test::TestFuture<std::optional<EphemeralKeyFetcher::Result>> future;
   fetcher.FetchEphemeralKey(future.GetCallback());
@@ -150,6 +162,40 @@ TEST_F(HttpRpcBasedEphemeralKeyFetcherTest, ShouldSupportConcurrentRequests) {
   EXPECT_EQ(res1->server_token, "token_server_1");
   EXPECT_EQ(res2->server_token, "token_server_2");
   EXPECT_EQ(fetcher_.ongoing_operations_count_for_testing(), 0u);
+}
+
+TEST_F(HttpRpcBasedEphemeralKeyFetcherTest,
+       ShouldFetchEphemeralKeyWithLazyUrlLoaderFactoryGetter) {
+  testing::NiceMock<base::MockRepeatingCallback<
+      scoped_refptr<network::SharedURLLoaderFactory>()>>
+      mock_factory_getter;
+
+  EXPECT_CALL(mock_factory_getter, Run()).Times(0);
+
+  HttpRpcBasedEphemeralKeyFetcher fetcher(identity_test_env_.identity_manager(),
+                                          mock_factory_getter.Get(),
+                                          GURL(kTestServerUrl));
+
+  EXPECT_CALL(mock_factory_getter, Run())
+      .WillOnce(testing::Return(test_shared_loader_factory_));
+
+  base::test::TestFuture<std::optional<EphemeralKeyFetcher::Result>> future;
+  fetcher.FetchEphemeralKey(future.GetCallback());
+}
+
+TEST_F(HttpRpcBasedEphemeralKeyFetcherTest,
+       ShouldReturnNulloptWhenUrlLoaderFactoryGetterReturnsNull) {
+  HttpRpcBasedEphemeralKeyFetcher fetcher(
+      identity_test_env_.identity_manager(),
+      base::BindRepeating(
+          []() -> scoped_refptr<network::SharedURLLoaderFactory> {
+            return nullptr;
+          }),
+      GURL(kTestServerUrl));
+
+  base::test::TestFuture<std::optional<EphemeralKeyFetcher::Result>> future;
+  fetcher.FetchEphemeralKey(future.GetCallback());
+  EXPECT_EQ(future.Take(), std::nullopt);
 }
 
 }  // namespace
