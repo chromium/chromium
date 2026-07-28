@@ -21,6 +21,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -887,6 +888,34 @@ TEST_F(RTCVideoDecoderAdapterTest, CanReadSharedFrameBuffer) {
   });
   FinishDecode(0);
   media_thread_.FlushForTesting();
+}
+
+TEST_F(RTCVideoDecoderAdapterTest, InitializeSyncTimeoutRace) {
+  RTCVideoDecoderAdapter::SetInitializeSyncTimeoutForTesting(
+      base::Milliseconds(1));
+
+  base::WaitableEvent initialize_called;
+  media::VideoDecoder::InitCB saved_init_cb;
+
+  EXPECT_CALL(*video_decoder_, Initialize_)
+      .WillOnce(testing::WithArg<3>([&](media::VideoDecoder::InitCB& init_cb) {
+        saved_init_cb = std::move(init_cb);
+        initialize_called.Signal();
+      }));
+
+  ASSERT_FALSE(RTCVideoDecoderAdapterWrapper::Create(
+      &gpu_factories_,
+      webrtc::SdpVideoFormat(
+          webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9)),
+      true));
+
+  initialize_called.Wait();
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(saved_init_cb),
+                                media::DecoderStatus::Codes::kOk));
+  media_thread_.FlushForTesting();
+
+  RTCVideoDecoderAdapter::SetInitializeSyncTimeoutForTesting(std::nullopt);
 }
 
 }  // namespace blink
