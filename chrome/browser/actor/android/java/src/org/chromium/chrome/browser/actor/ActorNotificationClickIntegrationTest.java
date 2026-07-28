@@ -18,7 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -39,13 +40,14 @@ public class ActorNotificationClickIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private ActorKeyedService mActorKeyedService;
 
     private Context mContext;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ContextUtils.getApplicationContext();
     }
 

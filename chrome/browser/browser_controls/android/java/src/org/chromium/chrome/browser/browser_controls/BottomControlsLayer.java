@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;

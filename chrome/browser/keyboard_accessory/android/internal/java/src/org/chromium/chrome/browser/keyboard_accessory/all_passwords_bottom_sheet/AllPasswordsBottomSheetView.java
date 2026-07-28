@@ -12,7 +12,6 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -199,7 +198,7 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.all_passwords_bottom_sheet_content_description);
     }
 

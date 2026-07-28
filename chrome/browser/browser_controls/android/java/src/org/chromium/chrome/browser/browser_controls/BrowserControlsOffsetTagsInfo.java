@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
-import androidx.annotation.NonNull;
-
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.build.annotations.NullMarked;
@@ -53,11 +51,11 @@ public final class BrowserControlsOffsetTagsInfo {
         return mTags.hasTags();
     }
 
-    public @NonNull BrowserControlsOffsetTags getTags() {
+    public BrowserControlsOffsetTags getTags() {
         return mTags;
     }
 
-    public @NonNull BrowserControlsOffsetTagConstraints getConstraints() {
+    public BrowserControlsOffsetTagConstraints getConstraints() {
         return new BrowserControlsOffsetTagConstraints(
                 mTopControlsConstraints, mContentConstraints, mBottomControlsConstraints);
     }
