@@ -32,7 +32,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // OmniboxPopupPresenterBase:
   void Show() override;
   void Hide() override;
-  void NotifyEscapeKeyPressed() override;
   // Requests activation of the popup widget and focuses the WebUI content,
   // while clearing stored focus on the container widget to prevent stealing
   // focus back from the WebUI input field.
@@ -64,9 +63,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void StopForwardingEvents();
 
   void DeactivatePopupAndKillFocus();
-
-  // Flag set when an ESC key event is intercepted before widget deactivation.
-  bool is_handling_escape_key_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

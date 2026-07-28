@@ -42,7 +42,6 @@ OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
 OmniboxFullPopupWebUIContent::~OmniboxFullPopupWebUIContent() = default;
 
 bool OmniboxFullPopupWebUIContent::EscClosesUI() const {
-  // ESC handling is performed by WebUI rather than by native C++.
   return false;
 }
 

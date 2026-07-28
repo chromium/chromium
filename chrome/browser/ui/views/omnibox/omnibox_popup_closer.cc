@@ -65,8 +65,6 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   auto* location_bar = browser_view_->GetLocationBar();
   if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
     if (auto* presenter = popup_view->presenter()) {
-      // Note: ESC key notifications (`PopupCloseReason::kEscapeKeyPressed`)
-      // are handled via `OmniboxPopupWebUIBaseContent::OnPreHandleEscapeKey()`.
       if (presenter->has_active_blockers()) {
         return;
       }
