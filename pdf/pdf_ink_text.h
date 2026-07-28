@@ -38,13 +38,18 @@ enum class TextTypeface {
 
 // These values are persisted in PDFs as integers. Do not change the assigned
 // integer values to maintain backward compatibility.
+// LINT.IfChange(TextAlignment)
 enum class TextAlignment {
   kLeft = 0,
   kCenter = 1,
   kRight = 2,
-  kFirst = kLeft,
-  kLast = kRight,
+  kMinValue = kLeft,
+  kMaxValue = kRight,
 };
+// LINT.ThenChange(
+//   //chrome/browser/resources/pdf/constants.ts:TextAlignment,
+//   //tools/metrics/histograms/metadata/pdf/enums.xml:PDFInk2TextAnnotationAlignment
+// )
 
 std::string TextTypefaceToString(TextTypeface typeface);
 std::string TextAlignmentToString(TextAlignment alignment);

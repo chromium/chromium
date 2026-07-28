@@ -70,11 +70,13 @@ export interface TextAnnotationMessageData extends TextAnnotation {
   source: TextAnnotationSource;
 }
 
+// LINT.IfChange(TextAlignment)
 export enum TextAlignment {
   LEFT = 'left',
   CENTER = 'center',
   RIGHT = 'right',
 }
+// LINT.ThenChange(//pdf/pdf_ink_text.h:TextAlignment)
 
 export enum TextStyle {
   BOLD = 'bold',
