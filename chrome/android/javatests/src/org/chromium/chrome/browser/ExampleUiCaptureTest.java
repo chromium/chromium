@@ -37,6 +37,6 @@ public class ExampleUiCaptureTest {
     @Feature({"UiCatalogue"})
     public void testCaptureNewTabPage() {
         mActivityTestRule.startFromLauncherAtNtp();
-        mScreenShooter.shoot("NTP", ScreenShooter.TagsEnum.UiCatalogueExample);
+        mScreenShooter.shoot("NTP", ScreenShooter.Tags.UI_CATALOGUE_EXAMPLE);
     }
 }
