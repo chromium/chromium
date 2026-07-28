@@ -556,6 +556,10 @@ public final class ProductionSupportedFlagList {
                 UiEventsFeatures.COMPENSATE_GESTURE_DETECTOR_TIMEOUTS,
                 "Componesate for event processing delay for calculating gesture timeouts."),
         Flag.baseFeature("ReduceCpuUtilization2"),
+        Flag.baseFeature(
+                "ReduceMojoURLLoaderFactoryCloning",
+                "Minimizes Mojo URLLoaderFactory cloning overhead during navigation and worker"
+                        + " startup."),
         Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
         Flag.baseFeature("IncreaseCoookieAccesCacheSize"),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
