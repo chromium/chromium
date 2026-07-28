@@ -25,7 +25,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -92,7 +94,6 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/observing_input_filter.h"
-#include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
@@ -144,23 +145,23 @@ PeerSessionImpl::PeerSessionImpl(
     std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     DesktopEnvironmentFactory* desktop_environment_factory,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    RequestPairingCallback request_pairing_cb)
     : PeerSessionImpl(std::make_unique<protocol::WebrtcConnectionToClient>(
                           std::move(ice_config_fetcher),
                           std::move(audio_task_runner)),
                       desktop_environment_factory,
-                      std::move(pairing_registry)) {}
+                      std::move(request_pairing_cb)) {}
 
 PeerSessionImpl::PeerSessionImpl(
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    RequestPairingCallback request_pairing_cb)
     : desktop_environment_factory_(desktop_environment_factory),
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
       client_clipboard_factory_(&client_clipboard_filter_),
       input_pipeline_(&coordinate_converter_, this),
-      pairing_registry_(std::move(pairing_registry)),
+      request_pairing_cb_(std::move(request_pairing_cb)),
       connection_(std::move(connection)) {
   connection_->SetEventHandler(this);
 
@@ -540,13 +541,48 @@ void PeerSessionImpl::SetCapabilities(
 
 void PeerSessionImpl::RequestPairing(
     const protocol::PairingRequest& pairing_request) {
-  if (pairing_registry_.get() && pairing_request.has_client_name()) {
-    protocol::PairingRegistry::Pairing pairing =
-        pairing_registry_->CreatePairing(pairing_request.client_name());
-    protocol::PairingResponse pairing_response;
-    pairing_response.set_client_id(pairing.client_id());
-    pairing_response.set_shared_secret(pairing.shared_secret());
-    connection_->client_stub()->SetPairingResponse(pairing_response);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!request_pairing_cb_ || !pairing_request.has_client_name() ||
+      pairing_request_pending_) {
+    return;
+  }
+
+  const std::string& client_name = pairing_request.client_name();
+  if (client_name.empty() || client_name.size() > kMaxClientNameLength ||
+      !base::IsStringUTF8(client_name)) {
+    LOG(ERROR) << "Invalid client name received in pairing request.";
+    return;
+  }
+
+  pairing_request_pending_ = true;
+  request_pairing_cb_.Run(
+      client_name,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &PeerSessionImpl::OnPairingResponse, weak_factory_.GetWeakPtr())));
+}
+
+void PeerSessionImpl::OnPairingResponse(
+    std::optional<protocol::PairingResponse> pairing_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pairing_request_pending_ = false;
+  if (!pairing_response.has_value()) {
+    LOG(WARNING) << "Pairing request failed or was rejected by host process.";
+    return;
+  }
+  if (!pairing_response->has_client_id() ||
+      pairing_response->client_id().empty() ||
+      !pairing_response->has_shared_secret() ||
+      pairing_response->shared_secret().empty()) {
+    LOG(WARNING) << "Received invalid or empty pairing response.";
+    return;
+  }
+  if (!connection_) {
+    return;
+  }
+  if (channels_connected_) {
+    connection_->client_stub()->SetPairingResponse(*pairing_response);
+  } else {
+    pending_pairing_response_ = std::move(*pairing_response);
   }
 }
 
@@ -779,6 +815,11 @@ void PeerSessionImpl::OnConnectionChannelsConnected() {
 
   DCHECK(!channels_connected_);
   channels_connected_ = true;
+
+  if (pending_pairing_response_) {
+    connection_->client_stub()->SetPairingResponse(*pending_pairing_response_);
+    pending_pairing_response_.reset();
+  }
 
   if (pending_audio_writer_) {
     connection_->SetAudioWriter(std::move(pending_audio_writer_));
@@ -1564,11 +1605,11 @@ PeerSessionImplFactory::PeerSessionImplFactory(
     DesktopEnvironmentFactory* desktop_environment_factory,
     GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-    scoped_refptr<protocol::PairingRegistry> pairing_registry)
+    RequestPairingCallback request_pairing_cb)
     : desktop_environment_factory_(desktop_environment_factory),
       get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)),
       audio_task_runner_(std::move(audio_task_runner)),
-      pairing_registry_(std::move(pairing_registry)) {}
+      request_pairing_cb_(std::move(request_pairing_cb)) {}
 
 PeerSessionImplFactory::~PeerSessionImplFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1581,7 +1622,7 @@ std::unique_ptr<PeerSession> PeerSessionImplFactory::Create() {
       get_ice_config_fetcher_cb_.Run();
   return std::make_unique<PeerSessionImpl>(
       std::move(ice_config_fetcher), audio_task_runner_,
-      desktop_environment_factory_, pairing_registry_);
+      desktop_environment_factory_, request_pairing_cb_);
 }
 
 }  // namespace remoting

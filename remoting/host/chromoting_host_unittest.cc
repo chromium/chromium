@@ -156,7 +156,7 @@ class ChromotingHostTest : public testing::Test {
         .Times(AtMost(1))
         .WillOnce(Return(ByMove(std::make_unique<PeerSessionImpl>(
             std::move(connection), desktop_environment_factory_.get(),
-            nullptr))));
+            base::NullCallback()))));
     MockPeerSessionFactory* mock_factory_ptr = mock_factory.get();
     mock_peer_session_factories_.push_back(std::move(mock_factory));
 

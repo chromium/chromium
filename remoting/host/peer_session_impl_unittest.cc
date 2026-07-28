@@ -267,6 +267,16 @@ class PeerSessionImplTest : public testing::Test {
   bool is_connected() const {
     return connection_ && connection_->is_connected();
   }
+
+  void OnRequestPairing(
+      const std::string& client_name,
+      PeerSessionImpl::RequestPairingResponseCallback response_cb) {
+    requested_client_name_ = client_name;
+    pairing_response_cb_ = std::move(response_cb);
+  }
+
+  std::string requested_client_name_;
+  PeerSessionImpl::RequestPairingResponseCallback pairing_response_cb_;
 };
 
 void PeerSessionImplTest::SetUp() {
@@ -306,7 +316,8 @@ void PeerSessionImplTest::CreatePeerSession() {
 
   peer_session_ = std::make_unique<PeerSessionImpl>(
       std::move(connection), desktop_environment_factory_.get(),
-      /* pairing_registry= */ nullptr);
+      base::BindRepeating(&PeerSessionImplTest::OnRequestPairing,
+                          base::Unretained(this)));
 }
 
 void PeerSessionImplTest::StartPeerSession(
@@ -974,6 +985,157 @@ TEST_F(PeerSessionImplTest, ControlTerminal_RemoveRequest) {
 
   peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   peer_session_.reset();
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing) {
+  ConnectPeerSession();
+
+  protocol::PairingRequest request;
+  request.set_client_name("test_client");
+  peer_session_->RequestPairing(request);
+
+  EXPECT_EQ(requested_client_name_, "test_client");
+  ASSERT_TRUE(pairing_response_cb_);
+
+  protocol::PairingResponse response;
+  response.set_client_id("client_id_123");
+  response.set_shared_secret("secret_456");
+
+  base::test::TestFuture<protocol::PairingResponse> future;
+  EXPECT_CALL(client_stub_, SetPairingResponse(_))
+      .WillOnce([&future](const protocol::PairingResponse& r) {
+        future.SetValue(r);
+      });
+  std::move(pairing_response_cb_).Run(response);
+
+  protocol::PairingResponse received_response = future.Take();
+  EXPECT_EQ(received_response.client_id(), "client_id_123");
+  EXPECT_EQ(received_response.shared_secret(), "secret_456");
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing_InvalidOrNullCallback) {
+  ConnectPeerSession();
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_)).Times(0);
+
+  protocol::PairingRequest empty_name_request;
+  peer_session_->RequestPairing(empty_name_request);
+  EXPECT_TRUE(requested_client_name_.empty());
+
+  protocol::PairingRequest long_name_request;
+  long_name_request.set_client_name(
+      std::string(PeerSessionImpl::kMaxClientNameLength + 1, 'a'));
+  peer_session_->RequestPairing(long_name_request);
+  EXPECT_TRUE(requested_client_name_.empty());
+
+  peer_session_->SetRequestPairingCallbackForTesting(base::NullCallback());
+  protocol::PairingRequest valid_request;
+  valid_request.set_client_name("test_client");
+  peer_session_->RequestPairing(valid_request);
+  EXPECT_TRUE(requested_client_name_.empty());
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing_EmptyResponseIgnored) {
+  ConnectPeerSession();
+
+  protocol::PairingRequest request;
+  request.set_client_name("test_client");
+  peer_session_->RequestPairing(request);
+  ASSERT_TRUE(pairing_response_cb_);
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_)).Times(0);
+  std::move(pairing_response_cb_).Run(std::nullopt);
+
+  base::test::TestFuture<void> after_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, after_future.GetCallback());
+  EXPECT_TRUE(after_future.Wait());
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing_BufferedBeforeChannelsConnected) {
+  CreatePeerSession();
+  StartPeerSession();
+  EXPECT_FALSE(peer_session_->channels_connected());
+
+  protocol::PairingRequest request;
+  request.set_client_name("test_client");
+  peer_session_->RequestPairing(request);
+  ASSERT_TRUE(pairing_response_cb_);
+
+  protocol::PairingResponse response;
+  response.set_client_id("client_id_123");
+  response.set_shared_secret("secret_456");
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_)).Times(0);
+  std::move(pairing_response_cb_).Run(response);
+
+  base::test::TestFuture<void> after_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, after_future.GetCallback());
+  EXPECT_TRUE(after_future.Wait());
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_))
+      .WillOnce([](const protocol::PairingResponse& r) {
+        EXPECT_EQ(r.client_id(), "client_id_123");
+        EXPECT_EQ(r.shared_secret(), "secret_456");
+      });
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(session_event_handler_, OnSessionChannelsConnected())
+      .WillOnce([&future] { future.SetValue(); });
+  peer_session_->CreateMediaStreams();
+  peer_session_->OnConnectionChannelsConnected();
+  future.Get();
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing_ConcurrentRequestsIgnored) {
+  ConnectPeerSession();
+
+  protocol::PairingRequest request1;
+  request1.set_client_name("client1");
+  peer_session_->RequestPairing(request1);
+  EXPECT_EQ(requested_client_name_, "client1");
+  ASSERT_TRUE(pairing_response_cb_);
+
+  requested_client_name_.clear();
+  protocol::PairingRequest request2;
+  request2.set_client_name("client2");
+  peer_session_->RequestPairing(request2);
+  EXPECT_TRUE(requested_client_name_.empty());
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_));
+  protocol::PairingResponse response;
+  response.set_client_id("id1");
+  response.set_shared_secret("secret1");
+  std::move(pairing_response_cb_).Run(response);
+
+  base::test::TestFuture<void> after_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, after_future.GetCallback());
+  EXPECT_TRUE(after_future.Wait());
+
+  protocol::PairingRequest request3;
+  request3.set_client_name("client3");
+  peer_session_->RequestPairing(request3);
+  EXPECT_EQ(requested_client_name_, "client3");
+}
+
+TEST_F(PeerSessionImplTest, RequestPairing_EmptyClientIdOrSecretIgnored) {
+  ConnectPeerSession();
+
+  protocol::PairingRequest request;
+  request.set_client_name("test_client");
+  peer_session_->RequestPairing(request);
+  ASSERT_TRUE(pairing_response_cb_);
+
+  EXPECT_CALL(client_stub_, SetPairingResponse(_)).Times(0);
+  protocol::PairingResponse bad_response;
+  bad_response.set_client_id("id_only");
+  std::move(pairing_response_cb_).Run(bad_response);
+
+  base::test::TestFuture<void> after_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, after_future.GetCallback());
+  EXPECT_TRUE(after_future.Wait());
 }
 
 class PeerSessionSecurityKeyTest : public PeerSessionImplTest {
