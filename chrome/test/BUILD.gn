@@ -597,6 +597,7 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
+      "//chrome/browser/themes:theme_service_changed_waiter",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles:test_support",
@@ -605,6 +606,7 @@ static_library("test_support") {
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/common:impl",
       "//chrome/browser/ui/views/tabs/vertical",
+      "//chrome/browser/ui/views/test:test_support",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/isolated_web_apps",
@@ -655,11 +657,6 @@ static_library("test_support") {
 
     sources += [
       "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h",
-      "../browser/ui/views/test/split_view_browser_test_mixin.h",
-      "../browser/ui/views/test/split_view_interactive_test_mixin.h",
-      "../browser/ui/views/test/tab_strip_interactive_test_mixin.h",
-      "../browser/ui/views/test/vertical_tabs_browser_test_mixin.h",
-      "../browser/ui/views/test/vertical_tabs_interactive_test_mixin.h",
       "../browser/ui/webui/test_support/webui_interactive_test_mixin.cc",
       "../browser/ui/webui/test_support/webui_interactive_test_mixin.h",
       "../test/base/browser_with_test_window_test.cc",
@@ -669,7 +666,6 @@ static_library("test_support") {
       "base/test_browser_window.cc",
       "base/test_browser_window.h",
     ]
-    public_deps += [ "//chrome/browser/themes:theme_service_changed_waiter" ]
     allow_circular_includes_from += [
       ":test_support_ui",
       "//chrome/browser/ui/views/tabs/common:impl",
