@@ -660,7 +660,7 @@ void ChipController::OpenPermissionPromptBubble() {
               std::make_unique<ContentSettingQuietRequestBubbleModel>(
                   content_settings_image_delegate_
                       ->GetContentSettingBubbleModelDelegate(),
-                  web_contents);
+                  web_contents->GetPrimaryPage());
       ui::TrackedElement* anchor = location_bar_->GetAnchorOrNull();
       DCHECK(anchor);  // We should get here only if location bar is visible.
       ContentSettingBubbleContents* quiet_request_bubble =

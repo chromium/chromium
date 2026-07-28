@@ -111,6 +111,10 @@ base::WeakPtr<Page> PageImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+base::SafeRef<Page> PageImpl::GetSafeRef() {
+  return weak_factory_.GetSafeRef();
+}
+
 base::WeakPtr<PageImpl> PageImpl::GetWeakPtrImpl() {
   return weak_factory_.GetWeakPtr();
 }

@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -196,7 +197,7 @@ class ContentSettingBubbleModel {
   // entirely.
   static std::unique_ptr<ContentSettingBubbleModel>
   CreateContentSettingBubbleModel(Delegate* delegate,
-                                  content::WebContents* web_contents,
+                                  content::Page& page,
                                   ContentSettingsType content_type);
 
   ContentSettingBubbleModel(const ContentSettingBubbleModel&) = delete;
@@ -253,16 +254,15 @@ class ContentSettingBubbleModel {
   bool is_UMA_for_test = false;
 
  protected:
-  // |web_contents| must outlive this.
-  ContentSettingBubbleModel(Delegate* delegate,
-                            content::WebContents* web_contents);
+  // |page| must outlive this.
+  ContentSettingBubbleModel(Delegate* delegate, content::Page& page);
 
   // Should always be non-nullptr.
-  content::WebContents* web_contents() const { return web_contents_; }
+  content::WebContents* web_contents() const;
   Profile* GetProfile() const;
   Delegate* delegate() const { return delegate_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
-  content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
+  content::Page& GetPage() const;
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
   void set_subtitle(const std::u16string& subtitle) {
@@ -309,7 +309,7 @@ class ContentSettingBubbleModel {
   }
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  const base::SafeRef<content::Page> page_;
   raw_ptr<Owner, DanglingUntriaged> owner_;
   raw_ptr<Delegate> delegate_;
   BubbleContent bubble_content_;
@@ -319,7 +319,7 @@ class ContentSettingBubbleModel {
 class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
  public:
   ContentSettingSimpleBubbleModel(Delegate* delegate,
-                                  content::WebContents* web_contents,
+                                  content::Page& page,
                                   ContentSettingsType content_type);
 
   ContentSettingSimpleBubbleModel(const ContentSettingSimpleBubbleModel&) =
@@ -354,7 +354,7 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
  public:
   ContentSettingRPHBubbleModel(
       Delegate* delegate,
-      content::WebContents* web_contents,
+      content::Page& page,
       custom_handlers::ProtocolHandlerRegistry* registry);
 
   ContentSettingRPHBubbleModel(const ContentSettingRPHBubbleModel&) = delete;
@@ -381,8 +381,7 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
 // The model of the content settings bubble for media settings.
 class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
  public:
-  ContentSettingMediaStreamBubbleModel(Delegate* delegate,
-                                       content::WebContents* web_contents);
+  ContentSettingMediaStreamBubbleModel(Delegate* delegate, content::Page& page);
 
   ContentSettingMediaStreamBubbleModel(
       const ContentSettingMediaStreamBubbleModel&) = delete;
@@ -456,7 +455,7 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
 class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
  public:
   ContentSettingQuietRequestBubbleModel(Delegate* delegate,
-                                        content::WebContents* web_contents);
+                                        content::Page& page);
 
   ContentSettingQuietRequestBubbleModel(
       const ContentSettingQuietRequestBubbleModel&) = delete;
@@ -480,9 +479,8 @@ class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
 class ContentSettingSubresourceFilterBubbleModel
     : public ContentSettingBubbleModel {
  public:
-  ContentSettingSubresourceFilterBubbleModel(
-      Delegate* delegate,
-      content::WebContents* web_contents);
+  ContentSettingSubresourceFilterBubbleModel(Delegate* delegate,
+                                             content::Page& page);
 
   ContentSettingSubresourceFilterBubbleModel(
       const ContentSettingSubresourceFilterBubbleModel&) = delete;
@@ -503,16 +501,13 @@ class ContentSettingSubresourceFilterBubbleModel
   void OnLearnMoreClicked() override;
   void CommitChanges() override;
 
-  base::WeakPtr<content::Page> page_;
-  GURL page_url_;
   bool is_checked_ = false;
 };
 
 // The model for automatic downloads setting.
 class ContentSettingDownloadsBubbleModel : public ContentSettingBubbleModel {
  public:
-  ContentSettingDownloadsBubbleModel(Delegate* delegate,
-                                     content::WebContents* web_contents);
+  ContentSettingDownloadsBubbleModel(Delegate* delegate, content::Page& page);
 
   ContentSettingDownloadsBubbleModel(
       const ContentSettingDownloadsBubbleModel&) = delete;
@@ -537,7 +532,7 @@ class ContentSettingDownloadsBubbleModel : public ContentSettingBubbleModel {
 class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
  public:
   ContentSettingSingleRadioGroup(Delegate* delegate,
-                                 content::WebContents* web_contents,
+                                 content::Page& page,
                                  ContentSettingsType content_type);
 
   ContentSettingSingleRadioGroup(const ContentSettingSingleRadioGroup&) =
@@ -571,7 +566,7 @@ class ContentSettingStorageAccessBubbleModel
     : public ContentSettingBubbleModel {
  public:
   ContentSettingStorageAccessBubbleModel(Delegate* delegate,
-                                         content::WebContents* web_contents);
+                                         content::Page& page);
   ~ContentSettingStorageAccessBubbleModel() override;
 
   ContentSettingStorageAccessBubbleModel(
@@ -586,7 +581,6 @@ class ContentSettingStorageAccessBubbleModel
                         bool is_allowed) override;
 
  private:
-  GURL page_url_;
   std::map<net::SchemefulSite, /*is_allowed*/ bool> changed_permissions_;
 };
 
@@ -595,8 +589,7 @@ class ContentSettingStorageAccessBubbleModel
 class ContentSettingGeolocationBubbleModel
     : public ContentSettingSingleRadioGroup {
  public:
-  ContentSettingGeolocationBubbleModel(Delegate* delegate,
-                                       content::WebContents* web_contents);
+  ContentSettingGeolocationBubbleModel(Delegate* delegate, content::Page& page);
 
   ContentSettingGeolocationBubbleModel(
       const ContentSettingGeolocationBubbleModel&) = delete;
@@ -630,7 +623,7 @@ class ContentSettingNotificationsBubbleModel
     : public ContentSettingSimpleBubbleModel {
  public:
   ContentSettingNotificationsBubbleModel(Delegate* delegate,
-                                         content::WebContents* web_contents);
+                                         content::Page& page);
 
   ContentSettingNotificationsBubbleModel(
       const ContentSettingNotificationsBubbleModel&) = delete;
@@ -651,7 +644,7 @@ class ContentSettingFramebustBlockBubbleModel
       public blocked_content::UrlListManager::Observer {
  public:
   ContentSettingFramebustBlockBubbleModel(Delegate* delegate,
-                                          content::WebContents* web_contents);
+                                          content::Page& page);
 
   ContentSettingFramebustBlockBubbleModel(
       const ContentSettingFramebustBlockBubbleModel&) = delete;

@@ -72,11 +72,14 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
   // Emulates link clicking on the mixed script bubble to allow mixed content
   // to run.
   content::TestNavigationObserver observer(web_contents());
-  std::unique_ptr<ContentSettingBubbleModel> model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          web_contents(), ContentSettingsType::MIXEDSCRIPT));
-  model->OnCustomLinkClicked();
+  {
+    std::unique_ptr<ContentSettingBubbleModel> model(
+        ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            web_contents()->GetPrimaryPage(),
+            ContentSettingsType::MIXEDSCRIPT));
+    model->OnCustomLinkClicked();
+  }
 
   // Waits for reload.
   observer.Wait();
@@ -146,12 +149,14 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
   // to run.
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  std::unique_ptr<ContentSettingBubbleModel> model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          browser()->tab_strip_model()->GetActiveWebContents(),
-          ContentSettingsType::MIXEDSCRIPT));
-  model->OnCustomLinkClicked();
+  {
+    std::unique_ptr<ContentSettingBubbleModel> model(
+        ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            web_contents()->GetPrimaryPage(),
+            ContentSettingsType::MIXEDSCRIPT));
+    model->OnCustomLinkClicked();
+  }
 
   // Waits for reload.
   observer.Wait();
@@ -314,12 +319,15 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperFencedFrameBrowserTest,
   // to run.
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  std::unique_ptr<ContentSettingBubbleModel> model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          browser()->tab_strip_model()->GetActiveWebContents(),
-          ContentSettingsType::MIXEDSCRIPT));
-  model->OnCustomLinkClicked();
+
+  {
+    std::unique_ptr<ContentSettingBubbleModel> model(
+        ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            web_contents()->GetPrimaryPage(),
+            ContentSettingsType::MIXEDSCRIPT));
+    model->OnCustomLinkClicked();
+  }
 
   // Waits for reload.
   observer.Wait();

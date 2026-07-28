@@ -284,6 +284,11 @@ views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
   return bubble_view_->GetWidget();
 }
 
+views::BubbleDialogDelegateView*
+ContentSettingImageView::GetBubbleViewForTesting() const {
+  return bubble_view_.get();
+}
+
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   if (!bubble_view_ || bubble_view_->GetWidget() != widget) {
     return;

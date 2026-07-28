@@ -20,6 +20,7 @@
 #include "ui/gfx/image/image.h"
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -149,7 +150,7 @@ class ContentSettingImageModel {
   // Internal implementation by subclasses of bubble model creation.
   virtual std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      content::WebContents* web_contents) = 0;
+      content::Page& page) = 0;
 
   void set_accessibility_string_id(int id) { accessibility_string_id_ = id; }
 
@@ -202,7 +203,7 @@ class ContentSettingSimpleImageModel : public ContentSettingImageModel {
   // ContentSettingImageModel implementation.
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      content::WebContents* web_contents) override;
+      content::Page& page) override;
 
   ContentSettingsType content_type() { return content_type_; }
 
@@ -223,7 +224,7 @@ class ContentSettingFramebustBlockImageModel : public ContentSettingImageModel {
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      content::WebContents* web_contents) override;
+      content::Page& page) override;
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_

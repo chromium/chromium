@@ -27,8 +27,8 @@ class ContentSettingBubbleContentsTest : public ChromeViewsTestBase {
 
 class TestContentSettingBubbleModel : public ContentSettingBubbleModel {
  public:
-  explicit TestContentSettingBubbleModel(content::WebContents* web_contents)
-      : ContentSettingBubbleModel(nullptr, web_contents) {
+  explicit TestContentSettingBubbleModel(content::Page& page)
+      : ContentSettingBubbleModel(nullptr, page) {
     AddListItem(
         ListItem(nullptr, std::u16string(), std::u16string(), false, false, 0));
   }
@@ -77,16 +77,15 @@ TEST_F(ContentSettingBubbleContentsTest, NullDeref) {
       views::BubbleDialogDelegateView::CreateBubble(
           std::make_unique<TestContentSettingBubbleContents>(
               std::make_unique<TestContentSettingBubbleModel>(
-                  web_contents.get()),
+                  web_contents->GetPrimaryPage()),
               web_contents.get(), parent_widget->GetNativeView())));
   widget->Show();
 }
 
 class TestContentSettingUrlBubbleModel : public ContentSettingBubbleModel {
  public:
-  TestContentSettingUrlBubbleModel(content::WebContents* web_contents,
-                                   const GURL& url)
-      : ContentSettingBubbleModel(nullptr, web_contents) {
+  TestContentSettingUrlBubbleModel(content::Page& page, const GURL& url)
+      : ContentSettingBubbleModel(nullptr, page) {
     ListItem item(nullptr, FormatUrlWithBullet(url), std::u16string(),
                   /*has_link=*/true, /*has_blocked_badge=*/false, 0);
     item.url = url;
@@ -119,8 +118,8 @@ TEST_F(ContentSettingBubbleContentsTest, BulletUrlLinkElision) {
       "https://google.com.evildomain-mybanklongdomainname.com/some/long/path");
 
   auto bubble = std::make_unique<TestContentSettingBubbleContents>(
-      std::make_unique<TestContentSettingUrlBubbleModel>(web_contents.get(),
-                                                         url),
+      std::make_unique<TestContentSettingUrlBubbleModel>(
+          web_contents->GetPrimaryPage(), url),
       web_contents.get(), parent_widget->GetNativeView());
 
   std::unique_ptr<views::Widget> widget(
@@ -172,4 +171,83 @@ TEST_F(ContentSettingBubbleContentsTest, BulletUrlLinkElision) {
   EXPECT_EQ(full_expected, link->GetTooltipText());
 
   widget->CloseNow();
+}
+
+TEST_F(ContentSettingBubbleContentsTest, PrimaryPageWillBeDeactivated) {
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+
+  std::unique_ptr<views::Widget> parent_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  parent_widget->Show();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Navigate to initial page.
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  auto bubble_contents = std::make_unique<TestContentSettingBubbleContents>(
+      std::make_unique<TestContentSettingBubbleModel>(
+          web_contents->GetPrimaryPage()),
+      web_contents.get(), parent_widget->GetNativeView());
+  TestContentSettingBubbleContents* bubble_contents_ptr = bubble_contents.get();
+
+  std::unique_ptr<views::Widget> widget(
+      views::BubbleDialogDelegateView::CreateBubble(
+          std::move(bubble_contents)));
+  widget->Show();
+
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_NE(nullptr, bubble_contents_ptr->bubble_model_for_test());
+
+  // Navigate again to trigger PrimaryPageWillBeDeactivated.
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example2.com"));
+
+  // The model should be reset synchronously.
+  EXPECT_EQ(nullptr, bubble_contents_ptr->bubble_model_for_test());
+
+  // The widget should be closed.
+  EXPECT_TRUE(widget->IsClosed());
+}
+
+TEST_F(ContentSettingBubbleContentsTest, WebContentsDestroyed) {
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+
+  std::unique_ptr<views::Widget> parent_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  parent_widget->Show();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Navigate to initial page.
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  auto bubble_contents = std::make_unique<TestContentSettingBubbleContents>(
+      std::make_unique<TestContentSettingBubbleModel>(
+          web_contents->GetPrimaryPage()),
+      web_contents.get(), parent_widget->GetNativeView());
+  TestContentSettingBubbleContents* bubble_contents_ptr = bubble_contents.get();
+
+  std::unique_ptr<views::Widget> widget(
+      views::BubbleDialogDelegateView::CreateBubble(
+          std::move(bubble_contents)));
+  widget->Show();
+
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_NE(nullptr, bubble_contents_ptr->bubble_model_for_test());
+
+  // Destroy WebContents.
+  web_contents.reset();
+
+  // The model should be reset synchronously.
+  EXPECT_EQ(nullptr, bubble_contents_ptr->bubble_model_for_test());
+
+  // The widget should be closed.
+  EXPECT_TRUE(widget->IsClosed());
 }

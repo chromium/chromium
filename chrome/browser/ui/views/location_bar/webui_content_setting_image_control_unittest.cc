@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/page.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,7 +85,7 @@ class MockContentSettingImageModel : public FakeContentSettingImageModel {
 
   MOCK_METHOD(std::unique_ptr<ContentSettingBubbleModel>,
               CreateBubbleModelImpl,
-              (ContentSettingBubbleModel::Delegate*, content::WebContents*),
+              (ContentSettingBubbleModel::Delegate*, content::Page&),
               (override));
 };
 
@@ -221,7 +222,7 @@ TEST_F(WebUIContentSettingImageControlTest, ShowContentSettingsBubble) {
   EXPECT_CALL(
       *cookies_model,
       CreateBubbleModelImpl(delegate_->GetContentSettingBubbleModelDelegate(),
-                            web_contents()))
+                            testing::Ref(web_contents()->GetPrimaryPage())))
       .WillOnce(testing::Return(
           testing::ByMove(std::unique_ptr<ContentSettingBubbleModel>())));
 
@@ -253,7 +254,7 @@ TEST_F(WebUIContentSettingImageControlTest, AutoOpenBubble) {
   EXPECT_CALL(
       *cookies_model,
       CreateBubbleModelImpl(delegate_->GetContentSettingBubbleModelDelegate(),
-                            web_contents()))
+                            testing::Ref(web_contents()->GetPrimaryPage())))
       .WillOnce(testing::Return(
           testing::ByMove(std::unique_ptr<ContentSettingBubbleModel>())));
 

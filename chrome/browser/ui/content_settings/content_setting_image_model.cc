@@ -45,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "net/base/schemeful_site.h"
@@ -157,7 +158,7 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      WebContents* web_contents) override;
+      content::Page& page) override;
 };
 
 class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
@@ -233,7 +234,7 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      WebContents* web_contents) override;
+      content::Page& page) override;
 
  private:
   PageSpecificContentSettings::MicrophoneCameraState state_;
@@ -269,9 +270,9 @@ class ContentSettingSmartCardImageModel
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      WebContents* web_contents) override {
+      content::Page& page) override {
     return std::make_unique<ContentSettingSimpleBubbleModel>(
-        delegate, web_contents, ContentSettingsType::SMART_CARD_GUARD);
+        delegate, page, ContentSettingsType::SMART_CARD_GUARD);
   }
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -307,7 +308,7 @@ class ContentSettingNotificationsImageModel
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
-      WebContents* web_contents) override;
+      content::Page& page) override;
 };
 
 class ContentSettingPopupImageModel : public ContentSettingSimpleImageModel {
@@ -577,9 +578,9 @@ ContentSettingSimpleImageModel::ContentSettingSimpleImageModel(
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingSimpleImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents) {
+    content::Page& page) {
   return ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-      delegate, web_contents, content_type());
+      delegate, page, content_type());
 }
 
 // static
@@ -855,9 +856,8 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingGeolocationImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents) {
-  return std::make_unique<ContentSettingGeolocationBubbleModel>(delegate,
-                                                                web_contents);
+    content::Page& page) {
+  return std::make_unique<ContentSettingGeolocationBubbleModel>(delegate, page);
 }
 
 // Protocol handlers -----------------------------------------------------------
@@ -1172,9 +1172,8 @@ bool ContentSettingMediaImageModel::IsMicAccessPendingOnSystemLevelPrompt() {
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingMediaImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents) {
-  return std::make_unique<ContentSettingMediaStreamBubbleModel>(delegate,
-                                                                web_contents);
+    content::Page& page) {
+  return std::make_unique<ContentSettingMediaStreamBubbleModel>(delegate, page);
 }
 
 // Blocked Framebust -----------------------------------------------------------
@@ -1198,9 +1197,9 @@ bool ContentSettingFramebustBlockImageModel::UpdateAndGetVisibility(
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingFramebustBlockImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents) {
-  return std::make_unique<ContentSettingFramebustBlockBubbleModel>(
-      delegate, web_contents);
+    content::Page& page) {
+  return std::make_unique<ContentSettingFramebustBlockBubbleModel>(delegate,
+                                                                   page);
 }
 
 // Sensors ---------------------------------------------------------------------
@@ -1399,17 +1398,17 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
-    WebContents* web_contents) {
+    content::Page& page) {
   if (blocked_on_system_level()) {
 #if BUILDFLAG(IS_MAC)
-    return std::make_unique<ContentSettingNotificationsBubbleModel>(
-        delegate, web_contents);
+    return std::make_unique<ContentSettingNotificationsBubbleModel>(delegate,
+                                                                    page);
 #else
     NOTREACHED();
 #endif
   } else {
-    return std::make_unique<ContentSettingQuietRequestBubbleModel>(
-        delegate, web_contents);
+    return std::make_unique<ContentSettingQuietRequestBubbleModel>(delegate,
+                                                                   page);
   }
 }
 
@@ -1532,7 +1531,7 @@ ContentSettingImageModel::CreateBubbleModel(
     ContentSettingBubbleModel::Delegate* delegate,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return CreateBubbleModelImpl(delegate, web_contents);
+  return CreateBubbleModelImpl(delegate, web_contents->GetPrimaryPage());
 }
 
 // static

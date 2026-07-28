@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
@@ -68,6 +69,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool IsPrimary() const override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
+  base::SafeRef<Page> GetSafeRef() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
 #if BUILDFLAG(IS_ANDROID)

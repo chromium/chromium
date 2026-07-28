@@ -385,12 +385,18 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // to run.
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  std::unique_ptr<ContentSettingBubbleModel> model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          browser()->tab_strip_model()->GetActiveWebContents(),
-          ContentSettingsType::MIXEDSCRIPT));
-  model->OnCustomLinkClicked();
+
+  {
+    std::unique_ptr<ContentSettingBubbleModel> model(
+        ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+            browser()->GetFeatures().content_setting_bubble_model_delegate(),
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryPage(),
+            ContentSettingsType::MIXEDSCRIPT));
+    model->OnCustomLinkClicked();
+  }
 
   // 3) Wait for reload.
   observer.Wait();

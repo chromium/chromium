@@ -75,7 +75,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
                                      state);
     return std::make_unique<ContentSettingMediaStreamBubbleModel>(
         browser()->GetFeatures().content_setting_bubble_model_delegate(),
-        web_contents);
+        web_contents->GetPrimaryPage());
   }
 
   content::WebContents* GetActiveTab() {
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
       std::make_unique<ContentSettingMediaStreamBubbleModel>(
           browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          web_contents);
+          web_contents->GetPrimaryPage());
 
   EXPECT_TRUE(mic_bubble->bubble_content().is_user_modifiable);
 }
@@ -344,7 +344,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest, PopupsActionsCount) {
   std::unique_ptr<ContentSettingBubbleModel> model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->GetFeatures().content_setting_bubble_model_delegate(),
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryPage(),
           ContentSettingsType::POPUPS));
   std::unique_ptr<FakeOwner> owner =
       FakeOwner::Create(*model, kDisallowButtonIndex);

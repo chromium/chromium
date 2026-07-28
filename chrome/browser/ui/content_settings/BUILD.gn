@@ -26,6 +26,7 @@ source_set("content_settings") {
       "content_setting_image_model.h",
       "content_setting_image_model_states.h",
       "content_setting_image_view_delegate.h",
+      "primary_page_deactivation_helper.h",
     ]
     public_deps += [ "//chrome/app/vector_icons" ]
   }
@@ -40,6 +41,7 @@ source_set("impl") {
       "content_setting_bubble_model.cc",
       "content_setting_image_model.cc",
       "content_setting_image_model_states.cc",
+      "primary_page_deactivation_helper.cc",
     ]
     deps += [
       "//chrome/browser/custom_handlers",
@@ -103,6 +105,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/subresource_filter/core/browser",
+    "//ui/events:test_support",
   ]
 }
 

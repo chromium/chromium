@@ -77,6 +77,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   views::Widget* GetBubbleWidgetForTesting() const;
 
+  views::BubbleDialogDelegateView* GetBubbleViewForTesting() const;
+
   ContentSettingImageModel* content_setting_image_model() const {
     return content_setting_image_model_.get();
   }

@@ -162,9 +162,6 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
           blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
       // popup-many-10.html should generate 10 blocked popups.
       EXPECT_EQ(10u, helper->GetBlockedPopupsCount());
-      // Set a fake URL so the UI displays a consistent string for pixel tests.
-      web_contents->GetController().GetVisibleEntry()->SetVirtualURL(
-          GURL("http://popuptest/"));
       break;
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
@@ -175,8 +172,6 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       // Set a fake URL so the UI displays a consistent string for pixel tests.
-      web_contents->GetController().GetVisibleEntry()->SetVirtualURL(
-          GURL("http://example.com/"));
       content_settings->OnTwoSitePermissionChanged(
           content_type, net::SchemefulSite(GURL("https://embedded.com")),
           CONTENT_SETTING_BLOCK);
@@ -395,6 +390,7 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest, InvokeUi_ads) {
 
 IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
                        InvokeUi_storage_access) {
+  set_baseline("79537604");
   ShowAndVerifyUi();
 }
 

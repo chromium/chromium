@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
+#include "chrome/browser/ui/content_settings/primary_page_deactivation_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/content_setting_site_row_view.h"
@@ -341,12 +342,19 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
                                arrow,
                                views::BubbleBorder::DIALOG_SHADOW,
                                true),
-      content_setting_bubble_model_(std::move(content_setting_bubble_model)) {
+      content_setting_bubble_model_(std::move(content_setting_bubble_model)),
+      weak_factory_(this) {
   // Although other code in this class treats content_setting_bubble_model_ as
   // though it's optional, in fact it can only become null if
   // WebContentsDestroyed() is called, which can't happen until the constructor
   // has run - so it is never null here.
   DCHECK(content_setting_bubble_model_);
+
+  chrome::RegisterPrimaryPageDeactivationCallback(
+      web_contents->GetPrimaryPage(),
+      base::BindOnce(&ContentSettingBubbleContents::ResetBubbleModelAndClose,
+                     weak_factory_.GetWeakPtr()));
+
   const std::u16string& done_text =
       GetDoneButtonText(content_setting_bubble_model_->bubble_content());
   const std::u16string& cancel_text =
@@ -667,12 +675,6 @@ void ContentSettingBubbleContents::CustomLinkClicked() {
   GetWidget()->Close();
 }
 
-void ContentSettingBubbleContents::PrimaryPageChanged(content::Page& page) {
-  // Content settings are based on the main frame, so if it switches then
-  // close up shop.
-  GetWidget()->Close();
-}
-
 void ContentSettingBubbleContents::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
@@ -680,15 +682,9 @@ void ContentSettingBubbleContents::OnVisibilityChanged(
   }
 }
 
-void ContentSettingBubbleContents::WebContentsDestroyed() {
-  // Destroy the bubble model to ensure that the underlying WebContents outlives
-  // it.
-  content_setting_bubble_model_->CommitChanges();
+void ContentSettingBubbleContents::ResetBubbleModelAndClose() {
+  // Destroy the bubble model to ensure that the underlying Page outlives it.
   content_setting_bubble_model_.reset();
-
-  // Closing the widget should synchronously hide it (and post a task to delete
-  // it). Subsequent event listener methods should not be invoked on hidden
-  // widgets.
   GetWidget()->Close();
 }
 

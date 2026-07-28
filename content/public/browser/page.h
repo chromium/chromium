@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
@@ -101,6 +102,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
   virtual base::WeakPtr<Page> GetWeakPtr() = 0;
+
+  // Returns a SafeRef to this Page.
+  virtual base::SafeRef<Page> GetSafeRef() = 0;
 
   // Whether the most recent page scale factor sent by the main frame's renderer
   // is 1 (i.e. no magnification).
