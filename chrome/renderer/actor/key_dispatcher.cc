@@ -203,6 +203,7 @@ void KeyDispatcher::ContinueIncrementalTyping() {
       has_cleared_auto_selection_ = false;
       current_key_ = 0;
 
+      base::WeakPtr<KeyDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
       // Execute SelectAll on the new element before restarting. If the webpage
       // copied over already typed characters to the new input box, selecting
       // all ensures the restarted typing sequence overwrites the copied text
@@ -211,13 +212,15 @@ void KeyDispatcher::ContinueIncrementalTyping() {
       if (focused_element.GetDocument().GetFrame()) {
         focused_element.GetDocument().GetFrame()->ExecuteCommand(
             blink::WebString("SelectAll"));
+        if (!weak_this) {
+          return;
+        }
       }
 
       base::TimeDelta input_delay = features::kGlicActorKeyUpDuration.Get();
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&KeyDispatcher::ContinueIncrementalTyping,
-                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&KeyDispatcher::ContinueIncrementalTyping, weak_this),
           input_delay);
       return;
     }
