@@ -72,8 +72,7 @@ class SearchPromotionManager : public KeyedService {
   void PerformArmB();
 
   void RunRegisterTask(std::unique_ptr<RegisterSearchPromotionTask> task);
-
-  void HandleTaskResult(platform_experience::DelegatedTaskResult result);
+  void OnTaskCompleted(platform_experience::DelegatedTaskResult result);
 
   void RecordDefaultBrowserState(
       shell_integration::DefaultWebClientState state);
