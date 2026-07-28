@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 @protocol GREYMatcher;
 
 // Helper class to return matchers for EG tests.  These helpers are compiled
@@ -90,6 +92,10 @@
 // in the main bundle.
 + (id<GREYMatcher>)imageViewWithCustomSymbolNamed:(NSString*)symbolName
                                         pointSize:(CGFloat)pointSize;
+
+// Matcher for element with a symbol defined by `symbol` and `pointSize`.
++ (id<GREYMatcher>)imageViewWithSymbol:(Symbol)symbol
+                             pointSize:(CGFloat)pointSize;
 
 // Matcher for element with an image corresponding to `imageID` and
 // accessibility trait UIAccessibilityTraitButton.

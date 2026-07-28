@@ -24,3 +24,20 @@ NSString* GetLocationBarSecuritySymbolName(
       NOTREACHED();
   }
 }
+
+Symbol GetLocationBarSecuritySymbol(LocationBarSecurityIconType iconType) {
+  switch (iconType) {
+    case LocationBarSecurityIconType::NONE:
+      return SymbolNone;
+    case LocationBarSecurityIconType::INFO:
+      return SymbolInfoCircle;
+    case LocationBarSecurityIconType::SECURE:
+      return SymbolSecureLocationBar;
+    case LocationBarSecurityIconType::NOT_SECURE_WARNING:
+      return SymbolWarningFill;
+    case LocationBarSecurityIconType::DANGEROUS:
+      return SymbolDangerousOmnibox;
+    case LocationBarSecurityIconType::LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
+      NOTREACHED();
+  }
+}

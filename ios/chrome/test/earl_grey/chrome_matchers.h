@@ -9,6 +9,8 @@
 
 #include <string>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 @protocol GREYMatcher;
 class GURL;
 
@@ -95,6 +97,11 @@ id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName);
 // point size in the main bundle.
 id<GREYMatcher> ImageViewWithCustomSymbolNameAndPointSize(NSString* symbolName,
                                                           CGFloat pointSize);
+
+// Returns a matcher for an element with a symbol defined by `symbol` and
+// `pointSize`.
+id<GREYMatcher> ImageViewWithSymbolAndPointSize(Symbol symbol,
+                                                CGFloat pointSize);
 
 // Returns a matcher for element with an image corresponding to `image_id` and
 // accessibility trait UIAccessibilityTraitButton.
