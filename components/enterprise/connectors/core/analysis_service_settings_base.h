@@ -37,6 +37,14 @@ class AnalysisServiceSettingsBase {
       const GURL& url,
       DataRegion data_region) const;
 
+  // Returns the network request analysis settings that apply to the given tab
+  // and request URLs. Returns `std::nullopt` if the settings are invalid or no
+  // analysis should take place.
+  virtual std::optional<AnalysisSettings> GetNetworkRequestAnalysisSettings(
+      const GURL& tab_url,
+      const GURL& request_url,
+      DataRegion data_region) const;
+
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
 
@@ -75,6 +83,7 @@ class AnalysisServiceSettingsBase {
   using PatternSettings =
       std::map<base::MatcherStringPattern::ID, URLPatternSettings>;
 
+  AnalysisServiceSettingsBase();
   explicit AnalysisServiceSettingsBase(
       const base::Value& settings_value,
       const ServiceProviderConfig& service_provider_config);
@@ -87,6 +96,11 @@ class AnalysisServiceSettingsBase {
   void ParseMinimumDataSize(const base::DictValue& settings_dict);
   void ParseCustomMessages(const base::DictValue& settings_dict);
   void ParseJustificationTags(const base::DictValue& settings_dict);
+
+  // Helper to set the `service_provider_name_` and `analysis_config_` fields.
+  // Returns false if `service_provider` isn't known.
+  bool SetServiceProvider(const std::string& service_provider_name,
+                          const ServiceProviderConfig& config);
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return std::nullopt.

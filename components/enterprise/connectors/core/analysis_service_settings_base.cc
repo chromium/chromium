@@ -5,6 +5,7 @@
 #include "components/enterprise/connectors/core/analysis_service_settings_base.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/url_matcher/url_util.h"
@@ -54,9 +55,14 @@ bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
     return false;
   }
 
-  service_provider_name_ = *service_provider_name;
-  if (auto it = service_provider_config.find(service_provider_name_);
-      it != service_provider_config.end()) {
+  return SetServiceProvider(*service_provider_name, service_provider_config);
+}
+
+bool AnalysisServiceSettingsBase::SetServiceProvider(
+    const std::string& service_provider_name,
+    const ServiceProviderConfig& config) {
+  service_provider_name_ = service_provider_name;
+  if (auto it = config.find(service_provider_name_); it != config.end()) {
     analysis_config_ = it->second.analysis;
   }
   if (!analysis_config_) {
@@ -246,6 +252,14 @@ AnalysisServiceSettingsBase::GetAnalysisSettings(const GURL& url,
 }
 
 std::optional<AnalysisSettings>
+AnalysisServiceSettingsBase::GetNetworkRequestAnalysisSettings(
+    const GURL& tab_url,
+    const GURL& request_url,
+    DataRegion data_region) const {
+  NOTREACHED();
+}
+
+std::optional<AnalysisSettings>
 AnalysisServiceSettingsBase::GetCommonAnalysisSettings(
     const std::set<base::MatcherStringPattern::ID>& matches) const {
   CHECK(IsValid());
@@ -409,6 +423,7 @@ bool AnalysisServiceSettingsBase::is_local_analysis() const {
   return analysis_config_ && analysis_config_->local_path != nullptr;
 }
 
+AnalysisServiceSettingsBase::AnalysisServiceSettingsBase() = default;
 AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
     AnalysisServiceSettingsBase&&) = default;
 AnalysisServiceSettingsBase& AnalysisServiceSettingsBase::operator=(
