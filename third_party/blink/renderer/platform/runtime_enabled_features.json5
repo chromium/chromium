@@ -5613,6 +5613,14 @@
       status: "stable",
     },
     {
+      // Allows a selection to extend into the light-DOM content assigned to a
+      // <slot>, e.g. the content of an open <details>, instead of clamping the
+      // focus at the slot's shadow host in EditingBoundaryAdjuster.
+      // See https://crbug.com/477613569
+      name: "SelectionEditingBoundarySlottedContent",
+      status: "stable",
+    },
+    {
       // Fixes selection focus affinity at soft wrap boundaries. When the focus
       // of a range selection is at a soft wrap boundary (a DOM offset shared by
       // two visual lines), this ensures the correct affinity is used based on

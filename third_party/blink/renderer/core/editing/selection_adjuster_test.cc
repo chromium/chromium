@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -296,6 +297,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
 // This test is just recording the behavior of current implementation, can be
 // changed.
 TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
+  ScopedSelectionEditingBoundarySlottedContentForTest scoped_feature(true);
   const char* body_content = R"HTML(
       <div contenteditable id=host>
         <div id=foo slot=foo>foo</div>
@@ -319,6 +321,116 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
   Element* bar = GetDocument().getElementById(AtomicString("bar"));
   Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
   Element* s2 = shadow_root.QuerySelector(AtomicString("#s2"));
+
+  // Select from 111 to foo.
+  const SelectionInFlatTree& selection =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::FirstPositionInNode(*s1))
+          .Extend(PositionInFlatTree::LastPositionInNode(*foo))
+          .Build();
+  const SelectionInFlatTree& result =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+  EXPECT_EQ(R"HTML(
+      <div contenteditable id="host">
+      <div>
+        <div id="s1">^111</div>
+        |<slot name="foo"><div id="foo" slot="foo">foo</div></slot>
+        <div id="s2">222</div>
+        <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
+        <div id="s3">333</div>
+      </div></div>)HTML",
+            GetSelectionTextInFlatTreeFromBody(result));
+
+  // Select from foo to 111.
+  const SelectionInFlatTree& selection2 =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::LastPositionInNode(*foo))
+          .Extend(PositionInFlatTree::FirstPositionInNode(*s1))
+          .Build();
+  const SelectionInFlatTree& result2 =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection2);
+  EXPECT_EQ(R"HTML(
+      <div contenteditable id="host">
+      <div>
+        <div id="s1">111</div>
+        <slot name="foo">|<div id="foo" slot="foo">foo^</div></slot>
+        <div id="s2">222</div>
+        <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
+        <div id="s3">333</div>
+      </div></div>)HTML",
+            GetSelectionTextInFlatTreeFromBody(result2));
+
+  // Select from 111 to 222.
+  const SelectionInFlatTree& selection3 =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::FirstPositionInNode(*s1))
+          .Extend(PositionInFlatTree::LastPositionInNode(*s2))
+          .Build();
+  const SelectionInFlatTree& result3 =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection3);
+  EXPECT_EQ(R"HTML(
+      <div contenteditable id="host">
+      <div>
+        <div id="s1">^111</div>
+        <slot name="foo"><div id="foo" slot="foo">foo</div></slot>
+        <div id="s2">222|</div>
+        <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
+        <div id="s3">333</div>
+      </div></div>)HTML",
+            GetSelectionTextInFlatTreeFromBody(result3));
+
+  // Select from foo to bar.
+  const SelectionInFlatTree& selection4 =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::FirstPositionInNode(*foo))
+          .Extend(PositionInFlatTree::LastPositionInNode(*bar))
+          .Build();
+  const SelectionInFlatTree& result4 =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection4);
+  EXPECT_EQ(R"HTML(
+      <div contenteditable id="host">
+      <div>
+        <div id="s1">111</div>
+        <slot name="foo"><div id="foo" slot="foo">^foo</div>|</slot>
+        <div id="s2">222</div>
+        <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
+        <div id="s3">333</div>
+      </div></div>)HTML",
+            GetSelectionTextInFlatTreeFromBody(result4));
+}
+
+// With SelectionEditingBoundarySlottedContent disabled, a <slot> and its shadow
+// host are still treated as an editing boundary for assigned light-DOM content,
+// so the selection is clamped at the slot.
+TEST_F(SelectionAdjusterTest,
+       ShadowDistributedNodesWithEditingBoundarySlottedContentDisabled) {
+  ScopedSelectionEditingBoundarySlottedContentForTest scoped_feature(false);
+  const char* body_content = R"HTML(
+      <div contenteditable id=host>
+        <div id=foo slot=foo>foo</div>
+        <div id=bar slot=bar>bar</div>
+      </div>)HTML";
+  const char* shadow_content = R"HTML(
+      <div>
+        <div id=s1>111</div>
+        <slot name=foo></slot>
+        <div id=s2>222</div>
+        <slot name=bar></slot>
+        <div id=s3>333</div>
+      </div>)HTML";
+  SetBodyContent(body_content);
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(shadow_content);
+
+  Element* foo = GetElementById("foo");
+  Element* bar = GetElementById("bar");
+  Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
 
   // Select from 111 to foo.
   const SelectionInFlatTree& selection =
@@ -360,35 +472,15 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
       </div></div>)HTML",
             GetSelectionTextInFlatTreeFromBody(result2));
 
-  // Select from 111 to 222.
-  const SelectionInFlatTree& selection3 =
-      SelectionInFlatTree::Builder()
-          .Collapse(PositionInFlatTree::FirstPositionInNode(*s1))
-          .Extend(PositionInFlatTree::LastPositionInNode(*s2))
-          .Build();
-  const SelectionInFlatTree& result3 =
-      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
-          selection3);
-  EXPECT_EQ(R"HTML(
-      <div contenteditable id="host">
-      <div>
-        <div id="s1">^111</div>
-        <slot name="foo"><div id="foo" slot="foo">foo</div></slot>
-        <div id="s2">222|</div>
-        <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
-        <div id="s3">333</div>
-      </div></div>)HTML",
-            GetSelectionTextInFlatTreeFromBody(result3));
-
   // Select from foo to bar.
-  const SelectionInFlatTree& selection4 =
+  const SelectionInFlatTree& selection3 =
       SelectionInFlatTree::Builder()
           .Collapse(PositionInFlatTree::FirstPositionInNode(*foo))
           .Extend(PositionInFlatTree::LastPositionInNode(*bar))
           .Build();
-  const SelectionInFlatTree& result4 =
+  const SelectionInFlatTree& result3 =
       SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
-          selection4);
+          selection3);
   EXPECT_EQ(R"HTML(
       <div contenteditable id="host">
       <div>
@@ -398,7 +490,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
         <slot name="bar"><div id="bar" slot="bar">bar</div></slot>
         <div id="s3">333</div>
       </div></div>)HTML",
-            GetSelectionTextInFlatTreeFromBody(result4));
+            GetSelectionTextInFlatTreeFromBody(result3));
 }
 
 TEST_F(SelectionAdjusterTest, EditingBoundaryOutsideOfShadowTree) {
@@ -517,6 +609,68 @@ TEST_F(SelectionAdjusterTest, ShadowHostAndShadowTreeAreEditable) {
       <div id="host"><div contenteditable id="bar">|bar^</div></div>
     </div>)HTML",
             GetSelectionTextInFlatTreeFromBody(result2));
+}
+
+// A selection starting outside an open <details> should be able to extend
+// into the details content, which is light-DOM slotted into the UA shadow
+// <slot> and shares the same editing host.
+TEST_F(SelectionAdjusterTest, EditingBoundaryDetailsSlottedContent) {
+  ScopedSelectionEditingBoundarySlottedContentForTest scoped_feature(true);
+  SetBodyContent(R"HTML(
+    <div contenteditable>
+      <div id=above>above</div>
+      <details open>
+        <summary>summary</summary>
+        <div id=content>content</div>
+      </details>
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* above = GetElementById("above");
+  Element* content = GetElementById("content");
+
+  const SelectionInFlatTree& selection =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::FirstPositionInNode(*above))
+          .Extend(PositionInFlatTree::LastPositionInNode(*content))
+          .Build();
+  const SelectionInFlatTree& result =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+
+  // The focus must remain inside the <details> content, not be clamped to a
+  // position before the content slot.
+  EXPECT_EQ(content, result.Focus().ComputeContainerNode());
+  EXPECT_TRUE(result.IsRange());
+}
+
+// With the feature disabled, the focus is clamped out of the <details> content.
+TEST_F(SelectionAdjusterTest,
+       EditingBoundaryDetailsSlottedContentFeatureDisabled) {
+  ScopedSelectionEditingBoundarySlottedContentForTest scoped_feature(false);
+  SetBodyContent(R"HTML(
+    <div contenteditable>
+      <div id=above>above</div>
+      <details open>
+        <summary>summary</summary>
+        <div id=content>content</div>
+      </details>
+    </div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* above = GetElementById("above");
+  Element* content = GetElementById("content");
+
+  const SelectionInFlatTree& selection =
+      SelectionInFlatTree::Builder()
+          .Collapse(PositionInFlatTree::FirstPositionInNode(*above))
+          .Extend(PositionInFlatTree::LastPositionInNode(*content))
+          .Build();
+  const SelectionInFlatTree& result =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
+          selection);
+
+  EXPECT_NE(content, result.Focus().ComputeContainerNode());
 }
 
 TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
