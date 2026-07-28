@@ -1148,7 +1148,7 @@ ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
       base::Time::UnixEpoch() + base::Seconds(proto.update_time_seconds());
 
   for (const auto& proto_mtc_anchor_data : proto.mtc_anchor_data()) {
-    if (proto_mtc_anchor_data.mtc_log_data_size() > 0) {
+    if (proto_mtc_anchor_data.has_ca_id()) {
       std::optional<ChromeRootStoreMtcMetadata::Plants05AnchorData>
           plants05_anchor_data =
               CreatePlants05AnchorData(proto_mtc_anchor_data);
