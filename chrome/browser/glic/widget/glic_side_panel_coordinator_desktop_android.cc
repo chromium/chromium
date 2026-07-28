@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
+#include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_toast.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -49,6 +50,9 @@ std::unique_ptr<GlicToast> MaybeShowResizeToast(
   if (auto* instance =
           glic_service->instance_coordinator().GetInstanceForTab(tab)) {
     is_actuating = instance->IsActuating();
+    if (auto* task_manager = instance->GetActorTaskManager()) {
+      task_manager->PauseTask();
+    }
   }
 
   int title_res_id =

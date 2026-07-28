@@ -979,6 +979,15 @@ void GlicActorTaskManager::CancelTask() {
   session_->CancelActiveTask();
 }
 
+void GlicActorTaskManager::PauseTask() {
+  if (!session_ || session_->current_task_id().is_null()) {
+    return;
+  }
+  session_->PauseActorTask(session_->current_task_id().value(),
+                           mojom::ActorTaskPauseReason::kPausedByUser,
+                           std::nullopt);
+}
+
 void GlicActorClientSession::CanActOnWebChanged(bool can_act_on_web) {
   if (!can_act_on_web && current_task_id_) {
     StopTaskImpl(current_task_id_,

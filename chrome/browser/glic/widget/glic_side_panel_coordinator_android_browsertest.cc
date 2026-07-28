@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
@@ -110,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
   // Simulate that Glic is currently actuating a task.
-  ASSERT_OK(CreateActorTask(instance));
+  ASSERT_OK_AND_ASSIGN(actor::TaskId task_id, CreateActorTask(instance));
 
   SidePanelEntryObserver* observer = GetCoordinatorAsObserver();
 
@@ -133,6 +135,14 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   // Trigger window resize hide event.
   observer->OnEntryHiddenWithReason(coordinator()->GetEntryForTesting(),
                                     SidePanelEntryHideReason::kWindowResized);
+
+  // Verify that the task was actually paused.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_EQ(task->GetState(), actor::ActorTask::State::kPausedByUser);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,

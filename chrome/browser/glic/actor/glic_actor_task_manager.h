@@ -83,6 +83,7 @@ class GlicActorTaskManager {
   void MaybeShowDeactivationToastUi();
 
   void CancelTask();
+  void PauseTask();
   bool IsActuating() const;
 
   // Returns the last acted tabs for the current task.
