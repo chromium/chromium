@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            text:
                                l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_NOTIFICATIONS_PERSONALIZED_NEWS_SETTINGS_TOGGLE_TITLE)
-                         symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
+                         symbol:SettingsRootSymbol(SymbolDiscoverFeed)
                      symbolTint:UIColor.whiteColor
           symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
               symbolBorderWidth:0
