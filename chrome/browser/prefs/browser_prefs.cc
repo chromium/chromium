@@ -588,85 +588,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-
-#if BUILDFLAG(IS_ANDROID)
-// Deprecated 07/2025.
-constexpr char kObsoletePasswordAccessLossWarningShownAtStartupTimestamp[] =
-    "password_access_loss_warning_shown_at_startup_timestamp";
-constexpr char kObsoletePasswordAccessLossWarningShownTimestamp[] =
-    "password_access_loss_warning_shown_timestamp";
-constexpr char kObsoleteTimeOfLastMigrationAttempt[] =
-    "time_of_last_migration_attempt";
-constexpr char kObsoleteSettingsMigratedToUPMLocal[] =
-    "profile.settings_migrated_to_upm_local";
-constexpr char kObsoleteShouldShowPostPasswordMigrationSheetAtStartup[] =
-    "should_show_post_password_migration_sheet_at_startup";
-constexpr char kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors[] =
-    "unenrolled_from_google_mobile_services_due_to_errors";
-constexpr char kObsoleteCurrentMigrationVersionToGoogleMobileServices[] =
-    "current_migration_version_to_google_mobile_services";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Deprecated 07/2025.
-inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
-    "sync.first_full_sync_completed";
-inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
-    "google.services.second_last_gaia_id";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 07/2025.
-inline constexpr char kAssistantNumSessionsWhereOnboardingShown[] =
-    "ash.assistant.num_sessions_where_onboarding_shown";
-inline constexpr char kAssistantTimeOfLastInteraction[] =
-    "ash.assistant.time_of_last_interaction";
-
-// Deprecated 07/2025.
-inline constexpr char kAssistantConsentStatus[] =
-    "settings.voice_interaction.activity_control.consent_status";
-inline constexpr char kAssistantContextEnabled[] =
-    "settings.voice_interaction.context.enabled";
-inline constexpr char kAssistantDisabledByPolicy[] =
-    "settings.assistant.disabled_by_policy";
-inline constexpr char kAssistantEnabled[] =
-    "settings.voice_interaction.enabled";
-inline constexpr char kAssistantHotwordAlwaysOn[] =
-    "settings.voice_interaction.hotword.always_on";
-inline constexpr char kAssistantHotwordEnabled[] =
-    "settings.voice_interaction.hotword.enabled";
-inline constexpr char kAssistantLaunchWithMicOpen[] =
-    "settings.voice_interaction.launch_with_mic_open";
-inline constexpr char kAssistantNotificationEnabled[] =
-    "settings.voice_interaction.notification.enabled";
-inline constexpr char kAssistantOnboardingMode[] =
-    "settings.assistant.onboarding_mode";
-inline constexpr char kAssistantVoiceMatchEnabledDuringOobe[] =
-    "settings.voice_interaction.oobe_voice_match.enabled";
-inline constexpr char kAssistantNumFailuresSinceLastServiceRun[] =
-    "ash.assistant.num_failures_since_last_service_run";
-#endif
-
-// Deprecated 07/2025
-constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
-constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_success";
-
-// Deprecated 07/2025
-inline constexpr char kSodaScheduledDeletionTime[] =
-    "accessibility.captions.soda_scheduled_deletion_time";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 07/2025.
-inline constexpr char kTimeOfFirstFilesAppChipPress[] =
-    "ash.holding_space.time_of_first_files_app_chip_press";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 07/2025.
-inline constexpr char kSyncPromoIdentityPillShownCount[] =
-    "ChromeSigninSyncPromoIdentityPillShownCount";
-inline constexpr char kSyncPromoIdentityPillUsedCount[] =
-    "ChromeSigninSyncPromoIdentityPillUsedCount";
-
 // Deprecated 08/2025.
 inline constexpr char kInvalidationClientIDCache[] =
     "invalidation.per_sender_client_id_cache";
@@ -1131,60 +1052,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 07/2025.
-  registry->RegisterTimePref(
-      kObsoletePasswordAccessLossWarningShownAtStartupTimestamp, base::Time());
-  registry->RegisterTimePref(kObsoletePasswordAccessLossWarningShownTimestamp,
-                             base::Time());
-  registry->RegisterDoublePref(kObsoleteTimeOfLastMigrationAttempt, 0.0);
-  registry->RegisterBooleanPref(kObsoleteSettingsMigratedToUPMLocal, false);
-  registry->RegisterBooleanPref(
-      kObsoleteShouldShowPostPasswordMigrationSheetAtStartup, false);
-  registry->RegisterBooleanPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors, false);
-  registry->RegisterIntegerPref(
-      kObsoleteCurrentMigrationVersionToGoogleMobileServices, 0);
-#endif  // BUILDFLAG(IS_ANDROID)
 
-  // Deprecated 07/2025.
-  registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
-  registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
-                               std::string());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 07/2025.
-  registry->RegisterIntegerPref(kAssistantNumSessionsWhereOnboardingShown, 0);
-  registry->RegisterTimePref(kAssistantTimeOfLastInteraction, base::Time());
-
-  // Deprecated 07/2025.
-  registry->RegisterIntegerPref(kAssistantConsentStatus, 0);
-  registry->RegisterBooleanPref(kAssistantContextEnabled, false);
-  registry->RegisterBooleanPref(kAssistantDisabledByPolicy, false);
-  registry->RegisterBooleanPref(kAssistantEnabled, false);
-  registry->RegisterBooleanPref(kAssistantHotwordAlwaysOn, false);
-  registry->RegisterBooleanPref(kAssistantHotwordEnabled, false);
-  registry->RegisterBooleanPref(kAssistantLaunchWithMicOpen, false);
-  registry->RegisterBooleanPref(kAssistantNotificationEnabled, false);
-  registry->RegisterBooleanPref(kAssistantVoiceMatchEnabledDuringOobe, false);
-  registry->RegisterStringPref(kAssistantOnboardingMode, std::string());
-  registry->RegisterIntegerPref(kAssistantNumFailuresSinceLastServiceRun, 0);
-#endif
-
-  // Deprecated 07/2025
-  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
-  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
-
-  // Deprecated 07/2025
-  registry->RegisterTimePref(kSodaScheduledDeletionTime, base::Time());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 07/2025.
-  registry->RegisterTimePref(kTimeOfFirstFilesAppChipPress, base::Time());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  registry->RegisterIntegerPref(kSyncPromoIdentityPillShownCount, 0);
-  registry->RegisterIntegerPref(kSyncPromoIdentityPillUsedCount, 0);
 
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
@@ -2473,55 +2341,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
 
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 07/2025.
-  profile_prefs->ClearPref(
-      kObsoletePasswordAccessLossWarningShownAtStartupTimestamp);
-  profile_prefs->ClearPref(kObsoletePasswordAccessLossWarningShownTimestamp);
-  profile_prefs->ClearPref(kObsoleteTimeOfLastMigrationAttempt);
-  profile_prefs->ClearPref(kObsoleteSettingsMigratedToUPMLocal);
-  profile_prefs->ClearPref(
-      kObsoleteShouldShowPostPasswordMigrationSheetAtStartup);
-  profile_prefs->ClearPref(
-      kObsoleteUnenrolledFromGoogleMobileServicesDueToErrors);
-  profile_prefs->ClearPref(
-      kObsoleteCurrentMigrationVersionToGoogleMobileServices);
-#endif  // BUILDFLAG(IS_ANDROID)
 
-  // Added 07/2025.
-  profile_prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
-  profile_prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 07/2025.
-  profile_prefs->ClearPref(kAssistantNumSessionsWhereOnboardingShown);
-  profile_prefs->ClearPref(kAssistantTimeOfLastInteraction);
-
-  // Added 07/2025.
-  profile_prefs->ClearPref(kAssistantConsentStatus);
-  profile_prefs->ClearPref(kAssistantContextEnabled);
-  profile_prefs->ClearPref(kAssistantDisabledByPolicy);
-  profile_prefs->ClearPref(kAssistantEnabled);
-  profile_prefs->ClearPref(kAssistantHotwordAlwaysOn);
-  profile_prefs->ClearPref(kAssistantHotwordEnabled);
-  profile_prefs->ClearPref(kAssistantLaunchWithMicOpen);
-  profile_prefs->ClearPref(kAssistantNotificationEnabled);
-  profile_prefs->ClearPref(kAssistantVoiceMatchEnabledDuringOobe);
-  profile_prefs->ClearPref(kAssistantOnboardingMode);
-  profile_prefs->ClearPref(kAssistantNumFailuresSinceLastServiceRun);
-#endif
-
-  // Added 07/2025
-  profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
-  profile_prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 07/2025.
-  profile_prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  profile_prefs->ClearPref(kSyncPromoIdentityPillShownCount);
-  profile_prefs->ClearPref(kSyncPromoIdentityPillUsedCount);
 
   // Added 08/2025.
   profile_prefs->ClearPref(kInvalidationClientIDCache);
