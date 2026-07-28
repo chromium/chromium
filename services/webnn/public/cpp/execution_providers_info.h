@@ -278,6 +278,15 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             // https://github.com/microsoft/onnxruntime/blob/a91b0b4/onnxruntime/core/providers/webgpu/ep/factory.cc#L66
             .vendor_id = 0,
             .enabled = false,
+            // The WebGPU EP does not enable int64 ops by default. WebNN
+            // requires int64 support, so enable it explicitly. Key and value
+            // must align with the ORT WebGPU EP implementation. See:
+            // https://github.com/microsoft/onnxruntime/blob/47faa11b035d53c49f3f93e815d004e616d360ca/onnxruntime/core/providers/webgpu/webgpu_provider_options.h#L18
+            .config_entries =
+                (const SessionConfigEntry[]){
+                    {.key = "ep.webgpuexecutionprovider.enableInt64",
+                     .value = "1"},
+                },
         },
     },
 });
