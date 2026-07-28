@@ -11,7 +11,7 @@
 ] interface PermissionStatus : EventTarget {
     // TODO(crbug.com/1395451): This cannot be PermissionName because
     // it is the wrong format.
-    readonly attribute DOMString name;
+    [CallWith=ScriptState] readonly attribute DOMString name;
     readonly attribute PermissionState state;
              attribute EventHandler onchange;
 };

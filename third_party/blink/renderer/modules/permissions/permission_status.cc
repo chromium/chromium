@@ -108,10 +108,19 @@ V8PermissionState PermissionStatus::state() const {
   return listener_->state();
 }
 
-String PermissionStatus::name() const {
+String PermissionStatus::name(ScriptState* script_state) const {
   if (!listener_)
     return String();
-  return PermissionNameToString(listener_->permission_name());
+  mojom::blink::PermissionName permission_name = listener_->permission_name();
+  if (permission_name ==
+          mojom::blink::PermissionName::GEOLOCATION_APPROXIMATE &&
+      !RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(
+          ExecutionContext::From(script_state))) {
+    // "geolocation-approximate" should not be exposed if
+    // ApproximateGeolocationPermissionAPI is disabled.
+    return PermissionNameToString(mojom::blink::PermissionName::GEOLOCATION);
+  }
+  return PermissionNameToString(permission_name);
 }
 
 void PermissionStatus::StartListening() {

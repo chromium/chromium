@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -249,7 +250,24 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
 
   switch (name.AsEnum()) {
     case V8PermissionName::Enum::kGeolocation:
-      return CreatePermissionDescriptor(PermissionName::GEOLOCATION);
+      if (RuntimeEnabledFeatures::ApproximateGeolocationPermissionEnabled(
+              ExecutionContext::From(script_state)) &&
+          !RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(
+              ExecutionContext::From(script_state))) {
+        // The internal permission model of chromium stores two separate values
+        // for precise and approximate geolocation. However, only one permission
+        // ("geolocation") is exposed through the Permissions API, and the spec
+        // mandates that permissions.query() should return "granted" even if the
+        // internal states are approximate: granted, precise: prompt. So we just
+        // return the approximate permission state here. Note that the state of
+        // approximate location is always laxer than the state of precise
+        // location, and querying approximate location exactly answers the
+        // question "is any location access granted or prompt".
+        return CreatePermissionDescriptor(
+            PermissionName::GEOLOCATION_APPROXIMATE);
+      } else {
+        return CreatePermissionDescriptor(PermissionName::GEOLOCATION);
+      }
 
     case V8PermissionName::Enum::kGeolocationApproximate:
       if (!RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(

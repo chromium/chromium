@@ -62,7 +62,7 @@ class PermissionStatus : public EventTarget,
 
   V8PermissionState state() const;
 
-  String name() const;
+  String name(ScriptState* script_state) const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 

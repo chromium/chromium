@@ -681,13 +681,11 @@
       // Gates the returned accuracyMode parameter upon permissions.query({name: "geolocation"})
       name: "ApproximateGeolocationPermissionAccuracyMode",
       depends_on: ["ApproximateGeolocationPermission"],
-      status: "experimental",
     },
     {
       // Gates the new permission "geolocation-approximate".
       name: "ApproximateGeolocationPermissionAPI",
       depends_on: ["ApproximateGeolocationPermission"],
-      status: "experimental",
     },
     {
       name: "ApproximateGeolocationWebVisibleAPI",
