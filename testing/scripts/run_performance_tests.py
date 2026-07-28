@@ -859,6 +859,9 @@ class CrossbenchTest(object):
     parser.add_argument('--wpr-https-port',
                         type=int,
                         help='The HTTPS port for WPR')
+    parser.add_argument('--wpr-network-speed',
+                        type=str,
+                        help='The network speed preset or throttling config')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
 
@@ -924,7 +927,8 @@ class CrossbenchTest(object):
             path=archive,
             skip_injection=self.cb_options.skip_wpr_script_injection,
             http_port=self.cb_options.wpr_http_port,
-            https_port=self.cb_options.wpr_https_port)
+            https_port=self.cb_options.wpr_https_port,
+            speed=self.cb_options.wpr_network_speed)
     ]
 
   def _check_for_embedder_arg(self):
@@ -1137,7 +1141,8 @@ def _create_network_json(config_type,
                          url=None,
                          skip_injection=False,
                          http_port=None,
-                         https_port=None):
+                         https_port=None,
+                         speed=None):
   network_dict = {'type': config_type}
   network_dict['path'] = path
   if url:
@@ -1148,6 +1153,8 @@ def _create_network_json(config_type,
     network_dict['http_port'] = http_port
   if https_port:
     network_dict['https_port'] = https_port
+  if speed:
+    network_dict['speed'] = speed
   network_json = json.dumps(network_dict)
   return f'--network={network_json}'
 
