@@ -1629,6 +1629,57 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//ios/web/content:ios_web_content_unittests",
+        "module_scheme": "gtest",
+        "name": "ios_web_content_unittests iPhone 15 26.5",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:07e67ff89ff11ed0e3071867ed6bb49319a91b05"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
+            },
+            {
+              "name": "xcode_ios_17f42",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ios_web_content_unittests",
+        "test_id_prefix": "ninja://ios/web/content:ios_web_content_unittests/",
+        "variant_id": "iPhone 15 26.5"
+      },
+      {
+        "args": [
+          "--use-simulator-cache",
+          "--platform",
+          "iPhone 15",
+          "--version",
+          "26.5",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17f42",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "module_name": "//ui/latency:latency_unittests",
         "module_scheme": "gtest",
         "name": "latency_unittests iPhone 15 26.5",

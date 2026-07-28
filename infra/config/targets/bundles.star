@@ -4928,6 +4928,7 @@ targets.bundle(
         "google_apis_unittests",
         "gpu_unittests",
         "gwp_asan_unittests",
+        "ios_web_content_unittests",
         "latency_unittests",
         "leveldb_unittests",
         "libjingle_xmpp_unittests",
