@@ -4737,6 +4737,7 @@ def _CheckChangeForIpcSecurityOwners(input_api):
         '*.mojom',
         '*_mojom_traits*.*',
         '*_type_converter*.*',
+        '*_extension_binder_provider*.*',
         # Android native IPC:
         '*.aidl',
     ]

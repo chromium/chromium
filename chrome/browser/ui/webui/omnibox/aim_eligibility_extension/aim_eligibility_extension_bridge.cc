@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility_page_handler.h"
+#include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_binder_provider.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_bridge_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
@@ -20,6 +21,8 @@
 
 AimEligibilityExtensionBridge::AimEligibilityExtensionBridge(Profile* profile)
     : profile_(*profile) {
+  AimEligibilityExtensionBinderProvider::Register(profile);
+
   auto* resource_manager = extensions::ExtensionsBrowserClient::Get()
                                ->GetComponentExtensionResourceManager();
   if (resource_manager) {

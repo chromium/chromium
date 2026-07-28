@@ -8,6 +8,8 @@ assert(enable_extensions_core)
 
 source_set("aim_eligibility_extension") {
   sources = [
+    "aim_eligibility_extension_binder_provider.cc",
+    "aim_eligibility_extension_binder_provider.h",
     "aim_eligibility_extension_bridge.cc",
     "aim_eligibility_extension_bridge.h",
     "aim_eligibility_extension_bridge_factory.cc",

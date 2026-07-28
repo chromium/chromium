@@ -25,6 +25,8 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_mojo_binder_registry.h"
+#include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -377,13 +379,11 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id) {
 
 bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
                                  content::BrowserContext* context) {
-  if (extension_id != extension_misc::kAimEligibilityExtensionId) {
-    return false;
-  }
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
-  return extension && Manifest::IsComponentLocation(extension->location());
+  return ExtensionMojoBinderRegistryFactory::GetForBrowserContext(context)
+      ->IsMojoJsEnabled(extension);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

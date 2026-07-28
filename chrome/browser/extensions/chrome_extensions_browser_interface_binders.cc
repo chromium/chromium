@@ -15,6 +15,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "extensions/browser/extension_mojo_binder_registry.h"
+#include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -304,8 +305,9 @@ void PopulateChromeFrameBindersForExtension(
   binder_map->Add<mime_handler::BeforeUnloadControl>(&BindBeforeUnloadControl);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  ExtensionMojoBinderRegistry::GetInstance()->PopulateFrameBinders(
-      binder_map, render_frame_host, extension);
+  ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+      render_frame_host->GetBrowserContext())
+      ->PopulateFrameBinders(binder_map, render_frame_host, extension);
 }
 
 void PopulateChromeServiceWorkerBindersForExtension(
@@ -343,8 +345,8 @@ void PopulateChromeServiceWorkerBindersForExtension(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  ExtensionMojoBinderRegistry::GetInstance()->PopulateServiceWorkerBinders(
-      binder_map, browser_context, extension);
+  ExtensionMojoBinderRegistryFactory::GetForBrowserContext(browser_context)
+      ->PopulateServiceWorkerBinders(binder_map, browser_context, extension);
 }
 
 }  // namespace extensions

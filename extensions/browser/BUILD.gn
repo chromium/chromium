@@ -344,6 +344,8 @@ source_set("browser_sources") {
     "extension_management_client.h",
     "extension_mojo_binder_registry.cc",
     "extension_mojo_binder_registry.h",
+    "extension_mojo_binder_registry_factory.cc",
+    "extension_mojo_binder_registry_factory.h",
     "extension_navigation_registry.cc",
     "extension_navigation_registry.h",
     "extension_navigation_throttle.cc",
