@@ -472,6 +472,11 @@ class MODULES_EXPORT RTCPeerConnection final
   // put into the cache so far.
   void DisableBackForwardCache(ExecutionContext* context);
 
+  // Called during construction. If the document's Connection-Allowlist or
+  // Connection-Allowlist-Report-Only headers would disallow WebRTC connections,
+  // sends Reporting API and UMA pings.
+  void MaybeReportConnectionAllowlistViolation(ExecutionContext* context);
+
   Member<RTCSessionDescription> pending_local_description_;
   Member<RTCSessionDescription> current_local_description_;
   Member<RTCSessionDescription> pending_remote_description_;
@@ -560,6 +565,11 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Insertable streams.
   bool encoded_insertable_streams_;
+
+  // Set in the constructor if RTC connections are disallowed by policy
+  // globally. See https://w3c.github.io/webappsec-csp/#directive-webrtc
+  // and https://w3c.github.io/webrtc-extensions/#ice-csp-modifications.
+  bool are_ice_candidates_administratively_prohibited_ = false;
 };
 
 }  // namespace blink

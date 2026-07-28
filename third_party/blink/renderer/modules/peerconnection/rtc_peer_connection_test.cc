@@ -405,11 +405,7 @@ TEST_F(RTCPeerConnectionTest, ConnectionAllowlistBlockIncrementsHistogram) {
   // Next, create the RTCPeerConnection. This should fail, and the target
   // histogram will be incremented accordingly.
   RTCPeerConnection* pc = CreatePC(scope);
-  EXPECT_EQ(
-      "RTCPeerConnection construction is disallowed by the "
-      "\"Connection-Allowlist\" header.",
-      GetExceptionMessage(scope));
-  ASSERT_FALSE(pc);
+  ASSERT_TRUE(pc);
   histogram_tester.ExpectTotalCount(
       "WebRTC.PeerConnection.BlockedByConnectionAllowlist", 1);
   histogram_tester.ExpectBucketCount(

@@ -283,6 +283,26 @@ bool IsValidTurnURL(const KURL& url) {
   return true;
 }
 
+// Determines if the current context disallows WebRTC. Corresponds to the
+// algorithm in https://www.w3.org/TR/CSP3/#should-block-rtc-connection.
+// To avoid redundant Reporting API triggers and UMA pings, we only set
+// send_report when constructing an actual RTCPeerConnection.
+bool AreIceCandidatesAdministrativelyProhibited(ExecutionContext* context,
+                                                bool send_report = false) {
+  const network::ConnectionAllowlists& connection_allowlists =
+      context->GetPolicyContainer()->GetPolicies().connection_allowlists;
+
+  bool blocked_by_connection_allowlist =
+      connection_allowlists.enforced.has_value() &&
+      connection_allowlists.enforced->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
+  if (blocked_by_connection_allowlist) {
+    return true;
+  }
+
+  return false;
+}
+
 webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     ExecutionContext* context,
     const RTCConfiguration* configuration,
@@ -338,65 +358,70 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     }
   }
 
-  std::vector<webrtc::PeerConnectionInterface::IceServer>& ice_servers =
-      web_configuration.servers;
-  for (const RTCIceServer* ice_server : configuration->iceServers()) {
-    Vector<String> url_strings;
-    std::vector<std::string> converted_urls;
-    if (ice_server->hasUrls()) {
-      UseCounter::Count(context, WebFeature::kRTCIceServerURLs);
-      switch (ice_server->urls()->GetContentType()) {
-        case V8UnionStringOrStringSequence::ContentType::kString:
-          url_strings.push_back(ice_server->urls()->GetAsString());
-          break;
-        case V8UnionStringOrStringSequence::ContentType::kStringSequence:
-          url_strings = ice_server->urls()->GetAsStringSequence();
-          break;
-      }
-    } else if (ice_server->hasUrl()) {
-      UseCounter::Count(context, WebFeature::kRTCIceServerURL);
-      url_strings.push_back(ice_server->url());
-    } else {
-      exception_state->ThrowTypeError("Malformed RTCIceServer");
-      return {};
-    }
-
-    for (const String& url_string : url_strings) {
-      KURL url(NullUrl(), url_string);
-      if (!url.IsValid()) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kSyntaxError,
-            StrCat({"'", url_string, "' is not a valid URL."}));
+  // If RTC connections are blocked globally, communication with all ICE servers
+  // should be also blocked. The simplest way to accomplish this is to filter
+  // them all out before they reach the native layer.
+  if (!AreIceCandidatesAdministrativelyProhibited(context)) {
+    std::vector<webrtc::PeerConnectionInterface::IceServer>& ice_servers =
+        web_configuration.servers;
+    for (const RTCIceServer* ice_server : configuration->iceServers()) {
+      Vector<String> url_strings;
+      std::vector<std::string> converted_urls;
+      if (ice_server->hasUrls()) {
+        UseCounter::Count(context, WebFeature::kRTCIceServerURLs);
+        switch (ice_server->urls()->GetContentType()) {
+          case V8UnionStringOrStringSequence::ContentType::kString:
+            url_strings.push_back(ice_server->urls()->GetAsString());
+            break;
+          case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+            url_strings = ice_server->urls()->GetAsStringSequence();
+            break;
+        }
+      } else if (ice_server->hasUrl()) {
+        UseCounter::Count(context, WebFeature::kRTCIceServerURL);
+        url_strings.push_back(ice_server->url());
+      } else {
+        exception_state->ThrowTypeError("Malformed RTCIceServer");
         return {};
       }
-      bool is_valid_turn = IsValidTurnURL(url);
-      if (!is_valid_turn && !IsValidStunURL(url)) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kSyntaxError,
-            StrCat({"'", url_string, "' is not a valid stun or turn URL."}));
-        return {};
-      }
-      if (is_valid_turn &&
-          (!ice_server->hasUsername() || !ice_server->hasCredential())) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kInvalidAccessError,
-            "Both username and credential are "
-            "required when the URL scheme is "
-            "\"turn\" or \"turns\".");
+
+      for (const String& url_string : url_strings) {
+        KURL url(NullUrl(), url_string);
+        if (!url.IsValid()) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kSyntaxError,
+              StrCat({"'", url_string, "' is not a valid URL."}));
+          return {};
+        }
+        bool is_valid_turn = IsValidTurnURL(url);
+        if (!is_valid_turn && !IsValidStunURL(url)) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kSyntaxError,
+              StrCat({"'", url_string, "' is not a valid stun or turn URL."}));
+          return {};
+        }
+        if (is_valid_turn &&
+            (!ice_server->hasUsername() || !ice_server->hasCredential())) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kInvalidAccessError,
+              "Both username and credential are "
+              "required when the URL scheme is "
+              "\"turn\" or \"turns\".");
+        }
+
+        converted_urls.push_back(String(url).Utf8());
       }
 
-      converted_urls.push_back(String(url).Utf8());
+      auto converted_ice_server = webrtc::PeerConnectionInterface::IceServer();
+      converted_ice_server.urls = std::move(converted_urls);
+      if (ice_server->hasUsername()) {
+        converted_ice_server.username = ice_server->username().Utf8();
+      }
+      if (ice_server->hasCredential()) {
+        converted_ice_server.password = ice_server->credential().Utf8();
+      }
+      ice_servers.emplace_back(std::move(converted_ice_server));
     }
-
-    auto converted_ice_server = webrtc::PeerConnectionInterface::IceServer();
-    converted_ice_server.urls = std::move(converted_urls);
-    if (ice_server->hasUsername()) {
-      converted_ice_server.username = ice_server->username().Utf8();
-    }
-    if (ice_server->hasCredential()) {
-      converted_ice_server.password = ice_server->credential().Utf8();
-    }
-    ice_servers.emplace_back(std::move(converted_ice_server));
   }
 
   web_configuration.certificates = base::ToVector(
@@ -703,6 +728,12 @@ RTCPeerConnection::RTCPeerConnection(
       encoded_insertable_streams_(encoded_insertable_streams) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
+  if (AreIceCandidatesAdministrativelyProhibited(context,
+                                                 /*send_report=*/true)) {
+    are_ice_candidates_administratively_prohibited_ = true;
+  }
+  MaybeReportConnectionAllowlistViolation(context);
+
   InstanceCounters::IncrementCounter(
       InstanceCounters::kRTCPeerConnectionCounter);
   // If we fail, set |m_closed| and |m_stopped| to true, to avoid hitting the
@@ -725,38 +756,6 @@ RTCPeerConnection::RTCPeerConnection(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "RTCPeerConnection is not allowed in fenced frames.");
-    return;
-  }
-
-  // WebRTC peer connections are not allowed in documents when blocked by the
-  // Connection-Allowlist header.
-  const auto& policy_container_policies =
-      context->GetPolicyContainer()->GetPolicies();
-
-  bool blocked_by_connection_allowlist_report_only =
-      policy_container_policies.connection_allowlists.report_only.has_value() &&
-      policy_container_policies.connection_allowlists.report_only
-              ->webrtc_behavior ==
-          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
-  if (blocked_by_connection_allowlist_report_only) {
-    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
-        V8ConnectionAllowlistDisposition::Enum::kReport, *context);
-  }
-
-  bool blocked_by_connection_allowlist =
-      policy_container_policies.connection_allowlists.enforced.has_value() &&
-      policy_container_policies.connection_allowlists.enforced
-              ->webrtc_behavior ==
-          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
-  if (blocked_by_connection_allowlist) {
-    base::UmaHistogramBoolean(
-        "WebRTC.PeerConnection.BlockedByConnectionAllowlist", true);
-    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
-        V8ConnectionAllowlistDisposition::Enum::kEnforce, *context);
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "RTCPeerConnection construction is disallowed by the "
-        "\"Connection-Allowlist\" header.");
     return;
   }
 
@@ -1711,6 +1710,12 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::addIceCandidate(
 
   DisableBackForwardCache(GetExecutionContext());
 
+  // If WebRTC is blocked globally, all candidates are "administratively
+  // prohibited" per spec, so we skip adding them.
+  if (are_ice_candidates_administratively_prohibited_) {
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -1870,7 +1875,7 @@ std::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
 }
 
 void RTCPeerConnection::restartIce() {
-  if (closed_) {
+  if (closed_ || are_ice_candidates_administratively_prohibited_) {
     return;
   }
   peer_handler_->RestartIce();
@@ -2974,7 +2979,8 @@ RTCPeerConnection::ComputeIceConnectionState() {
   if (closed_) {
     return webrtc::PeerConnectionInterface::kIceConnectionClosed;
   }
-  if (HasAnyFailedIceTransport()) {
+  if (are_ice_candidates_administratively_prohibited_ ||
+      HasAnyFailedIceTransport()) {
     return webrtc::PeerConnectionInterface::kIceConnectionFailed;
   }
   if (HasAnyDisconnectedIceTransport()) {
@@ -3058,6 +3064,12 @@ bool RTCPeerConnection::HasAllConnectedCompletedOrClosedIceTransports() const {
 void RTCPeerConnection::ChangePeerConnectionState(
     webrtc::PeerConnectionInterface::PeerConnectionState
         peer_connection_state) {
+  if (are_ice_candidates_administratively_prohibited_ &&
+      peer_connection_state !=
+          webrtc::PeerConnectionInterface::PeerConnectionState::kClosed) {
+    peer_connection_state =
+        webrtc::PeerConnectionInterface::PeerConnectionState::kFailed;
+  }
   if (peer_connection_state_ !=
       webrtc::PeerConnectionInterface::PeerConnectionState::kClosed) {
     ScheduleDispatchEvent(
@@ -3247,6 +3259,28 @@ void RTCPeerConnection::DisableBackForwardCache(ExecutionContext* context) {
   window->GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
       SchedulingPolicy::Feature::kWebRTCSticky,
       SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
+}
+
+void RTCPeerConnection::MaybeReportConnectionAllowlistViolation(
+    ExecutionContext* context) {
+  const network::ConnectionAllowlists& connection_allowlists =
+      context->GetPolicyContainer()->GetPolicies().connection_allowlists;
+
+  bool blocked_by_connection_allowlist_report_only =
+      connection_allowlists.report_only.has_value() &&
+      connection_allowlists.report_only->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
+  if (blocked_by_connection_allowlist_report_only) {
+    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
+        V8ConnectionAllowlistDisposition::Enum::kReport, *context);
+  }
+
+  if (are_ice_candidates_administratively_prohibited_) {
+    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
+        V8ConnectionAllowlistDisposition::Enum::kEnforce, *context);
+    base::UmaHistogramBoolean(
+        "WebRTC.PeerConnection.BlockedByConnectionAllowlist", true);
+  }
 }
 
 }  // namespace blink
