@@ -24,7 +24,7 @@ If the components or layer does not have a FeatureMap, create a new one:
       with `kFeaturesExposedToJava`.
     * `JNI_FooFeatureList_GetNativeMap` simply calling `GetFeatureMap`.
 2. In Java, create a `FooFeatureMap.java` class extending `FeatureMap.java`
-   (ex. [`ContentFeatureMap`](/content/public/android/java/src/org/chromium/content/browser/ContentFeatureMap.java)) with:
+   (ex. [`ContentFeatureMap`](/content/public/android/java/src/org/chromium/content_public/browser/ContentFeatureMap.java)) with:
     * A `getInstance()` that returns the singleton instance.
     * A single `long getNativeMap()` as @NativeMethods.
     * An `@Override` for the abstract `getNativeMap()` simply calling
