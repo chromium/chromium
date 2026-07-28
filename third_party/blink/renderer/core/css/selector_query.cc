@@ -133,6 +133,21 @@ Element* SelectorQuery::Closest(Element& target_element) const {
     return nullptr;
   }
 
+  // Single-compound fast path, mirroring Matches(): test each ancestor with
+  // MatchCompound() instead of running the full SelectorChecker.
+  if (compounds_.size() == 1 && !need_full_check_ && !compounds_[0].nth_child) {
+    FillMissingData(target_element);
+    const bool is_html_doc = IsA<HTMLDocument>(target_element.GetDocument());
+    for (Element* current_element = &target_element; current_element;
+         current_element = current_element->parentElement()) {
+      if (MatchCompound(*current_element, compounds_[0], kUnknownSiblingIndex,
+                        is_html_doc)) {
+        return current_element;
+      }
+    }
+    return nullptr;
+  }
+
   for (Element* current_element = &target_element; current_element;
        current_element = current_element->parentElement()) {
     if (SelectorListMatches(target_element, *current_element)) {

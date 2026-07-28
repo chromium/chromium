@@ -115,6 +115,27 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
   EXPECT_EQ("last", elm->IdForStyleResolution());
 }
 
+TEST(SelectorQueryTest, ClosestSingleCompoundFastPath) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write(
+      "<div id=match class=target><div><span id=leaf></span></div></div>");
+
+  Element* leaf = document->getElementById(AtomicString("leaf"));
+  Element* match = document->getElementById(AtomicString("match"));
+  ASSERT_TRUE(leaf && match);
+
+  // A single compound is resolved via MatchCompound() (check_class on leaf and
+  // its two ancestors), not the full SelectorChecker (recheck_selector).
+  EXPECT_EQ(match, leaf->closest(AtomicString(".target")));
+#if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
+  EXPECT_EQ((SelectorQuery::QueryStats{.check_class = 3}),
+            SelectorQuery::LastQueryStats());
+#endif
+}
+
 TEST(SelectorQueryTest, StandardsModeFastPaths) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
