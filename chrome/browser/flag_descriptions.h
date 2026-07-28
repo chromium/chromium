@@ -3561,6 +3561,12 @@ inline constexpr char kOmniboxResizingPrioritizationDescription[] =
     "Prioritizes providing space for the Omnibox during browser window "
     "resizing.";
 
+inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownName[] =
+    "Omnibox search prefetch on Enter KeyDown";
+inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownDescription[] =
+    "Triggers search prefetch on the Enter KeyDown event when no suggestion is "
+    "selected in the omnibox and the UrlBar itself is selected.";
+
 inline constexpr char kOmniboxToolbeltName[] = "Omnibox toolbelt";
 inline constexpr char kOmniboxToolbeltDescription[] =
     "Adds a row of buttons at the bottom of the omnibox.";

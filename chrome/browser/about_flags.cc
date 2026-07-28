@@ -9190,6 +9190,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"dse-preload2-on-press", flag_descriptions::kDsePreload2OnPressName,
      flag_descriptions::kDsePreload2OnPressDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDsePreload2OnPress)},
+    {"omnibox-search-prefetch-on-enter-key-down",
+     flag_descriptions::kOmniboxSearchPrefetchOnEnterKeyDownName,
+     flag_descriptions::kOmniboxSearchPrefetchOnEnterKeyDownDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSearchPrefetchOnEnterKeyDown)},
 
     {"http-cache-custom-backend",
      flag_descriptions::kHttpCacheCustomBackendName,

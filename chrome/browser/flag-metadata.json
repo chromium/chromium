@@ -7702,6 +7702,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "omnibox-search-prefetch-on-enter-key-down",
+    "owners": ["bashi@chromium.org", "chrome-prerendering@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-show-popup-on-mouse-released",
     "owners": ["jdonnelly@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150

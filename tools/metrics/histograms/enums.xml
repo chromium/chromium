@@ -10839,6 +10839,8 @@ from previous Chrome versions.
   <int value="-1167865881" label="ArabicIndicDigitInput:disabled"/>
   <int value="-1167716837"
       label="VisitedURLRankingHistoryVisibilityScoreFilter:enabled"/>
+  <int value="-1167110619"
+      label="OmniboxSearchPrefetchOnEnterKeyDown:disabled"/>
   <int value="-1166745977"
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
   <int value="-1166715563" label="ChromeOSAssistant:disabled"/>
@@ -19929,6 +19931,7 @@ from previous Chrome versions.
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
+  <int value="1717173782" label="OmniboxSearchPrefetchOnEnterKeyDown:enabled"/>
   <int value="1717602894" label="TabStripUnification:enabled"/>
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>
   <int value="1717987538" label="NTPTilesLowerResolutionFavicons:enabled"/>
