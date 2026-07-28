@@ -40,7 +40,7 @@ class BASE_EXPORT FieldTrialParamAssociator {
   // Sets parameters for the given field trial name and group.
   bool AssociateFieldTrialParams(const std::string& trial_name,
                                  const std::string& group_name,
-                                 const FieldTrialParams& params);
+                                 FieldTrialParams params);
 
   // Gets the parameters for a field trial and its chosen group. If not found in
   // field_trial_params_, then tries to looks it up in shared memory. Returns

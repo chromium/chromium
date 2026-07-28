@@ -285,7 +285,7 @@ void InitializeFeatureList(const base::DictValue& dcs_features,
 
         // Register the params, so that they can be queried by client code.
         bool success = base::AssociateFieldTrialParams(
-            feature_name, kDefaultDCSFeaturesGroup, params);
+            feature_name, kDefaultDCSFeaturesGroup, std::move(params));
         DCHECK(success);
       }
       continue;

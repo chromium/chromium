@@ -267,7 +267,7 @@ BASE_EXPORT void LogInvalidEnumValue(const Feature& feature,
 // is already active (group() has been called on it). Thread safe.
 BASE_EXPORT bool AssociateFieldTrialParams(const std::string& trial_name,
                                            const std::string& group_name,
-                                           const FieldTrialParams& params);
+                                           FieldTrialParams params);
 
 // Provides a mechanism to associate multiple set of params to multiple groups
 // with a formatted string as returned by FieldTrialList::AllParamsToString().

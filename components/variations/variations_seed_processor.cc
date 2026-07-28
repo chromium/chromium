@@ -8,6 +8,7 @@
 
 #include <map>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -93,7 +94,8 @@ void RegisterExperimentParams(const Study& study,
         SerializeGoogleGroupsFilter(study.filter());
   }
   if (!params.empty()) {
-    base::AssociateFieldTrialParams(study.name(), experiment.name(), params);
+    base::AssociateFieldTrialParams(study.name(), experiment.name(),
+                                    std::move(params));
   }
 }
 

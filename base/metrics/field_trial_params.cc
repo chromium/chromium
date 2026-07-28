@@ -108,9 +108,9 @@ void LogInvalidEnumValue(const Feature& feature,
 
 bool AssociateFieldTrialParams(const std::string& trial_name,
                                const std::string& group_name,
-                               const FieldTrialParams& params) {
+                               FieldTrialParams params) {
   return FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
-      trial_name, group_name, params);
+      trial_name, group_name, std::move(params));
 }
 
 bool AssociateFieldTrialParamsFromString(
@@ -154,7 +154,7 @@ bool AssociateFieldTrialParamsFromString(
       params[decode_data_func(key_values[i])] =
           decode_data_func(key_values[i + 1]);
     }
-    bool result = AssociateFieldTrialParams(trial, group, params);
+    bool result = AssociateFieldTrialParams(trial, group, std::move(params));
     if (!result) {
       DLOG(ERROR) << "Failed to associate field trial params for group \""
                   << group << "\" in trial \"" << trial << "\"";
