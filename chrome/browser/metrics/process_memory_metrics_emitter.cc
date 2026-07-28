@@ -386,6 +386,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "nonpurgeable_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"ioaccelerator", "IOAccelerator.Purgeable", MetricSize::kLarge,
      "purgeable_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/angle/metal", "ANGLEMetal", MetricSize::kLarge, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetJavaHeap},

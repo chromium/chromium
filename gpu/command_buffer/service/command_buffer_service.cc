@@ -193,17 +193,12 @@ bool AppleGpuMemoryDumpProvider::OnMemoryDump(
   dump->AddScalar("nonpurgeable_size", "bytes", accelerator_nonpurgeable_size);
   dump->AddScalar("purgeable_size", "bytes", accelerator_purgeable_size);
 
-  // Detailed only for now, until we check that it's cheap enough for
-  // kBackground dumps.
-  if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::kDetailed) {
-    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-      gl::GLDisplayEGL* display_egl = gl::GetDefaultDisplayEGL();
-      if (display_egl) {
-        dump = pmd->CreateAllocatorDump("gpu/angle/metal");
-        dump->AddScalar("size", "bytes",
-                        display_egl->GetMetalDeviceAllocatedMemory());
-      }
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+    gl::GLDisplayEGL* display_egl = gl::GetDefaultDisplayEGL();
+    if (display_egl) {
+      dump = pmd->CreateAllocatorDump("gpu/angle/metal");
+      dump->AddScalar("size", "bytes",
+                      display_egl->GetMetalDeviceAllocatedMemory());
     }
   }
 

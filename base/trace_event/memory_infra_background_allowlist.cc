@@ -167,6 +167,9 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "font_caches/font_platform_data_cache",
         "font_caches/shape_caches",
         "frame_evictor",
+#if BUILDFLAG(IS_MAC)
+        "gpu/angle/metal",
+#endif
         "gpu/command_buffer_memory/buffer_0x?",
         "gpu/dawn",
         "gpu/dawn/textures",

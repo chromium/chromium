@@ -162,6 +162,8 @@ chromium-metrics-reviews@google.com.
                platform APIs. Only reported on Android, if the value hasn't
                been collected in the last 5 minutes (otherwise Android
                produces a stale value, which is not emitted in Chrome)."/>
+  <variant name=".ANGLEMetal"
+      summary="Memory allocated by ANGLE Metal device, on macOS."/>
   <variant name=".BlinkGC" summary="Only counting Blink GC memory."/>
   <variant name=".BlinkGC.AllocatedObjects"
       summary="Only counting objects allocated using Blink GC."/>
