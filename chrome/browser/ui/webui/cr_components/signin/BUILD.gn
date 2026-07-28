@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+assert(enable_dice_support)
+
+source_set("signin") {
+  sources = [
+    "signin_utils_handler.cc",
+    "signin_utils_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//ui/webui/resources/cr_components/signin:mojo_bindings",
+  ]
+
+  deps = [
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "signin_utils_handler_unittest.cc" ]
+  deps = [
+    ":signin",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/webui/resources/cr_components/signin:mojo_bindings",
+  ]
+}

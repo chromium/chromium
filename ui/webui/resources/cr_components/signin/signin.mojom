@@ -1,0 +1,36 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module signin.mojom;
+
+// Subset of signin_metrics::AccessPoint used by WebUI.
+enum ChromeSigninAccessPoint {
+  SETTINGS = 0,
+  SETTINGS_YOUR_SAVED_INFO = 1,
+};
+
+// Browser-side handler for the signin component.
+interface SigninPageHandler {
+  // Starts the signin process.
+  StartSignin(ChromeSigninAccessPoint access_point);
+
+  // Signs in the user directly. Should only be called if the user is
+  // already signed into the web.
+  SigninWithAccount(
+    ChromeSigninAccessPoint access_point,
+    string email,
+    bool is_default_promo_account);
+
+  // Records that the sign-in pending promo was offered.
+  RecordSigninPendingOffered();
+
+  // Records that the sign-in offered promo was shown.
+  RecordSigninOffered(ChromeSigninAccessPoint access_point);
+};
+
+// Factory for creating SigninPageHandler.
+interface SigninPageHandlerFactory {
+  // Creates a SigninPageHandler.
+  CreateSigninPageHandler(pending_receiver<SigninPageHandler> handler);
+};

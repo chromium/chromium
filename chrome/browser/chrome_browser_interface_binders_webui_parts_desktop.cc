@@ -677,6 +677,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
       .ForWebUI<settings::SettingsUI>()
 #if !BUILDFLAG(IS_CHROMEOS)
       .Add<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>()
+      .Add<signin::mojom::SigninPageHandlerFactory>()
 #endif  // !BUILDFLAG(IS_CHROMEOS)
       .Add<batch_upload_promo::mojom::PageHandlerFactory>()
       .Add<customize_color_scheme_mode::mojom::

@@ -105,6 +105,10 @@ source_set("settings") {
         [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
   }
 
+  if (enable_dice_support) {
+    public_deps += [ "//ui/webui/resources/cr_components/signin:mojo_bindings" ]
+  }
+
   if (is_win || is_mac || is_linux) {
     sources += [
       "settings_default_browser_handler.h",
@@ -391,6 +395,10 @@ source_set("impl") {
       "//chromeos/version",
       "//ui/chromeos",
     ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/cr_components/signin" ]
   }
 }
 

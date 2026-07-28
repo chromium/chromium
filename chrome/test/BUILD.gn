@@ -924,10 +924,6 @@ static_library("test_support") {
     deps += [ "//chrome/browser/compose:test_support" ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    sources += []
-  }
-
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -6174,6 +6170,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui:feature_showcase_metrics",
       "//chrome/browser/ui/signin:unit_tests",
+      "//chrome/browser/ui/webui/cr_components/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
       "//chrome/browser/ui/webui/intro",
       "//components/lens:enterprise_policy",

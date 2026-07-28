@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -119,6 +120,11 @@ generate_grd("build_grd") {
     # ash/webui/common/resources:build_grd
     public_deps += [ ":build_cros_styles_grdp" ]
     grdp_files += [ "$target_gen_dir/cros_styles_resources.grdp" ]
+  }
+
+  if (enable_dice_support) {
+    public_deps += [ "cr_components/signin:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/cr_components/signin/resources.grdp" ]
   }
 }
 

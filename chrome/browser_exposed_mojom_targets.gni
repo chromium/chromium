@@ -359,6 +359,11 @@ if (!is_android) {
   ]
 }
 
+if (!is_chromeos) {
+  browser_exposed_mojom_targets +=
+      [ "//ui/webui/resources/cr_components/signin:mojo_bindings" ]
+}
+
 if (enable_webui_ntp) {
   browser_exposed_mojom_targets += [
     "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",

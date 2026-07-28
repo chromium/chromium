@@ -1979,6 +1979,13 @@ static_library("ui") {
       deps += [ "//components/rlz" ]
     }
 
+    if (enable_dice_support) {
+      deps += [
+        "//chrome/browser/ui/webui/cr_components/signin",
+        "//ui/webui/resources/cr_components/signin:mojo_bindings",
+      ]
+    }
+
     if (is_win || is_chromeos) {
       deps += [
         "//chrome/browser/ui/webui/signin:inline_login",
