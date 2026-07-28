@@ -104,12 +104,7 @@ bool IsForceInstalledExtension(const ExtensionId& extension_id,
       pref->GetType() != base::Value::Type::DICT) {
     return false;
   }
-  for (const auto item : pref->GetValue()->GetDict()) {
-    if (extension_id == item.first) {
-      return true;
-    }
-  }
-  return false;
+  return pref->GetValue()->GetDict().Find(extension_id) != nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
