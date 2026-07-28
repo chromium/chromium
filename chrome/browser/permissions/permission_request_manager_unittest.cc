@@ -44,7 +44,6 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -57,8 +56,6 @@
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #endif
-
-const double kTestEngagementScore = 29;
 
 class PermissionRequestManagerTest
     : public ChromeRenderViewHostTestHarness,
@@ -82,11 +79,6 @@ class PermissionRequestManagerTest
     ChromeRenderViewHostTestHarness::SetUp();
     SetContents(CreateTestWebContents());
     NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
-
-    site_engagement::SiteEngagementService::Get(profile())
-        ->ResetBaseScoreForURL(
-            GURL(permissions::MockPermissionRequest::kDefaultOrigin),
-            kTestEngagementScore);
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ =
@@ -219,9 +211,6 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
       static_cast<base::HistogramBase::Sample32>(geolocation_request_type), 1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptShownNoGesture, 0);
-  histograms.ExpectTotalCount(base::StrCat({"Permissions.Engagement.Accepted.",
-                                            geolocation_prompt_name}),
-                              0);
 
   Accept(base::FeatureList::IsEnabled(
              content_settings::features::kApproximateGeolocationPermission)
@@ -239,10 +228,6 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
       static_cast<base::HistogramBase::Sample32>(geolocation_request_type), 1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptAcceptedNoGesture, 0);
-  histograms.ExpectUniqueSample(
-      base::StrCat(
-          {"Permissions.Engagement.Accepted.", geolocation_prompt_name}),
-      kTestEngagementScore, 1);
 }
 
 TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
@@ -298,8 +283,6 @@ TEST_F(PermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture, 0);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptShownNoGesture, 0);
-  histograms.ExpectTotalCount(
-      "Permissions.Engagement.Accepted.AudioAndVideoCapture", 0);
 
   Accept();
 
@@ -308,9 +291,6 @@ TEST_F(PermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
       static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
-  histograms.ExpectUniqueSample(
-      "Permissions.Engagement.Accepted.AudioAndVideoCapture",
-      kTestEngagementScore, 1);
 }
 
 TEST_F(PermissionRequestManagerTest, UMAForMergedDeniedBubble) {

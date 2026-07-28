@@ -386,8 +386,6 @@ TEST_F(PermissionUmaUtilTest, GeolocationPermissionPromptResolved) {
         PermissionAction::GRANTED, 1);
     histograms.ExpectUniqueSample("Permissions.Prompt.Accepted", request_type,
                                   1);
-    histograms.ExpectTotalCount(
-        base::StrCat({"Permissions.Engagement.Accepted.", prompt_type_str}), 1);
     const auto entries = recorder.GetEntriesByName("Permission");
     ASSERT_EQ(1u, entries.size());
     const auto* entry = entries.back().get();

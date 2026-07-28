@@ -268,23 +268,6 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
                    FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN;
 }
 
-void RecordEngagementMetric(
-    const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-    content::BrowserContext* browser_context,
-    const std::string& action) {
-  CHECK(!requests.empty());
-
-  RequestTypeForUma type = PermissionUtil::GetUmaValueForRequests(requests);
-
-  CHECK(action == "Accepted" || action == "Dismissed");
-  std::string name = base::StrCat({"Permissions.Engagement.", action, ".",
-                                   GetPermissionRequestString(type)});
-
-  double engagement_score = PermissionsClient::Get()->GetSiteEngagementScore(
-      browser_context, requests[0]->requesting_origin());
-  base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
-}
-
 // Records in a UMA histogram whether we should expect to see an event in UKM,
 // to allow for evaluating if the current constraints on UKM recording work well
 // in practice.
@@ -1106,10 +1089,6 @@ void PermissionUmaUtil::PermissionPromptResolved(
       NOTREACHED();
   }
   std::string action_string = GetPermissionActionString(permission_action);
-  if (permission_action == PermissionAction::GRANTED ||
-      permission_action == PermissionAction::DISMISSED) {
-    RecordEngagementMetric(requests, browser_context, action_string);
-  }
 
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
