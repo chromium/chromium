@@ -10,9 +10,9 @@
 import * as fs from 'fs';
 import * as process from 'process';
 
-import {CodeWriter} from './code_writer.ts';
-import {MojomModel} from './converter.ts';
-import type {MojomAst} from './mojom_types.ts';
+import {CodeWriter} from './code_writer.js';
+import {MojomModel} from './converter.js';
+import type {MojomAst} from './mojom_types.js';
 
 function writeFunctionSignature(
     w: CodeWriter, functionName: string, paramType: string,
