@@ -950,7 +950,7 @@ interface pointer is probably a good idea.
 
 ## Copy data out of BigBuffer before parsing
 
-[BigBuffer](mojo/public/mojom/base/big_buffer.mojom) uses shared memory to make
+[BigBuffer](/mojo/public/mojom/base/big_buffer.mojom) uses shared memory to make
 passing large messages fast. When shmem is backing the message, it may be
 writable in the sending process while being read in the receiving process. If a
 BigBuffer is received from an untrustworthy process, you should make a copy of
