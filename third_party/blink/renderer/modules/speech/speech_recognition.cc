@@ -395,7 +395,8 @@ void SpeechRecognition::ResultRetrieved(
           hypothesis->utterance, hypothesis->confidence));
     }
     aggregated_results.push_back(SpeechRecognitionResult::Create(
-        std::move(alternatives), !result->is_provisional));
+        std::move(alternatives), !result->is_provisional,
+        result->audio_start_time, result->audio_end_time));
   }
 
   // |aggregated_results| now contains the following (in the given order):

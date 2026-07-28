@@ -25,25 +25,59 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 
+#include "base/time/time.h"
+
 namespace blink {
+
+namespace {
+// Quantize timestamps to 2ms precision to mitigate fingerprinting risks.
+constexpr base::TimeDelta kFuzzInterval = base::Milliseconds(2);
+
+double FuzzTimestamp(base::TimeDelta time) {
+  return time.FloorToMultiple(kFuzzInterval).InMillisecondsF();
+}
+}  // namespace
 
 SpeechRecognitionResult* SpeechRecognitionResult::Create(
     const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
-    bool final) {
-  return MakeGarbageCollected<SpeechRecognitionResult>(alternatives, final);
+    bool final,
+    std::optional<base::TimeDelta> audio_start_time,
+    std::optional<base::TimeDelta> audio_end_time) {
+  return MakeGarbageCollected<SpeechRecognitionResult>(
+      alternatives, final, audio_start_time, audio_end_time);
 }
 
 SpeechRecognitionAlternative* SpeechRecognitionResult::item(unsigned index) {
-  if (index >= alternatives_.size())
+  if (index >= alternatives_.size()) {
     return nullptr;
+  }
 
   return alternatives_[index].Get();
 }
 
 SpeechRecognitionResult::SpeechRecognitionResult(
     const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
-    bool final)
-    : final_(final), alternatives_(alternatives) {}
+    bool final,
+    std::optional<base::TimeDelta> audio_start_time,
+    std::optional<base::TimeDelta> audio_end_time)
+    : final_(final),
+      alternatives_(alternatives),
+      audio_start_time_(audio_start_time),
+      audio_end_time_(audio_end_time) {}
+
+std::optional<double> SpeechRecognitionResult::audioStartTime() const {
+  if (!audio_start_time_.has_value()) {
+    return std::nullopt;
+  }
+  return FuzzTimestamp(*audio_start_time_);
+}
+
+std::optional<double> SpeechRecognitionResult::audioEndTime() const {
+  if (!audio_end_time_.has_value()) {
+    return std::nullopt;
+  }
+  return FuzzTimestamp(*audio_end_time_);
+}
 
 void SpeechRecognitionResult::Trace(Visitor* visitor) const {
   visitor->Trace(alternatives_);

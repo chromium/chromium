@@ -31,4 +31,6 @@
     readonly attribute unsigned long length;
     getter SpeechRecognitionAlternative item(unsigned long index);
     readonly attribute boolean isFinal;
+    [RuntimeEnabled=WebSpeechTimestamps] readonly attribute DOMHighResTimeStamp? audioStartTime;
+    [RuntimeEnabled=WebSpeechTimestamps] readonly attribute DOMHighResTimeStamp? audioEndTime;
 };

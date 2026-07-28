@@ -26,6 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_RESULT_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_alternative.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -39,22 +42,30 @@ class MODULES_EXPORT SpeechRecognitionResult final : public ScriptWrappable {
 
  public:
   static SpeechRecognitionResult* Create(
-      const HeapVector<Member<SpeechRecognitionAlternative>>&,
-      bool final);
+      const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
+      bool final,
+      std::optional<base::TimeDelta> audio_start_time = std::nullopt,
+      std::optional<base::TimeDelta> audio_end_time = std::nullopt);
 
   SpeechRecognitionResult(
-      const HeapVector<Member<SpeechRecognitionAlternative>>&,
-      bool final);
+      const HeapVector<Member<SpeechRecognitionAlternative>>& alternatives,
+      bool final,
+      std::optional<base::TimeDelta> audio_start_time,
+      std::optional<base::TimeDelta> audio_end_time);
 
   unsigned length() { return alternatives_.size(); }
   SpeechRecognitionAlternative* item(unsigned index);
   bool isFinal() { return final_; }
+  std::optional<double> audioStartTime() const;
+  std::optional<double> audioEndTime() const;
 
   void Trace(Visitor*) const override;
 
  private:
   bool final_;
   HeapVector<Member<SpeechRecognitionAlternative>> alternatives_;
+  std::optional<base::TimeDelta> audio_start_time_;
+  std::optional<base::TimeDelta> audio_end_time_;
 };
 
 }  // namespace blink
