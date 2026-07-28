@@ -17,7 +17,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/win/security_descriptor.h"
+#include "base/win/access_token.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -62,23 +63,29 @@ Microsoft::WRL::ComPtr<IUnknown> DialUpdateService(UpdaterScope scope,
 }
 
 bool IsServerElevated(HANDLE pipe_handle) {
-  std::optional<base::win::SecurityDescriptor> sd =
-      base::win::SecurityDescriptor::FromHandle(
-          pipe_handle, base::win::SecurityObjectType::kFile,
-          OWNER_SECURITY_INFORMATION);
-  if (!sd) {
-    PLOG(ERROR) << "Failed to get security descriptor for pipe";
+  DWORD pid = 0;
+  if (!::GetNamedPipeServerProcessId(pipe_handle, &pid)) {
+    PLOG(ERROR) << "Failed to get named pipe server process ID";
     return false;
   }
 
-  const std::optional<base::win::Sid>& owner = sd->owner();
-  if (!owner) {
-    LOG(ERROR) << "Pipe owner is missing";
+  base::win::ScopedHandle process(
+      ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
+  if (!process.is_valid()) {
+    PLOG(ERROR) << "Failed to open named pipe server process " << pid;
     return false;
   }
 
-  return *owner == base::win::Sid(base::win::WellKnownSid::kLocalSystem) ||
-         *owner ==
+  std::optional<base::win::AccessToken> server_token =
+      base::win::AccessToken::FromProcess(process.get());
+  if (!server_token) {
+    LOG(ERROR) << "Failed to get access token for server process " << pid;
+    return false;
+  }
+
+  const base::win::Sid owner = server_token->Owner();
+  return owner == base::win::Sid(base::win::WellKnownSid::kLocalSystem) ||
+         owner ==
              base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators);
 }
 
