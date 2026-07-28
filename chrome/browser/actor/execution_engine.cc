@@ -135,45 +135,6 @@ constexpr char kTabSafeBrowsingObserverPredicateName[] =
 constexpr GateableEventSet kRequestsAndPageActions = {
     GateableEvent::kNavigationRequest, GateableEvent::kPageAction};
 
-class DecisionWrapper {
- public:
-  DecisionWrapper(AggregatedJournal& journal,
-                  const GURL& url,
-                  TaskId task_id,
-                  std::string_view event_name,
-                  DecisionCallbackWithReason callback)
-      : callback_(std::move(callback)),
-        journal_entry_(
-            journal.CreatePendingAsyncEntry(url,
-                                            task_id,
-                                            MakeBrowserTrackUUID(task_id),
-                                            event_name,
-                                            {})) {}
-
-  void Reject(std::string_view reason, MayActOnUrlBlockReason block_reason) {
-    journal_entry_->EndEntry(JournalDetailsBuilder().AddError(reason).Build());
-
-    // Some decisions are made asynchronously, so always invoke the callback
-    // asynchronously for consistency.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), block_reason));
-  }
-
-  void Accept() {
-    journal_entry_->EndEntry(
-        JournalDetailsBuilder().Add("result", "Allow").Build());
-
-    // Some decisions are made asynchronously, so always invoke the callback
-    // asynchronously for consistency.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), MayActOnUrlBlockReason::kAllowed));
-  }
-
- private:
-  DecisionCallbackWithReason callback_;
-  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
-};
 
 struct ActorGatingContext : public origin_gating::GatingDecisionContext {
   ActorGatingContext(ukm::SourceId ukm_id,
@@ -473,96 +434,73 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
   }
 }
 
-// The block reason and human-readable description produced when a gating
-// decision denies an action or navigation.
-struct MayActOnUrlBlockResult {
-  std::string reason;
-  MayActOnUrlBlockReason reason_code;
-};
-
-MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
+MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
     const origin_gating::GatingDecision& decision,
     const GURL& url) {
+  if (decision.is_allowed) {
+    return MayActOnUrlBlockReason::kAllowed;
+  }
   switch (decision.attribution.type()) {
     case origin_gating::DecisionAttribution::Type::kDecisionSource:
       switch (decision.attribution.Source()) {
         case DecisionSource::kEnterprisePolicy:
-          return {"Enterprise policy block",
-                  MayActOnUrlBlockReason::kEnterprisePolicy};
+          return MayActOnUrlBlockReason::kEnterprisePolicy;
         case DecisionSource::kForbidIpAddress:
-          return {"IP address", MayActOnUrlBlockReason::kIpAddress};
+          return MayActOnUrlBlockReason::kIpAddress;
         case DecisionSource::kRequireHttps:
         case DecisionSource::kRequireHttpsOrHttp:
-          return {"Wrong scheme",
-                  ProfileIOData::IsHandledURL(url)
-                      ? MayActOnUrlBlockReason::kWrongScheme
-                      : MayActOnUrlBlockReason::kExternalProtocol};
+          return ProfileIOData::IsHandledURL(url)
+                     ? MayActOnUrlBlockReason::kWrongScheme
+                     : MayActOnUrlBlockReason::kExternalProtocol;
         case DecisionSource::kActorContainerConfig:
-          return {"Blocked by actor container config",
-                  MayActOnUrlBlockReason::kBlockedByContainerConfig};
+          return MayActOnUrlBlockReason::kBlockedByContainerConfig;
         default:
           NOTREACHED() << "Unexpected decision source: "
                        << static_cast<int>(decision.attribution.Source());
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
       if (decision.attribution == kSafetyListPredicateName) {
-        return {"Blocked by static safety list",
-                MayActOnUrlBlockReason::kBlockedByStaticList};
+        return MayActOnUrlBlockReason::kBlockedByStaticList;
       }
       if (decision.attribution == kSensitiveUrlPredicateName) {
-        return {kSensitiveUrlPredicateName,
-                MayActOnUrlBlockReason::kOptimizationGuideBlock};
+        return MayActOnUrlBlockReason::kOptimizationGuideBlock;
       }
       if (decision.attribution == kLookalikeUrlPredicateName) {
-        return {kLookalikeUrlPredicateName,
-                MayActOnUrlBlockReason::kLookalikeDomain};
+        return MayActOnUrlBlockReason::kLookalikeDomain;
       }
       if (decision.attribution == kActionAllowlistPredicateName) {
-        return {kActionAllowlistPredicateName,
-                MayActOnUrlBlockReason::kUrlNotInAllowlist};
+        return MayActOnUrlBlockReason::kUrlNotInAllowlist;
       }
       if (decision.attribution == kSafeBrowsingPredicateName) {
-        return {"Safebrowsing unavailable",
-                MayActOnUrlBlockReason::kSafeBrowsing};
+        return MayActOnUrlBlockReason::kSafeBrowsing;
       }
       if (decision.attribution == kTabErrorDocumentPredicateName) {
-        return {"Tab is an error document",
-                MayActOnUrlBlockReason::kTabIsErrorDocument};
+        return MayActOnUrlBlockReason::kTabIsErrorDocument;
       }
       if (decision.attribution == kTabSafeBrowsingObserverPredicateName) {
-        return {"Blocked by safebrowsing",
-                MayActOnUrlBlockReason::kSafeBrowsing};
+        return MayActOnUrlBlockReason::kSafeBrowsing;
       }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
   }
 }
 
-// Resolves the pending `decision_wrapper` from the gating checker's `decision`.
-void ResolveGatingDecision(
-    std::unique_ptr<DecisionWrapper> decision_wrapper,
+// Resolves the gating decision and logs it to the journal.
+MayActOnUrlBlockReason ResolveGatingDecision(
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
     const GURL& url,
-    AggregatedJournal* journal,
-    TaskId task_id,
     GateableEvent event,
     std::unique_ptr<origin_gating::GatingDecisionContext> context,
     origin_gating::GatingDecision decision) {
-  journal->Log(url, task_id, "OriginGatingDecision",
-               JournalDetailsBuilder()
-                   .Add("origin", url::Origin::Create(url).Serialize())
-                   .Add("event", origin_gating::GateableEventToString(event))
-                   .Add("decision", decision.is_allowed ? "allowed" : "blocked")
-                   .Add("attribution", decision.attribution.ToString())
-                   .Build());
+  journal_entry->EndEntry(
+      JournalDetailsBuilder()
+          .Add("origin", url::Origin::Create(url).Serialize())
+          .Add("event", origin_gating::GateableEventToString(event))
+          .Add("decision", decision.is_allowed ? "allowed" : "blocked")
+          .Add("attribution", decision.attribution.ToString())
+          .Build());
 
-  if (decision.is_allowed) {
-    decision_wrapper->Accept();
-    return;
-  }
-
-  MayActOnUrlBlockResult block_info =
-      MapGatingDecisionToBlockResult(decision, url);
-  decision_wrapper->Reject(block_info.reason, block_info.reason_code);
+  return MapGatingDecisionToBlockReason(decision, url);
 }
 
 void OnNavigationConfirmationDecisionInBackground(
@@ -1315,14 +1253,15 @@ void ExecutionEngine::SafetyChecksForNextAction() {
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
       event, /*source=*/GURL(), url,
       base::BindOnce(&ResolveGatingDecision,
-                     std::make_unique<DecisionWrapper>(
-                         *journal_, url, task_->id(), "MayActOnTab",
-                         base::BindOnce(&ExecutionEngine::OnMayActOnTabDecision,
-                                        GetActionSequenceWeakPtr(),
-                                        tab->GetContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetLastCommittedOrigin())),
-                     url, &*journal_, task_->id(), event));
+                     journal_->CreatePendingAsyncEntry(
+                         url, task_->id(), MakeBrowserTrackUUID(task_->id()),
+                         "OriginGatingDecision", {}),
+                     url, event)
+          .Then(base::BindOnce(&ExecutionEngine::OnMayActOnTabDecision,
+                               GetActionSequenceWeakPtr(),
+                               tab->GetContents()
+                                   ->GetPrimaryMainFrame()
+                                   ->GetLastCommittedOrigin())));
 }
 
 void ExecutionEngine::OnMayActOnTabDecision(
@@ -1643,13 +1582,15 @@ const EnterprisePolicyChecker& ExecutionEngine::GetEnterprisePolicyChecker()
 void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
-  auto decision_wrapper = std::make_unique<DecisionWrapper>(
-      *journal_, url, task_->id(), "MayActOnUrl", std::move(callback));
   auto event = GateableEvent::kNavigationRequest;
   origin_gating_checker_.ComputeGatingDecision(
       /*context=*/nullptr, event, /*source=*/GURL(), url,
-      base::BindOnce(&ResolveGatingDecision, std::move(decision_wrapper), url,
-                     &*journal_, task_->id(), event));
+      base::BindOnce(&ResolveGatingDecision,
+                     journal_->CreatePendingAsyncEntry(
+                         url, task_->id(), MakeBrowserTrackUUID(task_->id()),
+                         "OriginGatingDecision", {}),
+                     url, event)
+          .Then(std::move(callback)));
 }
 
 Profile& ExecutionEngine::GetProfile() {
