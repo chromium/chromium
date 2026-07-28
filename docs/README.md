@@ -476,8 +476,8 @@ a video series of interviews with Chromium software engineers.
 *   [WebView Policies](webview_policies.md)
 *   [Linux Profiling](linux/profiling.md) - How to profile Chromium on Linux
 *   [Linux Graphics Pipeline](linux/graphics_pipeline.md)
-*   [Linux `SUID` Sandbox](linux/suid_sandbox.md) - Sandboxing renderers using a
-    SUID binary on Linux
+*   [Linux `SUID` Sandbox](../sandbox/linux/README.md) - Sandboxing renderers
+    using a SUID binary on Linux
 *   [Linux `SUID` Sandbox Development](linux/suid_sandbox_development.md) -
     Development on the above system.
 *   [Linux PID Namespace Support](linux/pid_namespace_support.md)

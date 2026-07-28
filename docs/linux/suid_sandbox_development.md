@@ -4,7 +4,7 @@
 See https://bugs.chromium.org/p/chromium/issues/detail?id=598454
 This page is mostly out-of-date.*
 
-For context see [LinuxSUIDSandbox](suid_sandbox.md)
+For context see [LinuxSUIDSandbox](../../sandbox/linux/README.md)
 
 We need a SUID helper binary to turn on the sandbox on Linux.
 
