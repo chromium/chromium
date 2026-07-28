@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentHostCallback;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.core.app.ApplicationProvider;
@@ -47,6 +48,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -64,6 +66,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -112,6 +115,8 @@ public class SettingsPageFragmentDelegateImplTest {
         when(mActivity.getModalDialogManagerSupplier()).thenReturn(modalDialogSupplier);
 
         when(mActivity.getSupportFragmentManager()).thenReturn(mFragmentManager);
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
         when(mFragmentManager.beginTransaction()).thenReturn(mFragmentTransaction);
         when(mFragmentTransaction.add(anyInt(), any(Fragment.class), anyString()))
                 .thenReturn(mFragmentTransaction);
@@ -268,9 +273,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_reusesExistingFragment() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
-
         mDelegate.initSettings(mContainerView);
 
         // Verify we registered the callback but did NOT add a new fragment
@@ -307,8 +309,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testGetMainFragment() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         Fragment mockFragment = mock(Fragment.class);
@@ -320,8 +320,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testGetMultiColumnSettings() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
@@ -339,8 +337,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
         triggerFragmentViewCreated();
 
@@ -355,8 +351,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testDestroySettings_destroysTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
 
@@ -376,9 +370,6 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void
             testInitSettings_withSavedInstanceState_passesInitialBreadcrumbPathToTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
-
         Bundle savedState = new Bundle();
         ArrayList<SettingsIndexData.Entry> entries =
                 new ArrayList<>(
@@ -401,9 +392,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_withIntent_passesInitialBreadcrumbPathToTitleUpdater() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
-
         SettingsIndexData indexData = SettingsIndexData.createInstance();
         indexData.resetNeedsIndexing();
 
@@ -448,9 +436,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testOnSaveInstanceState_savesInitialBreadcrumbPath() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
-
         Bundle savedState = new Bundle();
         ArrayList<SettingsIndexData.Entry> entries =
                 new ArrayList<>(
@@ -475,8 +460,6 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void testIsTwoColumnSettingsVisible() {
         // Setup mSettingsHostFragment.
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
 
@@ -497,8 +480,6 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void testFinishCurrentSettings() {
         // Setup mSettingsHostFragment.
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         Fragment fragment = mock(Fragment.class);
@@ -511,8 +492,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_createsSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         // Capture all registered FragmentLifecycleCallbacks.
@@ -539,8 +518,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testDestroySettings_destroysSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         // Capture lifecycle callbacks.
@@ -573,9 +550,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_reusesExistingRestoredSettingsHostFragment() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
-
         mDelegate.initSettings(mContainerView);
 
         verify(mFragmentTransaction, never()).add(anyInt(), any(), anyString());
@@ -585,8 +559,6 @@ public class SettingsPageFragmentDelegateImplTest {
     @Test
     public void
             testInitSettings_withExistingMultiColumnSettings_initializesTitleUpdaterAndSearchCoordinator() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
         when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
         when(mMultiColumnSettings.getView()).thenReturn(null);
@@ -614,8 +586,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testTitleUpdaterLifecycleCallbacks_unregistersAfterViewCreated() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
@@ -639,8 +609,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testOnHeaderLayoutUpdated_updatesNavigationIcon() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         Toolbar toolbar = mInflatedSettingsView.findViewById(R.id.action_bar);
@@ -666,8 +634,6 @@ public class SettingsPageFragmentDelegateImplTest {
 
     @Test
     public void testInitSettings_registersSelfAsMultiColumnSettingsObserver() {
-        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
-                .thenReturn(mMockSettingsHostFragment);
         mDelegate.initSettings(mContainerView);
 
         ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
@@ -709,5 +675,74 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.destroySettings();
 
         verify(mLifecycleDispatcher).unregister(mDelegate);
+    }
+
+    // Sets internal Fragment fields directly via ReflectionHelpers. This is required because
+    // AndroidX Fragment methods such as isAdded(), getHost(), and getChildFragmentManager()
+    // are final and cannot be mocked with Mockito.
+    private void setFragmentAttached(Fragment fragment, FragmentManager childFm) {
+        ReflectionHelpers.setField(fragment, "mAdded", true);
+        ReflectionHelpers.setField(fragment, "mHost", mock(FragmentHostCallback.class));
+        ReflectionHelpers.setField(fragment, "mChildFragmentManager", childFm);
+        when(fragment.getView()).thenReturn(null);
+    }
+
+    @Test
+    public void testHandleBackPress_multiColumnSettingsBackStack() {
+        mDelegate.initSettings(mContainerView);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        FragmentManager childFm = mock(FragmentManager.class);
+        setFragmentAttached(mMultiColumnSettings, childFm);
+        when(childFm.getBackStackEntryCount()).thenReturn(1);
+
+        assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
+        verify(childFm).popBackStack();
+    }
+
+    @Test
+    public void testHandleBackPress_settingsHostFragmentBackStack() {
+        mDelegate.initSettings(mContainerView);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(null);
+
+        FragmentManager childFm = mock(FragmentManager.class);
+        setFragmentAttached(mMockSettingsHostFragment, childFm);
+        when(childFm.getBackStackEntryCount()).thenReturn(1);
+
+        assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
+        verify(childFm).popBackStack();
+    }
+
+    @Test
+    public void testHandleBackPress_cannotHandle() {
+        mDelegate.initSettings(mContainerView);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        FragmentManager childFm = mock(FragmentManager.class);
+        setFragmentAttached(mMultiColumnSettings, childFm);
+        when(childFm.getBackStackEntryCount()).thenReturn(0);
+
+        assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
+    }
+
+    @Test
+    public void testUpdateBackPressState() {
+        mDelegate.initSettings(mContainerView);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+
+        FragmentManager childFm = mock(FragmentManager.class);
+        setFragmentAttached(mMultiColumnSettings, childFm);
+
+        when(childFm.getBackStackEntryCount()).thenReturn(0);
+        mDelegate.onHeaderLayoutUpdated();
+        assertFalse(mDelegate.getHandleBackPressChangedSupplier().get());
+
+        when(childFm.getBackStackEntryCount()).thenReturn(1);
+        mDelegate.onHeaderLayoutUpdated();
+        assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
     }
 }

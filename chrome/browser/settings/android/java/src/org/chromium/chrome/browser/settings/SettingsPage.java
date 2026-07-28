@@ -12,6 +12,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** A native page holding the Chrome settings UI in a tab. */
@@ -31,31 +33,33 @@ public class SettingsPage extends BasicNativePage {
     private final FragmentDelegate mFragmentDelegate;
 
     /**
-     * Create a new instance of the settings page.
+     * Create a new instance of the settings page with back press handling.
      *
      * @param activity The current {@link Activity} used to obtain resources or inflate views.
      * @param profile The Profile associated with the settings UI.
      * @param host A NativePageHost to load urls.
      * @param fragmentDelegate The delegate to initialize and destroy settings fragments.
+     * @param backPressHandler The back press handler for the settings page.
+     * @param backPressHandlerRegistry Back press handler registry to register back press handling.
      */
     public SettingsPage(
             Activity activity,
             Profile profile,
             NativePageHost host,
-            FragmentDelegate fragmentDelegate) {
+            FragmentDelegate fragmentDelegate,
+            BackPressHandler backPressHandler,
+            BackPressHandlerRegistry backPressHandlerRegistry) {
         super(host);
 
         mTitle = activity.getString(R.string.settings);
         mContentView = new FrameLayout(activity);
 
-        // TODO(crbug.com/521895796): Center the settings widgets in the middle of the tab.
-        // TODO(crbug.com/521895796): Add "back" navigation support.
-        // TODO(crbug.com/521895796): Add SettingsNavigation support (to launch settings from other
-        // parts of the app).
         mFragmentDelegate = fragmentDelegate;
         mFragmentDelegate.initSettings(mContentView);
 
         initWithView(mContentView);
+
+        setBackPressHandler(backPressHandler, backPressHandlerRegistry);
     }
 
     @Override

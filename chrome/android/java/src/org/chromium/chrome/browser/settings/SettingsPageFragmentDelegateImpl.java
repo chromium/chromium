@@ -28,9 +28,11 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -48,6 +50,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -66,7 +69,8 @@ public class SettingsPageFragmentDelegateImpl
                 SettingsMenuHelper.Delegate,
                 PreferenceUpdateObserver,
                 MultiColumnSettings.Observer,
-                SaveInstanceStateObserver {
+                SaveInstanceStateObserver,
+                BackPressHandler {
     private static final String SETTINGS_NATIVE_PAGE_TAG = "settings_native_page";
 
     private final Activity mActivity;
@@ -77,6 +81,7 @@ public class SettingsPageFragmentDelegateImpl
     private final BottomSheetController mBottomSheetController;
     private final ModalDialogManager mModalDialogManager;
     private final SettableMonotonicObservableSupplier<ModalDialogManager> mModalDialogSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final String mFragmentTag;
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
@@ -108,6 +113,7 @@ public class SettingsPageFragmentDelegateImpl
         mModalDialogManager = modalDialogManager;
         mModalDialogSupplier = ObservableSuppliers.<ModalDialogManager>createMonotonic();
         mModalDialogSupplier.set(mModalDialogManager);
+        mBackPressStateSupplier = ObservableSuppliers.createNonNull(false);
         // Ensure fragment has a globally unique tag so new settings tabs don't collide with
         // existing settings tabs (or closing tabs in the undo close tab snackbar queue). Use
         // tabId because it is stable across Activity restarts (e.g. theme changes).
@@ -216,6 +222,11 @@ public class SettingsPageFragmentDelegateImpl
                         mModalDialogSupplier,
                         () -> mSearchCoordinator);
         mSettingsHostFragment.setDependencyProvider(dependencyProvider);
+        if (mSettingsHostFragment.isAdded()) {
+            mSettingsHostFragment
+                    .getChildFragmentManager()
+                    .addOnBackStackChangedListener(this::updateBackPressState);
+        }
 
         assert mActivity instanceof ActivityLifecycleDispatcherProvider;
         ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().register(this);
@@ -247,6 +258,11 @@ public class SettingsPageFragmentDelegateImpl
                     multiColumnSettings, multiColumnSettings.requireView(), savedInstanceState);
             createSearchCoordinator(multiColumnSettings, savedInstanceState);
             multiColumnSettings.addObserver(this);
+            if (multiColumnSettings.isAdded()) {
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .addOnBackStackChangedListener(this::updateBackPressState);
+            }
             onHeaderLayoutUpdated();
         } else {
             // Otherwise create the title updater and search coordinator when the fragment is
@@ -443,6 +459,16 @@ public class SettingsPageFragmentDelegateImpl
     }
 
     @Override
+    public void onTitleUpdated() {
+        updateBackPressState();
+    }
+
+    @Override
+    public void onSlideStateUpdated(int newState) {
+        updateBackPressState();
+    }
+
+    @Override
     public void onHeaderLayoutUpdated() {
         if (mToolbar != null) {
             // The layout must be updated at least once before isTwoColumnSettingsVisible() returns
@@ -450,6 +476,67 @@ public class SettingsPageFragmentDelegateImpl
             SettingsMenuHelper.updateNavigationIcon(
                     mToolbar, mActivity, /* show= */ true, isTwoColumnSettingsVisible());
         }
+        updateBackPressState();
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    private static boolean isFragmentAttached(@Nullable Fragment fragment) {
+        return fragment != null && fragment.isAdded();
+    }
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        if (mSearchCoordinator != null && mSearchCoordinator.handleBackAction()) {
+            return BackPressResult.SUCCESS;
+        }
+        MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+        if (isFragmentAttached(multiColumnSettings)) {
+            assumeNonNull(multiColumnSettings);
+            if (multiColumnSettings.getChildFragmentManager().getBackStackEntryCount() > 0) {
+                multiColumnSettings.getChildFragmentManager().popBackStack();
+                return BackPressResult.SUCCESS;
+            }
+            if (multiColumnSettings.getView() != null) {
+                var slidingPane = multiColumnSettings.getSlidingPaneLayout();
+                if (slidingPane != null && slidingPane.isSlideable() && slidingPane.isOpen()) {
+                    slidingPane.closePane();
+                    return BackPressResult.SUCCESS;
+                }
+            }
+        }
+        if (isFragmentAttached(mSettingsHostFragment)) {
+            assumeNonNull(mSettingsHostFragment);
+            if (mSettingsHostFragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
+                mSettingsHostFragment.getChildFragmentManager().popBackStack();
+                return BackPressResult.SUCCESS;
+            }
+        }
+        return BackPressResult.FAILURE;
+    }
+
+    private void updateBackPressState() {
+        boolean canHandle = false;
+        MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
+        if (isFragmentAttached(multiColumnSettings)) {
+            assumeNonNull(multiColumnSettings);
+            if (multiColumnSettings.getChildFragmentManager().getBackStackEntryCount() > 0) {
+                canHandle = true;
+            } else if (multiColumnSettings.getView() != null) {
+                var slidingPane = multiColumnSettings.getSlidingPaneLayout();
+                if (slidingPane != null && slidingPane.isSlideable() && slidingPane.isOpen()) {
+                    canHandle = true;
+                }
+            }
+        } else if (isFragmentAttached(mSettingsHostFragment)) {
+            assumeNonNull(mSettingsHostFragment);
+            canHandle =
+                    mSettingsHostFragment.getChildFragmentManager().getBackStackEntryCount() > 0;
+        }
+        mBackPressStateSupplier.set(canHandle);
     }
 
     /** Utility class to handle creating the title updater. */
@@ -463,6 +550,13 @@ public class SettingsPageFragmentDelegateImpl
                 createMultiColumnTitleUpdater(multiColumnSettings, v, savedInstanceState);
                 createSearchCoordinator(multiColumnSettings, savedInstanceState);
                 multiColumnSettings.addObserver(SettingsPageFragmentDelegateImpl.this);
+                if (multiColumnSettings.isAdded()) {
+                    multiColumnSettings
+                            .getChildFragmentManager()
+                            .addOnBackStackChangedListener(
+                                    SettingsPageFragmentDelegateImpl.this::updateBackPressState);
+                }
+                updateBackPressState();
 
                 assert mTitleUpdaterLifecycleCallbacks == this;
                 fm.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);

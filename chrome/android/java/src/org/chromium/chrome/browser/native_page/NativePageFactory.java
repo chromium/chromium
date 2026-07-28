@@ -434,14 +434,8 @@ public class NativePageFactory {
 
         protected NativePage buildSettingsPage(Tab tab) {
             assert ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IN_TAB);
-            return new SettingsPage(
-                    mActivity,
-                    tab.getProfile(),
-                    new TabShim(
-                            tab,
-                            mBrowserControlsManager,
-                            mTabModelSelector,
-                            mEdgeToEdgeControllerSupplier),
+            // The fragment delegate acts both as a delegate and as a back press handler.
+            var fragmentDelegate =
                     new SettingsPageFragmentDelegateImpl(
                             mActivity,
                             tab.getProfile(),
@@ -450,7 +444,18 @@ public class NativePageFactory {
                             mSnackbarManagerSupplier.get(),
                             mBottomSheetController,
                             mModalDialogManagerSupplier.get(),
-                            tab.getId()));
+                            tab.getId());
+            return new SettingsPage(
+                    mActivity,
+                    tab.getProfile(),
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier),
+                    /* fragmentDelegate= */ fragmentDelegate,
+                    /* backPressHandler= */ fragmentDelegate,
+                    mBackPressManager);
         }
     }
 
