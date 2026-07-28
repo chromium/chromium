@@ -40,16 +40,6 @@ export class CrTextareaElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * Whether the text area should automatically get focus when the page
-       * loads.
-       */
-      autofocus: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      /**
        * Whether the text area is disabled. When disabled, the text area loses
        * focus and is not reachable by tabbing.
        */
@@ -154,7 +144,6 @@ export class CrTextareaElement extends PolymerElement {
     };
   }
 
-  declare autofocus: boolean;
   declare disabled: boolean;
   declare readonly: boolean;
   declare required: boolean;
