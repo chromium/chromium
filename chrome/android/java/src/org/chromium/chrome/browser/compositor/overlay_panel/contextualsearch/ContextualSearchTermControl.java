@@ -18,7 +18,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelTextViewInflater;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -58,9 +57,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
                 container,
                 resourceLoader,
                 R.dimen.contextual_search_end_padding,
-                ChromeFeatureList.sContextualPanelCloseButtonOnTablets.isEnabled()
-                        ? R.dimen.contextual_search_end_buttons_width
-                        : R.dimen.contextual_search_padded_button_width);
+                R.dimen.contextual_search_padded_button_width);
     }
 
     /**
