@@ -7,11 +7,10 @@ package org.chromium.chrome.browser.safety_hub;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 
 import android.content.Context;
-import android.view.View;
-
-import androidx.annotation.Nullable;
+import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
@@ -59,7 +58,7 @@ public class SafetyHubNoSavedPasswordsModuleHelper implements SafetyHubModuleHel
     }
 
     @Override
-    public @Nullable View.OnClickListener getPrimaryButtonListener() {
+    public @Nullable OnClickListener getPrimaryButtonListener() {
         return null;
     }
 
@@ -72,7 +71,7 @@ public class SafetyHubNoSavedPasswordsModuleHelper implements SafetyHubModuleHel
     }
 
     @Override
-    public View.OnClickListener getSecondaryButtonListener() {
+    public OnClickListener getSecondaryButtonListener() {
         if (mNoAccountPasswords && mNoLocalPasswords) {
             return v -> {
                 // TODO(crbug.com/407931779): Change to open the SH passwords page.
