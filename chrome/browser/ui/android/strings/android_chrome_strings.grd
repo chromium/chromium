@@ -6175,7 +6175,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Right click here to show tabs vertically
       </message>
       <message name="IDS_IPH_GLIC_PROMO_TEXT" desc="The in-product-help promotion message to try Glic.">
-        Try Gemini in Chrome to get answers, key takeaways and more
+        Get the best of Gemini from your Chrome toolbar. Long-press to customize.
       </message>
       <message name="IDS_IPH_GLIC_PROMO_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to try Glic.">
         Gemini is now on your toolbar. To change your pinned tool anytime, long-press the icon.
