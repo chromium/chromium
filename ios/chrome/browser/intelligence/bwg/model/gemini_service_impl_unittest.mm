@@ -441,7 +441,8 @@ TEST_F(GeminiServiceImplTest,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager_, account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // User should now be ineligible.
   EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
