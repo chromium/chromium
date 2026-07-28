@@ -29,6 +29,7 @@ items:
   - chrome.mac:70-
   - ios:97-
   - chrome.linux:145-
+  - android:153-
   value: 2
 owners:
 - file://components/policy/OWNERS

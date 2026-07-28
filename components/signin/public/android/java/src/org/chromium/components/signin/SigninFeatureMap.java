@@ -46,7 +46,7 @@ public final class SigninFeatureMap extends FeatureMap {
             new CachedFlag(
                     sInstance,
                     SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final List<CachedFlag> sCachedFlags =
             List.of(
