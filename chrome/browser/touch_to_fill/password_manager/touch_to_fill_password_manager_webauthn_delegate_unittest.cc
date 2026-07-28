@@ -100,6 +100,14 @@ class MockCredentialReceiver
   MOCK_METHOD(void, OnHybridSignInSelected, (), (override));
 
   content::WebContents* web_contents() override { return web_contents_; }
+  GURL GetFrameUrl() const override {
+    return web_contents_ ? web_contents_->GetLastCommittedURL() : GURL();
+  }
+  url::Origin GetFrameOrigin() const override {
+    return web_contents_
+               ? web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin()
+               : url::Origin();
+  }
 
  private:
   raw_ptr<content::WebContents> web_contents_;
@@ -372,4 +380,26 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
                std::vector<TouchToFillPasswordManagerView::Credential>(
                    std::vector<TouchToFillPasswordManagerView::Credential>,
                    bool)>(webauthn::sorting::SortTouchToFillCredentials)));
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest, GetFrameUrlAndOrigin) {
+  auto delegate = MakeTouchToFillPasswordManagerControllerDelegate(
+      /*should_show_hybrid_option=*/false,
+      /*is_immediate=*/true,
+      /*sorting_callback=*/base::NullCallback());
+
+  EXPECT_EQ(delegate->GetFrameUrl(), GURL(kExampleCom));
+  EXPECT_EQ(delegate->GetFrameOrigin(), url::Origin::Create(GURL(kExampleCom)));
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       GetFrameUrlAndOriginNullReceiver) {
+  TouchToFillPasswordManagerWebAuthnDelegate delegate(
+      /*receiver=*/nullptr,
+      /*sort_credentials_callback=*/base::NullCallback(),
+      /*should_show_hybrid_option=*/false,
+      /*is_immediate=*/true);
+
+  EXPECT_EQ(delegate.GetFrameUrl(), GURL());
+  EXPECT_TRUE(delegate.GetFrameOrigin().opaque());
 }

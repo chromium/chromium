@@ -64,11 +64,11 @@ class TouchToFillPasswordManagerDelegate {
 
   // Gets the last committed URL for the frame that triggered this sheet to be
   // created.
-  virtual GURL GetFrameUrl() = 0;
+  virtual GURL GetFrameUrl() const = 0;
 
   // Gets the last committed origin for the frame that triggered this sheet to
   // be created.
-  virtual url::Origin GetFrameOrigin() = 0;
+  virtual url::Origin GetFrameOrigin() const = 0;
 
   // Returns whether TTF is eligible for showing for the currently focused field
   // (e. g. it should not be triggered for the new password field).

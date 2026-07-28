@@ -80,6 +80,8 @@ class WebAuthnRequestDelegateAndroid
   void OnCredentialSelectionDeclined() override;
   void OnHybridSignInSelected() override;
   content::WebContents* web_contents() override;
+  GURL GetFrameUrl() const override;
+  url::Origin GetFrameOrigin() const override;
 
   // Returns a delegate associated with the |frame_host|. It creates one if
   // one does not already exist.

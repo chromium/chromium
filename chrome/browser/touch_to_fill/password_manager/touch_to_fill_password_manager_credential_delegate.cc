@@ -228,12 +228,13 @@ void TouchToFillPasswordManagerCredentialDelegate::OnCredManDismissed(
   std::move(action_completed).Run();
 }
 
-GURL TouchToFillPasswordManagerCredentialDelegate::GetFrameUrl() {
+GURL TouchToFillPasswordManagerCredentialDelegate::GetFrameUrl() const {
   CHECK(filler_);
   return filler_->GetFrameUrl();
 }
 
-url::Origin TouchToFillPasswordManagerCredentialDelegate::GetFrameOrigin() {
+url::Origin TouchToFillPasswordManagerCredentialDelegate::GetFrameOrigin()
+    const {
   CHECK(filler_);
   return filler_->GetFrameOrigin();
 }

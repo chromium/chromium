@@ -251,3 +251,11 @@ void WebAuthnRequestDelegateAndroid::OnHybridSignInSelected() {
 content::WebContents* WebAuthnRequestDelegateAndroid::web_contents() {
   return content::WebContents::FromRenderFrameHost(&render_frame_host());
 }
+
+GURL WebAuthnRequestDelegateAndroid::GetFrameUrl() const {
+  return render_frame_host().GetLastCommittedURL();
+}
+
+url::Origin WebAuthnRequestDelegateAndroid::GetFrameOrigin() const {
+  return render_frame_host().GetLastCommittedOrigin();
+}
