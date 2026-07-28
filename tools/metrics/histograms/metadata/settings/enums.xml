@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AbusiveNotificationPermissionsCheckResult) -->
+
+<enum name="AbusiveNotificationPermissionsCheckResult">
+  <int value="0" label="Safe"/>
+  <int value="1" label="Phishing"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h:AbusiveNotificationPermissionsCheckResult) -->
+
 <enum name="AndroidSettingsFragmentHashes">
   <int value="-2093401879" label="SafetyCheckSettingsFragment"/>
   <int value="-2054907175" label="GroupedWebsitesSettings"/>

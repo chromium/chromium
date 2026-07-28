@@ -274,6 +274,10 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       "SafeBrowsing.NotificationRevocationSource",
       safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist,
       /* expected_count */ 2);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
+      AbusiveNotificationPermissionsManager::CheckResult::kPhishing,
+      /* expected_count */ 2);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -309,6 +313,12 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   histogram_tester.ExpectUniqueSample(
       safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
       /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
+      AbusiveNotificationPermissionsManager::CheckResult::kSafe, 1);
+  histogram_tester.ExpectBucketCount(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
+      AbusiveNotificationPermissionsManager::CheckResult::kPhishing, 1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,

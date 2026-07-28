@@ -585,6 +585,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   // `OnCheckBrowseUrlResult` won't be called.
   if (is_safe_synchronously) {
     timer_.Stop();
+    LogCheckResult(CheckResult::kSafe);
     safe_browsing_request_clients_->erase(this);
     // The previous line results in deleting this object.
     // No further access to the object's attributes is permitted here.
@@ -598,6 +599,10 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   // Stop the timer to avoid `OnCheckBlocklistTimeout` from being called, since
   // we got a blocklist check result in time.
   timer_.Stop();
+  LogCheckResult(
+      threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING
+          ? CheckResult::kPhishing
+          : CheckResult::kSafe);
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     ExecuteAbusiveNotificationAutoRevocation(
         hcsm_.get(), url,
@@ -630,9 +635,17 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(database_manager_);
   database_manager_->CancelCheck(this);
+  LogCheckResult(CheckResult::kTimeout);
   safe_browsing_request_clients_->erase(this);
   // The previous line results in deleting this object.
   // No further access to the object's attributes is permitted here.
+}
+
+void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
+    LogCheckResult(CheckResult result) {
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
+      result);
 }
 
 void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
