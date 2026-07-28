@@ -307,7 +307,8 @@ static std::optional<VideoFrameLayout> GetDefaultLayout(
       planes = std::vector<ColorPlaneLayout>{
           ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
           ColorPlaneLayout(uv_stride, coded_size.GetArea(), uv_size),
-          ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
+          ColorPlaneLayout(coded_size.width(), coded_size.GetArea() + uv_size,
+                           coded_size.GetArea()),
       };
       break;
     }
