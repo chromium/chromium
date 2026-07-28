@@ -71,9 +71,11 @@ VoiceIsolation::VoiceIsolation(
       kVoiceIsolationFrameSize);
 
   forward_fifo_ =
-      std::make_unique<ConvertingAudioFifo>(audio_params, mono_internal);
+      std::make_unique<ConvertingAudioFifo>(audio_params, mono_internal,
+                                            /*use_input_bus_pool=*/true);
   backward_fifo_ =
-      std::make_unique<ConvertingAudioFifo>(mono_internal, audio_params);
+      std::make_unique<ConvertingAudioFifo>(mono_internal, audio_params,
+                                            /*use_input_bus_pool=*/true);
 }
 
 VoiceIsolation::~VoiceIsolation() = default;
@@ -85,15 +87,19 @@ void VoiceIsolation::ProcessAudio(const AudioBus& input_bus,
 
   // We cannot pass `input_bus` directly because we only hold a const reference
   // and ConvertingAudioFifo::Push takes ownership (std::unique_ptr<AudioBus>).
-  auto input_copy =
-      media::AudioBus::Create(input_bus.channels(), input_bus.frames());
+  // Instead we use a AudioBus from the internal pool of the `forward_fifo_` and
+  // `backward_fifo_`. Calls from `ProcessAudio()` will only require memory
+  // allocation in the first few calls.
+  std::unique_ptr<AudioBus> input_copy = forward_fifo_->GetInputAudioBus();
+  CHECK(input_copy);
   input_bus.CopyTo(input_copy.get());
 
   forward_fifo_->Push(std::move(input_copy));
 
   while (forward_fifo_->HasOutput()) {
     const media::AudioBus* internal_in = forward_fifo_->PeekOutput();
-    auto internal_out = media::AudioBus::Create(1, internal_in->frames());
+    std::unique_ptr<media::AudioBus> internal_out =
+        backward_fifo_->GetInputAudioBus();
 
     internal_voice_isolation_->ProcessAudio(internal_in->channel(0),
                                             internal_out->channel(0));

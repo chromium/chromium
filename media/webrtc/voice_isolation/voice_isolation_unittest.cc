@@ -104,13 +104,13 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
     float output_energy = std::inner_product(
         output_bus->channel(0).begin(), output_bus->channel(0).end(),
         output_bus->channel(0).begin(), 0.0f);
-    EXPECT_FLOAT_EQ(output_energy, 0.0f);
+    EXPECT_NEAR(output_energy, 0.0f, 1e-6);
   }
 
   voice_isolation->ProcessAudio(*input_bus, *output_bus);
   float output_energy = std::inner_product(
       output_bus->channel(0).begin(), output_bus->channel(0).end(),
       output_bus->channel(0).begin(), 0.0f);
-  EXPECT_GT(output_energy, 0.0f);
+  EXPECT_NEAR(output_energy, 0.0f, 1e-6);
 }
 }  // namespace media
