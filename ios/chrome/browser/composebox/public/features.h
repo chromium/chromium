@@ -117,4 +117,10 @@ BASE_DECLARE_FEATURE(kComposeboxAimRichAPCExtraction);
 // Returns whether rich APC extraction is enabled when attaching tabs in Aim.
 bool IsComposeboxAimRichAPCExtractionEnabled();
 
+// Used to enable the Connected Apps setting entry.
+BASE_DECLARE_FEATURE(kComposeboxConnectedAppsSetting);
+
+// Returns whether to enable the Connected Apps setting entry.
+bool IsComposeboxConnectedAppsSettingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_

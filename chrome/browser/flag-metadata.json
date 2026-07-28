@@ -1883,6 +1883,11 @@
     "expiry_milestone": 155
   },
   {
+      "name": "composebox-connected-apps-setting",
+      "owners": [ "erahmaoui@google.com", "bling-search@google.com" ],
+      "expiry_milestone": 160
+    },
+  {
     "name": "composebox-deep-search",
     "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
     "expiry_milestone": 160

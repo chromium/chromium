@@ -427,6 +427,14 @@ inline constexpr char kComposeboxConditionalPlusButtonName[] =
 inline constexpr char kComposeboxConditionalPlusButtonDescription[] =
     "When enabled, hides the plus button when typing a URL in compact mode.";
 
+inline constexpr char kComposeboxConnectedAppsSettingName[] =
+    "Enable Composebox connected apps setting";
+inline constexpr char kComposeboxConnectedAppsSettingDescription[] =
+    "Enables the composebox connected apps setting, the setting is used to "
+    "load "
+    "the web page where the user can the connect their Google apps to the "
+    "search services";
+
 inline constexpr char kComposeboxDeepSearchName[] =
     "Enable Composebox Deep Search";
 inline constexpr char kComposeboxDeepSearchDescription[] =

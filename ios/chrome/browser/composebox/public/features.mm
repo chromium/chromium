@@ -133,3 +133,10 @@ BASE_FEATURE(kComposeboxAimRichAPCExtraction,
 bool IsComposeboxAimRichAPCExtractionEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxAimRichAPCExtraction);
 }
+
+BASE_FEATURE(kComposeboxConnectedAppsSetting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsComposeboxConnectedAppsSettingEnabled() {
+  return base::FeatureList::IsEnabled(kComposeboxConnectedAppsSetting);
+}
