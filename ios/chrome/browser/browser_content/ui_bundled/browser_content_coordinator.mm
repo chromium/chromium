@@ -147,6 +147,7 @@
     _explainWithGeminiMediator.sceneHandler = sceneHandler;
     _explainWithGeminiMediator.geminiHandler =
         HandlerForProtocol(dispatcher, GeminiCommands);
+    _explainWithGeminiMediator.baseViewController = _viewController;
     _browserEditMenuHandler.explainWithGeminiDelegate =
         _explainWithGeminiMediator;
   }

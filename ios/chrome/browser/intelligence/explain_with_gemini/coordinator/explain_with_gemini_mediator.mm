@@ -192,7 +192,11 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   GeminiStartupState* startupState = [[GeminiStartupState alloc]
       initWithEntryPoint:gemini::EntryPoint::EditMenu];
   startupState.prepopulatedPrompt = prepopulatedPrompt;
-  [self.geminiHandler startGeminiFlowWithStartupState:startupState];
+  [self.geminiHandler
+      startGeminiEntryFlowWithStartupState:startupState
+                        baseViewController:self.baseViewController
+                  showSnackbarOnCompletion:YES
+                                completion:nil];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on

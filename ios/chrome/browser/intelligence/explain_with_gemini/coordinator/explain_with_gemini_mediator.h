@@ -24,6 +24,11 @@
 // The handler for Gemini commands.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
 
+// TODO(crbug.com/537876189): Remove this reference to UIViewController once
+// Helios Prime launches.
+// The base view controller for presenting Gemini UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 // Initializer for a mediator.
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
