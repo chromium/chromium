@@ -52,6 +52,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   gfx::Image GetSizedIcon(const gfx::Image& icon) const override;
   std::u16string GetFormattedFullURL() const override;
   std::u16string GetURLForDisplay() const override;
+  bool IsContextualTasksPage() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;

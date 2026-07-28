@@ -14,9 +14,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
@@ -38,8 +40,17 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,6 +61,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
@@ -76,7 +88,11 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 using testing::_;
@@ -90,6 +106,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
@@ -170,6 +187,58 @@ class MockContextualTasksUiService
   }
 };
 
+class ClipboardTextObserver
+    : public ui::test::ObservationStateObserver<std::u16string,
+                                                ui::ClipboardMonitor,
+                                                ui::ClipboardObserver> {
+ public:
+  explicit ClipboardTextObserver(ui::ClipboardMonitor* clipboard_monitor)
+      : ObservationStateObserver<std::u16string,
+                                 ui::ClipboardMonitor,
+                                 ui::ClipboardObserver>(clipboard_monitor) {
+    PollClipboard();
+  }
+  ~ClipboardTextObserver() override = default;
+
+  // ObservationStateObserver:
+  std::u16string GetStateObserverInitialState() const override {
+    return std::u16string();
+  }
+
+  // ClipboardObserver:
+  void OnClipboardDataChanged() override { PollClipboard(); }
+
+ private:
+  void PollClipboard() {
+    // When using `ui::TestClipboard` (via
+    // `content::BrowserTestClipboardScope`), clipboard reads/writes are
+    // synchronous. If we poll the clipboard synchronously during construction,
+    // the state change will be triggered before Kombucha has finished
+    // registering this observer, causing it to miss the notification. Deferring
+    // the poll via `PostTask` ensures the observer is fully registered and
+    // ready to receive the state change.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ClipboardTextObserver::PollClipboardImpl,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void PollClipboardImpl() {
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                        /*data_dst=*/std::nullopt,
+                        base::BindOnce(&ClipboardTextObserver::GotClipboard,
+                                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void GotClipboard(std::u16string result) {
+    OnStateObserverStateChanged(std::move(result));
+  }
+
+  base::WeakPtrFactory<ClipboardTextObserver> weak_ptr_factory_{this};
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ClipboardTextObserver, kClipboardText);
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -214,10 +283,39 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<MockAimEligibilityService>(
+    auto mock = std::make_unique<MockAimEligibilityService>(
         CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
         /*url_loader_factory=*/nullptr,
         IdentityManagerFactory::GetForProfile(profile));
+
+    auto* config = &mock->config();
+    // Configure AimEligibility to recognize Browser Tabs as valid inputs to
+    // populate context selection.
+    config->add_input_type_configs()->set_input_type(
+        omnibox::INPUT_TYPE_BROWSER_TAB);
+    config->add_input_type_configs()->set_input_type(
+        omnibox::INPUT_TYPE_LENS_IMAGE);
+    config->add_input_type_configs()->set_input_type(
+        omnibox::INPUT_TYPE_LENS_FILE);
+
+    ON_CALL(*mock, GetSearchboxConfig()).WillByDefault(testing::Return(config));
+
+    ON_CALL(*mock, IsAimUrl(_, _))
+        .WillByDefault(
+            [](const GURL& url, std::optional<std::string> host_override) {
+              return url.host().find(kMockAimPageHost) != std::string::npos;
+            });
+
+    // Satisfy the native navigation interception checks.
+    ON_CALL(*mock, HasAimUrlParams(_)).WillByDefault(testing::Return(true));
+    ON_CALL(*mock, IsCobrowseEligible()).WillByDefault(testing::Return(true));
+    ON_CALL(*mock, IsAimEligible()).WillByDefault(testing::Return(true));
+    ON_CALL(*mock, RegisterEligibilityChangedCallback(_))
+        .WillByDefault([](base::RepeatingClosure) {
+          return base::CallbackListSubscription();
+        });
+
+    return mock;
   }
 
   std::unique_ptr<KeyedService> BuildMockContextualTasksUiServiceInstance(
@@ -298,37 +396,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
           return false;
         }));
 
-    auto* mock_aim = GetMockAimEligibilityService(browser()->GetProfile());
-    auto* config = &mock_aim->config();
-    // Configure AimEligibility to recognize Browser Tabs as valid inputs to
-    // populate context selection.
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_BROWSER_TAB);
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_LENS_IMAGE);
-    config->add_input_type_configs()->set_input_type(
-        omnibox::INPUT_TYPE_LENS_FILE);
-
-    EXPECT_CALL(*mock_aim, GetSearchboxConfig())
-        .WillRepeatedly(testing::Return(config));
-
-    ON_CALL(*mock_aim, IsAimUrl(_, _))
-        .WillByDefault(
-            [](const GURL& url, std::optional<std::string> host_override) {
-              return url.host().find(kMockAimPageHost) != std::string::npos;
-            });
-
-    // Satisfy the native navigation interception checks.
-    EXPECT_CALL(*mock_aim, HasAimUrlParams(_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_aim, IsCobrowseEligible())
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_aim, IsAimEligible())
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*mock_aim, RegisterEligibilityChangedCallback(_))
-        .WillRepeatedly([](base::RepeatingClosure) {
-          return base::CallbackListSubscription();
-        });
+    // Mock configured in factory BuildMockAimServiceInstance
 
     // Explicitly enable user-level content sharing settings to satisfy native
     // FeatureEligibility.
@@ -2633,5 +2701,230 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForElementExists(kSidePanelId, kLensIcon),
       WaitForJsResultAt(kSidePanelId, kLensIcon, "el => !el.disabled", true));
 }
+
+class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  ContextualTasksCopyUrlTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> features = {
+        features::kInitialWebUI, features::kWebUILocationBar,
+        omnibox::internal::kWebUIOmniboxAimPopup};
+    if (GetParam()) {
+      enabled_features = features;
+    } else {
+      disabled_features = features;
+    }
+    copy_url_feature_list_.InitWithFeatures(enabled_features,
+                                            disabled_features);
+  }
+
+  views::WebView* GetWebUIToolbarWebView() {
+    return ::GetWebUIToolbarWebView(browser())->GetWebViewForTesting();
+  }
+
+  ui::test::InteractiveTestApi::MultiStep SetupTest() {
+    if (GetParam()) {
+      return Steps(
+          InstrumentTab(kPrimaryTab),
+          InstrumentNonTabWebView(kWebUIToolbarId, GetWebUIToolbarWebView(),
+                                  /*wait_for_ready=*/true));
+    } else {
+      return Steps(InstrumentTab(kPrimaryTab));
+    }
+  }
+
+  ui::test::InteractiveTestApi::MultiStep FocusAndCopy(
+      ui::Accelerator focus_accelerator,
+      ui::Accelerator copy_accelerator) {
+    const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
+        "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+    const WebContentsInteractionTestUtil::DeepQuery kReadonlyOmniboxDeepQuery =
+        {"toolbar-app", "location-bar", "readonly-omnibox"};
+    if (GetParam()) {
+      return Steps(
+          FocusWebContents(kPrimaryTab),
+          SendAccelerator(kBrowserViewElementId, focus_accelerator),
+          WaitForJsResultAt(
+              kWebUIToolbarId, kTextInputDeepQuery,
+              "el => new Promise(r => setTimeout(() => r(true), 500))"),
+          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
+                      "(el) => { el.focus(); el.select(); }"),
+          WaitForJsResultAt(kWebUIToolbarId, kReadonlyOmniboxDeepQuery,
+                            "el => el.adjustedCopyResult_ !== null"),
+          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
+                      "(el) => { document.execCommand('copy'); }"));
+    } else {
+      return Steps(FocusWebContents(kPrimaryTab),
+                   SendAccelerator(kBrowserViewElementId, focus_accelerator),
+                   SendAccelerator(kOmniboxElementId, copy_accelerator));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList copy_url_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, CopyUrl) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
+
+  ui::Accelerator focus_accelerator;
+  ui::Accelerator copy_accelerator;
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view->GetAcceleratorForCommandId(IDC_FOCUS_LOCATION,
+                                                       &focus_accelerator));
+  ASSERT_TRUE(
+      browser_view->GetAcceleratorForCommandId(IDC_COPY, &copy_accelerator));
+
+  RunTestSequence(
+      SetupTest(), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+
+      // Instrument the inner WebContents and wait for it to load.
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+
+      FocusAndCopy(focus_accelerator, copy_accelerator),
+
+      // Verify clipboard.
+      ObserveState(kClipboardText,
+                   []() { return ui::ClipboardMonitor::GetInstance(); }),
+      // The display URL is chrome://google.com/search?q=test&udm=50 (with
+      // chrome:// scheme) but when copied it should be swapped to
+      // https://www.google.com/search?udm=50&q=test...
+      WaitForState(
+          kClipboardText,
+          testing::ResultOf(
+              [](const std::u16string& s) { return base::UTF16ToUTF8(s); },
+              testing::StartsWith(
+                  "https://www.google.com/search?udm=50&q=test&cru=1"))),
+      StopObservingState(kClipboardText),
+      UninstrumentWebContents(kInnerWebContentsId,
+                              /*fail_if_not_instrumented=*/false));
+}
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50&q=test");
+
+  ui::Accelerator focus_accelerator;
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view->GetAcceleratorForCommandId(IDC_FOCUS_LOCATION,
+                                                       &focus_accelerator));
+
+  const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
+      "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+
+  const bool is_webui = GetParam();
+
+  auto focus_omnibox = [this, focus_accelerator, kTextInputDeepQuery,
+                        is_webui]() {
+    if (is_webui) {
+      // WebUI
+      return Steps(
+          FocusWebContents(kPrimaryTab),
+          SendAccelerator(kBrowserViewElementId, focus_accelerator),
+          WaitForJsResultAt(
+              kWebUIToolbarId, kTextInputDeepQuery,
+              "el => new Promise(r => setTimeout(() => r(true), 500))"),
+          ExecuteJsAt(kWebUIToolbarId, kTextInputDeepQuery,
+                      "(el) => { el.focus(); }"));
+    } else {
+      // Views
+      return Steps(FocusWebContents(kPrimaryTab),
+                   FocusElement(kOmniboxElementId));
+    }
+  };
+
+  auto get_omnibox_state = [browser_view](bool* in_progress,
+                                          std::u16string* text) {
+    return [browser_view, in_progress, text]() {
+      LocationBar* lb = browser_view->GetLocationBar();
+      if (in_progress) {
+        *in_progress =
+            lb->GetOmniboxController()->edit_model()->user_input_in_progress();
+      }
+      if (text) {
+        *text = lb->GetOmniboxView()->GetText();
+      }
+    };
+  };
+
+  bool in_progress = false;
+  std::u16string initial_text;
+  std::u16string modified_text;
+
+  RunTestSequence(
+      SetupTest(), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+
+      // Instrument the inner WebContents and wait for it to load.
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+
+      // 1. Focus the omnibox.
+      focus_omnibox(),
+
+      // 2. Verify user_input_in_progress is false.
+      Do(get_omnibox_state(&in_progress, &initial_text)),
+      Check([&in_progress]() { return !in_progress; },
+            "Verify user_input_in_progress is false initially"),
+
+      // 3. Type "a".
+      If([is_webui]() { return is_webui; },
+         Then(SendKeyPress(kWebUIToolbarId, ui::VKEY_A)),
+         Else(SendKeyPress(kOmniboxElementId, ui::VKEY_A))),
+
+      // For WebUI, wait for the JS value to update to "a".
+      If([is_webui]() { return is_webui; },
+         Then(WaitForJsResultAt(kWebUIToolbarId, kTextInputDeepQuery,
+                                "el => el.value === 'a'"))),
+
+      // 4. Verify user_input_in_progress is true, and text is "a".
+      Do(get_omnibox_state(&in_progress, &modified_text)),
+      Check([&in_progress]() { return in_progress; },
+            "Verify user_input_in_progress is true after typing"),
+      Check([&modified_text]() { return modified_text == u"a"; },
+            "Verify text is 'a' after typing"),
+
+      // 5. Blur the omnibox.
+      FocusWebContents(kPrimaryTab),
+
+      // 6. Verify user_input_in_progress is still true, and text is still "a"
+      // (not reverted).
+      Do(get_omnibox_state(&in_progress, &modified_text)),
+      Check([&in_progress]() { return in_progress; },
+            "Verify user_input_in_progress is still true after blur"),
+      Check([&modified_text]() { return modified_text == u"a"; },
+            "Verify text is still 'a' after blur"),
+
+      // 7. Focus it again, and press ESC to revert.
+      focus_omnibox(),
+      If([is_webui]() { return is_webui; },
+         Then(SendKeyPress(kWebUIToolbarId, ui::VKEY_ESCAPE)),
+         Else(SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE))),
+
+      // For WebUI, wait for the JS value to revert (not be "a").
+      If([is_webui]() { return is_webui; },
+         Then(WaitForJsResultAt(kWebUIToolbarId, kTextInputDeepQuery,
+                                "el => el.value !== 'a'"))),
+
+      // 8. Verify user_input_in_progress is false, and text is reverted to
+      // initial.
+      Do(get_omnibox_state(&in_progress, &modified_text)),
+      Check([&in_progress]() { return !in_progress; },
+            "Verify user_input_in_progress is false after revert"),
+      Check([&modified_text,
+             &initial_text]() { return modified_text == initial_text; },
+            "Verify text is reverted after revert"),
+      UninstrumentWebContents(kInnerWebContentsId,
+                              /*fail_if_not_instrumented=*/false));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksCopyUrlTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUI" : "Views";
+                         });
 
 }  // namespace contextual_tasks

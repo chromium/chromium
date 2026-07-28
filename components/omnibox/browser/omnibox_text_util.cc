@@ -173,6 +173,12 @@ void AdjustTextForCopy(
       *url_from_text = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
           *url_from_text);
     }
+    // Don't let users copy Contextual Task URLs. We should let them copy the
+    // inner frame URL instead.
+    if (!contextual_tasks_inner_frame_url.is_empty()) {
+      *url_from_text = contextual_tasks_inner_frame_url;
+    }
+
     *text = base::UTF8ToUTF16(url_from_text->spec());
     return;
   }

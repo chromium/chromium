@@ -357,4 +357,60 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
   EXPECT_EQ(1u, mojo_state->ui_version);
 }
 
+TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
+  // Set up contextual tasks page.
+  location_bar_model()->set_is_contextual_tasks_page(true);
+  std::u16string display_url = u"chrome://google.com/search?q=test";
+  location_bar_model()->set_url_for_display(display_url);
+  omnibox_view_->Update();  // Pull initial state
+
+  // Initially not focused, should show display URL, but input NOT in progress.
+  EXPECT_EQ(display_url, omnibox_view_->GetText());
+  {
+    auto mojo_state = update_propagator_.TakeState();
+    ASSERT_TRUE(mojo_state);
+    EXPECT_FALSE(mojo_state->user_input_in_progress);
+  }
+
+  // Focus the omnibox.
+  EXPECT_TRUE(omnibox_view_
+                  ->OnOmniboxAction(
+                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                              /*has_focus=*/true,
+                              /*request_clear_keyword=*/false,
+                              /*activate_default_search=*/false,
+                              /*start_zero_suggest=*/false,
+                              /*selection=*/gfx::Range(0))))
+                  .has_value());
+
+  // Should still show display URL, and user input is NOT in progress.
+  EXPECT_EQ(display_url, omnibox_view_->GetText());
+  {
+    auto mojo_state = update_propagator_.TakeState();
+    ASSERT_TRUE(mojo_state);
+    EXPECT_FALSE(mojo_state->user_input_in_progress);
+  }
+
+  // Blur the omnibox.
+  EXPECT_TRUE(omnibox_view_
+                  ->OnOmniboxAction(
+                      toolbar_ui_api::mojom::OmniboxAction::NewFocusChange(
+                          toolbar_ui_api::mojom::OmniboxActionFocusChange::New(
+                              /*has_focus=*/false,
+                              /*request_clear_keyword=*/false,
+                              /*activate_default_search=*/false,
+                              /*start_zero_suggest=*/false,
+                              /*selection=*/gfx::Range(0))))
+                  .has_value());
+
+  // Should still show display URL, and user input is NOT in progress again.
+  EXPECT_EQ(display_url, omnibox_view_->GetText());
+  {
+    auto mojo_state = update_propagator_.TakeState();
+    ASSERT_TRUE(mojo_state);
+    EXPECT_FALSE(mojo_state->user_input_in_progress);
+  }
+}
+
 }  // namespace

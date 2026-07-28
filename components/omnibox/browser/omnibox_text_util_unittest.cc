@@ -278,9 +278,6 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
          {"ContextualTasksDisplayUrlHost", "googlesearch"},
          {"ContextualTasksDisplayUrlPath", "/"}}}},
       /*disabled_features=*/{});
-  ON_CALL(*client(), GetContextualTasksInnerFrameURL())
-      .WillByDefault(testing::Return(
-          GURL("https://www.google.com/search?q=hello+world&udm=50")));
 
   for (size_t i = 0; i < std::size(input); ++i) {
     location_bar_model()->set_formatted_full_url(
@@ -290,6 +287,8 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
     // the test case's url_for_editing.
     location_bar_model()->set_url(
         url_formatter::FixupURL(input[i].url_for_editing));
+    location_bar_model()->set_is_contextual_tasks_page(
+        input[i].is_contextual_tasks_page);
 
     bool is_popup_open = input[i].is_match_selected_in_popup;
     // On-focus Omnibox behavior on the contextual tasks page is such that
@@ -303,6 +302,12 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::NAVSUGGEST;
     match.destination_url = GURL(input[i].match_destination_url);
+
+    EXPECT_CALL(*client(), GetContextualTasksInnerFrameURL())
+        .WillOnce(testing::Return(
+            input[i].is_contextual_tasks_page
+                ? GURL("https://www.google.com/search?q=hello+world&udm=50")
+                : GURL()));
 
     std::u16string result = base::UTF8ToUTF16(input[i].input);
     GURL url;
