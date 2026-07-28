@@ -69,10 +69,12 @@ void PrivateAiInternalsUI::BindInterface(
   auto* private_ai_service = PrivateAiServiceFactory::GetForProfile(profile);
 
   if (!private_ai_service) {
+    receiver.reset();
     return;
   }
   auto* token_manager = private_ai_service->GetTokenManager();
   if (!token_manager) {
+    receiver.reset();
     return;
   }
 

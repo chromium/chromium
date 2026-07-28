@@ -16,7 +16,8 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(private_ai::kPrivateAi);
+  config.features_enabled_and_params.push_back(
+      {private_ai::kPrivateAi, {{"api-key", "test_api_key"}}});
   return config;
 }
 
