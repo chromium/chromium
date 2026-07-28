@@ -10,9 +10,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_launcher.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "components/update_client/update_client_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
@@ -29,7 +32,8 @@ class OnDeviceModelDownloadProgressManager;
 
 class AISemanticEmbedderServiceLauncher
     : public passage_embeddings::PassageEmbeddingsServiceLauncher,
-      public passage_embeddings::EmbedderMetadataObserver {
+      public passage_embeddings::EmbedderMetadataObserver,
+      public component_updater::ComponentUpdateService::Observer {
  public:
   static AISemanticEmbedderServiceLauncher* Get();
   static void SetForTesting(
@@ -83,7 +87,11 @@ class AISemanticEmbedderServiceLauncher
       /*execute_for_gemma=*/true};
 
   void FlushCallbacks();
-  void OnComponentUpdateFinished();
+  void OnComponentRegistrationCompleted(bool registered);
+  void OnComponentUpdateFinished(update_client::Error error);
+
+  // component_updater::ComponentUpdateService::Observer:
+  void OnEvent(const component_updater::CrxUpdateItem& item) override;
 
   std::vector<base::OnceClosure> pending_model_availability_callbacks_;
 
@@ -91,6 +99,10 @@ class AISemanticEmbedderServiceLauncher
       embeddings_download_progress_manager_;
 
   static AISemanticEmbedderServiceLauncher* testing_instance_;
+
+  base::ScopedObservation<component_updater::ComponentUpdateService,
+                          component_updater::ComponentUpdateService::Observer>
+      component_updater_observation_{this};
 
   base::WeakPtrFactory<AISemanticEmbedderServiceLauncher> weak_ptr_factory_{
       this};

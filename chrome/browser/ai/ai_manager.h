@@ -126,7 +126,9 @@ class AIManager : public base::SupportsUserData::Data,
       CanCreateSemanticEmbedderCallback callback) override;
   void CreateSemanticEmbedder(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
-          client) override;
+          client,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
+      override;
 
   // Check whether optimization guide supports the feature matching `capability`
   // and modalities specified by `capabilities`; yields a result to `callback`.
@@ -191,6 +193,10 @@ class AIManager : public base::SupportsUserData::Data,
   // Validates the overridden on-device model path if one is configured via
   // switch.
   void StartModelPathValidationIfOverrideSet();
+
+  void OnSemanticEmbedderModelReady(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
+          client);
 
   // Creates an `AILanguageModel`, as a new session. Clones are created
   // internally within the `AILanguageModel` object.

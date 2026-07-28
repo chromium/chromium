@@ -12,7 +12,6 @@ import "third_party/blink/public/mojom/ai/ai_proofreader.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
-import "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -200,5 +199,11 @@ interface AIManager {
   // Creates an embedder, passing the result or error to the client.
   // Creation will be aborted if the client is disconnected.
   CreateSemanticEmbedder(
-      pending_remote<AIManagerCreateSemanticEmbedderClient> client);
+    pending_remote<AIManagerCreateSemanticEmbedderClient> client,
+    // If `monitor` is provided, the client will receive download progress
+    // updates if the model needs to be downloaded. If it is not provided, the
+    // download will still proceed if necessary, but the client will only be
+    // notified upon completion or failure via the `client` interface.
+    pending_remote<on_device_model.mojom.DownloadObserver>? monitor
+  );
 };

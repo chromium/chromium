@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ai/ai_semantic_embedder_service_launcher.h"
+#include "chrome/common/pref_names.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -34,6 +35,8 @@
 
 namespace component_updater {
 namespace {
+
+using testing::_;
 
 class AIEmbeddingsComponentInstallerTest : public testing::Test {
  public:
@@ -206,17 +209,34 @@ TEST_F(AIEmbeddingsComponentInstallerTest, RegistersWhenBothFeaturesEnabled) {
   run_loop.Run();
 }
 
-TEST_F(AIEmbeddingsComponentInstallerTest, DeleteComponent) {
-  base::FilePath component_dir =
-      GetInstallDir().Append(FILE_PATH_LITERAL("AIEmbeddings"));
-  ASSERT_TRUE(base::CreateDirectory(component_dir));
-  ASSERT_TRUE(base::WriteFile(component_dir.AppendASCII("test_file"), "data"));
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ManageRegistrationResumesWhenEligible) {
+  // Set the pref to true, simulating that the download is eligible to resume.
+  pref_service_.SetBoolean(optimization_guide::model_execution::prefs::
+                               localstate::kEmbeddingApiModelDownloadEligible,
+                           true);
 
-  EXPECT_TRUE(base::PathExists(component_dir));
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_cus_, RegisterComponent(_))
+      .WillOnce([&](const component_updater::ComponentRegistration&) {
+        run_loop.Quit();
+        return true;
+      });
 
-  DeleteAIEmbeddingsComponent(GetInstallDir());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  EXPECT_FALSE(base::PathExists(component_dir));
+  ManageAIEmbeddingsComponentRegistration(&mock_cus_, &pref_service_);
+  run_loop.Run();
+}
+
+TEST_F(AIEmbeddingsComponentInstallerTest,
+       ManageRegistrationDoesNotResumeWhenIneligible) {
+  // Ensure the pref is false (default).
+  EXPECT_FALSE(pref_service_.GetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kEmbeddingApiModelDownloadEligible));
+
+  // Should not be registered.
+  EXPECT_CALL(mock_cus_, RegisterComponent(_)).Times(0);
+  ManageAIEmbeddingsComponentRegistration(&mock_cus_, &pref_service_);
 }
 
 }  // namespace

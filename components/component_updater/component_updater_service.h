@@ -246,7 +246,7 @@ class OnDemandUpdater {
   friend class IwaKeyDistributionComponentInstallerPolicy;
   friend class PlatformRuntimeComponentInstallerPolicy;
   friend void UpdateAIEmbeddingsComponentOnDemand(Priority priority,
-                                                  base::OnceClosure callback);
+                                                  Callback callback);
 
   // Triggers an update check for a component. |id| is a value
   // returned by GetCrxComponentID(). If an update for this component is already

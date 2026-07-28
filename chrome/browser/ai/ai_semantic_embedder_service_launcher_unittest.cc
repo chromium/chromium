@@ -11,15 +11,20 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
+#include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace {
 
@@ -48,6 +53,11 @@ class MockOnDemandUpdater : public component_updater::OnDemandUpdater {
 
 class AISemanticEmbedderServiceLauncherTest : public testing::Test {
  public:
+  AISemanticEmbedderServiceLauncherTest() {
+    scoped_feature_list_.InitWithFeatures({blink::features::kAIEmbeddingsAPI},
+                                          {});
+  }
+
   void SetUp() override {
     auto mock_cus = std::make_unique<
         testing::NiceMock<component_updater::MockComponentUpdateService>>();
@@ -64,6 +74,7 @@ class AISemanticEmbedderServiceLauncherTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<testing::NiceMock<component_updater::MockComponentUpdateService>>
       mock_cus_ = nullptr;
@@ -119,8 +130,15 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   AISemanticEmbedderServiceLauncherForTest launcher;
   EXPECT_FALSE(launcher.controller()->IsModelAvailable());
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_on_demand_updater_,
-              OnDemandUpdate(testing::_, testing::_, testing::_));
+              OnDemandUpdate(testing::_, testing::_, testing::_))
+      .WillOnce([&run_loop](const std::string&,
+                            component_updater::OnDemandUpdater::Priority,
+                            component_updater::Callback callback) {
+        std::move(callback).Run(update_client::Error::NONE);
+        run_loop.Quit();
+      });
 
   // Call WaitForModelAvailable multiple times, they should all be queued.
   base::test::TestFuture<void> future1;
@@ -132,10 +150,40 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   EXPECT_FALSE(future1.IsReady());
   EXPECT_FALSE(future2.IsReady());
 
+  // Wait for the component registration to finish and trigger OnDemandUpdate.
+  run_loop.Run();
+
   // Simulate component updater successfully loading the model.
   launcher.controller()->MaybeUpdateModelInfo(GetTestModelInfo());
 
   // Now they should have both executed immediately.
   EXPECT_TRUE(future1.IsReady());
   EXPECT_TRUE(future2.IsReady());
+}
+
+TEST_F(AISemanticEmbedderServiceLauncherTest,
+       WaitForModelAvailable_QueuedAndFailed) {
+  AISemanticEmbedderServiceLauncherForTest launcher;
+  EXPECT_FALSE(launcher.controller()->IsModelAvailable());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_on_demand_updater_,
+              OnDemandUpdate(testing::_, testing::_, testing::_))
+      .WillOnce([&run_loop](const std::string&,
+                            component_updater::OnDemandUpdater::Priority,
+                            component_updater::Callback callback) {
+        std::move(callback).Run(update_client::Error::SERVICE_ERROR);
+        run_loop.Quit();
+      });
+
+  base::test::TestFuture<void> future;
+  launcher.WaitForModelAvailable(future.GetCallback());
+
+  // Wait for the component registration to finish and trigger OnDemandUpdate.
+  run_loop.Run();
+
+  // The callback should have been executed because of the update error.
+  EXPECT_TRUE(future.IsReady());
+  // Model is still not available.
+  EXPECT_FALSE(launcher.controller()->IsModelAvailable());
 }

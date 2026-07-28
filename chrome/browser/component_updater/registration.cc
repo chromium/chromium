@@ -37,6 +37,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
@@ -174,7 +175,6 @@ void RegisterComponentsForUpdate() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   RegisterOriginTrialsComponent(cus);
-  RegisterAIEmbeddingsComponent(cus, g_browser_process->local_state());
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
   MaybeRegisterPKIMetadataComponent(cus);
@@ -236,13 +236,8 @@ void RegisterComponentsForUpdate() {
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
-    if (optimization_guide::
-            GetGenAILocalFoundationalModelEnterprisePolicySettings(
-                g_browser_process->local_state()) ==
-        optimization_guide::model_execution::prefs::
-            GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
-      DeleteAIEmbeddingsComponent(path);
-    }
+    ManageAIEmbeddingsComponentRegistration(cus,
+                                            g_browser_process->local_state());
 
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);

@@ -85,7 +85,9 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       CanCreateSemanticEmbedderCallback callback) override;
   void CreateSemanticEmbedder(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
-          client) override;
+          client,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor)
+      override;
 
   template <typename CanCreateCallback>
   void CanCreateClient(CanCreateCallback callback);
