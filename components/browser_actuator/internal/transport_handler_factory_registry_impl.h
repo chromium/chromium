@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_HANDLER_FACTORY_REGISTRY_IMPL_H_
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_HANDLER_FACTORY_REGISTRY_IMPL_H_
 
-#include <map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -42,7 +42,7 @@ class TransportHandlerFactoryRegistryImpl
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<PayloadType, std::vector<raw_ptr<TransportHandlerFactory>>>
+  base::flat_map<PayloadType, std::vector<raw_ptr<TransportHandlerFactory>>>
       factories_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

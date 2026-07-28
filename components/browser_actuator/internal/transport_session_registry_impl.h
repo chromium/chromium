@@ -6,14 +6,15 @@
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_SESSION_REGISTRY_IMPL_H_
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/browser_actuator/public/transport_session_registry.h"
 
 namespace browser_actuator {
@@ -58,9 +59,11 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   base::WeakPtr<TransportChannel> channel_;
   const size_t max_concurrent_sessions_;
 
-  // Map of session_id to the corresponding TransportSession.
-  std::map<std::string, std::unique_ptr<TransportSessionImpl>, std::less<>>
-      sessions_ GUARDED_BY_CONTEXT(sequence_checker_);
+  using SessionMap =
+      base::flat_map<std::string,                            // Session ID
+                     std::unique_ptr<TransportSessionImpl>,  // Session instance
+                     std::less<>>;                           // comparator
+  SessionMap sessions_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TransportSessionRegistryImpl> weak_ptr_factory_{this};
 };
