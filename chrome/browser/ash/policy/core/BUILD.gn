@@ -154,6 +154,7 @@ static_library("core") {
     "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/webapps/browser",
+    "//remoting/host/mojom",
   ]
 
   allow_circular_includes_from = [
