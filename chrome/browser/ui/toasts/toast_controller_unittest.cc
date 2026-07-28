@@ -116,6 +116,29 @@ TEST_F(ToastControllerUnitTest, ShowToastWithBodyStringOverride) {
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 }
 
+TEST_F(ToastControllerUnitTest, ShowToastWithReplacementsAndCardinality) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kMailFilledIcon
+                                      : vector_icons::kEmailOldIcon,
+                                  kTestStringResId)
+          .Build());
+
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  EXPECT_CALL(*controller, CreateToast);
+
+  ToastParams params = ToastParams(ToastId::kLinkCopied);
+  params.body_string_replacement_params = {u"Ctrl+W"};
+  params.body_string_cardinality_param = 2;
+
+  EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
+  ::testing::Mock::VerifyAndClear(controller.get());
+  EXPECT_TRUE(controller->IsShowingToast());
+}
+
 TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(

@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -286,8 +287,6 @@ void ToastController::ShowToast(ToastParams params) {
   CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
   CHECK(current_toast_spec->body_string_id() != 0 ||
         params.body_string_override.has_value());
-  CHECK(params.body_string_replacement_params.empty() ||
-        !params.body_string_cardinality_param.has_value());
 
   currently_showing_toast_id_ = params.toast_id;
   currently_showing_toast_close_callback_ =
@@ -384,6 +383,11 @@ std::u16string ToastController::FormatString(
     std::vector<std::u16string> replacements,
     std::optional<int> cardinality) {
   if (cardinality.has_value()) {
+    if (!replacements.empty()) {
+      return base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringFUTF16(string_id, replacements, nullptr),
+          cardinality.value());
+    }
     return l10n_util::GetPluralStringFUTF16(string_id, cardinality.value());
   } else {
     return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
