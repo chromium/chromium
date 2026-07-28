@@ -841,6 +841,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Android.AAudio.InputTimestampDiscontinuitySizeV2"
+    units="ms" expires_after="2027-01-10">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The size (magnitude of deviation from expected callback interval) of a
+    timestamp discontinuity for AAudio input streams. Logged whenever a
+    discontinuity is detected (i.e. the actual interval differs from the
+    expected interval by more than 10% of the callback duration). This V2
+    version tracks timestamps from the start of captured audio buffers (the
+    oldest sample, as expected by the media pipeline) rather than the most
+    recent sample, fixing errors caused by variable-sized callbacks.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10s"
     units="discontinuities" expires_after="2027-01-03">
   <owner>tguilbert@chromium.org</owner>
@@ -851,6 +866,22 @@ chromium-metrics-reviews@google.com.
     differs from the expected timestamp by more than 10% of the callback
     duration. Logged periodically every 10 seconds while the stream is running.
     Streams shorter than 10 seconds are ignored.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10sV2"
+    units="discontinuities" expires_after="2027-01-03">
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The number of discontinuities in OnData() timestamps per 10 second interval
+    for AAudio input streams. A discontinuity is counted if the timestamp
+    differs from the expected timestamp by more than 10% of the callback
+    duration. Logged periodically every 10 seconds while the stream is running.
+    Streams shorter than 10 seconds are ignored. This V2 version tracks
+    timestamps from the start of captured audio buffers (the oldest sample, as
+    expected by the media pipeline) rather than the most recent sample, fixing
+    errors caused by variable-sized callbacks.
   </summary>
 </histogram>
 

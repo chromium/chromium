@@ -16,6 +16,12 @@
 
 namespace media {
 
+// Adjusts the AAudio capture timestamp to point to the first (oldest) sample,
+// aligning with the media pipeline's expectation.
+// TODO(b/538642984): Remove this flag and make it the default behavior once
+// M153 hits stable.
+BASE_FEATURE(kAAudioFixCaptureTimestamp, base::FEATURE_ENABLED_BY_DEFAULT);
+
 using Error = AudioInputStream::AudioInputCallback::Error;
 
 class AAudioInputDiscontinuityReporter {
@@ -26,43 +32,73 @@ class AAudioInputDiscontinuityReporter {
                                                params.sample_rate())),
         discontinuity_threshold_(buffer_duration_ / 10) {}
 
-  void CheckAndRecordDiscontinuity(base::TimeTicks capture_time) {
+  void CheckAndRecordDiscontinuity(base::TimeTicks capture_time,
+                                   base::TimeTicks capture_time_adjusted) {
     base::TimeTicks now = base::TimeTicks::Now();
-
-    if (!last_capture_time_.has_value()) {
-      last_capture_time_ = capture_time;
+    if (last_report_time_.is_null()) {
       last_report_time_ = now;
-      return;
     }
 
-    const base::TimeDelta delta = capture_time - *last_capture_time_;
-    const base::TimeDelta discontinuity_size =
-        (delta - buffer_duration_).magnitude();
+    Check(capture_time, &legacy_state_,
+          "Media.Audio.Android.AAudio.InputTimestampDiscontinuitySize");
 
-    if (discontinuity_size > discontinuity_threshold_) {
-      discontinuity_count_++;
-      base::UmaHistogramTimes(
-          "Media.Audio.Android.AAudio.InputTimestampDiscontinuitySize",
-          discontinuity_size);
-    }
-
-    last_capture_time_ = capture_time;
+    Check(capture_time_adjusted, &adjusted_state_,
+          "Media.Audio.Android.AAudio.InputTimestampDiscontinuitySizeV2");
 
     if (now - last_report_time_ >= base::Seconds(10)) {
       base::UmaHistogramCounts100(
           "Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10s",
-          discontinuity_count_);
-      discontinuity_count_ = 0;
+          legacy_state_.discontinuity_count);
+      legacy_state_.discontinuity_count = 0;
+
+      base::UmaHistogramCounts100(
+          "Media.Audio.Android.AAudio.TimestampDiscontinuitiesPer10sV2",
+          adjusted_state_.discontinuity_count);
+      adjusted_state_.discontinuity_count = 0;
+
       last_report_time_ = now;
     }
   }
 
  private:
+  struct State {
+    std::optional<base::TimeTicks> last_capture_time;
+    int discontinuity_count = 0;
+  };
+
+  void Check(base::TimeTicks capture_time,
+             State* state,
+             const char* size_metric) {
+    if (!state->last_capture_time.has_value()) {
+      state->last_capture_time = capture_time;
+      return;
+    }
+
+    const base::TimeDelta delta = capture_time - *state->last_capture_time;
+    const base::TimeDelta discontinuity_size =
+        (delta - buffer_duration_).magnitude();
+
+    if (discontinuity_size > discontinuity_threshold_) {
+      state->discontinuity_count++;
+      base::UmaHistogramTimes(size_metric, discontinuity_size);
+    }
+
+    state->last_capture_time = capture_time;
+  }
+
   const base::TimeDelta buffer_duration_;
   const base::TimeDelta discontinuity_threshold_;
-  std::optional<base::TimeTicks> last_capture_time_;
   base::TimeTicks last_report_time_;
-  int discontinuity_count_ = 0;
+
+  // Tracks capture times as we've historically calculated them. These capture
+  // times might point to the last (newest) sample, deviating from the media
+  // pipeline's expectations.
+  // TODO(b/538642984): Remove this legacy state and the associated V1 metrics
+  // once M153 hits stable.
+  State legacy_state_;
+  // Tracks our adjusted capture times, which should point to the first (oldest)
+  // sample, in line with the media pipeline's expectations.
+  State adjusted_state_;
 };
 
 AAudioInputStream::AAudioInputStream(AudioManagerAndroid* manager,
@@ -198,6 +234,8 @@ bool AAudioInputStream::OnAudioDataRequested(base::span<float> audio_data) {
   // The time at which the first frame in `audio_data` was captured.
   auto capture_timestamp = stream_wrapper_->GetCaptureTimestamp();
 
+  current_callback_num_frames_ = audio_data.size() / params_.channels();
+
   if (push_fifo_) {
     const size_t channels = params_.channels();
     const size_t max_samples = audio_bus_->frames() * channels;
@@ -252,9 +290,23 @@ void AAudioInputStream::DeliverAudio(const AudioBus& audio_bus,
 
   peak_detector_.FindPeak(&audio_bus);
 
-  discontinuity_reporter_->CheckAndRecordDiscontinuity(capture_time);
+  // `capture_time` points to the end of the buffer (most recently captured
+  // sample). However, the rest of the pipeline expects a timestamp for the
+  // first sample (oldest). We calculate `capture_time_adjusted` to point to the
+  // first sample for comparison metrics.
+  const base::TimeDelta adjustment = AudioTimestampHelper::FramesToTime(
+      current_callback_num_frames_, params_.sample_rate());
+  const base::TimeTicks capture_time_adjusted = capture_time - adjustment;
 
-  callback_->OnData(&audio_bus, capture_time, 0.0, {});
+  discontinuity_reporter_->CheckAndRecordDiscontinuity(capture_time,
+                                                       capture_time_adjusted);
+
+  const base::TimeTicks final_capture_time =
+      base::FeatureList::IsEnabled(kAAudioFixCaptureTimestamp)
+          ? capture_time_adjusted
+          : capture_time;
+
+  callback_->OnData(&audio_bus, final_capture_time, 0.0, {});
 }
 
 void AAudioInputStream::OnError() {

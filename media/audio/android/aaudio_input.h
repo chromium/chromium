@@ -90,6 +90,10 @@ class AAudioInputStream : public AudioInputStream,
 
   std::unique_ptr<AAudioInputDiscontinuityReporter> discontinuity_reporter_;
 
+  // The number of frames requested during the current call to
+  // `OnAudioDataRequested()`, used to adjust underlying capture timestamps.
+  int32_t current_callback_num_frames_ = 0;
+
   base::RepeatingClosure handle_device_change_on_main_sequence_;
 
   // Lock protects all members below which may be read concurrently from the
