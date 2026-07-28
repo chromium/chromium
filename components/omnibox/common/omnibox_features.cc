@@ -589,6 +589,8 @@ const base::FeatureParam<bool> kAskGCurrentTabChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGCurrentTabChip", false};
 const base::FeatureParam<bool> kAskGLensIcon{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensIcon", false};
+const base::FeatureParam<bool> kAskGLensSearchHintText{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensSearchHintText", false};
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

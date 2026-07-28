@@ -267,6 +267,8 @@ extern const base::FeatureParam<bool> kAskGSwapIcon;
 extern const base::FeatureParam<bool> kAskGCurrentTabChip;
 // Whether to show the Lens icon.
 extern const base::FeatureParam<bool> kAskGLensIcon;
+// Whether to use alternate text for Lens chip.
+extern const base::FeatureParam<bool> kAskGLensSearchHintText;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {
