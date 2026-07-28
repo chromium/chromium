@@ -2778,7 +2778,7 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
                                          ui::kColorMenuIcon, kTabMenuIconSize));
     }
 
-    if (features::IsImprovedReadAloudEnabled()) {
+    if (features::IsReadAnythingImprovedUiEnabled()) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
                                       IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE);
       if (is_menu_simplification_enabled) {

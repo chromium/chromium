@@ -107,7 +107,7 @@ suite('Toolbar Settings Menu', () => {
   test(
       'settings menu opens appearance submenu on click when flag enabled',
       async () => {
-        chrome.readingMode.isImprovedReadAloudEnabled = true;
+        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
         toolbar.$.settingsMenu.isImmersiveMode = true;
         await microtasksFinished();
         const targetItem = getMenuItem(SettingsOption.APPEARANCE);

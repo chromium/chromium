@@ -120,8 +120,8 @@ suite('SettingsMenuElement', () => {
         assertEquals(8, submenuEvents);
       });
 
-  test('with improved read aloud flag enabled', async () => {
-    chrome.readingMode.isImprovedReadAloudEnabled = true;
+  test('with improved ui flag enabled', async () => {
+    chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
     chrome.readingMode.isImmersiveEnabled = true;
     settingsMenu.isImmersiveMode = true;
     await microtasksFinished();
@@ -477,10 +477,10 @@ suite('SettingsMenuElement', () => {
   });
 
   test(
-      'improved read aloud menu requires both isImprovedReadAloudEnabled and ' +
+      'improved ui menu requires both isReadAnythingImprovedUiEnabled and ' +
           'isImmersiveEnabled',
       async () => {
-        chrome.readingMode.isImprovedReadAloudEnabled = true;
+        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
         chrome.readingMode.isImmersiveEnabled = false;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
@@ -492,7 +492,7 @@ suite('SettingsMenuElement', () => {
             !menuItems.find(item => item.id === SettingsOption.APPEARANCE));
         assertTrue(!!menuItems.find(item => item.id === SettingsOption.COLOR));
 
-        chrome.readingMode.isImprovedReadAloudEnabled = true;
+        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
         chrome.readingMode.isImmersiveEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
@@ -503,7 +503,7 @@ suite('SettingsMenuElement', () => {
             !!menuItems.find(item => item.id === SettingsOption.APPEARANCE));
         assertTrue(!menuItems.find(item => item.id === SettingsOption.COLOR));
 
-        chrome.readingMode.isImprovedReadAloudEnabled = false;
+        chrome.readingMode.isReadAnythingImprovedUiEnabled = false;
         chrome.readingMode.isImmersiveEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();

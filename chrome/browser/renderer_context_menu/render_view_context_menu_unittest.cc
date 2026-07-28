@@ -2333,7 +2333,7 @@ class RenderViewContextMenuListenToThisPageTest
 
 TEST_F(RenderViewContextMenuListenToThisPageTest, MenuItemPresentWhenEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kImprovedReadAloud);
+  feature_list.InitAndEnableFeature(features::kReadAnythingImprovedUi);
 
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
@@ -2346,7 +2346,7 @@ TEST_F(RenderViewContextMenuListenToThisPageTest, MenuItemPresentWhenEnabled) {
 
 TEST_F(RenderViewContextMenuListenToThisPageTest, MenuItemAbsentWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kImprovedReadAloud);
+  feature_list.InitAndDisableFeature(features::kReadAnythingImprovedUi);
 
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),

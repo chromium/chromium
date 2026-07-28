@@ -105,7 +105,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected accessor hasValidSelection_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
-  protected isImprovedReadAloudEnabled_: boolean = false;
+  protected isReadAnythingImprovedUiEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
@@ -173,8 +173,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.contentController_.configureTrustedTypes();
     }
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
-    this.isImprovedReadAloudEnabled_ =
-        chrome.readingMode.isImprovedReadAloudEnabled;
+    this.isReadAnythingImprovedUiEnabled_ =
+        chrome.readingMode.isReadAnythingImprovedUiEnabled;
   }
 
   override connectedCallback() {
@@ -373,7 +373,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   setPlayOnOpen(playOnOpen: boolean) {
-    if (this.isImprovedReadAloudEnabled_) {
+    if (this.isReadAnythingImprovedUiEnabled_) {
       this.playOnOpen_ = playOnOpen;
       this.requestUpdate();
     }
@@ -745,7 +745,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onThemeChange_(event: CustomEvent<{data: number}>) {
-    if (chrome.readingMode.isImprovedReadAloudEnabled && event.detail &&
+    if (chrome.readingMode.isReadAnythingImprovedUiEnabled && event.detail &&
         event.detail.data !== undefined) {
       this.settingsPrefs_ = {
         ...this.settingsPrefs_,

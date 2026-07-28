@@ -30,7 +30,7 @@ suite('PlayOnOpen', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     readingMode = new FakeReadingMode();
-    readingMode.isImprovedReadAloudEnabled = true;
+    readingMode.isReadAnythingImprovedUiEnabled = true;
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
     speech = new TestSpeechBrowserProxy();

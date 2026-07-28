@@ -278,7 +278,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     return optionIDs;
   }
 
-  private initializeMenuOptionsForImprovedReadAloud_(): SettingsOption[] {
+  private initializeMenuOptionsForImprovedUi_(): SettingsOption[] {
     const optionIDs: SettingsOption[] = [
       SettingsOption.APPEARANCE,
       SettingsOption.MEDIA,
@@ -304,9 +304,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   private initializeMenuOptions_() {
     let optionIDs: SettingsOption[];
-    if (chrome.readingMode.isImprovedReadAloudEnabled &&
+    if (chrome.readingMode.isReadAnythingImprovedUiEnabled &&
         chrome.readingMode.isImmersiveEnabled) {
-      optionIDs = this.initializeMenuOptionsForImprovedReadAloud_();
+      optionIDs = this.initializeMenuOptionsForImprovedUi_();
     } else {
       optionIDs = this.initializeMenuOptionsLegacy_();
     }
