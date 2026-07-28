@@ -675,6 +675,11 @@ builder.
   Location filters:
   * [`//chrome/enterprise_companion/.+`](https://cs.chromium.org/chromium/src/chrome/enterprise_companion/)
 
+* [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
+
+  Location filters:
+  * [`//build/conifg/siso/.+`](https://cs.chromium.org/chromium/src/build/conifg/siso/)
+
 * [linux-headless-shell-rel](https://ci.chromium.org/p/chromium/builders/try/linux-headless-shell-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-headless-shell-rel""))
 
   Location filters:
@@ -1068,9 +1073,6 @@ as required builders.
 
 * [ios-simulator-exp](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-exp) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-exp""))
   * Experiment percentage: 5.0
-
-* [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
-  * Experiment percentage: 10.0
 
 * [tricium-clang-tidy](https://ci.chromium.org/p/chromium/builders/try/tricium-clang-tidy) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-clang-tidy""))
   * Experiment percentage: 100.0

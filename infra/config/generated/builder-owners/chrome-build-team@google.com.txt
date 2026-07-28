@@ -24,6 +24,5 @@ ci/linux-no-modules-compile-rel
 ci/linux-win-cross-rel
 try/ios-simulator-exp
 try/linux-full-remote-rel
-try/linux-full-remote-rel-compilator
 try/linux-no-modules-compile-rel
 try/linux-win-cross-rel
