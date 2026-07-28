@@ -6,7 +6,7 @@ Chromium uses a scroll jank metric on Android that tracks the percentage of drop
 
 Chromium assumes that if scrolling input events arrive in sequence during a scroll, then frames should be produced in sequence, without any drops or delays.
 
-![Chromium Dropped Frame](chromium_dropped_frame.png)
+![Chromium Dropped Frame](../../images/chromium_dropped_frame.png)
 
 # How is it decided that scrolling events arrived in sequence
 
