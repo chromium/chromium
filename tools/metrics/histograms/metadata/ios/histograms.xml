@@ -7883,6 +7883,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabPicker.Accepted.SelectedTabs.Count" units="count"
+    expires_after="2027-07-07">
+  <owner>alionadangla@google.com</owner>
+  <owner>bling-search@google.com</owner>
+  <summary>
+    Records the number of tabs selected when the user exits the Tab Picker by
+    accepting the selection.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TabPicker.Cancel.SelectedTabs.Count" units="count"
+    expires_after="2027-07-07">
+  <owner>alionadangla@google.com</owner>
+  <owner>bling-search@google.com</owner>
+  <summary>
+    Records the number of tabs selected when the user exits the Tab Picker by
+    cancelling.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabStrip.DragDropGroups" enum="IOSTabSwitcherDragDropTabs"
     expires_after="2027-04-01">
   <owner>huitingyu@google.com</owner>

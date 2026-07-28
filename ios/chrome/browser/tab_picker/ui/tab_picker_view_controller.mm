@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_empty_state_view.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_mutator.h"
@@ -78,12 +79,16 @@
 
 /// Performs action when the button to add the selected tabs has been pressed.
 - (void)attachSelectedTabsButtonTapped {
+  base::UmaHistogramCounts100("IOS.TabPicker.Accepted.SelectedTabs.Count",
+                              static_cast<int>(_tabsCount));
   [self.mutator attachSelectedTabs];
   [self.tabPickerHandler hideTabPicker];
 }
 
 /// Dismisses the view.
 - (void)cancelButtonTapped {
+  base::UmaHistogramCounts100("IOS.TabPicker.Cancel.SelectedTabs.Count",
+                              static_cast<int>(_tabsCount));
   [self.tabPickerHandler hideTabPicker];
 }
 
