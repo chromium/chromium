@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -718,9 +719,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 - (void)updatePrimaryAccount {
+  UIImage* avatarImage = [self.dataSource primaryAccountAvatar];
+  BOOL showsRing = [self.dataSource primaryAccountAvatarNeedsRing];
+
   _identityAccountView = [[CentralAccountView alloc]
               initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-                avatarImage:self.dataSource.primaryAccountAvatar
+                avatarImage:avatarImage
+            showsAITierRing:showsRing
+             aiTierFullName:self.dataSource.primaryAccountAITierFullName
                        name:self.dataSource.primaryAccountUserFullName
                       email:self.dataSource.primaryAccountEmail
       managementDescription:self.dataSource.managementDescription

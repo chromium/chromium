@@ -21,17 +21,28 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage
+              showsAITierRing:(BOOL)showsAITierRing
+               aiTierFullName:(NSString*)aiTierFullName
                          name:(NSString*)name
                         email:(NSString*)email
         managementDescription:(NSString*)managementDescription
               useLargeMargins:(BOOL)useLargeMargins;
 
-// Returns the view parameters.
+// Returns the avatar image.
 - (UIImage*)avatarImage;
+
+// Returns the avatar view container.
+- (UIView*)avatarView;
+
 // The name of the view. The name if it’s set otherwise the email.
 - (NSString*)name;
+
 // The email of the view. The email if the name is set, otherwise nil.
 - (NSString*)email;
+
+// The full name of the AI tier. May be nil.
+- (NSString*)aiTierFullName;
+
 - (BOOL)managed;
 
 - (NSString*)managementDescription;

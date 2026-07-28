@@ -13,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
 
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/flags",
   "+ios/chrome/browser/policy",

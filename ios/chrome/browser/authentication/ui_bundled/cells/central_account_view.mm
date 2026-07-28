@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/ui/avatar/ai_tier_avatar_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -50,18 +51,22 @@ UIImage* GetEnterpriseIcon() {
   NSString* _name;
   // Email subtitle displayed in secondary label.
   NSString* _email;
-  // The account avatar.
-  UIImageView* _imageView;
+  // The avatar view.
+  AITierAvatarView* _avatarView;
   // Whether to use large margin.
   BOOL _useLargeMargins;
   // The constraint for the top padding.
   NSLayoutConstraint* _topPaddingConstraint;
   // Management label.
   UILabel* _managementLabel;
+  // The full name of the AI tier.
+  NSString* _aiTierFullName;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                   avatarImage:(UIImage*)avatarImage
+              showsAITierRing:(BOOL)showsAITierRing
+               aiTierFullName:(NSString*)aiTierFullName
                          name:(NSString*)name
                         email:(NSString*)email
         managementDescription:(NSString*)managementDescription
@@ -71,6 +76,7 @@ UIImage* GetEnterpriseIcon() {
     CHECK(avatarImage);
     CHECK(email);
     _avatarImage = avatarImage;
+    _aiTierFullName = [aiTierFullName copy];
     _name = name ? name : email;
     _email = name ? email : nil;
     _useLargeMargins = useLargeMargins;
@@ -79,13 +85,13 @@ UIImage* GetEnterpriseIcon() {
     self.accessibilityIdentifier =
         CentralAccountViewAccessibilityIdentifier(email);
 
-    _imageView = [[UIImageView alloc] initWithImage:_avatarImage];
-    // Creates the image rounded corners.
-    _imageView.layer.cornerRadius =
-        GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large).width / 2.0f;
-    _imageView.clipsToBounds = YES;
-    _imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_imageView];
+    CGFloat outerSize =
+        GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large).width;
+    _avatarView =
+        [[AITierAvatarView alloc] initWithAvatarImage:_avatarImage
+                                            outerSize:outerSize
+                                      showsAITierRing:showsAITierRing];
+    [self addSubview:_avatarView];
 
     UILabel* nameLabel = [[UILabel alloc] init];
     nameLabel.text = _name;
@@ -180,22 +186,23 @@ UIImage* GetEnterpriseIcon() {
                                         constant:bottomMargin]
           .active = YES;
     }
-    _topPaddingConstraint = [_imageView.topAnchor
+    _topPaddingConstraint = [_avatarView.topAnchor
         constraintEqualToAnchor:self.topAnchor
                        constant:(_useLargeMargins
                                      ? kTableViewLargeVerticalSpacing
                                      : kTopLargePadding)];
     [NSLayoutConstraint activateConstraints:@[
-      [_imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      [_avatarView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       _topPaddingConstraint,
-      [_imageView.widthAnchor
+      [_avatarView.widthAnchor
           constraintEqualToConstant:GetSizeForIdentityAvatarSize(
                                         IdentityAvatarSize::Large)
                                         .width],
-      [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
+      [_avatarView.heightAnchor
+          constraintEqualToAnchor:_avatarView.widthAnchor],
 
-      [nameLabel.topAnchor constraintEqualToAnchor:_imageView.bottomAnchor
-                                           constant:kTableViewVerticalSpacing],
+      [nameLabel.topAnchor constraintEqualToAnchor:_avatarView.bottomAnchor
+                                          constant:kTableViewVerticalSpacing],
       [nameLabel.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
@@ -204,7 +211,7 @@ UIImage* GetEnterpriseIcon() {
                          constant:-kTableViewHorizontalSpacing],
 
       [emailLabel.topAnchor constraintEqualToAnchor:nameLabel.bottomAnchor
-                                              constant:kLabelVerticalSpacing],
+                                           constant:kLabelVerticalSpacing],
       [emailLabel.leadingAnchor
           constraintEqualToAnchor:nameLabel.leadingAnchor],
       [emailLabel.trailingAnchor
@@ -218,25 +225,64 @@ UIImage* GetEnterpriseIcon() {
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
-  if (_name) {
+  NSString* aiTierString = nil;
+  if (_aiTierFullName.length > 0) {
+    aiTierString = l10n_util::GetNSStringF(
+        IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER,
+        base::SysNSStringToUTF16(_aiTierFullName));
+  }
+
+  if (_email != nil) {
+    // Both name and email are present.
     if ([self managed]) {
-      return l10n_util::GetNSStringF(
-          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS,
-          base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
-          base::SysNSStringToUTF16([self managementDescription]));
+      if (aiTierString) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER,
+            base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
+            base::SysNSStringToUTF16([self managementDescription]),
+            base::SysNSStringToUTF16(aiTierString));
+      } else {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS,
+            base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
+            base::SysNSStringToUTF16([self managementDescription]));
+      }
     } else {
-      return l10n_util::GetNSStringF(
-          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME,
-          base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email));
+      if (aiTierString) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_AI_TIER,
+            base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email),
+            base::SysNSStringToUTF16(aiTierString));
+      } else {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME,
+            base::SysNSStringToUTF16(_name), base::SysNSStringToUTF16(_email));
+      }
     }
   } else {
+    // Only email is present (stored in _name).
     if ([self managed]) {
-      return l10n_util::GetNSStringF(
-          IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS,
-          base::SysNSStringToUTF16(_email),
-          base::SysNSStringToUTF16([self managementDescription]));
+      if (aiTierString) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER,
+            base::SysNSStringToUTF16(_name),
+            base::SysNSStringToUTF16([self managementDescription]),
+            base::SysNSStringToUTF16(aiTierString));
+      } else {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS,
+            base::SysNSStringToUTF16(_name),
+            base::SysNSStringToUTF16([self managementDescription]));
+      }
     } else {
-      return _email;
+      if (aiTierString) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_AI_TIER,
+            base::SysNSStringToUTF16(_name),
+            base::SysNSStringToUTF16(aiTierString));
+      } else {
+        return _name;
+      }
     }
   }
 }
@@ -256,12 +302,20 @@ UIImage* GetEnterpriseIcon() {
   return _avatarImage;
 }
 
+- (UIView*)avatarView {
+  return _avatarView;
+}
+
 - (NSString*)name {
   return _name;
 }
 
 - (NSString*)email {
   return _email;
+}
+
+- (NSString*)aiTierFullName {
+  return _aiTierFullName;
 }
 
 - (BOOL)managed {
