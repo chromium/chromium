@@ -259,35 +259,6 @@ TEST(JPEGImageDecoderTest, manyProgressiveScans) {
   EXPECT_TRUE(test_decoder->Failed());
 }
 
-// This tests decoding a multi-scan non-interleaved sequential JPEG.
-// Decoding should fail with incomplete data.
-TEST(JPEGImageDecoderTest, nonInterleavedSequentialBufferedDecompress) {
-  Vector<char> test_data =
-      ReadFile("/images/jpeg-suite/baseline/32x32x8_ycbcr.jpg");
-  ASSERT_FALSE(test_data.empty());
-
-  const size_t partial_size = test_data.size() / 2;
-  scoped_refptr<SharedBuffer> partial_buffer = SharedBuffer::Create();
-  partial_buffer->Append(base::span<const char>(test_data).first(partial_size));
-
-  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
-  test_decoder->SetData(partial_buffer, false);
-
-  ImageFrame* frame = test_decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_NE(frame->GetStatus(), ImageFrame::kFramePartial);
-  EXPECT_NE(frame->GetStatus(), ImageFrame::kFrameComplete);
-  EXPECT_FALSE(test_decoder->Failed());
-
-  scoped_refptr<SharedBuffer> full_buffer = SharedBuffer::Create();
-  full_buffer->Append(base::span<const char>(test_data));
-  test_decoder->SetData(full_buffer, true);
-
-  frame = test_decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
-}
-
 // Decode a JPEG with EXIF data that defines a density corrected size. The EXIF
 // data has the initial IFD at the end of the data blob, and out-of-line data
 // defined just after the header.

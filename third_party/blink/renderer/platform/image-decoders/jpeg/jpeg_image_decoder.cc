@@ -168,8 +168,8 @@ struct decoder_source_mgr {
 enum jstate {
   kJpegHeader,  // Reading JFIF headers
   kJpegStartDecompress,
-  kJpegDecompressBufferedImage,  // Output pixels in buffered-image mode.
-  kJpegDecompressSequential,     // Output pixels in sequential mode.
+  kJpegDecompressProgressive,  // Output progressive pixels
+  kJpegDecompressSequential,   // Output sequential pixels
   kJpegDone
 };
 
@@ -570,8 +570,8 @@ class JPEGImageReader final {
           return false;  // I/O suspension.
         }
 
-        // If this is a JPEG requiring buffered-image mode.
-        state_ = (info_.buffered_image) ? kJpegDecompressBufferedImage
+        // If this is a progressive JPEG ...
+        state_ = (info_.buffered_image) ? kJpegDecompressProgressive
                                         : kJpegDecompressSequential;
         [[fallthrough]];
 
@@ -587,9 +587,9 @@ class JPEGImageReader final {
         }
         [[fallthrough]];
 
-      case kJpegDecompressBufferedImage:
-        if (state_ == kJpegDecompressBufferedImage) {
-          auto all_components_seen = [](jpeg_decompress_struct& info) -> bool {
+      case kJpegDecompressProgressive:
+        if (state_ == kJpegDecompressProgressive) {
+          auto all_components_seen = [](const jpeg_decompress_struct& info) {
             if (info.coef_bits) {
               for (int c = 0; c < info.num_components; ++c) {
                 if (UNSAFE_TODO(info.coef_bits[c])[0] == -1) {
@@ -597,12 +597,8 @@ class JPEGImageReader final {
                   return false;
                 }
               }
-              return true;
             }
-            // For non-progressive (e.g. non-interleaved sequential or lossless)
-            // images coef_bits is always null, and all components are only seen
-            // when the input is complete.
-            return jpeg_input_complete(&info);
+            return true;
           };
           int status = 0;
           int first_scan_to_display =
