@@ -870,7 +870,10 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
       }
     }
 
-    if (coordinate_system == AXCoordinateSystem::kFrame) {
+    // Only web content composes bounds across tree boundaries; other sources,
+    // such as Views, are anchored in screen coordinates by their own delegate.
+    if (coordinate_system == AXCoordinateSystem::kFrame ||
+        !manager->IsWebContentSource()) {
       break;
     }
 

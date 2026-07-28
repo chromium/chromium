@@ -1461,7 +1461,7 @@ void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point,
 
 gfx::Rect BrowserAccessibilityManager::GetViewBoundsInScreenCoordinates()
     const {
-  AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  AXPlatformTreeManagerDelegate* delegate = GetDelegateForNativeView();
   if (delegate) {
     gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
 
@@ -1983,6 +1983,11 @@ bool BrowserAccessibilityManager::IsRootFrameManager() const {
   DCHECK(!is_root_tree || GetParentTreeID() == AXTreeIDUnknown())
       << "Root tree has parent tree id of: " << GetParentTreeID();
   return is_root_tree;
+}
+
+bool BrowserAccessibilityManager::IsWebContentSource() const {
+  // delegate_ can be null in unit tests.
+  return !delegate_ || delegate_->AccessibilityIsWebContentSource();
 }
 
 AXTreeUpdate BrowserAccessibilityManager::SnapshotAXTreeForTesting() {

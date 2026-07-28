@@ -71,7 +71,7 @@ void BrowserAccessibilityManagerIOS::OnAtomicUpdateFinished(
 
 gfx::Rect BrowserAccessibilityManagerIOS::GetViewBoundsInScreenCoordinates()
     const {
-  AXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
+  AXPlatformTreeManagerDelegate* delegate = GetDelegateForNativeView();
   if (!delegate) {
     return gfx::Rect();
   }

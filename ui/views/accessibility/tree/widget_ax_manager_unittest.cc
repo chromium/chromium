@@ -18,6 +18,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_clipping_behavior.h"
+#include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -25,10 +27,15 @@
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views::test {
@@ -933,11 +940,256 @@ TEST_F(WidgetAXManagerTest, AccessibilityViewHasFocusAndSetFocus) {
   EXPECT_TRUE(manager()->AccessibilityViewHasFocus());
 }
 
-TEST_F(WidgetAXManagerTest, AccessibilityGetViewBounds_ReturnsWidgetBounds) {
-  gfx::Rect test_bounds(10, 20, 300, 400);
-  widget()->SetBounds(test_bounds);
+TEST_F(WidgetAXManagerTest,
+       AccessibilityGetViewBounds_ReturnsClientAreaBounds) {
+  widget()->SetBounds(gfx::Rect(10, 20, 300, 400));
 
-  EXPECT_EQ(manager()->AccessibilityGetViewBounds(), test_bounds);
+  EXPECT_EQ(manager()->AccessibilityGetViewBounds(),
+            widget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(manager()->AccessibilityGetViewBounds().origin(),
+            widget()->GetRootView()->GetBoundsInScreen().origin());
+}
+
+TEST_F(WidgetAXManagerTest, ScreenBoundsMatchViewBoundsInScreen) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(120, 240, 500, 400));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  View* root = widget()->GetRootView();
+  auto* container = root->AddChildView(std::make_unique<View>());
+  auto* child = container->AddChildView(std::make_unique<View>());
+  child->SetBounds(10, 20, 300, 200);
+  auto* grandchild = child->AddChildView(std::make_unique<View>());
+  grandchild->SetBounds(5, 7, 100, 50);
+  auto* great_grandchild = grandchild->AddChildView(std::make_unique<View>());
+  great_grandchild->SetBounds(3, 4, 40, 20);
+  RunScheduledLayout(widget());
+  api.WaitForNextSerialization();
+
+  for (View* view : {root, container, child, grandchild, great_grandchild}) {
+    ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(
+        static_cast<ui::AXNodeID>(view->GetViewAccessibility().GetUniqueId()));
+    ASSERT_NE(node, nullptr);
+    EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                  ui::AXClippingBehavior::kUnclipped),
+              view->GetBoundsInScreen());
+  }
+}
+
+TEST_F(WidgetAXManagerTest, ScreenBoundsFollowWidgetMove) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(20, 30, 500, 400));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  auto* child = container->AddChildView(std::make_unique<View>());
+  child->SetBounds(10, 20, 300, 200);
+  RunScheduledLayout(widget());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(
+      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId()));
+  ASSERT_NE(node, nullptr);
+  ASSERT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                ui::AXClippingBehavior::kUnclipped),
+            child->GetBoundsInScreen());
+
+  widget()->SetBounds(gfx::Rect(300, 450, 500, 400));
+
+  EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                ui::AXClippingBehavior::kUnclipped),
+            child->GetBoundsInScreen());
+}
+
+TEST_F(WidgetAXManagerTest, VirtualViewScreenBoundsMatchLegacyPath) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(120, 240, 500, 400));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  virtual_child->SetRole(ax::mojom::Role::kGroup);
+  nested_virtual->SetRole(ax::mojom::Role::kGroup);
+  virtual_child->SetBounds(gfx::RectF(10, 15, 60, 20));
+  nested_virtual->SetBounds(gfx::RectF(25, 30, 10, 10));
+  AXVirtualView* virtual_child_ptr = virtual_child.get();
+  AXVirtualView* nested_virtual_ptr = nested_virtual.get();
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+
+  auto container = std::make_unique<View>();
+  auto owner = std::make_unique<View>();
+  owner->SetBounds(30, 40, 200, 100);
+  owner->GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+  auto* owner_ptr = container->AddChildView(std::move(owner));
+  widget()->GetRootView()->AddChildView(std::move(container));
+  RunScheduledLayout(widget());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibility* virtual_child_node =
+      api.ax_tree_manager()->GetFromID(virtual_child_id);
+  ui::BrowserAccessibility* nested_virtual_node =
+      api.ax_tree_manager()->GetFromID(nested_virtual_id);
+  ASSERT_NE(virtual_child_node, nullptr);
+  ASSERT_NE(nested_virtual_node, nullptr);
+
+  EXPECT_EQ(
+      virtual_child_node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                        ui::AXClippingBehavior::kUnclipped),
+      virtual_child_ptr->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                       ui::AXClippingBehavior::kUnclipped));
+  EXPECT_EQ(
+      nested_virtual_node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                         ui::AXClippingBehavior::kUnclipped),
+      nested_virtual_ptr->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                        ui::AXClippingBehavior::kUnclipped));
+
+  gfx::Rect expected_nested(25, 30, 10, 10);
+  View::ConvertRectToScreen(owner_ptr, &expected_nested);
+  EXPECT_EQ(
+      nested_virtual_node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                         ui::AXClippingBehavior::kUnclipped),
+      expected_nested);
+}
+
+TEST_F(WidgetAXManagerTest, BoundsForEachCoordinateSystem) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(120, 240, 500, 400));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  auto* child = container->AddChildView(std::make_unique<View>());
+  child->SetBounds(10, 20, 300, 200);
+  auto* grandchild = child->AddChildView(std::make_unique<View>());
+  grandchild->SetBounds(5, 7, 100, 50);
+  RunScheduledLayout(widget());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibility* node =
+      api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
+          grandchild->GetViewAccessibility().GetUniqueId()));
+  ASSERT_NE(node, nullptr);
+
+  const gfx::Rect screen_bounds = node->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kUnclipped);
+  EXPECT_EQ(screen_bounds, grandchild->GetBoundsInScreen());
+  EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenPhysicalPixels,
+                                ui::AXClippingBehavior::kUnclipped),
+            screen_bounds);
+
+  gfx::Point widget_origin;
+  View::ConvertPointToWidget(grandchild, &widget_origin);
+  const gfx::Rect widget_bounds(widget_origin, grandchild->size());
+  EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
+                                ui::AXClippingBehavior::kUnclipped),
+            widget_bounds);
+  EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kFrame,
+                                ui::AXClippingBehavior::kUnclipped),
+            widget_bounds);
+}
+
+TEST_F(WidgetAXManagerTest, OverflowingChildIsNotClippedOrOffscreen) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(120, 240, 500, 400));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  auto* container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  auto* child = container->AddChildView(std::make_unique<View>());
+  child->SetBounds(10, 20, 100, 50);
+  auto* grandchild = child->AddChildView(std::make_unique<View>());
+  grandchild->SetBounds(80, 40, 200, 100);
+  RunScheduledLayout(widget());
+  api.WaitForNextSerialization();
+
+  ui::BrowserAccessibility* node =
+      api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
+          grandchild->GetViewAccessibility().GetUniqueId()));
+  ASSERT_NE(node, nullptr);
+
+  EXPECT_EQ(node->GetClippedScreenBoundsRect(),
+            node->GetUnclippedScreenBoundsRect());
+  EXPECT_EQ(node->GetUnclippedScreenBoundsRect(),
+            grandchild->GetBoundsInScreen());
+  EXPECT_FALSE(node->IsOffscreen());
+}
+
+TEST_F(WidgetAXManagerTest, HostedWidgetBoundsUseItsOwnClientArea) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  widget()->SetBounds(gfx::Rect(100, 100, 400, 300));
+
+  WidgetAXManagerTestApi host_api(manager());
+  host_api.Enable();
+
+  auto* host_container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  auto* host_view = host_container->AddChildView(std::make_unique<View>());
+  host_view->SetBounds(50, 60, 100, 100);
+  RunScheduledLayout(widget());
+
+  WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+  hosted_widget->SetBounds(gfx::Rect(700, 800, 200, 150));
+  {
+    WidgetAXManagerTestApi hosted_api(hosted_widget->ax_manager());
+    hosted_api.Enable();
+    hosted_widget->ax_manager()->HostAXTreeInView(
+        host_view->GetViewAccessibility());
+
+    auto* hosted_container =
+        hosted_widget->GetRootView()->AddChildView(std::make_unique<View>());
+    auto* hosted_child =
+        hosted_container->AddChildView(std::make_unique<View>());
+    hosted_child->SetBounds(5, 7, 40, 30);
+    RunScheduledLayout(hosted_widget.get());
+    RunPendingTasks();
+
+    ui::BrowserAccessibility* node =
+        hosted_api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
+            hosted_child->GetViewAccessibility().GetUniqueId()));
+    ASSERT_NE(node, nullptr);
+
+    EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                  ui::AXClippingBehavior::kUnclipped),
+              hosted_child->GetBoundsInScreen());
+  }
+}
+
+TEST_F(WidgetAXManagerTest, DestroyingHostedWidgetClearsItsHost) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi host_api(manager());
+  host_api.Enable();
+
+  auto* host_view =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+
+  {
+    WidgetAutoclosePtr hosted_widget(CreateTopLevelPlatformWidget());
+    WidgetAXManagerTestApi hosted_api(hosted_widget->ax_manager());
+    hosted_api.Enable();
+    hosted_widget->ax_manager()->HostAXTreeInView(
+        host_view->GetViewAccessibility());
+    ASSERT_NE(host_view->GetViewAccessibility().GetChildTreeID(),
+              ui::AXTreeIDUnknown());
+  }
+
+  EXPECT_EQ(host_view->GetViewAccessibility().GetChildTreeID(),
+            ui::AXTreeIDUnknown());
 }
 
 TEST_F(WidgetAXManagerTest, AccessibilityGetAcceleratedWidget) {

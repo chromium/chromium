@@ -1250,12 +1250,7 @@ void BrowserAccessibilityManagerWin::EnqueueSelectionChangedEvent(
 
 gfx::Rect BrowserAccessibilityManagerWin::GetViewBoundsInScreenCoordinates()
     const {
-  // For views-sourced managers, use own delegate directly (no root-frame
-  // hierarchy).  For web content, walk up to the root frame manager.
-  AXPlatformTreeManagerDelegate* target_delegate =
-      (delegate() && !delegate()->AccessibilityIsWebContentSource())
-          ? delegate()
-          : GetDelegateFromRootManager();
+  AXPlatformTreeManagerDelegate* target_delegate = GetDelegateForNativeView();
   if (!target_delegate) {
     return gfx::Rect();
   }

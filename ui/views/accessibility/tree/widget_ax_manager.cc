@@ -344,7 +344,8 @@ gfx::Rect WidgetAXManager::AccessibilityGetViewBounds() {
   if (!widget_) {
     return gfx::Rect();
   }
-  return widget_->GetWindowBoundsInScreen();
+  // View-to-screen conversions are anchored at the client area, not the window.
+  return widget_->GetClientAreaBoundsInScreen();
 }
 
 float WidgetAXManager::AccessibilityGetDeviceScaleFactor() {
@@ -603,11 +604,18 @@ void WidgetAXManager::SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id) {
   }
 
   tree_source_->SetParentTreeId(parent_ax_tree_id_);
-  if (is_enabled_) {
-    pending_data_updates_.insert(
-        widget_->GetRootView()->GetViewAccessibility().GetUniqueId());
-    SchedulePendingUpdate();
+  if (!is_enabled_) {
+    return;
   }
+
+  // The root view is already gone when the widget tears the manager down.
+  View* root_view = widget_->GetRootView();
+  if (!root_view) {
+    return;
+  }
+
+  pending_data_updates_.insert(root_view->GetViewAccessibility().GetUniqueId());
+  SchedulePendingUpdate();
 }
 
 void WidgetAXManager::ClearAXTreeHost() {

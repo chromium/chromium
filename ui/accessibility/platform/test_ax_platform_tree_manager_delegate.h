@@ -50,6 +50,7 @@ class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
 
   bool is_root_frame_;
   bool is_web_content_source_ = true;
+  gfx::Rect view_bounds_;
   ui::AXMode ax_mode_;
   gfx::AcceleratedWidget accelerated_widget_;
   raw_ptr<content::WebContentsAccessibility> web_contents_accessibility_ =

@@ -472,6 +472,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   // Returns whether this is the root frame.
   bool IsRootFrameManager() const;
 
+  // Returns whether this manager's tree was serialized from web content.
+  bool IsWebContentSource() const;
+
   // Get a snapshot of the current tree as an AXTreeUpdate.
   AXTreeUpdate SnapshotAXTreeForTesting();
 

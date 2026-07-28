@@ -15,6 +15,9 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -394,6 +397,281 @@ TEST_F(BrowserAccessibilityTest,
   EXPECT_EQ(views_delegate.get(), views_manager->GetDelegateForNativeView());
   EXPECT_EQ(web_delegate.get(), web_manager->GetDelegateForNativeView());
   EXPECT_EQ(web_delegate.get(), inner_web_manager->GetDelegateForNativeView());
+}
+
+TEST_F(BrowserAccessibilityTest, NonWebContentBoundsResolveWithinTheirOwnTree) {
+  // A Views tree never reports itself as a root frame, so nothing above it can
+  // contribute an offset.
+  test_browser_accessibility_delegate_->is_root_frame_ = false;
+  test_browser_accessibility_delegate_->is_web_content_source_ = false;
+  test_browser_accessibility_delegate_->view_bounds_ =
+      gfx::Rect(100, 200, 400, 500);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kWindow;
+  root.relative_bounds.bounds = gfx::RectF(0, 0, 400, 500);
+  root.child_ids = {2};
+
+  ui::AXNodeData container;
+  container.id = 2;
+  container.role = ax::mojom::Role::kGroup;
+  container.relative_bounds.bounds = gfx::RectF(10, 20, 200, 300);
+  container.child_ids = {3};
+
+  ui::AXNodeData child;
+  child.id = 3;
+  child.role = ax::mojom::Role::kButton;
+  child.relative_bounds.offset_container_id = 2;
+  child.relative_bounds.bounds = gfx::RectF(5, 7, 50, 30);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          MakeAXTreeUpdateForTesting(root, container, child), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  EXPECT_EQ(gfx::Rect(15, 27, 50, 30), manager->GetFromID(3)->GetBoundsRect(
+                                           ui::AXCoordinateSystem::kRootFrame,
+                                           ui::AXClippingBehavior::kUnclipped));
+  EXPECT_EQ(
+      gfx::Rect(10, 20, 200, 300),
+      manager->GetFromID(2)->GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
+                                           ui::AXClippingBehavior::kUnclipped));
+
+  EXPECT_EQ(nullptr, manager->GetDelegateFromRootManager());
+  EXPECT_EQ(test_browser_accessibility_delegate_.get(),
+            manager->GetDelegateForNativeView());
+
+  const gfx::Vector2d screen_offset =
+      manager->GetViewBoundsInScreenCoordinates().OffsetFromOrigin();
+  EXPECT_FALSE(screen_offset.IsZero());
+  EXPECT_EQ(
+      gfx::Rect(15, 27, 50, 30) + screen_offset,
+      manager->GetFromID(3)->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                           ui::AXClippingBehavior::kUnclipped));
+  EXPECT_EQ(gfx::Rect(15, 27, 50, 30), manager->GetFromID(3)->GetBoundsRect(
+                                           ui::AXCoordinateSystem::kFrame,
+                                           ui::AXClippingBehavior::kUnclipped));
+}
+
+TEST_F(BrowserAccessibilityTest, NonWebContentBoundsDoNotComposeAcrossTrees) {
+  const ui::AXTreeID host_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ui::AXTreeID hosted_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXNodeData host_root;
+  host_root.id = 1;
+  host_root.role = ax::mojom::Role::kWindow;
+  host_root.relative_bounds.bounds = gfx::RectF(0, 0, 400, 500);
+  host_root.child_ids = {2};
+
+  ui::AXNodeData host_view;
+  host_view.id = 2;
+  host_view.role = ax::mojom::Role::kGroup;
+  host_view.relative_bounds.bounds = gfx::RectF(50, 60, 100, 100);
+  host_view.AddChildTreeId(hosted_tree_id);
+
+  ui::AXTreeUpdate host_update =
+      MakeAXTreeUpdateForTesting(host_root, host_view);
+  host_update.tree_data.tree_id = host_tree_id;
+  host_update.root_id = host_root.id;
+  host_update.has_tree_data = true;
+
+  ui::AXNodeData hosted_root;
+  hosted_root.id = 10;
+  hosted_root.role = ax::mojom::Role::kWindow;
+  hosted_root.relative_bounds.bounds = gfx::RectF(0, 0, 200, 150);
+  hosted_root.child_ids = {11};
+
+  ui::AXNodeData hosted_child;
+  hosted_child.id = 11;
+  hosted_child.role = ax::mojom::Role::kButton;
+  hosted_child.relative_bounds.bounds = gfx::RectF(5, 7, 40, 30);
+
+  ui::AXTreeUpdate hosted_update =
+      MakeAXTreeUpdateForTesting(hosted_root, hosted_child);
+  hosted_update.tree_data.tree_id = hosted_tree_id;
+  hosted_update.tree_data.parent_tree_id = host_tree_id;
+  hosted_update.root_id = hosted_root.id;
+  hosted_update.has_tree_data = true;
+
+  auto host_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  host_delegate->is_root_frame_ = false;
+  host_delegate->is_web_content_source_ = false;
+
+  auto hosted_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  hosted_delegate->is_root_frame_ = false;
+  hosted_delegate->is_web_content_source_ = false;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> host_manager(
+      CreateBrowserAccessibilityManager(host_update, node_id_delegate_,
+                                        host_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> hosted_manager(
+      CreateBrowserAccessibilityManager(hosted_update, node_id_delegate_,
+                                        hosted_delegate.get()));
+
+  ASSERT_NE(nullptr,
+            hosted_manager->GetBrowserAccessibilityRoot()->PlatformGetParent());
+
+  EXPECT_EQ(hosted_delegate.get(), hosted_manager->GetDelegateForNativeView());
+
+  EXPECT_EQ(gfx::Rect(5, 7, 40, 30),
+            hosted_manager->GetFromID(11)->GetBoundsRect(
+                ui::AXCoordinateSystem::kRootFrame,
+                ui::AXClippingBehavior::kUnclipped));
+}
+
+TEST_F(BrowserAccessibilityTest, WebContentBoundsComposeAcrossTrees) {
+  const ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXNodeData parent_root;
+  parent_root.id = 1;
+  parent_root.role = ax::mojom::Role::kRootWebArea;
+  parent_root.relative_bounds.bounds = gfx::RectF(0, 0, 400, 500);
+  parent_root.child_ids = {2};
+
+  ui::AXNodeData iframe;
+  iframe.id = 2;
+  iframe.role = ax::mojom::Role::kIframe;
+  iframe.relative_bounds.bounds = gfx::RectF(50, 60, 100, 100);
+  iframe.AddChildTreeId(child_tree_id);
+
+  ui::AXTreeUpdate parent_update =
+      MakeAXTreeUpdateForTesting(parent_root, iframe);
+  parent_update.tree_data.tree_id = parent_tree_id;
+  parent_update.root_id = parent_root.id;
+  parent_update.has_tree_data = true;
+
+  ui::AXNodeData child_root;
+  child_root.id = 10;
+  child_root.role = ax::mojom::Role::kRootWebArea;
+  child_root.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+  child_root.child_ids = {11};
+
+  ui::AXNodeData child_node;
+  child_node.id = 11;
+  child_node.role = ax::mojom::Role::kButton;
+  child_node.relative_bounds.bounds = gfx::RectF(5, 7, 40, 30);
+
+  ui::AXTreeUpdate child_update =
+      MakeAXTreeUpdateForTesting(child_root, child_node);
+  child_update.tree_data.tree_id = child_tree_id;
+  child_update.tree_data.parent_tree_id = parent_tree_id;
+  child_update.root_id = child_root.id;
+  child_update.has_tree_data = true;
+
+  auto parent_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  parent_delegate->is_root_frame_ = true;
+
+  auto child_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  child_delegate->is_root_frame_ = false;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> parent_manager(
+      CreateBrowserAccessibilityManager(parent_update, node_id_delegate_,
+                                        parent_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      CreateBrowserAccessibilityManager(child_update, node_id_delegate_,
+                                        child_delegate.get()));
+
+  ASSERT_NE(nullptr,
+            child_manager->GetBrowserAccessibilityRoot()->PlatformGetParent());
+
+  EXPECT_EQ(parent_delegate.get(), child_manager->GetDelegateFromRootManager());
+  EXPECT_EQ(parent_delegate.get(), child_manager->GetDelegateForNativeView());
+
+  EXPECT_EQ(gfx::Rect(55, 67, 40, 30),
+            child_manager->GetFromID(11)->GetBoundsRect(
+                ui::AXCoordinateSystem::kRootFrame,
+                ui::AXClippingBehavior::kUnclipped));
+}
+
+TEST_F(BrowserAccessibilityTest,
+       WebContentHostedInViewsIsAnchoredByItsOwnView) {
+  const ui::AXTreeID views_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXNodeData views_root;
+  views_root.id = 1;
+  views_root.role = ax::mojom::Role::kWindow;
+  views_root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
+  views_root.child_ids = {2};
+
+  // Models views::WebView, which points at the primary main frame's tree but
+  // never becomes that tree's parent tree.
+  ui::AXNodeData web_view;
+  web_view.id = 2;
+  web_view.role = ax::mojom::Role::kClient;
+  web_view.relative_bounds.bounds = gfx::RectF(50, 60, 700, 500);
+  web_view.AddChildTreeId(web_tree_id);
+
+  ui::AXTreeUpdate views_update =
+      MakeAXTreeUpdateForTesting(views_root, web_view);
+  views_update.tree_data.tree_id = views_tree_id;
+  views_update.root_id = views_root.id;
+  views_update.has_tree_data = true;
+
+  ui::AXNodeData web_root;
+  web_root.id = 10;
+  web_root.role = ax::mojom::Role::kRootWebArea;
+  web_root.relative_bounds.bounds = gfx::RectF(0, 0, 700, 500);
+  web_root.child_ids = {11};
+
+  ui::AXNodeData web_node;
+  web_node.id = 11;
+  web_node.role = ax::mojom::Role::kButton;
+  web_node.relative_bounds.bounds = gfx::RectF(5, 7, 40, 30);
+
+  ui::AXTreeUpdate web_update = MakeAXTreeUpdateForTesting(web_root, web_node);
+  web_update.tree_data.tree_id = web_tree_id;
+  web_update.root_id = web_root.id;
+  web_update.has_tree_data = true;
+
+  auto views_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  views_delegate->is_root_frame_ = false;
+  views_delegate->is_web_content_source_ = false;
+  views_delegate->view_bounds_ = gfx::Rect(100, 200, 800, 600);
+
+  auto web_delegate = std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  web_delegate->is_root_frame_ = true;
+  web_delegate->is_web_content_source_ = true;
+  web_delegate->view_bounds_ = gfx::Rect(150, 260, 700, 500);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> views_manager(
+      CreateBrowserAccessibilityManager(views_update, node_id_delegate_,
+                                        views_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> web_manager(
+      CreateBrowserAccessibilityManager(web_update, node_id_delegate_,
+                                        web_delegate.get()));
+
+  // A web tree's parent tree is always another web frame's tree, so the walk
+  // out of the web tree stops here instead of reaching the hosting Views tree.
+  EXPECT_EQ(ui::AXTreeIDUnknown(), web_manager->GetParentTreeID());
+  EXPECT_EQ(nullptr,
+            web_manager->GetBrowserAccessibilityRoot()->PlatformGetParent());
+  EXPECT_EQ(web_manager.get(), web_manager->GetManagerForRootFrame());
+  EXPECT_EQ(web_delegate.get(), web_manager->GetDelegateForNativeView());
+
+  EXPECT_EQ(gfx::Rect(5, 7, 40, 30), web_manager->GetFromID(11)->GetBoundsRect(
+                                         ui::AXCoordinateSystem::kRootFrame,
+                                         ui::AXClippingBehavior::kUnclipped));
+  EXPECT_EQ(
+      gfx::Rect(5, 7, 40, 30) +
+          web_manager->GetViewBoundsInScreenCoordinates().OffsetFromOrigin(),
+      web_manager->GetFromID(11)->GetBoundsRect(
+          ui::AXCoordinateSystem::kScreenDIPs,
+          ui::AXClippingBehavior::kUnclipped));
+
+  EXPECT_EQ(
+      gfx::Rect(50, 60, 700, 500) +
+          views_manager->GetViewBoundsInScreenCoordinates().OffsetFromOrigin(),
+      views_manager->GetFromID(2)->GetBoundsRect(
+          ui::AXCoordinateSystem::kScreenDIPs,
+          ui::AXClippingBehavior::kUnclipped));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
