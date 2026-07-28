@@ -380,13 +380,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         NSAccessibilityPostNotificationWithUserInfo(
             native_node, mac_notification, user_info);
 
-        NSDictionary* root_user_info = GetUserInfoForValueChangedNotification(
-            native_node, deleted_text, inserted_text, edit_text_marker,
-            /*omit_keys=*/{NSAccessibilityTextChangeElement});
-
         NSAccessibilityPostNotificationWithUserInfo(
-            root->GetNativeViewAccessible().Get(), mac_notification,
-            root_user_info);
+            root->GetNativeViewAccessible().Get(), mac_notification, user_info);
         return;
       }
       break;
@@ -677,8 +672,7 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
     const BrowserAccessibilityCocoa* native_node,
     const std::u16string& deleted_text,
     const std::u16string& inserted_text,
-    id edit_text_marker,
-    std::initializer_list<NSString*> omit_keys) const {
+    id edit_text_marker) const {
   DCHECK(native_node);
   if (deleted_text.empty() && inserted_text.empty())
     return nil;
@@ -715,19 +709,12 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
     [changes addObject:change];
   }
 
-  NSMutableDictionary* user_info =
-      [NSMutableDictionary dictionaryWithDictionary:@{
-        NSAccessibilityTextStateSyncKey : @YES,
-        NSAccessibilityTextStateChangeTypeKey : @(AXTextStateChangeTypeEdit),
-        NSAccessibilityTextChangeValues : changes,
-        NSAccessibilityTextChangeElement : native_node
-      }];
-
-  for (NSString* key : omit_keys) {
-    [user_info removeObjectForKey:key];
-  }
-
-  return user_info;
+  return @{
+    NSAccessibilityTextStateSyncKey : @YES,
+    NSAccessibilityTextStateChangeTypeKey : @(AXTextStateChangeTypeEdit),
+    NSAccessibilityTextChangeValues : changes,
+    NSAccessibilityTextChangeElement : native_node
+  };
 }
 
 id BrowserAccessibilityManagerMac::GetParentView() {
