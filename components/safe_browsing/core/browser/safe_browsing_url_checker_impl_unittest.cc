@@ -661,6 +661,10 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
   histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.Result.HashDatabase",
+      SBThreatType::SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/1);
@@ -686,6 +690,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   url_checker_delegate_->WaitForStartDisplayingBlockingPageHelper();
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.CheckUrl.Result.HashDatabase", SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/1);

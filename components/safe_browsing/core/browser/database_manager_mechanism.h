@@ -60,6 +60,9 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
 
   ThreatSource GetThreatSource() const;
 
+  // Logs the `threat_type`from the result of the URL check.
+  void LogCheckResult(SBThreatType threat_type);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // If the allowlist should be checked first before checking the blocklist.
