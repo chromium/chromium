@@ -1,6 +1,25 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This class is used to construct and hold window-scoped state.
+//
+// This class exists for 3 reasons:
+//  (1) It provides explicit construction and destruction ordering.
+//  (2) It allows for dependency-injection at construction time of features.
+//  (3) It pairs with the UnownedUserData design pattern to ensure dependencies
+//      are precisely specified by BUILD.gn files. This prevents circular
+//      dependencies.
+//
+// If you want to make a new BrowserWindowFeature, following these steps:
+//  (1) Make a regular C++ class. It should NOT inherit from SupportsUserData.
+//  (2) Forward declare the class, and add a std::unique_ptr member to this
+//      header file.
+//  (3) Construct the member in browser_window_features.cc.
+//  (4) If consumers need to access the feature, expose it via
+//      BrowserWindowInterface and UnownedUserData.
+//
+// For more details on UnownedUserData, see ui/base/unowned_user_data/README.md.
 
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_
