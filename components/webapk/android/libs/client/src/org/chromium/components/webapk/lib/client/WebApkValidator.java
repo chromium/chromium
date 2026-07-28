@@ -464,7 +464,7 @@ public class WebApkValidator {
 
             // TODO(scottkirkwood): remove this log once well tested.
             if (DEBUG) {
-                Log.d(TAG, "File " + packageFilename + ": " + result);
+                Log.d(TAG, "File %s: %d", packageFilename, result);
             }
             return result == WebApkVerifySignature.Error.OK;
         } catch (Exception e) {
