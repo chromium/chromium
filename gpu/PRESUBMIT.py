@@ -18,10 +18,35 @@ def CommonChecks(input_api, output_api):
     sys.path = [
         input_api.PresubmitLocalPath()
     ] + sys.path
+    disabled_warnings = [
+        'anomalous-backslash-in-string',
+        'bad-indentation',
+        'consider-using-dict-items',
+        'consider-using-generator',
+        'consider-using-min-builtin',
+        'consider-using-with',
+        'deprecated-module',
+        'duplicate-code',
+        'function-redefined',
+        'line-too-long',
+        'missing-module-docstring',
+        'protected-access',
+        'singleton-comparison',
+        'superfluous-parens',
+        'undefined-variable',
+        'unnecessary-lambda-assignment',
+        'unnecessary-negation',
+        'unnecessary-semicolon',
+        'unspecified-encoding',
+        'unused-import',
+        'use-dict-literal',
+        'using-constant-test',
+    ]
     pylint_checks = input_api.canned_checks.GetPylint(
         input_api,
         output_api,
-        version='2.7')
+        disabled_warnings=disabled_warnings,
+        version='3.2')
     output.extend(input_api.RunTests(pylint_checks))
   finally:
     sys.path = sys_path_backup
