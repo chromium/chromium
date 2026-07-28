@@ -6,23 +6,24 @@
 #define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_DELEGATE_H_
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
-#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "chrome/renderer/actor/journal.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 
 namespace actor {
 
 class PageStabilityMetrics;
 
-// Actor-specific implementation of the
+// Actor-specific interface that extends
 // page_content_annotations::PageStabilityMonitorDelegate.
 //
-// This delegate maintains the integration with the Actor framework by routing
-// stability events to the Actor Journal and recording actor-specific timing
-// metrics.
+// Subclasses must implement the virtual `LogEvent` method to route page
+// stability events to Actor-specific logging frameworks (e.g. the Actor
+// Journal). This class also records actor-specific timing metrics.
 class PageStabilityMonitorDelegate
     : public page_content_annotations::PageStabilityMonitorDelegate {
  public:
@@ -41,9 +42,7 @@ class PageStabilityMonitorDelegate
     base::TimeDelta subsequent_paint_timeout;
   };
 
-  PageStabilityMonitorDelegate(TaskId task_id,
-                               Journal& journal,
-                               const Thresholds& thresholds);
+  PageStabilityMonitorDelegate(TaskId task_id, const Thresholds& thresholds);
   ~PageStabilityMonitorDelegate() override;
 
   // page_content_annotations::PageStabilityMonitorDelegate:
@@ -56,10 +55,17 @@ class PageStabilityMonitorDelegate
   base::TimeDelta GetInitialPaintTimeout() const override;
   base::TimeDelta GetSubsequentPaintTimeout() const override;
 
+ protected:
+  // Called to log a page stability event (kBegin, kEnd, or kInstant).
+  virtual void LogEvent(mojom::JournalEntryType type,
+                        std::string_view event_name,
+                        std::vector<mojom::JournalDetailsPtr> details) = 0;
+
+  TaskId task_id() const { return task_id_; }
+  std::optional<std::string> active_state_event_name_;
+
  private:
-  std::unique_ptr<Journal::PendingAsyncEntry> journal_entry_;
   TaskId task_id_;
-  base::raw_ref<Journal> journal_;
   std::unique_ptr<PageStabilityMetrics> metrics_;
   const Thresholds thresholds_;
 };

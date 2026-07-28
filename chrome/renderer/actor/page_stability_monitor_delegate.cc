@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/time/time.h"
-#include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/page_stability_metrics.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
@@ -22,9 +21,8 @@ namespace actor {
 
 PageStabilityMonitorDelegate::PageStabilityMonitorDelegate(
     TaskId task_id,
-    Journal& journal,
     const Thresholds& thresholds)
-    : task_id_(task_id), journal_(journal), thresholds_(thresholds) {}
+    : task_id_(task_id), thresholds_(thresholds) {}
 
 PageStabilityMonitorDelegate::~PageStabilityMonitorDelegate() = default;
 
@@ -34,13 +32,18 @@ void PageStabilityMonitorDelegate::WillMoveToState(
     metrics_->WillMoveToState(state);
   }
 
-  journal_entry_.reset();
-  journal_entry_ = journal_->CreatePendingAsyncEntry(
-      task_id_,
-      absl::StrFormat(
-          "PageStabilityState: %s",
-          page_content_annotations::PageStabilityStateToString(state)),
-      {});
+  // End the previous state before starting the new one.
+  if (active_state_event_name_.has_value()) {
+    LogEvent(mojom::JournalEntryType::kEnd, active_state_event_name_.value(),
+             {});
+    active_state_event_name_.reset();
+  }
+
+  active_state_event_name_ = absl::StrFormat(
+      "PageStabilityState: %s",
+      page_content_annotations::PageStabilityStateToString(state));
+  LogEvent(mojom::JournalEntryType::kBegin, active_state_event_name_.value(),
+           {});
 }
 
 void PageStabilityMonitorDelegate::OnEvent(
@@ -53,10 +56,10 @@ void PageStabilityMonitorDelegate::OnEvent(
           },
           [&](const page_content_annotations::
                   PageStabilityMonitorStartDelayEvent& e) {
-            journal_entry_->Log("MonitorStartDelay",
-                                JournalDetailsBuilder()
-                                    .Add("delay", e.delay.InMilliseconds())
-                                    .Build());
+            LogEvent(mojom::JournalEntryType::kInstant, "MonitorStartDelay",
+                     JournalDetailsBuilder()
+                         .Add("delay", e.delay.InMilliseconds())
+                         .Build());
           },
           [&](const page_content_annotations::PageStabilityMonitorStopEvent&) {
             if (metrics_) {
@@ -65,7 +68,11 @@ void PageStabilityMonitorDelegate::OnEvent(
           },
           [&](const page_content_annotations::
                   PageStabilityMonitorTearDownEvent&) {
-            journal_entry_.reset();
+            if (active_state_event_name_.has_value()) {
+              LogEvent(mojom::JournalEntryType::kEnd,
+                       active_state_event_name_.value(), {});
+              active_state_event_name_.reset();
+            }
           },
           [&](const page_content_annotations::InteractionContentfulPaintEvent&
                   e) {
@@ -74,8 +81,9 @@ void PageStabilityMonitorDelegate::OnEvent(
             }
 
             if (e.data.has_value()) {
-              journal_->Log(
-                  task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
+              LogEvent(
+                  mojom::JournalEntryType::kInstant,
+                  "PaintStabilityMonitor: InteractionContentfulPaint",
                   JournalDetailsBuilder()
                       .Add("total_painted_area", e.data->total_painted_area)
                       .Add("new_painted_area", e.data->new_painted_area)
@@ -86,19 +94,19 @@ void PageStabilityMonitorDelegate::OnEvent(
           },
           [&](const page_content_annotations::PaintStabilityMonitorStartedEvent&
                   e) {
-            journal_->Log(
-                task_id_, "PaintStabilityMonitor: InteractionContentfulPaint",
-                JournalDetailsBuilder()
-                    .Add("initial_painted_area", e.initial_painted_area)
-                    .Build());
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "PaintStabilityMonitor: InteractionContentfulPaint",
+                     JournalDetailsBuilder()
+                         .Add("initial_painted_area", e.initial_painted_area)
+                         .Build());
           },
           [&](const page_content_annotations::PaintStabilityDetectedEvent& e) {
-            journal_->Log(
-                task_id_, "PaintStabilityMonitor: Stability Detected",
-                JournalDetailsBuilder()
-                    .Add("total_painted_area", e.total_painted_area)
-                    .Add("is_waiting_for_stable", e.is_waiting_for_stable)
-                    .Build());
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "PaintStabilityMonitor: Stability Detected",
+                     JournalDetailsBuilder()
+                         .Add("total_painted_area", e.total_painted_area)
+                         .Add("is_waiting_for_stable", e.is_waiting_for_stable)
+                         .Build());
           },
           [&](const page_content_annotations::PaintStabilityReachedEvent&) {
             if (metrics_) {
@@ -112,44 +120,46 @@ void PageStabilityMonitorDelegate::OnEvent(
           },
           [&](const page_content_annotations::DidCommitProvisionalLoadEvent&
                   e) {
-            journal_->Log(task_id_, "PageStability: DidCommitProvisionalLoad",
-                          JournalDetailsBuilder()
-                              .Add("transition",
-                                   ui::PageTransitionGetCoreTransitionString(
-                                       e.transition))
-                              .Build());
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "PageStability: DidCommitProvisionalLoad",
+                     JournalDetailsBuilder()
+                         .Add("transition",
+                              ui::PageTransitionGetCoreTransitionString(
+                                  e.transition))
+                         .Build());
           },
           [&](const page_content_annotations::DidFailProvisionalLoadEvent&) {
-            journal_->Log(task_id_, "DidFailProvisionalLoad", {});
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "DidFailProvisionalLoad", {});
           },
           [&](const page_content_annotations::DidSetPageLifecycleStateEvent&) {
-            journal_->Log(task_id_, "PageStabilityMonitor Page Frozen", {});
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "PageStabilityMonitor Page Frozen", {});
           },
           [&](const page_content_annotations::NetworkIdleEvent&) {
-            journal_->Log(task_id_,
-                          "NetworkAndMainThreadStabilityMonitor::OnNetworkIdle",
-                          {});
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "NetworkAndMainThreadStabilityMonitor::OnNetworkIdle", {});
           },
           [&](const page_content_annotations::MainThreadIdleEvent&) {
-            journal_->Log(
-                task_id_,
-                "NetworkAndMainThreadStabilityMonitor::OnMainThreadIdle", {});
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "NetworkAndMainThreadStabilityMonitor::OnMainThreadIdle",
+                     {});
           },
           [&](const page_content_annotations::
                   NetworkAndMainThreadStabilityMonitorCreatedEvent& e) {
-            journal_->Log(task_id_,
-                          "NetworkAndMainThreadStabilityMonitor: Created",
-                          JournalDetailsBuilder()
-                              .Add("requests_before", e.starting_request_count)
-                              .Build());
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "NetworkAndMainThreadStabilityMonitor: Created",
+                     JournalDetailsBuilder()
+                         .Add("requests_before", e.starting_request_count)
+                         .Build());
           },
           [&](const page_content_annotations::
                   NetworkAndMainThreadStabilityMonitorStartedEvent& e) {
-            journal_->Log(task_id_,
-                          "NetworkAndMainThreadStabilityMonitor: WaitForStable",
-                          JournalDetailsBuilder()
-                              .Add("requests_after", e.after_request_count)
-                              .Build());
+            LogEvent(mojom::JournalEntryType::kInstant,
+                     "NetworkAndMainThreadStabilityMonitor: WaitForStable",
+                     JournalDetailsBuilder()
+                         .Add("requests_after", e.after_request_count)
+                         .Build());
           },
       },
       event);

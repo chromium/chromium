@@ -30,8 +30,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/renderer/actor/chrome_page_stability_monitor_delegate.h"
 #include "chrome/renderer/actor/journal.h"
-#include "chrome/renderer/actor/page_stability_monitor_delegate.h"
 #include "chrome/renderer/actor/tool_executor.h"
 #include "chrome/renderer/benchmarking_bindings.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
@@ -728,7 +728,7 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
   page_stability_monitor_ = std::make_unique<
       page_content_annotations::PageStabilityMonitor>(
       *render_frame(), supports_paint_stability,
-      std::make_unique<actor::PageStabilityMonitorDelegate>(
+      std::make_unique<actor::ChromePageStabilityMonitorDelegate>(
           task_id, *actor_journal_,
           actor::PageStabilityMonitorDelegate::Thresholds{
               .timeout_delay = features::kGlicActorPageStabilityTimeout.Get(),
