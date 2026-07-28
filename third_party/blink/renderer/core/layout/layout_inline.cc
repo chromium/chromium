@@ -104,7 +104,7 @@ void LayoutInline::Trace(Visitor* visitor) const {
   LayoutBoxModelObject::Trace(visitor);
 }
 
-LayoutInline* LayoutInline::CreateAnonymous(Document* document) {
+LayoutInline* LayoutInline::CreateAnonymous(Document& document) {
   LayoutInline* layout_inline = MakeGarbageCollected<LayoutInline>(nullptr);
   layout_inline->SetDocumentForAnonymous(document);
   return layout_inline;
@@ -374,8 +374,8 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   // for continuations.
   new_style_builder.SetDirection(containing_block->StyleRef().Direction());
 
-  return LayoutBlockFlow::CreateAnonymous(&GetDocument(),
-                                          new_style_builder.TakeStyle());
+  return LayoutBlockFlow::CreateAnonymous(GetDocument(),
+                                          *new_style_builder.TakeStyle());
 }
 
 LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(

@@ -20,7 +20,7 @@ LayoutTableSection* LayoutTableSection::CreateAnonymousWithParent(
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRowGroup);
   auto* new_section = MakeGarbageCollected<LayoutTableSection>(nullptr);
-  new_section->SetDocumentForAnonymous(&parent.GetDocument());
+  new_section->SetDocumentForAnonymous(parent.GetDocument());
   new_section->SetStyle(new_style);
   return new_section;
 }

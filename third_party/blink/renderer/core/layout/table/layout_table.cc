@@ -45,7 +45,7 @@ LayoutTable* LayoutTable::CreateAnonymousWithParent(
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), display);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
-  new_table->SetDocumentForAnonymous(&parent.GetDocument());
+  new_table->SetDocumentForAnonymous(parent.GetDocument());
   new_table->SetStyle(new_style);
   return new_table;
 }

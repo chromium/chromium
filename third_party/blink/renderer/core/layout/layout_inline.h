@@ -117,7 +117,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void Trace(Visitor*) const override;
 
-  static LayoutInline* CreateAnonymous(Document*);
+  static LayoutInline* CreateAnonymous(Document&);
 
   LayoutObject* FirstChild() const {
     NOT_DESTROYED();

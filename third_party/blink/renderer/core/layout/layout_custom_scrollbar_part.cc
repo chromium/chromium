@@ -84,7 +84,7 @@ static void RecordScrollbarPartStats(Document& document, ScrollbarPart part) {
 }
 
 LayoutCustomScrollbarPart* LayoutCustomScrollbarPart::CreateAnonymous(
-    Document* document,
+    Document& document,
     ScrollableArea* scrollable_area,
     CustomScrollbar* scrollbar,
     ScrollbarPart part,
@@ -93,7 +93,7 @@ LayoutCustomScrollbarPart* LayoutCustomScrollbarPart::CreateAnonymous(
       MakeGarbageCollected<LayoutCustomScrollbarPart>(
           scrollable_area, scrollbar, part, suppress_use_counters);
   if (!suppress_use_counters) {
-    RecordScrollbarPartStats(*document, part);
+    RecordScrollbarPartStats(document, part);
   }
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;

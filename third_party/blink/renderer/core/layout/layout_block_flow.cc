@@ -139,11 +139,11 @@ LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
 
 LayoutBlockFlow::~LayoutBlockFlow() = default;
 
-LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document* document,
-                                                  const ComputedStyle* style) {
+LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document& document,
+                                                  const ComputedStyle& style) {
   auto* layout_block_flow = MakeGarbageCollected<LayoutBlockFlow>(nullptr);
   layout_block_flow->SetDocumentForAnonymous(document);
-  layout_block_flow->SetStyle(style);
+  layout_block_flow->SetStyle(&style);
   return layout_block_flow;
 }
 

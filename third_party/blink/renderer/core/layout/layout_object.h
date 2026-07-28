@@ -3356,7 +3356,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return element->GetDisplayLockContext();
   }
 
-  void SetDocumentForAnonymous(Document* document) {
+  void SetDocumentForAnonymous(Document& document) {
     NOT_DESTROYED();
     DCHECK(IsAnonymous());
     node_ = document;

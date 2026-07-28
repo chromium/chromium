@@ -229,7 +229,7 @@ PhysicalSize CalculateInitialContainingBlockSizeForPagination(
   // (to resolve viewport units) are set up before entering layout (and, after
   // layout, the sizes may need to be adjusted, if the initial estimate turned
   // out to be wrong). Create a temporary node and resolve the size.
-  auto* page_box = LayoutBlockFlow::CreateAnonymous(&document, page_style);
+  auto* page_box = LayoutBlockFlow::CreateAnonymous(document, *page_style);
   BlockNode temporary_page_node(page_box);
 
   FragmentGeometry geometry;

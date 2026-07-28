@@ -15,7 +15,7 @@ class Document;
 class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
  public:
   explicit LayoutListMarkerImage(Element*);
-  static LayoutListMarkerImage* CreateAnonymous(Document*);
+  static LayoutListMarkerImage* CreateAnonymous(Document&);
 
  private:
   bool IsListMarkerImage() const final {

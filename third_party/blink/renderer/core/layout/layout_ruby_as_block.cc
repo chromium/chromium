@@ -23,7 +23,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   LayoutObject* inline_ruby = FirstChild();
   if (!inline_ruby) {
     inline_ruby = MakeGarbageCollected<LayoutInline>(nullptr);
-    inline_ruby->SetDocumentForAnonymous(&GetDocument());
+    inline_ruby->SetDocumentForAnonymous(GetDocument());
     ComputedStyleBuilder new_style_builder =
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), EDisplay::kRuby);

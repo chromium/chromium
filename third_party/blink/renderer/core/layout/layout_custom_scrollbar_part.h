@@ -39,7 +39,7 @@ class ScrollableArea;
 class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
  public:
   static LayoutCustomScrollbarPart* CreateAnonymous(
-      Document*,
+      Document&,
       ScrollableArea*,
       CustomScrollbar* = nullptr,
       ScrollbarPart = kNoPart,

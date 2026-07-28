@@ -173,7 +173,7 @@ LayoutTreeBuilderForText::CreateInlineWrapperForDisplayContentsIfNeeded(
   // inherited properties because the layout code expects the LayoutObject
   // parent of text nodes to have the same inherited properties.
   LayoutObject* inline_wrapper =
-      LayoutInline::CreateAnonymous(&node_->GetDocument());
+      LayoutInline::CreateAnonymous(node_->GetDocument());
   inline_wrapper->SetStyle(wrapper_style);
   if (!context_.parent->IsChildAllowed(inline_wrapper, *wrapper_style)) {
     inline_wrapper->Destroy();

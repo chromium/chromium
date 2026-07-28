@@ -292,7 +292,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     }
     if (!child) {
       LayoutListMarkerImage* image =
-          LayoutListMarkerImage::CreateAnonymous(&marker.GetDocument());
+          LayoutListMarkerImage::CreateAnonymous(marker.GetDocument());
       const ComputedStyle* image_style =
           marker.GetDocument()
               .GetStyleResolver()

@@ -15,7 +15,7 @@ namespace blink {
 
 LayoutViewTransitionRoot::LayoutViewTransitionRoot(Document& document)
     : LayoutBlockFlow(nullptr) {
-  SetDocumentForAnonymous(&document);
+  SetDocumentForAnonymous(document);
   SetChildrenInline(false);
 
   // Create an empty initial style so we can be added to the tree before

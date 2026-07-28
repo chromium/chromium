@@ -60,15 +60,15 @@ LayoutTextFragment* LayoutTextFragment::Create(Node* node,
                                                   length);
 }
 
-LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& doc,
+LayoutTextFragment* LayoutTextFragment::CreateAnonymous(Document& document,
                                                         const String& text,
                                                         unsigned start,
                                                         unsigned length) {
   LayoutTextFragment* fragment =
       LayoutTextFragment::Create(nullptr, text, start, length);
-  fragment->SetDocumentForAnonymous(&doc);
+  fragment->SetDocumentForAnonymous(document);
   if (length)
-    doc.View()->IncrementVisuallyNonEmptyCharacterCount(length);
+    document.View()->IncrementVisuallyNonEmptyCharacterCount(length);
   return fragment;
 }
 

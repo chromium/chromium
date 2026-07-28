@@ -61,7 +61,7 @@ String CounterTextFromStyleAndValue(const CounterStyle* counter_style,
 LayoutCounter::LayoutCounter(Document& document,
                              const CounterContentData& counter)
     : LayoutText(nullptr, StringImpl::empty_), counter_(counter) {
-  SetDocumentForAnonymous(&document);
+  SetDocumentForAnonymous(document);
   View()->AddLayoutCounter();
 }
 

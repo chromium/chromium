@@ -40,7 +40,7 @@ LayoutQuote::LayoutQuote(LayoutObject& owner, QuoteType quote)
       type_(quote),
       depth_(0),
       owning_pseudo_(DynamicTo<PseudoElement>(owner.GetNode())) {
-  SetDocumentForAnonymous(&owner.GetDocument());
+  SetDocumentForAnonymous(owner.GetDocument());
 }
 
 LayoutQuote::~LayoutQuote() {

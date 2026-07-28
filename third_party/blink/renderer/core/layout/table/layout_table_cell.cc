@@ -30,7 +30,7 @@ LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableCell);
   auto* new_cell = MakeGarbageCollected<LayoutTableCell>(nullptr);
-  new_cell->SetDocumentForAnonymous(&parent.GetDocument());
+  new_cell->SetDocumentForAnonymous(parent.GetDocument());
   new_cell->SetStyle(new_style);
   return new_cell;
 }

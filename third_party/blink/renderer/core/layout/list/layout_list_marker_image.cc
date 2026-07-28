@@ -12,7 +12,7 @@ LayoutListMarkerImage::LayoutListMarkerImage(Element* element)
     : LayoutImage(element) {}
 
 LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
-    Document* document) {
+    Document& document) {
   LayoutListMarkerImage* object =
       MakeGarbageCollected<LayoutListMarkerImage>(nullptr);
   object->SetDocumentForAnonymous(document);

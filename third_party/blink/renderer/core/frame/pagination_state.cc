@@ -27,7 +27,7 @@ void PaginationState::Trace(Visitor* visitor) const {
 LayoutBlockFlow* PaginationState::CreateAnonymousPageLayoutObject(
     Document& document,
     const ComputedStyle& style) {
-  LayoutBlockFlow* block = LayoutBlockFlow::CreateAnonymous(&document, &style);
+  LayoutBlockFlow* block = LayoutBlockFlow::CreateAnonymous(document, style);
   block->SetIsDetachedNonDomRoot(true);
   anonymous_page_objects_.push_back(block);
   return block;

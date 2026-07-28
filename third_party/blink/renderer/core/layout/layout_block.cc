@@ -616,7 +616,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
            new_display == EDisplay::kFlowRoot);
     layout_block = MakeGarbageCollected<LayoutBlockFlow>(nullptr);
   }
-  layout_block->SetDocumentForAnonymous(&parent->GetDocument());
+  layout_block->SetDocumentForAnonymous(parent->GetDocument());
   layout_block->SetStyle(new_style);
   return layout_block;
 }

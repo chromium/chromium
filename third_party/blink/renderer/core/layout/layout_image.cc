@@ -53,7 +53,7 @@ LayoutImage::LayoutImage(Element* element) : LayoutReplaced(element) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(Document& document) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
-  image->SetDocumentForAnonymous(&document);
+  image->SetDocumentForAnonymous(document);
   return image;
 }
 

@@ -21,7 +21,7 @@ LayoutTableRow* LayoutTableRow::CreateAnonymousWithParent(
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRow);
   auto* new_row = MakeGarbageCollected<LayoutTableRow>(nullptr);
-  new_row->SetDocumentForAnonymous(&parent.GetDocument());
+  new_row->SetDocumentForAnonymous(parent.GetDocument());
   new_row->SetStyle(new_style);
   return new_row;
 }

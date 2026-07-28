@@ -185,10 +185,10 @@ void LayoutText::Trace(Visitor* visitor) const {
   LayoutObject::Trace(visitor);
 }
 
-LayoutText* LayoutText::CreateEmptyAnonymous(Document& doc,
+LayoutText* LayoutText::CreateEmptyAnonymous(Document& document,
                                              const ComputedStyle* style) {
   auto* text = MakeGarbageCollected<LayoutText>(nullptr, StringImpl::empty_);
-  text->SetDocumentForAnonymous(&doc);
+  text->SetDocumentForAnonymous(document);
   text->SetStyle(style);
   return text;
 }
