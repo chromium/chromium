@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.ON_SUGGESTION_CLICKED;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TITLE;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties.TRAILING_ICON_ID;
+import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties.TEXT;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
 import android.os.Bundle;
@@ -563,5 +564,39 @@ public class AtMemoryBottomSheetMediatorTest {
         assertNotNull(okClickListener);
         okClickListener.run();
         verify(mDelegate).onSuggestionDismissed(2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testAiDisclosureSuggestion() {
+        AutofillSuggestion disclosure =
+                new AutofillSuggestion.Builder()
+                        .setLabel("")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_AI_DISCLOSURE)
+                        .build();
+
+        mMediator.show(List.of(disclosure));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.TEXT_WITH_CLICKABLE_LINK, mModelList.get(0).type);
+        assertEquals(
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.at_memory_ai_disclosure),
+                mModelList.get(0).model.get(TEXT));
+
+        UserActionTester userActionTester = new UserActionTester();
+        Runnable linkClicked =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(
+                                AtMemoryBottomSheetProperties.TextWithClickableLinkProperties
+                                        .ON_LINK_CLICKED);
+        linkClicked.run();
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("PersonalContext.AtMemory.Notice.SettingsLinkClick"));
     }
 }

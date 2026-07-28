@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Hom
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
@@ -142,6 +143,10 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                     HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND,
                     createSuggestionModel(suggestion, position));
         }
+        if (suggestion.getSuggestionType() == SuggestionType.AT_MEMORY_AI_DISCLOSURE) {
+            return new ListItem(
+                    HomeProperties.ItemType.TEXT_WITH_CLICKABLE_LINK, createAiDisclosureModel());
+        }
         return new ListItem(
                 HomeProperties.ItemType.SUGGESTION, createSuggestionModel(suggestion, position));
     }
@@ -225,6 +230,16 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (hasFocus) {
             mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
         }
+    }
+
+    private PropertyModel createAiDisclosureModel() {
+        String text = mContext.getString(R.string.at_memory_ai_disclosure);
+        return new PropertyModel.Builder(TextWithClickableLinkProperties.ALL_KEYS)
+                .with(TextWithClickableLinkProperties.TEXT, text)
+                .with(
+                        TextWithClickableLinkProperties.ON_LINK_CLICKED,
+                        this::onNoticeSettingsClicked)
+                .build();
     }
 
     private PropertyModel createNoticeModel(int position) {

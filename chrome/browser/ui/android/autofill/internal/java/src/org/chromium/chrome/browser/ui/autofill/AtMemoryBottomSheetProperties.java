@@ -62,7 +62,8 @@ class AtMemoryBottomSheetProperties {
             ItemType.SUGGESTION,
             ItemType.SUGGESTION_WITH_NO_BACKGROUND,
             ItemType.ZERO_STATE,
-            ItemType.NOTICE
+            ItemType.NOTICE,
+            ItemType.TEXT_WITH_CLICKABLE_LINK
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface ItemType {
@@ -77,6 +78,9 @@ class AtMemoryBottomSheetProperties {
 
             /** A section containing onboarding notice. */
             int NOTICE = 3;
+
+            /** A section containing text with a clickable link. */
+            int TEXT_WITH_CLICKABLE_LINK = 4;
         }
 
         /** Delegate to request search UI actions (e.g. hiding keyboard or clearing focus). */
@@ -160,6 +164,19 @@ class AtMemoryBottomSheetProperties {
         };
 
         private SuggestionItemProperties() {}
+    }
+
+    /** Properties for text items with clickable link displayed within the home screen. */
+    static class TextWithClickableLinkProperties {
+        // Text to be displayed with clickable link formatting.
+        static final ReadableObjectPropertyKey<String> TEXT = new ReadableObjectPropertyKey<>();
+        // Invoked when the link in the text is clicked.
+        static final ReadableObjectPropertyKey<Runnable> ON_LINK_CLICKED =
+                new ReadableObjectPropertyKey<>();
+
+        static final PropertyKey[] ALL_KEYS = {TEXT, ON_LINK_CLICKED};
+
+        private TextWithClickableLinkProperties() {}
     }
 
     private AtMemoryBottomSheetProperties() {}

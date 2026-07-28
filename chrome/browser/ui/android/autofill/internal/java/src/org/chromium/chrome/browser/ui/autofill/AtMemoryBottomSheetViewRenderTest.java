@@ -272,6 +272,20 @@ public class AtMemoryBottomSheetViewRenderTest {
                                     HomeProperties.ItemType.SUGGESTION_WITH_NO_BACKGROUND,
                                     searchTileModel));
 
+                    PropertyModel disclosureModel =
+                            new PropertyModel.Builder(
+                                            AtMemoryBottomSheetProperties
+                                                    .TextWithClickableLinkProperties.ALL_KEYS)
+                                    .with(
+                                            AtMemoryBottomSheetProperties
+                                                    .TextWithClickableLinkProperties.TEXT,
+                                            mActivity.getString(R.string.at_memory_ai_disclosure))
+                                    .build();
+                    modelList.add(
+                            new ListItem(
+                                    HomeProperties.ItemType.TEXT_WITH_CLICKABLE_LINK,
+                                    disclosureModel));
+
                     mView.getHomeView().setUpSheetItems(modelList);
 
                     mBottomSheetController.requestShowContent(content, false);

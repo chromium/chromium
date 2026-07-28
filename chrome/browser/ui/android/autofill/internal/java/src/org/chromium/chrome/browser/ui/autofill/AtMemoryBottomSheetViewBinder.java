@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Fly
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -130,6 +131,28 @@ class AtMemoryBottomSheetViewBinder {
             view.setTrailingIcon(model.get(SuggestionItemProperties.TRAILING_ICON_ID));
         } else if (propertyKey == SuggestionItemProperties.APPLY_DEACTIVATED_STYLE) {
             view.applyDeactivatedStyle(model.get(SuggestionItemProperties.APPLY_DEACTIVATED_STYLE));
+        } else {
+            assert false : "Unhandled property: " + propertyKey;
+        }
+    }
+
+    /**
+     * Called whenever the text with clickable link property model changes. It updates the given
+     * view accordingly.
+     *
+     * @param model The model containing the text with clickable link properties.
+     * @param view The view to update.
+     * @param propertyKey The property key that changed.
+     */
+    static void bindTextWithClickableLinkView(
+            PropertyModel model,
+            AtMemoryBottomSheetTextWithClickableLinkView view,
+            PropertyKey propertyKey) {
+        if (propertyKey == TextWithClickableLinkProperties.TEXT
+                || propertyKey == TextWithClickableLinkProperties.ON_LINK_CLICKED) {
+            view.setText(
+                    model.get(TextWithClickableLinkProperties.TEXT),
+                    model.get(TextWithClickableLinkProperties.ON_LINK_CLICKED));
         } else {
             assert false : "Unhandled property: " + propertyKey;
         }

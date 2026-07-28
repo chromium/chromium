@@ -202,6 +202,38 @@ public class AtMemoryBottomSheetViewTest {
     }
 
     @Test
+    public void testTextWithClickableLinkViewBinding() {
+        View textWithClickableLinkView =
+                android.view.LayoutInflater.from(mContext)
+                        .inflate(
+                                R.layout.at_memory_bottom_sheet_text_with_clickable_link_item,
+                                null);
+
+        Runnable linkClicked = mock(Runnable.class);
+        PropertyModel model =
+                new PropertyModel.Builder(
+                                AtMemoryBottomSheetProperties.TextWithClickableLinkProperties
+                                        .ALL_KEYS)
+                        .with(
+                                AtMemoryBottomSheetProperties.TextWithClickableLinkProperties.TEXT,
+                                "Test string with <link>link text</link>")
+                        .with(
+                                AtMemoryBottomSheetProperties.TextWithClickableLinkProperties
+                                        .ON_LINK_CLICKED,
+                                linkClicked)
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                model,
+                (AtMemoryBottomSheetTextWithClickableLinkView) textWithClickableLinkView,
+                AtMemoryBottomSheetViewBinder::bindTextWithClickableLinkView);
+
+        TextView textView = textWithClickableLinkView.findViewById(R.id.text);
+        assertNotNull(textView);
+        assertEquals("Test string with link text", textView.getText().toString());
+    }
+
+    @Test
     public void testFlyoutBackClickNotifiesCallback() {
         PropertyModel model =
                 new PropertyModel.Builder(FlyoutProperties.ALL_KEYS)
