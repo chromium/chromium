@@ -8,46 +8,59 @@
 
 namespace cast_streaming {
 
+DemuxerStreamConfigBuffer::DemuxerStreamConfigBuffer() = default;
+DemuxerStreamConfigBuffer::~DemuxerStreamConfigBuffer() = default;
+
+void DemuxerStreamConfigBuffer::SetConfigs(
+    mojom::AudioStreamInitializationInfoPtr audio_stream_info,
+    mojom::VideoStreamInitializationInfoPtr video_stream_info) {
+  base::OnceClosure closure;
+  scoped_refptr<base::SequencedTaskRunner> target_runner;
+  {
+    base::AutoLock lock(lock_);
+    if (has_configs_) {
+      return;
+    }
+    has_configs_ = true;
+    audio_stream_info_ = std::move(audio_stream_info);
+    video_stream_info_ = std::move(video_stream_info);
+
+    if (pending_callback_ && media_task_runner_) {
+      target_runner = media_task_runner_;
+      closure = base::BindOnce(std::move(pending_callback_),
+                               std::move(audio_stream_info_),
+                               std::move(video_stream_info_));
+    }
+  }
+  if (closure && target_runner) {
+    target_runner->PostTask(FROM_HERE, std::move(closure));
+  }
+}
+
+void DemuxerStreamConfigBuffer::ReadConfigs(
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    ConfigCallback callback) {
+  base::OnceClosure closure;
+  {
+    base::AutoLock lock(lock_);
+    if (has_configs_) {
+      closure =
+          base::BindOnce(std::move(callback), std::move(audio_stream_info_),
+                         std::move(video_stream_info_));
+    } else {
+      media_task_runner_ = media_task_runner;
+      pending_callback_ = std::move(callback);
+    }
+  }
+  if (closure) {
+    media_task_runner->PostTask(FROM_HERE, std::move(closure));
+  }
+}
+
 DemuxerConnector::DemuxerConnector() = default;
 
 DemuxerConnector::~DemuxerConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void DemuxerConnector::SetDemuxer(FrameInjectingDemuxer* demuxer) {
-  DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(demuxer);
-
-  if (demuxer_) {
-    // We do not support more than one active FrameInjectingDemuxer in the same
-    // RenderFrame. Return early here.
-    demuxer->OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
-                                  mojom::VideoStreamInitializationInfoPtr());
-    return;
-  }
-
-  DCHECK(!is_demuxer_initialized_);
-
-  if (IsBound()) {
-    demuxer_ = demuxer;
-    MaybeCallEnableReceiverCallback();
-  } else {
-    // The Cast Streaming Sender disconnected after |demuxer| was instantiated
-    // but before |demuxer| was initialized on the media thread.
-    demuxer->OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
-                                  mojom::VideoStreamInitializationInfoPtr());
-  }
-}
-
-void DemuxerConnector::OnDemuxerDestroyed() {
-  DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(demuxer_);
-
-  demuxer_ = nullptr;
-  is_demuxer_initialized_ = false;
-  demuxer_connector_receiver_.reset();
 }
 
 void DemuxerConnector::BindReceiver(
@@ -56,6 +69,7 @@ void DemuxerConnector::BindReceiver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!demuxer_connector_receiver_.is_bound());
 
+  config_buffer_ = base::MakeRefCounted<DemuxerStreamConfigBuffer>();
   demuxer_connector_receiver_.Bind(std::move(receiver));
 
   // Mojo service disconnection means the Cast Streaming Session ended or the
@@ -75,7 +89,7 @@ void DemuxerConnector::MaybeCallEnableReceiverCallback() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (enable_receiver_callback_ && demuxer_) {
+  if (enable_receiver_callback_) {
     std::move(enable_receiver_callback_).Run();
   }
 }
@@ -87,10 +101,9 @@ void DemuxerConnector::OnReceiverDisconnected() {
   demuxer_connector_receiver_.reset();
   enable_receiver_callback_.Reset();
 
-  if (demuxer_ && !is_demuxer_initialized_) {
-    OnStreamsInitialized(mojom::AudioStreamInitializationInfoPtr(),
-                         mojom::VideoStreamInitializationInfoPtr());
-  }
+  config_buffer_->SetConfigs(mojom::AudioStreamInitializationInfoPtr(),
+                             mojom::VideoStreamInitializationInfoPtr());
+  config_buffer_ = base::MakeRefCounted<DemuxerStreamConfigBuffer>();
 }
 
 void DemuxerConnector::EnableReceiver(EnableReceiverCallback callback) {
@@ -108,12 +121,9 @@ void DemuxerConnector::OnStreamsInitialized(
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_demuxer_initialized_);
-  DCHECK(demuxer_);
 
-  is_demuxer_initialized_ = true;
-  demuxer_->OnStreamsInitialized(std::move(audio_stream_info),
-                                 std::move(video_stream_info));
+  config_buffer_->SetConfigs(std::move(audio_stream_info),
+                             std::move(video_stream_info));
 }
 
 }  // namespace cast_streaming
