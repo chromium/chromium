@@ -88,8 +88,9 @@ class ActivityReporterImplTest : public testing::Test {
   std::unique_ptr<ActivityReporter> activity_reporter_ =
       CreateActivityReporterForTesting(
           mock_update_client_,
-          base::DoNothing(),
-          base::BindRepeating([] { return version_info::Channel::UNKNOWN; }));
+          base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
+          base::BindRepeating([] { return std::string("TEST"); }),
+          base::DoNothing());
 };
 
 TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {
@@ -119,6 +120,30 @@ TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {
   task_environment_.FastForwardBy(base::Hours(5));
   activity_reporter_->ReportActive();
   EXPECT_EQ(call_count, 2);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActive_ComponentData) {
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+      .WillOnce(
+          [&](const std::string& id,
+              update_client::UpdateClient::CrxDataCallback crx_data_callback,
+              update_client::UpdateClient::CrxStateChangeCallback, bool,
+              update_client::Callback) {
+            EXPECT_EQ(id, kChromeActivityId);
+            std::move(crx_data_callback)
+                .Run({std::string{kChromeActivityId}},
+                     base::BindOnce(
+                         [](const std::vector<std::optional<
+                                update_client::CrxComponent>>& components) {
+                           ASSERT_EQ(components.size(), 1u);
+                           ASSERT_TRUE(components[0].has_value());
+                           EXPECT_EQ(components[0]->app_id, kChromeActivityId);
+                           EXPECT_EQ(components[0]->brand, "TEST");
+                           EXPECT_EQ(components[0]->channel, "unknown");
+                           EXPECT_FALSE(components[0]->updates_enabled);
+                         }));
+          });
+  activity_reporter_->ReportActive();
 }
 
 }  // namespace activity_reporter
