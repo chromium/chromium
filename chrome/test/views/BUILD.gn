@@ -26,7 +26,7 @@ source_set("views") {
   deps = [
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/webui/top_chrome",
-    "//chrome/test:test_theme_provider",
+    "//chrome/test/base:test_theme_provider",
     "//components/color",
     "//content/test:test_support",
     "//ui/color",

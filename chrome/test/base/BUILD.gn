@@ -9,6 +9,26 @@ import("//printing/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//ui/views/features.gni")
 
+source_set("test_switches") {
+  testonly = true
+  sources = [
+    "test_switches.cc",
+    "test_switches.h",
+  ]
+}
+
+if (toolkit_views) {
+  source_set("test_theme_provider") {
+    testonly = true
+    sources = [
+      "test_theme_provider.cc",
+      "test_theme_provider.h",
+    ]
+    public_deps = [ "//ui/base" ]
+    deps = [ "//ui/gfx" ]
+  }
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [

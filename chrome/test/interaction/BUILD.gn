@@ -45,7 +45,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/views/tabs/common",
-      "//chrome/test:test_switches",
+      "//chrome/test/base:test_switches",
       "//components/feature_engagement",
       "//components/tabs:public",
       "//content/public/common",
@@ -80,8 +80,8 @@ if (!is_android) {
     ]
     deps = [
       ":interaction",
-      "//chrome/test:test_switches",
       "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:test_switches",
       "//ui/base:test_support",
     ]
   }

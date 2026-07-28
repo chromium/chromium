@@ -130,30 +130,6 @@ if (is_android) {
   }
 }
 
-# TODO(crbug.com/353332589): Move to //chrome/test/base when that module is
-# componentized.
-source_set("test_switches") {
-  testonly = true
-  sources = [
-    "base/test_switches.cc",
-    "base/test_switches.h",
-  ]
-}
-
-if (toolkit_views) {
-  # TODO(crbug.com/353332589): Move to //chrome/test/base when that module is
-  # componentized.
-  source_set("test_theme_provider") {
-    testonly = true
-    sources = [
-      "base/test_theme_provider.cc",
-      "base/test_theme_provider.h",
-    ]
-    public_deps = [ "//ui/base" ]
-    deps = [ "//ui/gfx" ]
-  }
-}
-
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
@@ -207,7 +183,6 @@ static_library("test_support") {
   }
 
   public_deps = [
-    ":test_switches",
     "//chrome/browser/notifications:test_support",
     "//chrome/browser/origin_trials",
     "//chrome/browser/performance_manager:test_support",
@@ -221,6 +196,7 @@ static_library("test_support") {
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:test_launcher_utils",
+    "//chrome/test/base:test_switches",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile_impl",
   ]
@@ -883,7 +859,7 @@ static_library("test_support") {
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/web_applications:launch_utils",
-      "//chrome/test:test_theme_provider",
+      "//chrome/test/base:test_theme_provider",
 
       # TODO(crbug.com/353332589): Remove once browser_with_test_window_test.h
       # is componentized. It uses ChromeTestViewsDelegate<> as a member field,
@@ -8237,7 +8213,7 @@ if (!is_android) {
       "//chrome/common:non_code_constants",
       "//chrome/common/profiler",
       "//chrome/renderer",
-      "//chrome/test:test_switches",
+      "//chrome/test/base:test_switches",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
       "//chrome/test/supervised_user:child_accounts",
