@@ -184,7 +184,6 @@ views::Widget::InitParams CreateWidgetParams(const gfx::Rect& bounds) {
       CaptureModeController::Get()->GetOnCaptureSurfaceWidgetParentWindow();
   params.bounds = bounds;
   params.name = "CameraPreviewWidget";
-  params.layer_type = ui::LAYER_SURFACE;
   return params;
 }
 

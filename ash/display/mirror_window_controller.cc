@@ -232,7 +232,7 @@ void MirrorWindowController::UpdateWindow(
 
       aura::Window* mirror_window = host_info->mirror_window =
           new aura::Window(nullptr);
-      mirror_window->Init(ui::LAYER_SURFACE);
+      mirror_window->Init(ui::LAYER_SOLID_COLOR);
       host->window()->AddChild(mirror_window);
       host_info->ash_host->SetRootWindowTransformer(std::move(transformer));
 
@@ -304,8 +304,8 @@ void MirrorWindowController::UpdateWindow(
     aura::Window* mirror_window = mirroring_host_info->mirror_window;
     mirror_window->SetBounds(gfx::Rect(mirror_size));
     mirror_window->Show();
-    mirror_window->layer()->AsSurface()->SetShowReflectedSurface(
-        reflecting_surface_id, mirror_size);
+    mirror_window->layer()->SetShowReflectedSurface(reflecting_surface_id,
+                                                    mirror_size);
   }
 
   // Deleting WTHs for disconnected displays.

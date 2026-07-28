@@ -1086,32 +1086,31 @@ TEST_P(LayerWithDelegateTest, Mirroring) {
 TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
   const viz::FrameSinkId arbitrary_frame_sink(1, 1);
   viz::ParentLocalSurfaceIdAllocator allocator;
-  auto layer = CreateLayer<LayerSurface>();
-  layer->SetBackgroundColor(SkColors::kWhite);
+  auto layer = CreateLayer<LayerSolidColor>();
 
   allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
   viz::SurfaceId surface_id_one(arbitrary_frame_sink, local_surface_id);
-  layer->SetShowSurface(surface_id_one, gfx::Size(10, 10),
+  layer->SetShowSurface(surface_id_one, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
   EXPECT_FALSE(layer->StretchContentToFillBounds());
 
   auto clone = layer->Clone();
-  EXPECT_FALSE(clone->AsSurface()->StretchContentToFillBounds());
+  EXPECT_FALSE(clone->StretchContentToFillBounds());
   auto mirror = layer->Mirror();
-  EXPECT_FALSE(mirror->AsSurface()->StretchContentToFillBounds());
+  EXPECT_FALSE(mirror->StretchContentToFillBounds());
 
   allocator.GenerateId();
   local_surface_id = allocator.GetCurrentLocalSurfaceId();
   viz::SurfaceId surface_id_two(arbitrary_frame_sink, local_surface_id);
-  layer->SetShowSurface(surface_id_two, gfx::Size(10, 10),
+  layer->SetShowSurface(surface_id_two, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), true);
   EXPECT_TRUE(layer->StretchContentToFillBounds());
 
   clone = layer->Clone();
-  EXPECT_TRUE(clone->AsSurface()->StretchContentToFillBounds());
+  EXPECT_TRUE(clone->StretchContentToFillBounds());
   mirror = layer->Mirror();
-  EXPECT_TRUE(mirror->AsSurface()->StretchContentToFillBounds());
+  EXPECT_TRUE(mirror->StretchContentToFillBounds());
 }
 
 class LayerWithNullDelegateTest : public LayerWithDelegateTest {
@@ -2724,41 +2723,52 @@ TEST_P(LayerWithDelegateTest, SetBoundsWhenInvisible) {
 }
 
 TEST_P(LayerWithDelegateTest, ExternalContent) {
-  auto root = CreateLayerNotDrawn(gfx::Rect(0, 0, 1000, 1000));
-  auto child = CreateLayer<LayerSurface>();
+  std::unique_ptr<Layer> root =
+      CreateLayerNotDrawn(gfx::Rect(0, 0, 1000, 1000));
+  auto child = CreateLayer<LayerSolidColor>();
 
   child->SetBounds(gfx::Rect(0, 0, 10, 10));
   child->SetVisible(true);
   root->Add(child.get());
 
+  // The layer is already showing solid color content, so the cc layer won't
+  // change.
+  scoped_refptr<cc::Layer> before = child->cc_layer_for_testing();
+
+  child->SetShowSolidColorContent();
+  EXPECT_TRUE(child->cc_layer_for_testing());
+  EXPECT_EQ(before.get(), child->cc_layer_for_testing());
+
+  // Showing surface content changes the underlying cc layer.
   viz::FrameSinkId frame_sink_id(1u, 1u);
   viz::ParentLocalSurfaceIdAllocator allocator;
+  before = child->cc_layer_for_testing();
   allocator.GenerateId();
-  child->SetBackgroundColor(SkColors::kWhite);
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
-      gfx::Size(10, 10), cc::DeadlinePolicy::UseDefaultDeadline(), false);
+      gfx::Size(10, 10), SkColors::kWhite,
+      cc::DeadlinePolicy::UseDefaultDeadline(), false);
   scoped_refptr<cc::Layer> after = child->cc_layer_for_testing();
   const auto* surface = static_cast<cc::SurfaceLayer*>(after.get());
   EXPECT_TRUE(after.get());
+  EXPECT_NE(before.get(), after.get());
   EXPECT_EQ(std::nullopt, surface->deadline_in_frames());
 
   allocator.GenerateId();
-  child->SetBackgroundColor(SkColors::kWhite);
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
-      gfx::Size(10, 10), cc::DeadlinePolicy::UseSpecifiedDeadline(4u), false);
+      gfx::Size(10, 10), SkColors::kWhite,
+      cc::DeadlinePolicy::UseSpecifiedDeadline(4u), false);
   EXPECT_EQ(4u, surface->deadline_in_frames());
 }
 
 TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
-  auto layer = CreateLayer<LayerSurface>();
-  layer->SetBackgroundColor(SkColors::kWhite);
+  auto layer = CreateLayer<LayerSolidColor>();
 
   viz::SurfaceId surface_id(
       viz::FrameSinkId(0, 1),
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
-  layer->SetShowSurface(surface_id, gfx::Size(10, 10),
+  layer->SetShowSurface(surface_id, gfx::Size(10, 10), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   const auto mirror = layer->Mirror();
@@ -2771,57 +2781,16 @@ TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
   surface_id =
       viz::SurfaceId(viz::FrameSinkId(1, 2),
                      viz::LocalSurfaceId(3, base::UnguessableToken::Create()));
-  layer->SetShowSurface(surface_id, gfx::Size(20, 20),
+  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   // The mirror should continue to use the same cc_layer.
   EXPECT_EQ(cc_layer, mirror->cc_layer_for_testing());
-  layer->SetShowSurface(surface_id, gfx::Size(20, 20),
+  layer->SetShowSurface(surface_id, gfx::Size(20, 20), SkColors::kWhite,
                         cc::DeadlinePolicy::UseDefaultDeadline(), false);
 
   // Surface updates propagate to the mirror.
   EXPECT_EQ(surface_id, surface->surface_id());
-}
-
-TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColor) {
-  auto layer = CreateLayer<LayerSurface>();
-
-  layer->SetBackgroundColor(SkColors::kRed);
-  EXPECT_EQ(SkColors::kRed, layer->GetBackgroundColor());
-
-  auto* surface = static_cast<cc::SurfaceLayer*>(layer->cc_layer_for_testing());
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorRED), surface->background_color());
-
-  layer->SetBackgroundColor(SkColors::kGreen);
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorGREEN), surface->background_color());
-}
-
-TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColorMirroring) {
-  auto layer = CreateLayer<LayerSurface>();
-  layer->SetBackgroundColor(SkColors::kRed);
-
-  const auto mirror = layer->Mirror();
-  auto* const cc_layer = mirror->cc_layer_for_testing();
-  const auto* surface = static_cast<cc::SurfaceLayer*>(cc_layer);
-
-  // Mirroring preserves background color.
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorRED), surface->background_color());
-
-  // Background color updates propagate to the mirror.
-  layer->SetBackgroundColor(SkColors::kGreen);
-  EXPECT_EQ(SkColor4f::FromColor(SK_ColorGREEN), surface->background_color());
-}
-
-TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColorCloning) {
-  auto layer = CreateLayer<LayerSurface>();
-  layer->SetBackgroundColor(SkColors::kRed);
-
-  const auto clone = layer->Clone();
-  auto* const cc_layer = clone->cc_layer_for_testing();
-  const auto* surface = static_cast<cc::SurfaceLayer*>(cc_layer);
-
-  // Cloning preserves background color.
-  EXPECT_EQ(SkColors::kRed, surface->background_color());
 }
 
 TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
@@ -2885,14 +2854,10 @@ TEST_P(LayerWithDelegateTest, LayerFiltersSurvival) {
   EXPECT_EQ(layer->layer_grayscale(), 0.5f);
   EXPECT_EQ(1u, layer->cc_layer_for_testing()->filters().size());
 
-  // Showing transferable resource changes the underlying cc layer.
+  // Showing surface content changes the underlying cc layer.
   scoped_refptr<cc::Layer> before = layer->cc_layer_for_testing();
-  auto resource = viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
-  layer->AsTextured()->SetTransferableResource(
-      resource, base::BindOnce([](const gpu::SyncToken&, bool) {}),
-      gfx::Size(10, 10));
+  layer->SetShowSurface(viz::SurfaceId(), gfx::Size(10, 10), SkColors::kWhite,
+                        cc::DeadlinePolicy::UseDefaultDeadline(), false);
   EXPECT_EQ(layer->layer_grayscale(), 0.5f);
   EXPECT_TRUE(layer->cc_layer_for_testing());
   EXPECT_NE(before.get(), layer->cc_layer_for_testing());

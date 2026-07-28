@@ -28,10 +28,7 @@ class MockDelegatedFrameHostClient : public DelegatedFrameHostClient {
   MockDelegatedFrameHostClient() = default;
   ~MockDelegatedFrameHostClient() override = default;
 
-  MOCK_METHOD(ui::LayerSurface*,
-              GetDelegatedFrameHostLayer,
-              (),
-              (const, override));
+  MOCK_METHOD(ui::Layer*, DelegatedFrameHostGetLayer, (), (const, override));
   MOCK_METHOD(bool, DelegatedFrameHostIsVisible, (), (const, override));
   MOCK_METHOD(SkColor, DelegatedFrameHostGetGutterColor, (), (const, override));
   MOCK_METHOD2(OnFrameTokenChanged,

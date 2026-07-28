@@ -16,8 +16,7 @@ DelegatedFrameHostClientIOS::DelegatedFrameHostClientIOS(
 
 DelegatedFrameHostClientIOS::~DelegatedFrameHostClientIOS() {}
 
-ui::LayerSurface* DelegatedFrameHostClientIOS::GetDelegatedFrameHostLayer()
-    const {
+ui::Layer* DelegatedFrameHostClientIOS::DelegatedFrameHostGetLayer() const {
   // TODO(crbug.com/40254930): Fix me
   // return render_widget_host_view_->layer();
   return nullptr;

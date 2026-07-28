@@ -24,9 +24,6 @@ enum LayerType {
 
   // A layer based on the NinePatchLayer class.
   LAYER_NINE_PATCH = 3,
-
-  // A layer based on the SurfaceLayer class.
-  LAYER_SURFACE = 4
 };
 
 COMPOSITOR_EXPORT std::string_view LayerTypeToString(LayerType type);
