@@ -15,14 +15,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -72,11 +71,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
     private static boolean sDimensionsInitialized;
-    private static int sEdgeSize;
-    private static int sEdgeSizeLargeIcon;
-    private static int sSideSpacing;
-    private static int sLargeIconRoundingRadius;
-    private static int sSmallIconRoundingRadius;
+    private static @Px int sEdgeSize;
+    private static @Px int sEdgeSizeLargeIcon;
+    private static @Px int sSideSpacing;
+    private static @Px int sLargeIconRoundingRadius;
+    private static @Px int sSmallIconRoundingRadius;
 
     private final OmniboxResourceProvider mResourceProvider;
 
@@ -99,14 +98,13 @@ public abstract class BaseSuggestionViewBinder<T extends View>
             view.setActionChipLeadInSpacing(
                     model.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING));
         } else if (SuggestionCommonProperties.APPLY_SIDE_SPACING == propertyKey) {
-            updateMargin(model, view);
+            view.applySideSpacing(
+                    model.get(SuggestionCommonProperties.APPLY_SIDE_SPACING), sSideSpacing);
         } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-            // TODO(crbug.com/41487873): migrate this to SuggestionLayout.
-            updateMargin(model, view);
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
         } else if (SuggestionCommonProperties.BG_POSITIONAL_MODE == propertyKey
@@ -146,7 +144,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         } else if (BaseSuggestionViewProperties.SHOW_DECORATION == propertyKey) {
             view.setShowDecorationIcon(model.get(BaseSuggestionViewProperties.SHOW_DECORATION));
         } else if (BaseSuggestionViewProperties.TOP_PADDING == propertyKey) {
-            view.setPadding(0, model.get(BaseSuggestionViewProperties.TOP_PADDING), 0, 0);
+            view.setPaddingRelative(
+                    view.getPaddingStart(),
+                    model.get(BaseSuggestionViewProperties.TOP_PADDING),
+                    view.getPaddingEnd(),
+                    view.getPaddingBottom());
         } else if (BaseSuggestionViewProperties.USE_LARGE_DECORATION == propertyKey) {
             view.setUseLargeDecorationIcon(
                     model.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
@@ -361,27 +363,6 @@ public abstract class BaseSuggestionViewBinder<T extends View>
                         && (positionalMode == PositionalMode.BOTTOM
                                 || positionalMode == PositionalMode.SINGLE);
         view.setRoundingEdges(roundTopEdge, roundBottomEdge);
-    }
-
-    /**
-     * Update the margin for the view.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param view A view that need to be updated.
-     */
-    public static void updateMargin(PropertyModel model, View view) {
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        if (layoutParams == null) {
-            layoutParams =
-                    new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        }
-
-        int sideSpacing =
-                model.get(SuggestionCommonProperties.APPLY_SIDE_SPACING) ? sSideSpacing : 0;
-        if (layoutParams instanceof MarginLayoutParams) {
-            ((MarginLayoutParams) layoutParams).setMargins(sideSpacing, 0, sideSpacing, 0);
-        }
-        view.setLayoutParams(layoutParams);
     }
 
     public static void resetCachedResources() {

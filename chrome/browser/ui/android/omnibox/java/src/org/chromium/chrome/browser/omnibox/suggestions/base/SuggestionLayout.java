@@ -198,6 +198,28 @@ class SuggestionLayout extends ViewGroup {
         invalidateOutline();
     }
 
+    public void applySideSpacing(boolean applyOuterMargins, @Px int sideSpacing) {
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        if (layoutParams == null) {
+            layoutParams =
+                    new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        }
+
+        @Px int marginSpacing = applyOuterMargins ? sideSpacing : 0;
+        if (layoutParams instanceof MarginLayoutParams) {
+            ((MarginLayoutParams) layoutParams).setMargins(marginSpacing, 0, marginSpacing, 0);
+        }
+        setLayoutParams(layoutParams);
+
+        // If outer margins are not applied, then the content in the suggestion becomes too close to
+        // the border of the Omnibox suggestions container. To avoid this, we need to add padding to
+        // the left and right of the suggestion. This allows the suggestion hover highlight to span
+        // the whole width and the content inside to be aligned correctly.
+        if (!applyOuterMargins) {
+            setPaddingRelative(sideSpacing, getPaddingTop(), sideSpacing, getPaddingBottom());
+        }
+    }
+
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
         // The only measure spec we know is the WIDTH of the suggestion and padding around the

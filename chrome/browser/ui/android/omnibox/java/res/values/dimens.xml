@@ -104,7 +104,7 @@ found in the LICENSE file.
 
     <!-- Omnibox suggestions -->
     <dimen name="omnibox_suggestion_header_padding_start">24dp</dimen>
-    <dimen name="omnibox_suggestion_header_padding_start_desktop">20dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_start_desktop">28dp</dimen>
     <dimen name="omnibox_suggestion_header_height">40dp</dimen>
     <dimen name="omnibox_suggestion_content_height">56dp</dimen>
     <dimen name="omnibox_suggestion_content_height_desktop">40dp</dimen>

@@ -613,6 +613,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
     private void updateLayoutAndBackground() {
         adjustVerticalTranslationForFuseboxState(mFuseboxState);
+        updateStatusViewMargin();
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) getLayoutParams();
         Resources resources = getResources();
         LinearLayout.LayoutParams parentParams =
@@ -714,6 +715,18 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             statusViewLayoutParams.topMargin = 0;
             mStatusView.setTranslationY(0);
             setTranslationYOfBottomStackedUrlActionButtons(0);
+        }
+        mStatusView.setLayoutParams(statusViewLayoutParams);
+    }
+
+    private void updateStatusViewMargin() {
+        MarginLayoutParams statusViewLayoutParams =
+                (MarginLayoutParams) mStatusView.getLayoutParams();
+        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER && mIsReparentedToPopover) {
+            int extraSpacing = OmniboxResourceProvider.getSideSpacing(getContext());
+            statusViewLayoutParams.setMarginStart(extraSpacing);
+        } else {
+            statusViewLayoutParams.setMarginStart(0);
         }
         mStatusView.setLayoutParams(statusViewLayoutParams);
     }
