@@ -40,6 +40,14 @@
 
 namespace views::test {
 
+namespace {
+
+ui::AXNodeID GetUniqueId(View* view) {
+  return static_cast<ui::AXNodeID>(view->GetViewAccessibility().GetUniqueId());
+}
+
+}  // namespace
+
 class WidgetAXManagerTest : public test::WidgetTest {
  protected:
   WidgetAXManagerTest() = default;
@@ -261,15 +269,17 @@ TEST_F(WidgetAXManagerTest, ChildWidget_EnableSerializesFullTree) {
   EXPECT_GT(child_api.ax_tree_manager()->ax_tree()->size(), 1);
 
   // Spot-check that descendants made it into the tree.
-  auto id = [](View* v) {
-    return static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
-  };
-  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(child_root)),
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(
+                GetUniqueId(child_root)),
             nullptr);
-  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(c1)), nullptr);
-  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(c2)), nullptr);
-  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(g1)), nullptr);
-  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(id(g2)), nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(GetUniqueId(c1)),
+            nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(GetUniqueId(c2)),
+            nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(GetUniqueId(g1)),
+            nullptr);
+  EXPECT_NE(child_api.ax_tree_manager()->ax_tree()->GetFromId(GetUniqueId(g2)),
+            nullptr);
 
   child_api.TearDown();
   child_widget->CloseNow();
@@ -656,15 +666,13 @@ TEST_F(WidgetAXManagerTest,
   api.Enable();
 
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->root()->id(),
-            static_cast<int32_t>(
-                widget()->GetRootView()->GetViewAccessibility().GetUniqueId()));
+            GetUniqueId(widget()->GetRootView()));
   EXPECT_GT(api.ax_tree_manager()->ax_tree()->size(), 1);
 
   // Adding a child view should automatically call OnDataChanged, which in turn
   // should schedule a pending serialization.
   auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
-  ui::AXNodeID child_id =
-      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  ui::AXNodeID child_id = GetUniqueId(child);
   api.WaitForNextSerialization();
 
   EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
@@ -691,10 +699,9 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
 
   EXPECT_FALSE(api.last_serialization().updates.empty());
 
-  EXPECT_NE(
-      api.ax_tree_manager()->ax_tree()->GetFromId(static_cast<ui::AXNodeID>(
-          widget()->GetRootView()->GetViewAccessibility().GetUniqueId())),
-      nullptr);
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(
+                GetUniqueId(widget()->GetRootView())),
+            nullptr);
 }
 
 TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoSerializeWhenNodeNotInTree) {
@@ -725,8 +732,7 @@ TEST_F(WidgetAXManagerTest,
   ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
   ASSERT_NE(browser_manager, nullptr);
 
-  const ui::AXNodeID child_id =
-      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID child_id = GetUniqueId(child);
   ui::BrowserAccessibility* browser_node = browser_manager->GetFromID(child_id);
   ASSERT_NE(browser_node, nullptr);
 
@@ -746,8 +752,7 @@ TEST_F(WidgetAXManagerTest,
   WidgetAXManagerTestApi child_api(child_manager);
   EXPECT_EQ(child_api.ax_tree_manager(), nullptr);
 
-  ui::AXNodeID child_root_id = static_cast<ui::AXNodeID>(
-      child_widget->GetRootView()->GetViewAccessibility().GetUniqueId());
+  ui::AXNodeID child_root_id = GetUniqueId(child_widget->GetRootView());
   EXPECT_EQ(child_manager->GetNativeViewAccessibleForId(child_root_id),
             gfx::NativeViewAccessible());
 
@@ -768,8 +773,7 @@ TEST_F(WidgetAXManagerTest,
   ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
   ASSERT_NE(browser_manager, nullptr);
 
-  const ui::AXNodeID child_id =
-      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID child_id = GetUniqueId(child);
   ui::BrowserAccessibility* browser_node = browser_manager->GetFromID(child_id);
   ASSERT_NE(browser_node, nullptr);
 
@@ -791,13 +795,12 @@ TEST_F(WidgetAXManagerTest, SerializesOffsetContainerIdToBrowserAccessible) {
   ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
   ASSERT_NE(browser_manager, nullptr);
 
-  auto id = [](View* v) {
-    return static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
-  };
-  ui::BrowserAccessibility* root_node = browser_manager->GetFromID(id(root));
-  ui::BrowserAccessibility* child_node = browser_manager->GetFromID(id(child));
+  ui::BrowserAccessibility* root_node =
+      browser_manager->GetFromID(GetUniqueId(root));
+  ui::BrowserAccessibility* child_node =
+      browser_manager->GetFromID(GetUniqueId(child));
   ui::BrowserAccessibility* grandchild_node =
-      browser_manager->GetFromID(id(grandchild));
+      browser_manager->GetFromID(GetUniqueId(grandchild));
   ASSERT_NE(root_node, nullptr);
   ASSERT_NE(child_node, nullptr);
   ASSERT_NE(grandchild_node, nullptr);
@@ -805,9 +808,9 @@ TEST_F(WidgetAXManagerTest, SerializesOffsetContainerIdToBrowserAccessible) {
   EXPECT_EQ(root_node->GetData().relative_bounds.offset_container_id,
             ui::kInvalidAXNodeID);
   EXPECT_EQ(child_node->GetData().relative_bounds.offset_container_id,
-            id(root));
+            GetUniqueId(root));
   EXPECT_EQ(grandchild_node->GetData().relative_bounds.offset_container_id,
-            id(child));
+            GetUniqueId(child));
 }
 
 TEST_F(WidgetAXManagerTest, SerializesOffsetContainerIdAfterReparenting) {
@@ -820,22 +823,20 @@ TEST_F(WidgetAXManagerTest, SerializesOffsetContainerIdAfterReparenting) {
   auto* grandchild = child->AddChildView(std::make_unique<View>());
   api.WaitForNextSerialization();
 
-  auto id = [](View* v) {
-    return static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
-  };
   auto offset_container_id = [&](View* v) {
-    ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(id(v));
+    ui::BrowserAccessibility* node =
+        api.ax_tree_manager()->GetFromID(GetUniqueId(v));
     return node ? node->GetData().relative_bounds.offset_container_id
                 : ui::kInvalidAXNodeID;
   };
 
-  ASSERT_EQ(offset_container_id(grandchild), id(child));
+  ASSERT_EQ(offset_container_id(grandchild), GetUniqueId(child));
 
   root->AddChildView(child->RemoveChildViewT(grandchild));
   api.WaitForNextSerialization();
 
-  EXPECT_EQ(offset_container_id(grandchild), id(root));
-  EXPECT_EQ(offset_container_id(child), id(root));
+  EXPECT_EQ(offset_container_id(grandchild), GetUniqueId(root));
+  EXPECT_EQ(offset_container_id(child), GetUniqueId(root));
 }
 
 TEST_F(WidgetAXManagerTest, SerializesVirtualViewOffsetContainerId) {
@@ -861,8 +862,7 @@ TEST_F(WidgetAXManagerTest, SerializesVirtualViewOffsetContainerId) {
   auto* container_ptr = root->AddChildView(std::move(container));
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID container_id = static_cast<ui::AXNodeID>(
-      container_ptr->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID container_id = GetUniqueId(container_ptr);
   ui::BrowserAccessibilityManager* browser_manager = api.ax_tree_manager();
   ASSERT_NE(browser_manager, nullptr);
 
@@ -911,17 +911,14 @@ TEST_F(WidgetAXManagerTest,
                 : ui::kInvalidAXNodeID;
   };
 
-  ASSERT_EQ(offset_container_id(virtual_child_id),
-            static_cast<ui::AXNodeID>(
-                container_ptr->GetViewAccessibility().GetUniqueId()));
+  ASSERT_EQ(offset_container_id(virtual_child_id), GetUniqueId(container_ptr));
 
   other_container_ptr->GetViewAccessibility().AddVirtualChildView(
       container_ptr->GetViewAccessibility().RemoveVirtualChildView(
           virtual_child_ptr));
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID other_container_id = static_cast<ui::AXNodeID>(
-      other_container_ptr->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID other_container_id = GetUniqueId(other_container_ptr);
   EXPECT_EQ(offset_container_id(virtual_child_id), other_container_id);
   EXPECT_EQ(offset_container_id(nested_virtual_id), other_container_id);
 }
@@ -969,8 +966,8 @@ TEST_F(WidgetAXManagerTest, ScreenBoundsMatchViewBoundsInScreen) {
   api.WaitForNextSerialization();
 
   for (View* view : {root, container, child, grandchild, great_grandchild}) {
-    ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(
-        static_cast<ui::AXNodeID>(view->GetViewAccessibility().GetUniqueId()));
+    ui::BrowserAccessibility* node =
+        api.ax_tree_manager()->GetFromID(GetUniqueId(view));
     ASSERT_NE(node, nullptr);
     EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
                                   ui::AXClippingBehavior::kUnclipped),
@@ -992,8 +989,8 @@ TEST_F(WidgetAXManagerTest, ScreenBoundsFollowWidgetMove) {
   RunScheduledLayout(widget());
   api.WaitForNextSerialization();
 
-  ui::BrowserAccessibility* node = api.ax_tree_manager()->GetFromID(
-      static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId()));
+  ui::BrowserAccessibility* node =
+      api.ax_tree_manager()->GetFromID(GetUniqueId(child));
   ASSERT_NE(node, nullptr);
   ASSERT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
                                 ui::AXClippingBehavior::kUnclipped),
@@ -1080,8 +1077,7 @@ TEST_F(WidgetAXManagerTest, BoundsForEachCoordinateSystem) {
   api.WaitForNextSerialization();
 
   ui::BrowserAccessibility* node =
-      api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
-          grandchild->GetViewAccessibility().GetUniqueId()));
+      api.ax_tree_manager()->GetFromID(GetUniqueId(grandchild));
   ASSERT_NE(node, nullptr);
 
   const gfx::Rect screen_bounds = node->GetBoundsRect(
@@ -1119,8 +1115,7 @@ TEST_F(WidgetAXManagerTest, OverflowingChildIsNotClippedOrOffscreen) {
   api.WaitForNextSerialization();
 
   ui::BrowserAccessibility* node =
-      api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
-          grandchild->GetViewAccessibility().GetUniqueId()));
+      api.ax_tree_manager()->GetFromID(GetUniqueId(grandchild));
   ASSERT_NE(node, nullptr);
 
   EXPECT_EQ(node->GetClippedScreenBoundsRect(),
@@ -1160,8 +1155,7 @@ TEST_F(WidgetAXManagerTest, HostedWidgetBoundsUseItsOwnClientArea) {
     RunPendingTasks();
 
     ui::BrowserAccessibility* node =
-        hosted_api.ax_tree_manager()->GetFromID(static_cast<ui::AXNodeID>(
-            hosted_child->GetViewAccessibility().GetUniqueId()));
+        hosted_api.ax_tree_manager()->GetFromID(GetUniqueId(hosted_child));
     ASSERT_NE(node, nullptr);
 
     EXPECT_EQ(node->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
@@ -1444,14 +1438,10 @@ TEST_F(WidgetAXManagerTest, FocusTracking_TracksFocusedView) {
   widget()->Show();
   v1->RequestFocus();
 
-  EXPECT_EQ(manager()->GetFocusedNodeId(),
-            static_cast<ui::AXNodeID>(
-                v1->GetViewAccessibility().GetUniqueId()));
+  EXPECT_EQ(manager()->GetFocusedNodeId(), GetUniqueId(v1));
 
   v2->RequestFocus();
-  EXPECT_EQ(manager()->GetFocusedNodeId(),
-            static_cast<ui::AXNodeID>(
-                v2->GetViewAccessibility().GetUniqueId()));
+  EXPECT_EQ(manager()->GetFocusedNodeId(), GetUniqueId(v2));
 }
 
 TEST_F(WidgetAXManagerTest, FocusTracking_ClearsFocusOnBlur) {
@@ -1501,9 +1491,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_DoesNotResolveActiveDescendant) {
   // focus_id should point to the focused VIEW, not its active descendant.
   // The BAM resolves active descendants itself via GetActiveDescendant()
   // in GetFocusFromThisOrDescendantFrame().
-  EXPECT_EQ(manager()->GetFocusedNodeId(),
-            static_cast<ui::AXNodeID>(
-                parent->GetViewAccessibility().GetUniqueId()));
+  EXPECT_EQ(manager()->GetFocusedNodeId(), GetUniqueId(parent));
 }
 
 TEST_F(WidgetAXManagerTest, FocusTracking_HandlesManagerDestruction) {
@@ -1537,8 +1525,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdInTreeData) {
 
   // Find the update that contains tree data with the focus_id.
   bool found_focus_id = false;
-  const ui::AXNodeID expected_id =
-      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID expected_id = GetUniqueId(v);
   for (const auto& update : api.last_serialization().updates) {
     if (update.has_tree_data && update.tree_data.focus_id == expected_id) {
       found_focus_id = true;
@@ -1562,8 +1549,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdUpdatesOnFocusChange) {
   v1->RequestFocus();
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID v1_id =
-      static_cast<ui::AXNodeID>(v1->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID v1_id = GetUniqueId(v1);
   bool found_v1 = false;
   for (const auto& update : api.last_serialization().updates) {
     if (update.has_tree_data && update.tree_data.focus_id == v1_id) {
@@ -1577,8 +1563,7 @@ TEST_F(WidgetAXManagerTest, FocusTracking_FocusIdUpdatesOnFocusChange) {
   v2->RequestFocus();
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID v2_id =
-      static_cast<ui::AXNodeID>(v2->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID v2_id = GetUniqueId(v2);
   bool found_v2 = false;
   for (const auto& update : api.last_serialization().updates) {
     if (update.has_tree_data && update.tree_data.focus_id == v2_id) {
@@ -1604,10 +1589,8 @@ TEST_F(WidgetAXManagerTest, TransientFocus_SerializesBeforeRestoredFocus) {
 
   widget()->Show();
 
-  const ui::AXNodeID root_id =
-      static_cast<ui::AXNodeID>(root->GetViewAccessibility().GetUniqueId());
-  const ui::AXNodeID focused_view_id = static_cast<ui::AXNodeID>(
-      focused_view->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID root_id = GetUniqueId(root);
+  const ui::AXNodeID focused_view_id = GetUniqueId(focused_view);
 
   std::vector<FocusEvent> focus_events;
   ui::AXTreeManager::SetFocusChangeCallbackForTesting(base::BindRepeating(
@@ -1713,8 +1696,7 @@ TEST_F(WidgetAXManagerTest, TextSelection_PopulatesTreeData) {
   v->RequestFocus();
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID v_id =
-      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID v_id = GetUniqueId(v);
   bool found_selection = false;
   for (const auto& update : api.last_serialization().updates) {
     if (update.has_tree_data &&
@@ -1746,8 +1728,7 @@ TEST_F(WidgetAXManagerTest, TextSelection_PopulatesBackwardTreeData) {
   v->RequestFocus();
   api.WaitForNextSerialization();
 
-  const ui::AXNodeID v_id =
-      static_cast<ui::AXNodeID>(v->GetViewAccessibility().GetUniqueId());
+  const ui::AXNodeID v_id = GetUniqueId(v);
   bool found_selection = false;
   for (const auto& update : api.last_serialization().updates) {
     if (update.has_tree_data && update.tree_data.sel_anchor_object_id == v_id &&
