@@ -24,6 +24,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -104,7 +105,10 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 
   AddComponentResourceEntries(kComponentExtensionResources);
   AddComponentResourceEntries(kExtraComponentExtensionResources);
-  AddComponentResourceEntries(kAimEligibilityExtensionResources);
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimEligibilityComponentExtension)) {
+    AddComponentResourceEntries(kAimEligibilityExtensionResources);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kIndigo)) {

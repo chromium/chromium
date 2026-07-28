@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_bridge.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 
 // static
@@ -42,11 +44,16 @@ AimEligibilityExtensionBridgeFactory::~AimEligibilityExtensionBridgeFactory() =
 std::unique_ptr<KeyedService>
 AimEligibilityExtensionBridgeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kAimEligibilityComponentExtension)) {
+    return nullptr;
+  }
   return std::make_unique<AimEligibilityExtensionBridge>(
       Profile::FromBrowserContext(context));
 }
 
 bool AimEligibilityExtensionBridgeFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  return base::FeatureList::IsEnabled(
+      omnibox::kAimEligibilityComponentExtension);
 }

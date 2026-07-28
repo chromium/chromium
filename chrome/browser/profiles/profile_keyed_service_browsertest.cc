@@ -393,7 +393,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
                        GuestProfileOTR_NeededServices) {
   // clang-format off
   std::set<std::string> guest_otr_active_services {
-    "AimEligibilityExtensionBridge",
     "AlarmManager",
     "AXMainNodeAnnotatorController",
     "AutocompleteActionPredictor",
@@ -436,7 +435,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "DeveloperToolsPolicyChecker",
     "EnterpriseReportingPrivateEventRouter",
     "ExtensionKeybindingRegistryShutdownNotifierFactory",
-    "ExtensionMojoBinderRegistry",
     "ExtensionNavigationRegistry",
     "ExtensionSystem",
     "ExtensionProtocolShutdownNotifierFactory",
@@ -574,6 +572,11 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
       SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord()) {
     guest_otr_active_services.insert("SearchEnginePreconnector");
   }
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimEligibilityComponentExtension)) {
+    guest_otr_active_services.insert("AimEligibilityExtensionBridge");
+    guest_otr_active_services.insert("ExtensionMojoBinderRegistry");
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
@@ -602,7 +605,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ActivityLogPrivateAPI",
     "AdvancedProtectionStatusManager",
     "AiModeButtonService",
-    "AimEligibilityExtensionBridge",
     "AimEligibilityService",
     "AlarmManager",
     "AnnouncementNotificationService",
@@ -700,7 +702,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ExtensionKeybindingRegistryShutdownNotifierFactory",
     "ExtensionManagement",
-    "ExtensionMojoBinderRegistry",
     "ExtensionNavigationRegistry",
     "ExtensionPrefValueMap",
     "ExtensionPrefs",
@@ -973,6 +974,11 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 
   if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
     guest_active_services.insert("SearchEnginePreconnector");
+  }
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimEligibilityComponentExtension)) {
+    guest_active_services.insert("AimEligibilityExtensionBridge");
+    guest_active_services.insert("ExtensionMojoBinderRegistry");
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(
