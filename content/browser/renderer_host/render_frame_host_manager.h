@@ -212,6 +212,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
         bool proceed,
         bool* proceed_to_fire_unload) = 0;
     virtual void CancelModalDialogsForRenderManager() = 0;
+    virtual void NotifyPrimaryPageWillBeDeactivated(PageImpl& page) = 0;
     virtual void NotifySwappedFromRenderManager(
         RenderFrameHostImpl* old_frame,
         RenderFrameHostImpl* new_frame) = 0;

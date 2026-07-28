@@ -402,6 +402,65 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
   EXPECT_EQ(&page_b, invoked_page);
 }
 
+IN_PROC_BROWSER_TEST_F(PageImplTest,
+                       PrimaryPageWillBeDeactivatedOnCrossSiteNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = primary_main_frame_host();
+  PageImpl& page_a = rfh_a->GetPage();
+
+  WebContents* contents = web_contents();
+  testing::NiceMock<MockWebContentsObserver> web_contents_observer(contents);
+  testing::Sequence s;
+
+  // Expect PrimaryPageWillBeDeactivated(page_a) then
+  // PrimaryPageChanged(page_b).
+  EXPECT_CALL(web_contents_observer,
+              PrimaryPageWillBeDeactivated(testing::Ref(page_a)))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(web_contents_observer,
+              PrimaryPageWillBeDeactivated(testing::Not(testing::Ref(page_a))))
+      .Times(0);
+  EXPECT_CALL(web_contents_observer, PrimaryPageChanged(testing::_))
+      .InSequence(s)
+      .WillOnce([url_b](Page& page) {
+        EXPECT_EQ(page.GetMainDocument().GetLastCommittedURL(), url_b);
+      });
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+}
+
+IN_PROC_BROWSER_TEST_F(PageImplTest,
+                       PrimaryPageWillBeDeactivatedNotTriggeredForSubframe) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  WebContents* contents = web_contents();
+  testing::NiceMock<MockWebContentsObserver> web_contents_observer(contents);
+
+  // We expect NO call to PrimaryPageWillBeDeactivated.
+  EXPECT_CALL(web_contents_observer, PrimaryPageWillBeDeactivated(testing::_))
+      .Times(0);
+
+  // 2) Navigate subframe B to C.
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
+  FrameTreeNode* subframe = root->child_at(0);
+
+  EXPECT_TRUE(NavigateFrameToURL(subframe, url_c));
+}
+
 // Test that a new Page object is created for a same-site same-RFH navigation.
 IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -418,6 +477,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
 
   // 2) Navigate to A2. This will result in invoking PrimaryPageChanged
   // callback.
+  EXPECT_CALL(page_changed_observer, PrimaryPageWillBeDeactivated(testing::_))
+      .WillOnce([&page_a1](Page& page) { EXPECT_EQ(&page, page_a1.get()); });
   EXPECT_CALL(page_changed_observer, PrimaryPageChanged(testing::_)).Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
   RenderFrameHostImplWrapper main_rfh_a2(primary_main_frame_host());
@@ -596,7 +657,8 @@ IN_PROC_BROWSER_TEST_F(PageImplPrerenderBrowserTest, IsPrimary) {
   GURL url_a = embedded_test_server()->GetURL("/empty.html");
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = primary_main_frame_host();
-  EXPECT_TRUE(rfh_a->GetPage().IsPrimary());
+  Page& page_a = rfh_a->GetPage();
+  EXPECT_TRUE(page_a.IsPrimary());
   testing::NiceMock<MockWebContentsObserver> page_changed_observer(
       web_contents());
 
@@ -611,9 +673,16 @@ IN_PROC_BROWSER_TEST_F(PageImplPrerenderBrowserTest, IsPrimary) {
   Page& prerender_page = prerender_frame->GetPage();
   EXPECT_FALSE(prerender_page.IsPrimary());
 
-  // Navigate to the prerendered site. PrimaryPageChanged should only be
-  // triggered on activation.
-  EXPECT_CALL(page_changed_observer, PrimaryPageChanged(testing::_)).Times(1);
+  // Navigate to the prerendered site. PrimaryPageWillBeDeactivated and
+  // PrimaryPageChanged should only be triggered on activation.
+  testing::Sequence s;
+  EXPECT_CALL(page_changed_observer,
+              PrimaryPageWillBeDeactivated(testing::Ref(page_a)))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(page_changed_observer, PrimaryPageChanged(testing::_))
+      .Times(1)
+      .InSequence(s);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(&prerender_page, &(primary_main_frame_host()->GetPage()));

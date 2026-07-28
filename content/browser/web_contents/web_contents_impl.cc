@@ -11073,6 +11073,11 @@ void WebContentsImpl::CancelModalDialogsForRenderManager() {
   CancelDialogManagerDialogs(/*reset_state=*/true);
 }
 
+void WebContentsImpl::NotifyPrimaryPageWillBeDeactivated(PageImpl& page) {
+  observers_.NotifyObservers(&WebContentsObserver::PrimaryPageWillBeDeactivated,
+                             page);
+}
+
 void WebContentsImpl::NotifySwappedFromRenderManager(
     RenderFrameHostImpl* old_frame,
     RenderFrameHostImpl* new_frame) {

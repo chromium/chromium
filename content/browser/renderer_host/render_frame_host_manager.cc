@@ -5346,6 +5346,16 @@ void RenderFrameHostManager::CommitPending(
     delegate_->CancelModalDialogsForRenderManager();
   }
 
+  if (is_main_frame && frame_tree_node_->frame_tree().is_primary()) {
+    // Call NotifyPrimaryPageWillBeDeactivated before swapping the
+    // RenderFrameHost. For same-RenderFrameHost navigations,
+    // NotifyPrimaryPageWillBeDeactivated is called by
+    // RenderFrameHostImpl::DidCommitNavigationInternal before resetting the
+    // DocumentAssociatedData.
+    delegate_->NotifyPrimaryPageWillBeDeactivated(
+        render_frame_host_->GetPage());
+  }
+
   // Swap in the new frame and make it active. Also ensure the FrameTree
   // stays in sync.
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host;

@@ -16403,6 +16403,15 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       GetStoragePartition()->GetNetworkContext()->SendReportsAndRemoveSource(
           GetReportingSource());
 
+      if (is_main_frame() && frame_tree()->is_primary()) {
+        // Call NotifyPrimaryPageWillBeDeactivated before resetting the page
+        // together with `document_associated_data_`. For cross-RenderFrameHost
+        // navigations, NotifyPrimaryPageWillBeDeactivated is called by
+        // RenderFrameHostManager::CommitPending before swapping
+        // RenderFrameHosts.
+        delegate_->NotifyPrimaryPageWillBeDeactivated(GetPage());
+      }
+
       // Clear all document-associated data for the non-pending commit
       // RenderFrameHosts because the navigation has created a new document.
       // Make sure the data doesn't get cleared for the cases when the

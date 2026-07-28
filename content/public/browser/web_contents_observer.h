@@ -184,6 +184,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // DidFinishNavigation is recommended).
   virtual void PrimaryPageChanged(Page& page) {}
 
+  // This method is invoked when the primary page of a WebContents is about to
+  // be deactivated. This happens when the primary page is being replaced by
+  // another page (due to a commit of a navigation). Note that this will not be
+  // called if the WebContents is being destroyed.
+  virtual void PrimaryPageWillBeDeactivated(Page& page) {}
+
   // This method is invoked when a frame is destroyed. A subframe is destroyed
   // when its parent detaches it or navigates to a different document. A main
   // frame is destroyed when the whole WebContents is going away, or, with

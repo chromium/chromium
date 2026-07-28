@@ -172,6 +172,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Notifies that the manifest URL is updated.
   virtual void OnManifestUrlChanged(PageImpl& page) {}
 
+  // Notifies the delegate that the primary page is about to be deactivated.
+  virtual void NotifyPrimaryPageWillBeDeactivated(PageImpl& page) {}
+
   // A message was added to the console. |source_id| is a URL.
   // |untrusted_stack_trace| is not present for most messages; only when
   // requested in advance and only for exceptions.

@@ -1256,6 +1256,7 @@ class CONTENT_EXPORT WebContentsImpl
       bool proceed,
       bool* proceed_to_fire_unload) override;
   void CancelModalDialogsForRenderManager() override;
+  void NotifyPrimaryPageWillBeDeactivated(PageImpl& page) override;
   void NotifySwappedFromRenderManager(RenderFrameHostImpl* old_frame,
                                       RenderFrameHostImpl* new_frame) override;
   void NotifySwappedFromRenderManagerWithoutFallbackContent(
