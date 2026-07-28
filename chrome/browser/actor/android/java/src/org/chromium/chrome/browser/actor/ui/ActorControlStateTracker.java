@@ -248,6 +248,11 @@ public class ActorControlStateTracker
         return mGlicInstanceHelper != null ? mGlicInstanceHelper.getConversationTitle() : "";
     }
 
+    /** Returns whether there is a GLIC instance for the current tab. */
+    public boolean hasGlicInstance() {
+        return mGlicInstanceHelper != null;
+    }
+
     /**
      * Returns whether there is an active task or a recently completed task associated with the
      * current conversation.

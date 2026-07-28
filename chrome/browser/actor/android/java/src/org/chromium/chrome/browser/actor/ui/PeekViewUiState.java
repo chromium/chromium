@@ -168,7 +168,8 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* titleTextAppearanceResId= */ R.style
+                            .TextAppearance_TextAccentMediumThick_Primary,
                     /* buttonContentDescriptionResId= */ R.string
                             .peek_state_pause_button_a11y_label);
 
@@ -184,7 +185,8 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* titleTextAppearanceResId= */ R.style
+                            .TextAppearance_TextAccentMediumThick_Primary,
                     /* buttonContentDescriptionResId= */ R.string
                             .peek_state_play_button_a11y_label);
 
@@ -201,7 +203,8 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ R.string.peek_state_view_button_label,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* titleTextAppearanceResId= */ R.style
+                            .TextAppearance_TextAccentMediumThick_Primary,
                     /* buttonContentDescriptionResId= */ Resources.ID_NULL);
 
     public static final PeekViewUiState DEFAULT =
@@ -216,6 +219,7 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.GONE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.GONE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_Headline2Thick,
+                    /* titleTextAppearanceResId= */ R.style
+                            .TextAppearance_TextAccentMediumThick_Primary,
                     /* buttonContentDescriptionResId= */ Resources.ID_NULL);
 }

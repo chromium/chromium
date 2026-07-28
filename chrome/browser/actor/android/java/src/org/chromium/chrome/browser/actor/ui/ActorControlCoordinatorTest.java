@@ -492,6 +492,14 @@ public class ActorControlCoordinatorTest {
     }
 
     @Test
+    public void testOnConversationTitleChanged_emptyTitle_showsNewChat() {
+        setUpProfileSupplier();
+        when(mGlicInstanceHelper.getConversationTitle()).thenReturn("");
+        mStateTracker.onInstanceChanged();
+        assertEquals("New chat", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
+    }
+
+    @Test
     public void testOnActorControlClick_taskActing_pauses() {
         setUpProfileSupplierWithRunningTask();
         when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);

@@ -154,6 +154,9 @@
   </message>
 
     <!-- Glic Peek View UI State Strings -->
+  <message name="IDS_PEEK_STATE_NEW_CHAT" desc="Default title text for the peek view when there is a new chat with no title." formatter_data="android_java">
+    New chat
+  </message>
   <message name="IDS_PEEK_STATE_ACTING" desc="Status message indicating that Gemini is actively working on a task the user assigned." formatter_data="android_java">
     Working on your task...
   </message>

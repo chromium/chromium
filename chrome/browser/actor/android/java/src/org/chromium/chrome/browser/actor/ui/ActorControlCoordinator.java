@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor.ui;
 
 import android.text.TextUtils;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ActorTask;
@@ -100,7 +101,13 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
                     break;
             }
         } else {
-            setPeekViewContent(conversationTitle, PeekViewUiState.DEFAULT);
+            String title = conversationTitle;
+            if (mStateTracker.hasGlicInstance() && TextUtils.isEmpty(title)) {
+                title =
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.peek_state_new_chat);
+            }
+            setPeekViewContent(title, PeekViewUiState.DEFAULT);
         }
     }
 
