@@ -17222,36 +17222,6 @@
             ]
         }
     ],
-    "NewTabPageCustomizationV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_showTipBottomSheet",
-                    "params": {
-                        "show_logo_and_search_box": "true",
-                        "show_promo": "true",
-                        "show_tip_bottom_sheet": "true"
-                    },
-                    "enable_features": [
-                        "NewTabPageCustomizationV2"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "show_logo_and_search_box": "true",
-                        "show_promo": "true"
-                    },
-                    "enable_features": [
-                        "NewTabPageCustomizationV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "NimbleCollisionAvoidanceV1": [
         {
             "platforms": [

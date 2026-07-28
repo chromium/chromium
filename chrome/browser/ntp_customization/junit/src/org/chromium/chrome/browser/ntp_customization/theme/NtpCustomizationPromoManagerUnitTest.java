@@ -34,6 +34,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -57,6 +58,7 @@ import java.time.Duration;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class NtpCustomizationPromoManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -97,6 +99,7 @@ public class NtpCustomizationPromoManagerUnitTest {
                         mWindowAndroid, /* isLff= */ false));
 
         // Case 1: Feature flag is disabled.
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
         assertFalse(ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue());
         assertFalse(
                 NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
@@ -166,6 +169,7 @@ public class NtpCustomizationPromoManagerUnitTest {
     public void testCanShowCustomizationIph() {
         when(mTab.isIncognitoBranded()).thenReturn(false);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
 
         // Case 1: All conditions met.
         assertTrue(

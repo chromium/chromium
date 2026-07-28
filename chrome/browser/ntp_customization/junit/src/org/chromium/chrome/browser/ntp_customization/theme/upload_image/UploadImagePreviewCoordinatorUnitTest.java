@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
@@ -63,6 +64,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UploadImagePreviewCoordinator}. */
+@Features.EnableFeatures(ChromeFeatureList.FEED_CONTAINMENT)
 @RunWith(BaseRobolectricTestRunner.class)
 public class UploadImagePreviewCoordinatorUnitTest {
     private static final String TEST_FILE_ID_HASH = "test_file_id_hash";
