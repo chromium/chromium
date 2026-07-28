@@ -20,6 +20,14 @@ class UserCloudPolicyManager;
 
 namespace enterprise_connectors {
 
+enum class RequestHandlerResultActionLevel {
+  // If text or image is empty then action level is not scan.
+  kNotScan = 0,
+  kAudit = 1,
+  kWarn = 2,
+  kBlock = 3,
+};
+
 // Fetches additional information that is common to every event. Fetches and
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
@@ -69,6 +77,11 @@ bool IsBulkDataEntryConnectorEnabled(ConnectorsServiceBase* service);
 // policy fetching response. If either policies has no affiliation IDs, this
 // function returns false.
 bool IsProfileAffilicated(ProfileIOS* profile);
+
+// Map the `FinalContentAnalysisResult` to action level: kAudit, kWarn and
+// kBlock.
+RequestHandlerResultActionLevel ResultToActionLevel(
+    const RequestHandlerResult& result);
 
 }  // namespace enterprise_connectors
 

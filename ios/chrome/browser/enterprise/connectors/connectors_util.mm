@@ -205,4 +205,26 @@ bool IsProfileAffilicated(ProfileIOS* profile) {
                                   ->GetDeviceAffiliationIds());
 }
 
+RequestHandlerResultActionLevel ResultToActionLevel(
+    const RequestHandlerResult& result) {
+  switch (result.final_result) {
+    case FinalContentAnalysisResult::SUCCESS:
+      return RequestHandlerResultActionLevel::kAudit;
+    case FinalContentAnalysisResult::WARNING:
+      return RequestHandlerResultActionLevel::kWarn;
+    case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::FAILURE:
+    case FinalContentAnalysisResult::FAIL_CLOSED:
+    case FinalContentAnalysisResult::CANCELLED:
+      return RequestHandlerResultActionLevel::kBlock;
+    case FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME:
+    case FinalContentAnalysisResult::ENCRYPTED_FILES:
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      // Force Save to Cloud, Kept in Managed Chrome and Encrypted Files are
+      // not supported on iOS.
+      NOTREACHED();
+  }
+  return RequestHandlerResultActionLevel::kBlock;
+}
+
 }  // namespace enterprise_connectors

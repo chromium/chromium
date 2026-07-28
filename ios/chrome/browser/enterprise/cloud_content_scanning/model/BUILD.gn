@@ -14,6 +14,8 @@ source_set("model") {
     "ios_cloud_binary_upload_service_factory.mm",
     "ios_content_analysis_request.h",
     "ios_content_analysis_request.mm",
+    "pasteboard_content_handler_ios.h",
+    "pasteboard_content_handler_ios.mm",
     "scan_decision_helper.h",
     "scan_decision_helper.mm",
   ]
@@ -55,6 +57,7 @@ source_set("unit_tests") {
     "files_request_handler_ios_unittest.mm",
     "ios_cloud_binary_upload_service_unittest.mm",
     "ios_content_analysis_request_unittest.mm",
+    "pasteboard_content_handler_ios_unittest.mm",
     "scan_decision_helper_unittest.mm",
   ]
   deps = [
@@ -70,6 +73,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors",
+    "//ios/chrome/browser/enterprise/connectors/analysis",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
