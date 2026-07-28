@@ -259,33 +259,35 @@ static cc::ScrollSnapAlign GetPhysicalAlignment(
   // itself. (This allows items in a container to have consistent snap alignment
   // in general, while ensuring that start always aligns the item to allow
   // reading its contents from the beginning.)
-  WritingDirectionMode writing_direction =
+  WritingDirectionMode container_writing_direction =
       container_style.GetWritingDirection();
   WritingDirectionMode area_writing_direction =
       area_style.GetWritingDirection();
-  if (area_writing_direction.IsHorizontal()) {
-    if (area_rect.Width() > container_rect.Width())
-      writing_direction = area_writing_direction;
-  } else {
-    if (area_rect.Height() > container_rect.Height())
-      writing_direction = area_writing_direction;
+  bool flip_x = container_writing_direction.IsFlippedX();
+  bool flip_y = container_writing_direction.IsFlippedY();
+  if (area_rect.Width() > container_rect.Width()) {
+    flip_x = area_writing_direction.IsFlippedX();
+  }
+  if (area_rect.Height() > container_rect.Height()) {
+    flip_y = area_writing_direction.IsFlippedY();
   }
 
-  bool rtl = (writing_direction.IsRtl());
-  if (writing_direction.IsHorizontal()) {
+  if (container_writing_direction.IsHorizontal()) {
     adjusted_alignment.alignment_inline =
-        rtl ? AdjustForRtlWritingMode(align.alignment_inline)
-            : align.alignment_inline;
-    adjusted_alignment.alignment_block = align.alignment_block;
-  } else {
-    bool flipped = writing_direction.IsFlippedBlocks();
-    adjusted_alignment.alignment_inline =
-        flipped ? AdjustForRtlWritingMode(align.alignment_block)
-                : align.alignment_block;
+        flip_x ? AdjustForRtlWritingMode(align.alignment_inline)
+               : align.alignment_inline;
     adjusted_alignment.alignment_block =
-        rtl ? AdjustForRtlWritingMode(align.alignment_inline)
-            : align.alignment_inline;
+        flip_y ? AdjustForRtlWritingMode(align.alignment_block)
+               : align.alignment_block;
+  } else {
+    adjusted_alignment.alignment_inline =
+        flip_x ? AdjustForRtlWritingMode(align.alignment_block)
+               : align.alignment_block;
+    adjusted_alignment.alignment_block =
+        flip_y ? AdjustForRtlWritingMode(align.alignment_inline)
+               : align.alignment_inline;
   }
+
   return adjusted_alignment;
 }
 

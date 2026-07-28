@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<title>CSS Scroll Snap: Oversized snap area with orthogonal writing mode</title>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#snap-overflow" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.parent {
+  height: 200px;
+  width: 200px;
+  overflow: auto;
+  scroll-snap-type: both mandatory;
+  scrollbar-width: none;
+}
+
+.horizontal {
+  writing-mode: horizontal-tb;
+}
+
+.vertical {
+  writing-mode: vertical-lr;
+}
+
+#space {
+  background-color: red;
+  height: 400px;
+  width: 400px;
+  display: grid;
+  place-items: center;
+}
+
+.target {
+  background-color: blue;
+  color: white;
+  scroll-snap-align: start center;
+}
+
+#target1 {
+  height: 100px;
+  width: 300px;
+}
+
+#target2 {
+  height: 300px;
+  width: 100px;
+}
+</style>
+<div id="parent1" class="parent vertical">
+  <div id="space">
+    <div id="target1" class="target horizontal"></div>
+  </div>
+</div>
+<div id="parent2" class="parent horizontal">
+  <div id="space">
+    <div id="target2" class="target vertical"></div>
+  </div>
+</div>
+<script>
+test(() => {
+  const parent = document.getElementById("parent1");
+  assert_equals(
+    parent.scrollLeft,
+    50,
+    "scroller snaps to start position along horizontal (inline) axis for target"
+  );
+  assert_equals(
+    parent.scrollTop,
+    100,
+    "scroller snaps to center position along vertical (block) axis for target"
+  );
+}, "Oversized area with orthogonal writing mode snaps to expected position (vertical container)");
+
+test(() => {
+  const parent = document.getElementById("parent2");
+  assert_equals(
+    parent.scrollLeft,
+    100,
+    "scroller snaps to center position along horizontal (inline) axis for target"
+  );
+  assert_equals(
+    parent.scrollTop,
+    50,
+    "scroller snaps to start position along vertical (block) axis for target"
+  );
+}, "Oversized area with orthogonal writing mode snaps to expected position (horizontal container)");
+</script>
