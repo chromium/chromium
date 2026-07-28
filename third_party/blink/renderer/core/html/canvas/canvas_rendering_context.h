@@ -248,7 +248,6 @@ class CORE_EXPORT CanvasRenderingContext
   // These methods get called at the end of script tasks that modified
   // the contents of the canvas (called didDraw). They mark the completion
   // of a presentable frame.
-  virtual void PreFinalizeFrame() {}
   virtual void FinalizeFrame(FlushReason) {}
   void FinalizeFrame() { return FinalizeFrame(FlushReason::kOther); }
   virtual void DidFlush() {}

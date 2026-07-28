@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -190,7 +191,9 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   EXPECT_TRUE(canvas_element().SurfaceLayerBridge());
   platform->RunUntilIdle();
 
-  // This call simulates having drawn something before FinalizeFrame().
+  // Initialize resource provider and simulate having drawn something.
+  static_cast<CanvasRenderingContext2D*>(context_.Get())
+      ->InitializeResourceProvider();
   canvas_element().DidDraw();
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
@@ -209,7 +212,6 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
             EXPECT_NE(shared_quad_state_list.front()->are_contents_opaque,
                       context_alpha);
           }));
-  context_->PreFinalizeFrame();
   context_->FinalizeFrame(FlushReason::kOther);
   canvas_element().PostFinalizeFrame(FlushReason::kOther);
   platform->RunUntilIdle();
