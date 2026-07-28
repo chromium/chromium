@@ -25,6 +25,10 @@ using ::testing::NiceMock;
 class AutofillDialogControllerImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  AutofillDialogControllerImplTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     mock_view_ = std::make_unique<NiceMock<MockAutofillDialogView>>();
@@ -38,6 +42,10 @@ class AutofillDialogControllerImplTest
 
  protected:
   std::unique_ptr<AutofillDialogView> PrepareMockView() {
+    if (!mock_view_) {
+      mock_view_ = std::make_unique<NiceMock<MockAutofillDialogView>>();
+      mock_view_ptr_ = mock_view_.get();
+    }
     return std::move(mock_view_);
   }
 
@@ -61,20 +69,80 @@ TEST_F(AutofillDialogControllerImplTest, ShowDialog) {
 TEST_F(AutofillDialogControllerImplTest, ShowLoadingDialog) {
   EXPECT_CALL(*mock_view_ptr_, Show()).Times(0);
   EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
-  controller_->ShowLoadingDialog(u"Title");
+  controller_->ShowLoadingDialog(u"Title", base::Seconds(2));
 
   EXPECT_EQ(u"Title", controller_->GetTitleText());
   EXPECT_THAT(controller_->GetDescriptionText(), IsEmpty());
   EXPECT_THAT(controller_->GetButtonText(), IsEmpty());
 }
 
-// Test that `Dismiss` hides the dialog view
-TEST_F(AutofillDialogControllerImplTest, Dismiss) {
+// Test that `Dismiss` hides the dialog view immediately if `min_time` has
+// elapsed.
+TEST_F(AutofillDialogControllerImplTest, DismissLoading_AfterMinTime) {
   EXPECT_CALL(*mock_view_ptr_, Show()).Times(0);
   EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+
+  controller_->ShowLoadingDialog(u"Title", base::Seconds(2));
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+
+  // Over the min_time, should dismiss immediately.
   EXPECT_CALL(*mock_view_ptr_, Dismiss());
-  controller_->ShowLoadingDialog(u"Title");
   controller_->Dismiss();
+}
+
+// Test that `Dismiss` waits until `min_time` passed before dismissing.
+TEST_F(AutofillDialogControllerImplTest, DismissLoading_BeforeMinTime) {
+  EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+  controller_->ShowLoadingDialog(u"Title", base::Seconds(2));
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Under the min_time, should NOT dismiss yet.
+  EXPECT_CALL(*mock_view_ptr_, Dismiss()).Times(0);
+  controller_->Dismiss();
+
+  // Fast forward by exactly the remaining time (1s). It should dismiss.
+  EXPECT_CALL(*mock_view_ptr_, Dismiss());
+  task_environment()->FastForwardBy(base::Seconds(1));
+}
+
+// Test that multiple `Dismiss` calls before `min_time` still correctly dismiss
+// just once.
+TEST_F(AutofillDialogControllerImplTest, DismissLoading_MultipleTimes) {
+  EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+  controller_->ShowLoadingDialog(u"Title", base::Seconds(2));
+
+  controller_->Dismiss();
+  controller_->Dismiss();
+  controller_->Dismiss();
+
+  EXPECT_CALL(*mock_view_ptr_, Dismiss());
+  task_environment()->FastForwardBy(base::Seconds(2));
+}
+
+// Test that we can properly show and dismiss the loading dialog consecutively.
+TEST_F(AutofillDialogControllerImplTest, ShowAndDismissLoadingDialogTwice) {
+  // First show and dismiss.
+  EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+  controller_->ShowLoadingDialog(u"Title1", base::Seconds(2));
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_CALL(*mock_view_ptr_, Dismiss());
+  controller_->Dismiss();
+  EXPECT_FALSE(controller_->HasDialogViewForTest());
+
+  // Pre-populate mock_view_ for the second dialog so we can set expectations.
+  mock_view_ = std::make_unique<NiceMock<MockAutofillDialogView>>();
+  mock_view_ptr_ = mock_view_.get();
+
+  EXPECT_CALL(*mock_view_ptr_, ShowLoadingDialog());
+  controller_->ShowLoadingDialog(u"Title2", base::Seconds(2));
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_CALL(*mock_view_ptr_, Dismiss());
+  controller_->Dismiss();
+  EXPECT_FALSE(controller_->HasDialogViewForTest());
 }
 
 // Test that only one dialog is shown at a time.

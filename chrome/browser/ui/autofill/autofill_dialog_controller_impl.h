@@ -9,6 +9,9 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_dialog_controller.h"
 #include "chrome/browser/ui/autofill/autofill_dialog_view.h"
 #include "content/public/browser/web_contents.h"
@@ -30,7 +33,8 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
             const std::u16string& description,
             const std::u16string& button_text,
             base::OnceClosure on_positive_button_clicked_callback) override;
-  void ShowLoadingDialog(const std::u16string& title) override;
+  void ShowLoadingDialog(const std::u16string& title,
+                         base::TimeDelta min_time) override;
   void Dismiss() override;
 
   void OnPositiveButtonClicked() override;
@@ -57,6 +61,10 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   std::u16string title_;
   std::u16string description_;
   std::u16string button_text_;
+
+  base::OneShotTimer dismiss_timer_;
+  base::ElapsedTimer dialog_show_time_;
+  base::TimeDelta min_show_time_;
 
   // Callback to run after the dialog positive button is clicked.
   base::OnceClosure on_positive_button_clicked_callback_;
