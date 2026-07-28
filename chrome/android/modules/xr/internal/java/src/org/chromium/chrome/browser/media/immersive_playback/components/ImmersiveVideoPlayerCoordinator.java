@@ -77,7 +77,9 @@ public class ImmersiveVideoPlayerCoordinator {
                 public void onMoveStart(XrPose pose, float scale) {}
 
                 @Override
-                public void onMoveUpdate(XrPose pose, float scale) {}
+                public void onMoveUpdate(XrPose pose, float scale) {
+                    mDelegate.onPlayerPanelPoseChanged(pose);
+                }
 
                 @Override
                 public void onMoveEnd(XrPose pose, float scale) {

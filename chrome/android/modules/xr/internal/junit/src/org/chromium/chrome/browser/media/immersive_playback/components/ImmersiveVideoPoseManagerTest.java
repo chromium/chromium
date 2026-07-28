@@ -35,6 +35,14 @@ public class ImmersiveVideoPoseManagerTest {
     private static final float SPHERE_CURVE_RADIUS = 4f;
     private static final float EPSILON = 1e-4f;
 
+    // Default Z distance of the player panel in QUAD mode.
+    private static final float DEFAULT_PLAYER_Z = 0.5f;
+    // Forward Z offset of the control panel relative to the player panel.
+    private static final float CONTROL_OFFSET_Z = 0.04f;
+    // In SPHERE/HEMISPHERE mode, the default control panel Z in unrotated world space is
+    // DEFAULT_PLAYER_Z + CONTROL_OFFSET_Z (0.54m).
+    private static final float WORLD_CONTROL_OFFSET_Z = DEFAULT_PLAYER_Z + CONTROL_OFFSET_Z;
+
     @Mock private ImmersiveVideoPoseManager.Delegate mDelegate;
 
     private ImmersiveVideoPoseManager mManager;
@@ -51,7 +59,65 @@ public class ImmersiveVideoPoseManagerTest {
 
     @Test
     public void testDefaultPoses() {
-        assertEquals(XrPose.create(XrVector3.create(0f, 0f, 0.5f)), mManager.getPlayerPanelPose());
+        assertEquals(
+                XrPose.create(XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
+                mManager.getPlayerPanelPose());
+    }
+
+    @Test
+    public void testQuadMode_PoseUpdates() {
+        XrPose newPose =
+                XrPose.create(XrVector3.create(1f, 2f, 3f), XrQuaternion.create(0f, 1f, 0f, 0f));
+
+        mManager.onPlayerPanelPoseChanged(newPose);
+
+        assertEquals(newPose, mManager.getPlayerPanelPose());
+
+        // Control panel pose in QUAD mode is positioned relative to the player panel:
+        // Y is offset downward by half the layout height (-0.25m), and Z is offset forward by
+        // CONTROL_OFFSET_Z (0.04m).
+        float expectedControlY = -QUAD_LAYOUT_HEIGHT / 2f;
+        XrPose expectedControlPose =
+                XrPose.create(
+                        XrVector3.create(0f, expectedControlY, CONTROL_OFFSET_Z),
+                        XrQuaternion.getIdentity());
+        assertEquals(expectedControlPose, mManager.getControlPanelPose());
+    }
+
+    @Test
+    public void testQuadMode_DragPoseUpdates() {
+        XrVector3 startOrigin = XrVector3.create(0f, 0f, 0f);
+        XrVector3 startDirection = XrVector3.create(0f, 0f, 1f);
+
+        mManager.onPlayerPanelDragStart(startOrigin, startDirection);
+
+        XrVector3 updateDirection = XrVector3.create(1f, 2f, 1f);
+        mManager.onPlayerPanelDragUpdate(startOrigin, updateDirection);
+
+        // Given drag update direction ray (1, 2, 1) and initial distance 0.5m:
+        // ||(1, 2, 1)|| = sqrt(6). Projected position is 0.5 * direction / ||direction||.
+        float expectedX = (float) (0.5 / Math.sqrt(6.0));
+        float expectedY = (float) (1.0 / Math.sqrt(6.0));
+        float expectedZ = (float) (0.5 / Math.sqrt(6.0));
+        float currentDistance =
+                (float)
+                        Math.sqrt(
+                                expectedX * expectedX
+                                        + expectedY * expectedY
+                                        + expectedZ * expectedZ);
+        float expectedYaw = -expectedX / currentDistance;
+        XrPose actualPose = mManager.getPlayerPanelPose();
+        assertEquals(expectedX, actualPose.getTranslation().getX(), EPSILON);
+        assertEquals(expectedY, actualPose.getTranslation().getY(), EPSILON);
+        assertEquals(expectedZ, actualPose.getTranslation().getZ(), EPSILON);
+        assertEquals(expectedYaw, actualPose.getRotation().getYaw(), EPSILON);
+
+        mManager.onPlayerPanelDragEnd(startOrigin, updateDirection);
+        XrPose endPose = mManager.getPlayerPanelPose();
+        assertEquals(expectedX, endPose.getTranslation().getX(), EPSILON);
+        assertEquals(expectedY, endPose.getTranslation().getY(), EPSILON);
+        assertEquals(expectedZ, endPose.getTranslation().getZ(), EPSILON);
+        assertEquals(expectedYaw, endPose.getRotation().getYaw(), EPSILON);
     }
 
     @Test
@@ -83,14 +149,20 @@ public class ImmersiveVideoPoseManagerTest {
         XrPose expectedPlayerPose = XrPose.create(XrVector3.getZero(), expectedRotation);
         assertEquals(expectedPlayerPose, mManager.getPlayerPanelPose());
 
-        // Verify control panel pose queries (world space, since parent is null in curved mode)
-        XrPose expectedControlPose = XrPose.create(XrVector3.create(0f, -0.3f, 0.51f));
+        // Verify control panel pose queries (world space, since parent is null in curved mode).
+        // Y is offset downward by half the sphere layout height (-0.3m), and Z is at
+        // WORLD_CONTROL_OFFSET_Z (0.54m).
+        float expectedControlY = -SPHERE_LAYOUT_HEIGHT / 2f;
+        XrPose expectedControlPose =
+                XrPose.create(XrVector3.create(0f, expectedControlY, WORLD_CONTROL_OFFSET_Z));
         assertEquals(expectedControlPose, mManager.getControlPanelPose());
 
         // Verify that when switching back to QUAD mode, the player panel starts with its default
-        // pose
+        // pose.
         mManager.updateStrategy(XrSurfaceEntityShape.QUAD);
-        assertEquals(XrPose.create(XrVector3.create(0f, 0f, 0.5f)), mManager.getPlayerPanelPose());
+        assertEquals(
+                XrPose.create(XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
+                mManager.getPlayerPanelPose());
     }
 
     @Test
@@ -107,10 +179,12 @@ public class ImmersiveVideoPoseManagerTest {
 
         assertEquals(controlPose, mManager.getControlPanelPose());
 
-        // Verify that when creating a fresh manager, it resets to default pose
+        // Verify that when creating a fresh manager, it resets to default pose.
         mManager = new ImmersiveVideoPoseManager(mDelegate);
         mManager.updateStrategy(XrSurfaceEntityShape.QUAD);
-        assertEquals(XrPose.create(XrVector3.create(0f, 0f, 0.5f)), mManager.getPlayerPanelPose());
+        assertEquals(
+                XrPose.create(XrVector3.create(0f, 0f, DEFAULT_PLAYER_Z)),
+                mManager.getPlayerPanelPose());
     }
 
     @Test
@@ -124,10 +198,23 @@ public class ImmersiveVideoPoseManagerTest {
 
         mManager.onControlPanelPoseChanged(controlPose);
 
+        // In HEMISPHERE mode, when the control panel moves to (1, 2, 3) rotated +90 deg around Y:
+        // 1. The unrotated local offset from control panel to player panel is:
+        //    localX = 0, localY = QUAD_LAYOUT_HEIGHT / 2 (+0.25m), localZ = -WORLD_CONTROL_OFFSET_Z
+        // (-0.54m).
+        // 2. Rotating (0, 0.25, -0.54) by +90 deg around Y transforms (x, y, z) -> (z, y, -x):
+        //    rotatedX = -0.54m, rotatedY = +0.25m, rotatedZ = 0m.
+        // 3. Adding to controlTrans (1, 2, 3):
+        //    expectedX = 1 - 0.54 = 0.46m, expectedY = 2 + 0.25 = 2.25m, expectedZ = 3 + 0 = 3.00m.
+        float localOffsetY = QUAD_LAYOUT_HEIGHT / 2f;
+        float expectedPlayerX = controlTrans.getX() - WORLD_CONTROL_OFFSET_Z;
+        float expectedPlayerY = controlTrans.getY() + localOffsetY;
+        float expectedPlayerZ = controlTrans.getZ();
+
         XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(0.46f, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(2.25f, actualPose.getTranslation().getY(), EPSILON);
-        assertEquals(3.00f, actualPose.getTranslation().getZ(), EPSILON);
+        assertEquals(expectedPlayerX, actualPose.getTranslation().getX(), EPSILON);
+        assertEquals(expectedPlayerY, actualPose.getTranslation().getY(), EPSILON);
+        assertEquals(expectedPlayerZ, actualPose.getTranslation().getZ(), EPSILON);
         assertEquals(controlRot, actualPose.getRotation());
         assertEquals(controlPose, mManager.getControlPanelPose());
 
@@ -135,10 +222,12 @@ public class ImmersiveVideoPoseManagerTest {
         XrQuaternion dragRot = getQuaternionFromAxisAngle(1f, 0f, 0f, 180f);
         mManager.onPlayerPanelPoseChanged(XrPose.create(dragTrans, dragRot));
 
+        // Dragging/moving the player panel in HEMISPHERE mode is ignored;
+        // player panel pose remains tied to the control panel pose.
         XrPose endPose = mManager.getPlayerPanelPose();
-        assertEquals(0.46f, endPose.getTranslation().getX(), EPSILON);
-        assertEquals(2.25f, endPose.getTranslation().getY(), EPSILON);
-        assertEquals(3.00f, endPose.getTranslation().getZ(), EPSILON);
+        assertEquals(expectedPlayerX, endPose.getTranslation().getX(), EPSILON);
+        assertEquals(expectedPlayerY, endPose.getTranslation().getY(), EPSILON);
+        assertEquals(expectedPlayerZ, endPose.getTranslation().getZ(), EPSILON);
     }
 
     @Test
@@ -151,10 +240,18 @@ public class ImmersiveVideoPoseManagerTest {
 
         mManager.onControlPanelPoseChanged(controlPose);
 
+        // Rotating by +90 deg around X transforms (x, y, z) -> (x, -z, y):
+        // rotatedX = 0m, rotatedY = +WORLD_CONTROL_OFFSET_Z (+0.54m), rotatedZ = +localOffsetY
+        // (+0.25m).
+        float localOffsetY = QUAD_LAYOUT_HEIGHT / 2f;
+        float expectedPlayerX = controlTrans.getX();
+        float expectedPlayerY = controlTrans.getY() + WORLD_CONTROL_OFFSET_Z;
+        float expectedPlayerZ = controlTrans.getZ() + localOffsetY;
+
         XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(1.00f, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(2.54f, actualPose.getTranslation().getY(), EPSILON);
-        assertEquals(3.25f, actualPose.getTranslation().getZ(), EPSILON);
+        assertEquals(expectedPlayerX, actualPose.getTranslation().getX(), EPSILON);
+        assertEquals(expectedPlayerY, actualPose.getTranslation().getY(), EPSILON);
+        assertEquals(expectedPlayerZ, actualPose.getTranslation().getZ(), EPSILON);
         assertEquals(controlRot, actualPose.getRotation());
     }
 
