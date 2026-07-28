@@ -118,6 +118,7 @@ std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
     const PrefService* pref_service,
     const GoogleGroupsManager* google_groups_manager,
     AutofillOptimizationGuideDecider* decider,
+    bool is_off_the_record,
     base::optional_ref<const GURL> url = std::nullopt,
     std::string* debug_message = nullptr);
 

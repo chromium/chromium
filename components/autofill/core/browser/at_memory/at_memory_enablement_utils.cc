@@ -279,6 +279,31 @@ std::optional<AtMemoryAction> MapCategoryToAtMemoryAction(
   NOTREACHED();
 }
 
+[[nodiscard]] bool SatisfiesOffTheRecordRequirement(
+    AtMemoryAction action,
+    bool is_off_the_record,
+    std::string* debug_message) {
+  switch (action) {
+    case AtMemoryAction::kTriggerSearchUI:
+    case AtMemoryAction::kShowIph:
+    case AtMemoryAction::kShowAutocompleteAtMemoryButton:
+    case AtMemoryAction::kRetrievePaymentsForFilling:
+    case AtMemoryAction::kRetrieveContactInfoForFilling:
+    case AtMemoryAction::kRetrieveIdentityDocsForFilling:
+    case AtMemoryAction::kRetrieveTravelDataForFilling:
+    case AtMemoryAction::kRetrieveShoppingDataForFilling:
+      if (is_off_the_record) {
+        MaybeOutputReason(debug_message, "Off the record.");
+        return false;
+      }
+      break;
+    case AtMemoryAction::kShowAtMemoryInSettings:
+    case AtMemoryAction::kAllowCustomizeAtMemoryShortcut:
+      break;
+  }
+  return true;
+}
+
 }  // namespace
 
 [[nodiscard]] bool IsRetrieveForFillingAction(AtMemoryAction action) {
@@ -355,7 +380,8 @@ bool MayPerformAtMemoryAction(
       action, client.GetPersonalContextEligibilityService(),
       client.GetSubscriptionEligibilityService(), client.GetPrefs(),
       client.GetGoogleGroupsManager(),
-      client.GetAutofillOptimizationGuideDecider(), url, debug_message);
+      client.GetAutofillOptimizationGuideDecider(), client.IsOffTheRecord(),
+      url, debug_message);
 }
 
 bool MayPerformAtMemoryActionBase(
@@ -367,11 +393,17 @@ bool MayPerformAtMemoryActionBase(
     const PrefService* pref_service,
     const GoogleGroupsManager* google_groups_manager,
     AutofillOptimizationGuideDecider* decider,
+    bool is_off_the_record,
     base::optional_ref<const GURL> url,
     std::string* debug_message) {
   if (base::FeatureList::IsEnabled(
           features::debug::kAtMemorySkipEnablementChecks)) {
     return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
+  }
+
+  if (!SatisfiesOffTheRecordRequirement(action, is_off_the_record,
+                                        debug_message)) {
+    return false;
   }
 
   if (!IsAtMemorySupported(personal_context_service,

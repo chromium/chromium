@@ -61,7 +61,7 @@ bool ShouldShowPersonalContextAutofillSetting(
 #else
       /*google_groups_manager=*/nullptr,
 #endif
-      /*decider=*/nullptr);
+      /*decider=*/nullptr, is_off_the_record);
 
   return ambient_autofill_enabled || at_memory_enabled;
 }

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -148,15 +149,17 @@ TEST_F(AtMemoryEnablementUtilsTest,
       AtMemoryAction::kTriggerSearchUI, nullptr,
       autofill_client().GetSubscriptionEligibilityService(),
       autofill_client().GetPrefs(), nullptr, nullptr,
-      /*url=*/GURL("https://example.com")));
+      /*is_off_the_record=*/false, /*url=*/GURL("https://example.com")));
   EXPECT_FALSE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kShowAtMemoryInSettings, nullptr,
       autofill_client().GetSubscriptionEligibilityService(),
-      autofill_client().GetPrefs(), nullptr, nullptr, /*url=*/std::nullopt));
+      autofill_client().GetPrefs(), nullptr, nullptr,
+      /*is_off_the_record=*/false, /*url=*/std::nullopt));
   EXPECT_FALSE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, nullptr,
       autofill_client().GetSubscriptionEligibilityService(),
-      autofill_client().GetPrefs(), nullptr, nullptr, /*url=*/std::nullopt));
+      autofill_client().GetPrefs(), nullptr, nullptr,
+      /*is_off_the_record=*/false, /*url=*/std::nullopt));
 }
 
 // Tests that `MayPerformAtMemoryAction` returns false when
@@ -174,7 +177,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
   EXPECT_FALSE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_, nullptr,
       autofill_client().GetPrefs(), nullptr, nullptr,
-      /*url=*/GURL("https://example.com")));
+      /*is_off_the_record=*/false, /*url=*/GURL("https://example.com")));
 }
 
 // Tests `MayPerformAtMemoryAction` when `pref_service` is null.
@@ -186,18 +189,19 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NullPrefService) {
   EXPECT_TRUE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kShowAtMemoryInSettings, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
-      nullptr, /*url=*/std::nullopt));
+      nullptr, /*is_off_the_record=*/false, /*url=*/std::nullopt));
 
   // IsPersonalContextToggleOn returns false if pref_service is null.
   EXPECT_FALSE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
-      nullptr, /*url=*/GURL("https://example.com")));
+      nullptr, /*is_off_the_record=*/false,
+      /*url=*/GURL("https://example.com")));
   EXPECT_FALSE(MayPerformAtMemoryActionBase(
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut,
       &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
-      nullptr, /*url=*/std::nullopt));
+      nullptr, /*is_off_the_record=*/false, /*url=*/std::nullopt));
 }
 
 // Tests `MayPerformAtMemoryAction` under various Personal Context states.
@@ -249,6 +253,53 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NotSupported) {
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, autofill_client(),
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
+}
+
+// Tests that `MayPerformAtMemoryAction` disallows all actions except
+// `kShowAtMemoryInSettings` and `kAllowCustomizeAtMemoryShortcut` when off the
+// record.
+TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_OffTheRecord) {
+  EXPECT_CALL(personal_context_service_, GetEligibilityState)
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEligibilityState::kEligible));
+  autofill_client().set_is_off_the_record(true);
+
+  constexpr auto kAllowedActionsWhenOffTheRecord =
+      base::MakeFixedFlatSet<AtMemoryAction>({
+          AtMemoryAction::kShowAtMemoryInSettings,
+          AtMemoryAction::kAllowCustomizeAtMemoryShortcut,
+      });
+
+  constexpr auto kAllActions = base::MakeFixedFlatSet<AtMemoryAction>(
+      {AtMemoryAction::kTriggerSearchUI,
+       AtMemoryAction::kShowAtMemoryInSettings,
+       AtMemoryAction::kAllowCustomizeAtMemoryShortcut,
+       AtMemoryAction::kShowIph,
+       AtMemoryAction::kShowAutocompleteAtMemoryButton,
+       AtMemoryAction::kRetrievePaymentsForFilling,
+       AtMemoryAction::kRetrieveContactInfoForFilling,
+       AtMemoryAction::kRetrieveIdentityDocsForFilling,
+       AtMemoryAction::kRetrieveTravelDataForFilling,
+       AtMemoryAction::kRetrieveShoppingDataForFilling});
+
+  for (AtMemoryAction action : kAllActions) {
+    std::string debug_message;
+    const bool expected_allowed =
+        kAllowedActionsWhenOffTheRecord.contains(action);
+    std::optional<RetrieveForFillingParams> params;
+    if (IsRetrieveForFillingAction(action)) {
+      params.emplace();
+    }
+    EXPECT_EQ(MayPerformAtMemoryAction(
+                  action, autofill_client(),
+                  autofill_client().GetLastCommittedPrimaryMainFrameURL(),
+                  params, &debug_message),
+              expected_allowed)
+        << "Failed for action: " << static_cast<int>(action);
+    if (!expected_allowed) {
+      EXPECT_EQ(debug_message, "Off the record.");
+    }
+  }
 }
 
 // Tests that `MayPerformAtMemoryAction` returns true when the client supports
@@ -331,7 +382,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_, nullptr,
       autofill_client().GetPrefs(), nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
-      /*url=*/GURL("https://example.com")));
+      /*is_off_the_record=*/false, /*url=*/GURL("https://example.com")));
 
   // The user is eligible for any tier value.
   autofill_client().GetPrefs()->SetInteger(
@@ -357,7 +408,7 @@ TEST_F(AtMemoryEnablementUtilsTest,
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_, nullptr,
       autofill_client().GetPrefs(), nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
-      /*url=*/GURL("https://example.com")));
+      /*is_off_the_record=*/false, /*url=*/GURL("https://example.com")));
 
   // The user is eligible for any tier value.
   autofill_client().GetPrefs()->SetInteger(
@@ -499,6 +550,7 @@ TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, ToggleOff) {
       /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
+      /*is_off_the_record=*/false,
       /*url=*/autofill_client().GetLastCommittedPrimaryMainFrameURL()));
   EXPECT_EQ(pref_store_->call_count(), 1);
 }
@@ -518,6 +570,7 @@ TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, ToggleOn) {
       /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
+      /*is_off_the_record=*/false,
       /*url=*/autofill_client().GetLastCommittedPrimaryMainFrameURL()));
   EXPECT_EQ(pref_store_->call_count(), 1);
 }
@@ -538,6 +591,7 @@ TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, NotEligible) {
       /*subscription_eligibility_service=*/nullptr, pref_service_.get(),
       /*google_groups_manager=*/nullptr,
       autofill_client().GetAutofillOptimizationGuideDecider(),
+      /*is_off_the_record=*/false,
       /*url=*/autofill_client().GetLastCommittedPrimaryMainFrameURL()));
   EXPECT_EQ(pref_store_->call_count(), 0);
 }
