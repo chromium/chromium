@@ -14,8 +14,10 @@ export function getHtml(this: PreviewAreaElement) {
   <div class="preview-area-message">
     <div>
       <span .innerHTML="${this.currentMessage_()}"></span>
-      <span class="preview-area-loading-message-jumping-dots
-          ${this.getJumpingDots_()}" ?hidden="${!this.isPreviewLoading_()}">
+      <span
+          class="preview-area-loading-message-jumping-dots
+          ${this.getJumpingDots_()}"
+          ?hidden="${!this.isPreviewLoading_()}">
         <span>.</span><span>.</span><span>.</span>
       </span>
     </div>

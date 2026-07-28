@@ -11,8 +11,8 @@ export function getHtml(this: CopiesSettingsElement) {
   return html`<!--_html_template_start_-->
 <print-preview-number-settings-section max-value="${this.copiesMax_}"
     min-value="1" default-value="1" input-label="$i18n{copiesLabel}"
-    input-aria-label="$i18n{copiesLabel}"
-    ?disabled="${this.disabled}" current-value="${this.currentValue_}"
+    input-aria-label="$i18n{copiesLabel}" ?disabled="${this.disabled}"
+    current-value="${this.currentValue_}"
     @current-value-changed="${this.onCurrentValueChanged_}"
     ?input-valid="${this.inputValid_}"
     @input-valid-changed="${this.onInputValidChanged_}"

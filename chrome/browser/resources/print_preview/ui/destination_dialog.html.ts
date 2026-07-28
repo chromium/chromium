@@ -12,10 +12,9 @@ export function getHtml(this: DestinationDialogElement) {
 <cr-dialog id="dialog" @close="${this.onClose_}">
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
   <div slot="body">
-    <print-preview-search-box id="searchBox"
-        label="$i18n{searchBoxPlaceholder}" .searchQuery="${this.searchQuery_}"
-        @search-query-changed="${this.onSearchQueryChanged_}"
-        autofocus>
+    <print-preview-search-box id="searchBox" label="$i18n{searchBoxPlaceholder}"
+        .searchQuery="${this.searchQuery_}"
+        @search-query-changed="${this.onSearchQueryChanged_}" autofocus>
     </print-preview-search-box>
     <print-preview-destination-list id="printList"
         ?loading-destinations="${this.loadingDestinations_}"

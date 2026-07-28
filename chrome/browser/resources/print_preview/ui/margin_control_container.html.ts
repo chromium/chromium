@@ -15,11 +15,9 @@ ${this.marginSides_.map(item => html`
       .translateTransform="${this.translateTransform_}"
       .clipSize="${this.clipSize_}"
       .measurementSystem="${this.measurementSystem}"
-      .scaleTransform="${this.scaleTransform_}"
-      .pageSize="${this.pageSize}"
-      @pointerdown="${this.onPointerdown_}"
-      @text-change="${this.onTextChange_}" @text-blur="${this.onTextBlur_}"
-      @text-focus="${this.onTextFocus_}"
+      .scaleTransform="${this.scaleTransform_}" .pageSize="${this.pageSize}"
+      @pointerdown="${this.onPointerdown_}" @text-change="${this.onTextChange_}"
+      @text-blur="${this.onTextBlur_}" @text-focus="${this.onTextFocus_}"
       @transition-end="${this.onTransitionEnd_}">
   </print-preview-margin-control>
 `)}

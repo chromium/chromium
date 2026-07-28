@@ -11,7 +11,8 @@ export function getHtml(this: AdvancedSettingsDialogElement) {
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" @close="${this.onClose_}">
   <div slot="title">
-    ${this.i18n('advancedSettingsDialogTitle', this.destination?.displayName || '')}
+    ${this.i18n(
+        'advancedSettingsDialogTitle', this.destination?.displayName || '')}
   </div>
   <div slot="body">
     <print-preview-search-box id="searchBox"

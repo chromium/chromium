@@ -12,10 +12,9 @@ export function getHtml(this: HeaderElement) {
 <div id="headerContainer">
   <h1 class="title">$i18n{title}</h1>
   <cr-icon ?hidden="${!this.managed}"
-      icon="${this.webuiRoundedIconsEnabled_
-          ? 'print-preview:domain'
-          : 'print-preview:business-old'}"
-       alt="" title="$i18n{managedSettings}">
+      icon="${this.webuiRoundedIconsEnabled_ ? 'print-preview:domain' :
+                                       'print-preview:business-old'}"
+      alt="" title="$i18n{managedSettings}">
   </cr-icon>
 </div>
 <span class="summary">${this.summary_}</span>

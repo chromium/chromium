@@ -29,11 +29,11 @@ export function getHtml(this: PrintPreviewDestinationListElement) {
           id="destination_${index}"
           aria-rowindex="${this.getAriaRowindex_(index)}" tabindex="${tabIndex}"
           .searchQuery="${this.searchQuery}" .destination="${item}"
-          @click="${this.onDestinationClick_}"
-          @keydown="${this.onKeydown_}"
+          @click="${this.onDestinationClick_}" @keydown="${this.onKeydown_}"
           role="row">
       </print-preview-destination-list-item>
-    `}"></cr-infinite-list>
+    `}">
+</cr-infinite-list>
 <div class="throbber-container" ?hidden="${this.throbberHidden_}">
   <div class="throbber"></div>
 </div>

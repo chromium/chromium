@@ -15,8 +15,8 @@ export function getHtml(this: MarginsSettingsElement) {
   <span id="margins-label" slot="title">$i18n{marginsLabel}</span>
   <div slot="controls">
     <select class="md-select" aria-labelledby="margins-label"
-        ?disabled="${this.marginsDisabled_}"
-        .value="${this.selectedValue}" @change="${this.onSelectChange}">
+        ?disabled="${this.marginsDisabled_}" .value="${this.selectedValue}"
+        @change="${this.onSelectChange}">
       <!-- The order of these options must match the natural order of their
       values, which come from MarginsType. -->
       <option value="${MarginsType.DEFAULT}" selected>

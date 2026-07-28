@@ -16,9 +16,8 @@ export function getHtml(this: MarginControlElement) {
   <div id="input-container">
     <input id="input" ?disabled="${this.disabled}"
         aria-label="${this.i18n(this.side)}"
-        aria-hidden="${this.getAriaHidden_()}"
-        @focus="${this.onFocus_}" @blur="${this.onBlur_}"
-        data-timeout-delay="1000">
+        aria-hidden="${this.getAriaHidden_()}" @focus="${this.onFocus_}"
+        @blur="${this.onBlur_}" data-timeout-delay="1000">
     <span id="unit">${this.measurementSystem?.unitSymbol || ''}</span>
   </div>
   <div id="underline"></div>

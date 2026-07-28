@@ -20,14 +20,13 @@ export function getHtml(this: SidebarElement) {
       @destination-changed="${this.onDestinationChanged_}"
       @destination-state-changed="${this.onDestinationStateChanged_}"
       error="${this.error}" @error-changed="${this.onErrorChanged_}"
-      ?first-load="${this.firstLoad_}"
-      .state="${this.state}" ?app-kiosk-mode="${this.isInAppKioskMode_}"
-      ?disabled="${this.controlsDisabled_}"
-      available class="settings-section"
+      ?first-load="${this.firstLoad_}" .state="${this.state}"
+      ?app-kiosk-mode="${this.isInAppKioskMode_}"
+      ?disabled="${this.controlsDisabled_}" available class="settings-section"
       @destination-capabilities-changed="${this.onDestinationCapabilitiesChanged_}">
   </print-preview-destination-settings>
-  <print-preview-pages-settings
-      page-count="${this.pageCount}" ?disabled="${this.controlsDisabled_}"
+  <print-preview-pages-settings page-count="${this.pageCount}"
+      ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.settingsAvailable_.pages}" class="settings-section">
   </print-preview-pages-settings>
   <print-preview-copies-settings
@@ -35,12 +34,10 @@ export function getHtml(this: SidebarElement) {
       ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.settingsAvailable_.copies}" class="settings-section">
   </print-preview-copies-settings>
-  <print-preview-layout-settings
-      ?disabled="${this.controlsDisabled_}"
+  <print-preview-layout-settings ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.settingsAvailable_.layout}" class="settings-section">
   </print-preview-layout-settings>
-  <print-preview-color-settings
-      ?disabled="${this.controlsDisabled_}"
+  <print-preview-color-settings ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.settingsAvailable_.color}" class="settings-section">
   </print-preview-color-settings>
   <print-preview-more-settings
@@ -49,8 +46,7 @@ export function getHtml(this: SidebarElement) {
       ?disabled="${this.controlsDisabled_}"
       ?hidden="${!this.shouldShowMoreSettings_}">
   </print-preview-more-settings>
-  <cr-collapse id="moreSettings"
-      ?opened="${this.shouldExpandSettings_()}">
+  <cr-collapse id="moreSettings" ?opened="${this.shouldExpandSettings_()}">
     <print-preview-media-size-settings
         .capability="${this.destinationCapabilities_?.printer.media_size || null}"
         ?disabled="${this.controlsDisabled_}"
@@ -64,31 +60,26 @@ export function getHtml(this: SidebarElement) {
     </print-preview-pages-per-sheet-settings>
     <print-preview-margins-settings .state="${this.state}"
         ?disabled="${this.controlsDisabled_}"
-        ?hidden="${!this.settingsAvailable_.margins}"
-        class="settings-section">
+        ?hidden="${!this.settingsAvailable_.margins}" class="settings-section">
     </print-preview-margins-settings>
     <print-preview-dpi-settings
         .capability="${this.destinationCapabilities_?.printer.dpi || null}"
         ?disabled="${this.controlsDisabled_}"
         ?hidden="${!this.settingsAvailable_.dpi}" class="settings-section">
     </print-preview-dpi-settings>
-    <print-preview-scaling-settings
-        ?disabled="${this.controlsDisabled_}" ?is-pdf="${this.isPdf}"
-        ?hidden="${!this.settingsAvailable_.scaling}"
+    <print-preview-scaling-settings ?disabled="${this.controlsDisabled_}"
+        ?is-pdf="${this.isPdf}" ?hidden="${!this.settingsAvailable_.scaling}"
         class="settings-section">
     </print-preview-scaling-settings>
-    <print-preview-duplex-settings
-        ?disabled="${this.controlsDisabled_}" ?dark="${this.inDarkMode}"
-        ?hidden="${!this.settingsAvailable_.duplex}"
+    <print-preview-duplex-settings ?disabled="${this.controlsDisabled_}"
+        ?dark="${this.inDarkMode}" ?hidden="${!this.settingsAvailable_.duplex}"
         class="settings-section">
     </print-preview-duplex-settings>
-    <print-preview-other-options-settings
-        ?disabled="${this.controlsDisabled_}"
+    <print-preview-other-options-settings ?disabled="${this.controlsDisabled_}"
         ?hidden="${!this.settingsAvailable_.otherOptions}"
         class="settings-section">
     </print-preview-other-options-settings>
-    <print-preview-advanced-options-settings
-        .destination="${this.destination}"
+    <print-preview-advanced-options-settings .destination="${this.destination}"
         ?disabled="${this.controlsDisabled_}"
         ?hidden="${!this.settingsAvailable_.vendorItems}"
         class="settings-section">

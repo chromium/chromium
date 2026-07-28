@@ -9,15 +9,14 @@ import type {AppElement} from './app.js';
 export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<print-preview-state id="state"
-    @state-changed="${this.onStateChanged_}" error="${this.error_}"
-    @error-changed="${this.onErrorChanged_}">
+<print-preview-state id="state" @state-changed="${this.onStateChanged_}"
+    error="${this.error_}" @error-changed="${this.onErrorChanged_}">
 </print-preview-state>
 <print-preview-model id="model"
     @settings-managed-changed="${this.onSettingsManagedChanged_}"
     .destination="${this.destination_}"
-    .documentSettings="${this.documentSettings_}"
-    .margins="${this.margins_}" .pageSize="${this.pageSize_}"
+    .documentSettings="${this.documentSettings_}" .margins="${this.margins_}"
+    .pageSize="${this.pageSize_}"
     @preview-setting-changed="${this.onPreviewSettingChanged_}"
     @sticky-setting-changed="${this.onStickySettingChanged_}"
     @setting-valid-changed="${this.onSettingValidChanged_}">
@@ -40,8 +39,8 @@ export function getHtml(this: AppElement) {
 </div>
 <print-preview-sidebar id="sidebar"
     @destination-state-changed="${this.onDestinationStateChanged_}"
-    ?controls-managed="${this.controlsManaged_}"
-    error="${this.error_}" @error-changed="${this.onErrorChanged_}"
+    ?controls-managed="${this.controlsManaged_}" error="${this.error_}"
+    @error-changed="${this.onErrorChanged_}"
     ?is-pdf="${!this.documentSettings_.isModifiable}"
     page-count="${this.documentSettings_.pageCount}" state="${this.state}"
     @focus="${this.onSidebarFocus_}"

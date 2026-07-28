@@ -19,8 +19,8 @@ export function getHtml(this: AdvancedOptionsSettingsElement) {
   </div>
 </print-preview-settings-section>
 ${this.showAdvancedDialog_ ? html`
-  <print-preview-advanced-settings-dialog
-      .destination="${this.destination}" @close="${this.onDialogClose_}">
+  <print-preview-advanced-settings-dialog .destination="${this.destination}"
+      @close="${this.onDialogClose_}">
   </print-preview-advanced-settings-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
