@@ -36,7 +36,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                android:focusable="true" />
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/security_description_details"
                 android:layout_width="wrap_content"
