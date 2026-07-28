@@ -1039,11 +1039,12 @@ void TabStripModel::ActivateTab(tabs::TabInterface* tab,
   scrubbing_metrics_.IncrementPressCount(user_gesture);
 
   // If this tab was activated, eg. by an extension, but is not in the focused
-  // group, unfocus the focused group.
-  std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
+  // group, unfocus the focused group (unless it is a pinned tab and pinned
+  // tabs are allowed in focus mode).
   std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   if (focused_group.has_value() &&
-      (!group_id.has_value() || group_id.value() != focused_group.value())) {
+      !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+          tab, focused_group)) {
     SetFocusedGroup(std::nullopt);
   }
 
@@ -3757,7 +3758,8 @@ tabs::TabStripModelSelectionState TabStripModel::GetSelectionStateFrom(
   if (focused_group.has_value()) {
     bool all_in_focused_group = !selected_tabs.empty();
     for (tabs::TabInterface* tab : selected_tabs) {
-      if (!tab || tab->GetGroup() != focused_group) {
+      if (!tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+              tab, focused_group)) {
         all_in_focused_group = false;
         break;
       }

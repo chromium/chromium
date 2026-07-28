@@ -2468,6 +2468,26 @@ TEST_F(TabStripModelTest, CommandCloseTabsToRightInFocusedGroupOnly) {
   EXPECT_EQ(group_b, tabstrip()->GetTabGroupForTab(1));
 }
 
+TEST_F(TabStripModelTest,
+       SelectingPinnedTabPreservesFocusWhenPinnedTabsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{features::kTabGroupsFocusingPinnedTabs.name, "true"}});
+
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->SetTabPinned(0, true);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Activate the pinned tab (index 0).
+  tabstrip()->ActivateTabAt(0);
+
+  // Focus should be preserved because kTabGroupsFocusingPinnedTabs is enabled.
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {

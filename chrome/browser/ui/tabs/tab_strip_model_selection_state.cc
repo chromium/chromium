@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
@@ -50,6 +51,18 @@ void TabStripModelSelectionState::Clear() {
   focused_group_ = std::nullopt;
 }
 
+bool TabStripModelSelectionState::IsTabValidInFocusedGroup(
+    const TabInterface* tab,
+    std::optional<tab_groups::TabGroupId> focused_group) {
+  if (!tab || !focused_group.has_value()) {
+    return false;
+  }
+  if (tab->GetGroup() == focused_group.value()) {
+    return true;
+  }
+  return tab->IsPinned() && features::kTabGroupsFocusingPinnedTabs.Get();
+}
+
 bool TabStripModelSelectionState::IsSelected(TabInterface* tab) const {
   return selected_tabs_.contains(tab);
 }
@@ -63,7 +76,7 @@ void TabStripModelSelectionState::UpdateFocusGroupValidity() {
     return;
   }
   for (TabInterface* tab : selected_tabs_) {
-    if (!tab || tab->GetGroup() != focused_group_) {
+    if (!IsTabValidInFocusedGroup(tab, focused_group_)) {
       focused_group_ = std::nullopt;
       return;
     }
@@ -157,7 +170,7 @@ bool TabStripModelSelectionState::Valid() const {
   }
   if (focused_group_.has_value()) {
     for (TabInterface* tab : selected_tabs_) {
-      if (!tab || tab->GetGroup() != focused_group_) {
+      if (!IsTabValidInFocusedGroup(tab, focused_group_)) {
         return false;
       }
     }
