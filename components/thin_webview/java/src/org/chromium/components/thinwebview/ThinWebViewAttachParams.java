@@ -17,19 +17,19 @@ public class ThinWebViewAttachParams {
     public final @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory;
     public final @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate;
     public final boolean supportTheming;
-    public final boolean enableAutofill;
+    public final boolean enableBrowserAutofill;
 
     private ThinWebViewAttachParams(
             @Nullable WebContentsDelegateAndroid webContentsDelegate,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             boolean supportTheming,
-            boolean enableAutofill) {
+            boolean enableBrowserAutofill) {
         this.webContentsDelegate = webContentsDelegate;
         this.contextMenuPopulatorFactory = contextMenuPopulatorFactory;
         this.selectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         this.supportTheming = supportTheming;
-        this.enableAutofill = enableAutofill;
+        this.enableBrowserAutofill = enableBrowserAutofill;
     }
 
     /** Builder for {@link ThinWebViewAttachParams}. */
@@ -38,7 +38,7 @@ public class ThinWebViewAttachParams {
         @Nullable private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
         @Nullable private SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
         private boolean mSupportTheming;
-        private boolean mEnableAutofill = true;
+        private boolean mEnableBrowserAutofill = true;
 
         public Builder() {}
 
@@ -90,13 +90,13 @@ public class ThinWebViewAttachParams {
         }
 
         /**
-         * Sets whether to enable Autofill tab helper attachment.
+         * Sets whether browser autofill tab helper attachment should be enabled.
          *
-         * @param enableAutofill Whether Autofill should be enabled.
+         * @param enableBrowserAutofill Whether browser Autofill should be enabled.
          * @return This builder.
          */
-        public Builder setEnableAutofill(boolean enableAutofill) {
-            mEnableAutofill = enableAutofill;
+        public Builder setEnableBrowserAutofill(boolean enableBrowserAutofill) {
+            mEnableBrowserAutofill = enableBrowserAutofill;
             return this;
         }
 
@@ -111,7 +111,7 @@ public class ThinWebViewAttachParams {
                     mContextMenuPopulatorFactory,
                     mSelectionDropdownMenuDelegate,
                     mSupportTheming,
-                    mEnableAutofill);
+                    mEnableBrowserAutofill);
         }
     }
 }
