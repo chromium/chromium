@@ -127,7 +127,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, DanglingUntriaged>
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
