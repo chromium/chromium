@@ -1960,7 +1960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppShimRegistry.VerifyCdHashResult"
-    enum="AppShimRegistryVerifyCdHashResult" expires_after="2026-10-01">
+    enum="AppShimRegistryVerifyCdHashResult" expires_after="2027-01-24">
   <owner>dmurph@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

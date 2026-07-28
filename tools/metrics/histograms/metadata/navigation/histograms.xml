@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2026-11-22">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2027-01-24">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1080,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.DuplicateNavigationsIgnoredCountPerNavigation"
-    units="count" expires_after="2026-11-22">
+    units="count" expires_after="2027-01-24">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.OpportunityTime.FetchStart"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-01-24">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Experimental.FastFetch.OpportunityTime.LoaderStart"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-01-24">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1333,7 +1333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.GestureTransition.Screenshot.SharedImageReceived"
-    enum="BooleanReceived" expires_after="2026-11-22">
+    enum="BooleanReceived" expires_after="2027-01-24">
   <owner>acondor@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -1565,7 +1565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.IsSameSiteInstance"
-    enum="NavigationIsSameSiteInstance" expires_after="2026-11-22">
+    enum="NavigationIsSameSiteInstance" expires_after="2027-01-24">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -1742,7 +1742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameProfileTypeDifferentPage2"
-    enum="BrowserProfileType" expires_after="2026-11-22">
+    enum="BrowserProfileType" expires_after="2027-01-24">
   <owner>dullweber@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

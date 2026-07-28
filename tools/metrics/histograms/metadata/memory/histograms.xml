@@ -3182,7 +3182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.SystemMemoryLists.QueryFailureStatus" enum="NTSTATUS"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>spvm@google.com</owner>
   <owner>etienneb@google.com</owner>
   <summary>

@@ -32,7 +32,7 @@ reviewer.
 <!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->
 
 <histogram name="PrivateAi.Client.ClientAttestationRequestFailureReason"
-    enum="PrivateAiStatusCode" expires_after="2026-11-25">
+    enum="PrivateAiStatusCode" expires_after="2027-01-24">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>lamzin@google.com</owner>
@@ -105,7 +105,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.RequestStatusCode" enum="PrivateAiStatusCode"
-    expires_after="2026-11-25">
+    expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -118,7 +118,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.RequestStatusCode.{FeatureName}"
-    enum="PrivateAiStatusCode" expires_after="2026-11-25">
+    enum="PrivateAiStatusCode" expires_after="2027-01-24">
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>lamzin@google.com</owner>
@@ -130,7 +130,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.ResponseSize.Success" units="bytes"
-    expires_after="2026-11-25">
+    expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -294,7 +294,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.SecureChannel.GetAttestationRequestLatency.{Status}"
-    units="ms" expires_after="2026-11-25">
+    units="ms" expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -313,7 +313,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.SecureChannel.GetHandshakeMessageLatency.{Status}"
-    units="ms" expires_after="2026-11-25">
+    units="ms" expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -345,7 +345,7 @@ reviewer.
 
 <histogram
     name="PrivateAi.SecureChannel.SendAttestationRequestLatency.{Status}"
-    units="ms" expires_after="2026-11-25">
+    units="ms" expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>

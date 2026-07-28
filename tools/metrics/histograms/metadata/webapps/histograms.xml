@@ -3139,7 +3139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.UpdateReviewDialog.TriggerToShowTime" units="ms"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
