@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/skills/skills_dialog_handler.h"
 #include "chrome/browser/ui/webui/skills/skills_page_handler.h"
 #include "chrome/browser/ui/webui/skills/skills_page_handler_v2.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
@@ -37,12 +38,22 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 namespace skills {
 namespace {
 
 constexpr int kMaxNameCharCount = 100;
 constexpr int kMaxPromptCharCount = 20000;
+
+std::string GetSkillsV2Origin() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kSkillsV2Origin)) {
+    return command_line->GetSwitchValueASCII(switches::kSkillsV2Origin);
+  }
+  // Default to prod if not specified.
+  return "https://clients5.google.com";
+}
 
 bool ShouldDisableBrowseSkillsPage() {
   if (!base::FeatureList::IsEnabled(
@@ -148,6 +159,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
     webui::SetupWebUIDataSource(source, kSkillsResources,
                                 IDR_SKILLS_V2_SKILLS_HTML);
     source->AddResourcePath("dialog", IDR_SKILLS_V2_SKILLS_DIALOG_HTML);
+    source->AddString("skillsPrimaryOrigin", GetSkillsV2Origin());
   } else {
     webui::SetupWebUIDataSource(source, kSkillsResources,
                                 IDR_SKILLS_SKILLS_HTML);

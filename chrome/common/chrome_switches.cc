@@ -951,6 +951,7 @@ const char kGuest[] = "guest";
 
 // Overrides the glic guest URL.
 const char kGlicGuestURL[] = "glic-guest-url";
+const char kSkillsV2Origin[] = "skills-v2-origin";
 // Overrides the Gemini Enterprise settings JSON dictionary for local development.
 const char kGlicGeminiEnterpriseSettingsOverride[] =
     "glic-gemini-enterprise-settings-override";

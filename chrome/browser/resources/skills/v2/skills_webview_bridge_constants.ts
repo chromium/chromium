@@ -1,6 +1,7 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 /** Message type used by the host to initiate the handshake ping. */
 export const SKILLS_HANDSHAKE_TYPE = 'skills-handshake';
@@ -41,20 +42,26 @@ export const HANDSHAKE_PING_INTERVAL_MS = 50;
 /** Timeout in milliseconds before the host aborts the handshake. */
 export const HANDSHAKE_TIMEOUT_MS = 5000;
 
-/** The primary origin for the Skills guest page. */
-export const PRIMARY_SKILLS_ORIGIN =
-    'https://chromeskills-staging.corp.google.com';
+/** Returns the primary origin for the Skills guest page. */
+export function getPrimarySkillsOrigin(): string {
+  return loadTimeData.getString('skillsPrimaryOrigin');
+}
 
-export const SKILLS_API_ALLOWED_ORIGINS = [
-  PRIMARY_SKILLS_ORIGIN,
-  'https://accounts.google.com',
-  // Only allowed for internal users.
-  'https://login.corp.google.com',
-  'https://accounts.googlers.com',
-];
+/** Returns the allowed origins list. */
+export function getSkillsApiAllowedOrigins(): string[] {
+  return [
+    getPrimarySkillsOrigin(),
+    'https://accounts.google.com',
+    // Only allowed for internal users.
+    'https://login.corp.google.com',
+    'https://accounts.googlers.com',
+  ];
+}
 
-/** The remote URL that the webview loads. */
-export const SKILLS_REMOTE_URL = `${PRIMARY_SKILLS_ORIGIN}/chromeskills/browse`;
+/** Returns the remote URL that the webview loads. */
+export function getSkillsRemoteUrl(): string {
+  return `${getPrimarySkillsOrigin()}/chromeskills/browse`;
+}
 
 const REMOTE_PATH_PREFIX = '/chromeskills';
 
@@ -63,7 +70,7 @@ const REMOTE_PATH_PREFIX = '/chromeskills';
  * staging remote URL.
  */
 export function getRemoteUrlForChromePath(chromePath: string): string {
-  return `${PRIMARY_SKILLS_ORIGIN}${REMOTE_PATH_PREFIX}${chromePath}`;
+  return `${getPrimarySkillsOrigin()}${REMOTE_PATH_PREFIX}${chromePath}`;
 }
 
 /**
@@ -71,7 +78,7 @@ export function getRemoteUrlForChromePath(chromePath: string): string {
  * to display in the address bar.
  */
 export function getChromePathForRemoteUrl(url: URL): string {
-  if (url.origin !== PRIMARY_SKILLS_ORIGIN ||
+  if (url.origin !== getPrimarySkillsOrigin() ||
       !url.pathname.startsWith(REMOTE_PATH_PREFIX)) {
     console.warn(
         `URL "${url.href}" does not match primary ` +

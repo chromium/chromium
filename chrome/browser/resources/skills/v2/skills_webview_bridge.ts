@@ -7,8 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ToastType} from '../skills.mojom-webui.js';
 
-import {getLoadingStageHistogramName, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, PRIMARY_SKILLS_ORIGIN, SKILLS_API_ALLOWED_ORIGINS, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
-
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_OPEN_URL, SKILLS_SHOW_TOAST} from './skills_webview_bridge_constants.js';
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
  * <protocol>://<hostname>[:<port>]
@@ -45,7 +44,7 @@ export function urlMatchesApiAllowedOrigin(url: URL): boolean {
 
   // A URL is allowed to have API access if it matches any of the explicit API
   // allowed origins.
-  return SKILLS_API_ALLOWED_ORIGINS.some((origin: string) => {
+  return getSkillsApiAllowedOrigins().some((origin: string) => {
     // Only allow internal origins for internal users.
     if (isInternalOnlyOrigin(origin) &&
         !loadTimeData.getBoolean('isInternalUser')) {
@@ -131,7 +130,7 @@ export class SkillsWebviewBridge {
       return true;
     }
 
-    return matcherForOrigin(PRIMARY_SKILLS_ORIGIN)?.test(url) ?? false;
+    return matcherForOrigin(getPrimarySkillsOrigin())?.test(url) ?? false;
   }
 
   private onLoadStop() {
