@@ -3271,7 +3271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.GMOSKOAttributionPlacementID.LongAttributionWindow"
-    units="Placement ID" expires_after="2026-08-14">
+    units="Placement ID" expires_after="2027-07-26">
   <owner>gujen@google.com</owner>
   <owner>sebsg@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -3284,7 +3284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.GMOSKOAttributionPlacementID.ShortAttributionWindow"
-    units="Placement ID" expires_after="2026-08-14">
+    units="Placement ID" expires_after="2027-07-26">
   <owner>gujen@google.com</owner>
   <owner>sebsg@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -3297,7 +3297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.GMOSKOInstallAttribution" enum="IOSInstallAttributionType"
-    expires_after="2026-08-04">
+    expires_after="2027-07-26">
   <owner>gujen@google.com</owner>
   <owner>sebsg@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
