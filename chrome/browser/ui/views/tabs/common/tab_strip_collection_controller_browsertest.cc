@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/fade_label_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -55,49 +57,73 @@
 namespace {
 
 class TabStripCollectionControllerBrowserTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
-  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      override {
-    return {{features::kTabGroupsCollapseFreezing, {}},
-            {tabs::kVerticalTabs, {}}};
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
   }
 
-  bool CheckMenuHasStringId(int message_id) {
-    ui::SimpleMenuModel* menu_model = vertical_tab_strip_controller()
-                                          ->GetTabContextMenuController()
-                                          ->GetMenuModel();
-    for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
-      if (l10n_util::GetStringUTF16(message_id) == menu_model->GetLabelAt(i)) {
-        return true;
-      }
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
     }
-    return false;
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsCollapseFreezing, {}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        VerifyTabContextMenuText) {
   // Get the first tab's node.
   TabCollectionNode* first_tab_node =
       unpinned_collection_node()->children()[0].get();
   ASSERT_TRUE(first_tab_node);
 
-  // Open Tab Context Menu manually.
-  vertical_tab_strip_controller()->ShowContextMenuForNode(
-      first_tab_node, first_tab_node->view(), gfx::Point(),
-      ui::mojom::MenuSourceType::kMouse);
+  const tabs::TabInterface* tab =
+      std::get<const tabs::TabInterface*>(first_tab_node->GetNodeData());
+  std::optional<int> tab_index =
+      browser()->tab_strip_model()->GetIndexOfTab(tab);
+  ASSERT_TRUE(tab_index.has_value());
 
-  // Verify "New Tab Below" text is present.
-  EXPECT_TRUE(CheckMenuHasStringId(IDS_TAB_CXMENU_NEWTABBELOW));
-  // Verify "Close Tabs Below" text is present.
-  EXPECT_TRUE(CheckMenuHasStringId(IDS_TAB_CXMENU_CLOSETABSBELOW));
+  TabContextMenuController context_menu_controller(
+      tab->GetHandle(), vertical_tab_strip_controller());
 
-  // Close menu to avoid the test hanging.
-  vertical_tab_strip_controller()->GetTabContextMenuController()->CloseMenu();
+  TabMenuModelFactory menu_model_factory;
+  auto model = menu_model_factory.Create(
+      &context_menu_controller,
+      browser()->GetFeatures().tab_menu_model_delegate(),
+      browser()->tab_strip_model(), tab_index.value());
+
+  auto check_menu_has_string = [&](int message_id) {
+    std::u16string expected = l10n_util::GetStringUTF16(message_id);
+    for (size_t i = 0; i < model->GetItemCount(); ++i) {
+      if (model->GetLabelAt(i) == expected) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  if (is_horizontal()) {
+    EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_NEWTABTORIGHT));
+    EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_CLOSETABSTORIGHT));
+  } else {
+    EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_NEWTABBELOW));
+    EXPECT_TRUE(check_menu_has_string(IDS_TAB_CXMENU_CLOSETABSBELOW));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        TabGroupCollapseFreezing) {
   // Create two tabs and add them to a group.
   AppendTab();
@@ -132,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_FALSE(tab_view1->HasFreezingVote());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest, ShiftTabNext) {
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest, ShiftTabNext) {
   AppendTab();
 
   TabStripModel* model = browser()->tab_strip_model();
@@ -149,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest, ShiftTabNext) {
   EXPECT_EQ(1, model->GetIndexOfTab(tab_to_move));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabPrevious) {
   AppendTab();
 
@@ -168,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ClickTabInImmersiveMode) {
   // Add another tab to switch to.
   AppendTab();
@@ -215,23 +241,52 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
-class VerticalTabGroupHoverCardTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripCollectionControllerBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+class TabGroupHoverCardTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
-  VerticalTabGroupHoverCardTest() {
+  TabGroupHoverCardTest() {
     TabHoverCardController::set_disable_animations_for_testing(true);
+  }
+
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
   }
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {{features::kTabGroupsCollapseFreezing, {}},
-            {tabs::kVerticalTabs, {}},
-            {features::kTabGroupHoverCards, {}}};
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsCollapseFreezing, {}});
+    enabled.push_back({features::kTabGroupHoverCards, {}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
-                       TabGroupHeaderHoverCardUnnamed) {
+IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardUnnamed) {
   AppendTab();
   AppendTab();
   TabStripModel* model = browser()->tab_strip_model();
@@ -273,8 +328,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   EXPECT_TRUE(tab_title_views[1]->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
-                       TabGroupHeaderHoverCardNamed) {
+IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardNamed) {
   // Create a group with some tabs and a name.
   AppendTab();
   AppendTab();
@@ -312,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   EXPECT_EQ(bubble->GetGroupTitleViewForTesting()->GetText(), expected_header);
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
+IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest,
                        TabGroupHeaderHoverCardWithExcessTabs) {
   // Create a group with more than kMaxTabs tabs.
   const size_t n_tabs = tabs::TabGroupData::kMaxTabs + 1;
@@ -346,7 +400,21 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   EXPECT_TRUE(bubble->GetGroupFooterViewForTesting()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabGroupHoverCardTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        MoveTabFirstAndLastUnpinned) {
   AppendTab();
   AppendTab();
@@ -373,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        MoveTabFirstAndLastPinned) {
   AppendTab();
   AppendTab();
@@ -409,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_EQ(tab_model->GetTabAtIndex(2), tab2);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabIntoGroup) {
   AppendTab();
   AppendTab();
@@ -431,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_EQ(group_id, tab1->GetGroup());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabOutOfGroup) {
   AppendTab();
 
@@ -452,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_FALSE(tab0->GetGroup().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabPastCollapsedGroup) {
   AppendTab();
   AppendTab();
@@ -487,16 +555,30 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_FALSE(tab0->GetGroup().has_value());
 }
 
-class VerticalTabStripControllerFocusingVisibilityBrowserTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+class TabStripControllerFocusingVisibilityBrowserTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    return {
-        {features::kTabGroupsFocusing,
-         {{"tab_groups_focusing_pinned_tabs", "false"}}},
-        {tabs::kVerticalTabs, {}},
-    };
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing,
+                       {{"tab_groups_focusing_pinned_tabs", "false"}}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
   }
 
  private:
@@ -508,7 +590,7 @@ class VerticalTabStripControllerFocusingVisibilityBrowserTest
 // Verifies that when a tab group is focused, pinned tabs and unfocused
 // groups/tabs are correctly hidden from the layout. It also ensures that
 // exiting focus mode restores the visibility of all tabs.
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerFocusingVisibilityBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
                        FocusModeHidesUnfocusedAndPinnedTabs) {
   AppendTab();
   AppendTab();
@@ -553,5 +635,19 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerFocusingVisibilityBrowserTest,
   EXPECT_TRUE(group_view->GetVisible());
   EXPECT_TRUE(unpinned_tab_view->GetVisible());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripControllerFocusingVisibilityBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
 
 }  // namespace

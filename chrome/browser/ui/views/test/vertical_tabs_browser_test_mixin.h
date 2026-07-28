@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -59,10 +60,8 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   TabStripCollectionController* vertical_tab_strip_controller() {
-    VerticalTabStripRegionView* const region_view =
-        T::browser()
-            ->GetBrowserView()
-            .vertical_tab_strip_region_view_for_testing();
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        T::browser()->GetBrowserView().tab_strip_view());
     return region_view ? region_view->GetTabStripCollectionController()
                        : nullptr;
   }
@@ -102,11 +101,9 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   RootTabCollectionNode* root_node() {
-    VerticalTabStripRegionView* region_view =
-        T::browser()
-            ->GetBrowserView()
-            .vertical_tab_strip_region_view_for_testing();
-    return region_view->root_node_for_testing();
+    auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+        T::browser()->GetBrowserView().tab_strip_view());
+    return region_view ? region_view->root_node_for_testing() : nullptr;
   }
 
   TabCollectionNode* unpinned_collection_node() {

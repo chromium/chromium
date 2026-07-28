@@ -40,9 +40,51 @@ const char kSecondTabName[] = "SecondTab";
 const char kThirdTabName[] = "ThirdTab";
 const int kShift = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
 
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+
 class TabStripCollectionControllerInteractiveUiTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
+  TabStripCollectionControllerInteractiveUiTest() = default;
+  ~TabStripCollectionControllerInteractiveUiTest() override = default;
+
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsInteractiveTestMixin<
+        InteractiveBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsInteractiveTestMixin<
+        InteractiveBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
+  TabStripView* GetTabStripView() {
+    auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
+        browser()->GetBrowserView().tab_strip_view());
+    return base_region ? views::AsViewClass<TabStripView>(
+                             base_region->GetTabStripView())
+                       : nullptr;
+  }
+
+  ui::ElementIdentifier tab_strip_anchor_element() const {
+    return is_horizontal() ? kNewTabButtonElementId
+                           : kVerticalTabStripBottomContainerElementId;
+  }
+
   bool CheckMenuHasStringId(int message_id) {
     ui::SimpleMenuModel* menu_model = vertical_tab_strip_controller()
                                           ->GetTabContextMenuController()
@@ -79,11 +121,11 @@ class TabStripCollectionControllerInteractiveUiTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        VerifyTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -103,11 +145,11 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
           0));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        VerifyClosingTabWithMiddleMouseButton) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -139,12 +181,12 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
       WaitForHide(kFirstTabName));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     TabStripCollectionControllerInteractiveUiTest,
     VerifyNotClosingTabWhenMiddleMouseButtonReleasedElsewhere) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -172,11 +214,11 @@ IN_PROC_BROWSER_TEST_F(
                   2));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        ShiftMultiTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create three tabs.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -230,11 +272,11 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
           0));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        ToggleTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -275,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
           0));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        KeyboardTabSelection) {
   ui::Accelerator previous_tab_accelerator, next_tab_accelerator;
 
@@ -286,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -308,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 #else
 #define MAYBE_KeyboardTabGroupCommands KeyboardTabGroupCommands
 #endif
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        MAYBE_KeyboardTabGroupCommands) {
   ui::Accelerator create_new_tab_group_accelerator,
       add_new_tab_to_group_accelerator, close_tab_group_accelerator;
@@ -322,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Keyboard Command to Create New Tab Group.
       SendAccelerator(kBrowserViewElementId, create_new_tab_group_accelerator),
       // Verify One Tab Group Exists.
@@ -374,11 +416,11 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
           0));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        VerifyTabContextMenu) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Identify Tab by Type (TabView).
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
@@ -400,13 +442,13 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 #define MAYBE_TabOpenedWhileUsingTabContextMenu \
   TabOpenedWhileUsingTabContextMenu
 #endif
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        MAYBE_TabOpenedWhileUsingTabContextMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabId);
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Add a second tab and open its context menu.
       AddInstrumentedTab(kSecondTabId, GURL("https://www.example.com/")),
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kSecondTabName,
@@ -460,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(
     OnTabGroupFocusChangedUpdatesTheme) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -493,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(
     UnfocusButtonShowsWhenGroupFocused) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId),
       // Create a second tab.
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
@@ -521,11 +563,10 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_VerticalTabHoverCardShowUnpinned VerticalTabHoverCardShowUnpinned
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        MAYBE_VerticalTabHoverCardShowUnpinned) {
   RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      MoveMouseTo(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
       MoveMouseTo(kFirstTabName),
@@ -537,32 +578,27 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 #else
 #define MAYBE_ScrollingHidesHoverCard ScrollingHidesHoverCard
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        MAYBE_ScrollingHidesHoverCard) {
   RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      MoveMouseTo(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
       MoveMouseTo(kFirstTabName),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
       Do([this]() {
-        views::View* tab_strip_view =
-            BrowserView::GetBrowserViewForBrowser(browser())
-                ->vertical_tab_strip_region_view_for_testing()
-                ->GetTabStripView();
-        TabStripView* vertical_tab_strip_view =
-            views::AsViewClass<TabStripView>(tab_strip_view);
-        vertical_tab_strip_view->unpinned_tabs_scroll_view()->ScrollByOffset(
-            {0, -100});
+        gfx::PointF scroll_offset =
+            is_horizontal() ? gfx::PointF(-100, 0) : gfx::PointF(0, -100);
+        GetTabStripView()->unpinned_tabs_scroll_view()->ScrollByOffset(
+            scroll_offset);
       }),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        ScrollingUnpinnedContainerClosesTabGroupEditorBubble) {
   RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId), Do([this]() {
+      WaitForShow(kNewTabButtonElementId), Do([this]() {
         browser()->tab_strip_model()->ExecuteContextMenuCommand(
             browser()->tab_strip_model()->active_index(),
             TabStripModel::ContextMenuCommand::
@@ -580,14 +616,10 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
             FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(300));
         run_loop.Run();
 
-        views::View* tab_strip_view =
-            BrowserView::GetBrowserViewForBrowser(browser())
-                ->vertical_tab_strip_region_view_for_testing()
-                ->GetTabStripView();
-        TabStripView* vertical_tab_strip_view =
-            views::AsViewClass<TabStripView>(tab_strip_view);
-        vertical_tab_strip_view->unpinned_tabs_scroll_view()->ScrollByOffset(
-            {0, -100});
+        gfx::PointF scroll_offset =
+            is_horizontal() ? gfx::PointF(-100, 0) : gfx::PointF(0, -100);
+        GetTabStripView()->unpinned_tabs_scroll_view()->ScrollByOffset(
+            scroll_offset);
       }),
       WaitForHide(kTabGroupEditorBubbleId));
 }
@@ -597,11 +629,10 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
 #else
 #define MAYBE_MousePressHidesHoverCard MousePressHidesHoverCard
 #endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        MAYBE_MousePressHidesHoverCard) {
   RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      MoveMouseTo(kVerticalTabStripBottomContainerElementId),
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
       MoveMouseTo(kFirstTabName),
@@ -609,4 +640,19 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerInteractiveUiTest,
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
+
 }  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripCollectionControllerInteractiveUiTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });

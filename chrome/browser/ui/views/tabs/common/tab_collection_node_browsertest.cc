@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -31,17 +34,38 @@
 #include "ui/views/view_utils.h"
 
 class TabCollectionNodeBrowserTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
   TabCollectionNodeBrowserTest() = default;
   ~TabCollectionNodeBrowserTest() override = default;
 
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
  protected:
   RootTabCollectionNode* root_node() {
-    return browser()
-        ->GetBrowserView()
-        .vertical_tab_strip_region_view_for_testing()
-        ->root_node_for_testing();
+    auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+        browser()->GetBrowserView().tab_strip_view());
+    return base_region_view ? base_region_view->root_node_for_testing()
+                            : nullptr;
   }
 
   views::View* root_node_view() { return root_node()->view(); }
@@ -142,7 +166,7 @@ class TabCollectionNodeBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_UnpinnedTab) {
   AppendTab();
 
@@ -165,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_PinnedTab) {
   AppendPinnedTab();
 
@@ -180,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_TabGroup) {
   AppendTabToNewGroup();
 
@@ -200,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(group_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_MultiTabGroup) {
   AppendTabsToNewGroup(2);
 
@@ -221,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(group_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_SplitTab) {
   AppendSplitTab();
 
@@ -242,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(split_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_PinnedSplitTab) {
   AppendPinnedSplitTab();
 
@@ -263,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_ViewClasses) {
   AppendPinnedTab();
   AppendTabToNewGroup();
@@ -310,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_TRUE(views::IsViewClass<TabView>(split_node->children()[1]->view()));
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_ViewHierarchy) {
   AppendTab();
 
@@ -343,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
             2u);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, GetDirectChildren) {
   AppendTab();
 
   ASSERT_TRUE(
@@ -370,12 +394,9 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
                 ->contents());
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        CollectionReturnsOnlyCollectionItems) {
   AppendTab();
-
-  views::View* non_collection_view =
-      parent_view()->AddChildView(std::make_unique<views::View>());
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !root_node()->children().empty(); }));
@@ -383,23 +404,22 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node()->children().size(), 2u);
 
-  // The parent_view should have multiple children in addition to the root view.
+  // The parent_view has non-collection children (e.g. search button, new tab
+  // button, bottom container).
   ASSERT_GE(parent_view()->children().size(), 2u);
 
-  views::View* non_collection_view_2 =
-      root_node_view()->AddChildView(std::make_unique<views::View>());
-
-  // The root_node_view should have four children, the pinned and unpinned
-  // views, a separator and the non-collection view.
-  ASSERT_EQ(root_node_view()->children().size(), 4u);
-
   const auto& child_views = root_node()->GetDirectChildren();
-  ASSERT_GE(child_views.size(), 2u);
-  EXPECT_FALSE(std::ranges::contains(child_views, non_collection_view));
-  EXPECT_FALSE(std::ranges::contains(child_views, non_collection_view_2));
+  ASSERT_EQ(child_views.size(), 2u);
+  // Verify that non-collection child views of the parent view are not included
+  // in GetDirectChildren.
+  for (views::View* child : parent_view()->children()) {
+    if (child != root_node_view()) {
+      EXPECT_FALSE(std::ranges::contains(child_views, child));
+    }
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabViewIsCreatedForTabs) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, TabViewIsCreatedForTabs) {
   // Add an unpinned tab.
   AppendTab();
   // Add a pinned tab.
@@ -426,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabViewIsCreatedForTabs) {
       views::IsViewClass<TabView>(unpinned_node->children()[1]->view()));
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
   // The pinned Node should be empty.
   const auto* pinned_node = pinned_collection_node();
   ASSERT_EQ(pinned_node->children().size(), 0u);
@@ -468,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
   EXPECT_EQ(unpinned_node->children()[2].get(), appended_unpinned_tab_node);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   // 1. Setup: Have three tabs unpinned.
   AppendTab();
   AppendTab();
@@ -489,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   ASSERT_EQ(unpinned_node->children().size(), 2u);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
   // 1. Setup: Create an initial tab and a tab group to be detached.
   auto [contents_vector, group_id] = AppendTabsToNewGroup(2);
 
@@ -535,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
             TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
   // 1. Setup: Start with three unpinned tabs.
   AppendTab();  // Tab 1 (index 1)
   AppendTab();  // Tab 2 (index 2)
@@ -571,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
             TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        SingleMoveWithinCollection) {
   // 1. Setup: Start with three unpinned tabs.
   AppendTab();  // Tab 1 (index 1)
@@ -621,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(unpinned_node->children()[2]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        SingleMoveAcrossCollection) {
   // 1. Setup: Start with three unpinned tabs.
   // Tab 0: Initial tab
@@ -671,8 +691,13 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_NE(unpinned_node->children()[1].get(), tab_to_pin_node);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
                        PinnedContainerDragAxesUpdatesOnCollapseStateChanged) {
+  if (is_horizontal()) {
+    GTEST_SKIP()
+        << "Vertical tab strip collapse state is not applicable in horizontal "
+           "mode.";
+  }
   AppendPinnedTab();
 
   auto* pinned_view = views::AsViewClass<PinnedTabContainerView>(
@@ -693,3 +718,17 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
     return pinned_view->drag_axes() == DraggedTabsContainer::DragAxes::kBoth;
   }));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabCollectionNodeBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
