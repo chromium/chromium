@@ -83,9 +83,12 @@
 
   // Records the displayed primary account info by the view. Used to limit the
   // view updates to only when one of these values is updated.
+
+  // The displayed primary account. Not nil.
   NSString* _primaryAccountDisplayedEmail;
-  // The name may be nil if it has not yet been fetched.
+  // The name of the primary account. It may be nil.
   NSString* _primaryAccountDisplayedUserFullName;
+  // The version of the avatar currently displayed. Not nil.
   UIImage* _primaryAccountDisplayedAvatar;
   // The URL which the the account menu was viewed from when
   // AccountMenuAccessPoint::kWeb.
