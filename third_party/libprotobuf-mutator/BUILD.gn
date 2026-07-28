@@ -59,6 +59,7 @@ if (use_libfuzzer) {
     deps = [
       ":libprotobuf-mutator",
       ":lpm_test_fuzzer_proto",
+      ":lpm_test_fuzzer_proto_fuzzable",
     ]
 
     # Don't actually run this on CF. It's only a test to ensure builds work.
@@ -73,6 +74,7 @@ fuzzable_proto_library("lpm_test_fuzzer_proto") {
     "test_fuzzer/imported_publicly.proto",
     "test_fuzzer/test_fuzzer_input.proto",
   ]
+  use_experimental_fuzzable_proto = true
 }
 
 # Avoid CQ complaints on platforms we don't care about (ie: iOS).
