@@ -224,7 +224,7 @@ public class TabBottomSheetWebUi {
                             .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
                             .setSelectionDropdownMenuDelegate(mSelectionDropdownMenuDelegate)
                             .setSupportTheming(true)
-                            .setEnableAutofill(false)
+                            .setEnableAutofill(true)
                             .build());
             if (mClientType == TabBottomSheetClientType.CONTEXTUAL_TASKS) {
                 // This disables ActionModeSelectionMenu from ever being shown on AIM.
