@@ -22,10 +22,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -34,7 +32,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engines_switches.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -505,61 +502,11 @@ const AiModeButtonUiConfig* OmniboxContextMenuMixinBase::GetAiModeUiConfig()
   return service ? service->GetCurrentConfig() : nullptr;
 }
 
-void OmniboxContextMenuMixinBase::BuildSendTabToSelfSubmenu(
-    ui::SimpleMenuModel* menu_contents,
-    size_t index) {
-  CHECK(location_bar_);
-  send_tab_to_self_submenu_delegate_ =
-      std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
-          location_bar_->GetWebContents(),
-          send_tab_to_self::ShareEntryPoint::kOmniboxMenu);
-  send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
-      send_tab_to_self_submenu_delegate_.get());
-  send_tab_to_self_submenu_delegate_->PopulateSubmenu(
-      send_tab_to_self_submenu_.get());
-
-  menu_contents->InsertSubMenuWithStringIdAt(index, IDC_SEND_TAB_TO_SELF,
-                                             IDS_MENU_SEND_TAB_TO_SELF,
-                                             send_tab_to_self_submenu_.get());
-#if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(
-      index, ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                ? kDevicesIcon
-                                                : kDevicesOldIcon));
-#endif
-  menu_contents->SetIsNewFeatureAt(
-      index, UserEducationService::MaybeShowNewBadge(
-                 location_bar_->GetProfile(),
-                 send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2));
-}
-
-void OmniboxContextMenuMixinBase::BuildSendTabToSelfSimpleItem(
-    ui::SimpleMenuModel* menu_contents,
-    size_t index) {
-  menu_contents->InsertItemAt(
-      index, IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
-#if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(
-      index, ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                ? kDevicesIcon
-                                                : kDevicesOldIcon));
-#endif
-}
-
 void OmniboxContextMenuMixinBase::MaybeAddSendTabToSelfItem(
     ui::SimpleMenuModel* menu_contents) {
-  // WebContents is required to evaluate Send Tab to Self availability
-  // (such as sync state and target devices) and to provide tab context
-  // (URL and title) for the context menu delegate.
-  if (!location_bar_ || !location_bar_->GetWebContents()) {
-    return;
-  }
-
-  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      send_tab_to_self::GetEntryPointDisplayReason(
-          location_bar_->GetWebContents());
-  if (!reason) {
+  // Only add this menu entry if SendTabToSelf feature is enabled.
+  if (!send_tab_to_self::ShouldDisplayEntryPoint(
+          location_bar_->GetWebContents())) {
     return;
   }
 
@@ -574,16 +521,14 @@ void OmniboxContextMenuMixinBase::MaybeAddSendTabToSelfItem(
     menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
   }
 
-  // Build an inline submenu showing target devices if the Omnibox context menu
-  // feature is enabled and target devices are available. Otherwise, fallback
-  // to a simple command item that triggers the bubble dialog.
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2) &&
-      *reason == send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
-    BuildSendTabToSelfSubmenu(menu_contents, index);
-  } else {
-    BuildSendTabToSelfSimpleItem(menu_contents, index);
-  }
-
+  menu_contents->InsertItemAt(
+      index, IDC_SEND_TAB_TO_SELF,
+      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+#if !BUILDFLAG(IS_MAC)
+  menu_contents->SetIcon(
+      index, ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                                ? kDevicesIcon
+                                                : kDevicesOldIcon));
+#endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }

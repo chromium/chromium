@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_MIXIN_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_MIXIN_H_
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -29,10 +28,6 @@ class WebContents;
 namespace gfx {
 class FontList;
 }  // namespace gfx
-
-namespace send_tab_to_self {
-class SendTabToSelfContextMenuDelegate;
-}  // namespace send_tab_to_self
 
 namespace ui {
 class SimpleMenuModel;
@@ -118,19 +113,11 @@ class OmniboxContextMenuMixinBase {
   // Helper that adds a menu entry to send current tab to other devices if
   // appropriate.
   void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
-  void BuildSendTabToSelfSubmenu(ui::SimpleMenuModel* menu_contents,
-                                 size_t index);
-  void BuildSendTabToSelfSimpleItem(ui::SimpleMenuModel* menu_contents,
-                                    size_t index);
 
   const AiModeButtonUiConfig* GetAiModeUiConfig() const;
 
   raw_ptr<LocationBar> location_bar_;
   raw_ptr<OmniboxController> controller_;
-
-  std::unique_ptr<send_tab_to_self::SendTabToSelfContextMenuDelegate>
-      send_tab_to_self_submenu_delegate_;
-  std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 
   // A helper `Textfield` instance used solely for generating and handling the
   // native context menu when the user right-clicks inside the full WebUI
@@ -151,7 +138,6 @@ class OmniboxContextMenuMixinBase {
   std::unique_ptr<views::Textfield> context_menu_textfield_helper_;
   std::unique_ptr<views::ViewsTextServicesContextMenu>
       text_services_context_menu_;  // refs `context_menu_textfield_helper_`
-
   // Cached clipboard text for menu paste state.
   // Updated by PrepareToShowContextMenu()
   std::u16string clipboard_text_for_menu_;
