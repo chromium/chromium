@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_util.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -528,11 +529,13 @@
     FullscreenModeTransitionTrigger trigger =
         FullscreenModeTransitionTrigger::kForcedByCode;
 
+    BOOL findNavigatorVisible = [self isFindNavigatorVisibleInTab];
+
     if (IsFullscreenRefactoringEnabled()) {
       if (targetIndicatorActive) {
         [self.fullscreenCommands enterFullscreenWithTrigger:trigger
                                                    animated:YES];
-      } else {
+      } else if (!findNavigatorVisible) {
         [self.fullscreenCommands exitFullscreenWithTrigger:trigger
                                                   animated:YES];
       }
@@ -540,7 +543,7 @@
       if (targetIndicatorActive) {
         _fullscreenController->EnterForceFullscreenMode(
             /* insets_update_enabled= */ false, trigger);
-      } else {
+      } else if (!findNavigatorVisible) {
         _fullscreenController->ExitForceFullscreenMode(trigger);
       }
     }
@@ -548,6 +551,14 @@
 
   [self.consumer setLocationIndicatorVisible:targetIndicatorActive
                              forNotification:notification];
+}
+
+// Returns whether the find navigator is visible in the active tab.
+- (BOOL)isFindNavigatorVisibleInTab {
+  if (_webStateList && _webStateList->GetActiveWebState()) {
+    return IsFindNavigatorVisibleInTab(_webStateList->GetActiveWebState());
+  }
+  return NO;
 }
 
 // Returns whether the keyboard is active for web content and not interacting
