@@ -59,6 +59,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "components/variations/net/variations_command_line.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo_ipc_support.h"
@@ -120,6 +121,7 @@
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/tflite/buildflags.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/base/ui_base_paths.h"
@@ -643,6 +645,7 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
                                           /*will_trace_thread_restart=*/true);
     } else {
       main_params.needs_startup_tracing_after_sandbox_init = true;
+      tracing::EnableEarlyTrackRegistration();
     }
 #else
     tracing::InitTracingPostFeatureList(/*enable_consumer=*/false,
@@ -1122,6 +1125,7 @@ NO_STACK_PROTECTOR int ContentMainRunnerImpl::Run() {
               /*will_trace_thread_restart=*/true);
         } else {
           needs_startup_tracing_after_sandbox_init = true;
+          tracing::EnableEarlyTrackRegistration();
         }
 #else
         tracing::InitTracingPostFeatureList(
