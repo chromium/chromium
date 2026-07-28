@@ -13,7 +13,7 @@
 namespace blink {
 
 class HTMLMenuItemElement;
-
+class MenuMutationObserver;
 class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
                                          public TypeAheadDataSource {
  public:
@@ -31,6 +31,9 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   int IndexOfSelectedOption() const override;
   int OptionCount() const override;
   String OptionAtIndex(int index) const override;
+  bool IsInDialogMode() const;
+  void IncreaseContentModelViolationCount();
+  void DecreaseContentModelViolationCount();
 
  protected:
   HTMLMenuOwnerElement(HTMLQualifiedName, Document&);
@@ -40,6 +43,8 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
  private:
   Member<HTMLMenuItemElement> last_mouseup_menu_item_;
   bool processing_click_ = false;
+  Member<MenuMutationObserver> menu_mutation_observer_;
+  unsigned content_model_violations_count_ = 0;
 };
 
 template <>

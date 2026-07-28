@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_sub_menu_element.h"
+#include "third_party/blink/renderer/core/html/menu_mutation_observer.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -23,9 +25,43 @@ HTMLMenuOwnerElement::HTMLMenuOwnerElement(HTMLQualifiedName tag_name,
                                            Document& document)
     : HTMLElement(tag_name, document), type_ahead_(this) {
   DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
+  menu_mutation_observer_ = MakeGarbageCollected<MenuMutationObserver>(*this);
+}
+
+bool HTMLMenuOwnerElement::IsInDialogMode() const {
+  return content_model_violations_count_ > 0U;
+}
+
+void HTMLMenuOwnerElement::IncreaseContentModelViolationCount() {
+  bool dialog_mode_changed = !content_model_violations_count_;
+  ++content_model_violations_count_;
+  if (dialog_mode_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      // Unlike <select>, which keeps its internal role as kComboBoxSelect and
+      // relies on an accessor adjustment in AXObject::RoleValue() to expose
+      // kDialog, <menu> and <menubar> change their internal role to kDialog.
+      // Because the role changes here, we must use
+      // HandleAttributeChanged(kRoleAttr) to force the accessibility object to
+      // be destroyed and recreated, rather than just using MarkElementDirty()
+      // to refresh its properties.
+      cache->HandleAttributeChanged(html_names::kRoleAttr, this);
+    }
+  }
+}
+
+void HTMLMenuOwnerElement::DecreaseContentModelViolationCount() {
+  DCHECK_GT(content_model_violations_count_, 0U);
+  bool dialog_mode_changed = content_model_violations_count_ == 1;
+  --content_model_violations_count_;
+  if (dialog_mode_changed) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleAttributeChanged(html_names::kRoleAttr, this);
+    }
+  }
 }
 
 void HTMLMenuOwnerElement::Trace(Visitor* visitor) const {
+  visitor->Trace(menu_mutation_observer_);
   visitor->Trace(last_mouseup_menu_item_);
   HTMLElement::Trace(visitor);
 }

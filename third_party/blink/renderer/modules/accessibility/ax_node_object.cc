@@ -2549,11 +2549,17 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     NOTREACHED();
   }
 
-  if (IsA<HTMLMenuBarElement>(GetNode())) {
+  if (auto* menu_bar = DynamicTo<HTMLMenuBarElement>(GetNode())) {
+    if (menu_bar->IsInDialogMode()) {
+      return ax::mojom::blink::Role::kDialog;
+    }
     return ax::mojom::blink::Role::kMenuBar;
   }
 
-  if (IsA<HTMLMenuListElement>(GetNode())) {
+  if (auto* menu_list = DynamicTo<HTMLMenuListElement>(GetNode())) {
+    if (menu_list->IsInDialogMode()) {
+      return ax::mojom::blink::Role::kDialog;
+    }
     return ax::mojom::blink::Role::kMenu;
   }
 
