@@ -193,8 +193,8 @@ class AccountTrackerService {
                                                 const std::string&,
                                                 const gfx::Image&);
 
-  void NotifyAccountUpdated(const AccountInfo& account_info);
-  void NotifyAccountRemoved(const AccountInfo& account_info);
+  void MaybeNotifyAccountUpdated(const AccountInfo& account_info);
+  void MaybeNotifyAccountRemoved(const AccountInfo& account_info);
 
   // Start tracking `account_id` (`account_id` must not be empty).
   void StartTrackingAccount(const CoreAccountId& account_id);
