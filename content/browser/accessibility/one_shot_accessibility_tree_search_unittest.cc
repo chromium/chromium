@@ -452,4 +452,164 @@ TEST_F(OneShotAccessibilityTreeSearchTest, TwoPredicatesListItem) {
   EXPECT_EQ(9, search.GetMatchAtIndex(2)->GetId());
 }
 
+TEST_F(OneShotAccessibilityTreeSearchTest, ParagraphPredicate) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  // Wrapper div (should NOT match)
+  ui::AXNodeData wrapper;
+  wrapper.id = 2;
+  wrapper.role = ax::mojom::Role::kGenericContainer;
+  wrapper.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                           true);
+
+  // Actual paragraph (should match)
+  ui::AXNodeData p1;
+  p1.id = 3;
+  p1.role = ax::mojom::Role::kParagraph;
+
+  // Generic container acting as paragraph (should match)
+  ui::AXNodeData p2;
+  p2.id = 4;
+  p2.role = ax::mojom::Role::kGenericContainer;
+  p2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  p2.SetName("Paragraph 2");
+
+  // Heading (should match)
+  ui::AXNodeData heading;
+  heading.id = 5;
+  heading.role = ax::mojom::Role::kHeading;
+  heading.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                           true);
+
+  // List (should NOT match)
+  ui::AXNodeData list;
+  list.id = 6;
+  list.role = ax::mojom::Role::kList;
+  list.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  wrapper.child_ids = {p1.id, p2.id, heading.id, list.id};
+  root.child_ids = {wrapper.id};
+
+  ui::TestAXNodeIdDelegate local_delegate;
+  std::unique_ptr<ui::BrowserAccessibilityManager> local_tree =
+      std::make_unique<TestBrowserAccessibilityManager>(
+          ui::MakeAXTreeUpdateForTesting(root, wrapper, p1, p2, heading, list),
+          local_delegate);
+
+  ui::OneShotAccessibilityTreeSearch search(
+      local_tree->GetBrowserAccessibilityRoot());
+  search.AddPredicate(ui::AccessibilityParagraphPredicate);
+
+  ASSERT_EQ(3U, search.CountMatches());
+  EXPECT_EQ(3, search.GetMatchAtIndex(0)->GetId());
+  EXPECT_EQ(4, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(5, search.GetMatchAtIndex(2)->GetId());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest,
+       ParagraphPredicate_ExcludeAncestors) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  // P0: Paragraph before start node (should match)
+  ui::AXNodeData p0;
+  p0.id = 2;
+  p0.role = ax::mojom::Role::kParagraph;
+
+  // P1: Paragraph containing start node (should NOT match because it's
+  // ancestor)
+  ui::AXNodeData p1;
+  p1.id = 3;
+  p1.role = ax::mojom::Role::kParagraph;
+
+  // Text1: Start node
+  ui::AXNodeData text1;
+  text1.id = 4;
+  text1.role = ax::mojom::Role::kStaticText;
+  text1.SetName("Text 1");
+
+  // P2: Paragraph after start node (should match if we went FORWARDS, but we go
+  // BACKWARDS)
+  ui::AXNodeData p2;
+  p2.id = 5;
+  p2.role = ax::mojom::Role::kParagraph;
+
+  p1.child_ids = {text1.id};
+  root.child_ids = {p0.id, p1.id, p2.id};
+
+  ui::TestAXNodeIdDelegate local_delegate;
+  std::unique_ptr<ui::BrowserAccessibilityManager> local_tree =
+      std::make_unique<TestBrowserAccessibilityManager>(
+          ui::MakeAXTreeUpdateForTesting(root, p0, p1, text1, p2),
+          local_delegate);
+
+  ui::OneShotAccessibilityTreeSearch search(
+      local_tree->GetBrowserAccessibilityRoot());
+  search.AddPredicate(ui::AccessibilityParagraphPredicate);
+  search.SetStartNode(local_tree->GetFromID(4));
+  search.SetDirection(ui::OneShotAccessibilityTreeSearch::BACKWARDS);
+
+  // Should only match p0 (id=2).
+  // p1 (id=3) is excluded because it is ancestor of text1 (id=4).
+  ASSERT_EQ(1U, search.CountMatches());
+  EXPECT_EQ(2, search.GetMatchAtIndex(0)->GetId());
+}
+
+TEST_F(OneShotAccessibilityTreeSearchTest, ParagraphPredicate_ExcludedRoles) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  // Table (should NOT match)
+  ui::AXNodeData table;
+  table.id = 2;
+  table.role = ax::mojom::Role::kTable;
+  table.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  // Document (should NOT match)
+  ui::AXNodeData doc;
+  doc.id = 3;
+  doc.role = ax::mojom::Role::kDocument;
+  doc.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  // Button (should NOT match)
+  ui::AXNodeData button;
+  button.id = 4;
+  button.role = ax::mojom::Role::kButton;
+  button.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+
+  // Paragraph (should match)
+  ui::AXNodeData p;
+  p.id = 5;
+  p.role = ax::mojom::Role::kParagraph;
+
+  // Generic container acting as paragraph (should match)
+  ui::AXNodeData div;
+  div.id = 6;
+  div.role = ax::mojom::Role::kGenericContainer;
+  div.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  root.child_ids = {table.id, doc.id, button.id, p.id, div.id};
+
+  ui::TestAXNodeIdDelegate local_delegate;
+  std::unique_ptr<ui::BrowserAccessibilityManager> local_tree =
+      std::make_unique<TestBrowserAccessibilityManager>(
+          ui::MakeAXTreeUpdateForTesting(root, table, doc, button, p, div),
+          local_delegate);
+
+  ui::OneShotAccessibilityTreeSearch search(
+      local_tree->GetBrowserAccessibilityRoot());
+  search.AddPredicate(ui::AccessibilityParagraphPredicate);
+
+  // Should match p (5) and div (6).
+  // table (2), doc (3), button (4) should be excluded by role.
+  ASSERT_EQ(2U, search.CountMatches());
+  EXPECT_EQ(5, search.GetMatchAtIndex(0)->GetId());
+  EXPECT_EQ(6, search.GetMatchAtIndex(1)->GetId());
+}
+
 }  // namespace content

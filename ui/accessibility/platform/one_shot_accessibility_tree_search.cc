@@ -34,6 +34,32 @@ void GetNodeStrings(BrowserAccessibility* node,
     strings->push_back(value);
 }
 
+namespace {
+
+bool IsBlockContainer(BrowserAccessibility* node) {
+  if (!node || !node->node()) {
+    return false;
+  }
+  const ui::AXNode* ax_node = node->node();
+  return (ax_node->GetBoolAttribute(
+              ax::mojom::BoolAttribute::kIsLineBreakingObject) ||
+          ax_node->GetRole() == ax::mojom::Role::kParagraph) &&
+         ax_node->GetRole() != ax::mojom::Role::kLineBreak &&
+         ax_node->GetRole() != ax::mojom::Role::kInlineTextBox;
+}
+
+bool HasBlockContainerDescendant(BrowserAccessibility* node) {
+  for (size_t i = 0; i < node->PlatformChildCount(); ++i) {
+    BrowserAccessibility* child = node->PlatformGetChild(i);
+    if (IsBlockContainer(child) || HasBlockContainerDescendant(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 OneShotAccessibilityTreeSearch::OneShotAccessibilityTreeSearch(
     BrowserAccessibility* scope)
     : tree_(scope->manager()), scope_node_(scope), start_node_(scope) {}
@@ -456,10 +482,38 @@ bool AccessibilityMediaPredicate(BrowserAccessibility* start,
 
 bool AccessibilityParagraphPredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
-  // Since paragraphs can contain other nodes, we exclude ancestors of the start
-  // node from the search
-  return node->GetRole() == ax::mojom::Role::kParagraph &&
-         !start->IsDescendantOf(node);
+  // Since paragraphs can contain inline child nodes (such as static text or
+  // links), they are not leaf nodes in the tree. The start node will often be a
+  // descendant of a paragraph. We exclude ancestors of the start node to avoid
+  // matching the paragraph that already contains the start node, as we want to
+  // find other paragraphs.
+  if (start->IsDescendantOf(node)) {
+    return false;
+  }
+
+  ax::mojom::Role role = node->GetRole();
+
+  if (role == ax::mojom::Role::kParagraph) {
+    return true;
+  }
+
+  if (!IsBlockContainer(node)) {
+    return false;
+  }
+
+  // Exclude roles that are definitely not paragraphs (containers or controls).
+  if (IsList(role) || IsTableLike(role) || IsPlatformDocument(role) ||
+      role == ax::mojom::Role::kDocument || IsControl(role)) {
+    return false;
+  }
+
+  // Exclude block containers that have block descendants (we only want leaf
+  // blocks).
+  if (HasBlockContainerDescendant(node)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool AccessibilityRadioButtonPredicate(BrowserAccessibility* start,
