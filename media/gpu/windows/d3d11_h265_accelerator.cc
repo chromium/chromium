@@ -202,9 +202,7 @@ void D3D11H265Accelerator::PicParamsFromSPS(
         SPS_TO_PP(bit_depth_chroma_minus8);
         SPS_TO_PP(log2_max_pic_order_cnt_lsb_minus4);
 
-        if (sps->profile_tier_level.general_profile_idc == 4) {
-          is_rext_ = true;
-        }
+        is_rext_ = sps->profile_tier_level.general_profile_idc == 4;
         // HEVC DXVA spec does not clearly state which slot
         // in sps->sps_max_dec_pic_buffering_minus1 should
         // be used here. However section A4.1 of HEVC spec
