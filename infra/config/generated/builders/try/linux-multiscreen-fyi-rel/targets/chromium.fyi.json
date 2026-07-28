@@ -13,8 +13,7 @@
         "name": "multiscreen_interactive_ui_tests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-24.04",
-            "pool": "chromium.tests.multiscreen"
+            "os": "Ubuntu-24.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

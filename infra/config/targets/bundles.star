@@ -2099,16 +2099,14 @@ targets.bundle(
     targets = [
         "multiscreen_interactive_ui_tests",
     ],
+    mixins = [
+        "linux-noble",
+    ],
     per_test_modifications = {
         "multiscreen_interactive_ui_tests": targets.mixin(
             args = [
                 "--gtest_filter=*MultiScreen*:*VirtualDisplayUtil*",
             ],
-            swarming = targets.swarming(
-                dimensions = {
-                    "pool": "chromium.tests.multiscreen",
-                },
-            ),
         ),
     },
 )
