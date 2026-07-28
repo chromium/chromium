@@ -1071,6 +1071,12 @@ float WebUIToolbarWebView::GetScaleFactor() const {
 views::FlexSpecification WebUIToolbarWebView::GetFlexSpecification(
     int navigation_button_flex_order,
     int location_bar_flex_order) {
+  // If the all controls are using WebUI, don't need to integrate with the Views
+  // overflow logic, and flex orders don't really make any sense, so this method
+  // should not be called. Instead, the caller should set a basic
+  // FlexSpecification itself.
+  CHECK(!is_webui_toolbar_fully_enabled_);
+
   // This is the base flex rule when using the lowest order / highest priority
   // for the WebUIToolbarWebView. If there's enough space for all the highest
   // priority controls, then we'll switch to the lower priority flex rule for
@@ -1636,6 +1642,12 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
 }
 
 void WebUIToolbarWebView::UpdateButtonOverflowState() {
+  // If all controls are being managed by WebUI, overflow is handled entirely in
+  // Javascript instead of C++.
+  if (is_webui_toolbar_fully_enabled_) {
+    return;
+  }
+
   // Compute layout to determine which buttons to hide. Ignore the returned
   // Size.
   ButtonOverflowInfo button_overflow_info;

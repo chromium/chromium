@@ -43,9 +43,14 @@ bool WebUIHomeControl::IsPinned() const {
 }
 
 void WebUIHomeControl::SetIsOverflowed(bool is_overflowed) {
+  if (is_overflowed) {
+    CHECK(!features::IsWebUIToolbarFullyEnabled());
+  }
+
   if (is_overflowed_ == is_overflowed) {
     return;
   }
+
   is_overflowed_ = is_overflowed;
   UpdateState();
 }

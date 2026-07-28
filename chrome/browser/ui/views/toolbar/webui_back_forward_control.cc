@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -72,9 +73,14 @@ bool WebUIBackForwardControl::IsPinned() const {
 }
 
 void WebUIBackForwardControl::SetIsOverflowed(bool is_overflowed) {
+  if (is_overflowed) {
+    CHECK(!features::IsWebUIToolbarFullyEnabled());
+  }
+
   if (is_overflowed_ == is_overflowed) {
     return;
   }
+
   is_overflowed_ = is_overflowed;
   delegate_->OnBackForwardStateChanged();
 }

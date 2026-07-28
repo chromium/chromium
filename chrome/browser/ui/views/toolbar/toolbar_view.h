@@ -197,6 +197,9 @@ class ToolbarView : public views::AccessiblePaneView,
   AppMenuIconController* app_menu_icon_controller() {
     return &app_menu_icon_controller_;
   }
+
+  // The ToolbarController may be nullptr. This happens when there is a
+  // WebUIToolbarWebView that is handling all toolbar controls.
   ToolbarController* toolbar_controller() { return toolbar_controller_.get(); }
   const ToolbarController* toolbar_controller() const {
     return toolbar_controller_.get();

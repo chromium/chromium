@@ -295,7 +295,9 @@ ToolbarView::~ToolbarView() {
     return;
   }
 
-  overflow_button_->set_toolbar_controller(nullptr);
+  if (overflow_button_) {
+    overflow_button_->set_toolbar_controller(nullptr);
+  }
 
   for (const auto& view_and_command : GetViewCommandMap()) {
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
@@ -578,8 +580,13 @@ void ToolbarView::Init() {
     avatar_->SetVisible(show_avatar_toolbar_button);
   }
 
-  overflow_button_ = AddChildView(std::make_unique<OverflowButton>());
-  overflow_button_->SetVisible(false);
+  // Only manage the overflow button when there are at least some views
+  // controls. If there aren't any, the WebUIToolbarWebView will handle all
+  // layout and overflow itself, in Javascript.
+  if (!features::IsWebUIToolbarFullyEnabled()) {
+    overflow_button_ = AddChildView(std::make_unique<OverflowButton>());
+    overflow_button_->SetVisible(false);
+  }
 
   // WebUI app menu button handles these internally, so no need to set these
   // properties here, and the control is added as part of the WebUI toolbar.
@@ -1377,7 +1384,8 @@ gfx::Size ToolbarView::GetMinimumSize() const {
         size.SetToMin({size.width(), max_height});
       }
       // Overflow button must be part of minimum size calculation.
-      if (browser_->is_type_normal() && !overflow_button_->GetVisible()) {
+      if (overflow_button_ && browser_->is_type_normal() &&
+          !overflow_button_->GetVisible()) {
         const int default_margin =
             GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
         size.Enlarge(
@@ -1576,24 +1584,40 @@ void ToolbarView::InitLayout() {
     toolbar_webview_->SetProperty(views::kMarginsKey, gfx::Insets());
   }
 
-  // Order 1 is reserved for the location bar if kOmniboxResizingPrioritization
-  // is enabled.
-  constexpr int kToolbarFlexOrderStart = 2;
+  // If there are any non-WebUI controls, needs to set up the ToolbarController
+  // to handle overflow. Otherwise, the toolbar controller is not needed.
+  if (!features::IsWebUIToolbarFullyEnabled()) {
+    // Order 1 is reserved for the location bar if
+    // kOmniboxResizingPrioritization is enabled.
+    constexpr int kToolbarFlexOrderStart = 2;
 
-  // TODO(crbug.com/40929989): Ignore containers till issue addressed.
-  toolbar_controller_ = std::make_unique<ToolbarController>(
-      ToolbarController::GetDefaultResponsiveElements(browser_),
-      ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-      this, toolbar_webview_.get(), overflow_button_, pinned_toolbar_actions_,
-      PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
-  overflow_button_->set_toolbar_controller(toolbar_controller_.get());
+    // TODO(crbug.com/40929989): Ignore containers till issue addressed.
+    toolbar_controller_ = std::make_unique<ToolbarController>(
+        ToolbarController::GetDefaultResponsiveElements(browser_),
+        ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
+        this, toolbar_webview_.get(), overflow_button_, pinned_toolbar_actions_,
+        PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));
+    overflow_button_->set_toolbar_controller(toolbar_controller_.get());
+  }
 
   if (toolbar_webview_) {
-    toolbar_webview_->SetProperty(
-        views::kFlexBehaviorKey,
-        toolbar_webview_->GetFlexSpecification(
-            toolbar_controller_->webui_toolbar_button_flex_order(),
-            location_bar_flex_order));
+    if (toolbar_controller_) {
+      toolbar_webview_->SetProperty(
+          views::kFlexBehaviorKey,
+          toolbar_webview_->GetFlexSpecification(
+              toolbar_controller_->webui_toolbar_button_flex_order(),
+              location_bar_flex_order));
+    } else {
+      // If `toolbar_controller_` is nullptr, then the WebUI toolbar is managing
+      // all controls, so don't need to worry about integrating with
+      // ToolbarController's overflow logic, so instead use a more basic
+      // resizing rule. Eventually we'll be the only View in this case, anyways,
+      // and may want to get rid of the FlexLayout entirely.
+      toolbar_webview_->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kUnbounded));
+    }
   }
 
   LayoutCommon();

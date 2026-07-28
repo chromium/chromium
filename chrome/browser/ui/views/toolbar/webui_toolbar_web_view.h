@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_app_menu_control.h"
@@ -309,6 +310,10 @@ class WebUIToolbarWebView
   // Note that this function call records whether `location_bar_flex_order` is
   // higher or lower than `navigation_button_flex_order`, and ComputeLayout()'s
   // behavior will vary accordingly.
+  //
+  // If features::IsWebUIToolbarFullyEnabled()) is true, which means the WebUI
+  // toolbar is managing all controls, then this method must not be called,
+  // since layout will be handled in Javascript, instead of by FlexLayout.
   views::FlexSpecification GetFlexSpecification(
       int navigation_button_flex_order,
       int location_bar_flex_order);
@@ -457,6 +462,13 @@ class WebUIToolbarWebView
   // applicable. Allows ComputeLayout() to be const, and usable both for
   // computing putative sizes during layout, and updating which buttons have
   // overflowed when the View is actually resized.
+  //
+  // Note that if `is_webui_toolbar_fully_enabled_` is true, the logic to
+  // calculate `is_*_overflowed` values is not accurate, and what has overflowed
+  // should only computed in Javascript.
+  //
+  // TODO(crbug.com/538175276): When `is_webui_toolbar_fully_enabled_` is true,
+  // perform all layout in Javascript, and don't even populate this structure.
   struct ButtonOverflowInfo {
     bool is_forward_button_overflowed = false;
     bool is_home_button_overflowed = false;
@@ -510,6 +522,10 @@ class WebUIToolbarWebView
   // if the lower-priority rule should be used instead, given `bounds`.
   bool RuleEnabledPredicate(int current_flex_order,
                             const views::SizeBounds& bounds);
+
+  // Whether all controls are being managed by WebUI.
+  const bool is_webui_toolbar_fully_enabled_ =
+      features::IsWebUIToolbarFullyEnabled();
 
   // The most recent NavigationControlsState, consisting of the state of all
   // controls managed by the toolbar. This may or may not have been sent to
