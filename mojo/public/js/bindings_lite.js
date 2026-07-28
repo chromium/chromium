@@ -51,6 +51,123 @@ mojo.internal.kHostLittleEndian = (function() {
 })();
 
 /**
+ * A lightweight JavaScript wrapper replicating the DataView API over a
+ * DataView. Flattening offsets to the root DataView avoids heavy native
+ * v8::internal::JSArrayBufferView C++ object allocations.
+ *
+ * This class is intended to work as a mirror to the actual DataView, to
+ * reduce the amount of code change.
+ *
+ * Each instance of a DataViewWrapper will reference a native DataView as
+ * well as its own offset within that DataView.
+ *
+ * If a DataView is passed in, it will use that as the base DataView.
+ *
+ * If another instance of DataViewWrapper is passed in, it would reference
+ * the underlying native DataView and track its own offset.
+ */
+mojo.internal.DataViewWrapper = class {
+  /**
+   * @param {!DataView|!mojo.internal.DataViewWrapper|!ArrayBuffer} view
+   * @param {number=} byteOffset
+   */
+  constructor(view, byteOffset = 0) {
+    /** @private {!DataView} */
+    this.dataView_;
+    /** @type {number} */
+    this.byteOffset;
+
+    if (view instanceof mojo.internal.DataViewWrapper) {
+      this.dataView_ = view.dataView_;
+      this.byteOffset = view.byteOffset + byteOffset;
+    } else if (view instanceof DataView) {
+      // Flatten to root DataView over view.buffer so this.byteOffset is
+      // absolute.
+      this.dataView_ = (view.byteOffset === 0 &&
+                        view.byteLength === view.buffer.byteLength) ?
+          view :
+          new DataView(view.buffer);
+      this.byteOffset = view.byteOffset + byteOffset;
+    } else if (view instanceof ArrayBuffer) {
+      this.dataView_ = new DataView(view);
+      this.byteOffset = byteOffset;
+    } else {
+      throw new Error(
+          'DataViewWrapper constructor requires a DataViewWrapper, DataView,' +
+          ' or ArrayBuffer instance');
+    }
+  }
+
+  get buffer() {
+    return this.dataView_.buffer;
+  }
+
+  getUint8(offset) {
+    return this.dataView_.getUint8(this.byteOffset + offset);
+  }
+
+  getInt8(offset) {
+    return this.dataView_.getInt8(this.byteOffset + offset);
+  }
+
+  getUint16(offset, littleEndian) {
+    return this.dataView_.getUint16(this.byteOffset + offset, littleEndian);
+  }
+
+  getInt16(offset, littleEndian) {
+    return this.dataView_.getInt16(this.byteOffset + offset, littleEndian);
+  }
+
+  getUint32(offset, littleEndian) {
+    return this.dataView_.getUint32(this.byteOffset + offset, littleEndian);
+  }
+
+  getInt32(offset, littleEndian) {
+    return this.dataView_.getInt32(this.byteOffset + offset, littleEndian);
+  }
+
+  getFloat32(offset, littleEndian) {
+    return this.dataView_.getFloat32(this.byteOffset + offset, littleEndian);
+  }
+
+  getFloat64(offset, littleEndian) {
+    return this.dataView_.getFloat64(this.byteOffset + offset, littleEndian);
+  }
+
+  setUint8(offset, value) {
+    this.dataView_.setUint8(this.byteOffset + offset, value);
+  }
+
+  setInt8(offset, value) {
+    this.dataView_.setInt8(this.byteOffset + offset, value);
+  }
+
+  setUint16(offset, value, littleEndian) {
+    this.dataView_.setUint16(this.byteOffset + offset, value, littleEndian);
+  }
+
+  setInt16(offset, value, littleEndian) {
+    this.dataView_.setInt16(this.byteOffset + offset, value, littleEndian);
+  }
+
+  setUint32(offset, value, littleEndian) {
+    this.dataView_.setUint32(this.byteOffset + offset, value, littleEndian);
+  }
+
+  setInt32(offset, value, littleEndian) {
+    this.dataView_.setInt32(this.byteOffset + offset, value, littleEndian);
+  }
+
+  setFloat32(offset, value, littleEndian) {
+    this.dataView_.setFloat32(this.byteOffset + offset, value, littleEndian);
+  }
+
+  setFloat64(offset, value, littleEndian) {
+    this.dataView_.setFloat64(this.byteOffset + offset, value, littleEndian);
+  }
+};
+
+/**
  * @param {*} x
  * @return {boolean}
  */
@@ -76,7 +193,7 @@ mojo.internal.align = function(size, alignment) {
 };
 
 /**
- * @param {!DataView} dataView
+ * @param {!DataView|!mojo.internal.DataViewWrapper} dataView
  * @param {number} byteOffset
  * @param {number|bigint} value
  */
@@ -100,7 +217,7 @@ mojo.internal.setInt64 = function(dataView, byteOffset, value) {
 };
 
 /**
- * @param {!DataView} dataView
+ * @param {!DataView|!mojo.internal.DataViewWrapper} dataView
  * @param {number} byteOffset
  * @param {number|bigint} value
  */
@@ -124,7 +241,7 @@ mojo.internal.setUint64 = function(dataView, byteOffset, value) {
 };
 
 /**
- * @param {!DataView} dataView
+ * @param {!DataView|!mojo.internal.DataViewWrapper} dataView
  * @param {number} byteOffset
  * @return {bigint}
  */
@@ -141,7 +258,7 @@ mojo.internal.getInt64 = function(dataView, byteOffset) {
 };
 
 /**
- * @param {!DataView} dataView
+ * @param {!DataView|!mojo.internal.DataViewWrapper} dataView
  * @param {number} byteOffset
  * @return {bigint}
  */
@@ -784,7 +901,7 @@ mojo.internal.Encoder.textEncoder = null;
  */
 mojo.internal.Decoder = class {
   /**
-   * @param {!DataView} data
+   * @param {!mojo.internal.DataViewWrapper|!DataView|!ArrayBuffer} data
    * @param {!Array<MojoHandle>} handles
    * @param {?mojo.internal.MessageContext=} context
    */
@@ -792,8 +909,10 @@ mojo.internal.Decoder = class {
     /** @private {?mojo.internal.MessageContext} */
     this.context_ = context;
 
-    /** @private {!DataView} */
-    this.data_ = data;
+    /** @private {!mojo.internal.DataViewWrapper} */
+    this.data_ = (data instanceof mojo.internal.DataViewWrapper) ?
+        data :
+        new mojo.internal.DataViewWrapper(data);
 
     /** @private {!Array<MojoHandle>} */
     this.handles_ = handles;
@@ -896,8 +1015,9 @@ mojo.internal.Decoder = class {
       return null;
 
     const arrayDecoder = new mojo.internal.Decoder(
-        new DataView(this.data_.buffer, arrayOffset), this.handles_,
-        this.context_);
+        new mojo.internal.DataViewWrapper(
+            this.data_, arrayOffset - this.data_.byteOffset),
+        this.handles_, this.context_);
 
     const numElements = arrayDecoder.decodeUint32(4);
     if (!numElements)
@@ -962,8 +1082,9 @@ mojo.internal.Decoder = class {
       return null;
 
     const mapDecoder = new mojo.internal.Decoder(
-        new DataView(this.data_.buffer, mapOffset), this.handles_,
-        this.context_);
+        new mojo.internal.DataViewWrapper(
+            this.data_, mapOffset - this.data_.byteOffset),
+        this.handles_, this.context_);
     const mapStructSize = mapDecoder.decodeUint32(0);
     const mapStructVersion = mapDecoder.decodeUint32(4);
     if (mapStructSize != mojo.internal.kMapDataSize || mapStructVersion != 0)
@@ -1002,8 +1123,9 @@ mojo.internal.Decoder = class {
       return null;
 
     const decoder = new mojo.internal.Decoder(
-        new DataView(this.data_.buffer, structOffset), this.handles_,
-        this.context_);
+        new mojo.internal.DataViewWrapper(
+            this.data_, structOffset - this.data_.byteOffset),
+        this.handles_, this.context_);
     return decoder.decodeStructInline(structSpec);
   }
 
@@ -1050,8 +1172,9 @@ mojo.internal.Decoder = class {
       return null;
 
     const decoder = new mojo.internal.Decoder(
-        new DataView(this.data_.buffer, structOffset), this.handles_,
-        this.context_);
+        new mojo.internal.DataViewWrapper(
+            this.data_, structOffset - this.data_.byteOffset),
+        this.handles_, this.context_);
 
     const size = decoder.decodeUint32(mojo.internal.kStructHeaderSizeOffset);
     const version =
@@ -1167,8 +1290,9 @@ mojo.internal.Decoder = class {
       return null;
 
     const decoder = new mojo.internal.Decoder(
-        new DataView(this.data_.buffer, unionOffset), this.handles_,
-        this.context_);
+        new mojo.internal.DataViewWrapper(
+            this.data_, unionOffset - this.data_.byteOffset),
+        this.handles_, this.context_);
     return decoder.decodeUnion(unionSpec, 0);
   }
 
@@ -1262,7 +1386,7 @@ mojo.internal.Decoder.textDecoder = null;
 mojo.internal.MessageHeader;
 
 /**
- * @param {!DataView} data
+ * @param {!mojo.internal.DataViewWrapper} data
  * @return {!mojo.internal.MessageHeader}
  */
 mojo.internal.deserializeMessageHeader = function(data) {

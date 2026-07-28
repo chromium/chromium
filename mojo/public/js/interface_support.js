@@ -132,7 +132,8 @@ mojo.internal.interfaceSupport.Router = class {
       return;
     }
 
-    const header = mojo.internal.deserializeMessageHeader(new DataView(buffer));
+    const header = mojo.internal.deserializeMessageHeader(
+        new mojo.internal.DataViewWrapper(buffer));
     if (this.pipeControlHandler_.maybeHandleMessage(header, buffer)) {
       return;
     }
@@ -521,7 +522,7 @@ mojo.internal.interfaceSupport.PipeControlMessageHandler = class {
       return false;
     }
 
-    const data = new DataView(buffer, header.headerSize);
+    const data = new mojo.internal.DataViewWrapper(buffer, header.headerSize);
     const decoder = new mojo.internal.Decoder(data, []);
     const spec = /** @type {!mojo.internal.StructSpec} */ (
         mojo.pipeControl.RunOrClosePipeMessageParamsSpec.$.$.structSpec);
@@ -566,7 +567,7 @@ mojo.internal.interfaceSupport.ControlMessageHandler = class {
 
   maybeHandleControlMessage(header, buffer) {
     if (header.ordinal === mojo.interfaceControl.RUN_MESSAGE_ID) {
-      const data = new DataView(buffer, header.headerSize);
+      const data = new mojo.internal.DataViewWrapper(buffer, header.headerSize);
       const decoder = new mojo.internal.Decoder(data, []);
       if (header.flags & mojo.internal.kMessageFlagExpectsResponse)
         return this.handleRunRequest_(header.requestId, decoder);
@@ -870,7 +871,8 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
     if (!pendingResponse)
       return this.onError(endpoint, 'Received unexpected response message');
     const decoder = new mojo.internal.Decoder(
-        new DataView(buffer, header.headerSize), handles, {endpoint});
+        new mojo.internal.DataViewWrapper(buffer, header.headerSize), handles,
+        {endpoint});
     const responseValue = decoder.decodeStructInline(
         /** @type {!mojo.internal.StructSpec} */ (
             pendingResponse.responseStruct.$.structSpec));
@@ -1199,7 +1201,8 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
     if (!handler)
       throw new Error('Received unknown message');
     const decoder = new mojo.internal.Decoder(
-        new DataView(buffer, header.headerSize), handles, {endpoint});
+        new mojo.internal.DataViewWrapper(buffer, header.headerSize), handles,
+        {endpoint});
     const request = decoder.decodeStructInline(
         /** @type {!mojo.internal.StructSpec} */ (
             handler.paramStruct.$.structSpec));
