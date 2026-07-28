@@ -155,7 +155,6 @@ static_library("renderer") {
     "//components/page_content_annotations/content/mojom",
     "//components/page_content_annotations/content/renderer",
     "//components/page_content_annotations/core:features",
-    "//components/page_image_annotation/content/renderer",
     "//components/page_load_metrics/renderer",
     "//components/paint_preview/buildflags",
     "//components/password_manager/core/common",
