@@ -376,8 +376,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
     public static final String CONTEXTUAL_PAGE_ACTION_TAB_GROUPING =
             "ContextualPageActionTabGrouping";
-    public static final String CONTEXTUAL_PANEL_CLOSE_BUTTON_ON_TABLETS =
-            "ContextualPanelCloseButtonOnTablets";
+    public static final String CONTEXTUAL_PANEL_CLOSE_BUTTON = "ContextualPanelCloseButton";
     public static final String CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION =
             "ContextualSearchDisableOnlineDetection";
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
@@ -926,8 +925,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID, true);
     public static final CachedFlag sContextMenuDownloadVideoFrame =
             newCachedFlag(CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID, true);
-    public static final CachedFlag sContextualPanelCloseButtonOnTablets =
-            newCachedFlag(CONTEXTUAL_PANEL_CLOSE_BUTTON_ON_TABLETS, true);
+    public static final CachedFlag sContextualPanelCloseButton =
+            newCachedFlag(CONTEXTUAL_PANEL_CLOSE_BUTTON, true);
     public static final CachedFlag sContextualTasks = newCachedFlag(CONTEXTUAL_TASKS, false);
     public static final CachedFlag sCpaTabGroupingButton =
             newCachedFlag(
@@ -1346,7 +1345,7 @@ public abstract class ChromeFeatureList {
                     sCompositorViewRemeasureFix,
                     sContextMenuCopyVideoFrame,
                     sContextMenuDownloadVideoFrame,
-                    sContextualPanelCloseButtonOnTablets,
+                    sContextualPanelCloseButton,
                     sContextualTasks,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
