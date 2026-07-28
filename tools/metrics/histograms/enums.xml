@@ -13057,6 +13057,7 @@ from previous Chrome versions.
   <int value="-462404204" label="CryptAuthV2DeviceSync:disabled"/>
   <int value="-462205750" label="enable-service-worker-sync"/>
   <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
+  <int value="-461631357" label="AndroidFreLayoutUpdate:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461519957" label="AutofillAiWithDataSchema:enabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
@@ -16740,6 +16741,7 @@ from previous Chrome versions.
   <int value="711627544" label="ImeSwitchCheckConnectionStatus:enabled"/>
   <int value="712155532" label="GlicUseNonClient:disabled"/>
   <int value="713216521" label="NtpMostRelevantTabResumptionModule:disabled"/>
+  <int value="713292999" label="AndroidFreLayoutUpdate:disabled"/>
   <int value="713636081"
       label="CustomProfileStringsForSupervisedUsers:enabled"/>
   <int value="713946324" label="OmniboxSearchReadyIncognito:disabled"/>

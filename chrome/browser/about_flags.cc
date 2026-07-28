@@ -13573,6 +13573,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(views::features::kNativeViewHostManagesLayers)},
 #endif  // defined(TOOLKIT_VIEWS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-fre-layout-update",
+     flag_descriptions::kAndroidFreLayoutUpdateName,
+     flag_descriptions::kAndroidFreLayoutUpdateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidFreLayoutUpdate)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

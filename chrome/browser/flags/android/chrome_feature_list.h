@@ -45,6 +45,7 @@ BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkPopup);
 BASE_DECLARE_FEATURE(kAndroidDeviceSignalsDisclaimer);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidFirstRunLaunchBounds);
+BASE_DECLARE_FEATURE(kAndroidFreLayoutUpdate);
 BASE_DECLARE_FEATURE(kAndroidHistoryClustering);
 BASE_DECLARE_FEATURE(kAndroidNewMediaPicker);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);

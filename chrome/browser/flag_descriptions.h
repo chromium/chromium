@@ -5486,6 +5486,11 @@ inline constexpr char kAndroidElegantTextHeightName[] =
 inline constexpr char kAndroidElegantTextHeightDescription[] =
     "Enables elegant text height in core BrowserUI theme.";
 
+inline constexpr char kAndroidFreLayoutUpdateName[] =
+    "Android Fre Layout Update";
+inline constexpr char kAndroidFreLayoutUpdateDescription[] =
+    "Enables updated FRE layout on Android.";
+
 inline constexpr char kAndroidGrammarCheckName[] =
     "Enable grammar checks on text input";
 inline constexpr char kAndroidGrammarCheckDescription[] =
