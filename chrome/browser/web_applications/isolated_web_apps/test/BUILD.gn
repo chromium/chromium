@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# These mixins depend on Isolated Web App support, which is not built on
+# Android.
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "fake_iwa_runtime_data_provider_mixin.h",
+      "iwa_runtime_data_provider_mixin.cc",
+      "iwa_runtime_data_provider_mixin.h",
+    ]
+
+    # The Isolated Web App component targets (public, test_support) are
+    # reached transitively through //chrome/test:test_support. Depending on
+    # them directly would give browser_test binaries a second static path to
+    # those source_sets and cause duplicate-symbol link errors.
+    public_deps = [ "//chrome/test:test_support" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:chrome_browser_main",
+      "//chrome/browser:main_extra_parts",
+    ]
+  }
+}
