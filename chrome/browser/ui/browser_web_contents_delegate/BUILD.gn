@@ -16,6 +16,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser:repost_form_warning_controller",
       "//chrome/browser/actor",
+      "//chrome/browser/background",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/headless",

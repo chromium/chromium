@@ -1343,28 +1343,10 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  if (actor::HasActorTaskPreventingNewWebContents(opener)) {
-    // If an ExecutionEngine is acting on the opener, prevent it from creating a
-    // new WebContents. We'll instead force the navigation to happen in the same
-    // tab. Note, we do this even if the task isn't active (e.g. paused) so that
-    // a user action on behalf of the actor has the same behavior since the
-    // resumed task will still be fixed to the tab.
-
-    // However, if the opener is sandboxed and restricted from top-level
-    // navigation, we cannot force a same-tab redirection as it would violate
-    // the sandbox. Instead, we decline to override creation, allowing the
-    // browser to safely open a new popup window (since kPopups is allowed).
-    if (opener &&
-        opener->IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
-      return false;
-    }
-    return true;
-  }
-
-  return (window_container_type ==
-              content::mojom::WindowContainerType::BACKGROUND &&
-          ShouldCreateBackgroundContents(source_site_instance, opener_url,
-                                         frame_name));
+  return BrowserWebContentsDelegate::From(this)
+      ->IsWebContentsCreationOverridden(opener, source_site_instance,
+                                        window_container_type, opener_url,
+                                        frame_name, target_url);
 }
 
 WebContents* Browser::CreateCustomWebContents(
@@ -1378,30 +1360,10 @@ WebContents* Browser::CreateCustomWebContents(
     const blink::mojom::WindowFeatures& window_features,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
-  if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
-      actor::HasActorTaskPreventingNewWebContents(opener)) {
-    // If an ExecutionEngine is acting on the opener, we force the navigation
-    // to happen in the same tab.
-    content::NavigationController::LoadURLParams params(target_url);
-    params.initiator_frame_token = opener->GetFrameToken();
-    params.initiator_process_id = opener->GetProcess()->GetID();
-    params.initiator_origin = opener->GetLastCommittedOrigin();
-    params.source_site_instance = source_site_instance;
-    params.transition_type = ui::PAGE_TRANSITION_LINK;
-    params.is_renderer_initiated = true;
-    opener_contents->GetController().LoadURLWithParams(params);
-    VLOG(1) << "Actor treated window open as same tab navigation. "
-            << target_url;
-    return nullptr;
-  }
-
-  BackgroundContents* background_contents = CreateBackgroundContents(
-      source_site_instance, opener, opener_url, is_new_browsing_instance,
-      frame_name, target_url, partition_config, session_storage_namespace);
-  if (background_contents) {
-    return background_contents->web_contents();
-  }
-  return nullptr;
+  return BrowserWebContentsDelegate::From(this)->CreateCustomWebContents(
+      opener, source_site_instance, is_new_browsing_instance, opener_url,
+      frame_name, target_url, disposition, window_features, partition_config,
+      session_storage_namespace);
 }
 
 void Browser::WebContentsCreated(WebContents* source_contents,
@@ -1409,36 +1371,16 @@ void Browser::WebContentsCreated(WebContents* source_contents,
                                  const std::string& frame_name,
                                  const GURL& target_url,
                                  WebContents* new_contents) {
-  // Note: Consult owners before adding new code here.
-  // This method is called from WebContentsImpl::CreateNewWindow() for a created
-  // `new_contents`. This occurs before ownership of `new_contents` is
-  // transferred to Browser and `new_contents` is added to a TabModel. Tab
-  // specific initialization should be performed by TabModel and not added here.
-
-  // SafeBrowsingNavigationObserver relies on recording a precise sequence of
-  // navigation events, with tabs tracked via their SessionID, managed by
-  // SessionTabHelper. The current safe browsing implementation requires
-  // tracking new contents from the moment of creation, at which point TabModel
-  // and tab helpers have not yet been initialized for `new_contents`.
-  // Explicitly instantiate the SessionTabHelper here to ensure SessionIDs are
-  // available when needed.
-  // TODO(crbug.com/362038317): Once SafeBrowsingNavigationObserver is updated
-  // to track `new_contents` after it is added to its TabModel this override can
-  // be removed.
-  CreateSessionServiceTabHelper(new_contents);
+  BrowserWebContentsDelegate::From(this)->WebContentsCreated(
+      source_contents, opener_id, frame_name, target_url, new_contents);
 }
 
 void Browser::RendererUnresponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  // Don't show the page hung dialog when a HTML popup hangs because
-  // the dialog will take the focus and immediately close the popup.
-  RenderWidgetHostView* view = render_widget_host->GetView();
-  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
-    TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
-        render_widget_host, std::move(hang_monitor_restarter));
-  }
+  BrowserWebContentsDelegate::From(this)->RendererUnresponsive(
+      source, render_widget_host, hang_monitor_restarter);
 }
 
 void Browser::RendererResponsive(
@@ -1465,70 +1407,36 @@ bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
 std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return window_->OpenEyeDropper(frame, listener);
+  return BrowserWebContentsDelegate::From(this)->OpenEyeDropper(frame,
+                                                                listener);
 }
 
 bool Browser::ShouldUseInstancedSystemMediaControls() const {
-  return GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-         is_type_app_popup();
+  return BrowserWebContentsDelegate::From(this)
+      ->ShouldUseInstancedSystemMediaControls();
 }
 
 void Browser::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  if (auto* const app_browser_controller =
-          web_app::AppBrowserController::From(this)) {
-    app_browser_controller->DraggableRegionsChanged(regions, contents);
-  }
+  BrowserWebContentsDelegate::From(this)->DraggableRegionsChanged(regions,
+                                                                  contents);
 }
 
 std::vector<blink::mojom::RelatedApplicationPtr>
 Browser::GetSavedRelatedApplications(WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  CHECK(profile);
-  if (!web_app::AreWebAppsEnabled(profile)) {
-    return {};
-  }
-  const webapps::AppId* app_id =
-      web_app::WebAppTabHelper::GetAppId(web_contents);
-  if (!app_id || app_id->empty()) {
-    return {};
-  }
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  CHECK(provider);
-  std::vector<blink::Manifest::RelatedApplication> saved_related_apps =
-      provider->registrar_unsafe().GetRelatedApplications(*app_id);
-  std::vector<blink::mojom::RelatedApplicationPtr> related_apps_ptr;
-  for (const auto& app : saved_related_apps) {
-    auto related_app = blink::mojom::RelatedApplication::New();
-    related_app->platform =
-        base::UTF16ToUTF8(app.platform.value_or(std::u16string()));
-    related_app->id = base::UTF16ToUTF8(app.id.value_or(std::u16string()));
-    if (!app.url.is_empty()) {
-      related_app->url = app.url.spec();
-    }
-    related_apps_ptr.push_back(std::move(related_app));
-  }
-  return related_apps_ptr;
+  return BrowserWebContentsDelegate::From(this)->GetSavedRelatedApplications(
+      web_contents);
 }
 
 content::WebContents* Browser::GetResponsibleWebContents(
     content::WebContents* web_contents) {
-  // Tabs are the proper choice for modal scope.
-  return web_contents;
+  return BrowserWebContentsDelegate::From(this)->GetResponsibleWebContents(
+      web_contents);
 }
 
 std::optional<gfx::Rect> Browser::GetWindowBoundsInScreen() {
-  if (!window_) {
-    return std::nullopt;
-  }
-
-  // Note that `GetBounds` here returns the screen coordinate bounds
-  // from the browser widget. This is not to be confused with
-  // `views::View::bounds()` which returns parent-relative bounds.
-  return GetBrowserView().GetBounds();
+  return BrowserWebContentsDelegate::From(this)->GetWindowBoundsInScreen();
 }
 
 void Browser::RunFileChooser(
