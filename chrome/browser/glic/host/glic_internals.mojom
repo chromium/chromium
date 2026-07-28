@@ -97,6 +97,7 @@ struct TriggerInvokeFromInternalsOptions {
   bool? show_panel;
   InvokeTargetSurface surface;
   int32? specific_tab_index;
+  array<int32>? specific_tabs_to_share_indices;
   ActuationTarget actuation_target;
   // Source-specific payload for the invocation.
   InvocationPayload? payload;

@@ -59,6 +59,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeConversationType_: {type: String},
       invokeConversationId_: {type: String},
       invokeSpecificTabIndex_: {type: Number},
+      invokeSpecificTabsToShareIndices_: {type: Array},
       availableTabs_: {type: Array},
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
@@ -94,6 +95,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeConversationType_: string = 'default';
   protected accessor invokeConversationId_: string = '';
   protected accessor invokeSpecificTabIndex_: number = 0;
+  protected accessor invokeSpecificTabsToShareIndices_: number[] = [];
   protected accessor availableTabs_: string[] = [];
 
   protected accessor selectedTabIndex_: number = 0;
@@ -124,6 +126,8 @@ export class GlicInternalsAppElement extends CrLitElement {
         ({internalsData}: {internalsData: InternalsDataPayload}) => {
           this.data_ = internalsData;
         });
+
+    this.refreshOpenTabs_();
   }
 
   protected onShowErrorAllowedChange(e: Event) {
@@ -349,6 +353,27 @@ export class GlicInternalsAppElement extends CrLitElement {
         Number((e.target as HTMLSelectElement).value);
   }
 
+  protected onInvokeSpecificTabsToShareIndexChange_(e: Event) {
+    const select = e.target as HTMLSelectElement;
+    const indexInArray = Number(select.dataset['index']);
+    const newIndices = [...this.invokeSpecificTabsToShareIndices_];
+    newIndices[indexInArray] = Number(select.value);
+    this.invokeSpecificTabsToShareIndices_ = newIndices;
+  }
+
+  protected onRemoveTabsToShareIndexClick_(e: Event) {
+    const button = e.target as HTMLElement;
+    const indexToRemove = Number(button.dataset['index']);
+    this.invokeSpecificTabsToShareIndices_ =
+        this.invokeSpecificTabsToShareIndices_.filter(
+            (_, index) => index !== indexToRemove);
+  }
+
+  protected onAddTabsToShareIndexClick_() {
+    this.invokeSpecificTabsToShareIndices_ =
+        [...this.invokeSpecificTabsToShareIndices_, 0];
+  }
+
   protected onInvokeZssOverrideChange_(e: Event) {
     this.invokeZssOverride_ = (e.target as HTMLInputElement).checked;
   }
@@ -436,6 +461,10 @@ export class GlicInternalsAppElement extends CrLitElement {
       surface: surface,
       specificTabIndex: this.invokeSurfaceType_ === 'specificTab' ?
           this.invokeSpecificTabIndex_ :
+          null,
+      specificTabsToShareIndices:
+          this.invokeSpecificTabsToShareIndices_.length > 0 ?
+          this.invokeSpecificTabsToShareIndices_ :
           null,
       actuationTarget: this.invokeActuationTarget_,
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,

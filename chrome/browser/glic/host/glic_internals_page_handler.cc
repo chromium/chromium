@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <sstream>
 
@@ -884,6 +885,28 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
       if (target_tab) {
         options.target.surface = target_tab->GetHandle();
       }
+    }
+  }
+
+  if (mojo_options->specific_tabs_to_share_indices.has_value()) {
+    std::vector<tabs::TabHandle> tabs_to_pin;
+    TabListInterface* tab_list = TabListInterface::From(current_browser);
+    if (tab_list) {
+      for (int32_t index :
+           mojo_options->specific_tabs_to_share_indices.value()) {
+        if (index >= 0 && index < tab_list->GetTabCount()) {
+          tabs::TabInterface* target_tab = tab_list->GetTab(index);
+          if (target_tab &&
+              std::find(tabs_to_pin.begin(), tabs_to_pin.end(),
+                        target_tab->GetHandle()) == tabs_to_pin.end()) {
+            tabs_to_pin.push_back(target_tab->GetHandle());
+          }
+        }
+      }
+    }
+    if (!tabs_to_pin.empty()) {
+      options.tab_sharing = TabSharingOptions(std::move(tabs_to_pin),
+                                              GlicPinTrigger::kContextMenu);
     }
   }
 
