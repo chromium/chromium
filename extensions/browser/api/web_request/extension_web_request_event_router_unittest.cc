@@ -5,23 +5,35 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/common/api/web_request.h"
+#include "extensions/browser/test_event_router.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/url_pattern.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
+#include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -240,17 +252,43 @@ TEST_F(WebRequestEventRouterTest, RequestFilter_DeserializeMissingUrls) {
 
 namespace {
 
+// Captures the events that per-context dispatch sends through the
+// extension-scoped EventRouter, instead of delivering them to a renderer.
+// Tests inspect the captured events and run their completion callbacks.
+class CapturingEventRouter : public TestEventRouter {
+ public:
+  explicit CapturingEventRouter(content::BrowserContext* context)
+      : TestEventRouter(context) {}
+
+  // TestEventRouter:
+  void DispatchEventToExtension(const ExtensionId& extension_id,
+                                std::unique_ptr<Event> event) override {
+    events_.push_back(std::move(event));
+  }
+
+  std::vector<std::unique_ptr<Event>>& events() { return events_; }
+
+ private:
+  std::vector<std::unique_ptr<Event>> events_;
+};
+
 class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
  public:
   static constexpr const char* kExtensionName = "Test Extension";
   static constexpr const char* kEventName =
-      api::web_request::OnBeforeRequest::kEventName;
+      extension_web_request_api_constants::kOnBeforeSendHeadersEvent;
   static constexpr int kWorkerThreadId = 12;
   static constexpr int64_t kServiceWorkerVersionId = 7;
 
+  WebRequestEventRouterContextDispatchTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kWebRequestPerContextEventDispatch);
+  }
+
   void SetUp() override {
     ExtensionsTest::SetUp();
-
+    event_router_ =
+        CreateAndUseTestEventRouter<CapturingEventRouter>(browser_context());
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(browser_context());
 
@@ -263,6 +301,7 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
   }
 
   void TearDown() override {
+    event_router_ = nullptr;
     render_process_host_.reset();
     ExtensionsTest::TearDown();
   }
@@ -323,6 +362,73 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
         extra_info_spec, web_view_instance_id);
   }
 
+  std::vector<std::unique_ptr<Event>>& dispatched_events() {
+    return event_router_->events();
+  }
+
+  // The concrete identity of the active listener that `AddListener()`
+  // registers.
+  Event::DispatchTarget ActiveDispatchTarget() {
+    return {render_process_host_->GetID(), kWorkerThreadId,
+            kServiceWorkerVersionId};
+  }
+
+  // Builds a browser-initiated main-frame navigation request.
+  std::unique_ptr<WebRequestInfo> CreateRequest(uint64_t request_id) {
+    WebRequestInfoInitParams params;
+    params.id = request_id;
+    params.url = GURL("http://example.com/");
+    params.method = "GET";
+    params.is_navigation_request = true;
+    params.web_request_type = WebRequestResourceType::MAIN_FRAME;
+    params.is_async = true;
+    auto request = std::make_unique<WebRequestInfo>(std::move(params));
+    request->dnr_actions.emplace();
+    return request;
+  }
+
+  // Starts the blocking "onBeforeSendHeaders" stage.
+  int StartOnBeforeSendHeaders(const WebRequestInfo* request) {
+    return router()->OnBeforeSendHeaders(
+        browser_context(), request,
+        base::BindLambdaForTesting(
+            [this](const std::set<std::string>& removed_headers,
+                   const std::set<std::string>& set_headers, int error_code) {
+              removed_headers_ = removed_headers;
+              set_headers_ = set_headers;
+              result_ = error_code;
+            }),
+        &headers_);
+  }
+
+  // Simulates one blocking listener response from the target, delivered under
+  // the target's concrete identity. A woken lazy context also responds with
+  // concrete IDs.
+  void RespondWithCancel(uint64_t request_id) {
+    auto response = std::make_unique<WebRequestEventRouter::EventResponse>(
+        extension_id(), base::Time::Now());
+    response->cancel = true;
+    router()->OnEventHandledForTarget(
+        browser_context(), extension_id(), kEventName, request_id,
+        render_process_host_->GetID(), /*web_view_instance_id=*/0,
+        kWorkerThreadId, kServiceWorkerVersionId, ExtraInfoSpec::BLOCKING,
+        std::move(response));
+  }
+
+  // Simulates the target's completion signal, sent after all matching
+  // listeners in the context have run.
+  void FinishHandling(uint64_t request_id) {
+    router()->OnEventHandlingDone(browser_context(), extension_id(), kEventName,
+                                  request_id, render_process_host_->GetID(),
+                                  /*web_view_instance_id=*/0, kWorkerThreadId,
+                                  kServiceWorkerVersionId);
+  }
+
+  net::HttpRequestHeaders headers_;
+  std::optional<int> result_;
+  std::set<std::string> removed_headers_;
+  std::set<std::string> set_headers_;
+
  private:
   RequestFilter MakeFilter(const std::string& url_pattern) {
     RequestFilter filter;
@@ -331,7 +437,9 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
     return filter;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   ExtensionsAPIClient api_client_;
+  raw_ptr<CapturingEventRouter> event_router_ = nullptr;
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   scoped_refptr<const Extension> extension_;
 };
@@ -422,7 +530,7 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
 
 // Verifies that when a service worker wakes up and activates one of its lazy
 // listeners, sibling lazy registrations for the same parent event
-// ("onBeforeRequest") are preserved. In legacy sub-event naming, leftover
+// ("onBeforeSendHeaders") are preserved. In legacy sub-event naming, leftover
 // inactive records under the same name were purged as stale; under parent
 // naming, those records represent distinct, valid sibling listeners.
 TEST_F(WebRequestEventRouterContextDispatchTest,
@@ -442,6 +550,94 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
   EXPECT_EQ(1u, GetListenerCount());
   EXPECT_EQ(1u,
             router()->GetInactiveListenerCount(browser_context(), kEventName));
+}
+
+// A response resolves an active dispatch target.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       ActiveTargetResolvedByResponse) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING));
+
+  // The blocking listener makes its target a blocking source, so the request
+  // must wait for the target's resolution.
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // The target receives one event, addressed to the listener's concrete
+  // renderer identity.
+  ASSERT_EQ(1u, dispatched_events().size());
+  const Event& event = *dispatched_events()[0];
+  EXPECT_EQ(kEventName, event.event_name);
+  ASSERT_TRUE(event.restrict_to_dispatch_target.has_value());
+  EXPECT_EQ(ActiveDispatchTarget(), *event.restrict_to_dispatch_target);
+
+  // A listener response only records a delta. Other matching listeners in the
+  // context may still be running, so the target stays pending and the request
+  // stays blocked.
+  RespondWithCancel(request->id);
+  EXPECT_FALSE(result_.has_value());
+
+  // The completion signal resolves the target: the recorded cancel applies
+  // and the request unblocks.
+  FinishHandling(request->id);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+}
+
+// A lazy dispatch target wakes up, and its concrete response resolves it.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       LazyTargetResolvedByConcreteResponse) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // A stopped context has no renderer identity at dispatch time, so the event
+  // goes out under the target's lazy key. This dispatch is what wakes the
+  // context.
+  ASSERT_EQ(1u, dispatched_events().size());
+  const Event& event = *dispatched_events()[0];
+  ASSERT_TRUE(event.restrict_to_dispatch_target.has_value());
+  EXPECT_TRUE(event.restrict_to_dispatch_target->IsLazy());
+
+  // The woken context responds under its concrete identity, which never
+  // equals the lazy key the pending target was recorded under. The response
+  // lookup must fall back to the pending lazy entry, and must not resolve it
+  // yet.
+  RespondWithCancel(request->id);
+  EXPECT_FALSE(result_.has_value());
+
+  // The completion signal, also under the concrete identity, resolves the
+  // lazy target and applies the recorded cancel.
+  FinishHandling(request->id);
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, *result_);
+}
+
+// A lazy dispatch target whose context cannot start resolves empty.
+TEST_F(WebRequestEventRouterContextDispatchTest,
+       LazyTargetCannotStartResolvesEmpty) {
+  ASSERT_TRUE(AddListener("http://example.com/*", ExtraInfoSpec::BLOCKING,
+                          /*is_lazy=*/true));
+
+  std::unique_ptr<WebRequestInfo> request = CreateRequest(1);
+  ASSERT_EQ(net::ERR_IO_PENDING, StartOnBeforeSendHeaders(request.get()));
+
+  // A blocking target's event must carry a cannot-dispatch callback; without
+  // it, a failed dispatch would block the request forever.
+  ASSERT_EQ(1u, dispatched_events().size());
+  const Event& event = *dispatched_events()[0];
+  ASSERT_TRUE(event.cannot_dispatch_callback);
+
+  // Simulate EventRouter reporting the failed dispatch.
+  event.cannot_dispatch_callback.Run();
+
+  // The target resolves with no response deltas: the request unblocks and
+  // proceeds unmodified.
+  ASSERT_TRUE(result_.has_value());
+  EXPECT_EQ(net::OK, *result_);
+  EXPECT_TRUE(removed_headers_.empty());
+  EXPECT_TRUE(set_headers_.empty());
 }
 
 }  // namespace extensions
