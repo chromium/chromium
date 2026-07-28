@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -333,8 +332,7 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
   const AccountId id(AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId));
   ScopedLogIn login(GetFakeUserManager(), id);
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile());
+  const user_manager::User* user = GetFakeUserManager()->FindUser(id);
 
   // Unconfirmed
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
