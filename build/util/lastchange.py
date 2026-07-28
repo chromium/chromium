@@ -157,7 +157,7 @@ def FetchGitRevision(directory, commit_filter, start_commit="HEAD"):
   output = _RunGitCommand(directory, git_args)
   hash_, commit_timestamp = output.split()
   if not hash_:
-    return VersionInfo('0', '0', '', 0)
+    return _EMPTY_VERSION_INFO
 
   revision = hash_
   pos = ''
