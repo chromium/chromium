@@ -10,8 +10,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/payments/core/features.h"
@@ -324,6 +326,42 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestMandatoryUiEnabledTest, AsyncCloseDialog) {
 
   // Now the PaymentRequest should be deleted.
   EXPECT_TRUE(GetPaymentRequests().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestMandatoryUiEnabledTest,
+                       ShowAndHideLoadingView) {
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  EXPECT_EQ(1U, GetPaymentRequests().size());
+  EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
+  EXPECT_EQ(nullptr, test_api(dialog_view()).loading_view_overlay());
+
+  ResetEventWaiter(DialogEvent::LOADING_VIEW_SHOWN);
+  dialog_view()->ShowLoadingView();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  PaymentAppLoadingView* loading_view =
+      test_api(dialog_view()).loading_view_overlay();
+  ASSERT_NE(nullptr, loading_view);
+  EXPECT_TRUE(loading_view->GetVisible());
+  EXPECT_FALSE(test_api(dialog_view()).view_stack()->GetVisible());
+
+  ResetEventWaiter(DialogEvent::LOADING_VIEW_HIDDEN);
+  dialog_view()->HideLoadingView();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  EXPECT_EQ(nullptr, test_api(dialog_view()).loading_view_overlay());
+  EXPECT_TRUE(test_api(dialog_view()).view_stack()->GetVisible());
 }
 
 }  // namespace

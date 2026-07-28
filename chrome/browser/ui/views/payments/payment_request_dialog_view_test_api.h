@@ -33,6 +33,8 @@ class PaymentRequestDialogViewTestApi {
     return view_->CalculatePreferredSize(available_size);
   }
 
+  void ResizeToPaymentHandlerSize() { view_->ResizeToPaymentHandlerSize(); }
+
   ViewStack* view_stack() { return view_->view_stack_; }
   ControllerMap* controller_map() { return &view_->controller_map_; }
   views::View* throbber_overlay() { return view_->throbber_overlay_; }

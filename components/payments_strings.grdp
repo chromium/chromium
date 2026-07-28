@@ -487,6 +487,9 @@
     <message name="IDS_PAYMENT_APP_LOADING_MESSAGE" desc="Informational text shown to the user while their selected payment handler application is loading.">
       Loading <ph name="APP_ORIGIN">$1<ex>bobpay.com</ex></ph> to handle your payment on <ph name="MERCHANT_ORIGIN">$2<ex>example.com</ex></ph>.
     </message>
+    <message name="IDS_PAYMENT_APP_LOADING_TITLE" desc="Accessible title read by screen readers for the loading view displayed when a payment handler application is loading.">
+      Loading payment app
+    </message>
   </if> <!-- not is_android -->
 
 

@@ -10,10 +10,12 @@
 #include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -41,6 +43,13 @@ PaymentAppLoadingView::PaymentAppLoadingView(
     const GURL& top_origin,
     views::Button::PressedCallback close_callback) {
   SetProperty(views::kElementIdentifierKey, kTopViewId);
+  // Configure ACCESSIBLE_ONLY focus behavior so screen readers can announce the
+  // loading dialog context during accessibility mode.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_PAYMENT_APP_LOADING_TITLE),
+      ax::mojom::NameFrom::kAttribute);
   // Paint to a layer so this view correctly overlays ViewStack (which also
   // paints to a layer).
   SetPaintToLayer();
@@ -67,6 +76,9 @@ PaymentAppLoadingView::PaymentAppLoadingView(
       header_view_, icon, formatted_app_origin, std::move(close_callback));
   origin_label_ = header_views.origin_label.get();
   origin_label_->SetText(formatted_app_origin);
+  // We only need one accessibility name on loading view for screen reader to
+  // announce.
+  origin_label_->SetFocusBehavior(FocusBehavior::NEVER);
   close_button_ = header_views.close_button.get();
   if (close_button_) {
     close_button_->SetProperty(views::kElementIdentifierKey, kCloseButtonId);

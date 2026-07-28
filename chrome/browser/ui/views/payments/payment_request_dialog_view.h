@@ -221,6 +221,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void RemoveLoadingView();
   void OnDialogClosed();
   void ResizeDialogWindow();
+  void ResizeToPaymentHandlerSize();
   void CheckIfDialogFitsInBrowserWindow();
   bool DialogFitsInBrowserWindow() const;
 

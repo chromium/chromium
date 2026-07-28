@@ -11,9 +11,6 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
@@ -93,7 +90,11 @@ base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
 }
 
 void PaymentRequestDialogView::RequestFocus() {
-  view_stack_->RequestFocus();
+  if (loading_view_overlay_ && loading_view_overlay_->GetVisible()) {
+    loading_view_overlay_->RequestFocus();
+  } else {
+    view_stack_->RequestFocus();
+  }
 }
 
 views::View* PaymentRequestDialogView::GetInitiallyFocusedView() {
@@ -225,6 +226,7 @@ void PaymentRequestDialogView::ShowProcessingSpinner() {
 
 void PaymentRequestDialogView::ShowLoadingView() {
   CHECK(request_->state()->selected_app());
+  ResizeToPaymentHandlerSize();
   loading_view_overlay_ = AddChildView(std::make_unique<PaymentAppLoadingView>(
       request_->state()->selected_app()->icon_bitmap(),
       GURL(request_->state()->selected_app()->GetId()),
@@ -237,7 +239,8 @@ void PaymentRequestDialogView::ShowLoadingView() {
   // TODO(crbug.com/358379367): Remove once layers obey the clip by default.
   loading_view_overlay_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(GetCornerRadius()));
-
+  view_stack_->SetVisible(false);
+  RequestFocus();
   if (observer_for_testing_) {
     observer_for_testing_->OnLoadingViewShown();
   }
@@ -255,20 +258,7 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
     return;
   }
 
-  // The Payment Handler window is larger than the Payment Request sheet, which
-  // causes us to make different decisions when e.g. animating it.
-  is_showing_large_payment_handler_window_ = true;
-
-  // Calculate |payment_handler_window_height_|
-  auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-      request_->web_contents());
-  int browser_window_content_height =
-      browser->capabilities()->GetContentsSize().height();
-  payment_handler_window_height_ =
-      std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
-                                       browser_window_content_height));
-
-  ResizeDialogWindow();
+  ResizeToPaymentHandlerSize();
 
   // Once we have resized the dialog, re-check that it still fits in the
   // available window space.
@@ -617,6 +607,8 @@ void PaymentRequestDialogView::HideLoadingView() {
 void PaymentRequestDialogView::RemoveLoadingView() {
   if (loading_view_overlay_) {
     RemoveChildViewT(std::exchange(loading_view_overlay_, nullptr));
+    view_stack_->SetVisible(true);
+    RequestFocus();
     if (observer_for_testing_) {
       observer_for_testing_->OnLoadingViewHidden();
     }
@@ -821,6 +813,23 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
             ->delegate()
             ->GetWebContentsModalDialogHost(web_contents));
   }
+}
+
+void PaymentRequestDialogView::ResizeToPaymentHandlerSize() {
+  // The Payment Handler window is larger than the Payment Request sheet, which
+  // causes us to make different decisions when e.g. animating it.
+  is_showing_large_payment_handler_window_ = true;
+
+  // Calculate |payment_handler_window_height_|
+  int browser_window_content_height =
+      request_->web_contents()
+          ? request_->web_contents()->GetContainerBounds().height()
+          : 0;
+  payment_handler_window_height_ =
+      std::max(kDialogHeight, std::min(kPreferredPaymentHandlerDialogHeight,
+                                       browser_window_content_height));
+
+  ResizeDialogWindow();
 }
 
 void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {

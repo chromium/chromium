@@ -11,9 +11,14 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -97,6 +102,19 @@ TEST_F(PaymentAppLoadingViewTest, HideWithMinimumLoadingMessageDuration) {
   // Fast forward by remaining 1ms. The callback should run now.
   EXPECT_CALL(hidden_callback, Run);
   task_environment()->FastForwardBy(base::Milliseconds(1));
+}
+
+TEST_F(PaymentAppLoadingViewTest, FocusInAccessibilityMode) {
+  // Note that on ChromeOS, views::FocusManager requires the widget/window tree
+  // to be explicitly shown. Without widget.Show(), the view is considered
+  // invisible, causing focus requests to be rejected.
+  widget().Show();
+  EXPECT_EQ(loading_view().GetFocusBehavior(),
+            views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  widget().GetFocusManager()->SetKeyboardAccessible(true);
+
+  loading_view().RequestFocus();
+  EXPECT_TRUE(loading_view().HasFocus());
 }
 
 }  // namespace payments

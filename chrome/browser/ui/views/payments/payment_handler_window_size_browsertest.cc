@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace payments {
 
@@ -30,6 +36,15 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
+
+#if BUILDFLAG(IS_OZONE)
+    // Wayland does not support resizing the window bounds programmatically,
+    // which means these tests cannot function.
+    if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+      GTEST_SKIP();
+    }
+#endif
+
     NavigateTo("/payment_handler.html");
   }
 
@@ -81,6 +96,74 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
                            /*wait_for_animation=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ResizeToPreferredHeight) {
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
+  ResetEventWaiterForDialogOpened();
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "paymentRequestWithOptions({requestShipping: true}, $1)",
+          payment_method),
+      /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_TRUE(WaitForObservedEvent());
+  // When browser content height >= 500, dialog height is capped at
+  // kPreferredPaymentHandlerDialogHeight (500).
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 800, 800));
+
+  test_api(dialog_view()).ResizeToPaymentHandlerSize();
+
+  EXPECT_EQ(gfx::Size(kPreferredPaymentHandlerDialogWidth,
+                      kPreferredPaymentHandlerDialogHeight),
+            DialogViewSize());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
+                       ResizeToBrowserContentHeight) {
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
+  ResetEventWaiterForDialogOpened();
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "paymentRequestWithOptions({requestShipping: true}, $1)",
+          payment_method),
+      /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_TRUE(WaitForObservedEvent());
+  // Set window height to 600, which produces expected dialog height equals to
+  // actual browser content height.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 800, 600));
+
+  test_api(dialog_view()).ResizeToPaymentHandlerSize();
+
+  int actual_content_height =
+      BrowserWindow::FromBrowser(browser())->GetContentsSize().height();
+  EXPECT_EQ(
+      gfx::Size(kPreferredPaymentHandlerDialogWidth, actual_content_height),
+      DialogViewSize());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest,
+                       ResizeToMinimumDialogHeight) {
+  std::string payment_method;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &payment_method);
+  ResetEventWaiterForDialogOpened();
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace(
+          "paymentRequestWithOptions({requestShipping: true}, $1)",
+          payment_method),
+      /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_TRUE(WaitForObservedEvent());
+  // Set window height to 350 so browser content height < kDialogHeight (450).
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 800, 350));
+
+  test_api(dialog_view()).ResizeToPaymentHandlerSize();
+
+  EXPECT_EQ(gfx::Size(kPreferredPaymentHandlerDialogWidth, kDialogHeight),
+            DialogViewSize());
 }
 
 }  // namespace payments
