@@ -1139,8 +1139,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         };
     }
 
+    /** Sets the tab grid item long press orchestrator for testing. */
     void setTabGridItemLongPressOrchestratorForTesting(
             TabGridItemLongPressOrchestrator orchestrator) {
         mTabGridItemLongPressOrchestrator = orchestrator;
+    }
+
+    /** Returns the drag out listener for testing. */
+    @Nullable OnDragOutListener getOnDragOutListenerForTesting() {
+        return mOnDragOutListener;
     }
 }
