@@ -45,6 +45,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: false,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -76,6 +77,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -129,6 +131,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: false,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -147,11 +150,13 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
     searchbox.onInputFocusChanged(new CustomEvent(
-        'input-focus-changed', {detail: {value: 'edited text'}}));
+        'input-focus-changed',
+        {detail: {value: 'edited text', isOnFocus: true}}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
     assertFalse(searchbox.dropdownIsVisible);
 
@@ -164,11 +169,13 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
     searchbox.onInputFocusChanged(new CustomEvent(
-        'input-focus-changed', {detail: {value: 'permanent text'}}));
+        'input-focus-changed',
+        {detail: {value: 'permanent text', isOnFocus: true}}));
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
@@ -183,6 +190,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -220,6 +228,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
     handler.reset();
@@ -265,6 +274,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
     handler.reset();
@@ -284,6 +294,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -300,6 +311,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: false,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -327,6 +339,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -348,6 +361,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -395,6 +409,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
     handler.reset();
@@ -421,6 +436,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -479,6 +495,7 @@ suite('OmniboxPopupSearchboxTest', function() {
         isFocused: true,
         permanentDisplayText: testText,
         showFullUrl: false,
+        queryZps: false,
       });
     };
 
@@ -720,6 +737,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: false,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
     await searchbox.$.input.updateComplete;
@@ -737,6 +755,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: 'chrome://version',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
     await searchbox.$.input.updateComplete;
@@ -756,6 +775,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: '',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 
@@ -774,6 +794,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       isFocused: true,
       permanentDisplayText: 'https://chromium.org',
       showFullUrl: false,
+      queryZps: false,
     });
     await microtasksFinished();
 

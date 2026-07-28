@@ -289,7 +289,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     }
 
     // User is tabbing into the input element.
-    this.fire('input-focus-changed', {value: this.$.input.value});
+    this.fire(
+        'input-focus-changed',
+        {value: this.$.input.value, isOnFocus: !this.$.input.value});
   }
 
   protected onInputMousedown_(e: MouseEvent|null) {
@@ -297,7 +299,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (e && e.button !== 0) {
       return;
     }
-    this.fire('input-focus-changed', {value: this.$.input.value});
+    this.fire(
+        'input-focus-changed',
+        {value: this.$.input.value, isOnFocus: !this.$.input.value});
   }
 
   protected onInputPaste_(e: ClipboardEvent) {

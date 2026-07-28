@@ -28,6 +28,8 @@ struct OmniboxInputState {
   string permanent_display_text;
   // Whether the full url should be showing.
   bool show_full_url;
+  // Whether searchbox should query for ZPS.
+  bool query_zps;
 };
 
 // Browser-side handler for the Omnibox Popup.
