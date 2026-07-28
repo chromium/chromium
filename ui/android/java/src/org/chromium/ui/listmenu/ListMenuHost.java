@@ -84,6 +84,8 @@ public class ListMenuHost
     private final boolean mPositionedAtEnd;
 
     private final @Nullable PressedStateSetter mPressedStateSetter;
+    private @Nullable CharSequence mOriginalTooltip;
+    private boolean mTooltipCleared;
 
     /**
      * Creates a new {@link ListMenuHost}.
@@ -159,6 +161,12 @@ public class ListMenuHost
             mPressedStateSetter.setPressedState(false);
         }
 
+        if (mTooltipCleared) {
+            mView.setTooltipText(mOriginalTooltip);
+            mTooltipCleared = false;
+            mOriginalTooltip = null;
+        }
+
         if (mHierarchicalMenuController == null
                 || mHierarchicalMenuController.getFlyoutController() == null) {
             return;
@@ -188,6 +196,13 @@ public class ListMenuHost
     public void showMenu() {
         if (!mView.isAttachedToWindow()) return;
         dismiss();
+
+        // Clear the tooltip on the anchor view so Android Framework's TooltipPopup
+        // doesn't persist over the newly shown menu window on systems with mouse/hover support.
+        mOriginalTooltip = mView.getTooltipText();
+        mView.setTooltipText(null);
+        mTooltipCleared = true;
+
         initPopupWindow();
 
         FlyoutController<AnchoredPopupWindow> controller =

@@ -331,7 +331,11 @@ class AppMenu implements OnKeyListener {
             boolean addTopPaddingBeforeFirstRow,
             boolean isFromBottomBar,
             FlyoutHandler<AppMenuPopup> flyoutHandler) {
-        mContext = context;
+        // Clear the tooltip on the anchor view so Android Framework's TooltipPopup
+        // doesn't persist over the newly shown menu window on systems with mouse/hover support.
+        final CharSequence originalTooltip = anchorView.getTooltipText();
+        anchorView.setTooltipText(null);
+
         PopupWindow popup = new PopupWindow(context);
         popup.setFocusable(true);
         popup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -345,6 +349,8 @@ class AppMenu implements OnKeyListener {
                     if (anchorView instanceof ImageButton) {
                         ((ImageButton) anchorView).setSelected(false);
                     }
+                    // Restore the original tooltip text when the menu is dismissed.
+                    anchorView.setTooltipText(originalTooltip);
 
                     if (mMenuItemEnterAnimator != null) mMenuItemEnterAnimator.cancel();
                     if (mHeightAnimator != null) mHeightAnimator.cancel();
