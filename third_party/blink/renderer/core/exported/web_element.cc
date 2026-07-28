@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
@@ -546,6 +547,19 @@ std::vector<gfx::Rect> WebElement::ClientRectsInWidget() {
 }
 
 SkBitmap WebElement::ImageContents() {
+  Element* element = Unwrap<Element>();
+  if (!element) {
+    return {};
+  }
+
+  if (auto* canvas = blink::DynamicTo<HTMLCanvasElement>(element)) {
+    scoped_refptr<StaticBitmapImage> image = canvas->Snapshot(kBackBuffer);
+    if (!image) {
+      return {};
+    }
+    return image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
+  }
+
   Image* image = GetImage();
   if (!image)
     return {};
@@ -553,7 +567,6 @@ SkBitmap WebElement::ImageContents() {
   if (RuntimeEnabledFeatures::SvgFallBackToContainerSizeEnabled()) {
     if (auto* svg_image = blink::DynamicTo<SVGImage>(*image)) {
       // Adapted from ImageElementBase::GetSourceImageFromCanvas.
-      Element* element = Unwrap<Element>();
       const ComputedStyle* style = element->GetComputedStyle();
       auto preferred_color_scheme = element->GetDocument()
                                         .GetStyleEngine()

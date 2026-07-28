@@ -589,6 +589,4 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
   EXPECT_TRUE(manager->IsOCRTimerActiveForTesting());
 }
 
-// TODO(crbug.com/498093320): Add a browser test that uses OCR service.
-
 }  // namespace blink

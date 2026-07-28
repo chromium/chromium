@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 
 source_set("accessibility") {
   public = [
@@ -203,9 +204,11 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    data_deps = []
     sources = [
       "accessibility_labels_service_browsertest.cc",
       "ax_main_node_annotator_controller_browsertest.cc",
+      "canvas_accessibility_browsertest.cc",
       "image_annotation_browsertest.cc",
       "interstitial_accessibility_browsertest.cc",
       "page_colors_controller_browsertest.cc",
@@ -245,6 +248,10 @@ if (!is_android) {
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//services/screen_ai/public/cpp:utilities",
     ]
+
+    if (enable_screen_ai_browsertests) {
+      data_deps += [ "//third_party/screen-ai:screen_ai" ]
+    }
 
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/accessibility:test_support" ]

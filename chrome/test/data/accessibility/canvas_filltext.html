@@ -1,0 +1,18 @@
+<!-- Note: This test page sets up the canvas dynamically via JavaScript
+     without static HTML canvas elements. -->
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    window.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'canvas';
+      canvas.width = 200;
+      canvas.height = 200;
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      ctx.fillText('Hello Canvas', 10, 50);
+    };
+  </script>
+</body>
+</html>

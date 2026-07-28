@@ -1,0 +1,31 @@
+<!-- Note: This test page sets up the canvas dynamically via JavaScript
+     without static HTML canvas elements. -->
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'canvas';
+      canvas.width = img.width || 300;
+      canvas.height = img.height || 300;
+      document.body.appendChild(canvas);
+      // Note: { colorSpace: 'display-p3', pixelFormat: 'float16' } creates a
+      // float16 canvas context to verify that WebElement::ImageContents()
+      // converts float16 snapshots to N32 bitmaps for AXCanvasAnnotator.
+      const ctx = canvas.getContext('2d', {
+        willReadFrequently: true,
+        colorSpace: 'display-p3',
+        pixelFormat: 'float16'
+      });
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      document.title = 'loaded';
+    };
+    img.src = '/ocr/simple_text_only_sample.png';
+  </script>
+</body>
+</html>
+

@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/renderer/accessibility/annotations/ax_annotator.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,8 +32,7 @@ class RenderAccessibilityImpl;
 // updated on a page. This class is then responsible for retrieving the
 // OCR text for all canvases that need accessibility support and notifying the
 // RenderAccessibility that owns it to update the relevant canvas annotations.
-class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator,
-                                         public base::CheckedObserver {
+class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
  public:
   // `render_accessibility` is the owner of this class and should outlive it.
   explicit AXCanvasAnnotator(
@@ -64,7 +62,8 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator,
   void AddCanvasAnnotationForNode(blink::WebAXObject& src, ui::AXNodeData& dst);
 
   // Connects to the Screen AI OCR service if not already connected.
-  void ConnectOcrIfNeeded();
+  // Returns true if connected or successfully bound.
+  bool ConnectOcrIfNeeded();
 
   // Gets called when the OCR service shuts down or disconnects.
   void OnOcrDisconnected();

@@ -138,6 +138,8 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   ukm_timer_ = std::make_unique<base::ElapsedTimer>();
 
   ax_annotators_manager_->CancelAnnotations();
+  ax_annotators_manager_->AccessibilityModeChanged(ui::AXMode(),
+                                                   accessibility_mode_);
   page_language_.clear();
 
   // New document has started. Do not expect to receive the ACK for a

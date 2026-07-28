@@ -1,0 +1,28 @@
+<!-- Note: This test page sets up the canvas dynamically via JavaScript
+     without static HTML canvas elements. -->
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'canvas';
+      canvas.width = img.width || 300;
+      canvas.height = img.height || 300;
+      document.body.appendChild(canvas);
+      // Note: { willReadFrequently: true } is used here to force a software
+      // backing store, avoiding GPU texture readback stalls in static test
+      // environments. On actual websites, accessibility OCR extracts snapshots
+      // via canvas->Snapshot(kBackBuffer), which supports both GPU and
+      // software canvases automatically without requiring this option.
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      document.title = 'loaded';
+    };
+    img.src = '/ocr/simple_text_only_sample.png';
+  </script>
+</body>
+</html>
