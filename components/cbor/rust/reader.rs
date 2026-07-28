@@ -7,7 +7,6 @@
 // `ParseResult` and `parse_with_config_ffi` below, and rely entirely on
 // `parse_with_config` propagating a structured `Result` to C++.
 use alloc::collections::BTreeMap;
-use alloc::string::String;
 use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::str;
@@ -21,19 +20,19 @@ use crate::values::{MapKey, Value};
 /// It is intended for debugging only. Where `usize` values are present, they
 /// contain the approximate number of bytes remaining when the error occurred.
 #[derive(Debug, PartialEq)]
-pub enum Error {
+pub enum Error<'a> {
     DepthLimitExceeded(usize, usize),
     InputTruncated,
     InvalidUTF8(usize),
-    DuplicateMapKey(usize, Value),
-    MapKeysOutOfOrder(usize, Value),
+    DuplicateMapKey(usize, Value<'a>),
+    MapKeysOutOfOrder(usize, Value<'a>),
     NegativeOutOfRange(u64),
     NonMinimalAdditionalData(usize),
     TrailingData(usize),
     UnsignedOutOfRange(u64),
     UnsupportedAdditionalInformation(usize, u8),
     UnsupportedMajorType(usize, u8),
-    UnsupportedMapKeyType(usize, Value),
+    UnsupportedMapKeyType(usize, Value<'a>),
     UnsupportedSimpleValue(u64),
     UnsupportedFloatingPointValue(u64),
 }
@@ -61,7 +60,7 @@ pub enum ErrorCode {
 // LINT.ThenChange(//components/cbor/reader.h:DecoderError,
 // //components/cbor/reader.cc:DecoderErrorAsserts)
 
-impl Error {
+impl Error<'_> {
     pub fn error_code(&self) -> ErrorCode {
         match self {
             Error::UnsupportedMajorType(_, _) => ErrorCode::UnsupportedMajorType,
@@ -97,18 +96,18 @@ impl Default for Config {
     }
 }
 
-fn get_u8(bytes: &mut &[u8]) -> Result<u8, Error> {
+fn get_u8(bytes: &mut &[u8]) -> Result<u8, Error<'static>> {
     bytes.split_off_first().copied().ok_or(Error::InputTruncated)
 }
 
-fn get<'a>(bytes: &mut &'a [u8], num_bytes: usize) -> Result<&'a [u8], Error> {
+fn get<'a>(bytes: &mut &'a [u8], num_bytes: usize) -> Result<&'a [u8], Error<'static>> {
     bytes.split_off(..num_bytes).ok_or(Error::InputTruncated)
 }
 
 #[repr(C)]
 #[derive(Debug, PartialEq, Clone)]
-pub struct ParseResult {
-    pub value: Value,
+pub struct ParseResult<'a> {
+    pub value: Value<'a>,
     pub bytes_consumed: usize,
     pub error_code: ErrorCode,
 }
@@ -116,7 +115,10 @@ pub struct ParseResult {
 /// Parses CBOR bytes into a `Value`.
 ///
 /// Returns the parsed value and the number of bytes consumed.
-pub fn parse_with_config(mut input: &[u8], config: Config) -> Result<(Value, usize), Error> {
+pub fn parse_with_config<'a>(
+    mut input: &'a [u8],
+    config: Config,
+) -> Result<(Value<'a>, usize), Error<'a>> {
     let orig_len = input.len();
     let ret = parse_value(&mut input, 0, &config)?;
     let consumed = orig_len - input.len();
@@ -124,7 +126,7 @@ pub fn parse_with_config(mut input: &[u8], config: Config) -> Result<(Value, usi
 }
 
 /// FFI wrapper returning `ParseResult` for Crubit C++ consumption.
-pub fn parse_with_config_ffi(input: &[u8], config: Config) -> ParseResult {
+pub fn parse_with_config_ffi<'a>(input: &'a [u8], config: Config) -> ParseResult<'a> {
     match parse_with_config(input, config) {
         Ok((value, bytes_consumed)) => {
             ParseResult { value, bytes_consumed, error_code: ErrorCode::Ok }
@@ -135,7 +137,11 @@ pub fn parse_with_config_ffi(input: &[u8], config: Config) -> ParseResult {
     }
 }
 
-fn parse_value(input: &mut &[u8], depth: usize, config: &Config) -> Result<Value, Error> {
+fn parse_value<'a>(
+    input: &mut &'a [u8],
+    depth: usize,
+    config: &Config,
+) -> Result<Value<'a>, Error<'a>> {
     if depth > config.max_nesting_level {
         return Err(Error::DepthLimitExceeded(input.len(), config.max_nesting_level));
     }
@@ -152,7 +158,7 @@ fn parse_value(input: &mut &[u8], depth: usize, config: &Config) -> Result<Value
     }
 }
 
-fn parse_header(input: &mut &[u8]) -> Result<(u8, u8, u64), Error> {
+fn parse_header(input: &mut &[u8]) -> Result<(u8, u8, u64), Error<'static>> {
     let b = get_u8(input)?;
     let major_type = b >> 5;
     let info = b & 0x1f;
@@ -201,7 +207,9 @@ impl FromBytes<8> for u64 {
     }
 }
 
-fn u64_from_be_bytes<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
+fn u64_from_be_bytes<const N: usize, T: FromBytes<N>>(
+    input: &mut &[u8],
+) -> Result<u64, Error<'static>> {
     const {
         assert!(N == core::mem::size_of::<T>());
     }
@@ -213,7 +221,7 @@ fn u64_from_be_bytes<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Resu
     Ok(T::from_be_bytes(*bytes).into())
 }
 
-fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error> {
+fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u64, Error<'static>> {
     let v = u64_from_be_bytes::<N, T>(input)?;
     let (_, expected_num_bytes) = crate::writer::low_bits_and_length(v);
     if N != expected_num_bytes {
@@ -223,7 +231,7 @@ fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u6
     }
 }
 
-fn to_int(arg: u64, is_negative: bool) -> Result<Value, Error> {
+fn to_int(arg: u64, is_negative: bool) -> Result<Value<'static>, Error<'static>> {
     if is_negative {
         if arg > i64::MAX as u64 {
             Err(Error::NegativeOutOfRange(arg))
@@ -237,25 +245,29 @@ fn to_int(arg: u64, is_negative: bool) -> Result<Value, Error> {
     }
 }
 
-fn to_bytestring(input: &mut &[u8], len64: u64) -> Result<Value, Error> {
+fn to_bytestring<'a>(input: &mut &'a [u8], len64: u64) -> Result<Value<'a>, Error<'static>> {
     let Ok(len) = usize::try_from(len64) else {
         return Err(Error::InputTruncated);
     };
     let bytes = get(input, len)?;
-    Ok(Value::Bytestring(bytes.to_vec()))
+    Ok(Value::Bytestring(bytes))
 }
 
-fn to_string(input: &mut &[u8], len64: u64, config: &Config) -> Result<Value, Error> {
+fn to_string<'a>(
+    input: &mut &'a [u8],
+    len64: u64,
+    config: &Config,
+) -> Result<Value<'a>, Error<'a>> {
     let Ok(len) = usize::try_from(len64) else {
         return Err(Error::InputTruncated);
     };
     let orig_len = input.len();
     let bytes = get(input, len)?;
     match str::from_utf8(bytes) {
-        Ok(string) => Ok(Value::String(String::from(string))),
+        Ok(string) => Ok(Value::String(string)),
         Err(_) => {
             if config.allow_invalid_utf8 {
-                Ok(Value::InvalidUtf8(bytes.to_vec()))
+                Ok(Value::InvalidUtf8(bytes))
             } else {
                 Err(Error::InvalidUTF8(orig_len))
             }
@@ -263,12 +275,12 @@ fn to_string(input: &mut &[u8], len64: u64, config: &Config) -> Result<Value, Er
     }
 }
 
-fn to_array(
-    input: &mut &[u8],
+fn to_array<'a>(
+    input: &mut &'a [u8],
     num_elements: u64,
     depth: usize,
     config: &Config,
-) -> Result<Value, Error> {
+) -> Result<Value<'a>, Error<'a>> {
     let mut ret = Vec::new();
     for _ in 0..num_elements {
         ret.push(parse_value(input, depth, config)?);
@@ -276,12 +288,12 @@ fn to_array(
     Ok(Value::Array(ret))
 }
 
-fn to_map(
-    input: &mut &[u8],
+fn to_map<'a>(
+    input: &mut &'a [u8],
     num_elements: u64,
     depth: usize,
     config: &Config,
-) -> Result<Value, Error> {
+) -> Result<Value<'a>, Error<'a>> {
     let mut ret: BTreeMap<MapKey, Value> = BTreeMap::new();
 
     for _ in 0..num_elements {
@@ -316,7 +328,7 @@ fn to_map(
     Ok(Value::Map(ret))
 }
 
-fn to_simple_value(info: u8, arg: u64, config: &Config) -> Result<Value, Error> {
+fn to_simple_value(info: u8, arg: u64, config: &Config) -> Result<Value<'static>, Error<'static>> {
     match info {
         SIMPLE_VALUE_FALSE => Ok(Value::Boolean(false)),
         SIMPLE_VALUE_TRUE => Ok(Value::Boolean(true)),

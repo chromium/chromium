@@ -6,7 +6,7 @@ use cbor::*;
 use rust_gtest_interop::prelude::*;
 use std::collections::BTreeMap;
 
-fn parse_bytes(input: &[u8]) -> Result<Value, Error> {
+fn parse_bytes<'a>(input: &'a [u8]) -> Result<Value<'a>, Error<'a>> {
     let len = input.len();
     let (val, consumed) = parse_with_config(input, Config::default())?;
     if consumed < len {
@@ -34,10 +34,10 @@ fn test_inputs() {
         ("1818", Ok(Value::Int(24))),
         ("1817", Err(Error::NonMinimalAdditionalData(0))),
         ("190080", Err(Error::NonMinimalAdditionalData(0))),
-        ("60", Ok(Value::String(String::from("")))),
-        ("6161", Ok(Value::String(String::from("a")))),
-        ("40", Ok(Value::Bytestring(vec![]))),
-        ("4100", Ok(Value::Bytestring(vec![0x00]))),
+        ("60", Ok(Value::String(""))),
+        ("6161", Ok(Value::String("a"))),
+        ("40", Ok(Value::Bytestring(&[]))),
+        ("4100", Ok(Value::Bytestring(&[0x00]))),
         ("61ff", Err(Error::InvalidUTF8(1))),
         ("80", Ok(Value::Array(Vec::new()))),
         ("8101", Ok(Value::Array(vec![Value::Int(1)]))),
@@ -59,7 +59,7 @@ fn test_inputs() {
         (
             "a1410a01",
             Ok(Value::Map(BTreeMap::from([(
-                MapKey::Bytestring(hex::decode("0a").unwrap()),
+                MapKey::Bytestring(&[0x0a]),
                 Value::Int(1),
             )]))),
         ),
@@ -73,19 +73,13 @@ fn test_inputs() {
                 (
                     MapKey::Int(-2),
                     Value::Bytestring(
-                        hex::decode(
-                            "09ac4af6a4646b5bfe81c37f751769c768c5c41ffea633dad0f48e6e3bc3e9a0",
-                        )
-                        .unwrap(),
+                        b"\x09\xac\x4a\xf6\xa4\x64\x6b\x5b\xfe\x81\xc3\x7f\x75\x17\x69\xc7\x68\xc5\xc4\x1f\xfe\xa6\x33\xda\xd0\xf4\x8e\x6e\x3b\xc3\xe9\xa0",
                     ),
                 ),
                 (
                     MapKey::Int(-3),
                     Value::Bytestring(
-                        hex::decode(
-                            "269fbe132c40bf11f4de4a92bec527901906fdce98bbed52df9b175b6a4f3808",
-                        )
-                        .unwrap(),
+                        b"\x26\x9f\xbe\x13\x2c\x40\xbf\x11\xf4\xde\x4a\x92\xbe\xc5\x27\x90\x19\x06\xfd\xce\x98\xbb\xed\x52\xdf\x9b\x17\x5b\x6a\x4f\x38\x08",
                     ),
                 ),
             ]))),
@@ -171,7 +165,7 @@ fn test_corner_cases() {
         // D. Advanced UTF-8 & Unicode Escapes
         ("62c080", Err(Error::InvalidUTF8(2))),
         ("63eda080", Err(Error::InvalidUTF8(3))),
-        ("626100", Ok(Value::String(String::from("a\x00")))),
+        ("626100", Ok(Value::String("a\x00"))),
         // E. Semantic CBOR Tags Rejection
         ("c0", Err(Error::UnsupportedMajorType(0, 6))),
         ("c2", Err(Error::UnsupportedMajorType(0, 6))),
