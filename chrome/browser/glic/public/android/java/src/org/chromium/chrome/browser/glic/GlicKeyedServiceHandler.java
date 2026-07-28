@@ -76,4 +76,23 @@ public final class GlicKeyedServiceHandler {
 
         return service.invokeWithAutoSubmit(tab, text, invocationSource);
     }
+
+    /**
+     * Invokes the GLIC service, opening the panel with the given tab as context (no auto-submit).
+     *
+     * @param profile The current profile.
+     * @param tab The {@link Tab} to target.
+     * @param invocationSource How the UI was triggered.
+     * @return true if the service was successfully invoked.
+     */
+    public static boolean invoke(
+            Profile profile, Tab tab, @GlicInvocationSource int invocationSource) {
+        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+        if (service == null) {
+            return false;
+        }
+
+        service.invoke(tab, invocationSource);
+        return true;
+    }
 }

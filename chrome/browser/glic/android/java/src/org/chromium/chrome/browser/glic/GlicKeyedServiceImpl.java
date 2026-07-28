@@ -70,6 +70,13 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
+    public void invoke(Tab tab, @GlicInvocationSource int invocationSource) {
+        if (mNativePtr == 0) return;
+
+        GlicKeyedServiceImplJni.get().invoke(mNativePtr, tab, invocationSource);
+    }
+
+    @Override
     public boolean isPanelShowingForBrowser(long browserWindowPtr) {
         if (mNativePtr == 0) return false;
         return GlicKeyedServiceImplJni.get().isPanelShowingForBrowser(mNativePtr, browserWindowPtr);
@@ -181,6 +188,11 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 long nativeGlicKeyedServiceAndroid,
                 @JniType("TabAndroid*") Tab tab,
                 @JniType("std::string") String text,
+                @GlicInvocationSource int source);
+
+        void invoke(
+                long nativeGlicKeyedServiceAndroid,
+                @JniType("TabAndroid*") Tab tab,
                 @GlicInvocationSource int source);
 
         boolean isPanelShowingForBrowser(long nativeGlicKeyedServiceAndroid, long browserWindowPtr);

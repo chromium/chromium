@@ -1967,6 +1967,7 @@ android_library(
 
   deps = [
     ":common_unit_test_deps_java",
+    "//chrome/browser/glic:public_java",
     "//chrome/browser/gsa:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/ui/android/signin:java",

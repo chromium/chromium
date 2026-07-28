@@ -120,6 +120,18 @@ bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
   }
 }
 
+void GlicKeyedServiceAndroid::Invoke(JNIEnv* env,
+                                     TabAndroid* tab,
+                                     int32_t source) {
+  if (!tab) {
+    return;
+  }
+
+  GlicInvokeOptions options(Target(*tab),
+                            static_cast<mojom::InvocationSource>(source));
+  service_->Invoke(std::move(options));
+}
+
 bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
     JNIEnv* env,
     int64_t browser_window_ptr) {
