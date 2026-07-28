@@ -12,7 +12,7 @@ import type {ToastType} from '../skills.mojom-webui.js';
 
 import type {SkillsWebviewBridgeDelegate} from './skills_webview_bridge.js';
 import {SkillsWebviewBridge} from './skills_webview_bridge.js';
-import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage} from './skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getRemoteUrlForChromePath, HISTOGRAM_TOTAL_INIT_LATENCY, IS_FIRST_PARTY_QUERY_PARAMETER, IS_SAVING_GEMINI_QUERY_PARAMETER, LoadingStage} from './skills_webview_bridge_constants.js';
 
 export class SkillsWebview {
   protected remoteUrl: string = '';
@@ -30,23 +30,43 @@ export class SkillsWebview {
   }
 
   private isSavingGeminiQuery(): boolean {
-    if (!loadTimeData.valueExists('dialogType')) {
-      return false;
-    }
     return loadTimeData.getInteger('dialogType') === SkillsDialogType.kAdd &&
-        !loadTimeData.getString('skillId');
+        !loadTimeData.getString('skillId') &&
+        !!loadTimeData.getString('skillPrompt');
+  }
+
+  private isFirstPartySkill(): boolean {
+    return loadTimeData.getInteger('dialogType') === SkillsDialogType.kAdd &&
+        !!loadTimeData.getString('skillId');
+  }
+
+  private isUserSkill(): boolean {
+    return loadTimeData.getInteger('dialogType') === SkillsDialogType.kEdit;
   }
 
   private initializeRemoteUrl() {
     const path = window.location.pathname;
     this.remoteUrl = getRemoteUrlForChromePath(path);
 
-    if (this.isSavingGeminiQuery()) {
-      const url = new URL(this.remoteUrl);
-      url.searchParams.set(IS_SAVING_GEMINI_QUERY_PARAMETER, 'true');
-      this.remoteUrl = url.toString();
-      this.promptToSend = loadTimeData.getString('skillPrompt');
+    const url = new URL(this.remoteUrl);
+
+    // For dialog type urls, set query paraemters as necessary.
+    if (loadTimeData.valueExists('dialogType')) {
+      if (this.isSavingGeminiQuery()) {
+        url.searchParams.set(IS_SAVING_GEMINI_QUERY_PARAMETER, 'true');
+        this.promptToSend = loadTimeData.getString('skillPrompt');
+      } else if (this.isFirstPartySkill()) {
+        url.searchParams.set('id', loadTimeData.getString('skillId'));
+        url.searchParams.set(IS_FIRST_PARTY_QUERY_PARAMETER, 'true');
+      } else if (this.isUserSkill()) {
+        const skillId = loadTimeData.getString('skillId');
+        if (skillId) {
+          url.searchParams.set('id', skillId);
+        }
+      }
     }
+
+    this.remoteUrl = url.toString();
   }
 
   getInitStartTimeForTesting(searchParams: URLSearchParams): number {

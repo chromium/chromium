@@ -5,7 +5,7 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {SkillsDialogType} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
-import {IS_SAVING_GEMINI_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
+import {IS_FIRST_PARTY_QUERY_PARAMETER, IS_SAVING_GEMINI_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 class TestSkillsWebview extends SkillsWebview {
@@ -34,5 +34,33 @@ suite('SkillsWebviewTest', () => {
     const url = new URL(webviewApp.getRemoteUrlForTesting());
     assertEquals(
         'true', url.searchParams.get(IS_SAVING_GEMINI_QUERY_PARAMETER));
+  });
+
+  test('SkillsWebview_AddWithId_FirstPartySkill', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      dialogType: SkillsDialogType.kAdd,
+      skillId: 'some_id',
+    });
+
+    const webviewApp = new TestSkillsWebview();
+    const url = new URL(webviewApp.getRemoteUrlForTesting());
+    assertEquals('some_id', url.searchParams.get('id'));
+    assertEquals('true', url.searchParams.get(IS_FIRST_PARTY_QUERY_PARAMETER));
+  });
+
+  test('SkillsWebview_EditWithId_UserSkill', () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      dialogType: SkillsDialogType.kEdit,
+      skillId: 'some_id',
+    });
+
+    const webviewApp = new TestSkillsWebview();
+    const url = new URL(webviewApp.getRemoteUrlForTesting());
+    assertEquals('some_id', url.searchParams.get('id'));
+    assertEquals(null, url.searchParams.get(IS_FIRST_PARTY_QUERY_PARAMETER));
   });
 });
