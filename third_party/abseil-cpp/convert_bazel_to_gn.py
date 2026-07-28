@@ -22,13 +22,23 @@ _SKIP_TARGETS = {
     'Disabled because container_memory_test requires -frtti',
     'container:raw_hash_set_test':
     'raw_hash_set_test uses typeid(), i.e., relies on RTTI.',
+    'debugging:demangle_test': 'Disabled because this test relies on RTTI',
+    'profiling:sample_recorder_test':
+    'TODO: Re-enable once the issue with gmock activating generic gtest printers hitting issues with -Wmicrosoft-cast.',
     'random/internal:nanobenchmark': 'Only used for benchmarking',
+    'synchronization:blocking_counter_test':
+    'Conflicts at link time with "tracing_strong_test" because also defines strong functions for AbslInternalTraceWait and alike',
+    'synchronization:mutex_method_pointer_test': 'Doesn\'t compile.',
+    'synchronization:notification_test':
+    'Conflicts at link time with "tracing_strong_test" because also defines strong functions for AbslInternalTraceWait and alike',
     'types:any_span_test':
     'any_span_test is not ported because relies on RTTI',
 }
 
 # Extra build rules added at the end. The reason they are needed vary per target.
 _ADD_CONTENT = {
+    'cleanup:cleanup_internal':
+    'visibility = [ "//third_party/abseil-cpp/absl/*" ]',
     'container:hashtablez_sampler_test': 'if (is_win) { sources = [] }',
     'container:test_allocator':
     'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
@@ -179,6 +189,10 @@ class _Converter:
                 out.append(f'')
                 continue
 
+            if '@google_benchmark//:benchmark_main' in bazel_deps:
+                # Porting benchmarks targets is not implemented.
+                continue
+
             if '//absl/base:exception_safety_testing' in bazel_deps:
                 out.append(
                     f'# skipped because chromium doesn\'t use c++ exceptions')
@@ -282,15 +296,20 @@ def convert_all(root_dir):
     # TODO: crbug.com/524565513: walk the root dir when script is fully ready to handle all edge cases.
     for folder in [
             'algorithm',
+            'cleanup',
             'container',
             'crc',
+            'debugging',
             'functional',
+            'hash',
             'memory',
             'meta',
             'numeric',
+            'profiling',
             'random',
             'random/internal',
             'status',
+            'synchronization',
             'time',
             'types',
             'utility',
