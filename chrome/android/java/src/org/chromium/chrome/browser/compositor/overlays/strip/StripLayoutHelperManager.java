@@ -1164,7 +1164,7 @@ public class StripLayoutHelperManager
                 (2 * MIN_TAB_WIDTH_DP)
                         - TAB_OVERLAP_WIDTH_DP
                         + BUTTON_TOUCH_TARGET_SIZE_DP
-                        + getActiveStripLayoutHelper().getTabSearchButtonWidth()
+                        + getActiveStripLayoutHelper().getTabSearchButton().getWidth()
                         + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding()
                         + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f);
         return Math.round(thresholdDp);

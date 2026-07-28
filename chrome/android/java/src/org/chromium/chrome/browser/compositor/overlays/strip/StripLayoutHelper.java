@@ -563,7 +563,6 @@ public class StripLayoutHelper
 
     // Layout Constants
     private final float mNewTabButtonWidth;
-    private final float mTabSearchButtonWidth;
 
     // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
     // by this much, so we offset the drawX.
@@ -808,11 +807,6 @@ public class StripLayoutHelper
         mScrollDelegate = new ScrollDelegate(context);
 
         Resources res = context.getResources();
-        // Set tab search button background resource.
-        mTabSearchButtonWidth =
-                ChromeFeatureList.sTabSearchForDesktop.isEnabled()
-                        ? BUTTON_TOUCH_TARGET_SIZE_DP
-                        : 0.f;
         mTabSearchButton = createTabSearchButton(context, incognito, res);
 
         // Use toolbar menu button padding to align NTB with menu button.
@@ -936,13 +930,17 @@ public class StripLayoutHelper
 
     private TintedCompositorButton createTabSearchButton(
             Context context, boolean incognito, Resources res) {
+        float width =
+                ChromeFeatureList.sTabSearchForDesktop.isEnabled()
+                        ? BUTTON_TOUCH_TARGET_SIZE_DP
+                        : 0.f;
         TintedCompositorButton button =
                 new TintedCompositorButton(
                         context,
                         incognito,
                         ButtonType.TAB_SEARCH,
                         /* parentView= */ null,
-                        BUTTON_BACKGROUND_SIZE_DP,
+                        width,
                         BUTTON_BACKGROUND_SIZE_DP,
                         mControlContainer::setTooltipText,
                         /* clickHandler= */ this,
@@ -970,10 +968,10 @@ public class StripLayoutHelper
     }
 
     private void updateTabSearchButton() {
-        mTabSearchButton.setVisible(mTabSearchButtonWidth > 0.f);
+        mTabSearchButton.setVisible(mTabSearchButton.getWidth() > 0.f);
         if (mTabSearchButton.isVisible()) {
             if (LocalizationUtils.isLayoutRtl()) {
-                mTabSearchButton.setDrawX(mWidth - mRightPadding - mTabSearchButtonWidth);
+                mTabSearchButton.setDrawX(mWidth - mRightPadding - mTabSearchButton.getWidth());
             } else {
                 mTabSearchButton.setDrawX(mLeftPadding);
             }
@@ -1029,10 +1027,6 @@ public class StripLayoutHelper
      */
     public TintedCompositorButton getTabSearchButton() {
         return mTabSearchButton;
-    }
-
-    float getTabSearchButtonWidth() {
-        return mTabSearchButtonWidth;
     }
 
     /**
@@ -1246,7 +1240,7 @@ public class StripLayoutHelper
 
     private void updateMargins(boolean recalculateTabWidth) {
         // Reserve space for tab search button if it is visible at the start of the strip.
-        mReservedStartMargin = mTabSearchButton.isVisible() ? mTabSearchButtonWidth : 0.f;
+        mReservedStartMargin = mTabSearchButton.isVisible() ? mTabSearchButton.getWidth() : 0.f;
         if (LocalizationUtils.isLayoutRtl()) {
             mLeftMargin = mReservedEndMargin + mLeftPadding;
             mRightMargin = mReservedStartMargin + mRightPadding;
