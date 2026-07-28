@@ -208,25 +208,25 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  PA_CONSTINIT static _ReservationOffsetTable<kRegularOffsetTableLength>
+  constinit static _ReservationOffsetTable<kRegularOffsetTableLength>
       regular_pool_table_;
-  PA_CONSTINIT static _ReservationOffsetTable<kBRPOffsetTableLength>
+  constinit static _ReservationOffsetTable<kBRPOffsetTableLength>
       brp_pool_table_;
-  PA_CONSTINIT static _ReservationOffsetTable<kConfigurableOffsetTableLength>
+  constinit static _ReservationOffsetTable<kConfigurableOffsetTableLength>
       configurable_pool_table_;
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // If thread isolation support is enabled, we need to write-protect the tables
   // of the thread isolated pool. For this, the thread isolated ones start on a
   // page boundary.
   PA_THREAD_ISOLATED_ALIGN
-  PA_CONSTINIT static _ReservationOffsetTable<
+  constinit static _ReservationOffsetTable<
       kThreadIsolatedOffsetTableLength,
       kThreadIsolatedOffsetTablePaddingSize>
       thread_isolated_pool_table_;
 #endif
 #else
   // A single table for the entire 32-bit address space.
-  PA_CONSTINIT static _ReservationOffsetTable<kReservationOffsetTableLength>
+  constinit static _ReservationOffsetTable<kReservationOffsetTableLength>
       reservation_offset_table_;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 };

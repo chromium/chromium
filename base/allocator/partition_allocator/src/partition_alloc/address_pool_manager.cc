@@ -26,7 +26,7 @@
 
 namespace partition_alloc::internal {
 
-PA_CONSTINIT AddressPoolManager AddressPoolManager::singleton_;
+constinit AddressPoolManager AddressPoolManager::singleton_;
 
 // static
 AddressPoolManager& AddressPoolManager::GetInstance() {

@@ -415,7 +415,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writable data, through
   // alignment and padding.
-  PA_CONSTINIT static PoolSetup setup_;
+  constinit static PoolSetup setup_;
 
 #if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
   static size_t zero_segment_size_;

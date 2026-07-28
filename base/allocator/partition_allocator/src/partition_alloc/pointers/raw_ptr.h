@@ -468,7 +468,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) || \
     PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||     \
     PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
-  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
+  PA_ALWAYS_INLINE constexpr ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     Impl::Untrace(tracer_.owner_id());
     // Work around external issues where raw_ptr is used after destruction.
@@ -477,7 +477,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
   }
 #else
-  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
+  PA_ALWAYS_INLINE constexpr ~raw_ptr() noexcept {
     // Not =default because we want MSan use-after-dtor instrumentation.
   }
   static_assert(!kZeroOnDestruct);
@@ -655,7 +655,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     EphemeralRawAddr& operator=(const EphemeralRawAddr&) = delete;
     void* operator new(size_t) = delete;
     void* operator new(size_t, void*) = delete;
-    PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~EphemeralRawAddr() { original = copy; }
+    PA_ALWAYS_INLINE constexpr ~EphemeralRawAddr() { original = copy; }
 
     PA_ALWAYS_INLINE constexpr T** operator&() && PA_LIFETIME_BOUND {
       return &copy;
@@ -672,7 +672,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     T* copy;
     raw_ptr& original;  // Original pointer.
   };
-  PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR EphemeralRawAddr AsEphemeralRawAddr() & {
+  PA_ALWAYS_INLINE constexpr EphemeralRawAddr AsEphemeralRawAddr() & {
     return EphemeralRawAddr(*this);
   }
 

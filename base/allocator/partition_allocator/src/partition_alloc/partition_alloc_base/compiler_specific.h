@@ -12,16 +12,6 @@
 #include <sanitizer/msan_interface.h>
 #endif
 
-// A wrapper around `__has_cpp_attribute()`, which is in C++20 and thus not yet
-// available for all targets PA supports (since PA's minimum C++ version is 17).
-// This works similarly to `PA_HAS_ATTRIBUTE()` below, in that where it's
-// unavailable it will map to `0`.
-#if defined(__has_cpp_attribute)
-#define PA_HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
-#else
-#define PA_HAS_CPP_ATTRIBUTE(x) 0
-#endif
-
 // A wrapper around `__has_attribute()`, which is similar to the C++20-standard
 // `__has_cpp_attribute()`, but tests for support for `__attribute__(())`s.
 // Compilers that do not support this (e.g. MSVC) are also assumed not to
@@ -70,9 +60,9 @@
 //     // This body will not be inlined into callers.
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(gnu::noinline)
+#if __has_cpp_attribute(gnu::noinline)
 #define PA_NOINLINE [[gnu::noinline]]
-#elif PA_HAS_CPP_ATTRIBUTE(msvc::noinline)
+#elif __has_cpp_attribute(msvc::noinline)
 #define PA_NOINLINE [[msvc::noinline]]
 #else
 #define PA_NOINLINE
@@ -93,9 +83,9 @@
 // Since `ALWAYS_INLINE` is performance-oriented but can hamper debugging,
 // ignore it in debug mode.
 #if !PA_BUILDFLAG(IS_DEBUG)
-#if PA_HAS_CPP_ATTRIBUTE(clang::always_inline)
+#if __has_cpp_attribute(clang::always_inline)
 #define PA_ALWAYS_INLINE [[clang::always_inline]] inline
-#elif PA_HAS_CPP_ATTRIBUTE(gnu::always_inline)
+#elif __has_cpp_attribute(gnu::always_inline)
 #define PA_ALWAYS_INLINE [[gnu::always_inline]] inline
 #elif defined(PA_COMPILER_MSVC)
 #define PA_ALWAYS_INLINE __forceinline
@@ -115,7 +105,7 @@
 //     PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION void Func() requires ...;
 //   };
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::exclude_from_explicit_instantiation)
+#if __has_cpp_attribute(clang::exclude_from_explicit_instantiation)
 #define PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION \
   [[clang::exclude_from_explicit_instantiation]]
 #elif PA_HAS_ATTRIBUTE(exclude_from_explicit_instantiation)
@@ -140,7 +130,7 @@
 //   // Calls to this method will not be tail calls.
 //   PA_NOT_TAIL_CALLED void Func();
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::not_tail_called)
+#if __has_cpp_attribute(clang::not_tail_called)
 #define PA_NOT_TAIL_CALLED [[clang::not_tail_called]]
 #else
 #define PA_NOT_TAIL_CALLED
@@ -163,7 +153,7 @@
 //     PA_MUSTTAIL return Func1(d + 1);  // `Func1()` will be tail-called.
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::musttail)
+#if __has_cpp_attribute(clang::musttail)
 #define PA_MUSTTAIL [[clang::musttail]]
 #else
 #define PA_MUSTTAIL
@@ -191,9 +181,9 @@
 // https://devblogs.microsoft.com/cppblog/msvc-cpp20-and-the-std-cpp20-switch/#msvc-extensions-and-abi),
 // and clang-cl matches it for ABI compatibility reasons. We need to prefer
 // [[msvc::no_unique_address]] when available if we actually want any effect.
-#if PA_HAS_CPP_ATTRIBUTE(msvc::no_unique_address)
+#if __has_cpp_attribute(msvc::no_unique_address)
 #define PA_NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
-#elif PA_HAS_CPP_ATTRIBUTE(no_unique_address)
+#elif __has_cpp_attribute(no_unique_address)
 #define PA_NO_UNIQUE_ADDRESS [[no_unique_address]]
 #else
 #define PA_NO_UNIQUE_ADDRESS
@@ -222,7 +212,7 @@
 //     Print("%s", 1);
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(gnu::format)
+#if __has_cpp_attribute(gnu::format)
 #define PA_PRINTF_FORMAT(format_param, dots_param) \
   [[gnu::format(printf, format_param, dots_param)]]
 #else
@@ -241,7 +231,7 @@
 //     // CFI indirect call checks will not be performed in this body.
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::no_sanitize)
+#if __has_cpp_attribute(clang::no_sanitize)
 #define PA_NO_SANITIZE(sanitizer) [[clang::no_sanitize(sanitizer)]]
 #else
 #define PA_NO_SANITIZE(sanitizer)
@@ -354,7 +344,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //     // No calls in this block will be merged.
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::nomerge)
+#if __has_cpp_attribute(clang::nomerge)
 #define PA_NOMERGE [[clang::nomerge]]
 #else
 #define PA_NOMERGE
@@ -387,41 +377,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //   // `S`'s nontrivial destructor.
 //   struct PA_TRIVIAL_ABI S { ~S(); }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::trivial_abi)
+#if __has_cpp_attribute(clang::trivial_abi)
 #define PA_TRIVIAL_ABI [[clang::trivial_abi]]
 #else
 #define PA_TRIVIAL_ABI
-#endif
-
-// Makes C++20's `constinit` functionality available even pre-C++20, by falling
-// back to a custom attribute.
-// TODO(crbug.com/365046216): Use `constinit` directly when C++20 is available
-// and all usage sites have been reordered to be compatible with doing so.
-//
-// See also:
-//   https://clang.llvm.org/docs/AttributeReference.html#require-constant-initialization-constinit-c-20
-//
-// Usage:
-// ```
-// struct S {
-//   constexpr S() = default;
-//   S(int) {}
-// };
-//
-// // Compiles (constant initialization via `constexpr` default constructor).
-// PA_CONSTINIT S s0;
-//
-// // Will not compile; diagnosed as usage of non-constexpr constructor in a
-// // constant expression.
-// PA_CONSTINIT S s1(1);
-//
-// // Compiles (non-constant initialization via non-`constexpr` constructor).
-// S s2(2);
-// ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::require_constant_initialization)
-#define PA_CONSTINIT [[clang::require_constant_initialization]]
-#else
-#define PA_CONSTINIT
 #endif
 
 // Annotates a type as holding a pointer into an owner object (an appropriate
@@ -445,28 +404,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //    return S(T());
 //  }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(gsl::Pointer)
+#if __has_cpp_attribute(gsl::Pointer)
 #define PA_GSL_POINTER [[gsl::Pointer]]
 #else
 #define PA_GSL_POINTER
-#endif
-
-// Annotates a destructor marking it `constexpr` only if the language supports
-// it (C++20 and onward).
-//
-// Usage:
-// ```
-//  struct S {
-//    PA_CONSTEXPR_DTOR ~S() {}  // N.B.: Compiles even pre-C++20
-//  };
-//  // The following declaration will only compile in C++20; diagnosed as an
-//  // invalid constexpr variable of non-literal type otherwise.
-//  constexpr S s;
-// ```
-#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L
-#define PA_CONSTEXPR_DTOR constexpr
-#else
-#define PA_CONSTEXPR_DTOR
 #endif
 
 // Annotates a pointer or reference parameter or return value for a member
@@ -499,7 +440,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //     return S(p).Get();
 //   }
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(clang::lifetimebound)
+#if __has_cpp_attribute(clang::lifetimebound)
 #define PA_LIFETIME_BOUND [[clang::lifetimebound]]
 #else
 #define PA_LIFETIME_BOUND
@@ -515,7 +456,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Usage:
 // ```
 // ```
-#if PA_HAS_CPP_ATTRIBUTE(gnu::no_profile_instrument_function)
+#if __has_cpp_attribute(gnu::no_profile_instrument_function)
 #define PA_NOPROFILE [[gnu::no_profile_instrument_function]]
 #else
 #define PA_NOPROFILE
@@ -523,7 +464,7 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 // Annotates a function or class data member indicating it can lead to
 // out-of-bounds accesses (OOB) if given incorrect inputs.
-#if PA_HAS_CPP_ATTRIBUTE(clang::unsafe_buffer_usage)
+#if __has_cpp_attribute(clang::unsafe_buffer_usage)
 #define PA_UNSAFE_BUFFER_USAGE [[clang::unsafe_buffer_usage]]
 #else
 #define PA_UNSAFE_BUFFER_USAGE

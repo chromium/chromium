@@ -963,7 +963,7 @@ void InstallCustomDispatch(AllocatorDispatch* dispatch) {
 }  // namespace
 
 void InstallPartitionAllocWithAdvancedChecks() {
-  PA_CONSTINIT static AllocatorDispatch dispatch = []() constexpr {
+  constinit static AllocatorDispatch dispatch = []() constexpr {
     auto dispatch =
         internal::PartitionAllocWithAdvancedChecksFunctions::MakeDispatch();
     dispatch.next = &internal::kPartitionAllocDispatch;

@@ -216,7 +216,7 @@ class BucketIndexLookup final {
     return index <= kMaxLinearIndex ? size_if_linear : size_if_exponential;
   }
 
-  PA_CONSTINIT static const std::array<size_t, kNumBuckets> kBucketSizes;
+  constinit static const std::array<size_t, kNumBuckets> kBucketSizes;
 };
 
 }  // namespace partition_alloc
