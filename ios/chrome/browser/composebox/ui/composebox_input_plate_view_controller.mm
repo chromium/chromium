@@ -466,11 +466,16 @@ UIImage* SendButtonImage(BOOL highlighted,
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
-  _editView.minimumHeight =
-      _theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad
-          ? kOmniboxIPadMinHeight
-          : kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
+
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    _editView.minimumHeight = kOmniboxCobrowseMinHeight;
+  } else if (_theme.inputPlatePosition == ComposeboxInputPlatePosition::kiPad) {
+    _editView.minimumHeight = kOmniboxIPadMinHeight;
+  } else {
+    _editView.minimumHeight = kOmniboxMinHeight;
+  }
+
   [_omniboxContainer addSubview:_editView];
   [NSLayoutConstraint activateConstraints:@[
     [_editView.leadingAnchor
