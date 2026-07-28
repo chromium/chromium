@@ -31,6 +31,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -555,6 +556,19 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       WebString::FromAscii(dom_distiller::kDomDistillerScheme));
   // TODO(nyquist): Add test to ensure this happens when the flag is set.
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(dom_distiller_scheme);
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kGoogleChromeScheme)) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    WebSecurityPolicy::RegisterURLSchemeAsDirectLaunch(
+        WebString::FromAscii("google-chrome"));
+#else
+    WebSecurityPolicy::RegisterURLSchemeAsDirectLaunch(
+        WebString::FromAscii("chromium"));
+#endif
+  }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(

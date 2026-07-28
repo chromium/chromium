@@ -691,6 +691,21 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   const KURL& url = resource_request.Url();
   LocalDOMWindow* origin_window = request.GetOriginWindow();
 
+  if (SchemeRegistry::IsDirectLaunchScheme(url.Protocol())) {
+    // TODO(crbug.com/517967197): Explore stripping the direct launch scheme
+    // prefix and continuing as a standard renderer-initiated navigation for web
+    // compatibility.
+    if (frame_->GetDocument()) {
+      frame_->GetDocument()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kSecurity,
+              mojom::blink::ConsoleMessageLevel::kError,
+              StrCat({"Not allowed to navigate to direct-launch scheme '",
+                      url.Protocol(), "' from web contexts."})));
+    }
+    return;
+  }
+
   TRACE_EVENT2("navigation", "FrameLoader::StartNavigation", "url",
                url.GetString().Utf8(), "load_type",
                static_cast<int>(frame_load_type));

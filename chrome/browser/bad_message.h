@@ -35,6 +35,7 @@ enum BadMessageReason {
   PVM_PRINT_FENCED_FRAME = 12,
   SAGPC_INVALID_PERMISSION_REQUEST_CONTEXT = 13,
   TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT = 14,
+  CCBC_GOOGLE_CHROME_SCHEME = 15,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

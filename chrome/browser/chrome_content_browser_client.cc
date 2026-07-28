@@ -58,6 +58,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
@@ -7240,18 +7241,23 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
   // origin as a secure fallback when the initiator is missing.
   if (std::optional<GURL> new_url =
           startup::ExtractGoogleChromeSchemeInnerUrl(url)) {
+    // Direct launch scheme navigations originating from Chrome's own renderers
+    // are blocked in Blink (see TODO(deepakr) in FrameLoader). Receiving an
+    // un-blocked direct launch scheme from a renderer document indicates a
+    // compromised renderer.
+    if (initiator_document) {
+      bad_message::ReceivedBadMessage(initiator_document->GetProcess(),
+                                      bad_message::CCBC_GOOGLE_CHROME_SCHEME);
+      return false;
+    }
+
     if (startup::ValidateLaunchUrlWebSafe(*new_url)) {
       auto* web_contents = web_contents_getter.Run();
       if (web_contents) {
-        // Treat this navigation as renderer-initiated to ensure downstream
-        // components apply all standard renderer-initiated security
+        // Treat OS-initiated direct launch navigations as renderer-initiated
+        // to ensure downstream components apply standard security
         // restrictions (such as blocking navigations to privileged chrome://
         // pages).
-        //
-        // TODO(crbug.com/513728023): Block this scheme when coming from
-        // Chrome's own renderers, since this should only be allowed from
-        // external renderers. Blink should drop the scheme before it gets to
-        // the browser.
         content::OpenURLParams params(
             *new_url,
             content::Referrer(web_contents->GetLastCommittedURL(),
