@@ -36,6 +36,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -230,9 +231,24 @@ class ExtensionActionPopup implements Destroyable {
 
         @Override
         public boolean handleKeyboardEvent(WebContents webContents, KeyEvent event) {
-            // We send unhandled keyboard events to the main {@link Activity} so that unconsumed
-            // keybindings pass through to the application window.
-            return mActivity.dispatchKeyEvent(event);
+            if (mActivity == null) return false;
+
+            if (mActivity instanceof KeyboardShortcutsDelegate) {
+                KeyboardShortcutsDelegate delegate = (KeyboardShortcutsDelegate) mActivity;
+                if (delegate.handleKeyboardEvent(event)) {
+                    return true;
+                }
+            }
+
+            // If the delegate didn't consume the event (e.g., if the Universal Keyboard
+            // Handling feature flag is disabled), we need to prevent the dispatchKeyEvent
+            // infinite loop. We prevent space and backspace events from being dispatched
+            // to the Activity.
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                return mActivity.onKeyDown(event.getKeyCode(), event);
+            }
+
+            return false;
         }
 
         @Override
