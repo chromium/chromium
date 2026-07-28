@@ -99,7 +99,10 @@ class OutsideSettingsCSPDelegate final
   // SecurityContext of either parent context or WorkerOrWorkletGlobalScope.
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
   void SetRequireTrustedTypes() override {}
-  void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override {}
+  void ApplyInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
+  void NotifyBrowserOfInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
   void DisableEval(const String& error_message) override {}
   void SetWasmEvalErrorMessage(const String& error_message) override {}
 

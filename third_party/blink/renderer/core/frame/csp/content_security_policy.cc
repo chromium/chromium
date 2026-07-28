@@ -319,7 +319,20 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
     Count(WebFeature::kTrustedTypesEnabled);
   }
 
-  delegate_->AddInsecureRequestPolicy(insecure_request_policy_);
+  // Update the delegate's local SecurityContext state only. Do NOT notify
+  // the browser here: this function runs from BindToDelegate() during
+  // DocumentLoader::DidInstallNewDocument, i.e. before the new document has
+  // committed. Sending EnforceInsecureRequestPolicy /
+  // EnforceInsecureNavigationsSet IPCs here would route via
+  // GetLocalFrameHostRemote() to the previously committed document's
+  // RenderFrameHost and corrupt browser-side replicated state, causing
+  // spurious same-document commit mismatches (crbug/40580002). The browser
+  // learns the authoritative values from DidCommitProvisionalLoadParams
+  // once the commit happens (see Navigator::DidNavigate).
+  //
+  // The post-bind dynamic <meta> path (AddPolicies() below, when called on
+  // an already-bound CSP) explicitly notifies the browser after this call.
+  delegate_->ApplyInsecureRequestPolicy(insecure_request_policy_);
 
   for (const auto& console_message : console_messages_)
     delegate_->AddConsoleMessage(console_message);
@@ -475,6 +488,13 @@ void ContentSecurityPolicy::AddPolicies(
     return;
 
   ApplyPolicySideEffectsToDelegate();
+  // If this CSP is already bound, this call represents a post-bind dynamic
+  // policy addition (e.g. <meta http-equiv>). For document loads, header
+  // policies are added before BindToDelegate() and are propagated to the
+  // browser via commit params instead. Because we are past bind, the mojo
+  // remote now correctly routes to this document's RenderFrameHost, so it
+  // is safe to notify the browser directly. See crbug/40580002.
+  delegate_->NotifyBrowserOfInsecureRequestPolicy(insecure_request_policy_);
   ReportUseCounters(policies_to_report);
 
   delegate_->DidAddContentSecurityPolicies(std::move(policies_to_report));

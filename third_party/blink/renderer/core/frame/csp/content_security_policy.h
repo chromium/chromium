@@ -119,8 +119,36 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   // Directives support.
   virtual void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) = 0;
   virtual void SetRequireTrustedTypes() = 0;
-  virtual void AddInsecureRequestPolicy(
+  // Apply the insecure-request policy change to the renderer-local
+  // SecurityContext (and the associated insecure-navigations upgrade
+  // set). This is the local state change; it does NOT send any IPC. It
+  // is therefore safe to call while binding CSP to a document that has
+  // not yet committed. For the initial commit path the browser receives
+  // the same authoritative values via DidCommitProvisionalLoadParams
+  // (see RenderFrameImpl::MakeDidCommitProvisionalLoadParams and
+  // Navigator::DidNavigate). See crbug/40580002.
+  virtual void ApplyInsecureRequestPolicy(
       mojom::blink::InsecureRequestPolicy) = 0;
+
+  // Send the EnforceInsecureRequestPolicy / EnforceInsecureNavigationsSet
+  // IPCs so the browser can update replicated state and propagate to
+  // cross-process proxies. This does not modify local renderer state.
+  //
+  // Only safe to call once the document has committed and CSP is bound
+  // to the corresponding LocalFrame: otherwise the IPC will route via
+  // GetLocalFrameHostRemote() to the previously committed document's
+  // RenderFrameHost, producing an insecure-request-policy mismatch
+  // (crbug/40580002). Callers on the initial-commit path must not use
+  // this method and should instead rely on DidCommitProvisionalLoadParams
+  // (see ApplyInsecureRequestPolicy above).
+  //
+  // |added_policy| is the delegate's current cumulative insecure-request
+  // policy (i.e. the value ContentSecurityPolicy holds in
+  // |insecure_request_policy_| after applying local side effects). The
+  // insecure-navigations set IPC is gated on kUpgradeInsecureRequests: the
+  // set can only change when the incoming policy contained UIR.
+  virtual void NotifyBrowserOfInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy added_policy) = 0;
 
   // Violation reporting.
 

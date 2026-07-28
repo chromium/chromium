@@ -40,7 +40,10 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
   const KURL& Url() const override { return url_; }
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
   void SetRequireTrustedTypes() override {}
-  void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override {}
+  void ApplyInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
+  void NotifyBrowserOfInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
   SourceLocation* GetSourceLocation() override { return nullptr; }
   std::optional<uint16_t> GetStatusCode() override { return std::nullopt; }
   String GetDocumentReferrer() override { return ""; }

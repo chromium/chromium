@@ -27,7 +27,9 @@ class ExecutionContextCSPDelegate final
   const KURL& Url() const override;
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override;
   void SetRequireTrustedTypes() override;
-  void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override;
+  void ApplyInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override;
+  void NotifyBrowserOfInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy added_policy) override;
   SourceLocation* GetSourceLocation() override;
   std::optional<uint16_t> GetStatusCode() override;
   String GetDocumentReferrer() override;

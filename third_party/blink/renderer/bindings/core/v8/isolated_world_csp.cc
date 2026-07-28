@@ -73,7 +73,10 @@ class IsolatedWorldCSPDelegate final
   // supported.
   void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
   void SetRequireTrustedTypes() override {}
-  void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override {}
+  void ApplyInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
+  void NotifyBrowserOfInsecureRequestPolicy(
+      mojom::blink::InsecureRequestPolicy) override {}
 
   // TODO(crbug.com/916885): Figure out if we want to support violation
   // reporting for isolated world CSPs.
