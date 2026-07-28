@@ -500,10 +500,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
-      if (base::FeatureList::IsEnabled(
-              features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
-        return true;
-      }
       if (!subscription_service) {
         MaybeOutputReason(debug_message,
                           "Subscription eligibility service not available.");
