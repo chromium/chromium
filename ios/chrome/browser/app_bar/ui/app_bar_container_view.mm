@@ -77,6 +77,14 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   [self updatePositioning];
 }
 
+- (void)setAppBarLockedInFullscreen:(BOOL)appBarLockedInFullscreen {
+  if (_appBarLockedInFullscreen == appBarLockedInFullscreen) {
+    return;
+  }
+  _appBarLockedInFullscreen = appBarLockedInFullscreen;
+  [self updatePositioning];
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updatePositioning];
@@ -123,7 +131,9 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
       appBarWidth = windowSize.width;
       heightInAppCoordinates = windowSize.height;
       CGFloat minHeight =
-          IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
+          (IsAppBarHiddenInFullscreen() && !self.appBarLockedInFullscreen)
+              ? 0
+              : kAppBarHeightFullscreen;
       extraOffset =
           (1 - self.fullscreenProgress) * (AppBarHeightPortrait() - minHeight);
       break;

@@ -217,6 +217,8 @@
   if (self.layoutState.appBarLockedInFullscreen) {
     progress = 0.0;
   }
+  self.view.appBarLockedInFullscreen =
+      self.layoutState.appBarLockedInFullscreen;
   self.view.fullscreenProgress = progress;
   self.view.appBarPosition = position;
   [_appBar updateForAngle:-angle];
