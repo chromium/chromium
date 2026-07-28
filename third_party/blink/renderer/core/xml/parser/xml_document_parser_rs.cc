@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 namespace {
@@ -250,8 +251,16 @@ void XMLDocumentParserRs::HandleError(XMLErrors::ErrorType type,
 }
 
 void XMLDocumentParserRs::Append(const String& xml_string) {
-  xml_ffi::append_to_source(*read_state_,
-                            base::StringViewToRustSlice(xml_string.Utf8()));
+  if (RuntimeEnabledFeatures::XMLParserReplaceLoneSurrogatesEnabled()) {
+    // Replace lone surrogates with U+FFFD so the parser does a best-effort
+    // parse instead of rejecting the whole input (crbug.com/40814739).
+    xml_ffi::append_to_source(*read_state_,
+                              base::StringViewToRustSlice(xml_string.Utf8(
+                                  Utf8ConversionMode::kStrictReplacingErrors)));
+  } else {
+    xml_ffi::append_to_source(*read_state_,
+                              base::StringViewToRustSlice(xml_string.Utf8()));
+  }
   ProcessEvents();
 }
 

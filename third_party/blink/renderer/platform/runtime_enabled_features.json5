@@ -7526,6 +7526,15 @@
       status: "stable",
     },
     {
+      // Replaces lone surrogates in the XML source with U+FFFD so that the
+      // parser makes a best-effort parse instead of rejecting the whole
+      // document. This feature acts as a kill switch for
+      // https://crbug.com/40814739. This flag was shipped in M153, and can be
+      // removed in M155.
+      name: "XMLParserReplaceLoneSurrogates",
+      status: "stable",
+    },
+    {
       // Switches from XML parsing through libxml2 to parsing XML using the
       // Rust xml crate. This makes parsing memory safe but breaks XSLT
       // as the Rust XML parsing code paths is incompatible with libxslt.
