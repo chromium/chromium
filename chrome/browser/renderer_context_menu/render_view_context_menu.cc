@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/break_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -30,6 +31,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
@@ -1602,6 +1604,18 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   if (id == IDC_CONTENT_CONTEXT_SEARCHWEBFOR) {
     base::RecordAction(base::UserMetricsAction(
         "RenderViewContextMenu.Used.IDC_CONTENT_CONTEXT_SEARCHWEBFOR"));
+    base::i18n::BreakIterator break_iter(params_.selection_text,
+                                         base::i18n::BreakIterator::BREAK_WORD);
+    if (break_iter.Init()) {
+      int word_count = 0;
+      while (break_iter.Advance()) {
+        if (break_iter.IsWord()) {
+          word_count++;
+        }
+      }
+      base::UmaHistogramCounts1000(
+          "RenderViewContextMenu.SelectedTextWordCount.SearchWeb", word_count);
+    }
   }
 
   // Log other situations.

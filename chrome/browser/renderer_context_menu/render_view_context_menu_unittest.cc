@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -1000,6 +1001,22 @@ TEST_F(RenderViewContextMenuPrefsTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(delegate.last_navigation_params()->url,
                                          "source", &source_param));
   EXPECT_EQ("chrome.ctxt", source_param);
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, SearchWebForLogsSelectedTextWordCount) {
+  base::HistogramTester histogram_tester;
+  content::RenderFrameHost& main_frame = *web_contents()->GetPrimaryMainFrame();
+
+  SetUserSelectedDefaultSearchProvider("https://www.google.com/search", true);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.selection_text = u"Search for multiple words in selection";
+  auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
+  menu->Init();
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFOR, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "RenderViewContextMenu.SelectedTextWordCount.SearchWeb", 6, 1);
 }
 
 TEST_F(RenderViewContextMenuPrefsTest,

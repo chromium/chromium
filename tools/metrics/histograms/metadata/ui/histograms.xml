@@ -1025,6 +1025,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RenderViewContextMenu.SelectedTextWordCount.SearchWeb"
+    units="words" expires_after="2027-07-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the user selects the &quot;Search Google for&quot; (Search Web
+    for) context menu item. Logs the number of words selected.
+  </summary>
+</histogram>
+
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
     expires_after="2026-11-29">
   <owner>avi@chromium.org</owner>
