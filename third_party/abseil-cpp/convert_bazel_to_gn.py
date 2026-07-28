@@ -16,31 +16,40 @@ import sys
 
 # List of targets that do not have matching gn target generated.
 _SKIP_TARGETS = {
-    'types:any_span_test':
-    'any_span_test is not ported because relies on RTTI',
     'container:btree_test':
     'TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.',
     'container:container_memory_test':
     'Disabled because container_memory_test requires -frtti',
     'container:raw_hash_set_test':
     'raw_hash_set_test uses typeid(), i.e., relies on RTTI.',
+    'random/internal:nanobenchmark': 'Only used for benchmarking',
+    'types:any_span_test':
+    'any_span_test is not ported because relies on RTTI',
 }
 
 # Extra build rules added at the end. The reason they are needed vary per target.
 _ADD_CONTENT = {
-    'container:hashtablez_sampler_test':
-    'if (is_win) { sources = [] }',
+    'container:hashtablez_sampler_test': 'if (is_win) { sources = [] }',
     'container:test_allocator':
     'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
+    'random:uniform_real_distribution_test': 'if (is_ios) { sources = [] }',
+    'random/internal:seed_material': 'if (is_win) {  libs = [ "bcrypt.lib" ]}',
 }
 
-def _ast_get_value(node):
+
+def _ast_get_value(node, local_vars):
     if isinstance(node, ast.Constant):
         return node.value
     elif isinstance(node, ast.List):
-        return [_ast_get_value(elt) for elt in node.elts]
+        return [_ast_get_value(elt, local_vars) for elt in node.elts]
     elif isinstance(node, ast.Name):
+        if node.id in local_vars:
+            return local_vars[node.id]
         return node.id
+    elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left = _ast_get_value(node.left, local_vars) or []
+        right = _ast_get_value(node.right, local_vars) or []
+        return left + right
     return None
 
 
@@ -111,8 +120,18 @@ class _Converter:
 
     def parse_bazel(self, content):
         tree = ast.parse(content)
+        local_vars = {
+            'ABSL_DEFAULT_LINKOPTS': [],
+            'ABSL_DEFAULT_COPTS': [],
+            'ABSL_TEST_COPTS': []
+        }
         default_vis = []
         for node in tree.body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        local_vars[target.id] = _ast_get_value(
+                            node.value, local_vars)
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 call = node.value
                 if isinstance(call.func, ast.Name):
@@ -120,11 +139,12 @@ class _Converter:
                     if func_name == 'package':
                         for kw in call.keywords:
                             if kw.arg == 'default_visibility':
-                                default_vis = _ast_get_value(kw.value)
+                                default_vis = _ast_get_value(
+                                    kw.value, local_vars)
                     elif func_name in ('cc_library', 'cc_test'):
                         t = {'is_test': func_name == 'cc_test'}
                         for kw in call.keywords:
-                            t[kw.arg] = _ast_get_value(kw.value)
+                            t[kw.arg] = _ast_get_value(kw.value, local_vars)
                         if 'visibility' not in t and default_vis:
                             t['visibility'] = default_vis
                         self.bazel_targets.append(t)
@@ -162,6 +182,14 @@ class _Converter:
             if '//absl/base:exception_safety_testing' in bazel_deps:
                 out.append(
                     f'# skipped because chromium doesn\'t use c++ exceptions')
+                out.append(f'# {rule}("{name}")')
+                out.append(f'')
+                continue
+
+            if is_test and '@googletest//:gtest_main' not in bazel_deps:
+                out.append(
+                    f'# {name} is excluded because defines its own main function'
+                )
                 out.append(f'# {rule}("{name}")')
                 out.append(f'')
                 continue
@@ -260,6 +288,8 @@ def convert_all(root_dir):
             'memory',
             'meta',
             'numeric',
+            'random',
+            'random/internal',
             'status',
             'time',
             'types',

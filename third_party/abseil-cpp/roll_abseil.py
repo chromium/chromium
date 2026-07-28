@@ -59,6 +59,7 @@ def _UpdateAbseilInChromium(abseil_dir, chromium_dir):
         '.clang-format-ignore',
         '.git',
         '.gitignore',
+        '.style.yapf',
         '*.gni',
         '*clang-format',
         'patches/*',
