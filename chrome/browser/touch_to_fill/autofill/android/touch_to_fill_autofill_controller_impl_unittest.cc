@@ -60,7 +60,6 @@ class MockTouchToFillAutofillDelegate : public TouchToFillAutofillDelegate {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
-  MOCK_METHOD(void, OnShow, (), (override));
   MOCK_METHOD(void, OnNoticeAcknowledged, (), (override));
   MOCK_METHOD(void, OnSettingsLinkClicked, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));

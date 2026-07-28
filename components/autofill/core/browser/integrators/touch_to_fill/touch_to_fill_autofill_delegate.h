@@ -34,9 +34,6 @@ class TouchToFillAutofillDelegate {
   // Hides the TTF Autofill surface if one is shown.
   virtual void HideTouchToFill() = 0;
 
-  // Called when the TTF Autofill surface is shown.
-  virtual void OnShow() = 0;
-
   // Called when the user acknowledges the TTF Autofill notice.
   virtual void OnNoticeAcknowledged() = 0;
 

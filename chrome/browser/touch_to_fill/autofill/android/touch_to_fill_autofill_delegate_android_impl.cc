@@ -98,7 +98,6 @@ bool TouchToFillAutofillDelegateAndroidImpl::TryToShowTouchToFill(
           weak_ptr_factory_.GetWeakPtr())) {
     ttf_autofill_state_ = TouchToFillAutofillState::kShowing;
     query_field_id_ = field.global_id();
-    OnShow();
     return true;
   }
   return false;
@@ -126,10 +125,6 @@ void TouchToFillAutofillDelegateAndroidImpl::HideTouchToFill() {
     case TouchToFillAutofillState::kInactive:
       break;
   }
-}
-
-void TouchToFillAutofillDelegateAndroidImpl::OnShow() {
-  // TODO(crbug.com/521716313): Record shown metrics.
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnNoticeAcknowledged() {
