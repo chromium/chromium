@@ -118,14 +118,16 @@ class FuchsiaVideoDecoder::OutputMailbox {
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size& size,
       viz::SharedImageFormat& format,
-      const gfx::ColorSpace& color_space)
-      : raster_context_provider_(raster_context_provider),
-        weak_factory_(this) {
+      const gfx::ColorSpace& color_space,
+      bool allow_overlays)
+      : raster_context_provider_(raster_context_provider), weak_factory_(this) {
     gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                     gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
                                      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                      gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    if (allow_overlays) {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
 
     // Note that the shared image prefers external sampler.
     format.SetPrefersExternalSampler();
@@ -613,7 +615,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
     output_mailboxes_[buffer_index] = new OutputMailbox(
         raster_context_provider_,
         gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)), coded_size,
-        si_format, current_config_.color_space_info().ToGfxColorSpace());
+        si_format, current_config_.color_space_info().ToGfxColorSpace(),
+        use_overlays_for_video_);
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
         gpu::SyncToken(), output_mailboxes_[buffer_index]->mailbox());
@@ -654,7 +657,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
 
   // Allow this video frame to be promoted as an overlay, because it was
   // registered with an ImagePipe.
-  frame->metadata().allow_overlay = use_overlays_for_video_;
+  frame->metadata().allow_overlay =
+      frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
   if (protected_output_) {
     frame->metadata().protected_video = true;

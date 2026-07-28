@@ -169,8 +169,6 @@ void VideoToolboxFrameConverter::Convert(
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
-  bool allow_overlay = true;
-
   auto shared_image_interface = sis_->shared_image_interface();
   CHECK(shared_image_interface);
 
@@ -188,7 +186,7 @@ void VideoToolboxFrameConverter::Convert(
   if (!color_space.IsValid()) {
     // Chrome and macOS do not agree on the color space; force compositing to
     // ensure a consistent result. See crbug.com/343014700.
-    allow_overlay = false;
+    shared_image_usage.RemoveAll(gpu::SHARED_IMAGE_USAGE_SCANOUT);
     // Always use limited range since we request a limited range output format.
     color_space = metadata->color_space.GetWithMatrixAndRange(
         metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
@@ -226,7 +224,8 @@ void VideoToolboxFrameConverter::Convert(
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }
-  frame->metadata().allow_overlay = allow_overlay;
+  frame->metadata().allow_overlay =
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
