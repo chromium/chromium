@@ -64,7 +64,14 @@ class MockAutofillDriver : public TestAutofillDriver {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
-  ~MockAutofillClient() override = default;
+  ~MockAutofillClient() override {
+    // This is required because `RoutingMockAutofillDriver` attempts to cast the
+    // client to `MockAutofillClient` in its DTOR (to access the router). As
+    // noted in `~TestAutofillClient()`, we must explicitly delete the drivers
+    // here while the dynamic type is still `MockAutofillClient`, to prevent
+    // CFI / UBSan crashes during that cast.
+    GetAutofillDriverFactory().DeleteAll();
+  }
 
   MOCK_METHOD(AutofillManager*,
               GetAutofillManagerForPrimaryMainFrame,
@@ -1250,15 +1257,7 @@ class OmniboxAutofillDelegateFillingTest
 
 // Tests that selecting and accepting a credit card suggestion for a subframe
 // credit card form routes the preview and fill actions to the subframe driver.
-// TODO(crbug.com/490213796): Failing bots
-#if BUILDFLAG(IS_LINUX) && (defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER))
-#define MAYBE_FillOrPreviewCard_SubframeForm DISABLED_FillOrPreviewCard_SubframeForm
-#else
-#define MAYBE_FillOrPreviewCard_SubframeForm FillOrPreviewCard_SubframeForm
-#endif
-
-TEST_F(OmniboxAutofillDelegateFillingTest,
-       MAYBE_FillOrPreviewCard_SubframeForm) {
+TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
   // Create drivers and set unique frame tokens.
   CreateAutofillDriver();  // Main frame (index 0)
   CreateAutofillDriver();  // Subframe (index 1)
@@ -1366,16 +1365,7 @@ TEST_F(OmniboxAutofillDelegateFillingTest,
 // Tests that selecting and accepting a credit card suggestion for a main frame
 // credit card form routes the preview and fill actions to the main frame
 // driver.
-
-// TODO(crbug.com/490213796): Failing bots
-#if BUILDFLAG(IS_LINUX) && (defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER))
-#define MAYBE_FillOrPreviewCard_MainFrameForm DISABLED_FillOrPreviewCard_MainFrameForm
-#else
-#define MAYBE_FillOrPreviewCard_MainFrameForm FillOrPreviewCard_MainFrameForm
-#endif
-
-TEST_F(OmniboxAutofillDelegateFillingTest,
-       MAYBE_FillOrPreviewCard_MainFrameForm) {
+TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
   // Create only the main frame driver.
   CreateAutofillDriver();  // Main frame (index 0)
   autofill_driver(0).SetLocalFrameToken(test::MakeLocalFrameToken());
