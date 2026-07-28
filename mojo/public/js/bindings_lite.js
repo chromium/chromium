@@ -908,15 +908,14 @@ mojo.internal.Decoder = class {
     // non-nullable types.
     const isNullableValueType = !!arraySpec.elementNullable &&
         arraySpec.elementType.$.isValueType;
-    const elementHasValue = isNullableValueType ? [] : null;
+    const elementHasValue = isNullableValueType ? new Array(numElements) : null;
 
     if (isNullableValueType) {
       let bitfieldByte = 8;
       let bitfieldBit = 0;
 
       for (let i = 0; i < numElements; ++i) {
-        elementHasValue.push(
-          arrayDecoder.decodeBool(bitfieldByte, bitfieldBit));
+        elementHasValue[i] = arrayDecoder.decodeBool(bitfieldByte, bitfieldBit);
         bitfieldBit++;
         if (bitfieldBit === 8) {
           bitfieldBit = 0;
@@ -927,24 +926,24 @@ mojo.internal.Decoder = class {
 
     let byteOffset = 8 +
         mojo.internal.computeHasValueBitfieldSize(arraySpec, numElements);
-    const result = [];
+    const result = new Array(numElements);
     if (arraySpec.elementType === mojo.internal.Bool) {
       for (let i = 0; i < numElements; ++i)
         if (isNullableValueType && !elementHasValue[i]) {
-          result.push(null);
+          result[i] = null;
         } else {
-          result.push(arrayDecoder.decodeBool(byteOffset + (i >> 3), i % 8));
+          result[i] = arrayDecoder.decodeBool(byteOffset + (i >> 3), i % 8);
         }
     } else {
       for (let i = 0; i < numElements; ++i) {
         if (isNullableValueType && !elementHasValue[i]) {
-          result.push(null);
+          result[i] = null;
         } else {
           const element = arraySpec.elementType.$.decode(
             arrayDecoder, byteOffset, 0, !!arraySpec.elementNullable);
           if (element === null && !arraySpec.elementNullable)
             throw new Error('Received unexpected array element');
-          result.push(element);
+          result[i] = element;
         }
         byteOffset += arraySpec.elementType.$.arrayElementSize(
             !!arraySpec.elementNullable);
