@@ -530,8 +530,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
 
     @Override
     protected void switchToTab(@Nullable Tab tab, int lastTabId) {
-        if (tab == null || lastTabId == Tab.INVALID_TAB_ID) {
-            super.switchToTab(tab, lastTabId);
+        if (tab == null || lastTabId == Tab.INVALID_TAB_ID || tab.getId() == lastTabId) {
             return;
         }
 
