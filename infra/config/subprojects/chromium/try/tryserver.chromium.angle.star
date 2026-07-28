@@ -136,6 +136,24 @@ def angle_win_builder(**kwargs):
     )
 
 angle_win_builder(
+    name = "win-angle-chromium-arm64-try",
+    description_html = "Builds and tests ANGLE on arm64 Windows using ToT ANGLE and a known good Chromium revision.",
+    mirrors = [
+        "ci/win-angle-chromium-arm64-builder",
+        "ci/win11-angle-chromium-arm64-qualcomm-snapdragonxelite",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-angle-chromium-arm64-builder",
+            "no_symbols",
+        ],
+    ),
+)
+
+angle_win_builder(
     name = "win-angle-chromium-x64-try",
     description_html = "Builds and tests ANGLE on x64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [

@@ -99,6 +99,7 @@
     "ios-angle-builder": "ci/ios-angle-builder/gn-args.json",
     "linux-angle-chromium-builder": "ci/linux-angle-chromium-builder/gn-args.json",
     "mac-angle-chromium-builder": "ci/mac-angle-chromium-builder/gn-args.json",
+    "win-angle-chromium-arm64-builder": "ci/win-angle-chromium-arm64-builder/gn-args.json",
     "win-angle-chromium-x64-builder": "ci/win-angle-chromium-x64-builder/gn-args.json",
     "win-angle-chromium-x86-builder": "ci/win-angle-chromium-x86-builder/gn-args.json"
   },
@@ -660,6 +661,7 @@
     "ios-angle-try-intel": "try/ios-angle-try-intel/gn-args.json",
     "linux-angle-chromium-try": "try/linux-angle-chromium-try/gn-args.json",
     "mac-angle-chromium-try": "try/mac-angle-chromium-try/gn-args.json",
+    "win-angle-chromium-arm64-try": "try/win-angle-chromium-arm64-try/gn-args.json",
     "win-angle-chromium-x64-try": "try/win-angle-chromium-x64-try/gn-args.json",
     "win-angle-chromium-x86-try": "try/win-angle-chromium-x86-try/gn-args.json"
   },

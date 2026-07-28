@@ -12511,6 +12511,27 @@
           }
         ]
       },
+      "win-angle-chromium-arm64-builder": {
+        "contact_team_email": "angle-team@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "win-angle-chromium-x64-builder": {
         "contact_team_email": "angle-team@google.com",
         "problem_specs": [
@@ -13429,6 +13450,27 @@
       },
       "win10-wpt-chromium-rel": {
         "contact_team_email": "chrome-blink-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "win11-angle-chromium-arm64-qualcomm-snapdragonxelite": {
+        "contact_team_email": "angle-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

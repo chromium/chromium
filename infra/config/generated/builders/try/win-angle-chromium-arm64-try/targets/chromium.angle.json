@@ -1,0 +1,8 @@
+{
+  "win-angle-chromium-arm64-builder": {
+    "additional_compile_targets": [
+      "angle_unittests"
+    ]
+  },
+  "win11-angle-chromium-arm64-qualcomm-snapdragonxelite": {}
+}

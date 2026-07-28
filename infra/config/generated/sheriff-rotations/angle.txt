@@ -9,7 +9,9 @@ ci/linux-angle-chromium-nvidia
 ci/mac-angle-chromium-amd
 ci/mac-angle-chromium-builder
 ci/mac-angle-chromium-intel
+ci/win-angle-chromium-arm64-builder
 ci/win-angle-chromium-x64-builder
 ci/win-angle-chromium-x86-builder
 ci/win10-angle-chromium-x64-intel
 ci/win10-angle-chromium-x64-nvidia
+ci/win11-angle-chromium-arm64-qualcomm-snapdragonxelite

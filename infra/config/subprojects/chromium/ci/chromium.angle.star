@@ -563,6 +563,52 @@ ci.thin_tester(
 )
 
 gpu.ci.windows_builder(
+    name = "win-angle-chromium-arm64-builder",
+    description_html = "Compiles ANGLE test binaries for Windows/ARM64 using ToT ANGLE and a known good Chromium revision.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "win",
+        ],
+    ),
+    targets = targets.bundle(
+        # TODO(crbug.com/535541754): Remove compile targets once the child
+        # tester has tests enabled.
+        additional_compile_targets = [
+            "angle_unittests",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|Chromium",
+        short_name = "a64",
+    ),
+    contact_team_email = "angle-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
+gpu.ci.windows_builder(
     name = "win-angle-chromium-x64-builder",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -599,6 +645,48 @@ gpu.ci.windows_builder(
     ),
     contact_team_email = "angle-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "win11-angle-chromium-arm64-qualcomm-snapdragonxelite",
+    description_html = "Tests ANGLE on Win/ARM64 Snapdragon X Elite devices using ToT ANGLE and a knokwn good Chromium revision.",
+    parent = "win-angle-chromium-arm64-builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            # TODO(crbug.com/535541754): Enable tests.
+        ],
+        mixins = [
+            "win11_qualcomm_snapdragon_x_elite_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Qualcomm|Chromium",
+        short_name = "sxe",
+    ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.thin_tester(
