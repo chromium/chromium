@@ -39,6 +39,9 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/permissions/test/mock_permission_request.h"
+#if BUILDFLAG(IS_MAC)
+#include "components/viz/common/features.h"
+#endif
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -127,7 +130,9 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-OmniboxPopupViewWebUITest::OmniboxPopupViewWebUITest() = default;
+OmniboxPopupViewWebUITest::OmniboxPopupViewWebUITest() {
+  feature_list_.InitAndEnableFeature(omnibox::internal::kWebUIOmniboxPopup);
+}
 OmniboxPopupViewWebUITest::~OmniboxPopupViewWebUITest() = default;
 
 OmniboxPopupViewWebUITest::ThemeChangeWaiter::~ThemeChangeWaiter() {
@@ -188,7 +193,6 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
 }
 
 void OmniboxPopupViewWebUITest::SetUp() {
-  feature_list_.InitAndEnableFeature(omnibox::internal::kWebUIOmniboxPopup);
   InProcessBrowserTest::SetUp();
 }
 
@@ -247,13 +251,10 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
     // Unset it here as this test does not strictly require the window to be in
     // front to verify state isolation.
     set_global_browser_set_up_function(nullptr);
-  }
-  void SetUp() override {
     feature_list_full_v2_.InitWithFeatures(
         {omnibox::internal::kWebUIOmniboxPopup,
          omnibox::kWebUIOmniboxFullPopup},
         {});
-    InProcessBrowserTest::SetUp();
   }
 
   std::unique_ptr<views::Widget> DeactivatePopupWidget() {
@@ -686,5 +687,57 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
   // `PermissionPromptFactory`.
   EXPECT_TRUE(presenter->IsPermissionPromptPreventingClose());
 }
+
+#if BUILDFLAG(IS_MAC)
+class OmniboxPopupViewWebUIFrameCacheTest
+    : public OmniboxPopupViewWebUITest,
+      public testing::WithParamInterface<bool> {
+  // TODO(crbug.com/538294830): Use base/test/with_feature_override.h instead.
+ public:
+  OmniboxPopupViewWebUIFrameCacheTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {omnibox::kOmniboxWebUIPopupMarkAsHidden,
+           ::features::kHideDelegatedFrameHostMac},
+          {omnibox::kOmniboxWebUIDetachWebContentsOnHide});
+    } else {
+      feature_list_.InitWithFeatures(
+          {omnibox::kOmniboxWebUIPopupMarkAsHidden},
+          {omnibox::kOmniboxWebUIDetachWebContentsOnHide,
+           ::features::kHideDelegatedFrameHostMac});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupViewWebUIFrameCacheTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(OmniboxPopupViewWebUIFrameCacheTest, FrameCacheUsage) {
+  // During browser startup, other WebUIs (or the initial NTP view) might have
+  // generated their own unlocked frames that are cached in memory. Purging
+  // ensures the baseline is 0.
+  content::PurgeUnlockedCompositorFrames();
+  EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+
+  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+      location_bar()->GetOmniboxPopupView());
+  popup_view->presenter()->Show();
+  popup_view->UpdatePopupAppearance();
+
+  popup_view->presenter()->Hide();
+
+  // Verify that the frame is correctly unlocked when the feature fix is
+  // enabled.
+  if (GetParam()) {
+    EXPECT_EQ(1u, content::GetUnlockedCompositorFrameCount());
+  } else {
+    EXPECT_EQ(0u, content::GetUnlockedCompositorFrameCount());
+  }
+}
+#endif
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

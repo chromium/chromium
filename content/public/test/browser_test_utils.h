@@ -2335,6 +2335,12 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
+// Returns the number of unlocked frames in the FrameEvictionManager.
+size_t GetUnlockedCompositorFrameCount();
+
+// Purges all unlocked frames in the FrameEvictionManager.
+void PurgeUnlockedCompositorFrames();
+
 // Helper class to interpose on Blob URL registrations, replacing the URL
 // contained in incoming registration requests with the specified URL.
 class BlobURLStoreInterceptor

@@ -78,6 +78,9 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
   void set_max_number_of_saved_frames(size_t max_number_of_saved_frames) {
     max_number_of_saved_frames_ = max_number_of_saved_frames;
   }
+  size_t GetUnlockedFramesCountForTesting() const {
+    return unlocked_frames_.size();
+  }
 
   // Purges all unlocked frames, allowing us to reclaim resources.
   void PurgeAllUnlockedFrames();
