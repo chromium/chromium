@@ -400,11 +400,10 @@ PrivateVerificationTokensDatabase::GetKeys() {
   while (statement.Step()) {
     std::string issuer_str = statement.ColumnString(0);
     std::vector<uint8_t> public_key = statement.ColumnBlobAsVector(1);
-    uint32_t key_id = static_cast<uint32_t>(statement.ColumnInt64(2));
     int64_t expiration = statement.ColumnInt64(3);
     uint32_t version = static_cast<uint32_t>(statement.ColumnInt64(4));
     url::Origin issuer = url::Origin::Create(GURL(issuer_str));
-    keys.emplace_back(std::move(issuer), std::move(public_key), key_id,
+    keys.emplace_back(std::move(issuer), std::move(public_key),
                       base::Time::UnixEpoch() + base::Seconds(expiration),
                       version);
   }

@@ -134,7 +134,7 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
 
   PrivateVerificationTokensPublicKey pk(
       url::Origin::Create(GURL("https://" + *domain)),
-      std::move(*decoded_public_key), *key_id,
+      std::move(*decoded_public_key),
       base::Time::UnixEpoch() + base::Seconds(*expiration), *version);
   return IssuerConfig(*batch_size, std::move(pk));
 }

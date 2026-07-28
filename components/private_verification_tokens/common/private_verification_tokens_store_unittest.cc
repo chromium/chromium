@@ -80,14 +80,14 @@ class PrivateVerificationTokensStoreTest : public testing::Test {
     const url::Origin c_origin = url::Origin::Create(GURL("https://c.eee"));
     keys = {
         {a_origin,
-         PrivateVerificationTokensPublicKey(a_origin, {1, 2, 3}, /*key_id=*/3,
-                                            expiration, /*version=*/1)},
+         PrivateVerificationTokensPublicKey(a_origin, {1, 2, 3}, expiration,
+                                            /*version=*/1)},
         {b_origin,
-         PrivateVerificationTokensPublicKey(b_origin, {4, 5, 6}, /*key_id=*/4,
-                                            expiration, /*version=*/2)},
+         PrivateVerificationTokensPublicKey(b_origin, {4, 5, 6}, expiration,
+                                            /*version=*/2)},
         {c_origin,
-         PrivateVerificationTokensPublicKey(c_origin, {7, 8, 9}, /*key_id=*/4,
-                                            expiration, /*version=*/2)},
+         PrivateVerificationTokensPublicKey(c_origin, {7, 8, 9}, expiration,
+                                            /*version=*/2)},
     };
     tokens = {
         {a_origin,
@@ -263,11 +263,11 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeOnly) {
 
   keys = {
       {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, /*key_id=*/3,
-                                          expiration, /*version=*/1)},
+       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
+                                          /*version=*/1)},
       {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, /*key_id=*/4,
-                                          expiration, /*version=*/2)},
+       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
+                                          /*version=*/2)},
   };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
@@ -350,11 +350,11 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_OriginOnly) {
 
   keys = {
       {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, /*key_id=*/3,
-                                          expiration, /*version=*/1)},
+       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
+                                          /*version=*/1)},
       {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, /*key_id=*/4,
-                                          expiration, /*version=*/2)},
+       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
+                                          /*version=*/2)},
   };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
@@ -407,11 +407,11 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeAndOrigin) {
 
   keys = {
       {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, /*key_id=*/3,
-                                          expiration, /*version=*/1)},
+       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
+                                          /*version=*/1)},
       {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, /*key_id=*/4,
-                                          expiration, /*version=*/2)},
+       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
+                                          /*version=*/2)},
   };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
@@ -466,14 +466,14 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_MultipleOrigins) {
 
   keys = {
       {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, /*key_id=*/3,
-                                          expiration, /*version=*/1)},
+       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
+                                          /*version=*/1)},
       {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, /*key_id=*/4,
-                                          expiration, /*version=*/2)},
+       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
+                                          /*version=*/2)},
       {kOriginCEee,
-       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, /*key_id=*/5,
-                                          expiration, /*version=*/3)},
+       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, expiration,
+                                          /*version=*/3)},
   };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>> tokens = {
@@ -533,14 +533,14 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeRange) {
 
   keys = {
       {kOriginA,
-       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, /*key_id=*/3,
-                                          expiration, /*version=*/1)},
+       PrivateVerificationTokensPublicKey(kOriginA, {1, 2, 3}, expiration,
+                                          /*version=*/1)},
       {kOriginBTri,
-       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, /*key_id=*/4,
-                                          expiration, /*version=*/2)},
+       PrivateVerificationTokensPublicKey(kOriginBTri, {4, 5, 6}, expiration,
+                                          /*version=*/2)},
       {kOriginCEee,
-       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, /*key_id=*/5,
-                                          expiration, /*version=*/3)},
+       PrivateVerificationTokensPublicKey(kOriginCEee, {7, 8, 9}, expiration,
+                                          /*version=*/3)},
   };
 
   std::map<url::Origin, std::vector<PrivateVerificationTokensToken>>

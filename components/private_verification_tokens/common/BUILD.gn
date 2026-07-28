@@ -9,6 +9,7 @@ source_set("private_verification_tokens_public_key") {
     "private_verification_tokens_public_key.cc",
     "private_verification_tokens_public_key.h",
   ]
+  deps = [ "//crypto" ]
   public_deps = [
     "//base",
     "//url",

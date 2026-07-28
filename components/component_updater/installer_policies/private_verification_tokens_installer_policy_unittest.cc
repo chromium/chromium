@@ -134,7 +134,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
         const url::Origin origin_a =
             url::Origin::Create(GURL("https://a.example"));
         const private_verification_tokens::PrivateVerificationTokensPublicKey
-            expected_pk_a{origin_a, expected_key_bytes_a, 2,
+            expected_pk_a{origin_a, expected_key_bytes_a,
                           base::Time::UnixEpoch() + base::Seconds(12), 1};
 
         EXPECT_TRUE(got->config().contains(origin_a));
@@ -151,7 +151,7 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
         const url::Origin origin_b =
             url::Origin::Create(GURL("https://b.example"));
         private_verification_tokens::PrivateVerificationTokensPublicKey
-            expected_pk_b{origin_b, expected_key_bytes_b, 4,
+            expected_pk_b{origin_b, expected_key_bytes_b,
                           base::Time::UnixEpoch() + base::Seconds(24), 1};
 
         EXPECT_TRUE(got->config().contains(origin_b));

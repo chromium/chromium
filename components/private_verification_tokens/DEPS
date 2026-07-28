@@ -1,5 +1,6 @@
 include_rules = [
   "+base",
+  "+crypto",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

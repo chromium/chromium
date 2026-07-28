@@ -343,7 +343,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   EXPECT_THAT(config->config(), testing::SizeIs(1));
 
   PrivateVerificationTokensPublicKey expected_public_key{
-      issuer, serialized_public_key, key_id,
+      issuer, serialized_public_key,
       base::Time::UnixEpoch() + base::Seconds(12), version};
   const auto& parsed_issuer_config = config->config().at(issuer);
   EXPECT_EQ(parsed_issuer_config.batch_size, 3);
@@ -390,14 +390,14 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
   const url::Origin b_origin = url::Origin::Create(GURL("https://b.com"));
 
   PrivateVerificationTokensPublicKey expected_pk1{
-      a_origin, serialized_public_key1, 2,
+      a_origin, serialized_public_key1,
       base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at(a_origin);
   EXPECT_EQ(config1.batch_size, 3);
   EXPECT_EQ(config1.public_key, expected_pk1);
 
   PrivateVerificationTokensPublicKey expected_pk2{
-      b_origin, serialized_public_key2, 5,
+      b_origin, serialized_public_key2,
       base::Time::UnixEpoch() + base::Seconds(53), 1};
   const auto& config2 = config->config().at(b_origin);
   EXPECT_EQ(config2.batch_size, 5);
@@ -443,7 +443,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
       url::Origin::Create(GURL("https://invalid.com"));
 
   PrivateVerificationTokensPublicKey expected_pk1{
-      valid_origin, serialized_public_key1, 2,
+      valid_origin, serialized_public_key1,
       base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at(valid_origin);
   EXPECT_EQ(config1.batch_size, 3);
@@ -500,14 +500,14 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest,
 
   // Verify first a.com entry is picked
   PrivateVerificationTokensPublicKey expected_pk1{
-      a_origin, serialized_public_key, 2,
+      a_origin, serialized_public_key,
       base::Time::UnixEpoch() + base::Seconds(49), 1};
   const auto& config1 = config->config().at(a_origin);
   EXPECT_EQ(config1.batch_size, 3);
   EXPECT_EQ(config1.public_key, expected_pk1);
 
   PrivateVerificationTokensPublicKey expected_pk2{
-      b_origin, serialized_public_key, 5,
+      b_origin, serialized_public_key,
       base::Time::UnixEpoch() + base::Seconds(53), 1};
   const auto& config2 = config->config().at(b_origin);
   EXPECT_EQ(config2.batch_size, 5);
@@ -582,7 +582,7 @@ TEST_F(PrivateVerificationTokensIssuerConfigTest, LoadFromFile_ValidJson) {
   EXPECT_EQ(result->config().at(expected_origin).batch_size, 3);
 
   const PrivateVerificationTokensPublicKey expected_public_key{
-      expected_origin, serialized_public_key, 3,
+      expected_origin, serialized_public_key,
       base::Time::UnixEpoch() + base::Seconds(12), 1};
   EXPECT_EQ(result->config().at(expected_origin).public_key,
             expected_public_key);

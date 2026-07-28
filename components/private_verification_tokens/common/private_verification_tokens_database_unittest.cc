@@ -438,9 +438,9 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   std::vector<uint8_t> key_b = {4, 5, 6};
   const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
-      PrivateVerificationTokensPublicKey(kOriginA, key_a, /*key_id=*/3,
+      PrivateVerificationTokensPublicKey(kOriginA, key_a,
                                          /*expiration=*/exp, /*version=*/1),
-      PrivateVerificationTokensPublicKey(kOriginBTri, key_b, /*key_id=*/4,
+      PrivateVerificationTokensPublicKey(kOriginBTri, key_b,
                                          /*expiration=*/exp, /*version=*/2),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
@@ -466,15 +466,14 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   std::vector<uint8_t> key_a = {1, 2, 3};
   const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
-      PrivateVerificationTokensPublicKey(kOriginA, key_a, /*key_id=*/3,
+      PrivateVerificationTokensPublicKey(kOriginA, key_a,
                                          /*expiration=*/exp, /*version=*/1),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
 
-  std::vector<uint8_t> key_a_new = {7, 8, 9};
   const auto exp_new = base::Time::UnixEpoch() + base::Seconds(10);
   std::vector<PrivateVerificationTokensPublicKey> keys_new{
-      PrivateVerificationTokensPublicKey(kOriginA, key_a_new, /*key_id=*/3,
+      PrivateVerificationTokensPublicKey(kOriginA, key_a,
                                          /*expiration=*/exp_new, /*version=*/2),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys_new));
@@ -505,27 +504,27 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   // b.tri has 3 keys
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey(
-          kOriginA, key_a, /*key_id=*/3,
+          kOriginA, key_a,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(5),
           /*version=*/1),
       PrivateVerificationTokensPublicKey(
-          kOriginBTri, key_b_1, /*key_id=*/4,
+          kOriginBTri, key_b_1,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
-          kOriginCEee, key_c, /*key_id=*/4,
+          kOriginCEee, key_c,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
-          kOriginBTri, key_b_2, /*key_id=*/5,
+          kOriginBTri, key_b_2,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
-          kOriginBTri, key_b_3, /*key_id=*/6,
+          kOriginBTri, key_b_3,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
@@ -555,23 +554,23 @@ TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_ExistingId_KeyRemoved) {
   std::vector<uint8_t> key_c = {7, 8, 9};
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey(
-          kOriginA, key_a, /*key_id=*/3,
+          kOriginA, key_a,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(5),
           /*version=*/1),
       PrivateVerificationTokensPublicKey(
-          kOriginBTri, key_b, /*key_id=*/4,
+          kOriginBTri, key_b,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
       PrivateVerificationTokensPublicKey(
-          kOriginCEee, key_c, /*key_id=*/5,
+          kOriginCEee, key_c,
           /*expiration=*/
           base::Time::UnixEpoch() + base::Seconds(6),
           /*version=*/2),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
-  EXPECT_TRUE(pvt_database_->RemoveKey(kOriginBTri, 4));
+  EXPECT_TRUE(pvt_database_->RemoveKey(kOriginBTri, keys[1].key_id()));
   std::vector<PrivateVerificationTokensPublicKey> got_keys =
       pvt_database_->GetKeys();
   EXPECT_THAT(got_keys, testing::UnorderedElementsAre(keys[0], keys[2]));
@@ -590,12 +589,11 @@ TEST_F(PrivateVerificationTokensDatabaseTest, RemoveKey_NonExistentId_NoOp) {
   std::vector<uint8_t> key_a = {1, 2, 3};
   std::vector<PrivateVerificationTokensPublicKey> keys{
       PrivateVerificationTokensPublicKey(
-          kOriginA, key_a, /*key_id=*/3,
-          base::Time::UnixEpoch() + base::Seconds(5), 1),
+          kOriginA, key_a, base::Time::UnixEpoch() + base::Seconds(5), 1),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
 
-  EXPECT_TRUE(pvt_database_->RemoveKey(kOriginA, 4));
+  EXPECT_TRUE(pvt_database_->RemoveKey(kOriginA, keys[0].key_id() + 1));
 
   std::vector<PrivateVerificationTokensPublicKey> got_keys =
       pvt_database_->GetKeys();
@@ -632,7 +630,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   std::vector<uint8_t> key_a = {1, 2, 3};
   const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
-      PrivateVerificationTokensPublicKey(kOriginA, key_a, /*key_id=*/3,
+      PrivateVerificationTokensPublicKey(kOriginA, key_a,
                                          /*expiration=*/exp, /*version=*/1),
   };
 
@@ -708,7 +706,7 @@ TEST_F(PrivateVerificationTokensDatabaseTest,
   std::vector<uint8_t> key_a = {1, 2, 3};
   const auto exp = base::Time::UnixEpoch() + base::Seconds(5);
   std::vector<PrivateVerificationTokensPublicKey> keys{
-      PrivateVerificationTokensPublicKey(kOriginA, key_a, 3, exp, 1),
+      PrivateVerificationTokensPublicKey(kOriginA, key_a, exp, 1),
   };
   EXPECT_TRUE(pvt_database_->StoreKeys(keys));
   pvt_database_.reset();

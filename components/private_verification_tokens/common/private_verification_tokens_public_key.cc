@@ -7,18 +7,18 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "crypto/hash.h"
 
 namespace private_verification_tokens {
 
 PrivateVerificationTokensPublicKey::PrivateVerificationTokensPublicKey(
     url::Origin issuer,
     std::vector<uint8_t> public_key,
-    uint32_t key_id,
     base::Time expiration,
     uint32_t version)
     : issuer_(std::move(issuer)),
       public_key_(std::move(public_key)),
-      key_id_(key_id),
+      key_id_(crypto::hash::Sha256(public_key_).back()),
       expiration_(expiration),
       version_(version) {}
 
@@ -48,7 +48,7 @@ const std::vector<uint8_t>& PrivateVerificationTokensPublicKey::public_key()
   return public_key_;
 }
 
-uint32_t PrivateVerificationTokensPublicKey::key_id() const {
+uint8_t PrivateVerificationTokensPublicKey::key_id() const {
   return key_id_;
 }
 
