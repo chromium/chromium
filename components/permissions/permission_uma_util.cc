@@ -276,8 +276,7 @@ void RecordEngagementMetric(
 
   RequestTypeForUma type = PermissionUtil::GetUmaValueForRequests(requests);
 
-  DCHECK(action == "Accepted" || action == "Denied" || action == "Dismissed" ||
-         action == "Ignored" || action == "AcceptedOnce");
+  CHECK(action == "Accepted" || action == "Dismissed");
   std::string name = base::StrCat({"Permissions.Engagement.", action, ".",
                                    GetPermissionRequestString(type)});
 
@@ -1107,7 +1106,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
       NOTREACHED();
   }
   std::string action_string = GetPermissionActionString(permission_action);
-  RecordEngagementMetric(requests, browser_context, action_string);
+  if (permission_action == PermissionAction::GRANTED ||
+      permission_action == PermissionAction::DISMISSED) {
+    RecordEngagementMetric(requests, browser_context, action_string);
+  }
 
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(

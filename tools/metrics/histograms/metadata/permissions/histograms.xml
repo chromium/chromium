@@ -789,20 +789,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Permissions.Engagement.AcceptedOnce{PermissionRequestTypes}"
-    units="%" expires_after="2022-08-25">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the user accepts the one time permission prompt. It tracks the
-    Site engagement score for sites. For more info check
-    chrome/browser/engagement/ {PermissionRequestTypes}
-  </summary>
-  <token key="PermissionRequestTypes" variants="PermissionRequestTypes">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Permissions.Engagement.Accepted{PermissionRequestTypes}"
     units="%" expires_after="2026-12-16">
   <owner>engedy@chromium.org</owner>
@@ -817,40 +803,12 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Permissions.Engagement.Denied{PermissionRequestTypes}"
-    units="%" expires_after="2023-03-05">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the user denies the permission prompt. It tracks the Site
-    engagement score for sites. For more info check chrome/browser/engagement/
-    {PermissionRequestTypes}
-  </summary>
-  <token key="PermissionRequestTypes" variants="PermissionRequestTypes">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Permissions.Engagement.Dismissed{PermissionRequestTypes}"
     units="%" expires_after="2026-12-09">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Recorded when the user dismisses the permission prompt. It tracks the Site
-    engagement score for sites. For more info check chrome/browser/engagement/
-    {PermissionRequestTypes}
-  </summary>
-  <token key="PermissionRequestTypes" variants="PermissionRequestTypes">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Permissions.Engagement.Ignored{PermissionRequestTypes}"
-    units="%" expires_after="2023-07-02">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the user ignores the permission prompt. It tracks the Site
     engagement score for sites. For more info check chrome/browser/engagement/
     {PermissionRequestTypes}
   </summary>

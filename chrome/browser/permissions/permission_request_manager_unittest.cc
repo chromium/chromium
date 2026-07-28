@@ -259,8 +259,6 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
       static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::DOWNLOAD),
       1);
-  histograms.ExpectTotalCount("Permissions.Engagement.Denied.MultipleDownload",
-                              0);
   // No need to test the other UMA for showing prompts again, they were tested
   // in UMAForSimpleAcceptedBubble.
 
@@ -280,9 +278,6 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptDeniedGesture, 0);
-  histograms.ExpectUniqueSample(
-      "Permissions.Engagement.Denied.MultipleDownload", kTestEngagementScore,
-      1);
 }
 
 TEST_F(PermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
@@ -326,8 +321,6 @@ TEST_F(PermissionRequestManagerTest, UMAForMergedDeniedBubble) {
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        CreateRequest(params_request_camera_));
   WaitForBubbleToBeShown();
-  histograms.ExpectTotalCount(
-      "Permissions.Engagement.Denied.AudioAndVideoCapture", 0);
   // No need to test UMA for showing prompts again, they were tested in
   // UMAForMergedAcceptedBubble.
 
@@ -338,42 +331,6 @@ TEST_F(PermissionRequestManagerTest, UMAForMergedDeniedBubble) {
       static_cast<base::HistogramBase::Sample32>(
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
-  histograms.ExpectUniqueSample(
-      "Permissions.Engagement.Denied.AudioAndVideoCapture",
-      kTestEngagementScore, 1);
-}
-
-TEST_F(PermissionRequestManagerTest, UMAForIgnores) {
-  base::HistogramTester histograms;
-
-  std::string_view geolocation_prompt_name =
-      base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)
-          ? "GeolocationApproximateOrPrecise"
-          : "Geolocation";
-
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
-                       CreateRequest(params_request1_));
-  WaitForBubbleToBeShown();
-  histograms.ExpectTotalCount(base::StrCat({"Permissions.Engagement.Ignored.",
-                                            geolocation_prompt_name}),
-                              0);
-
-  GURL youtube("http://www.youtube.com/");
-  NavigateAndCommit(youtube);
-  histograms.ExpectUniqueSample(base::StrCat({"Permissions.Engagement.Ignored.",
-                                              geolocation_prompt_name}),
-                                kTestEngagementScore, 1);
-
-  auto youtube_request = std::make_unique<permissions::MockPermissionRequest>(
-      youtube, permissions::RequestType::kCameraStream);
-  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
-                       std::move(youtube_request));
-  WaitForBubbleToBeShown();
-
-  NavigateAndCommit(GURL(permissions::MockPermissionRequest::kDefaultOrigin));
-  histograms.ExpectUniqueSample("Permissions.Engagement.Ignored.VideoCapture",
-                                0, 1);
 }
 
 TEST_F(PermissionRequestManagerTest, TestEmbargoForEmbeddedPermissionRequest) {
