@@ -378,7 +378,7 @@ def analyze_error(stdout, stderr):
 def compile_branch(platform, target, submodule, index=None):
     """Compiles the branch, saves stdout and stderr to a file,
     and returns the result."""
-    print(f"Compiling the branch to verify Jetski fixes... in {submodule}")
+    print(f"Compiling the branch in {submodule}...")
     out_dir = f"out/{platform}"
 
     compile_res = subprocess.run(f"autoninja -C {out_dir} {target}",
@@ -716,26 +716,36 @@ Then refined with jetski-cli and at last manually refined"""
 
         commit_applied_edits(submodule)
 
-        print("Invoking jetski-cli to fix potential compilation errors...")
-
-        files = get_modified_files(submodule, sub_main, branch)
-
-        # Create prompt file with target files and git diff
-        [prompt_file_path,
-         working_dir] = create_prompt_file(files, submodule, branch, sub_main)
-
-        if not prompt_file_path:
-            break
-
-        abs_working_dir = os.path.abspath(working_dir)
-        llm_output = call_jetski_cli(prompt_file_path, working_dir, model,
-                                     abs_working_dir)
-
-        commit_if_changes(submodule)
-
+        print("Compiling branch to check if automatic spanification passes...")
         [compile_result,
          compilation_errors] = compile_branch(platform, target, submodule,
                                               index)
+
+        llm_output = ""
+        if compile_result != "SUCCESS":
+            print("Compilation failed. Invoking jetski-cli to fix errors...")
+
+            files = get_modified_files(submodule, sub_main, branch)
+
+            # Create prompt file with target files and git diff
+            [prompt_file_path,
+             working_dir] = create_prompt_file(files, submodule, branch,
+                                               sub_main)
+
+            if not prompt_file_path:
+                break
+
+            abs_working_dir = os.path.abspath(working_dir)
+            llm_output = call_jetski_cli(prompt_file_path, working_dir, model,
+                                         abs_working_dir)
+
+            commit_if_changes(submodule)
+
+            [compile_result,
+             compilation_errors] = compile_branch(platform, target, submodule)
+        else:
+            print("Automatic spanification compiled successfully! "
+                  "Skipping jetski-cli.")
 
         [plus_delta, minus_delta, total_delta, num_files,
          first_file] = compute_diff_stats(submodule, sub_main, branch)
