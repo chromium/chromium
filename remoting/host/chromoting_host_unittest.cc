@@ -101,8 +101,7 @@ class ChromotingHostTest : public testing::Test {
         base::BindRepeating(
             []() -> std::unique_ptr<protocol::IceConfigFetcher> {
               return nullptr;
-            }),
-        task_runner_);
+            }));
     host_ = std::make_unique<ChromotingHost>(
         std::move(peer_session_factory),
         base::WrapUnique(session_manager_.get()),
@@ -469,8 +468,7 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
       /*get_ice_config_fetcher_cb=*/
       base::BindRepeating([]() -> std::unique_ptr<protocol::IceConfigFetcher> {
         return nullptr;
-      }),
-      task_runner_);
+      }));
   host_ = std::make_unique<ChromotingHost>(
       std::move(peer_session_factory), base::WrapUnique(session_manager_.get()),
       std::move(secondary_session_manager),

@@ -54,7 +54,6 @@
 namespace remoting {
 
 IpcDesktopEnvironment::IpcDesktopEnvironment(
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control,
@@ -62,8 +61,7 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
     base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
     const DesktopEnvironmentOptions& options)
     : desktop_session_proxy_(
-          base::MakeRefCounted<DesktopSessionProxy>(audio_task_runner,
-                                                    io_task_runner,
+          base::MakeRefCounted<DesktopSessionProxy>(io_task_runner,
                                                     client_session_control,
                                                     client_session_events,
                                                     desktop_session_connector,
@@ -160,12 +158,10 @@ IpcDesktopEnvironmentFactory::DesktopConnection::operator=(
     DesktopConnection&&) = default;
 
 IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     mojo::AssociatedRemote<mojom::DesktopSessionManager> remote)
-    : audio_task_runner_(audio_task_runner),
-      network_task_runner_(network_task_runner),
+    : network_task_runner_(network_task_runner),
       io_task_runner_(io_task_runner),
       desktop_session_manager_(std::move(remote)) {}
 
@@ -188,12 +184,12 @@ void IpcDesktopEnvironmentFactory::Create(
   DCHECK(network_task_runner_->BelongsToCurrentThread());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                std::make_unique<IpcDesktopEnvironment>(
-                                    audio_task_runner_, network_task_runner_,
-                                    io_task_runner_, client_session_control,
-                                    client_session_events,
-                                    connector_factory_.GetWeakPtr(), options)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     std::make_unique<IpcDesktopEnvironment>(
+                         network_task_runner_, io_task_runner_,
+                         client_session_control, client_session_events,
+                         connector_factory_.GetWeakPtr(), options)));
 }
 
 bool IpcDesktopEnvironmentFactory::SupportsAudioCapture() const {

@@ -406,7 +406,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   mock_desktop_session_manager_.BindNewReceiver(
       remote.BindNewEndpointAndPassReceiver());
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
-      task_runner_, task_runner_, io_task_runner_, std::move(remote));
+      task_runner_, io_task_runner_, std::move(remote));
   SetPersistentDesktopSessions(false);
   CreateDesktopEnvironment();
 }
@@ -838,7 +838,7 @@ TEST_F(IpcDesktopEnvironmentTest, StartAudioInjectorCreatesSpscBuffer) {
   mock_desktop_session_manager_.BindNewReceiver(
       remote.BindNewEndpointAndPassReceiver());
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
-      task_runner_, task_runner_, io_task_runner_, std::move(remote));
+      task_runner_, io_task_runner_, std::move(remote));
   SetPersistentDesktopSessions(false);
 
   base::test::TestFuture<MockDesktopEnvironment*> mock_env_future;

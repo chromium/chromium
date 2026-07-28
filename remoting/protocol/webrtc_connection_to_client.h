@@ -39,9 +39,8 @@ class WebrtcConnectionToClient : public ConnectionToClient,
                                  public WebrtcTransport::EventHandler,
                                  public ChannelDispatcherBase::EventHandler {
  public:
-  WebrtcConnectionToClient(
-      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+  explicit WebrtcConnectionToClient(
+      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher);
 
   WebrtcConnectionToClient(const WebrtcConnectionToClient&) = delete;
   WebrtcConnectionToClient& operator=(const WebrtcConnectionToClient&) = delete;
@@ -99,14 +98,14 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   // Event handler for handling events sent from this object.
   raw_ptr<ConnectionToClient::EventHandler> event_handler_ = nullptr;
 
+  // Declared before transport_ so it outlives WebRTC tracks and streams.
+  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
   std::unique_ptr<WebrtcTransport> transport_;
 
   raw_ptr<WebrtcVideoEncoderFactory, AcrossTasksDanglingUntriaged>
       video_encoder_factory_;
 
   HostVideoStatsDispatcher video_stats_dispatcher_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   SessionOptions session_options_;
 

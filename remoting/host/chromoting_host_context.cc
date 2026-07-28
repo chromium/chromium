@@ -33,7 +33,6 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
 
   ChromotingHostContextChromeOs(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
       scoped_refptr<AutoThreadTaskRunner> file_task_runner,
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
@@ -77,7 +76,6 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
 
 ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
     scoped_refptr<AutoThreadTaskRunner> file_task_runner,
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
@@ -85,7 +83,6 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     CreateClientCertStoreCallback create_client_cert_store)
     : ChromotingHostContext(ui_task_runner,
-                            audio_task_runner,
                             file_task_runner,
                             input_task_runner,
                             network_task_runner,
@@ -108,8 +105,8 @@ ChromotingHostContextChromeOs::~ChromotingHostContextChromeOs() {
 std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
   DCHECK(ui_task_runner()->BelongsToCurrentThread());
   return std::make_unique<ChromotingHostContextChromeOs>(
-      ui_task_runner(), audio_task_runner(), file_task_runner(),
-      input_task_runner(), network_task_runner(), video_capture_task_runner(),
+      ui_task_runner(), file_task_runner(), input_task_runner(),
+      network_task_runner(), video_capture_task_runner(),
       ui_shared_url_loader_factory_, create_client_cert_store_);
 }
 
@@ -150,7 +147,6 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
  public:
   ChromotingHostContextDesktop(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
-      scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
       scoped_refptr<AutoThreadTaskRunner> file_task_runner,
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
@@ -183,14 +179,12 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
 
 ChromotingHostContextDesktop::ChromotingHostContextDesktop(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
     scoped_refptr<AutoThreadTaskRunner> file_task_runner,
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<net::URLRequestContextGetter> url_request_context_getter)
     : ChromotingHostContext(ui_task_runner,
-                            audio_task_runner,
                             file_task_runner,
                             input_task_runner,
                             network_task_runner,
@@ -206,8 +200,8 @@ ChromotingHostContextDesktop::~ChromotingHostContextDesktop() {
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
   return std::make_unique<ChromotingHostContextDesktop>(
-      ui_task_runner(), audio_task_runner(), file_task_runner(),
-      input_task_runner(), network_task_runner(), video_capture_task_runner(),
+      ui_task_runner(), file_task_runner(), input_task_runner(),
+      network_task_runner(), video_capture_task_runner(),
       url_request_context_getter_);
 }
 
@@ -244,13 +238,11 @@ ChromotingHostContextDesktop::create_client_cert_store_callback() const {
 
 ChromotingHostContext::ChromotingHostContext(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> audio_task_runner,
     scoped_refptr<AutoThreadTaskRunner> file_task_runner,
     scoped_refptr<AutoThreadTaskRunner> input_task_runner,
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner)
     : ui_task_runner_(ui_task_runner),
-      audio_task_runner_(audio_task_runner),
       file_task_runner_(file_task_runner),
       input_task_runner_(input_task_runner),
       network_task_runner_(network_task_runner),
@@ -258,10 +250,6 @@ ChromotingHostContext::ChromotingHostContext(
 
 ChromotingHostContext::~ChromotingHostContext() = default;
 
-scoped_refptr<AutoThreadTaskRunner> ChromotingHostContext::audio_task_runner()
-    const {
-  return audio_task_runner_;
-}
 
 scoped_refptr<AutoThreadTaskRunner> ChromotingHostContext::file_task_runner()
     const {
@@ -295,18 +283,6 @@ policy::ManagementService* ChromotingHostContext::management_service() {
 #if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
-#if BUILDFLAG(IS_WIN)
-  // On Windows the AudioCapturer requires COM, so we run a single-threaded
-  // apartment, which requires a UI thread.
-  scoped_refptr<AutoThreadTaskRunner> audio_task_runner =
-      AutoThread::CreateWithLoopAndComInitTypes(
-          "ChromotingAudioThread", ui_task_runner, base::MessagePumpType::UI,
-          AutoThread::COM_INIT_STA);
-#else   // !BUILDFLAG(IS_WIN)
-  scoped_refptr<AutoThreadTaskRunner> audio_task_runner =
-      AutoThread::CreateWithType("ChromotingAudioThread", ui_task_runner,
-                                 base::MessagePumpType::IO);
-#endif  // !BUILDFLAG(IS_WIN)
   scoped_refptr<AutoThreadTaskRunner> file_task_runner =
       AutoThread::CreateWithType("ChromotingFileThread", ui_task_runner,
                                  base::MessagePumpType::IO);
@@ -328,8 +304,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   return std::make_unique<ChromotingHostContextDesktop>(
-      ui_task_runner, audio_task_runner, file_task_runner, input_task_runner,
-      network_task_runner,
+      ui_task_runner, file_task_runner, input_task_runner, network_task_runner,
 #if BUILDFLAG(IS_APPLE)
       // Mac requires a UI thread for the capturer.
       AutoThread::CreateWithType("ChromotingCaptureThread", ui_task_runner,
@@ -369,7 +344,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
   // that allows blocking I/O, which is required by thread joining.
   return std::make_unique<ChromotingHostContextChromeOs>(
       ui_auto_task_runner,
-      AutoThread::Create("ChromotingAudioThread", file_auto_task_runner),
       file_auto_task_runner,
       ui_auto_task_runner,  // input_task_runner
       io_auto_task_runner,  // network_task_runner

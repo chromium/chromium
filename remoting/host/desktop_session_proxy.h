@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -85,7 +86,6 @@ class DesktopSessionProxy
       public mojom::DesktopSessionStateHandler {
  public:
   DesktopSessionProxy(
-      scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control,
       base::WeakPtr<ClientSessionEvents> client_session_events,
@@ -129,8 +129,10 @@ class DesktopSessionProxy
   // the associated resources.
   void DetachFromDesktop();
 
-  // Stores |audio_capturer| to be used to post captured audio packets. Called
-  // on the |audio_capture_task_runner_| thread.
+  // Registers `audio_capturer` to receive captured audio packets. This method
+  // is called on the audio sequence where `audio_capturer` is bound, and will
+  // also record the current sequence task runner as the audio task runner.
+  // `audio_capturer_` must only be accessed from the audio sequence.
   void SetAudioCapturer(const base::WeakPtr<IpcAudioCapturer>& audio_capturer);
 
   // Stores |mouse_cursor_monitor| to be used to post mouse cursor changes.
@@ -246,15 +248,23 @@ class DesktopSessionProxy
                                 base::WeakPtr<IpcVideoFrameCapturer> capturer);
 
   // Task runners:
-  //   - |audio_capturer_| is called back on |audio_capture_task_runner_|.
-  //   - public methods of this class (with some exceptions) are called on
-  //     |caller_task_runner| passed in the constructor.
-  //   - background I/O is served on |io_task_runner_|.
-  scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner_;
+  //   - `main_task_runner_` is the sequence on which public methods of this
+  //     class and IPC messages from the desktop process are handled.
+  //   - `audio_capture_task_runner_` is the sequence on which `audio_capturer_`
+  //     is called back.
+  //   - background I/O is served on `io_task_runner_`.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> audio_capture_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
 
-  // Points to the audio capturer receiving captured audio packets.
+  // Points to the audio capturer receiving captured audio packets. This is
+  // registered by `IpcAudioCapturer::Start()` calling
+  // `SetAudioCapturer()` on `audio_capture_task_runner_`.
+  // When IPC audio packets arrive from the desktop process on
+  // `main_task_runner_` in `OnAudioPacket()`, this class hops sequences by
+  // posting a task to `audio_capture_task_runner_`, where `audio_capturer_`
+  // is dereferenced safely on its native sequence.
   base::WeakPtr<IpcAudioCapturer> audio_capturer_;
 
   // Points to the client stub passed to StartInputInjector().
@@ -361,6 +371,10 @@ class DesktopSessionProxy
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::OnceCallback<void(bool)> pending_audio_format_ack_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  void SetAudioCaptureTaskRunner(
+      scoped_refptr<base::SequencedTaskRunner> audio_capture_task_runner);
+  void DispatchAudioPacketOnAudioSequence(std::unique_ptr<AudioPacket> packet);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/fifo_buffer.h"
@@ -53,12 +54,13 @@ const char kVideoStatsStreamLabel[] = "screen_stream";
 // TODO(sergeyu): Figure out if we would benefit from using a separate thread as
 // a worker thread.
 WebrtcConnectionToClient::WebrtcConnectionToClient(
-    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
+    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher)
     : video_stats_dispatcher_(kVideoStatsStreamLabel),
-      audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
+  audio_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::HIGHEST},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),

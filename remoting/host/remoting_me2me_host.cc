@@ -1147,7 +1147,7 @@ void HostProcess::StartOnUiThread() {
           kAudioPipeSwitchName);
   if (!audio_pipe_name.empty()) {
     remoting::PulseAudioCapturer::InitializePipeReader(
-        context_->audio_task_runner(), audio_pipe_name);
+        context_->file_task_runner(), audio_pipe_name);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -1181,8 +1181,8 @@ void HostProcess::StartOnUiThread() {
 
     auto desktop_environment_factory =
         std::make_unique<IpcDesktopEnvironmentFactory>(
-            context_->audio_task_runner(), context_->network_task_runner(),
-            context_->network_task_runner(), std::move(remote));
+            context_->network_task_runner(), context_->network_task_runner(),
+            std::move(remote));
     desktop_session_connector_ = desktop_environment_factory.get();
     desktop_environment_factory_ = std::move(desktop_environment_factory);
   } else
@@ -2073,8 +2073,7 @@ void HostProcess::StartHost() {
 #endif
 
   auto peer_session_factory = std::make_unique<PeerSessionImplFactory>(
-      desktop_environment_factory_.get(), std::move(get_ice_config_fetcher_cb),
-      context_->audio_task_runner());
+      desktop_environment_factory_.get(), std::move(get_ice_config_fetcher_cb));
   peer_session_factory_ = peer_session_factory.get();
 
   host_ = std::make_unique<ChromotingHost>(

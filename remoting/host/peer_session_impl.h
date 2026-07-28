@@ -102,12 +102,6 @@ class PeerSessionImpl : public PeerSession,
                                    RequestPairingResponseCallback response_cb)>;
 
   // `desktop_environment_factory` must outlive `this`.
-  PeerSessionImpl(
-      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-      DesktopEnvironmentFactory* desktop_environment_factory,
-      RequestPairingCallback request_pairing_cb);
-
   PeerSessionImpl(std::unique_ptr<protocol::ConnectionToClient> connection,
                   DesktopEnvironmentFactory* desktop_environment_factory,
                   RequestPairingCallback request_pairing_cb);
@@ -457,7 +451,6 @@ class PeerSessionImplFactory : public PeerSessionFactory {
   PeerSessionImplFactory(
       DesktopEnvironmentFactory* desktop_environment_factory,
       GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       RequestPairingCallback request_pairing_cb = base::NullCallback());
   PeerSessionImplFactory(const PeerSessionImplFactory&) = delete;
   PeerSessionImplFactory& operator=(const PeerSessionImplFactory&) = delete;
@@ -474,7 +467,6 @@ class PeerSessionImplFactory : public PeerSessionFactory {
   SEQUENCE_CHECKER(sequence_checker_);
   raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   GetIceConfigFetcherCallback get_ice_config_fetcher_cb_;
-  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
   RequestPairingCallback request_pairing_cb_;
 };
 

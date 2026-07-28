@@ -142,17 +142,6 @@ namespace remoting {
 using protocol::ActionRequest;
 
 PeerSessionImpl::PeerSessionImpl(
-    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
-    DesktopEnvironmentFactory* desktop_environment_factory,
-    RequestPairingCallback request_pairing_cb)
-    : PeerSessionImpl(std::make_unique<protocol::WebrtcConnectionToClient>(
-                          std::move(ice_config_fetcher),
-                          std::move(audio_task_runner)),
-                      desktop_environment_factory,
-                      std::move(request_pairing_cb)) {}
-
-PeerSessionImpl::PeerSessionImpl(
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
     RequestPairingCallback request_pairing_cb)
@@ -1604,11 +1593,9 @@ void PeerSessionImpl::SetComposeEnabledOnVideoStreams(bool enabled) {
 PeerSessionImplFactory::PeerSessionImplFactory(
     DesktopEnvironmentFactory* desktop_environment_factory,
     GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     RequestPairingCallback request_pairing_cb)
     : desktop_environment_factory_(desktop_environment_factory),
       get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)),
-      audio_task_runner_(std::move(audio_task_runner)),
       request_pairing_cb_(std::move(request_pairing_cb)) {}
 
 PeerSessionImplFactory::~PeerSessionImplFactory() {
@@ -1620,9 +1607,10 @@ std::unique_ptr<PeerSession> PeerSessionImplFactory::Create() {
   CHECK(get_ice_config_fetcher_cb_) << "Missing Ice Config Fetcher callback.";
   std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher =
       get_ice_config_fetcher_cb_.Run();
+  auto connection = std::make_unique<protocol::WebrtcConnectionToClient>(
+      std::move(ice_config_fetcher));
   return std::make_unique<PeerSessionImpl>(
-      std::move(ice_config_fetcher), audio_task_runner_,
-      desktop_environment_factory_, request_pairing_cb_);
+      std::move(connection), desktop_environment_factory_, request_pairing_cb_);
 }
 
 }  // namespace remoting

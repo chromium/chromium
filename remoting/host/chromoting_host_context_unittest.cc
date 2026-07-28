@@ -34,7 +34,6 @@ TEST(ChromotingHostContextTest, StartAndStop) {
   if (!context) {
     return;
   }
-  EXPECT_TRUE(context->audio_task_runner().get());
   EXPECT_TRUE(context->video_capture_task_runner().get());
   EXPECT_TRUE(context->file_task_runner().get());
   EXPECT_TRUE(context->input_task_runner().get());
