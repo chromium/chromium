@@ -333,6 +333,36 @@ TEST_F(StyleAdjusterTest, SingleAxisScrollerUseCount) {
   GetDocument().ClearUseCounterForTesting(WebFeature::kSingleAxisScroller);
 }
 
+TEST_F(StyleAdjusterTest, SingleAxisScrollerOverscrollBehaviorUseCount) {
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: clip; overflow-y: auto;
+                overscroll-behavior-y: contain'></div>
+    <div style='overflow-x: scroll; overflow-y: clip;
+                overscroll-behavior-x: contain'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerOverscrollBehavior));
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: clip; overflow-y: auto;
+                overscroll-behavior-x: none'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerOverscrollBehavior));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerOverscrollBehavior);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: scroll; overflow-y: clip;
+                overscroll-behavior-y: contain'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerOverscrollBehavior));
+}
+
 // crbug.com/392643253
 TEST_F(StyleAdjusterTest, AdjustForDisplayInlinify) {
   SetBodyInnerHTML(R"HTML(<ruby><video></video><audio></audio></ruby>)HTML");
