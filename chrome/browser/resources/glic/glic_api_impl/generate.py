@@ -55,18 +55,27 @@ def Main():
         print("Error: Could not find source directory.", file=sys.stderr)
         sys.exit(1)
 
-    # Script paths
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    gen_sources_ts = os.path.join(this_dir, 'generate_impl', 'gen_sources.ts')
     node_py = os.path.join(source_dir, 'third_party', 'node', 'node.py')
+    tsc_js = os.path.join(source_dir, 'third_party', 'node', 'node_modules',
+                          'typescript', 'bin', 'tsc')
+    tsconfig_json = os.path.join(this_dir, 'generate_impl', 'tsconfig.json')
 
-    # Run gen_sources.ts using node.py
-    node_cmd = [sys.executable, node_py, gen_sources_ts]
-    # Pass through --check-only or other args
-    node_cmd += sys.argv[1:]
+    with tempfile.TemporaryDirectory() as temp_dir:
+        tsc_cmd = [
+            sys.executable, node_py, tsc_js, '--project', tsconfig_json,
+            '--outDir', temp_dir, '--noEmit', 'false'
+        ]
+        res = subprocess.run(tsc_cmd)
+        if res.returncode != 0:
+            sys.exit(res.returncode)
 
-    result = subprocess.run(node_cmd)
-    sys.exit(result.returncode)
+        gen_sources_js = os.path.join(temp_dir, 'gen_sources.js')
+        node_cmd = [sys.executable, node_py, gen_sources_js] + sys.argv[1:]
+        env = os.environ.copy()
+        env['GENERATE_IMPL_DIR'] = os.path.join(this_dir, 'generate_impl')
+        result = subprocess.run(node_cmd, env=env)
+        sys.exit(result.returncode)
 
 
 if __name__ == '__main__':

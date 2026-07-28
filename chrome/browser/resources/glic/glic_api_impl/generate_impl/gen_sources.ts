@@ -136,8 +136,11 @@ function updateGlicApiExports(
 function getAst(dirname: string): MojomAst {
   const parsePyPath = path.resolve(dirname, 'parse.py');
   try {
-    const jsonStr =
-        execFileSync('vpython3', [parsePyPath], {encoding: 'utf-8'});
+    const vpythonCmd =
+        process.platform === 'win32' ? 'vpython3.bat' : 'vpython3';
+    const jsonStr = execFileSync(
+        vpythonCmd, [parsePyPath],
+        {encoding: 'utf-8', shell: process.platform === 'win32'});
     return JSON.parse(jsonStr) as MojomAst;
   } catch (e) {
     console.error('Failed to run parse.py:', e);
@@ -155,7 +158,11 @@ function main() {
   }
 
   const scriptPath = fileURLToPath(import.meta.url);
-  const scriptDir = path.dirname(scriptPath);
+  let scriptDir = path.dirname(scriptPath);
+  if (!fs.existsSync(path.join(scriptDir, 'parse.py')) &&
+      process.env['GENERATE_IMPL_DIR']) {
+    scriptDir = process.env['GENERATE_IMPL_DIR'];
+  }
 
   const ast = getAst(scriptDir);
 
