@@ -45,6 +45,11 @@ const CGFloat kFaviconIconSize = 16;
 }
 
 - (void)fetchImage:(GURL)imageURL completion:(void (^)(UIImage*))completion {
+  // As a precaution, don't fetch images from nonstandard schemes.
+  if (!imageURL.SchemeIsHTTPOrHTTPS()) {
+    completion(nil);
+  }
+
   NSString* URL = [NSString cr_fromString:imageURL.spec()];
   UIImage* cachedImage = [_cachedImages objectForKey:URL];
   if (cachedImage) {

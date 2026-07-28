@@ -50,6 +50,12 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 
+namespace {
+
+const int64_t kMaxFaviconDownloadBytes = 1024 * 1024 * 5;
+
+}  // namespace
+
 @interface OmniboxPopupCoordinator () <OmniboxPopupMediatorProtocolProvider,
                                        OmniboxPopupMediatorSharingDelegate>
 
@@ -100,6 +106,7 @@
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
           self.profile->GetSharedURLLoaderFactory());
+  imageFetcher->SetImageDownloadLimit(kMaxFaviconDownloadBytes);
 
   _omniboxImageFetcher = [[OmniboxImageFetcher alloc]
       initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
