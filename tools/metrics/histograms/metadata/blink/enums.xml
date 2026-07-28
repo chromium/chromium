@@ -6725,6 +6725,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5972" label="V8Navigator_GlobalPrivacyControl_AttributeGetter"/>
   <int value="5973" label="XmlCAPAlert"/>
   <int value="5974" label="XmlCAPAlertWithXSLT"/>
+  <int value="5975" label="SingleAxisScrollerPositionSticky"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

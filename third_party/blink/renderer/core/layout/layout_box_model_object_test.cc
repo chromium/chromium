@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -433,6 +435,70 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionContainerIsScroller) {
   EXPECT_EQ(
       gfx::Rect(0, 0, 0, 100),
       ToEnclosingRect(constraints.ScrollContainerRelativeStickyBoxRect()));
+}
+
+TEST_P(LayoutBoxModelObjectTest, SingleAxisScrollerPositionStickyUseCount) {
+  ScopedSingleAxisScrollContainersForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow: clip'>
+      <div style='position: sticky; top: 0'></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerPositionSticky));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerPositionSticky);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: clip; overflow-y: auto'>
+      <div style='position: sticky; top: 0'></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerPositionSticky));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerPositionSticky);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: clip; overflow-y: auto'>
+      <div style='position: sticky; left: 0'></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerPositionSticky));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerPositionSticky);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: auto; overflow-y: clip'>
+      <div>
+        <div style='position: sticky; top: 0; left: 0'></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerPositionSticky));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kSingleAxisScrollerPositionSticky);
+}
+
+TEST_P(LayoutBoxModelObjectTest,
+       NoSingleAxisScrollerPositionStickyUseCountWhenDisabled) {
+  ScopedSingleAxisScrollContainersForTest scoped_feature(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow-x: clip; overflow-y: auto'>
+      <div style='position: sticky; left: 0'></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kSingleAxisScrollerPositionSticky));
 }
 
 // Verifies that the sticky constraints are correct when the sticky position
