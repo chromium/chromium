@@ -202,6 +202,26 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
   void MinimizeFromWebAPI() override;
   void MaximizeFromWebAPI() override;
   void RestoreFromWebAPI() override;
+  void SetResizableFromWebAPI(bool resizable) override;
+  ui::mojom::WindowShowState GetWindowShowState() const override;
+  bool CanEnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame) override;
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override;
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override;
+  blink::mojom::DisplayMode GetDisplayMode(
+      const content::WebContents* web_contents) override;
+  blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
+      content::RenderFrameHost* requesting_frame) override;
+  void RegisterProtocolHandler(content::RenderFrameHost* requesting_frame,
+                               const std::string& protocol,
+                               const GURL& url,
+                               bool user_gesture) override;
 
  private:
   const base::ElapsedTimer creation_timer_;

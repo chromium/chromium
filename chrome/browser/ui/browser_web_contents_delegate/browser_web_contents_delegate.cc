@@ -11,6 +11,8 @@
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -32,10 +34,12 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -48,9 +52,13 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -64,8 +72,13 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/common/extension.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/base_window.h"
 
@@ -993,4 +1006,180 @@ void BrowserWebContentsDelegate::MaximizeFromWebAPI() {
 
 void BrowserWebContentsDelegate::RestoreFromWebAPI() {
   window_->Restore();
+}
+
+void BrowserWebContentsDelegate::SetResizableFromWebAPI(bool resizable) {
+  // TODO(crbug.com/355026937): Eliminate this BrowserView reference.
+  if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(&*browser_)) {
+    browser_view->SetResizableFromWebApi(resizable);
+  }
+}
+
+ui::mojom::WindowShowState BrowserWebContentsDelegate::GetWindowShowState()
+    const {
+  return window_->GetWindowShowState();
+}
+
+bool BrowserWebContentsDelegate::CanEnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame) {
+  // If the tab strip isn't editable then a drag session is in progress, and it
+  // is not safe to enter fullscreen. https://crbug.com/40059349
+  if (!browser_->GetTabStripModel()->delegate()->IsTabStripEditable()) {
+    return false;
+  }
+
+  return exclusive_access_manager_->fullscreen_controller()
+      ->CanEnterFullscreenModeForTab(requesting_frame);
+}
+
+void BrowserWebContentsDelegate::EnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  exclusive_access_manager_->fullscreen_controller()->EnterFullscreenModeForTab(
+      requesting_frame, FullscreenTabParams{options.display_id});
+}
+
+void BrowserWebContentsDelegate::ExitFullscreenModeForTab(
+    content::WebContents* web_contents) {
+  exclusive_access_manager_->fullscreen_controller()->ExitFullscreenModeForTab(
+      web_contents);
+}
+
+bool BrowserWebContentsDelegate::IsFullscreenForTabOrPending(
+    const content::WebContents* web_contents) {
+  const content::FullscreenState state = GetFullscreenState(web_contents);
+  return state.target_mode == content::FullscreenMode::kContent ||
+         state.target_mode == content::FullscreenMode::kPseudoContent;
+}
+
+content::FullscreenState BrowserWebContentsDelegate::GetFullscreenState(
+    const content::WebContents* web_contents) const {
+  return exclusive_access_manager_->fullscreen_controller()->GetFullscreenState(
+      web_contents);
+}
+
+blink::mojom::DisplayMode BrowserWebContentsDelegate::GetDisplayMode(
+    const content::WebContents* web_contents) {
+  if (window_->IsFullscreen()) {
+    return blink::mojom::DisplayMode::kFullscreen;
+  }
+
+  const BrowserWindowInterface::Type type = browser_->GetType();
+  if ((type == BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE)) {
+    return blink::mojom::DisplayMode::kPictureInPicture;
+  }
+
+  if ((type == BrowserWindowInterface::Type::TYPE_APP) ||
+      (type == BrowserWindowInterface::Type::TYPE_DEVTOOLS) ||
+      (type == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
+    if (app_browser_controller_ &&
+        app_browser_controller_->HasMinimalUiButtons()) {
+      return blink::mojom::DisplayMode::kMinimalUi;
+    }
+
+    if (app_browser_controller_ &&
+        app_browser_controller_->AppUsesWindowControlsOverlay() &&
+        !web_contents->GetWindowsControlsOverlayRect().IsEmpty()) {
+      return blink::mojom::DisplayMode::kWindowControlsOverlay;
+    }
+
+    if (app_browser_controller_ && app_browser_controller_->AppUsesTabbed()) {
+      return blink::mojom::DisplayMode::kTabbed;
+    }
+
+    if (app_browser_controller_ &&
+        app_browser_controller_->AppUsesUnframedMode() &&
+        window_->IsUnframedModeEnabled()) {
+      return blink::mojom::DisplayMode::kUnframed;
+    }
+
+    return blink::mojom::DisplayMode::kStandalone;
+  }
+
+  return blink::mojom::DisplayMode::kBrowser;
+}
+
+blink::ProtocolHandlerSecurityLevel
+BrowserWebContentsDelegate::GetProtocolHandlerSecurityLevel(
+    content::RenderFrameHost* requesting_frame) {
+  content::BrowserContext* context = requesting_frame->GetBrowserContext();
+  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
+  const extensions::Extension* owner_extension =
+      extensions::ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
+          requesting_frame);
+  if (owner_extension &&
+      process_map->IsPrivilegedExtensionProcess(
+          *owner_extension, requesting_frame->GetProcess()->GetID())) {
+    return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
+  }
+  return blink::ProtocolHandlerSecurityLevel::kStrict;
+}
+
+void BrowserWebContentsDelegate::RegisterProtocolHandler(
+    content::RenderFrameHost* requesting_frame,
+    const std::string& protocol,
+    const GURL& url,
+    bool user_gesture) {
+  content::BrowserContext* context = requesting_frame->GetBrowserContext();
+  if (context->IsOffTheRecord()) {
+    return;
+  }
+
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(requesting_frame);
+
+  custom_handlers::ProtocolHandler handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+
+  // The parameters's normalization process defined in the spec has been already
+  // applied in the WebContentImpl class, so at this point it shouldn't be
+  // possible to create an invalid handler.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  DCHECK(handler.IsValid());
+
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
+  if (registry->SilentlyHandleRegisterHandlerRequest(handler)) {
+    return;
+  }
+
+  // TODO(carlscab): This should probably be FromFrame() once it becomes
+  // PageSpecificContentSettingsDelegate
+  auto* page_content_settings_delegate =
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
+  if (!user_gesture) {
+    page_content_settings_delegate->set_pending_protocol_handler(handler);
+    page_content_settings_delegate->set_previous_protocol_handler(
+        registry->GetHandlerFor(handler.protocol()));
+    window_->GetLocationBar()->UpdateContentSettingsIcons();
+    return;
+  }
+
+  // Make sure content-setting icon is turned off in case the page does
+  // ungestured and gestured RPH calls.
+  page_content_settings_delegate->ClearPendingProtocolHandler();
+  window_->GetLocationBar()->UpdateContentSettingsIcons();
+
+  if (registry->registration_mode() ==
+      custom_handlers::RphRegistrationMode::kAutoAccept) {
+    registry->OnAcceptRegisterProtocolHandler(handler);
+    return;
+  }
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  if (permission_request_manager) {
+    auto blocker = web_contents->ForSecurityDropFullscreen(
+        /*display_id=*/display::kInvalidDisplayId);
+    if (!blocker) {
+      return;
+    }
+
+    permission_request_manager->AddRequest(
+        requesting_frame,
+        std::make_unique<
+            custom_handlers::RegisterProtocolHandlerPermissionRequest>(
+            registry, handler, url, std::move(*blocker)));
+  }
 }

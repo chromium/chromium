@@ -1476,98 +1476,46 @@ void Browser::RestoreFromWebAPI() {
 }
 
 void Browser::SetResizableFromWebAPI(bool resizable) {
-  GetBrowserView().SetResizableFromWebApi(resizable);
+  BrowserWebContentsDelegate::From(this)->SetResizableFromWebAPI(resizable);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ui::mojom::WindowShowState Browser::GetWindowShowState() const {
-  return window_->GetWindowShowState();
+  return BrowserWebContentsDelegate::From(this)->GetWindowShowState();
 }
 
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame) {
-  // If the tab strip isn't editable then a drag session is in progress, and it
-  // is not safe to enter fullscreen. https://crbug.com/40059349
-  if (!tab_strip_model_delegate_->IsTabStripEditable()) {
-    return false;
-  }
-
-  return browser_window_features()
-      ->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->CanEnterFullscreenModeForTab(requesting_frame);
+  return BrowserWebContentsDelegate::From(this)->CanEnterFullscreenModeForTab(
+      requesting_frame);
 }
 
 void Browser::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->EnterFullscreenModeForTab(requesting_frame,
-                                  FullscreenTabParams{options.display_id});
+  BrowserWebContentsDelegate::From(this)->EnterFullscreenModeForTab(
+      requesting_frame, options);
 }
 
 void Browser::ExitFullscreenModeForTab(WebContents* web_contents) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->ExitFullscreenModeForTab(web_contents);
+  BrowserWebContentsDelegate::From(this)->ExitFullscreenModeForTab(
+      web_contents);
 }
 
 bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-  const content::FullscreenState state = GetFullscreenState(web_contents);
-  return state.target_mode == content::FullscreenMode::kContent ||
-         state.target_mode == content::FullscreenMode::kPseudoContent;
+  return BrowserWebContentsDelegate::From(this)->IsFullscreenForTabOrPending(
+      web_contents);
 }
 
 content::FullscreenState Browser::GetFullscreenState(
     const WebContents* web_contents) const {
-  return browser_window_features()
-      ->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->GetFullscreenState(web_contents);
+  return BrowserWebContentsDelegate::From(this)->GetFullscreenState(
+      web_contents);
 }
 
 blink::mojom::DisplayMode Browser::GetDisplayMode(
     const WebContents* web_contents) {
-  if (window_->IsFullscreen()) {
-    return blink::mojom::DisplayMode::kFullscreen;
-  }
-
-  if (is_type_picture_in_picture()) {
-    return blink::mojom::DisplayMode::kPictureInPicture;
-  }
-
-  if (GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      is_type_devtools() || is_type_app_popup()) {
-    auto* const app_browser_controller =
-        web_app::AppBrowserController::From(this);
-    if (app_browser_controller &&
-        app_browser_controller->HasMinimalUiButtons()) {
-      return blink::mojom::DisplayMode::kMinimalUi;
-    }
-
-    if (app_browser_controller &&
-        app_browser_controller->AppUsesWindowControlsOverlay() &&
-        !web_contents->GetWindowsControlsOverlayRect().IsEmpty()) {
-      return blink::mojom::DisplayMode::kWindowControlsOverlay;
-    }
-
-    if (app_browser_controller && app_browser_controller->AppUsesTabbed()) {
-      return blink::mojom::DisplayMode::kTabbed;
-    }
-
-    if (app_browser_controller &&
-        app_browser_controller->AppUsesUnframedMode() &&
-        window_->IsUnframedModeEnabled()) {
-      return blink::mojom::DisplayMode::kUnframed;
-    }
-
-    return blink::mojom::DisplayMode::kStandalone;
-  }
-
-  return blink::mojom::DisplayMode::kBrowser;
+  return BrowserWebContentsDelegate::From(this)->GetDisplayMode(web_contents);
 }
 
 blink::mojom::ApplicationContext Browser::GetApplicationContext(
@@ -1579,17 +1527,8 @@ blink::mojom::ApplicationContext Browser::GetApplicationContext(
 
 blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
     content::RenderFrameHost* requesting_frame) {
-  content::BrowserContext* context = requesting_frame->GetBrowserContext();
-  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(context);
-  const Extension* owner_extension =
-      extensions::ProcessManager::Get(context)->GetExtensionForRenderFrameHost(
-          requesting_frame);
-  if (owner_extension &&
-      process_map->IsPrivilegedExtensionProcess(
-          *owner_extension, requesting_frame->GetProcess()->GetID())) {
-    return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
-  }
-  return blink::ProtocolHandlerSecurityLevel::kStrict;
+  return BrowserWebContentsDelegate::From(this)
+      ->GetProtocolHandlerSecurityLevel(requesting_frame);
 }
 
 void Browser::RegisterProtocolHandler(
@@ -1597,69 +1536,8 @@ void Browser::RegisterProtocolHandler(
     const std::string& protocol,
     const GURL& url,
     bool user_gesture) {
-  content::BrowserContext* context = requesting_frame->GetBrowserContext();
-  if (context->IsOffTheRecord()) {
-    return;
-  }
-
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(requesting_frame);
-
-  ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
-      protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
-
-  // The parameters's normalization process defined in the spec has been already
-  // applied in the WebContentImpl class, so at this point it shouldn't be
-  // possible to create an invalid handler.
-  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
-  DCHECK(handler.IsValid());
-
-  custom_handlers::ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
-  if (registry->SilentlyHandleRegisterHandlerRequest(handler)) {
-    return;
-  }
-
-  // TODO(carlscab): This should probably be FromFrame() once it becomes
-  // PageSpecificContentSettingsDelegate
-  auto* page_content_settings_delegate =
-      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
-  if (!user_gesture && window_) {
-    page_content_settings_delegate->set_pending_protocol_handler(handler);
-    page_content_settings_delegate->set_previous_protocol_handler(
-        registry->GetHandlerFor(handler.protocol()));
-    window_->GetLocationBar()->UpdateContentSettingsIcons();
-    return;
-  }
-
-  // Make sure content-setting icon is turned off in case the page does
-  // ungestured and gestured RPH calls.
-  if (window_) {
-    page_content_settings_delegate->ClearPendingProtocolHandler();
-    window_->GetLocationBar()->UpdateContentSettingsIcons();
-  }
-
-  if (registry->registration_mode() ==
-      custom_handlers::RphRegistrationMode::kAutoAccept) {
-    registry->OnAcceptRegisterProtocolHandler(handler);
-    return;
-  }
-
-  permissions::PermissionRequestManager* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-  if (permission_request_manager) {
-    auto blocker = web_contents->ForSecurityDropFullscreen(
-        /*display_id=*/display::kInvalidDisplayId);
-    if (!blocker) {
-      return;
-    }
-
-    permission_request_manager->AddRequest(
-        requesting_frame,
-        std::make_unique<
-            custom_handlers::RegisterProtocolHandlerPermissionRequest>(
-            registry, handler, url, std::move(*blocker)));
-  }
+  BrowserWebContentsDelegate::From(this)->RegisterProtocolHandler(
+      requesting_frame, protocol, url, user_gesture);
 }
 
 void Browser::UnregisterProtocolHandler(
