@@ -101,8 +101,9 @@ not set up on your machine.
 ### Android
 
 On Android, the tests are built and run via the `android_browsertests` target.
-Note that due to the deployment of a mock OpenXR runtime and writing a JSON file
-to: `'/product/etc/openxr/1/active_runtime.json'`, tests must be run on a rooted
+Note that due to the deployment of the OpenXR mock trampoline shared library
+(`libopenxr_mock.so`) and writing a JSON file to:
+`'/product/etc/openxr/1/active_runtime.json'`, tests must be run on a rooted
 device. Because this is a large target, it is recommended to append
 `--gtest_filter=*WebXr*` when running the tests.
 

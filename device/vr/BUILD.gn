@@ -428,7 +428,6 @@ if (enable_openxr) {
         "openxr/test/fake_openxr_impl_api.h",
         "openxr/test/openxr_mock_helper.cc",
         "openxr/test/openxr_mock_helper.h",
-        "openxr/test/openxr_negotiate.h",
         "openxr/test/openxr_test_helper.cc",
         "openxr/test/openxr_test_helper.h",
       ]

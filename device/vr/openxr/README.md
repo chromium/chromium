@@ -106,3 +106,30 @@ extension is enabled when available and providing a means to create your new
 class as described in [OpenXR Extensions](#openxr-extensions).
 
 [xr_device_service]: https://source.chromium.org/chromium/chromium/src/+/main:content/services/isolated_xr_device/README.md
+
+## Testing
+
+OpenXR testing is handled by a fake implementation of the API found in
+[`//device/vr/openxr/test/fake_openxr_impl_api.cc`](test/fake_openxr_impl_api.cc)
+along with [`OpenXrTestHelper`](test/openxr_test_helper.h). Typically, an OpenXR
+runtime is a separate shared library loaded by the OpenXR loader. To simplify
+testing and avoid DLL boundary issues (such as duplicate `//base` singletons or
+data marshalling), we embed the fake OpenXR implementation directly into the
+target process (the test binary/browser process on Android, or the isolated XR
+device service on Windows).
+
+To intercept calls from the OpenXR loader, we compile a lightweight trampoline shared
+library in the [`//device/vr:openxr_mock`](../../BUILD.gn) target (`libopenxr_mock.so` on
+Android or `openxr_mock.dll` on Windows). Runtime configuration JSON files
+([`openxr_android.json`](test/openxr_android.json) and [`openxr_win.json`](test/openxr_win.json))
+are deployed during test setup to direct the OpenXR loader to use this trampoline library as the
+active runtime.
+
+During test initialization, the main process passes its OpenXR function dispatch table to this
+trampoline via `SetMockOpenXrDispatchTable()`. When the OpenXR loader negotiates the runtime
+interface, the trampoline reverse-registers and forwards all subsequent OpenXR calls back to the
+embedded implementation in the main process.
+
+For more details on writing and running XR browser tests, see the
+[XR Browser Tests documentation](../../../chrome/browser/vr/test/xr_browser_tests.md)
+and [XR Browser Test Details](../../../chrome/browser/vr/test/xr_browser_test_details.md).

@@ -10,7 +10,6 @@
 #include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_mock_helper.h"
-#include "device/vr/openxr/test/openxr_negotiate.h"
 #include "device/vr/openxr/test/openxr_test_helper.h"
 
 #if BUILDFLAG(IS_WIN)

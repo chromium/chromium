@@ -24,14 +24,11 @@ overview and links to the various components.
 
 ## Type Complexity
 
-While WebXR *does* have multiple potential backends, these types are only used
-for the `xr_browser_tests` and `android_browsertests`, which support the OpenXR
-runtime. In order to test the OpenXR runtime, we build a mock version of that
-runtime, which is in fact its own independent shared library. Its test
-architecture is thus such that type data is pushed into it across a library
-boundary, and then queried via the OpenXR APIs. In order to prevent allocation
-errors with tests, all types that are pushed into it need to be simple types
-without complex destructors. In order to ease the writing of tests, all values
-returned over the mojom interfaces here **SHOULD** have their own typemap, which
-**SHOULD NOT** have a complex destructor, thus allowing this type to be passed
-to and from the `//device/vr/test/test_hook.h` interface directly.
+While WebXR *does* have multiple potential backends, these test interfaces are only
+used for `xr_browser_tests` and `android_browsertests`, which test the OpenXR runtime.
+In order to test OpenXR, we build a fake OpenXR implementation (`openxr_test_helper`)
+that is embedded directly into the target process (the browser test process on
+Android, or the sandboxed `isolated_xr_device` utility process on Windows). Due to
+requirements of how the `third_party` OpenXR loader works, a lightweight trampoline
+shared library (`openxr_mock`) redirects OpenXR loader calls back to this embedded
+implementation via a function dispatch table.
