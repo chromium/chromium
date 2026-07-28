@@ -81,6 +81,9 @@ class ProcessorEntityMetadata {
   // Increments the sequence number of the entity, indicating a local change.
   // This will also update the base_specifics_hash if the entity was not already
   // unsynced.
+  // TODO(crbug.com/40823197): Consider replacing IncrementSequenceNumber() with
+  // a higher-level domain API (e.g. MarkForRecommit()) to avoid exposing
+  // low-level sequence number counter semantics to callers.
   void IncrementSequenceNumber();
 
   // Returns true if the entity's specifics hash (sync-ed or unsynced) matches
@@ -105,9 +108,6 @@ class ProcessorEntityMetadata {
   // The entity must not be deleted.
   bool MatchesFaviconHash(const std::string& favicon_png_bytes) const;
 
-  // Updates the specifics hash in the metadata based on `specifics`.
-  void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
-
   // Records that a remote update was ignored. Updates server_id and
   // server_version.
   void RecordIgnoredRemoteUpdate(const UpdateResponseData& update);
@@ -128,16 +128,6 @@ class ProcessorEntityMetadata {
   // Records a commit response.
   void RecordCommitResponse(const CommitResponseData& data);
 
-  // Updates the metadata fields (sequence_number, specifics_hash,
-  // modification_time, is_deleted, unique_position) for a local update.
-  // Used by bookmarks to perform custom local updates.
-  // TODO(crbug.com/40823197): Consider removing this method and having
-  // bookmarks use RecordLocalUpdate() instead.
-  void UpdateMetadataForLocalUpdate(
-      const sync_pb::EntitySpecifics& specifics,
-      base::Time modification_time,
-      std::optional<sync_pb::UniquePosition> unique_position);
-
   // Performs a local update based on the provided `data`, updating metadata
   // fields.
   void RecordLocalUpdate(
@@ -148,14 +138,11 @@ class ProcessorEntityMetadata {
   // Performs a local deletion, updating metadata fields.
   void RecordLocalDeletion(const DeletionOrigin& origin);
 
-  // Sets the possibly trimmed base specifics.
-  void SetPossiblyTrimmedBaseSpecifics(sync_pb::EntitySpecifics specifics);
-
-  // Sets the creation time.
-  void SetCreationTime(base::Time time);
-
  private:
   explicit ProcessorEntityMetadata(sync_pb::EntityMetadata metadata);
+
+  // Updates the specifics hash in the metadata based on `specifics`.
+  void UpdateSpecificsHash(const sync_pb::EntitySpecifics& specifics);
 
   sync_pb::EntityMetadata metadata_;
 };

@@ -134,13 +134,29 @@ TEST(ProcessorEntityMetadataTest,
   ProcessorEntityMetadata metadata = ProcessorEntityMetadata::CreateNew(
       ClientTagHash::FromHashed("hash"), "server_id", base::Time::Now());
 
-  sync_pb::EntitySpecifics specifics;
-  specifics.mutable_preference()->set_name("name");
-  metadata.UpdateSpecificsHash(specifics);
+  UpdateResponseData update;
+  update.entity.id = "server_id";
+  update.entity.specifics.mutable_preference()->set_name("name");
+  update.response_version = 1;
+  metadata.RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
+                                      /*unique_position=*/std::nullopt);
+  CommitResponseData response1;
+  response1.id = "server_id";
+  response1.sequence_number = metadata.proto().sequence_number();
+  response1.response_version = 1;
+  response1.specifics_hash = metadata.proto().specifics_hash();
+  metadata.RecordCommitResponse(response1);
+
   const std::string initial_hash = metadata.proto().specifics_hash();
   ASSERT_FALSE(initial_hash.empty());
 
-  metadata.IncrementSequenceNumber();
+  // First local update (becomes unsynced, base_specifics_hash set to
+  // initial_hash).
+  EntityData local_data;
+  local_data.specifics.mutable_preference()->set_name("new_name");
+  metadata.RecordLocalUpdate(local_data, /*trimmed_specifics=*/{},
+                             /*unique_position=*/std::nullopt);
+
   EXPECT_EQ(metadata.proto().base_specifics_hash(), initial_hash);
 }
 
@@ -149,22 +165,35 @@ TEST(ProcessorEntityMetadataTest,
   ProcessorEntityMetadata metadata = ProcessorEntityMetadata::CreateNew(
       ClientTagHash::FromHashed("hash"), "server_id", base::Time::Now());
 
-  sync_pb::EntitySpecifics specifics1;
-  specifics1.mutable_preference()->set_name("name1");
-  metadata.UpdateSpecificsHash(specifics1);
-  const std::string initial_hash = metadata.proto().specifics_hash();
+  UpdateResponseData update;
+  update.entity.id = "server_id";
+  update.entity.specifics.mutable_preference()->set_name("name1");
+  update.response_version = 1;
+  metadata.RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
+                                      /*unique_position=*/std::nullopt);
 
-  // First increment (becomes unsynced).
-  metadata.IncrementSequenceNumber();
+  CommitResponseData response2;
+  response2.id = "server_id";
+  response2.sequence_number = metadata.proto().sequence_number();
+  response2.response_version = 1;
+  response2.specifics_hash = metadata.proto().specifics_hash();
+  metadata.RecordCommitResponse(response2);
+
+  const std::string initial_hash = metadata.proto().specifics_hash();
+  ASSERT_FALSE(initial_hash.empty());
+
+  // First local update (becomes unsynced).
+  EntityData local_data1;
+  local_data1.specifics.mutable_preference()->set_name("name2");
+  metadata.RecordLocalUpdate(local_data1, /*trimmed_specifics=*/{},
+                             /*unique_position=*/std::nullopt);
   ASSERT_EQ(metadata.proto().base_specifics_hash(), initial_hash);
 
-  // Set new specifics hash.
-  sync_pb::EntitySpecifics specifics2;
-  specifics2.mutable_preference()->set_name("name2");
-  metadata.UpdateSpecificsHash(specifics2);
-
-  // Second increment (already unsynced).
-  metadata.IncrementSequenceNumber();
+  // Second local update (already unsynced).
+  EntityData local_data2;
+  local_data2.specifics.mutable_preference()->set_name("name3");
+  metadata.RecordLocalUpdate(local_data2, /*trimmed_specifics=*/{},
+                             /*unique_position=*/std::nullopt);
   EXPECT_EQ(metadata.proto().base_specifics_hash(), initial_hash);
 }
 

@@ -10,6 +10,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -114,8 +115,11 @@ void SyncedBookmarkTrackerEntity::RecordLocalUpdate(
     const sync_pb::EntitySpecifics& specifics,
     base::Time modification_time) {
   CHECK(!IsDeleted());
-  metadata_.UpdateMetadataForLocalUpdate(
-      specifics, modification_time, specifics.bookmark().unique_position());
+  syncer::EntityData data;
+  data.specifics = specifics;
+  data.modification_time = modification_time;
+  metadata_.RecordLocalUpdate(data, /*trimmed_specifics=*/{},
+                              specifics.bookmark().unique_position());
 }
 
 void SyncedBookmarkTrackerEntity::RecordCommitResponse(
@@ -141,8 +145,12 @@ void SyncedBookmarkTrackerEntity::UndeleteTombstoneForBookmarkNode(
   DCHECK(node);
   DCHECK(IsDeleted());
   bookmark_node_ = node;
-  metadata_.UpdateMetadataForLocalUpdate(
-      specifics, modification_time, specifics.bookmark().unique_position());
+
+  syncer::EntityData data;
+  data.specifics = specifics;
+  data.modification_time = modification_time;
+  metadata_.RecordLocalUpdate(data, /*trimmed_specifics=*/{},
+                              specifics.bookmark().unique_position());
 }
 
 }  // namespace sync_bookmarks

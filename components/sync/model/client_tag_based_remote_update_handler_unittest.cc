@@ -222,7 +222,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteCreation) {
   EXPECT_TRUE(metadata.has_creation_time());
   EXPECT_TRUE(metadata.has_modification_time());
   EXPECT_TRUE(metadata.has_specifics_hash());
-  EXPECT_TRUE(metadata.has_possibly_trimmed_base_specifics());
+  EXPECT_FALSE(metadata.has_possibly_trimmed_base_specifics());
 }
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
@@ -318,7 +318,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   EXPECT_EQ(0, metadata.sequence_number());
   EXPECT_EQ(0, metadata.acked_sequence_number());
   EXPECT_EQ(2, metadata.server_version());
-  EXPECT_TRUE(metadata.has_possibly_trimmed_base_specifics());
+  EXPECT_FALSE(metadata.has_possibly_trimmed_base_specifics());
 }
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteDeletion) {
