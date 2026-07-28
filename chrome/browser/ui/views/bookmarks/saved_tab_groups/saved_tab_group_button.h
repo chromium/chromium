@@ -96,8 +96,9 @@ class SavedTabGroupButton : public views::MenuButton,
   const base::Uuid guid() const { return guid_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, AccessibleName);
-  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, TooltipText);
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarComponentBrowserTest,
+                           AccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarComponentBrowserTest, TooltipText);
 
   std::u16string GetAccessibleNameForButton() const;
   void SetTextProperties(const SavedTabGroup& group);
