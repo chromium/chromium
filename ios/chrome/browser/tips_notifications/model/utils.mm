@@ -64,21 +64,14 @@ int SetupListBodyAlternativeID() {
 // Returns the title and the body text ids for the default browser promo
 // notification.
 ContentIDs DefaultBrowserContentIDsForAlternative(
-    TipsNotificationsAlternativeStringVersion alternative) {
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT1_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT2_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT1_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT3_BODY};
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
+    bool isAlternativeStringEnabled) {
+  if (isAlternativeStringEnabled) {
+    return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_ALT1_TITLE,
+            IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
   }
+
+  return {IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_TITLE,
+          IDS_IOS_NOTIFICATIONS_TIPS_DEFAULT_BROWSER_BODY};
 }
 
 // Returns the title and the body text ids for the what's new promo
@@ -222,9 +215,11 @@ ContentIDs SafeBrowsingContentIDsForAlternative(
 ContentIDs ContentIDsForType(TipsNotificationType type) {
   TipsNotificationsAlternativeStringVersion alternative =
       GetTipsNotificationsAlternativeStringVersion();
+  bool isAlternativeStringEnabled =
+      IsTipsNotificationsAlternativeStringsEnabled();
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
-      return DefaultBrowserContentIDsForAlternative(alternative);
+      return DefaultBrowserContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kWhatsNew:
       return WhatsNewContentIDsForAlternative(alternative);
     case TipsNotificationType::kSignin:
