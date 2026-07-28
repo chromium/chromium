@@ -935,9 +935,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Tracks how many instances of OnWndProc are on the stack.
   int in_wnd_proc_depth_ = 0;
 
-  // Returns true if the message handler has been destroyed, and CHECKs that
-  // kDeferHWNDMessageHandlerDestruction is not enabled in that case.
-  static bool IsDestroyed(const base::WeakPtr<HWNDMessageHandler>& ref);
+  // Returns true if the message handler is pending deletion.
+  bool IsDestroyed() const;
 
   // The WeakPtrFactories below (one inside the
   // CR_MSG_MAP_CLASS_DECLARATIONS macro and autohide_factory_) must
