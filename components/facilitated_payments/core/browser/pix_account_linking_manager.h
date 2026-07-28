@@ -62,6 +62,12 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
 
   void Reset();
 
+  // Called when the user returns to Chrome after paying in bank app.
+  void OnUserReturnedToChrome();
+
+  // Called after the predefined wait time following user return to Chrome.
+  void OnPostReturnDelayPassed();
+
   // Sets the UI event listener, sets the internal UI state, and triggers
   // showing the Pix account linking prompt if the user is eligible.
   void ShowPixAccountLinkingPromptIfEligible();
@@ -75,6 +81,12 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
 
   // Stores the client token received from FetchClientToken().
   std::vector<uint8_t> client_token_;
+
+  // Track if the user has returned to Chrome tab from the bank app.
+  bool has_user_returned_to_chrome_ = false;
+
+  // Track if the delay after returning to Chrome has elapsed.
+  bool has_post_return_delay_passed_ = false;
 
   // Optional bool to indicate whether the user is eligible for Pix account
   // linking based on the response from payments backend. This field is set to
