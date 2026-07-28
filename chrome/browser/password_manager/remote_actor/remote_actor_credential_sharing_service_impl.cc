@@ -6,11 +6,12 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
 
@@ -34,8 +35,39 @@ RemoteActorCredentialSharingServiceImpl::
 void RemoteActorCredentialSharingServiceImpl::SharePassword(
     const ShareParameters& params,
     SharePasswordCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false));
+  CHECK(!callback.is_null());
+
+  if (params.agent_oauth_client_id.empty() || params.web_origin.empty() ||
+      params.password_client_tag_hash.empty() ||
+      params.obfuscated_gaia_id.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  credential_store_->UpdateCredential(
+      params.obfuscated_gaia_id, params.web_origin,
+      params.password_client_tag_hash, params.username, params.password,
+      params.time_to_live,
+      base::BindOnce(
+          &RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted,
+          base::Unretained(this), params, std::move(callback)));
+}
+
+void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
+    const ShareParameters& params,
+    SharePasswordCallback callback,
+    bool success) {
+  if (!success) {
+    std::move(callback).Run(false);
+    return;
+  }
+  RemoteActorCredentialPermissionClient::PasswordPermission permission;
+  permission.agent_oauth_client_id = params.agent_oauth_client_id;
+  permission.web_origin = params.web_origin;
+  permission.password_client_tag_hash = params.password_client_tag_hash;
+
+  permission_client_->GrantPasswordPermission(permission, std::move(callback));
 }
 
 }  // namespace password_manager
