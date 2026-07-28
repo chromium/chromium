@@ -23,6 +23,10 @@ _SKIP_TARGETS = {
     'container:raw_hash_set_test':
     'raw_hash_set_test uses typeid(), i.e., relies on RTTI.',
     'debugging:demangle_test': 'Disabled because this test relies on RTTI',
+    'flags:commandlineflag_test':
+    'Conflicts at link_time with "parse_test" because defines the same flags.',
+    'flags:reflection_test':
+    'Conflicts at link time with "flag_test" because defines the same flags.',
     'profiling:sample_recorder_test':
     'TODO: Re-enable once the issue with gmock activating generic gtest printers hitting issues with -Wmicrosoft-cast.',
     'random/internal:nanobenchmark': 'Only used for benchmarking',
@@ -35,6 +39,18 @@ _SKIP_TARGETS = {
     'any_span_test is not ported because relies on RTTI',
 }
 
+# Extra output added just before the target.
+_ADD_PREFIX = {
+    'flags:config':
+    '''# Since absl/flags are only used by some test binaries (e.g. in WebRTC),
+# there is no need to strip flags from mobile platforms binaries.
+# This does not affect Chromium.
+config("absl_flags_config") {
+  defines = [ "ABSL_FLAGS_STRIP_NAMES=0" ]
+ }
+ ''',
+}
+
 # Extra build rules added at the end. The reason they are needed vary per target.
 _ADD_CONTENT = {
     'cleanup:cleanup_internal':
@@ -42,6 +58,8 @@ _ADD_CONTENT = {
     'container:hashtablez_sampler_test': 'if (is_win) { sources = [] }',
     'container:test_allocator':
     'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
+    'flags:config': 'public_configs = [ ":absl_flags_config" ]',
+    'flags:parse_test': 'if (is_ios) { sources = [] }',
     'random:uniform_real_distribution_test': 'if (is_ios) { sources = [] }',
     'random/internal:seed_material': 'if (is_win) {  libs = [ "bcrypt.lib" ]}',
 }
@@ -209,6 +227,7 @@ class _Converter:
                 continue
 
             # Start writing the output.
+            out.append(_ADD_PREFIX.get(target_name, ''))
             out.append(f'{rule}("{name}") {{')
 
             if bt.get('testonly'):
@@ -300,6 +319,7 @@ def convert_all(root_dir):
             'container',
             'crc',
             'debugging',
+            'flags',
             'functional',
             'hash',
             'memory',
