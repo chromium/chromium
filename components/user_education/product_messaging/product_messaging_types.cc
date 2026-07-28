@@ -29,10 +29,16 @@ std::string ProductMessageKey::GetName() const {
 }
 
 std::string ProductMessageKey::ToString() const {
-  static constexpr std::array<
-      std::string_view, static_cast<size_t>(ProductMessageType::kMaxValue) + 1U>
-      kTypeNames{"[none]", "LowPriorityIph", "HighPriorityIph",
-                 "LegalOrComplianceNotice"};
+  static constexpr auto kTypeNames = std::to_array<std::string_view>({
+      "[none]",
+      "LowPriorityForTesting",
+      "LowPriorityIph",
+      "HighPriorityIph",
+      "LegalOrComplianceNotice",
+      "HighPriorityForTesting",
+  });
+  static_assert(kTypeNames.size() ==
+                static_cast<size_t>(ProductMessageType::kMaxValue) + 1U);
   std::ostringstream oss;
   oss << "ProductMessageKey{ type: "
       << kTypeNames.at(static_cast<size_t>(type_)) << " id: " << id_.GetName()
