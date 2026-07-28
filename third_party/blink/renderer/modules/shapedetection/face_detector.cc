@@ -128,9 +128,8 @@ void FaceDetector::OnDetectFaces(
     }
 
     DetectedFace* detected_face = DetectedFace::Create();
-    detected_face->setBoundingBox(DOMRectReadOnly::Create(
-        face->bounding_box.x(), face->bounding_box.y(),
-        face->bounding_box.width(), face->bounding_box.height()));
+    detected_face->setBoundingBox(
+        DOMRectReadOnly::FromRectF(face->bounding_box));
     detected_face->setLandmarks(landmarks);
     detected_faces.push_back(detected_face);
   }

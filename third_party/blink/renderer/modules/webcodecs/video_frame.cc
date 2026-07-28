@@ -1160,9 +1160,8 @@ DOMRectReadOnly* VideoFrame::codedRect() {
     return nullptr;
 
   if (!coded_rect_) {
-    coded_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
-        0, 0, local_frame->coded_size().width(),
-        local_frame->coded_size().height());
+    coded_rect_ =
+        DOMRectReadOnly::FromRect(gfx::Rect(local_frame->coded_size()));
   }
   return coded_rect_.Get();
 }
@@ -1173,10 +1172,7 @@ DOMRectReadOnly* VideoFrame::visibleRect() {
     return nullptr;
 
   if (!visible_rect_) {
-    visible_rect_ = MakeGarbageCollected<DOMRectReadOnly>(
-        local_frame->visible_rect().x(), local_frame->visible_rect().y(),
-        local_frame->visible_rect().width(),
-        local_frame->visible_rect().height());
+    visible_rect_ = DOMRectReadOnly::FromRect(local_frame->visible_rect());
   }
   return visible_rect_.Get();
 }

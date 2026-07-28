@@ -26,6 +26,7 @@ class CORE_EXPORT DOMRect final : public DOMRectReadOnly {
                          double y = 0,
                          double width = 0,
                          double height = 0);
+  static DOMRect* FromRect(const gfx::Rect&);
   static DOMRect* FromRectF(const gfx::RectF&);
   static DOMRect* fromRect(const DOMRectInit*);
 

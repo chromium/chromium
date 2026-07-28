@@ -94,8 +94,7 @@ void ResizeObserverEntry::PopulateFromSVGChild(
   if (!svg_graphics_element)
     return;
   const gfx::SizeF bounding_box_size = svg_graphics_element->GetBBox().size();
-  content_rect_ =
-      DOMRectReadOnly::FromRectF(gfx::RectF(gfx::PointF(), bounding_box_size));
+  content_rect_ = DOMRectReadOnly::FromRectF(gfx::RectF(bounding_box_size));
   ResizeObserverSize* size = ResizeObserverSize::Create(
       bounding_box_size.width(), bounding_box_size.height());
   content_box_size.push_back(size);

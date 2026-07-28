@@ -16,6 +16,11 @@ DOMRect* DOMRect::Create(double x, double y, double width, double height) {
   return MakeGarbageCollected<DOMRect>(x, y, width, height);
 }
 
+DOMRect* DOMRect::FromRect(const gfx::Rect& rect) {
+  return MakeGarbageCollected<DOMRect>(rect.x(), rect.y(), rect.width(),
+                                       rect.height());
+}
+
 DOMRect* DOMRect::FromRectF(const gfx::RectF& rect) {
   return MakeGarbageCollected<DOMRect>(rect.x(), rect.y(), rect.width(),
                                        rect.height());

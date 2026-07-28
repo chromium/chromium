@@ -129,7 +129,7 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
       (use_virtual_keyboard_api_fixes && keyboard_rect.IsEmpty())
           ? gfx::Rect()
           : keyboard_rect;
-  bounding_rect_ = DOMRect::FromRectF(gfx::RectF(visible_keyboard_rect));
+  bounding_rect_ = DOMRect::FromRect(visible_keyboard_rect);
 
   int keyboard_inset_right;
   int keyboard_inset_bottom;

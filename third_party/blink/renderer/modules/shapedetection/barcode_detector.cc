@@ -194,9 +194,8 @@ void BarcodeDetector::OnDetectBarcodes(
 
     DetectedBarcode* detected_barcode = DetectedBarcode::Create();
     detected_barcode->setRawValue(barcode->raw_value);
-    detected_barcode->setBoundingBox(DOMRectReadOnly::Create(
-        barcode->bounding_box.x(), barcode->bounding_box.y(),
-        barcode->bounding_box.width(), barcode->bounding_box.height()));
+    detected_barcode->setBoundingBox(
+        DOMRectReadOnly::FromRectF(barcode->bounding_box));
     detected_barcode->setFormat(BarcodeFormatToEnum(barcode->format));
     detected_barcode->setCornerPoints(corner_points);
     detected_barcodes.push_back(detected_barcode);

@@ -84,9 +84,8 @@ void TextDetector::OnDetectText(
 
     DetectedText* detected_text = DetectedText::Create();
     detected_text->setRawValue(text->raw_value);
-    detected_text->setBoundingBox(DOMRectReadOnly::Create(
-        text->bounding_box.x(), text->bounding_box.y(),
-        text->bounding_box.width(), text->bounding_box.height()));
+    detected_text->setBoundingBox(
+        DOMRectReadOnly::FromRectF(text->bounding_box));
     detected_text->setCornerPoints(corner_points);
     results.push_back(detected_text);
   }

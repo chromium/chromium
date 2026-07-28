@@ -398,10 +398,8 @@ const HeapVector<Member<HTMLElement>>& EditContext::attachedElements() {
 const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
   HeapVector<Member<DOMRect>> dom_rects;
   std::ranges::transform(
-      character_bounds_, std::back_inserter(dom_rects), [](const auto& bound) {
-        return DOMRect::Create(bound.x(), bound.y(), bound.width(),
-                               bound.height());
-      });
+      character_bounds_, std::back_inserter(dom_rects),
+      [](const gfx::Rect& bound) { return DOMRect::FromRect(bound); });
   return dom_rects;
 }
 
