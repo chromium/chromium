@@ -428,9 +428,6 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     const ImageEncodeOptions* options,
     ExceptionState& exception_state) {
   DCHECK(IsOffscreenCanvas());
-  String object_name = "OffscreenCanvas";
-  std::stringstream error_msg;
-
   if (is_neutered_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "OffscreenCanvas object is detached.");
@@ -445,8 +442,8 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   }
 
   if (!OriginClean()) {
-    error_msg << "Tainted " << object_name << " may not be exported.";
-    exception_state.ThrowSecurityError(error_msg.str().c_str());
+    exception_state.ThrowSecurityError(
+        "A tainted OffscreenCanvas may not be exported.");
     return EmptyPromise();
   }
 
@@ -458,16 +455,16 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   }
 
   if (!IsPaintable() || Size().IsEmpty()) {
-    error_msg << "The size of " << object_name << " is zero.";
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      error_msg.str().c_str());
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        "The size of the OffscreenCanvas is zero.");
     return EmptyPromise();
   }
 
   if (!context_) {
-    error_msg << object_name << " has no rendering context.";
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      error_msg.str().c_str());
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The OffscreenCanvas has no rendering context.");
     return EmptyPromise();
   }
 
