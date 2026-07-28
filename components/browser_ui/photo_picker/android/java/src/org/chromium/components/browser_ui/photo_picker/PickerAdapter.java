@@ -10,35 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** A data adapter for the Photo Picker. */
 @NullMarked
 public class PickerAdapter extends Adapter<ViewHolder> {
-    // The possible types of actions required during decoding.
-    @IntDef({DecodeActions.NO_ACTION, DecodeActions.FROM_CACHE, DecodeActions.DECODE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface DecodeActions {
-        int NO_ACTION = 0; // Gallery/Camera tile: No action.
-        int FROM_CACHE = 1; // Image already decoded.
-        int DECODE = 2; // Image needed to be decoded.
-    }
-
     // The category view to use to show the images.
     private final PickerCategoryView mCategoryView;
-
-    // How many times the (high-res) cache was useful.
-    @DecodeActions private int mCacheHits;
-
-    // How many times a decoding was requested.
-    @DecodeActions private int mDecodeRequests;
 
     /**
      * The PickerAdapter constructor.
@@ -65,12 +46,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder instanceof PickerBitmapViewHolder) {
             PickerBitmapViewHolder myHolder = (PickerBitmapViewHolder) holder;
-            @DecodeActions int result = myHolder.displayItem(mCategoryView, position);
-            if (result == DecodeActions.FROM_CACHE) {
-                mCacheHits++;
-            } else if (result == DecodeActions.DECODE) {
-                mDecodeRequests++;
-            }
+            myHolder.displayItem(mCategoryView, position);
         }
     }
 
@@ -78,15 +54,5 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     public int getItemCount() {
         assumeNonNull(mCategoryView.getPickerBitmaps());
         return mCategoryView.getPickerBitmaps().size();
-    }
-
-    /** Returns the number of times the cache supplied a bitmap. */
-    public int getCacheHitCount() {
-        return mCacheHits;
-    }
-
-    /** Returns the number of decode requests (cache-misses). */
-    public int getDecodeRequestCount() {
-        return mDecodeRequests;
     }
 }

@@ -1246,18 +1246,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ERROR_NO_PADDING_WITH_NEW_INSETS"/>
 </enum>
 
-<enum name="ExifOrientation">
-  <int value="0" label="Normal"/>
-  <int value="1" label="Rotate 90"/>
-  <int value="2" label="Rotate 190"/>
-  <int value="3" label="Rotate 270"/>
-  <int value="4" label="Transpose"/>
-  <int value="5" label="Transverse"/>
-  <int value="6" label="Flip Horizontally"/>
-  <int value="7" label="Flip Vertically"/>
-  <int value="8" label="Undefined"/>
-</enum>
-
 <enum name="GlicPromoBottomSheetDismissReason">
   <int value="0" label="Accept"/>
   <int value="1" label="Reject"/>

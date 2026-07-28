@@ -124,7 +124,6 @@ public class ImageDecoderTest {
         Assert.assertFalse("Expected decode to fail", bundle.getBoolean(ImageDecoder.KEY_SUCCESS));
         Assert.assertEquals("path", bundle.getString(ImageDecoder.KEY_FILE_PATH));
         Assert.assertEquals(null, bundle.getParcelable(ImageDecoder.KEY_IMAGE_BITMAP));
-        Assert.assertEquals(0, bundle.getLong(ImageDecoder.KEY_DECODE_TIME));
     }
 
     @Test
@@ -147,10 +146,6 @@ public class ImageDecoderTest {
         Assert.assertTrue(
                 "Expecting success being returned", bundle.getBoolean(ImageDecoder.KEY_SUCCESS));
         Assert.assertEquals(file.getPath(), bundle.getString(ImageDecoder.KEY_FILE_PATH));
-        Assert.assertFalse(
-                "Decoding should take a non-zero amount of time",
-                0 == bundle.getLong(ImageDecoder.KEY_DECODE_TIME));
-
         Bitmap decodedBitmap = bundle.getParcelable(ImageDecoder.KEY_IMAGE_BITMAP);
         Assert.assertFalse("Decoded bitmap should not be null", null == decodedBitmap);
         Assert.assertEquals(50, decodedBitmap.getWidth());

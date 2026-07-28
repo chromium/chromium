@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -26,13 +25,11 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -53,27 +50,6 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
 
     // A content resolver for providing file descriptors for the images.
     private final ContentResolver mContentResolver;
-
-    // The number of successful image decodes (not video), per batch.
-    private int mSuccessfulImageDecodes;
-
-    // The number of runtime failures during image decoding (not video), per batch.
-    private int mFailedImageDecodesRuntime;
-
-    // The number of out of memory failures during image decoding (not video), per batch.
-    private int mFailedImageDecodesMemory;
-
-    // The number of successful video decodes, per batch.
-    private int mSuccessfulVideoDecodes;
-
-    // The number of file errors during video decoding, per batch.
-    private int mFailedVideoDecodesFile;
-
-    // The number of runtime failures during video decoding, per batch.
-    private int mFailedVideoDecodesRuntime;
-
-    // The number of io failures during video decoding, per batch.
-    private int mFailedVideoDecodesIo;
 
     // A worker task for asynchronously handling video decode requests.
     private @Nullable DecodeVideoTask mWorkerTask;
@@ -179,9 +155,6 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
 
         // The callback to use to communicate the results of the decoding.
         final ImagesDecodedCallback mCallback;
-
-        // The timestamp for when the request was sent for decoding.
-        long mTimestamp;
 
         public DecoderServiceParams(
                 Uri uri,
@@ -303,55 +276,12 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
         assert mProcessingRequest == null;
         mProcessingRequest = getNextPending();
         if (mProcessingRequest != null) {
-            mProcessingRequest.mTimestamp = SystemClock.elapsedRealtime();
             if (mProcessingRequest.mFileType != PickerBitmap.TileTypes.VIDEO) {
                 dispatchDecodeImageRequest(mProcessingRequest);
             } else {
                 dispatchDecodeVideoRequest(mProcessingRequest, mProcessingRequest.mFirstFrame);
             }
             return;
-        }
-
-        int totalImageRequests =
-                mSuccessfulImageDecodes + mFailedImageDecodesRuntime + mFailedImageDecodesMemory;
-        if (totalImageRequests > 0) {
-            // Calculate and transmit UMA for image decoding.
-            int runtimeFailures = 100 * mFailedImageDecodesRuntime / totalImageRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostFailureRuntime", runtimeFailures);
-
-            int memoryFailures = 100 * mFailedImageDecodesMemory / totalImageRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostFailureOutOfMemory", memoryFailures);
-
-            mSuccessfulImageDecodes = 0;
-            mFailedImageDecodesRuntime = 0;
-            mFailedImageDecodesMemory = 0;
-        }
-
-        int totalVideoRequests =
-                mSuccessfulVideoDecodes
-                        + mFailedVideoDecodesFile
-                        + mFailedVideoDecodesRuntime
-                        + mFailedVideoDecodesIo;
-        if (totalVideoRequests > 0) {
-            // Calculate and transmit UMA for video decoding.
-            int videoFileFailures = 100 * mFailedVideoDecodesFile / totalVideoRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostVideoFileError", videoFileFailures);
-
-            int videoRuntimeFailures = 100 * mFailedVideoDecodesRuntime / totalVideoRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostVideoRuntimeError", videoRuntimeFailures);
-
-            int videoIoFailures = 100 * mFailedVideoDecodesIo / totalVideoRequests;
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.PhotoPicker.DecoderHostVideoIoError", videoIoFailures);
-
-            mSuccessfulVideoDecodes = 0;
-            mFailedVideoDecodesFile = 0;
-            mFailedVideoDecodesRuntime = 0;
-            mFailedVideoDecodesIo = 0;
         }
 
         for (DecoderStatusCallback callback : mCallbacks) {
@@ -366,7 +296,6 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
      * @param bitmaps The thumbnails representing the decoded video.
      * @param duration The video duration (a formatted human-readable string, for example "3:00").
      * @param fullWidth Whether the image is using the full width of the screen.
-     * @param decodingResult Whether the decoding was successful.
      * @param ratio The ratio of the first decoded frame in the video (>1.0=portrait,
      *     <1.0=landscape).
      */
@@ -376,27 +305,9 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             @Nullable List<Bitmap> bitmaps,
             @Nullable String duration,
             boolean fullWidth,
-            @DecodeVideoTask.DecodingResult int decodingResult,
             float ratio) {
-        switch (decodingResult) {
-            case DecodeVideoTask.DecodingResult.SUCCESS:
-                if (bitmaps != null && bitmaps.size() > 0) {
-                    mSuccessfulVideoDecodes++;
-                }
-                break;
-            case DecodeVideoTask.DecodingResult.FILE_ERROR:
-                mFailedVideoDecodesFile++;
-                break;
-            case DecodeVideoTask.DecodingResult.RUNTIME_ERROR:
-                mFailedVideoDecodesRuntime++;
-                break;
-            case DecodeVideoTask.DecodingResult.IO_ERROR:
-                mFailedVideoDecodesIo++;
-                break;
-        }
-
         assumeNonNull(uri.getPath());
-        closeRequest(uri.getPath(), true, fullWidth, bitmaps, duration, -1, ratio);
+        closeRequest(uri.getPath(), true, fullWidth, bitmaps, duration, ratio);
     }
 
     @Override
@@ -411,7 +322,6 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                     List<Bitmap> bitmaps = null;
                     Boolean fullWidth = false;
                     float ratio = 0;
-                    long decodeTime = -1;
                     try {
                         // Read the reply back from the service.
                         filePath = payload.getString(ImageDecoder.KEY_FILE_PATH);
@@ -422,15 +332,11 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                                                 payload.getParcelable(ImageDecoder.KEY_IMAGE_BITMAP)
                                         : null;
                         ratio = payload.getFloat(ImageDecoder.KEY_RATIO);
-                        decodeTime = payload.getLong(ImageDecoder.KEY_DECODE_TIME);
                         fullWidth = payload.getBoolean(ImageDecoder.KEY_FULL_WIDTH);
-                        mSuccessfulImageDecodes++;
                         bitmaps = new ArrayList<>(1);
                         bitmaps.add(bitmap);
-                    } catch (RuntimeException e) {
-                        mFailedImageDecodesRuntime++;
-                    } catch (OutOfMemoryError e) {
-                        mFailedImageDecodesMemory++;
+                    } catch (RuntimeException | OutOfMemoryError e) {
+                        // Failed to decode.
                     } finally {
                         assumeNonNull(filePath);
                         closeRequest(
@@ -439,14 +345,13 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
                                 fullWidth,
                                 bitmaps,
                                 /* videoDuration= */ null,
-                                decodeTime,
                                 ratio);
                     }
                 });
     }
 
     private void closeRequestWithError(String filePath) {
-        closeRequest(filePath, false, false, null, null, -1, 1.0f);
+        closeRequest(filePath, false, false, null, null, 1.0f);
     }
 
     /**
@@ -458,7 +363,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
      * @param isVideo True if the request was for video decoding.
      * @param fullWidth Whether the image is using the full width of the screen.
      * @param bitmaps The resulting decoded bitmaps, or null if decoding fails.
-     * @param decodeTime The length of time it took to decode the bitmaps.
+     * @param videoDuration The formatted video duration string, or null for images.
      * @param ratio The ratio of the images (>1.0=portrait, <1.0=landscape).
      */
     private void closeRequest(
@@ -467,52 +372,14 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
             boolean fullWidth,
             @Nullable List<Bitmap> bitmaps,
             @Nullable String videoDuration,
-            long decodeTime,
             float ratio) {
         // If this assert triggers, it means that simultaneous requests have been sent for
         // decoding, which should not happen.
         assumeNonNull(mProcessingRequest);
         assumeNonNull(mProcessingRequest.mUri.getPath());
         assert mProcessingRequest.mUri.getPath().equals(filePath);
-        long endRpcCall = SystemClock.elapsedRealtime();
-        if (isVideo && bitmaps != null) {
-            if (bitmaps.size() > 1) {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.PhotoPicker.RequestProcessTimeAnimation",
-                        endRpcCall - mProcessingRequest.mTimestamp);
-            } else {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.PhotoPicker.RequestProcessTimeThumbnail",
-                        endRpcCall - mProcessingRequest.mTimestamp);
-            }
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "Android.PhotoPicker.RequestProcessTime",
-                    endRpcCall - mProcessingRequest.mTimestamp);
-        }
-
         mProcessingRequest.mCallback.imagesDecodedCallback(
                 filePath, isVideo, fullWidth, bitmaps, videoDuration, ratio);
-
-        if (decodeTime != -1 && bitmaps != null && bitmaps.get(0) != null) {
-            int sizeInKB = bitmaps.get(0).getByteCount() / ConversionUtils.BYTES_PER_KILOBYTE;
-            if (isVideo) {
-                if (bitmaps.size() > 1) {
-                    RecordHistogram.recordTimesHistogram(
-                            "Android.PhotoPicker.VideoDecodeTimeAnimation", decodeTime);
-                } else {
-                    RecordHistogram.recordTimesHistogram(
-                            "Android.PhotoPicker.VideoDecodeTimeThumbnail", decodeTime);
-                    RecordHistogram.recordCustomCountHistogram(
-                            "Android.PhotoPicker.VideoByteCount", sizeInKB, 1, 100000, 50);
-                }
-            } else {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.PhotoPicker.ImageDecodeTime", decodeTime);
-                RecordHistogram.recordCustomCountHistogram(
-                        "Android.PhotoPicker.ImageByteCount", sizeInKB, 1, 100000, 50);
-            }
-        }
         mProcessingRequest = null;
 
         dispatchNextDecodeRequest();

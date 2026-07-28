@@ -13,7 +13,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -178,9 +177,6 @@ public class PickerCategoryView extends RelativeLayout
 
     // A worker task for asynchronously enumerating files off the main thread.
     private @Nullable FileEnumWorkerTask mWorkerTask;
-
-    // The timestamp for the start of the enumeration of files on disk.
-    private long mEnumStartTime;
 
     // Whether the connection to the service has been established.
     private boolean mServiceReady;
@@ -353,14 +349,6 @@ public class PickerCategoryView extends RelativeLayout
         if (files == null) {
             return;
         }
-
-        // Calculate the rate of files enumerated per tenth of a second.
-        long elapsedTimeMs = SystemClock.elapsedRealtime() - mEnumStartTime;
-        int rate = (int) (100L * files.size() / elapsedTimeMs);
-        RecordHistogram.recordTimesHistogram("Android.PhotoPicker.EnumerationTime", elapsedTimeMs);
-        RecordHistogram.recordCustomCountHistogram(
-                "Android.PhotoPicker.EnumeratedFiles", files.size(), 1, 10000, 50);
-        RecordHistogram.recordCount1000Histogram("Android.PhotoPicker.EnumeratedRate", rate);
 
         mPickerBitmaps = files;
         processBitmaps();
@@ -594,7 +582,6 @@ public class PickerCategoryView extends RelativeLayout
             mWorkerTask.cancel(true);
         }
 
-        mEnumStartTime = SystemClock.elapsedRealtime();
         mWorkerTask =
                 new FileEnumWorkerTask(
                         mWindowAndroid,
@@ -685,10 +672,6 @@ public class PickerCategoryView extends RelativeLayout
     private void recordFinalUmaStats(int action) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.PhotoPicker.DialogAction", action, ACTION_BOUNDARY);
-        RecordHistogram.recordCount1MHistogram(
-                "Android.PhotoPicker.DecodeRequests", mPickerAdapter.getDecodeRequestCount());
-        RecordHistogram.recordCount1MHistogram(
-                "Android.PhotoPicker.CacheHits", mPickerAdapter.getCacheHitCount());
     }
 
     /** Sets a list of files to use as data for the dialog. For testing use only. */

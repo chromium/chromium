@@ -8,12 +8,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -113,11 +111,9 @@ public class PickerBitmapViewHolder extends ViewHolder
      *
      * @param categoryView The PickerCategoryView to use to fetch the image.
      * @param position The position of the item to fetch.
-     * @return The decoding action required to display the item.
      */
     @Initializer
-    public @PickerAdapter.DecodeActions int displayItem(
-            PickerCategoryView categoryView, int position) {
+    public void displayItem(PickerCategoryView categoryView, int position) {
         mCategoryView = categoryView;
 
         List<PickerBitmap> pickerBitmaps = mCategoryView.getPickerBitmaps();
@@ -127,7 +123,7 @@ public class PickerBitmapViewHolder extends ViewHolder
         if (mBitmapDetails.type() == PickerBitmap.TileTypes.CAMERA
                 || mBitmapDetails.type() == PickerBitmap.TileTypes.GALLERY) {
             mItemView.initialize(mBitmapDetails, null, null, false, -1);
-            return PickerAdapter.DecodeActions.NO_ACTION;
+            return;
         }
 
         assumeNonNull(mBitmapDetails.getUri());
@@ -143,7 +139,7 @@ public class PickerBitmapViewHolder extends ViewHolder
                     original.videoDuration,
                     false,
                     original.ratioOriginal);
-            return PickerAdapter.DecodeActions.FROM_CACHE;
+            return;
         }
 
         int width = mCategoryView.getImageWidth();
@@ -157,12 +153,7 @@ public class PickerBitmapViewHolder extends ViewHolder
 
         if (payload != null) {
             Bitmap placeholder = payload.bitmaps.get(0);
-            // For performance stats see http://crbug.com/719919.
-            long begin = SystemClock.elapsedRealtime();
             placeholder = BitmapUtils.scale(placeholder, width, false);
-            long scaleTime = SystemClock.elapsedRealtime() - begin;
-            RecordHistogram.recordTimesHistogram(
-                    "Android.PhotoPicker.UpscaleLowResBitmap", scaleTime);
             List<Bitmap> bitmaps = new ArrayList<>(1);
             bitmaps.add(placeholder);
 
@@ -180,7 +171,6 @@ public class PickerBitmapViewHolder extends ViewHolder
                 width,
                 mCategoryView.isInMagnifyingMode(),
                 this);
-        return PickerAdapter.DecodeActions.DECODE;
     }
 
     /**

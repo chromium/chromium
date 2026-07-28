@@ -13,38 +13,18 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.util.Pair;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 
 /** A worker task to decode video and extract information from it off of the UI thread. */
 @NullMarked
 class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
-    /** The possible error states while decoding. */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({
-        DecodingResult.SUCCESS,
-        DecodingResult.FILE_ERROR,
-        DecodingResult.RUNTIME_ERROR,
-        DecodingResult.IO_ERROR
-    })
-    public @interface DecodingResult {
-        int SUCCESS = 0;
-        int FILE_ERROR = 1;
-        int RUNTIME_ERROR = 2;
-        int IO_ERROR = 3;
-    }
-
     /** An interface to use to communicate back the results to the client. */
     public interface VideoDecodingCallback {
         /**
@@ -54,14 +34,13 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
          * @param bitmaps An array of thumbnails extracted from the video.
          * @param duration The duration of the video.
          * @param fullWidth Whether the image is using the full width of the screen.
-         * @param decodingStatus Whether the decoding was successful.
+         * @param ratio The aspect ratio of the first frame of the video.
          */
         void videoDecodedCallback(
                 Uri uri,
                 @Nullable List<Bitmap> bitmaps,
                 @Nullable String duration,
                 boolean fullWidth,
-                @DecodingResult int decodingStatus,
                 float ratio);
     }
 
@@ -85,9 +64,6 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
 
     // The ContentResolver to use to retrieve image metadata from disk.
     private final ContentResolver mContentResolver;
-
-    // Keeps track of errors during decoding.
-    private @DecodingResult int mDecodingResult;
 
     // The duration of the video.
     private @Nullable String mDuration;
@@ -181,16 +157,8 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
                             mIntervalMs);
             mDuration = duration;
             mRatio = bitmaps.second;
-            mDecodingResult = DecodingResult.SUCCESS;
             return bitmaps.first;
-        } catch (FileNotFoundException exception) {
-            mDecodingResult = DecodingResult.FILE_ERROR;
-            return null;
-        } catch (RuntimeException exception) {
-            mDecodingResult = DecodingResult.RUNTIME_ERROR;
-            return null;
-        } catch (IOException exception) {
-            mDecodingResult = DecodingResult.IO_ERROR;
+        } catch (RuntimeException | IOException exception) {
             return null;
         }
     }
@@ -207,11 +175,10 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
         }
 
         if (results == null) {
-            mCallback.videoDecodedCallback(mUri, null, "", mFullWidth, mDecodingResult, 1.0f);
+            mCallback.videoDecodedCallback(mUri, null, "", mFullWidth, 1.0f);
             return;
         }
 
-        mCallback.videoDecodedCallback(
-                mUri, results, mDuration, mFullWidth, mDecodingResult, mRatio);
+        mCallback.videoDecodedCallback(mUri, results, mDuration, mFullWidth, mRatio);
     }
 }
