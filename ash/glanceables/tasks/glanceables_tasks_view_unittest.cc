@@ -76,6 +76,9 @@ class GlanceablesTasksViewTest : public AshTestBase {
   void TearDown() override {
     view_ = nullptr;
     widget_.reset();
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
+                         .classroom_client = nullptr, .tasks_client = nullptr});
     fake_glanceables_tasks_client_.reset();
     // Destroy `widget_` first, before destroying `LayoutProvider` (needed in
     // the `views::Combobox`'s destruction chain).

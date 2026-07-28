@@ -95,7 +95,9 @@ GlanceablesKeyedService::GlanceablesKeyedService(
   }
 }
 
-GlanceablesKeyedService::~GlanceablesKeyedService() = default;
+GlanceablesKeyedService::~GlanceablesKeyedService() {
+  Shutdown();
+}
 
 void GlanceablesKeyedService::Shutdown() {
   if (Shell::HasInstance()) {

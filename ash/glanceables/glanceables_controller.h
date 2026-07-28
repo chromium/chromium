@@ -27,9 +27,8 @@ class ASH_EXPORT GlanceablesController : public SessionObserver {
  public:
   // Convenience wrapper to pass all clients from browser to ash at once.
   struct ClientsRegistration {
-    raw_ptr<GlanceablesClassroomClient, DanglingUntriaged> classroom_client =
-        nullptr;
-    raw_ptr<api::TasksClient, DanglingUntriaged> tasks_client = nullptr;
+    raw_ptr<GlanceablesClassroomClient> classroom_client = nullptr;
+    raw_ptr<api::TasksClient> tasks_client = nullptr;
   };
 
   GlanceablesController();
