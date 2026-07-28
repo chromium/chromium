@@ -162,7 +162,6 @@ static_library("test_support") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/update_client",
-    "//chrome/test/data/webui:resources",
     "//components/activity_reporter",
     "//components/affiliations/core/browser:test_support",
     "//components/record_replay/core/common",
@@ -201,6 +200,7 @@ static_library("test_support") {
     "//chrome/test/base:testing_profile_impl",
     "//chrome/test/base:tracing",
     "//chrome/test/base:web_feature_histogram_tester",
+    "//chrome/test/base:web_ui_test_data_source",
   ]
 
   sources = [
@@ -221,8 +221,6 @@ static_library("test_support") {
     "base/scoped_metrics_service_for_synthetic_trials.h",
     "base/web_ui_mocha_browser_test.cc",
     "base/web_ui_mocha_browser_test.h",
-    "base/web_ui_test_data_source.cc",
-    "base/web_ui_test_data_source.h",
   ]
 
   if (enable_guest_view) {
@@ -244,10 +242,7 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//ash/webui/common:trusted_types_util",
-      "//chrome/browser/media_galleries",
-    ]
+    deps += [ "//chrome/browser/media_galleries" ]
   }
 
   if (is_android) {

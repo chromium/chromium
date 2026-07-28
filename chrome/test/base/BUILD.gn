@@ -60,6 +60,29 @@ source_set("web_feature_histogram_tester") {
   ]
 }
 
+source_set("web_ui_test_data_source") {
+  testonly = true
+  sources = [
+    "web_ui_test_data_source.cc",
+    "web_ui_test_data_source.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/common",
+    "//chrome/test/data/webui:resources",
+    "//content/public/common",
+    "//services/network/public/mojom",
+    "//ui/webui",
+    "//ui/webui/resources",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ash/webui/common:trusted_types_util" ]
+  }
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [
