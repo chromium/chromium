@@ -203,6 +203,7 @@ TEST(HidPreparsedDataTest, NoReportItems) {
   ASSERT_TRUE(collection->usage);
   EXPECT_EQ(collection->usage->usage_page, kPageGenericDesktop);
   EXPECT_EQ(collection->usage->usage, kUsageMouse);
+  EXPECT_EQ(collection->collection_type, mojom::kHIDCollectionTypeApplication);
   EXPECT_TRUE(collection->report_ids.empty());
   EXPECT_TRUE(collection->input_reports.empty());
   EXPECT_TRUE(collection->output_reports.empty());
