@@ -18,6 +18,20 @@ import sys
 _SKIP_TARGETS = {
     'types:any_span_test':
     'any_span_test is not ported because relies on RTTI',
+    'container:btree_test':
+    'TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.',
+    'container:container_memory_test':
+    'Disabled because container_memory_test requires -frtti',
+    'container:raw_hash_set_test':
+    'raw_hash_set_test uses typeid(), i.e., relies on RTTI.',
+}
+
+# Extra build rules added at the end. The reason they are needed vary per target.
+_ADD_CONTENT = {
+    'container:hashtablez_sampler_test':
+    'if (is_win) { sources = [] }',
+    'container:test_allocator':
+    'deps = [ "//third_party/abseil-cpp/absl/base:config", "//third_party/googletest:gtest" ]',
 }
 
 def _ast_get_value(node):
@@ -65,7 +79,8 @@ class _Converter:
                 parts = vis.split(':')
                 pkg = parts[0]
                 rule = parts[1] if len(parts) > 1 else ''
-                gn_pkg = '//third_party/abseil-cpp/' + pkg[2:]
+                gn_pkg = '' if pkg[7:] == self.rel_path else (
+                    '//third_party/abseil-cpp/' + pkg[2:])
                 if rule == '__pkg__':
                     result.append(gn_pkg + ':*')
                 elif rule == '__subpackages__':
@@ -134,11 +149,19 @@ class _Converter:
 
             is_test = bt.get('is_test')
             rule = 'absl_test' if is_test else 'absl_source_set'
+            bazel_deps = bt.get('deps', [])
             target_name = f"{self.rel_path}:{name}"
 
             skip = _SKIP_TARGETS.get(target_name)
             if skip:
                 out.append(f'# {skip}')
+                out.append(f'# {rule}("{name}")')
+                out.append(f'')
+                continue
+
+            if '//absl/base:exception_safety_testing' in bazel_deps:
+                out.append(
+                    f'# skipped because chromium doesn\'t use c++ exceptions')
                 out.append(f'# {rule}("{name}")')
                 out.append(f'')
                 continue
@@ -156,7 +179,7 @@ class _Converter:
                     out.append(f'"{s}",')
                 out.append(']')
 
-            hdrs = bt.get('hdrs')
+            hdrs = bt.get('hdrs', []) + bt.get('textual_hdrs', [])
             if hdrs:
                 out.append('public = [')
                 for h in sorted(hdrs):
@@ -174,7 +197,7 @@ class _Converter:
                 out.append(']')
 
             gn_deps = []
-            for d in bt.get('deps', []):
+            for d in bazel_deps:
                 td = self._translate_dep(d)
                 if td:
                     gn_deps.append(td)
@@ -190,6 +213,7 @@ class _Converter:
                     out.append(f'"{d}",')
                 out.append(']')
 
+            out.append(_ADD_CONTENT.get(target_name, ''))
             out.append('}')
             out.append('')
 
@@ -230,6 +254,7 @@ def convert_all(root_dir):
     # TODO: crbug.com/524565513: walk the root dir when script is fully ready to handle all edge cases.
     for folder in [
             'algorithm',
+            'container',
             'crc',
             'functional',
             'memory',
