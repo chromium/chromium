@@ -1,0 +1,211 @@
+# Enriched seed for the MojoVideoEncodeAcceleratorService MojoLPM fuzzer.
+#
+# This seed drives the two untrusted-deserialize hot paths the harness targets
+# (VideoEncodeAcceleratorConfig -> service Initialize, and the VideoFrame union /
+# plane-layout reconstruction -> service Encode), instead of the trivial
+# IsFlushSupported no-op the previous seed used.
+#
+# action[0]: bind a fresh service over a FakeVideoEncodeAccelerator, register the
+#            mojo::Remote<media.mojom.VideoEncodeAccelerator> under id 1.
+# action[1]: Initialize(config, client, media_log) against remote id 1. The Config
+#            carries a populated Bitrate union (ConstantBitrate member -- a union
+#            with NO member set fails the union FromProto, which would silently
+#            drop the whole call). m_client / m_media_log are left 0 so MojoLPM
+#            synthesizes a fresh VEAClient associated-remote and MediaLog remote
+#            itself (FromProto(0, PendingRemote) takes the "synthesize" branch in
+#            the generated mojolpm cc). This reaches VideoEncodeAcceleratorConfig
+#            StructTraits::Read and the service's Initialize() -> FakeVEA bring-up.
+# action[2]: pump posted tasks so Initialize completion / RequireBitstreamBuffers
+#            drain.
+# action[3]: Encode(frame, options) against remote id 1. The VideoFrame's m_data
+#            union is set (EOS member) so the call dispatches; format / coded_size /
+#            visible_rect / natural_size / metadata are populated so the mojo
+#            serialize side exercises every VideoFrame field and the mutator has a
+#            rich, valid starting point to flip m_data to shared_memory_data and
+#            reach the offsets[]/strides[] plane-layout reconstruction in
+#            VideoFrameStructTraits::Read. m_options is a minimal VideoEncodeOptions.
+# action[4]: pump posted tasks so the Encode completion drains.
+#
+# The single sequence runs all five actions in order; sequence_indexes selects it.
+#
+# BUILD CORRECTNESS: this textproto is converted to a binarypb with
+# `protoc --encode`, which ENFORCES proto2 required fields. Every generated
+# *_ProtoStruct / *_ProtoUnion carries `required uint32 id = 1`, so every `new {}`
+# below sets `id` plus all of its own required scalar/enum/struct fields. Enum
+# fields use numeric literals (proto2 text format accepts the integer value of an
+# enum -- mirrors `m_profile: 12` in the sibling webrtc_video_perf seed), which
+# avoids depending on the generated enum value identifiers. Repeated fields may be
+# omitted (a repeated field is never "missing required").
+actions {
+  new_video_encode_accelerator {
+    id: 1
+  }
+}
+actions {
+  video_encode_accelerator_remote_action {
+    id: 1
+    m_initialize {
+      m_config {
+        new {
+          id: 1
+          m_input_format: 1
+          m_input_visible_size {
+            new {
+              id: 1
+              m_width: 320
+              m_height: 240
+            }
+          }
+          m_output_profile: 1
+          m_bitrate {
+            new {
+              id: 1
+              m_constant {
+                new {
+                  id: 1
+                  m_target_bps: 1000000
+                }
+              }
+            }
+          }
+          m_framerate: 30
+          m_storage_type: 0
+          m_content_type: 0
+          m_gop_length: 30
+          m_has_gop_length: true
+          m_h264_output_level: 0
+          m_has_h264_output_level: false
+          m_is_constrained_h264: false
+          m_drop_frame_thresh_percentage: 0
+          m_spatial_layers {
+          }
+          m_inter_layer_pred: 0
+          m_require_low_delay: false
+          m_required_encoder_type: 0
+          m_manual_reference_buffer_control: false
+        }
+      }
+      m_client: 0
+      m_media_log: 0
+    }
+  }
+}
+actions {
+  run_thread {
+  }
+}
+actions {
+  video_encode_accelerator_remote_action {
+    id: 1
+    m_encode {
+      m_frame {
+        new {
+          id: 1
+          m_format: 1
+          m_coded_size {
+            new {
+              id: 2
+              m_width: 320
+              m_height: 240
+            }
+          }
+          m_visible_rect {
+            new {
+              id: 1
+              m_x: 0
+              m_y: 0
+              m_width: 320
+              m_height: 240
+            }
+          }
+          m_natural_size {
+            new {
+              id: 3
+              m_width: 320
+              m_height: 240
+            }
+          }
+          m_timestamp {
+            new {
+              id: 1
+              m_microseconds: 0
+            }
+          }
+          m_data {
+            new {
+              id: 1
+              m_eos_data {
+                new {
+                  id: 1
+                }
+              }
+            }
+          }
+          m_metadata {
+            new {
+              id: 1
+              m_allow_overlay: false
+              m_capture_version {
+                new {
+                  id: 1
+                  m_source: 0
+                  m_sub_capture: 0
+                }
+              }
+              m_copy_required: false
+              m_end_of_stream: true
+              m_interactive_content: false
+              m_read_lock_fences_enabled: false
+              m_in_surface_view: false
+              m_wants_promotion_hint: false
+              m_protected_video: false
+              m_hw_protected: false
+              m_needs_detiling: false
+              m_is_webgpu_compatible: false
+              m_power_efficient: false
+              m_background_blur: 0
+            }
+          }
+          m_color_space {
+            new {
+              id: 1
+              m_primaries: 0
+              m_transfer: 0
+              m_matrix: 0
+              m_range: 0
+              m_custom_primary_matrix {
+              }
+              m_transfer_params {
+              }
+            }
+          }
+          m_hdr_metadata {
+            new {
+              id: 1
+            }
+          }
+        }
+      }
+      m_options {
+        new {
+          id: 1
+          m_force_keyframe: true
+          m_reference_buffers {
+          }
+        }
+      }
+    }
+  }
+}
+actions {
+  run_thread {
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 2
+  action_indexes: 3
+  action_indexes: 4
+}
+sequence_indexes: 0

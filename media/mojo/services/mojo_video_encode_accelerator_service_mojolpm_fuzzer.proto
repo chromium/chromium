@@ -1,0 +1,79 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the
+// media.mojom.VideoEncodeAccelerator interface.
+//
+// VideoEncodeAccelerator is the renderer -> GPU-process Mojo channel for
+// hardware video encode offload (MojoVideoEncodeAcceleratorService lives in the
+// GPU process and receives these calls from renderer processes). A compromised
+// renderer fully controls every argument:
+//   * VideoEncodeAcceleratorConfig (pixel format / profile / sizes / bitrate /
+//     spatial layers) -> Initialize().
+//   * The VideoFrame union -- critically its plane layout (offsets[]/strides[])
+//     and shared-memory/GpuMemoryBuffer data -- deserialized by
+//     media/mojo/mojom/video_frame_mojom_traits.cc::Read -> Encode().
+//   * The int32 bitstream_buffer_id and UnsafeSharedMemoryRegion handed to
+//     UseOutputBitstreamBuffer().
+//   * VideoBitrateAllocation / Bitrate + optional gfx::Size for the
+//     RequestEncodingParametersChange* methods.
+// This proto drives the whole interface through the real Mojo
+// serialization/deserialization path, exactly as a renderer would reach the
+// GPU process.
+//
+// Design follows mojo_video_decoder_mojolpm_fuzzer.proto: a "New" action binds
+// a fresh service instance (over a real FakeVideoEncodeAccelerator backend)
+// into a mojo::Remote registered in the MojoLPM context under `id`, and the
+// generated mojolpm.media.mojom.VideoEncodeAccelerator.RemoteAction (selected
+// by that same `id`) then issues Initialize / Encode / UseOutputBitstreamBuffer
+// / RequestEncodingParametersChange* / IsFlushSupported / Flush over the live
+// pipe. MojoLPM synthesizes the pending_associated_remote<VEAClient>, the
+// pending_remote<MediaLog>, and the UnsafeSharedMemoryRegion handle itself, so
+// the harness does not have to hand-build them.
+
+syntax = "proto2";
+
+package media.fuzzing.video_encode_accelerator.proto;
+
+import "media/mojo/mojom/video_encode_accelerator.mojom.mojolpm.proto";
+
+// Bind a new MojoVideoEncodeAcceleratorService (over a
+// FakeVideoEncodeAccelerator that initializes successfully) and register the
+// resulting mojo::Remote<media.mojom.VideoEncodeAccelerator> in the MojoLPM
+// context under `id`. Subsequent VideoEncodeAccelerator.RemoteAction messages
+// reference the remote by `id`.
+message NewVideoEncodeAcceleratorAction {
+  required uint32 id = 1;
+}
+
+// Run the fuzzer sequence for an indeterminate period. This is not intended to
+// impose a specific ordering, but to let queued/posted tasks (e.g. the
+// BindPostTaskToCurrentDefault Encode() completion callback and the
+// FakeVideoEncodeAccelerator reply tasks) drain before the next action runs.
+// Mirrors the run_thread action used by the mojo_video_decoder /
+// compositor_frame_sink fuzzers.
+message RunThreadAction {}
+
+// Actions that can be performed by the fuzzer.
+message Action {
+  oneof action {
+    NewVideoEncodeAcceleratorAction new_video_encode_accelerator = 1;
+    RunThreadAction run_thread = 2;
+    mojolpm.media.mojom.VideoEncodeAccelerator.RemoteAction
+        video_encode_accelerator_remote_action = 3;
+  }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}

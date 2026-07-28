@@ -21,4 +21,8 @@ specific_include_rules = {
     "+third_party/libprotobuf-mutator/src/src",
     "+components/leveldb_proto/testing/fake_db.h",
   ],
+  "mojo_video_encode_accelerator_service_mojolpm_fuzzer\\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+third_party/libprotobuf-mutator/src/src",
+  ],
 }
