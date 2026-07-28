@@ -350,8 +350,9 @@ TEST_F(
   EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(tab_token))
       .WillRepeatedly(testing::Return(&tab_file_info));
 
-  // Submit Query 1 with SmartTabSharing active.
+  // Simulate smart tab sharing being active and toggled on in a previous turn.
   local_handle->set_smart_tab_sharing_active(true);
+  local_handle->set_smart_tab_sharing_toggled_since_last_turn(false);
   auto request_info1 = std::make_unique<
       ContextualSearchContextController::CreateClientToAimRequestInfo>();
   EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
@@ -387,6 +388,94 @@ TEST_F(
   EXPECT_EQ(captured_info->removed_contexts[0].uuid(), 99999u);
 
   // Subsequent turn (Query 3): verify flag is reset and removed_contexts is not re-populated.
+  auto request_info3 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+
+  std::unique_ptr<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>
+      captured_info3;
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [&](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                  info) {
+            captured_info3 = std::move(info);
+            return lens::ClientToAimMessage();
+          });
+
+  local_handle->CreateClientToAimRequest(std::move(request_info3));
+
+  ASSERT_TRUE(captured_info3);
+  EXPECT_TRUE(captured_info3->removed_contexts.empty());
+}
+
+TEST_F(
+    ContextualSearchSessionHandleTest,
+    CreateClientToAimRequest_SmartTabSharingToggledOn_AddsUploadedContextIdsToRemovedContexts) {
+  auto mock_validator = std::make_unique<MockTabValidator>();
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* local_mock_controller_ptr =
+      mock_controller.get();
+
+  auto local_service = std::make_unique<ContextualSearchService>(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
+      std::move(mock_validator));
+
+  auto local_handle = local_service->CreateSessionForTesting(
+      std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  // Create a tab context token.
+  base::UnguessableToken tab_token = local_handle->CreateContextToken();
+
+  FileInfo tab_file_info;
+  tab_file_info.file_token = tab_token;
+  tab_file_info.tab_session_id = SessionID::FromSerializedValue(1);
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(99999);
+  tab_file_info.request_id = req_id;
+
+  EXPECT_CALL(*local_mock_controller_ptr, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_file_info));
+
+  // Submit Query 1 with SmartTabSharing inactive by default.
+  auto request_info1 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                 info) { return lens::ClientToAimMessage(); });
+  local_handle->CreateClientToAimRequest(std::move(request_info1));
+
+  // SmartTabSharing explicitly toggled on prior to Query 2.
+  local_handle->set_smart_tab_sharing_active(true);
+
+  auto request_info2 = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+
+  std::unique_ptr<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>
+      captured_info;
+  EXPECT_CALL(*local_mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(
+          [&](std::unique_ptr<
+              ContextualSearchContextController::CreateClientToAimRequestInfo>
+                  info) {
+            captured_info = std::move(info);
+            return lens::ClientToAimMessage();
+          });
+
+  local_handle->CreateClientToAimRequest(std::move(request_info2));
+
+  // Assert: removed_contexts contains the uploaded context ID.
+  ASSERT_TRUE(captured_info);
+  ASSERT_EQ(captured_info->removed_contexts.size(), 1u);
+  EXPECT_EQ(captured_info->removed_contexts[0].uuid(), 99999u);
+
+  // Subsequent turn (Query 3): verify flag is reset and removed_contexts is not
+  // re-populated.
   auto request_info3 = std::make_unique<
       ContextualSearchContextController::CreateClientToAimRequestInfo>();
 
