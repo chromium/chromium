@@ -34,6 +34,10 @@ class UnboundedFrameSinkHandler : public LayerTreeFrameSinkClient {
   void DismissFrameSink();
 
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
+  bool HasUnsubmittedLocalSurfaceId() const {
+    return local_surface_id_.is_valid() &&
+           local_surface_id_ != last_submitted_local_surface_id_;
+  }
 
   void SubmitFrame(viz::CompositorFrame frame);
 

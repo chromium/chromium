@@ -54,13 +54,13 @@ void UnboundedFrameSinkHandler::SetLocalSurfaceId(
 }
 
 void UnboundedFrameSinkHandler::SubmitFrame(viz::CompositorFrame frame) {
-  // If the frame size changed but we haven't received a new LocalSurfaceId from
-  // the browser yet, we must drop the frame. Submitting a frame with a
-  // mismatched size/ID causes validation errors and crashes in Viz.
-  bool size_changed_without_new_local_surface_id =
-      frame.size_in_pixels() != last_submitted_size_in_pixels_ &&
-      local_surface_id_ == last_submitted_local_surface_id_;
-  if (frame_sink_ && !size_changed_without_new_local_surface_id) {
+  if (frame_sink_ && local_surface_id_.is_valid()) {
+    if (local_surface_id_ == last_submitted_local_surface_id_ &&
+        !last_submitted_size_in_pixels_.IsEmpty() &&
+        !frame.render_pass_list.empty()) {
+      frame.render_pass_list.back()->output_rect.set_size(
+          last_submitted_size_in_pixels_);
+    }
     last_submitted_size_in_pixels_ = frame.size_in_pixels();
     last_submitted_local_surface_id_ = local_surface_id_;
     frame_sink_->SubmitCompositorFrame(std::move(frame),

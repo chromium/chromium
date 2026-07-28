@@ -2061,7 +2061,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
           active_element, DocumentUpdateReason::kJavaScript);
       gfx::Rect bounds;
       if (auto* layout_object = active_element->GetLayoutObject()) {
-        bounds = layout_object->AbsoluteBoundingBoxRect();
+        bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
       }
       if (!bounds.IsEmpty()) {
         unbounded_surface_state_->host_->UpdateBounds(bounds);
@@ -2959,6 +2959,9 @@ void WebFrameWidgetImpl::UpdateUnboundedElementBounds(const gfx::Rect& bounds) {
     return;
   }
   unbounded_surface_state_->host_->UpdateBounds(bounds);
+  if (auto* host = LayerTreeHost()) {
+    host->SetNeedsCommitWithForcedRedraw();
+  }
 }
 
 void WebFrameWidgetImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {

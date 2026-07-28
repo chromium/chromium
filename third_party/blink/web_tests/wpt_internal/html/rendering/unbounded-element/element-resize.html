@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/508672616">
+<link rel="match" href="element-resize-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/unbounded-utils.js"></script>
+
+<style>
+  #target {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    display: flex;
+  }
+  .menu {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #submenu {
+    width: 0px;
+    height: 100px;
+  }
+</style>
+
+<div id="target" unbounded>
+  <div class="menu"></div>
+  <div id="submenu"></div>
+</div>
+
+<script>
+// Wait 10 animation frames after changing bounds to allow the renderer <-> browser
+// IPC round-trip for unbounded surface reallocation to complete.
+async function waitForFrames() {
+  for (let i = 0; i < 10; i++) {
+    await new Promise(requestAnimationFrame);
+  }
+}
+
+unbounded_appearance_test(async () => {
+  await showUnboundedElement(target);
+  await waitForFrames();
+  submenu.style.width = '100px';
+  await waitForFrames();
+});
+</script>

@@ -1053,6 +1053,11 @@ bool LayerTreeHostImpl::HasDamage() const {
     return true;
   }
 
+  if (unbounded_frame_sink_handler_ &&
+      unbounded_frame_sink_handler_->HasUnsubmittedLocalSurfaceId()) {
+    return true;
+  }
+
   const LayerTreeImpl* active_tree = active_tree_.get();
   // Make sure we propagate the primary main item sequence number. If there is
   // no stored sequence number, we don't need to damage: either damage will

@@ -5,8 +5,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
@@ -698,6 +700,109 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DynamicBoundsSync) {
     gfx::Rect bounds = window->GetBounds();
     EXPECT_EQ(150, bounds.width());
     EXPECT_EQ(200, bounds.height());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       NestedChildBoundsExpansionTriggersRedraw) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="parent" style="display:flex; width:100px; height:100px;"
+           unbounded>
+        <div style="width:100px; height:100px; flex-shrink:0;"></div>
+        <div id="child" style="width:100px; height:100px; flex-shrink:0;
+             display:none;"></div>
+      </div>
+    `;
+    const parent = document.getElementById('parent');
+    parent.showUnboundedElement().then(() => "OK", e => e.name);
+  )";
+  EXPECT_EQ("OK", EvalJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(window);
+
+  // Initial bounds should only be parent (100x100)
+  {
+    gfx::Rect bounds = window->GetBounds();
+    EXPECT_EQ(100, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Show child
+  std::string update_script = R"(
+    document.getElementById('child').style.display = 'block';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), update_script));
+
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  EXPECT_EQ(200, window->GetBounds().width());
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       AnimatedChildWithBoxShadowSubmitsFrame) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <style>
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .submenu {
+          display: none;
+          width: 100px;
+          height: 100px;
+        }
+        .submenu.is-open {
+          display: block;
+          animation: fadeIn 0.2s ease-in-out;
+          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+        }
+      </style>
+      <div id="parent" style="display:flex; width:100px; height:100px;"
+           unbounded>
+        <div style="width:100px; height:100px;"></div>
+        <div id="child" class="submenu"></div>
+      </div>
+    `;
+    const parent = document.getElementById('parent');
+    parent.showUnboundedElement().then(() => "OK", e => e.name);
+  )";
+  EXPECT_EQ("OK", EvalJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(window);
+
+  std::string update_script = R"(
+    document.getElementById('child').classList.add('is-open');
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), update_script));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return window->GetBounds().width() > 100; }));
+
+  // Force subsequent animation frame under the same LocalSurfaceId
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  base::test::TestFuture<const content::CopyFromSurfaceResult&> future_result;
+  window->CopyFromSurface(gfx::Rect(), window->GetBounds().size(),
+                          base::TimeDelta(), future_result.GetCallback());
+  auto result = future_result.Take();
+  EXPECT_TRUE(result.has_value());
+  if (result.has_value()) {
+    EXPECT_FALSE(result.value().bitmap.drawsNothing());
   }
 }
 
