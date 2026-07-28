@@ -133,6 +133,8 @@ def main(args):
     # tree.
     toplevel = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
                                        shell=IS_WINDOWS).rstrip()
+    filter_branch_env = os.environ.copy()
+    filter_branch_env['FILTER_BRANCH_SQUELCH_WARNING'] = '1'
     subprocess.check_call(
         ['git',
          'filter-branch',
@@ -142,7 +144,8 @@ def main(args):
              ' '.join(shlex.quote(path) for path in parsed.exclude),
          revision_old + '..UPDATE_TO'],
         cwd=toplevel,
-        shell=IS_WINDOWS)
+        shell=IS_WINDOWS,
+        env=filter_branch_env)
 
     # git-filter-branch saved a copy of the original UPDATE_TO at
     # original/UPDATE_TO, but this isn’t useful because it refers to the same
