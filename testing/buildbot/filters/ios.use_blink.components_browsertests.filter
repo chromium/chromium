@@ -38,8 +38,8 @@
 
 # TODO(crbug.com/503810632): These tests have been failing since
 # https://crrev.com/c/7539316, https://crrev.com/c/7763951,
-# https://crrev.com/c/7671607, https://crrev.com/c/7863615, and
-# https://crrev.com/c/7893748 on the bot.
+# https://crrev.com/c/7671607, https://crrev.com/c/7863615,
+# https://crrev.com/c/7893748, and https://crrev.com/c/8132523 on the bot.
 -SurfaceEmbedBrowserTest.Crash
 -SurfaceEmbedBrowserTest.CrashEarly
 -SurfaceEmbedBrowserTest.CrashThenReattach
@@ -52,6 +52,7 @@
 -SurfaceEmbedBrowserTest.EmbedTagInvalidContentId
 -SurfaceEmbedBrowserTest.EmbedTagRemovedDestroysHost
 -SurfaceEmbedBrowserTest.FocusByClick
+-SurfaceEmbedBrowserTest.FocusByTabKey
 -SurfaceEmbedBrowserTest.FocusPreservedAfterNavigation
 -SurfaceEmbedBrowserTest.HtmlPopupOnSurfaceEmbeddedPage
 -SurfaceEmbedBrowserTest.ResizeEmbedPixelTest
