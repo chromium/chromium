@@ -1663,6 +1663,12 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, GetAllChunking) {
                                   blink::mojom::kIDBGetAllChunkSize)));
 }
 
+// Verifies that getAll() succeeds over an object store containing many large
+// values, testing platform limits. Regression test for crbug.com/523912081.
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, GetAllLargeValues) {
+  SimpleTest(GetTestUrl("indexeddb", "get_all_large_values.html"));
+}
+
 // Large values are NOT wrapped when using SQLite, but are wrapped when using
 // LevelDB.
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
