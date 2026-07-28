@@ -5,7 +5,6 @@
 if (is_android) {
   source_set("readaloud") {
     sources = [
-      "read_aloud_constants.h",
       "read_aloud_playback_session.h",
       "read_aloud_service.h",
       "read_aloud_service_factory.h",

@@ -64,6 +64,16 @@ buildflag_header("buildflags") {
   ]
 }
 
+source_set("readaloud_constants") {
+  sources = [
+    "readaloud/read_aloud_constants.h",
+  ]
+  public_deps = [
+    "//base",
+    "//media",
+  ]
+}
+
 source_set("channel_info") {
   sources = [
     "channel_info.cc",
@@ -150,6 +160,7 @@ static_library("common_lib") {
     "pdf_util.h",
     "pref_names_util.cc",
     "pref_names_util.h",
+    "readaloud/read_aloud_constants.h",
     "ref_counted_util.h",
     "search/instant_mojom_traits.h",
     "search/instant_types.cc",

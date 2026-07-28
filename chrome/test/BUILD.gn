@@ -6828,6 +6828,7 @@ test("unit_tests") {
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",
       "//chrome/common/read_anything:mojo_bindings",
+      "//chrome/services/readaloud:unit_tests",
       "//chrome/services/speech:unit_tests",
       "//components/app_constants",
       "//components/application_locale_storage",

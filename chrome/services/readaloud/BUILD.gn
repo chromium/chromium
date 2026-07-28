@@ -3,16 +3,19 @@
 # found in the LICENSE file.
 
 source_set("readaloud") {
-  sources = [
-    "decoded_audio_segment.cc",
+  public = [
     "decoded_audio_segment.h",
-    "read_aloud_playback_controller.cc",
     "read_aloud_playback_controller.h",
   ]
+  sources = [
+    "decoded_audio_segment.cc",
+    "read_aloud_playback_controller.cc",
+  ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//chrome/common:mojo_bindings",
+    "//chrome/common:readaloud_constants",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
@@ -24,6 +27,7 @@ source_set("unit_tests") {
 
   sources = [
     "decoded_audio_segment_unittest.cc",
+    "read_aloud_playback_controller_unittest.cc",
   ]
 
   deps = [
@@ -31,6 +35,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//media",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//mojo/public/mojom/base",
     "//testing/gmock",
     "//testing/gtest",
   ]

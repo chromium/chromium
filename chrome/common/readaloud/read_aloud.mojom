@@ -36,6 +36,11 @@ interface ReadAloudPlaybackController {
                   media.mojom.ReadWriteAudioDataPipe data_pipe);
   // Replaces the article text. If playback is active, cancels in-flight synthesis,
   // flushes prefetch caches, resets the cursor to index 0, and pauses (`kPaused`).
+  //
+  // Security constraints:
+  // - The number of segments must not exceed `kMaxTextSegments` (1,000).
+  // - The text length of each segment must not exceed `kMaxTextLengthPerSegment` (65,536 characters).
+  // Exceeding these limits will trigger a bad message error and close the receiver channel.
   SetTextContent(array<TextSegment> segments);
   Play();
   Pause();

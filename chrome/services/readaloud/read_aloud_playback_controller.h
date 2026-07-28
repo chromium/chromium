@@ -8,8 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
+#include "chrome/common/readaloud/read_aloud_constants.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,11 +60,30 @@ class ReadAloudPlaybackController
   void SetPlaybackRate(float rate) override;
   void FlushBuffers() override;
 
+ private:
+  // Mojo disconnect handlers:
+  void OnReceiverDisconnected();
+  void OnControllerDisconnected();
+  void OnClientDisconnected();
+
+  // Resets active session state, clears segments, and resets playback rate.
+  void ResetSession();
+
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
       receiver_;
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController>
       controller_receiver_{this};
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient> client_;
+
+  // Active text segments currently loaded for playback in this session.
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments_;
+  // Current playback rate multiplier (clamped between kMinPlaybackRate and
+  // kMaxPlaybackRate).
+  float playback_rate_ = 1.0f;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<ReadAloudPlaybackController> session_weak_factory_{this};
+  base::WeakPtrFactory<ReadAloudPlaybackController> factory_weak_factory_{this};
 };
 
 }  // namespace readaloud

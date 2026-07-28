@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_READALOUD_READ_ALOUD_CONSTANTS_H_
-#define CHROME_BROWSER_READALOUD_READ_ALOUD_CONSTANTS_H_
+#ifndef CHROME_COMMON_READALOUD_READ_ALOUD_CONSTANTS_H_
+#define CHROME_COMMON_READALOUD_READ_ALOUD_CONSTANTS_H_
 
 #include <cstddef>
 
@@ -27,6 +27,15 @@ inline constexpr base::TimeDelta kBrowserBufferingWatchdog = base::Seconds(30);
 inline constexpr base::TimeDelta kVolumeRampDuration = base::Milliseconds(10);
 inline constexpr int kMaxRetryAttempts = 3;
 
+// Limits for text payload validation to prevent utility process memory exhaustion (OOM/DoS).
+inline constexpr size_t kMaxTextSegments = 1000;
+inline constexpr size_t kMaxTextLengthPerSegment = 65536;  // 64 KB max characters per segment
+inline constexpr size_t kMaxVoiceIdLength = 256;
+
+// Allowed range for speech speed rate scaling.
+inline constexpr float kMinPlaybackRate = 0.25f;
+inline constexpr float kMaxPlaybackRate = 4.0f;
+
 }  // namespace readaloud
 
-#endif  // CHROME_BROWSER_READALOUD_READ_ALOUD_CONSTANTS_H_
+#endif  // CHROME_COMMON_READALOUD_READ_ALOUD_CONSTANTS_H_
