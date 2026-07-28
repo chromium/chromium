@@ -72,7 +72,9 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
           return false;
         }
 
-        activated_browsers_.push_back(browser);
+        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          activated_browsers_.push_back(browser);
+        }
 
         // Keep iterating if we haven't hit the maximum number of tracked
         // windows.
@@ -104,6 +106,10 @@ bool GlassFrameService::IsBrowserWindowEligible(
 }
 
 void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+
   // If the browser is already in the list, remove it since it
   // needs to be re-added to the front of the list.
   auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
@@ -125,6 +131,10 @@ void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
 }
 
 void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
+  if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+
   const base::flat_set<BrowserWindowInterface*> old_eligible =
       GetEligibleBrowserWindowInterfaces();
 

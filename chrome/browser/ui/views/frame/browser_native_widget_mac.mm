@@ -264,6 +264,7 @@ void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
   browser_view_ = nullptr;
   last_preferred_color_scheme_.reset();
   last_theme_color_.reset();
+  glass_frame_service_subscription_ = {};
   NativeWidgetMac::OnWidgetDestroyed(widget);
 }
 
@@ -796,6 +797,10 @@ bool BrowserNativeWidgetMac::IsBrowserWidgetEligible() const {
 }
 
 void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
+  if (!GetNSWindowHost()) {
+    return;
+  }
+
   NSWindow* const ns_window = GetNSWindowHost()->GetInProcessNSWindow();
   if (!ns_window) {
     return;

@@ -88,9 +88,9 @@ BrowserFrameViewMac::BrowserFrameViewMac(BrowserWidget* frame,
   // GlassFrameService is only available if glass frame is enabled.
   if (auto* const glass_service = GlassFrameService::GetInstance()) {
     SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
     is_glass_frame_eligible_ =
         glass_service->IsBrowserWindowEligible(browser_view->browser());
+    layer()->SetFillsBoundsOpaquely(!is_glass_frame_eligible_);
     glass_frame_service_subscription_ =
         glass_service->RegisterGlassFrameEligibilityChangedCallback(
             browser_view->browser(),
@@ -595,5 +595,6 @@ void BrowserFrameViewMac::OnGlassFrameEligibilityChanged(bool is_eligible) {
     return;
   }
   is_glass_frame_eligible_ = is_eligible;
+  layer()->SetFillsBoundsOpaquely(!is_glass_frame_eligible_);
   SchedulePaint();
 }

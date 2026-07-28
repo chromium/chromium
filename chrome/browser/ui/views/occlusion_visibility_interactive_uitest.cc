@@ -7,6 +7,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/test/widget_test.h"
 
 class VisibilityWaiter : public content::WebContentsObserver {
@@ -61,6 +62,11 @@ class OcclusionVisibilityInteractiveUITest : public InteractiveBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
                        MAYBE_OcclusionTriggersVisiblityChange) {
+  // TODO(crbug.com/539963779): Re-enable test when glass frame is enabled
+  if (features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Windows are translucent when glass frame is enabled and "
+                    "thus times out when testing for occlusion";
+  }
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
