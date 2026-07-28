@@ -139,6 +139,7 @@ class ComposeboxQueryControllerBridge
   void StartTabContextUploadFlow(
       JNIEnv* env,
       const base::UnguessableToken& context_token,
+      std::optional<SessionID> tab_session_id,
       bool was_cached,
       base::TimeTicks start_time,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
@@ -146,6 +147,9 @@ class ComposeboxQueryControllerBridge
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromUrl(GURL url);
+  void OnSearchUrlCreated(
+      base::android::ScopedJavaGlobalRef<jobject> j_callback,
+      GURL url);
   void ContextualizeAndCreateSearchUrl(
       std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
           search_url_request_info,
@@ -156,6 +160,8 @@ class ComposeboxQueryControllerBridge
   }
 
   raw_ptr<Profile> profile_;
+  // The WebContents of the active tab where the search query was initiated.
+  base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface>
       contextual_tasks_web_ui_interface_ = nullptr;
   bool is_task_scoped_ = false;
