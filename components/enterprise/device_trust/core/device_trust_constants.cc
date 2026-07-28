@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "components/enterprise/device_trust/core/device_trust_constants.h"
 
 namespace enterprise_connectors {
 

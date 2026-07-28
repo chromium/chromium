@@ -3751,12 +3751,12 @@ source_set("browser") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/chromeos/video_conference",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/extensions/api/document_scan",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
       "//chromeos/ash/components/system_web_apps:system_web_app_type",
+      "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
+      "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
+      "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/browser_process_platform_part_ash.h gets modularized.
@@ -4151,8 +4151,6 @@ source_set("browser") {
   if (is_linux || is_win || is_mac || is_chromeos) {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
@@ -4162,6 +4160,8 @@ source_set("browser") {
       "//components/device_signals/core/common",
       "//components/enterprise/core",
       "//components/enterprise/device_trust",
+      "//components/enterprise/device_trust/core/attestation",
+      "//components/enterprise/device_trust/core/attestation:types",
       "//components/metrics",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_metrics_validator",
@@ -4915,12 +4915,12 @@ group("browser_generated_files") {
   }
   if (is_win || is_mac || is_linux) {
     public_deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/ui/webui/app_home:mojo_bindings",
       "//chrome/browser/ui/webui/on_device_translation_internals:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
+      "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
+      "//components/enterprise/device_trust/core/attestation/proto:google_key_proto",
+      "//components/enterprise/device_trust/core/attestation/proto:interface_proto",
     ]
   }
   if (is_win || is_mac || is_linux || is_chromeos) {

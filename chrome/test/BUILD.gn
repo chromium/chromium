@@ -4280,7 +4280,6 @@ if (!is_android) {
         "//chrome/browser/chromeos/tablet_mode:browser_tests",
         "//chrome/browser/chromeos/video_conference",
         "//chrome/browser/enterprise/connectors/device_trust:features",
-        "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/enterprise/connectors/device_trust/signals:browser_tests",
         "//chrome/browser/image_decoder",
         "//chrome/browser/invalidation:browser_tests",
@@ -4462,6 +4461,7 @@ if (!is_android) {
         "//components/device_signals/core/browser",
         "//components/drive",
         "//components/enterprise/common/proto:dlp_policy_event_proto",
+        "//components/enterprise/device_trust/core",
         "//components/exo:test_support",
         "//components/feedback",
         "//components/feedback/content",
@@ -7546,10 +7546,6 @@ test("unit_tests") {
 
     deps += [
       "../browser/enterprise/connectors/device_trust:features",
-      "../browser/enterprise/connectors/device_trust/attestation/common",
-      "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
-      "../browser/enterprise/connectors/device_trust/common",
-      "../browser/enterprise/connectors/device_trust/common:unit_tests",
       "../browser/enterprise/connectors/device_trust/signals:test_support",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common:test_support",
@@ -7557,6 +7553,10 @@ test("unit_tests") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/browser:test_support",
       "//components/enterprise/device_trust",
+      "//components/enterprise/device_trust/core",
+      "//components/enterprise/device_trust/core:unit_tests",
+      "//components/enterprise/device_trust/core/attestation",
+      "//components/enterprise/device_trust/core/attestation:test_support",
     ]
   }
 

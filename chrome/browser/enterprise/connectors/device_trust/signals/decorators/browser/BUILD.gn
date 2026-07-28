@@ -11,7 +11,6 @@ source_set("unit_tests") {
   deps = [
     "//chrome/browser",
     "//chrome/browser/enterprise/connectors/device_trust:features",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
     "//chrome/browser/enterprise/connectors/device_trust/signals",
     "//chrome/browser/enterprise/connectors/device_trust/signals:test_support",
     "//chrome/browser/enterprise/core:test_support",
@@ -19,6 +18,7 @@ source_set("unit_tests") {
     "//components/device_signals/core/browser:test_support",
     "//components/device_signals/core/common",
     "//components/enterprise:test_support",
+    "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//testing/gmock",

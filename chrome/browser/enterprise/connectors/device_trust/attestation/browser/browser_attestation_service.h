@@ -16,8 +16,8 @@
 #include "base/task/task_runner.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
+#include "components/enterprise/device_trust/core/attestation/attestation_service.h"
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
 
 namespace enterprise_connectors {
 

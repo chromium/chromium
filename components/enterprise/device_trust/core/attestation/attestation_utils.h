@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_ATTESTATION_UTILS_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_ATTESTATION_UTILS_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_ATTESTATION_UTILS_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_ATTESTATION_UTILS_H_
 
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "components/enterprise/device_trust/core/attestation/signals_type.h"
 
 namespace enterprise_connectors {
 
@@ -27,4 +27,4 @@ std::unique_ptr<SignalsType> DictionarySignalsToProtobufSignals(
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_ATTESTATION_UTILS_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_ATTESTATION_UTILS_H_

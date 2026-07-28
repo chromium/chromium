@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;

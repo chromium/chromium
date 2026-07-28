@@ -9,8 +9,8 @@ source_set("signals") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//chrome/browser/enterprise/core",
+    "//components/enterprise/device_trust/core/attestation:types",
     "//components/enterprise/device_trust/core/signals",
   ]
 }

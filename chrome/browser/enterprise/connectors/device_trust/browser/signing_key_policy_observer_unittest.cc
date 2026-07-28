@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/device_trust/browser/siging_key_policy_observer.h"
-
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

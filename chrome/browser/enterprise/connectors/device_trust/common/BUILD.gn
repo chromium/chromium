@@ -5,35 +5,18 @@
 source_set("common") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [
-    "common_types.cc",
-    "device_trust_constants.cc",
-    "metrics_utils.cc",
-  ]
+  sources = [ "metrics_utils.cc" ]
 
-  public = [
-    "common_types.h",
-    "device_trust_constants.h",
-    "metrics_utils.h",
-  ]
+  public = [ "metrics_utils.h" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/enterprise/device_trust/core",
+  ]
 
   deps = []
 
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/install_attributes" ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  configs += [ "//components/enterprise:extra_warnings" ]
-
-  sources = [ "common_types_unittest.cc" ]
-
-  deps = [
-    ":common",
-    "//testing/gtest",
-  ]
 }

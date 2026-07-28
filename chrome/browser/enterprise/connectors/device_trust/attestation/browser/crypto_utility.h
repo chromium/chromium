@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_BROWSER_CRYPTO_UTILITY_H_
 
 #include "base/containers/span.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace enterprise_connectors {

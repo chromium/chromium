@@ -5,8 +5,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/browser/signing_key_policy_observer.h"
 
 #include "base/check.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 namespace enterprise_connectors {
 

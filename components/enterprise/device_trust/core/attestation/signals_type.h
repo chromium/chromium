@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_SIGNALS_TYPE_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_SIGNALS_TYPE_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_SIGNALS_TYPE_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_SIGNALS_TYPE_H_
 
 #include "build/build_config.h"
 
@@ -18,7 +18,7 @@ using SignalsType = ::attestation::DeviceTrustSignals;
 }  // namespace enterprise_connectors
 
 #else
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"  // nogncheck
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"  // nogncheck
 
 namespace enterprise_connectors {
 
@@ -29,4 +29,4 @@ using SignalsType = DeviceTrustSignals;
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_SIGNALS_TYPE_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_ATTESTATION_SIGNALS_TYPE_H_

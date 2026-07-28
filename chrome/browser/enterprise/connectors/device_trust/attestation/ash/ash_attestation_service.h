@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "components/enterprise/device_trust/core/attestation/attestation_service.h"
 
 namespace enterprise_connectors {
 

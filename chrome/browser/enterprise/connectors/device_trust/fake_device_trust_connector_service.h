@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;

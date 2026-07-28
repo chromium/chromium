@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/install_attributes/install_attributes.h"

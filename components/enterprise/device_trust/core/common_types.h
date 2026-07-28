@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_COMMON_TYPES_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_COMMON_TYPES_H_
+#ifndef COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_COMMON_TYPES_H_
+#define COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_COMMON_TYPES_H_
 
 #include <optional>
 #include <string>
@@ -75,4 +75,4 @@ struct DeviceTrustResponse {
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_COMMON_TYPES_H_
+#endif  // COMPONENTS_ENTERPRISE_DEVICE_TRUST_CORE_COMMON_TYPES_H_

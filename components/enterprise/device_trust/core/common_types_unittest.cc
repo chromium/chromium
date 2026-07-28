@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 #include <array>
 

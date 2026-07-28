@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_attestation_ca.pb.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 namespace enterprise_connectors {
 

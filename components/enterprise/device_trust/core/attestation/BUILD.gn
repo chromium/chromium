@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("common") {
+source_set("attestation") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "attestation_utils.cc" ]
@@ -15,8 +15,8 @@ source_set("common") {
   public_deps = [
     ":types",
     "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//components/device_signals/core/common",
+    "//components/enterprise/device_trust/core",
     "//third_party/abseil-cpp:absl",
   ]
 }
@@ -30,7 +30,7 @@ source_set("types") {
     public_deps =
         [ "//chromeos/ash/components/dbus/attestation:attestation_proto" ]
   } else {
-    public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto" ]
+    public_deps = [ "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto" ]
   }
 }
 
@@ -43,9 +43,9 @@ source_set("test_support") {
   public = [ "mock_attestation_service.h" ]
 
   public_deps = [
-    ":common",
+    ":attestation",
     ":types",
-    "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//components/enterprise/device_trust/core",
     "//testing/gmock",
   ]
 }

@@ -20,7 +20,7 @@ source_set("common") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+    "//components/enterprise/device_trust/core/attestation:types",
   ]
 
   deps = [
@@ -42,7 +42,7 @@ source_set("test_support") {
 
   public_deps = [
     ":common",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+    "//components/enterprise/device_trust/core/attestation:types",
     "//testing/gmock",
   ]
 }
@@ -57,10 +57,10 @@ source_set("unit_tests") {
     ":common",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//chrome/common:constants",
     "//components/component_updater",
     "//components/device_signals/core/common",
+    "//components/enterprise/device_trust/core/attestation:types",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs:test_support",

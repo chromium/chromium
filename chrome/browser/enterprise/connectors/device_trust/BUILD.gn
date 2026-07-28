@@ -65,10 +65,10 @@ source_set("unit_tests") {
       ":test_support",
       "//base",
       "//chrome/browser/enterprise:impl",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/signals:test_support",
       "//chrome/test:test_support",
       "//components/device_signals/core/browser:test_support",
+      "//components/enterprise/device_trust/core/attestation:test_support",
       "//testing/gtest",
     ]
   }

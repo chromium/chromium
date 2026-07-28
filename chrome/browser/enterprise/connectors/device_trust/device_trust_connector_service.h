@@ -12,8 +12,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/device_signals/core/browser/user_delegate.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 

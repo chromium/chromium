@@ -8,8 +8,8 @@
 #include <array>
 #include <string>
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_google_key.pb.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_interface.pb.h"
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_google_key.pb.h"
+#include "components/enterprise/device_trust/core/attestation/proto/device_trust_interface.pb.h"
 
 namespace enterprise_connectors {
 

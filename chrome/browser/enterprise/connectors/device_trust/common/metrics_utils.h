@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "components/enterprise/device_trust/core/common_types.h"
 
 namespace enterprise_connectors {
 

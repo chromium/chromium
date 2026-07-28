@@ -25,11 +25,11 @@
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/windows_types.h"
-#include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
 #include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/util_constants.h"
+#include "components/enterprise/device_trust/core/device_trust_constants.h"
 
 namespace enterprise_connectors {
 
