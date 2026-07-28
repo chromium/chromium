@@ -12,6 +12,9 @@ namespace enterprise_groups {
 // Controls whether enterprise group IDs are copied to preferences.
 BASE_DECLARE_FEATURE(kEnterpriseGroupsExperiments);
 
+// Feature to test domain-based Finch control end-to-end.
+BASE_DECLARE_FEATURE(kFakeEnterpriseGroup);
+
 }  // namespace enterprise_groups
 
 #endif  // COMPONENTS_ENTERPRISE_BROWSER_GROUPS_GROUPS_FEATURES_H_
