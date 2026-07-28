@@ -9419,7 +9419,18 @@ crbug.com/535696870 [ Linux ] virtual/permission-element/external/wpt/html/seman
 crbug.com/535947496 [ Linux ] http/tests/inspector-protocol/web-transport-handshake-failure.js [ Failure Pass ]
 
 # Gardener 2026-07-21
-crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass ]
+crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass Timeout ]
 
 crbug.com/510232476 [ Mac13 ] external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-002.html [ Failure Pass ]
+
+# Gardener 2026-07-28
+crbug.com/539889938 [ Linux ] external/wpt/html/semantics/permission-element/geolocation-element/parent-image-mask.tentative.html [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/semantics/permission-element/parent-image-mask.tentative.html [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1251.html?include=loading [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.https.html?target_hint=_blank [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/speculation-rules/prerender/local-storage.https.html?target_hint=_blank [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-drawImage.html [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/interaction/focus/processing-model/focus-fixup-rule-one-no-dialogs.html [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?* [ Failure Pass ]
+crbug.com/539889938 [ Linux ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?* [ Failure Pass ]
 
