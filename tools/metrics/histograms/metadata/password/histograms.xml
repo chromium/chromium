@@ -1254,7 +1254,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.ClassificationCorrectness.ConfirmationPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2027-01-03">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     This metric records the correctness of a confirmation password field
     classification produced on the page load.
@@ -1270,7 +1270,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.ClassificationCorrectness.CurrentPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2026-12-27">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     This metric records the correctness of a current password field
     classification produced on the page load.
@@ -1288,7 +1288,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.ClassificationCorrectness.NewPassword"
     enum="PasswordManagerClassificationCorrectness" expires_after="2027-01-03">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     This metric records the correctness of a new password field classification
     produced on the page load.
@@ -1306,7 +1306,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.ClassificationCorrectness.Username"
     enum="PasswordManagerClassificationCorrectness" expires_after="2027-01-03">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     This metric records the correctness of a username field classification
     produced on the page load.
