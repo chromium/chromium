@@ -127,30 +127,30 @@ export class CrToggleElement extends CrToggleElementBase {
     };
   }
 
-  private checkedChanged_() {
+  protected checkedChanged_() {
     this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
   }
 
-  private disabledChanged_() {
+  protected disabledChanged_() {
     this.setAttribute('tabindex', this.disabled ? '-1' : '0');
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
   }
 
-  private onFocus_() {
+  protected onFocus_() {
     this.getRipple().showAndHoldDown();
   }
 
-  private hideRipple_() {
+  protected hideRipple_() {
     this.getRipple().clear();
   }
 
-  private onPointerUp_() {
+  protected onPointerUp_() {
     assert(this.boundPointerMove_);
     this.removeEventListener('pointermove', this.boundPointerMove_);
     this.hideRipple_();
   }
 
-  private onPointerDown_(e: PointerEvent) {
+  protected onPointerDown_(e: PointerEvent) {
     // Don't do anything if this was not a primary button click or touch event.
     if (e.button !== 0) {
       return;
@@ -165,7 +165,7 @@ export class CrToggleElement extends CrToggleElementBase {
     this.addEventListener('pointermove', this.boundPointerMove_);
   }
 
-  private onClick_(e: Event) {
+  protected onClick_(e: Event) {
     // Prevent |click| event from bubbling. It can cause parents of this
     // elements to erroneously re-toggle this control.
     e.stopPropagation();
@@ -198,7 +198,7 @@ export class CrToggleElement extends CrToggleElementBase {
         'change', {bubbles: true, composed: true, detail: this.checked}));
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -214,7 +214,7 @@ export class CrToggleElement extends CrToggleElementBase {
     }
   }
 
-  private onKeyUp_(e: KeyboardEvent) {
+  protected onKeyUp_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }

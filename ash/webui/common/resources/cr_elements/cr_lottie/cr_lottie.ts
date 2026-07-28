@@ -209,7 +209,7 @@ export class CrLottieElement extends PolymerElement {
   /**
    * Updates the animation that is being displayed.
    */
-  private animationUrlChanged_() {
+  protected animationUrlChanged_() {
     if (!this.worker_) {
       // The worker hasn't loaded yet. We will load the new animation once the
       // worker loads.

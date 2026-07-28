@@ -80,11 +80,11 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private onClearSelectionClick_() {
+  protected onClearSelectionClick_() {
     this.fire_('clear-selected-items');
   }
 
-  private updateSelectionLabel_() {
+  protected updateSelectionLabel_() {
     // Do this update in a microtask to ensure |show| and |selectionLabel|
     // are both updated.
     this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
@@ -97,7 +97,7 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
     });
   }
 
-  private onShowChanged_() {
+  protected onShowChanged_() {
     if (this.show) {
       this.hasShown_ = true;
     }

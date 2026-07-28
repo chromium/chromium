@@ -84,7 +84,7 @@ export const CrRadioButtonMixin = dedupingMixin(
         declare hideLabelText: boolean;
         declare label: string;
         declare name: string;
-        declare private buttonTabIndex_: number;
+        declare protected buttonTabIndex_: number;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -105,15 +105,15 @@ export const CrRadioButtonMixin = dedupingMixin(
           assertNotReached();
         }
 
-        private onFocus_() {
+        protected onFocus_() {
           this.getPaperRipple().showAndHoldDown();
         }
 
-        private hideRipple_() {
+        protected hideRipple_() {
           this.getPaperRipple().clear();
         }
 
-        private onFocusableChanged_() {
+        protected onFocusableChanged_() {
           const links = this.querySelectorAll('a');
           links.forEach((link) => {
             // Remove the tab stop on any links when the row is unchecked.
@@ -123,15 +123,15 @@ export const CrRadioButtonMixin = dedupingMixin(
           });
         }
 
-        private getAriaChecked_(): string {
+        protected getAriaChecked_(): string {
           return this.checked ? 'true' : 'false';
         }
 
-        private getAriaDisabled_(): string {
+        protected getAriaDisabled_(): string {
           return this.disabled ? 'true' : 'false';
         }
 
-        private getTabIndex_(): number {
+        protected getTabIndex_(): number {
           return this.focusable ? 0 : -1;
         }
 
@@ -144,7 +144,7 @@ export const CrRadioButtonMixin = dedupingMixin(
          *    it'll correctly obey non-zero tabindex ordering of the
          *    containing document.
          */
-        private onInputKeydown_(e: KeyboardEvent) {
+        protected onInputKeydown_(e: KeyboardEvent) {
           if (e.shiftKey && e.key === 'Tab') {
             this.focus();
           }

@@ -121,12 +121,12 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     return this.$.checkbox;
   }
 
-  private checkedChanged_() {
+  protected checkedChanged_() {
     this.$.checkbox.setAttribute(
         'aria-checked', this.checked ? 'true' : 'false');
   }
 
-  private disabledChanged_(_current: boolean, previous: boolean) {
+  protected disabledChanged_(_current: boolean, previous: boolean) {
     if (previous === undefined && !this.disabled) {
       return;
     }
@@ -136,7 +136,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
         'aria-disabled', this.disabled ? 'true' : 'false');
   }
 
-  private showRipple_() {
+  protected showRipple_() {
     if (this.noink) {
       return;
     }
@@ -144,11 +144,11 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.getRipple().showAndHoldDown();
   }
 
-  private hideRipple_() {
+  protected hideRipple_() {
     this.getRipple().clear();
   }
 
-  private onClick_(e: Event) {
+  protected onClick_(e: Event) {
     if (this.disabled || (e.target as HTMLElement).tagName === 'A') {
       return;
     }
@@ -163,7 +163,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
         'change', {bubbles: true, composed: true, detail: this.checked}));
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -179,7 +179,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  private onKeyUp_(e: KeyboardEvent) {
+  protected onKeyUp_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
@@ -190,7 +190,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  private onTabIndexChanged_() {
+  protected onTabIndexChanged_() {
     // :host shouldn't have a tabindex because it's set on #checkbox.
     this.removeAttribute('tabindex');
   }

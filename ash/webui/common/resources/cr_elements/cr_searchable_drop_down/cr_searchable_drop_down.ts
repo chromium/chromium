@@ -237,21 +237,21 @@ export class CrSearchableDropDownElement extends PolymerElement {
     this.openDropdownTimeoutId_ = setTimeout(this.openDropdown_.bind(this));
   }
 
-  private onItemsChanged_() {
+  protected onItemsChanged_() {
     // Refit the iron-dropdown so that it can expand as neccessary to
     // accommodate new items. Refitting is done on a new task because the change
     // notification might not yet have propagated to the iron-dropdown.
     this.enqueueDropdownRefit_();
   }
 
-  private onFocus_() {
+  protected onFocus_() {
     if (this.readonly) {
       return;
     }
     this.openDropdown_();
   }
 
-  private onMouseMove_(event: Event) {
+  protected onMouseMove_(event: Event) {
     const item = event.composedPath().find(elm => {
       const element = elm as HTMLElement;
       return element.classList && element.classList.contains('list-item');
@@ -303,7 +303,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
     }
   }
 
-  private onKeyDown_(event: KeyboardEvent) {
+  protected onKeyDown_(event: KeyboardEvent) {
     const dropdown = this.$.dropdown;
     if (!dropdown.opened) {
       if (this.readonly) {
@@ -395,7 +395,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
     items[nextIndex].scrollIntoViewIfNeeded();
   }
 
-  private onInput_() {
+  protected onInput_() {
     this.searchTerm_ = this.$.search.value;
 
     if (this.updateValueOnInput) {
@@ -421,7 +421,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
     this.updateInvalid_();
   }
 
-  private onSelect_(event: DomRepeatEvent<string>) {
+  protected onSelect_(event: DomRepeatEvent<string>) {
     this.closeDropdown_();
 
     this.value = event.model.item;
@@ -434,7 +434,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
     }
   }
 
-  private filterItems_(searchTerm: string): ((s: string) => boolean)|null {
+  protected filterItems_(searchTerm: string): ((s: string) => boolean)|null {
     if (!searchTerm) {
       return null;
     }
@@ -443,13 +443,13 @@ export class CrSearchableDropDownElement extends PolymerElement {
     };
   }
 
-  private shouldShowErrorMessage_(
+  protected shouldShowErrorMessage_(
       errorMessage: string, errorMessageAllowed: boolean): boolean {
     return !!this.getErrorMessage_(errorMessage, errorMessageAllowed);
   }
 
-  private getErrorMessage_(errorMessage: string, errorMessageAllowed: boolean):
-      string {
+  protected getErrorMessage_(
+      errorMessage: string, errorMessageAllowed: boolean): string {
     if (!errorMessageAllowed) {
       return '';
     }
@@ -463,7 +463,7 @@ export class CrSearchableDropDownElement extends PolymerElement {
    * updateValueOnInput is false. When updateValueOnInput is true, it is ok to
    * leave the user's text in the dropdown search bar when focus is changed.
    */
-  private onBlur_() {
+  protected onBlur_() {
     if (!this.updateValueOnInput) {
       this.$.search.value = this.value;
     }

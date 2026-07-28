@@ -130,7 +130,6 @@ export class CrDialogElement extends CrDialogElementBase {
   declare showOnAttach: boolean;
   declare ariaDescriptionText: string;
 
-  private intersectionObserver_: IntersectionObserver|null = null;
   private mutationObserver_: MutationObserver|null = null;
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
 
@@ -242,13 +241,13 @@ export class CrDialogElement extends CrDialogElementBase {
     this.$.dialog.setAttribute('aria-label', title);
   }
 
-  private onCloseKeypress_(e: Event) {
+  protected onCloseKeypress_(e: Event) {
     // Because the dialog may have a default Enter key handler, prevent
     // keypress events from bubbling up from this element.
     e.stopPropagation();
   }
 
-  private onNativeDialogClose_(e: Event) {
+  protected onNativeDialogClose_(e: Event) {
     // Ignore any 'close' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
@@ -260,7 +259,7 @@ export class CrDialogElement extends CrDialogElementBase {
         new CustomEvent('close', {bubbles: true, composed: true}));
   }
 
-  private onNativeDialogCancel_(e: Event) {
+  protected onNativeDialogCancel_(e: Event) {
     // Ignore any 'cancel' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
@@ -290,7 +289,7 @@ export class CrDialogElement extends CrDialogElementBase {
     return this.$.dialog;
   }
 
-  private onKeypress_(e: KeyboardEvent) {
+  protected onKeypress_(e: KeyboardEvent) {
     if (e.key !== 'Enter') {
       return;
     }
@@ -315,7 +314,7 @@ export class CrDialogElement extends CrDialogElementBase {
     }
   }
 
-  private onKeydown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     assert(this.consumeKeydownEvent);
 
     if (!this.getNative().open) {
@@ -330,7 +329,7 @@ export class CrDialogElement extends CrDialogElementBase {
     e.stopPropagation();
   }
 
-  private onPointerdown_(e: PointerEvent) {
+  protected onPointerdown_(e: PointerEvent) {
     // Only show pulse animation if user left-clicked outside of the dialog
     // contents.
     if (e.button !== 0 ||

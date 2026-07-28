@@ -240,7 +240,7 @@ export class CrSliderElement extends CrSliderElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private computeDisabled_(): boolean {
+  protected computeDisabled_(): boolean {
     return this.disabled || this.ticks.length === 1;
   }
 
@@ -252,11 +252,11 @@ export class CrSliderElement extends CrSliderElementBase {
    * @return The array items have no type since this is used to
    *     create |markerCount| number of markers.
    */
-  private getMarkers_<T>(): T[] {
+  protected getMarkers_<T>(): T[] {
     return new Array(Math.max(0, this.markerCount - 1));
   }
 
-  private getMarkerClass_(index: number): string {
+  protected getMarkerClass_(index: number): string {
     const currentStep = (this.markerCount - 1) * this.getRatio();
     return index < currentStep ? 'active-marker' : 'inactive-marker';
   }
@@ -301,12 +301,12 @@ export class CrSliderElement extends CrSliderElementBase {
     this.showLabel_ = true;
   }
 
-  private onDisabledChanged_() {
+  protected onDisabledChanged_() {
     this.setAttribute('tabindex', this.disabled_ ? '-1' : '0');
     this.blur();
   }
 
-  private onKeyDown_(event: KeyboardEvent) {
+  protected onKeyDown_(event: KeyboardEvent) {
     if (this.disabled_ || this.noKeybindings) {
       return;
     }
@@ -337,7 +337,7 @@ export class CrSliderElement extends CrSliderElementBase {
     this.showRipple_();
   }
 
-  private onKeyUp_(event: KeyboardEvent) {
+  protected onKeyUp_(event: KeyboardEvent) {
     if (event.key === 'Home' || event.key === 'End' ||
         this.deltaKeyMap_!.has(event.key)) {
       setTimeout(() => {
@@ -350,7 +350,7 @@ export class CrSliderElement extends CrSliderElementBase {
    * When the left-mouse button is pressed, the knob location is updated and
    * dragging starts.
    */
-  private onPointerDown_(event: PointerEvent) {
+  protected onPointerDown_(event: PointerEvent) {
     if (this.disabled_ ||
         event.buttons !== 1 && event.pointerType === 'mouse') {
       return;
@@ -390,7 +390,7 @@ export class CrSliderElement extends CrSliderElementBase {
     });
   }
 
-  private onTicksChanged_() {
+  protected onTicksChanged_() {
     if (this.ticks.length > 1) {
       this.snaps = true;
       this.max = this.ticks.length - 1;
@@ -401,11 +401,11 @@ export class CrSliderElement extends CrSliderElementBase {
     }
   }
 
-  private onTransitionEnd_() {
+  protected onTransitionEnd_() {
     this.transiting_ = false;
   }
 
-  private onValueMinMaxChange_() {
+  protected onValueMinMaxChange_() {
     this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
       if (this.value === undefined || this.min === undefined ||
           this.max === undefined) {
@@ -415,7 +415,7 @@ export class CrSliderElement extends CrSliderElementBase {
     });
   }
 
-  private updateUi_() {
+  protected updateUi_() {
     const percent = `${this.getRatio() * 100}%`;
     this.$.bar.style.width = percent;
     this.$.knobAndLabel.style.marginInlineStart = percent;
@@ -471,7 +471,7 @@ export class CrSliderElement extends CrSliderElementBase {
     }
   }
 
-  private buildDeltaKeyMap_() {
+  protected buildDeltaKeyMap_() {
     const increment = this.keyPressSliderIncrement;
     const decrement = -this.keyPressSliderIncrement;
     this.deltaKeyMap_ = new Map([

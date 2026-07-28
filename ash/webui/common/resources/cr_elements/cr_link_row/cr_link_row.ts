@@ -114,15 +114,15 @@ export class CrLinkRowElement extends PolymerElement {
     this.$.icon.focus();
   }
 
-  private computeHideLabelWrapper_(): boolean {
+  protected computeHideLabelWrapper_(): boolean {
     return !(this.label || this.usingSlottedLabel);
   }
 
-  private getIcon_(): string {
+  protected getIcon_(): string {
     return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
   }
 
-  private computeButtonAriaDescription_(
+  protected computeButtonAriaDescription_(
       external: boolean, buttonAriaDescription?: string): string {
     return buttonAriaDescription ??
         (external ? loadTimeData.getString('opensInNewTab') : '');

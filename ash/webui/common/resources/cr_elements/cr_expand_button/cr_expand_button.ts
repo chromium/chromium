@@ -113,11 +113,11 @@ export class CrExpandButtonElement extends PolymerElement {
     this.addEventListener('click', this.toggleExpand_);
   }
 
-  private computeTooltipText_(): string {
+  protected computeTooltipText_(): string {
     return this.expanded ? this.collapseTitle : this.expandTitle;
   }
 
-  private onTooltipTextChange_() {
+  protected onTooltipTextChange_() {
     this.title = this.tooltipText_;
   }
 
@@ -125,7 +125,7 @@ export class CrExpandButtonElement extends PolymerElement {
     this.$.icon.focus();
   }
 
-  private onAriaLabelChange_() {
+  protected onAriaLabelChange_() {
     if (this.ariaLabel) {
       this.$.icon.removeAttribute('aria-labelledby');
       this.$.icon.setAttribute('aria-label', this.ariaLabel);
@@ -135,11 +135,11 @@ export class CrExpandButtonElement extends PolymerElement {
     }
   }
 
-  private onExpandedChange_() {
+  protected onExpandedChange_() {
     this.updateIcon_();
   }
 
-  private onIconChange_() {
+  protected onIconChange_() {
     this.updateIcon_();
   }
 
@@ -147,7 +147,7 @@ export class CrExpandButtonElement extends PolymerElement {
     this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
   }
 
-  private toggleExpand_(event: Event) {
+  protected toggleExpand_(event: Event) {
     // Prevent |click| event from bubbling. It can cause parents of this
     // elements to erroneously re-toggle this control.
     event.stopPropagation();
@@ -158,7 +158,7 @@ export class CrExpandButtonElement extends PolymerElement {
     focusWithoutInk(this.$.icon);
   }
 
-  private updateAriaExpanded_() {
+  protected updateAriaExpanded_() {
     if (this.disabled) {
       this.$.icon.removeAttribute('aria-expanded');
     } else {

@@ -110,7 +110,7 @@ export class CrToolbarElement extends PolymerElement {
     return this.$.search;
   }
 
-  private onMenuClick_() {
+  protected onMenuClick_() {
     this.dispatchEvent(new CustomEvent(
         'cr-toolbar-menu-click', {bubbles: true, composed: true}));
   }

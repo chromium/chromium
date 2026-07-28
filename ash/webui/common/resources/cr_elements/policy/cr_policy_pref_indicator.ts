@@ -76,7 +76,7 @@ export class CrPolicyPrefIndicatorElement extends
   /**
    * @return The indicator type based on |pref| and |associatedValue|.
    */
-  private getIndicatorTypeForPref_(): CrPolicyIndicatorType {
+  protected getIndicatorTypeForPref_(): CrPolicyIndicatorType {
     assert(this.pref);
     const {enforcement, userSelectableValues, controlledBy, recommendedValue} =
         this.pref;
@@ -123,7 +123,7 @@ export class CrPolicyPrefIndicatorElement extends
   /**
    * @return The tooltip text for |indicatorType|.
    */
-  private getIndicatorTooltipForPref_(): string {
+  protected getIndicatorTooltipForPref_(): string {
     if (!this.pref) {
       return '';
     }
