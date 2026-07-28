@@ -89,13 +89,19 @@ void NowPlayingInfoCenterDelegate::StartTimer() {
 }
 
 void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
-  auto position = position_.value_or(media_session::MediaPosition());
   auto playback_status =
       playback_status_.value_or(SystemMediaControls::PlaybackStatus::kStopped);
 
   MPNowPlayingPlaybackState state =
       PlaybackStatusToMPNowPlayingPlaybackState(playback_status);
   [now_playing_info_center_delegate_cocoa_ setPlaybackState:state];
+
+  if (!position_) {
+    [now_playing_info_center_delegate_cocoa_ clearPosition];
+    return;
+  }
+
+  const media_session::MediaPosition& position = *position_;
 
   // Convert the TimeTicks timestamp to wall-clock Time by subtracting the
   // elapsed tick duration from the current wall-clock time.
@@ -120,6 +126,11 @@ void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
                                    .InSecondsF())];
 
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
+}
+
+void NowPlayingInfoCenterDelegate::ClearPosition() {
+  position_.reset();
+  [now_playing_info_center_delegate_cocoa_ clearPosition];
 }
 
 void NowPlayingInfoCenterDelegate::ClearMetadata() {

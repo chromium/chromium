@@ -175,7 +175,16 @@ void SystemMediaControlsNotifier::MediaSessionPositionChanged(
   if (position) {
     DebouncePositionUpdate(*position);
   } else {
-    ClearAllMetadata();
+    delayed_position_update_ = std::nullopt;
+
+    // Do not cancel metadata or playback state updates just because position
+    // is unavailable. A Media Session can retain both while explicitly
+    // clearing its position state.
+    if (!delayed_metadata_update_ && !delayed_playback_status_) {
+      metadata_update_timer_.Stop();
+    }
+
+    system_media_controls_->ClearPosition();
   }
 }
 

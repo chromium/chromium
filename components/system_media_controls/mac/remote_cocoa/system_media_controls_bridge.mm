@@ -97,6 +97,10 @@ void SystemMediaControlsBridge::SetPosition(
   now_playing_info_center_delegate_.SetPosition(position);
 }
 
+void SystemMediaControlsBridge::ClearPosition() {
+  now_playing_info_center_delegate_.ClearPosition();
+}
+
 void SystemMediaControlsBridge::ClearMetadata() {
   now_playing_info_center_delegate_.ClearMetadata();
 

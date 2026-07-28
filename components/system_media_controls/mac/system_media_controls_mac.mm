@@ -150,6 +150,11 @@ void SystemMediaControlsMac::SetPosition(
   bridge_remote_->SetPosition(position);
 }
 
+void SystemMediaControlsMac::ClearPosition() {
+  MaybeRebindToBridge();
+  bridge_remote_->ClearPosition();
+}
+
 void SystemMediaControlsMac::ClearMetadata() {
   MaybeRebindToBridge();
   bridge_remote_->ClearMetadata();

@@ -417,6 +417,34 @@ void SystemMediaControlsWin::SetPosition(
   DCHECK(SUCCEEDED(hr));
 }
 
+void SystemMediaControlsWin::ClearPosition() {
+  DCHECK(initialized_);
+
+  Microsoft::WRL::ComPtr<ISystemMediaTransportControls2>
+      system_media_controls_2;
+  HRESULT hr = system_media_controls_.As(&system_media_controls_2);
+  if (FAILED(hr)) {
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<ISystemMediaTransportControlsTimelineProperties>
+      timeline_properties;
+  base::win::ScopedHString id = base::win::ScopedHString::Create(
+      RuntimeClass_Windows_Media_SystemMediaTransportControlsTimelineProperties);
+  hr = base::win::RoActivateInstance(id.get(), &timeline_properties);
+  if (FAILED(hr)) {
+    return;
+  }
+
+  // A default timeline has no range and therefore is not displayed.
+  hr = system_media_controls_2->UpdateTimelineProperties(
+      timeline_properties.Get());
+  DCHECK(SUCCEEDED(hr));
+
+  hr = system_media_controls_2->put_PlaybackRate(1.0);
+  DCHECK(SUCCEEDED(hr));
+}
+
 void SystemMediaControlsWin::ClearThumbnail() {
   DCHECK(initialized_);
   DCHECK(display_updater_);

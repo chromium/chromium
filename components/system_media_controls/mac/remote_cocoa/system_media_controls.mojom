@@ -55,6 +55,9 @@ interface SystemMediaControls {
 
   // Clears all previously set metadata and state from the system media controls.
   ClearMetadata();
+
+  // Clears position-related state without clearing media metadata.
+  ClearPosition();
 };
 
 // Enables the browser process to observe user initiated events from macOS's

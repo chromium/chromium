@@ -49,6 +49,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsBridge
   void SetAlbum(const std::u16string& album) override;
   void SetThumbnail(const SkBitmap& thumbnail) override;
   void SetPosition(const media_session::MediaPosition& position) override;
+  void ClearPosition() override;
   void ClearMetadata() override;
 
  private:

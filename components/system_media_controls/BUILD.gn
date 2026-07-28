@@ -98,6 +98,13 @@ source_set("unit_tests") {
       "//testing/gmock",
       "//testing/gtest",
     ]
+  } else if (is_mac) {
+    sources = [ "mac/now_playing_info_center_delegate_cocoa_unittest.mm" ]
+    deps = [
+      ":system_media_controls",
+      "//testing/gtest",
+    ]
+    frameworks = [ "MediaPlayer.framework" ]
   }
 }
 

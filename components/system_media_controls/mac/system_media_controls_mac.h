@@ -58,6 +58,7 @@ class SystemMediaControlsMac
   void SetAlbum(const std::u16string& album) override;
   void SetThumbnail(const SkBitmap& bitmap) override;
   void SetPosition(const media_session::MediaPosition& position) override;
+  void ClearPosition() override;
   void ClearThumbnail() override {}
   void ClearMetadata() override;
   void UpdateDisplay() override {}

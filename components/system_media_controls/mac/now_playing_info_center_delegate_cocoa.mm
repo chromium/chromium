@@ -79,6 +79,22 @@
   [_nowPlayingInfo setObject:artwork forKey:MPMediaItemPropertyArtwork];
 }
 
+- (void)clearPosition {
+  [_nowPlayingInfo
+      removeObjectForKey:MPNowPlayingInfoPropertyCurrentPlaybackDate];
+  [_nowPlayingInfo
+      removeObjectForKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  [_nowPlayingInfo removeObjectForKey:MPNowPlayingInfoPropertyPlaybackRate];
+  [_nowPlayingInfo removeObjectForKey:MPMediaItemPropertyPlaybackDuration];
+
+  // ClearMetadata deliberately publishes nil. Do not replace it with the
+  // default-filled internal dictionary when a null position follows during
+  // media session teardown.
+  if ([MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo) {
+    [self updateNowPlayingInfo];
+  }
+}
+
 - (void)clearMetadata {
   // Reset our internal dictionary to have default values.
   [self initializeNowPlayingInfoValues];
