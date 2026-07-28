@@ -36,6 +36,7 @@ namespace {
 
 const char kAppUrl[] = "https://isolated.app";
 const char kAppUrl2[] = "https://isolated.app/page";
+const char kOtherAppUrl[] = "https://other-isolated.app";
 const char kNonAppUrl[] = "https://example.com";
 const char kNonAppUrl2[] = "https://example.com/page";
 static constexpr WebExposedIsolationLevel kNotIsolated =
@@ -47,7 +48,8 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url.GetHost() == GURL(kAppUrl).GetHost();
+    return url.GetHost() == GURL(kAppUrl).GetHost() ||
+           url.GetHost() == GURL(kOtherAppUrl).GetHost();
   }
 
   bool HandleExternalProtocol(
@@ -329,6 +331,36 @@ TEST_F(IsolatedWebAppThrottleTest, AllowIframeNavigationOutOfApp) {
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
+}
+
+TEST_F(IsolatedWebAppThrottleTest, BlockIframeNavigationToOtherIsolatedWebApp) {
+  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
+  EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
+
+  // Navigating an iframe to a different Isolated Web App should be blocked.
+  auto simulator = StartRendererInitiatedNavigation(iframe_id, kOtherAppUrl);
+
+  auto start_result = simulator->GetLastThrottleCheckResult();
+  EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, start_result.action());
+}
+
+TEST_F(IsolatedWebAppThrottleTest, BlockIframeRedirectToOtherIsolatedWebApp) {
+  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
+  EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
+  FrameTreeNodeId iframe_id = CreateIframe(main_frame_id(), "test_frame");
+
+  auto simulator = StartRendererInitiatedNavigation(iframe_id, kNonAppUrl);
+
+  auto start_result = simulator->GetLastThrottleCheckResult();
+  EXPECT_EQ(NavigationThrottle::PROCEED, start_result.action());
+
+  // Redirect to a different Isolated Web App.
+  simulator->SetRedirectHeaders(corp_coep_headers());
+  simulator->Redirect(GURL(kOtherAppUrl));
+
+  auto redirect_result = simulator->GetLastThrottleCheckResult();
+  EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, redirect_result.action());
 }
 
 TEST_F(IsolatedWebAppThrottleTest,

@@ -233,9 +233,12 @@ IsolatedWebAppThrottle::MaybeThrottleNavigationTransition(
     // Handle iframe navigations.
     CHECK(!navigation_handle()->IsInMainFrame());
 
-    // Iframes are allowed to leave the app's origin.
+    // Iframes are allowed to leave the app's origin, but not to navigate
+    // into a different Isolated Web App.
     if (dest_tuple != web_contents_isolation_tuple) {
-      return ThrottleAction::PROCEED;
+      return IsNavigatingToIsolatedApplication(navigation_handle())
+                 ? block_action
+                 : ThrottleAction::PROCEED;
     }
 
     // Block renderer-initiated iframe navigations into the app that were
