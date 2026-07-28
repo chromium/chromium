@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,6 +25,7 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
+#include "components/multistep_filter/core/switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -37,10 +39,6 @@
 
 namespace multistep_filter {
 
-
-
-
-
 class MultistepFilterServiceTest : public testing::Test {
  public:
   MultistepFilterServiceTest() {
@@ -52,7 +50,7 @@ class MultistepFilterServiceTest : public testing::Test {
         syncer::UserSelectableType::kHistory, true);
   }
 
-  void CreateService(signin::IdentityManager* identity_manager) {
+  void CreateService() {
     auto annotation_index_client =
         std::make_unique<MockAnnotationIndexClient>();
     mock_client_ = annotation_index_client.get();
@@ -63,7 +61,7 @@ class MultistepFilterServiceTest : public testing::Test {
     MultistepFilterService::Params params;
     params.annotation_index_client = std::move(annotation_index_client);
     params.filter_store = std::move(filter_store);
-    params.identity_manager = identity_manager;
+    params.identity_manager = identity_test_env_.identity_manager();
     params.consent_helper = std::move(consent_helper);
     params.log_router = nullptr;
     params.pref_service = &pref_service_;
@@ -71,8 +69,6 @@ class MultistepFilterServiceTest : public testing::Test {
 
     service_ = std::make_unique<MultistepFilterService>(std::move(params));
   }
-
-  void CreateService() { CreateService(identity_test_env_.identity_manager()); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -243,9 +239,19 @@ TEST_F(MultistepFilterServiceTest,
        CanUseModelExecutionFeatures_CapabilityNotSet) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
-
   CreateService();
   EXPECT_FALSE(service_->CanUseModelExecutionFeatures());
+}
+
+// Tests that CanUseModelExecutionFeatures returns true when the bypass switch
+// is enabled, even if not signed in.
+TEST_F(MultistepFilterServiceTest,
+       CanUseModelExecutionFeatures_BypassSwitchEnabled) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kMultistepFilterBypassCapabilityCheck);
+  CreateService();
+  EXPECT_TRUE(service_->CanUseModelExecutionFeatures());
 }
 
 }  // namespace multistep_filter

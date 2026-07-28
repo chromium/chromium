@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "components/multistep_filter/core/prefs/multistep_filter_retention_prefs.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
+#include "components/multistep_filter/core/switches.h"
 #include "components/multistep_filter/core/verification/filter_application_verifier.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -72,9 +74,6 @@ void LogHistoryDeleted(MultistepFilterLogRouter* log_router,
       << LogDetail{"reason", reason}
       << LogDetail{"rows_deleted", static_cast<int>(rows_deleted.value_or(0))};
 }
-
-
-
 
 }  // namespace
 
@@ -139,12 +138,19 @@ bool MultistepFilterService::HasUserProvidedConsent(int64_t navigation_id,
 }
 
 bool MultistepFilterService::CanUseModelExecutionFeatures() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kMultistepFilterBypassCapabilityCheck)) {
+    return true;
+  }
+  if (!IsUserSignedIn()) {
+    return false;
+  }
   const CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty()) {
     return false;
   }
-  AccountInfo account_info =
+  const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   return account_info.GetAccountCapabilities()
              .can_use_model_execution_features() == signin::Tribool::kTrue;

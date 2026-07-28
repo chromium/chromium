@@ -36,6 +36,7 @@ source_set("core") {
   ]
   deps = [
     ":features",
+    ":switches",
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
@@ -79,6 +80,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":features",
+    ":switches",
     ":test_support",
     ":util",
     "//base",
