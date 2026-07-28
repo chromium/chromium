@@ -403,19 +403,21 @@ class GraphImplLiteRt::ComputeResources {
       accelerators |= ::litert::HwAccelerators::kNpu;
     }
 
-    if (context_device == mojom::Device::kGpu) {
-      accelerators |= ::litert::HwAccelerators::kGpu;
-      auto gpu_options = options->GetGpuOptions();
-      if (!gpu_options) {
-        return base::unexpected(mojom::Error::New(
-            mojom::Error::Code::kUnknownError,
-            base::StringPrintf("Unable to create GPU Options: %s",
-                               gpu_options.Error().Message())));
-      }
-      gpu_options->SetPrecision(graph_requires_fp32_precision
-                                    ? ::litert::GpuOptions::Precision::kFp32
-                                    : ::litert::GpuOptions::Precision::kFp16);
-    }
+    // TODO(crbug.com/516836300): Re-enable once ABI mismatch is resolved.
+    // if (context_device == mojom::Device::kGpu) {
+    //   accelerators |= ::litert::HwAccelerators::kGpu;
+    //   auto gpu_options = options->GetGpuOptions();
+    //   if (!gpu_options) {
+    //     return base::unexpected(mojom::Error::New(
+    //         mojom::Error::Code::kUnknownError,
+    //         base::StringPrintf("Unable to create GPU Options: %s",
+    //                            gpu_options.Error().Message())));
+    //   }
+    //   gpu_options->SetPrecision(graph_requires_fp32_precision
+    //                                 ? ::litert::GpuOptions::Precision::kFp32
+    //                                 :
+    //                                 ::litert::GpuOptions::Precision::kFp16);
+    // }
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
     accelerators |= ::litert::HwAccelerators::kCpu;
     auto cpu_options = options->GetCpuOptions();
