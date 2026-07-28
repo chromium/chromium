@@ -79,7 +79,7 @@ class DlpInternalsUi extends PolymerElement {
   private filesEntries_: FileDatabaseEntry[] = [];
 
   // Selected file inode number.
-  private selectedFileInode_: bigint;
+  private selectedFileInode_: bigint = 0n;
 
   private readonly pageHandler_: PageHandlerInterface;
   private readonly reportingObserver_: ReportingObserverReceiver;
@@ -274,7 +274,7 @@ class DlpInternalsUi extends PolymerElement {
           if (value.inode) {
             this.selectedFileInode_ = value.inode;
           } else {
-            this.selectedFileInode_ = BigInt(0);
+            this.selectedFileInode_ = 0n;
           }
         })
         .catch((e: object) => {

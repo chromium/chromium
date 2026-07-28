@@ -27,7 +27,7 @@ export const SubflowMixin = dedupingMixin(
           };
         }
 
-        buttonState: ButtonBarState;
+        declare buttonState: ButtonBarState;
 
         initSubflow(): void {
           assertNotReached();
