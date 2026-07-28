@@ -326,6 +326,11 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerInteractiveTest,
                        OpenAndCloseWithKeyboardShortcut) {
+  if (GetParam()) {
+    // Immersive mode is tested in ToggleImmersiveFromKeyboardShortcut.
+    return;
+  }
+
   ui::Accelerator reading_mode_accelerator;
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
       IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
