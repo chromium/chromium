@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/eye_dropper_listener.h"
@@ -47,6 +48,7 @@ class CONTENT_EXPORT EyeDropperChooserImpl final
 
   ChooseCallback callback_;
   std::unique_ptr<EyeDropper> eye_dropper_;
+  base::WeakPtrFactory<EyeDropperChooserImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

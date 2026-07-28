@@ -4,6 +4,7 @@
 
 #include "content/browser/eye_dropper_chooser_impl.h"
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -115,13 +116,19 @@ void EyeDropperChooserImpl::Choose(ChooseCallback callback) {
 }
 
 void EyeDropperChooserImpl::ColorSelected(SkColor color) {
+  base::WeakPtr<EyeDropperChooserImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   eye_dropper_.reset();
+  CHECK(weak_this);
   ClearActiveEyeDropper();
   std::move(callback_).Run(/*success=*/true, color);
 }
 
 void EyeDropperChooserImpl::ColorSelectionCanceled() {
+  base::WeakPtr<EyeDropperChooserImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   eye_dropper_.reset();
+  CHECK(weak_this);
   ClearActiveEyeDropper();
   std::move(callback_).Run(/*success=*/false, /*color=*/0);
 }
