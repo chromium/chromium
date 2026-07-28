@@ -3021,18 +3021,26 @@
     <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the pop-ups content setting.">
       Not allowed to send pop-ups or use redirects
     </message>
-    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION" desc="Description of the protected content content setting.">
-      To play content protected by copyright, sites may need to use a content protection service
-    </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED" desc="Label for the enabled option of the protected content content setting.">
-      Sites can play protected content
+      Sites can use content protection services
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
-      Don't allow sites to play protected content
+      Don't allow sites to use content protection services
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
-      Media with a copyright might not play
+      You may not be able to access certain content
     </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION" desc="Description of the protected content content setting.">
+      Sites may use a content protection service to play content that is protected by copyright
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION_WITH_BROWSER_CHECK" desc="Description of the protected content content setting, including a warning that sites may check which browser is used.">
+      Sites may use a content protection service to play content that is protected by copyright or check which browser you're using
+    </message>
+    <if expr="is_win or is_macosx">
+      <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_SUB_LABEL" desc="Sub label for the enabled option of the protected content content setting.">
+        These sites may see which browser you're using
+      </message>
+    </if>
     <if expr="is_chromeos or is_win">
       <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION" desc="Text that is displayed on the Protected Content section of Content Settings. This text explains that enabling protected content may require using a uniquely identifiable machine identifier.">
         Sites may also need to recognize your device using an identifier
