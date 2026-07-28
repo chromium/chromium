@@ -69,9 +69,10 @@ void SidePanelRegistry::ResetActiveEntry() {
   active_entry_.reset();
 }
 
-void SidePanelRegistry::ClearCachedEntryViews() {
+void SidePanelRegistry::ClearCachedEntryViews(bool include_active_entry) {
   for (auto const& entry : entries_) {
-    if (!active_entry_.has_value() || entry.get() != active_entry_.value()) {
+    if (include_active_entry || !active_entry_.has_value() ||
+        entry.get() != active_entry_.value()) {
       entry.get()->ClearCachedView();
     }
   }

@@ -51,8 +51,9 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
   void ResetActiveEntry();
 
-  // Clear cached view for all owned entries, except for the active entry.
-  void ClearCachedEntryViews();
+  // Clear cached view for owned entries. If `include_active_entry` is false,
+  // the active entry's cached view is preserved.
+  void ClearCachedEntryViews(bool include_active_entry = false);
 
   // Registers a SidePanelEntry. Returns true if the entry is successfully
   // registered and false if a SidePanelEntry already exists in the registry for

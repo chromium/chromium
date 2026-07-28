@@ -73,6 +73,7 @@ SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   SPLOG("SidePanelCoordinatorAndroid Destructor");
+  ClearCachedEntryViews(/*include_active_entry=*/true);
   Java_SidePanelCoordinatorAndroidImpl_clearNativePtr(AttachCurrentThread(),
                                                       java_coordinator());
 }
@@ -806,15 +807,16 @@ void SidePanelCoordinatorAndroid::ClearDeferredEntryForTab(
   deferred_entry_tracker_.ClearEntryForTab(tab_handle);
 }
 
-void SidePanelCoordinatorAndroid::ClearCachedEntryViews() {
+void SidePanelCoordinatorAndroid::ClearCachedEntryViews(
+    bool include_active_entry) {
   if (auto* window_registry = SidePanelRegistry::From(browser())) {
-    window_registry->ClearCachedEntryViews();
+    window_registry->ClearCachedEntryViews(include_active_entry);
   }
 
   if (auto* tab_list = TabListInterface::From(browser())) {
     for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
       if (auto* registry = SidePanelRegistry::From(tab)) {
-        registry->ClearCachedEntryViews();
+        registry->ClearCachedEntryViews(include_active_entry);
       }
     }
   }

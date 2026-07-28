@@ -457,6 +457,46 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       entry_java_view.obj(), entry_ptr->CachedView()->view().obj()));
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Destructor_ClearsCachedEntryViews) {
+  // Arrange: Register entries in window and tab registries and populate cache.
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  auto window_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto tab_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+
+  auto window_entry = CreateSidePanelEntry(window_key, browser_);
+  auto tab_entry = CreateSidePanelEntry(tab_key, browser_);
+  SidePanelEntry* window_entry_ptr = window_entry.get();
+  SidePanelEntry* tab_entry_ptr = tab_entry.get();
+
+  SidePanelRegistry::From(browser_)->Register(std::move(window_entry));
+  SidePanelRegistry::From(active_tab)->Register(std::move(tab_entry));
+
+  coordinator_->SidePanelUIBase::Show(window_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  coordinator_->SidePanelUIBase::Show(tab_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+
+  ASSERT_NE(nullptr, window_entry_ptr->CachedView().get());
+  ASSERT_NE(nullptr, tab_entry_ptr->CachedView().get());
+
+  // Act: Destroy the coordinator (simulating window/activity destruction).
+  delete coordinator_.ExtractAsDangling();
+
+  // Assert: Cached views in both window and tab registries are cleared...
+  EXPECT_EQ(nullptr, window_entry_ptr->CachedView().get());
+  EXPECT_EQ(nullptr, tab_entry_ptr->CachedView().get());
+
+  // ...but active entry selection remains preserved for window restoration.
+  EXPECT_EQ(
+      tab_entry_ptr,
+      SidePanelRegistry::From(active_tab)->GetActiveEntry().value_or(nullptr));
+}
+
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
     Show_SidePanelAlreadyShownWithDifferentEntry_CachesEntryViewForBothPreviousAndCurrentEntries) {

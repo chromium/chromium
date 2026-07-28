@@ -129,7 +129,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Delegates to `SidePanelRegistry::ClearCachedEntryViews` in all
   // `SidePanelRegistry` instances accessible from this class, including
   // the window-scoped registry and all contextual (tab-scoped) registries.
-  void ClearCachedEntryViews();
+  void ClearCachedEntryViews(bool include_active_entry = false);
 
   void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
 
