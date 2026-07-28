@@ -70,6 +70,8 @@ import type {PinnedToolbarActionsElement} from './pinned_toolbar_actions.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
+import {ToolbarActionMixin} from './toolbar_action_mixin.js';
+import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 import {CrLazyIconset} from './cr_lazy_iconset.js';
@@ -117,6 +119,7 @@ export {
   PressHandler,
   ReadonlyOmniboxElement,
   resetInitialStateForTesting,
+  ToolbarActionMixin,
   ToolbarChipButtonElement,
   TrackedElementManager,
 };
@@ -131,6 +134,7 @@ export type {
   PinnedToolbarActionElement,
   PinnedToolbarActionsElement,
   PointerProxy,
+  ToolbarActionMixinInterface,
   ToolbarFlatStateSchema,
 };
 // clang-format on

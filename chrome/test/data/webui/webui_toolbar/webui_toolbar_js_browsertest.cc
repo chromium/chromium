@@ -83,6 +83,10 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PermissionDashboard) {
   RunTest("webui_toolbar/permission_dashboard_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarActionMixin) {
+  RunTest("webui_toolbar/toolbar_action_mixin_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ToolbarButton) {
   RunTest("webui_toolbar/toolbar_button_test.js", "mocha.run();");
 }
