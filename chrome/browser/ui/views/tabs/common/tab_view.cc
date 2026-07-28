@@ -676,6 +676,20 @@ void TabView::OnBlur() {
   InvalidateLayout();
 }
 
+gfx::Size TabView::GetMinimumSize() const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    if (pinned_) {
+      return gfx::Size(tab_style_->GetPinnedWidth(split_),
+                       GetLayoutConstant(LayoutConstant::kTabHeight));
+    }
+    const int min_width = active_ ? tab_style_->GetMinimumActiveWidth(split_)
+                                  : tab_style_->GetMinimumInactiveWidth();
+    return gfx::Size(min_width, GetLayoutConstant(LayoutConstant::kTabHeight));
+  }
+  return views::View::GetMinimumSize();
+}
+
 void TabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   SetClipPath(GetPath());
 }

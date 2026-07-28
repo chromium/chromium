@@ -98,6 +98,7 @@ class TabView : public views::View,
 
  private:
   // views::View
+  gfx::Size GetMinimumSize() const override;
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
