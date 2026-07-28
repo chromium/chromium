@@ -254,7 +254,12 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
   NSWindow* generic_ns_window =
       generic_widget->GetNativeWindow().GetNativeNSWindow();
 
-  EXPECT_EQ(generic_ns_window.alphaValue, 1.0);
+  // The alpha value will only be set to a non-zero value once the compositor
+  // delivers a frame. Wait for it.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return generic_ns_window.alphaValue == 1.0 &&
+           browserWindow.alphaValue == 1.0;
+  }));
 
   ConfirmQuitPanelController* controller =
       [[ConfirmQuitPanelController alloc] init];

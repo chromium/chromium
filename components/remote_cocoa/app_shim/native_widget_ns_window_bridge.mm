@@ -979,8 +979,22 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
 
   DCHECK(wants_to_be_visible_);
 
-  if (!ca_transaction_sync_suppressed_)
-    ui::CATransactionCoordinator::Get().Synchronize();
+  if (!ca_transaction_sync_suppressed_) {
+    if (base::FeatureList::IsEnabled(features::kAlphaInsteadOfCATransaction)) {
+      // If the window isn't visible and a compositor frame for the window size
+      // hasn't come in yet, keep the window effectively invisible via
+      // `alphaValue`. It will be made visible when a correctly sized compositor
+      // frame arrives.
+      if (!window_.visible && compositor_frame_dip_size_ != content_dip_size_) {
+        if (!pending_alpha_value_.has_value()) {
+          pending_alpha_value_ = window_.alphaValue;
+        }
+        window_.alphaValue = 0.0;
+      }
+    } else {
+      ui::CATransactionCoordinator::Get().Synchronize();
+    }
+  }
 
   // If the parent (or an ancestor) is hidden, return and wait for it to become
   // visible.
@@ -1883,7 +1897,13 @@ void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
 }
 
 void NativeWidgetNSWindowBridge::SetOpacity(float opacity) {
-  [window_ setAlphaValue:opacity];
+  // If the window is currently invisible waiting for a compositor frame to
+  // arrive, update the value to set once that frame arrives.
+  if (pending_alpha_value_.has_value()) {
+    pending_alpha_value_ = opacity;
+  } else {
+    window_.alphaValue = opacity;
+  }
 }
 
 void NativeWidgetNSWindowBridge::SetWindowLevel(int32_t level) {
@@ -1939,6 +1959,13 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
 
   if (ca_transaction_sync_suppressed_)
     ca_transaction_sync_suppressed_ = false;
+
+  // If the window is being kept invisible by its `alphaValue` waiting for
+  // a compositor frame, show it now.
+  if (pending_alpha_value_.has_value()) {
+    window_.alphaValue = pending_alpha_value_.value();
+    pending_alpha_value_ = std::nullopt;
+  }
 
   if (invalidate_shadow_on_frame_swap_) {
     invalidate_shadow_on_frame_swap_ = false;
@@ -2167,9 +2194,10 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   CheckAndNotifyZoomedStateChanged();
   CheckAndNotifyAllWorkspacesStateChanged();
 
-  if (content_resized && !ca_transaction_sync_suppressed_ &&
-      !base::FeatureList::IsEnabled(features::kAsyncLiveResize)) {
-    ui::CATransactionCoordinator::Get().Synchronize();
+  if (content_resized && window_.visible && !ca_transaction_sync_suppressed_) {
+    if (!base::FeatureList::IsEnabled(features::kAsyncLiveResize)) {
+      ui::CATransactionCoordinator::Get().Synchronize();
+    }
   }
 
   // For a translucent window, the shadow calculation needs to be carried out
