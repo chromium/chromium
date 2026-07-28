@@ -155,6 +155,7 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   bubble_view->AcceptDialog();
 
   EXPECT_TRUE(accept_future.Wait());
+  EXPECT_FALSE(IsIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -167,6 +168,7 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   bubble_view->CancelDialog();
 
   EXPECT_TRUE(cancel_future.Wait());
+  EXPECT_FALSE(IsIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
@@ -180,6 +182,21 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
       views::Widget::ClosedReason::kLostFocus);
 
   EXPECT_TRUE(closed_future.Wait());
+  EXPECT_TRUE(IsIconVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       CloseButtonCallbackTriggered) {
+  base::test::TestFuture<void> closed_future;
+  ShowBubble(base::DoNothing(), base::DoNothing(), closed_future.GetCallback());
+
+  PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  bubble_view->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+
+  EXPECT_TRUE(closed_future.Wait());
+  EXPECT_FALSE(IsIconVisible());
 }
 
 // TODO(crbug.com/529904307): Disabled due to flakey test.

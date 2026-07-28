@@ -82,6 +82,11 @@ class PaymentsChurnedUsersBubbleController
   bool is_reshow_ = false;
   AccountInfo account_info_;
 
+  // Set to false if a user accepts, cancels, or closes the bubble. This ensures
+  // the page action icon goes away so that the user isn't stuck with the icon
+  // and re-showing the bubble in the omnibox.
+  bool should_show_icon_ = true;
+
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;
   base::OnceClosure closed_callback_;

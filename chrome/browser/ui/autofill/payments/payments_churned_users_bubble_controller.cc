@@ -56,6 +56,7 @@ void PaymentsChurnedUsersBubbleController::Show(
   cancel_callback_ = std::move(cancel_callback);
   closed_callback_ = std::move(closed_callback);
   account_info_ = std::move(account_info);
+  should_show_icon_ = true;
   QueueOrShowBubble();
 }
 
@@ -76,6 +77,13 @@ void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {
 void PaymentsChurnedUsersBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
+
+  if (closed_reason == PaymentsUiClosedReason::kAccepted ||
+      closed_reason == PaymentsUiClosedReason::kCancelled ||
+      closed_reason == PaymentsUiClosedReason::kClosed) {
+    should_show_icon_ = false;
+  }
+
   UpdatePageActionIcon();
 
   if (closed_reason == PaymentsUiClosedReason::kAccepted) {
@@ -154,7 +162,7 @@ PaymentsChurnedUsersBubbleController::GetActionIdForPageAction() {
 }
 
 bool PaymentsChurnedUsersBubbleController::ShouldShowPageAction() {
-  return true;
+  return should_show_icon_;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
