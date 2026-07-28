@@ -386,9 +386,6 @@ gpu::SyncToken WebGpuSharedImageWrapper::GetSyncToken() const {
   return release_sync_token_;
 }
 
-base::ByteSize WebGpuSharedImageWrapper::EstimatedSizeInBytes() const {
-  return shared_image_->EstimatedSizeInBytes();
-}
 
 void WebGpuSharedImageWrapper::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -411,7 +408,8 @@ void WebGpuSharedImageWrapper::OnMemoryDump(
 }
 
 size_t WebGpuSharedImageWrapper::GetSize() const {
-  return base::checked_cast<size_t>(EstimatedSizeInBytes().InBytes());
+  return base::checked_cast<size_t>(
+      shared_image_->EstimatedSizeInBytes().InBytes());
 }
 
 }  // namespace blink

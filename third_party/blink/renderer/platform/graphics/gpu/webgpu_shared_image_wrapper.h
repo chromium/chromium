@@ -123,7 +123,6 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
   bool IsGpuContextLost() const;
 
   // CanvasMemoryDumpClient implementation.
-  base::ByteSize EstimatedSizeInBytes() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
