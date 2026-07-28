@@ -877,7 +877,6 @@ static_library("test_support") {
     sources += [
       "../browser/ui/chooser_bubble_testapi.h",
       "../browser/ui/views/chooser_bubble_testapi_views.cc",
-      "../browser/ui/views/media_router/app_menu_test_api.h",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.cc",
       "../browser/ui/views/profiles/profile_picker_view_test_utils.h",
       "../browser/ui/views/profiles/profiles_pixel_test_utils.cc",
