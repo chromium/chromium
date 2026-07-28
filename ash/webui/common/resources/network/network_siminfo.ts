@@ -127,16 +127,16 @@ export class NetworkSiminfoElement extends NetworkSiminfoElementBase {
     };
   }
 
-  deviceState: OncMojo.DeviceStateProperties;
-  networkState: OncMojo.NetworkStateProperties;
-  globalPolicy: GlobalPolicy|undefined;
-  disabled: boolean;
-  private lockEnabled_: boolean;
-  private isDialogOpen_: boolean;
-  private showChangePin_: boolean;
-  private isActiveSim_: boolean;
-  private state_: State;
-  private isSimPinLockRestricted_: boolean;
+  declare deviceState: OncMojo.DeviceStateProperties;
+  declare networkState: OncMojo.NetworkStateProperties;
+  declare globalPolicy: GlobalPolicy|undefined;
+  declare disabled: boolean;
+  declare private lockEnabled_: boolean;
+  declare private isDialogOpen_: boolean;
+  declare private showChangePin_: boolean;
+  declare private isActiveSim_: boolean;
+  declare private state_: State;
+  declare private isSimPinLockRestricted_: boolean;
   private setLockEnabled_: boolean|undefined;
 
   getSimLockToggle(): CrToggleElement {

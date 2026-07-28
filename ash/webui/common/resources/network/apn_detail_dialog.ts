@@ -194,26 +194,26 @@ export class ApnDetailDialog extends ApnDetailDialogBase {
     };
   }
 
-  apnProperties: ApnProperties|undefined;
-  mode: ApnDetailDialogMode;
-  guid: string;
-  apnList: ApnProperties[];
-  private advancedSettingsExpanded_: boolean;
-  private AuthenticationTypes: ApnAuthenticationType[];
-  private IpTypes: ApnIpType[];
-  private UiElement: UiElement;
-  private selectedAuthType_: string;
-  private selectedIpType_: string;
-  private apn_: string;
-  private username_: string;
-  private password_: string;
-  private isDefaultApnType_: boolean;
-  private isAttachApnType_: boolean;
-  private isApnInputInvalid_: boolean;
-  private isMaxApnInputLengthReached_: boolean;
-  private shouldShowApnTypeErrorMessage_: boolean;
-  private shouldAnnounceA11yActionButtonState_: boolean|undefined;
-  private actionButtonEnabledA11yText_: string;
+  declare apnProperties: ApnProperties|undefined;
+  declare mode: ApnDetailDialogMode;
+  declare guid: string;
+  declare apnList: ApnProperties[];
+  declare private advancedSettingsExpanded_: boolean;
+  declare private AuthenticationTypes: ApnAuthenticationType[];
+  declare private IpTypes: ApnIpType[];
+  declare private UiElement: UiElement;
+  declare private selectedAuthType_: string;
+  declare private selectedIpType_: string;
+  declare private apn_: string;
+  declare private username_: string;
+  declare private password_: string;
+  declare private isDefaultApnType_: boolean;
+  declare private isAttachApnType_: boolean;
+  declare private isApnInputInvalid_: boolean;
+  declare private isMaxApnInputLengthReached_: boolean;
+  declare private shouldShowApnTypeErrorMessage_: boolean;
+  declare private shouldAnnounceA11yActionButtonState_: boolean|undefined;
+  declare private actionButtonEnabledA11yText_: string;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {

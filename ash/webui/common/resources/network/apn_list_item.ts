@@ -92,17 +92,17 @@ export class ApnListItemElement extends ApnListItemBase {
     };
   }
 
-  guid: string;
-  apn: ApnProperties;
-  isApnConnected: boolean;
-  shouldDisallowDisablingRemoving: boolean;
-  shouldDisallowEnabling: boolean;
-  shouldDisallowApnModification: boolean;
-  itemIndex: number;
-  listSize: number;
-  portalState: PortalState|null;
-  private isDisabled_: boolean;
-  private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
+  declare guid: string;
+  declare apn: ApnProperties;
+  declare isApnConnected: boolean;
+  declare shouldDisallowDisablingRemoving: boolean;
+  declare shouldDisallowEnabling: boolean;
+  declare shouldDisallowApnModification: boolean;
+  declare itemIndex: number;
+  declare listSize: number;
+  declare portalState: PortalState|null;
+  declare private isDisabled_: boolean;
+  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {

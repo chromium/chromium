@@ -62,10 +62,10 @@ export class NetworkConfigToggleElement extends NetworkConfigToggleElementBase {
     };
   }
 
-  checked: boolean;
-  label: string;
-  policyOnLeft: boolean;
-  subLabel: string;
+  declare checked: boolean;
+  declare label: string;
+  declare policyOnLeft: boolean;
+  declare subLabel: string;
 
   override ready() {
     super.ready();

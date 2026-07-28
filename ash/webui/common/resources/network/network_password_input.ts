@@ -14,14 +14,14 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import type {ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
-import {NetworkConfigElementBehavior, NetworkConfigElementBehaviorInterface} from './network_config_element_behavior.js';
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
 import {getTemplate} from './network_password_input.html.js';
 import {FAKE_CREDENTIAL} from './onc_mojo.js';
 
@@ -87,10 +87,12 @@ export class NetworkPasswordInputElement extends
 
       disabled: {
         type: Boolean,
+        value: false,
       },
 
       readonly: {
         type: Boolean,
+        value: false,
       },
 
       value: {
@@ -110,20 +112,20 @@ export class NetworkPasswordInputElement extends
     };
   }
 
-  label: string;
-  showPassword: boolean;
-  invalid: boolean;
-  allowErrorMessage: boolean;
-  errorMessage: string;
-  managedProperties: ManagedProperties;
-  disabled: boolean = false;
-  readonly: boolean = false;
-  value: string;
-  override ariaLabel: string;
-  private tooltipPosition_: string;
-  private showPolicyIndicator_: boolean;
+  declare label: string;
+  declare ariaLabel: string;
+  declare showPassword: boolean;
+  declare invalid: boolean;
+  declare allowErrorMessage: boolean;
+  declare errorMessage: string;
+  declare managedProperties: ManagedProperties|null|undefined;
+  declare disabled: boolean;
+  declare readonly: boolean;
+  declare value: string;
+  declare private tooltipPosition_: string;
+  declare private showPolicyIndicator_: boolean;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.tooltipPosition_ =
@@ -136,7 +138,7 @@ export class NetworkPasswordInputElement extends
 
     input.focus();
 
-    // If the input has any contents, the should be selected when focus is
+    // If the input has any contents, they should be selected when focus is
     // applied.
     input.select();
   }
@@ -169,7 +171,7 @@ export class NetworkPasswordInputElement extends
          this.managedProperties.source === OncSource.kNone);
   }
 
-  private onShowPasswordTap_(event: Event) {
+  private onShowPasswordTap_(event: Event): void {
     if (event.type === 'touchend' && event.cancelable) {
       // Prevent touch from producing secondary mouse events
       // that may cause the tooltip to appear unnecessarily.
@@ -186,7 +188,7 @@ export class NetworkPasswordInputElement extends
     event.stopPropagation();
   }
 
-  private onKeydown_(event: KeyboardEvent) {
+  private onKeydown_(event: KeyboardEvent): void {
     const target = event.target as HTMLElement;
     assert(target);
     if (target.id === 'input' && event.key === 'Enter') {
@@ -217,7 +219,7 @@ export class NetworkPasswordInputElement extends
    * If the fake password is showing, delete the password and focus the input
    * when clicked so the user can enter a new password.
    */
-  private onMousedown_(event: Event) {
+  private onMousedown_(event: Event): void {
     if (!this.isShowingPlaceholder_()) {
       return;
     }

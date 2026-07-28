@@ -108,30 +108,20 @@ export class NetworkSelectElement extends NetworkSelectElementBase {
     };
   }
 
-  showButtons: boolean;
-  customItems: NetworkList.CustomItemState[];
-  showTechnologyBadge: boolean;
-  enableWifiScans: boolean;
-  showScanProgress: boolean;
-  activationUnavailable: boolean;
-  private networkStateList_: OncMojo.NetworkStateProperties[];
-  private isScanOngoing_: boolean;
-  private globalPolicy_: GlobalPolicy|undefined;
+  declare showButtons: boolean;
+  declare customItems: NetworkList.CustomItemState[];
+  declare showTechnologyBadge: boolean;
+  declare enableWifiScans: boolean;
+  declare showScanProgress: boolean;
+  declare activationUnavailable: boolean;
+  declare private networkStateList_: OncMojo.NetworkStateProperties[];
+  declare private isScanOngoing_: boolean;
+  declare private globalPolicy_: GlobalPolicy|undefined;
 
   private defaultNetworkState_: OncMojo.NetworkStateProperties|undefined;
   private scanIntervalId_: number|undefined;
-  private networkConfig_: CrosNetworkConfigInterface;
-
-  constructor() {
-    super();
-
-    this.defaultNetworkState_ = undefined;
-
-    this.scanIntervalId_ = undefined;
-
-    this.networkConfig_ =
-        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  }
+  private networkConfig_: CrosNetworkConfigInterface =
+      MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
   override connectedCallback() {
     super.connectedCallback();

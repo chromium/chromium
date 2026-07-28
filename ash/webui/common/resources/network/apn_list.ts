@@ -96,18 +96,18 @@ export class ApnListElement extends ApnListElementBase {
     };
   }
 
-  guid: string;
-  errorState: string;
-  managedCellularProperties: ManagedCellularProperties;
-  portalState: PortalState|null;
-  shouldOmitLinks: boolean;
-  shouldDisallowApnModification: boolean;
-  private apns_: [];
-  private hasEnabledDefaultCustomApn_: boolean;
-  private shouldShowApnDetailDialog_: boolean;
-  private apnDetailDialogMode_: ApnDetailDialogMode;
-  private shouldShowApnSelectionDialog_: boolean;
-  private apnDetailDialogApnProperties_: ApnProperties|undefined;
+  declare guid: string;
+  declare errorState: string;
+  declare managedCellularProperties: ManagedCellularProperties;
+  declare portalState: PortalState|null;
+  declare shouldOmitLinks: boolean;
+  declare shouldDisallowApnModification: boolean;
+  declare private apns_: [];
+  declare private hasEnabledDefaultCustomApn_: boolean;
+  declare private shouldShowApnDetailDialog_: boolean;
+  declare private apnDetailDialogMode_: ApnDetailDialogMode;
+  declare private shouldShowApnSelectionDialog_: boolean;
+  declare private apnDetailDialogApnProperties_: ApnProperties|undefined;
 
   private onZeroStateCreateApnLinkClicked_(e: CustomEvent<{event: Event}>):
       void {

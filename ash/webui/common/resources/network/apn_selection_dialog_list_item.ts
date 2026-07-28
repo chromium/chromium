@@ -42,8 +42,8 @@ export class ApnSelectionDialogListItem extends
     };
   }
 
-  apn: ApnProperties;
-  selected: boolean;
+  declare apn: ApnProperties;
+  declare selected: boolean;
 
   private getApnDisplayName_(apn: ApnProperties): string {
     return getApnDisplayName(this.i18n.bind(this), apn);

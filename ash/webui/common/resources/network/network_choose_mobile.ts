@@ -73,13 +73,13 @@ export class NetworkChooseMobileElement extends NetworkChooseMobileElementBase {
     };
   }
 
-  deviceState: OncMojo.DeviceStateProperties|null;
-  disabled: boolean;
-  managedProperties: ManagedProperties|undefined;
-  private mobileNetworkList_: FoundNetworkProperties[];
+  declare deviceState: OncMojo.DeviceStateProperties|null;
+  declare disabled: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare private mobileNetworkList_: FoundNetworkProperties[];
   private networkConfig_: CrosNetworkConfigInterface|null = null;
   private scanRequested_: boolean = false;
-  private selectedMobileNetworkId_: string;
+  declare private selectedMobileNetworkId_: string;
 
   override connectedCallback() {
     super.connectedCallback();

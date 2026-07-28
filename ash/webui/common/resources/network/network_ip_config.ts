@@ -173,16 +173,16 @@ export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
     };
   }
 
-  disabled: boolean;
-  managedProperties: ManagedProperties|undefined;
-  private automatic_: boolean;
-  private ipConfig_: ({
+  declare disabled: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare private automatic_: boolean;
+  declare private ipConfig_: ({
     ipv4: (OncMojo.IPConfigUIProperties | undefined),
     ipv6: (OncMojo.IPConfigUIProperties|undefined),
   }|undefined);
-  private ipConfigFields_: string[];
-  private shouldShowAutoIpConfigToggle_: boolean;
-  private savedStaticIp_: OncMojo.IPConfigUIProperties|undefined;
+  declare private ipConfigFields_: string[];
+  declare private shouldShowAutoIpConfigToggle_: boolean;
+  declare private savedStaticIp_: OncMojo.IPConfigUIProperties|undefined;
 
   constructor() {
     super();

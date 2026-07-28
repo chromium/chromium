@@ -130,15 +130,15 @@ export class NetworkProxyElement extends NetworkProxyElementBase {
     };
   }
 
-  editable: boolean;
-  managedProperties: ManagedProperties|undefined;
-  useSharedProxies: boolean;
-  private proxy_: ManagedProxySettings;
-  private wpad_: string;
-  private useSameProxy_: boolean;
-  private proxyTypes_: [];
-  private proxyExclusionInputValue_: string;
-  private proxyIsUserModified_: boolean;
+  declare editable: boolean;
+  declare managedProperties: ManagedProperties|undefined;
+  declare useSharedProxies: boolean;
+  declare private proxy_: ManagedProxySettings;
+  declare private wpad_: string;
+  declare private useSameProxy_: boolean;
+  declare private proxyTypes_: [];
+  declare private proxyExclusionInputValue_: string;
+  declare private proxyIsUserModified_: boolean;
 
   /**
    * Saved ExcludeDomains properties so that switching to a non-Manual type

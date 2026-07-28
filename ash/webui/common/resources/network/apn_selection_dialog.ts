@@ -77,12 +77,12 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
     };
   }
 
-  apnList: ApnProperties[];
-  guid: string;
-  shouldOmitLinks: boolean;
-  private selectedApn_: ApnProperties;
-  private shouldAnnounceA11yActionButtonState_: boolean|undefined;
-  private actionButtonEnabledA11yText_: string;
+  declare apnList: ApnProperties[];
+  declare guid: string;
+  declare shouldOmitLinks: boolean;
+  declare private selectedApn_: ApnProperties;
+  declare private shouldAnnounceA11yActionButtonState_: boolean|undefined;
+  declare private actionButtonEnabledA11yText_: string;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {
