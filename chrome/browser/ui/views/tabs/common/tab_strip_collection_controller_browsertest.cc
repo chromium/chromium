@@ -170,11 +170,6 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
                        ClickTabInImmersiveMode) {
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test because it fails with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-
   // Add another tab to switch to.
   AppendTab();
 
@@ -209,7 +204,11 @@ IN_PROC_BROWSER_TEST_F(TabStripCollectionControllerBrowserTest,
   EXPECT_TRUE(toolbar->IsDrawn());
   EXPECT_TRUE(button_provider->GetBackButton()->IsDrawn());
   EXPECT_TRUE(toolbar->forward_button()->IsDrawn());
-  EXPECT_TRUE(toolbar->reload_button()->IsDrawn());
+  if (toolbar->reload_button()) {
+    EXPECT_TRUE(toolbar->reload_button()->IsDrawn());
+  } else {
+    EXPECT_NE(button_provider->GetReloadButton(), nullptr);
+  }
   EXPECT_TRUE(toolbar->location_bar()->IsDrawn());
   EXPECT_TRUE(button_provider->GetAppMenuControl()->IsDrawn());
 }
