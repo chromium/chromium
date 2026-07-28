@@ -118,7 +118,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   [textInput.view becomeFirstResponder];
 
-  if (_presentationContext == OmniboxPresentationContext::kComposebox &&
+  if ((_presentationContext == OmniboxPresentationContext::kComposebox ||
+       _presentationContext == OmniboxPresentationContext::kCobrowse) &&
       _omniboxTextModel && _omniboxTextModel->user_input_in_progress) {
     // In composebox, the omnibox is refocused after using the camera
     // attachment. If user has existing input, set the caret to the end of the
@@ -163,7 +164,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // defocus (crbug.com/458055336).
   BOOL skipExitPreEdit =
       IsComposeboxIOSEnabled() &&
-      _presentationContext == OmniboxPresentationContext::kComposebox;
+      (_presentationContext == OmniboxPresentationContext::kComposebox ||
+       _presentationContext == OmniboxPresentationContext::kCobrowse);
   if (!skipExitPreEdit) {
     [self.textInput exitPreEditState];
   }
@@ -174,7 +176,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   // Composebox is destroyed on endEditing, skip revert to avoid resizing on
   // revert.
-  if (_presentationContext != OmniboxPresentationContext::kComposebox) {
+  if (_presentationContext != OmniboxPresentationContext::kComposebox &&
+      _presentationContext != OmniboxPresentationContext::kCobrowse) {
     // Blow away any in-progress edits.
     [self revertAll];
     DCHECK(![self.textInput hasAutocompleteText]);
@@ -602,7 +605,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   if ([textInput isPreEditing]) {
     [textInput setClearingPreEditText:YES];
     if (IsComposeboxIOSEnabled() &&
-        _presentationContext == OmniboxPresentationContext::kComposebox) {
+        (_presentationContext == OmniboxPresentationContext::kComposebox ||
+         _presentationContext == OmniboxPresentationContext::kCobrowse)) {
       // Clear pre-edit text manually instead of relying on clearsOnInsertion.
       // clearsOnInsertion calls selectAll: which can can crash when called on
       // begin editing (crbug.com/479185287).
