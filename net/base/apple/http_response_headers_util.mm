@@ -7,18 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
-#include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/http/http_util.h"
-
-namespace {
-
-// String format used to create the http status line from the status code and
-// its localized description.
-char const kHttpStatusLineFormat[] = "HTTP %" PRIdNS " DummyStatusDescription";
-
-}  // anonymous namespace
 
 namespace net {
 
@@ -30,15 +22,17 @@ NSString* FixNSStringIncorrectlyDecodedAsLatin1(NSString* string) {
       characterSetWithRange:NSMakeRange(0x0080, 0x10ffff - 0x0080)];
 
   NSRange range = [string rangeOfCharacterFromSet:non_ascii_characters];
-  if (range.location == NSNotFound && range.length == 0)
+  if (range.location == NSNotFound && range.length == 0) {
     return string;
+  }
 
   // Try to save the string as "latin1". Will fail if it does contains
   // characters that falls out of the "latin1" range (i.e. after '\u00ff').
   NSData* data = [string dataUsingEncoding:NSISOLatin1StringEncoding
                       allowLossyConversion:NO];
-  if (!data)
+  if (!data) {
     return string;
+  }
 
   // Try to load the saved data as "utf-8". Will fail if the string is
   // not encoded in "utf-8". In that case, it was probably not garbled
@@ -46,8 +40,9 @@ NSString* FixNSStringIncorrectlyDecodedAsLatin1(NSString* string) {
   // strings that are genuinely encoded in "latin1".
   NSString* decoded = [[NSString alloc] initWithData:data
                                             encoding:NSUTF8StringEncoding];
-  if (!decoded)
+  if (!decoded) {
     return string;
+  }
 
   return decoded;
 }
@@ -55,21 +50,28 @@ NSString* FixNSStringIncorrectlyDecodedAsLatin1(NSString* string) {
 scoped_refptr<HttpResponseHeaders> CreateHeadersFromNSHTTPURLResponse(
     NSHTTPURLResponse* response) {
   DCHECK(response);
+
   // Initialize the header with a generated status line.
-  scoped_refptr<HttpResponseHeaders> http_headers(new HttpResponseHeaders(
-      base::StringPrintf(kHttpStatusLineFormat, response.statusCode)));
+  std::string status_line =
+      base::StrCat({"HTTP ", base::NumberToString(response.statusCode),
+                    " DummyStatusDescription"});
+
+  scoped_refptr<HttpResponseHeaders> http_headers(
+      new HttpResponseHeaders(status_line));
 
   // Iterate through |response|'s headers and add them to |http_headers|.
   [response.allHeaderFields enumerateKeysAndObjectsUsingBlock:^(
                                 NSString* name, NSString* value, BOOL*) {
     const std::string header_name = base::SysNSStringToUTF8(name);
-    if (!HttpUtil::IsValidHeaderName(header_name))
+    if (!HttpUtil::IsValidHeaderName(header_name)) {
       return;
+    }
 
     const std::string header_value =
         base::SysNSStringToUTF8(FixNSStringIncorrectlyDecodedAsLatin1(value));
-    if (!HttpUtil::IsValidHeaderValue(header_value))
+    if (!HttpUtil::IsValidHeaderValue(header_value)) {
       return;
+    }
 
     http_headers->AddHeader(header_name, header_value);
   }];

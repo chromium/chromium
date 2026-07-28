@@ -47,6 +47,8 @@ const CGFloat kLabelMargin = 2.5f;
   // If the previous number and current number match, do nothing.
   if (self.displayNumber != number) {
     self.displayNumber = number;
+    NSString* number_string =
+        [[[NSNumberFormatter alloc] init] stringFromNumber:@(number)];
     if (animated) {
       // If the view is being animated in, then `hidden` needs to be set to
       // `NO`. Otherwise the view is being animated out, in which case `hidden`
@@ -58,8 +60,7 @@ const CGFloat kLabelMargin = 2.5f;
               self.alpha = 1.0;
               // Only setting when > 0 as this makes the animation
               // look better than switching to 0 then fading out.
-              [self.textBadge
-                  setText:[NSString stringWithFormat:@"%" PRIdNS, number]];
+              self.textBadge.text = number_string;
             } else {
               self.alpha = 0.0;
             }
@@ -72,7 +73,7 @@ const CGFloat kLabelMargin = 2.5f;
             }
           }];
     } else {
-      [self.textBadge setText:[NSString stringWithFormat:@"%" PRIdNS, number]];
+      self.textBadge.text = number_string;
       self.hidden = (number > 0 ? NO : YES);
       self.alpha = (number > 0 ? 1 : 0);
     }

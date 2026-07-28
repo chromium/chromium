@@ -164,8 +164,8 @@ NSString* DialogMessageFromError(NSError* error) {
     if (errorDepth > 0) {
       [errorMessage appendString:@", "];
     }
-    [errorMessage
-        appendFormat:@"%@: %" PRIdNS, errorCursor.domain, errorCursor.code];
+    [errorMessage appendFormat:@"%@: %ld", errorCursor.domain,
+                               static_cast<long>(errorCursor.code)];
     errorCursor = errorCursor.userInfo[NSUnderlyingErrorKey];
   }
   [errorMessage appendString:@")"];

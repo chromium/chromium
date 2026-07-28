@@ -660,8 +660,9 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
         for (NSUInteger i = 0; i < [(NSArray*)expected_value count]; ++i) {
           [verifying_javascripts
               addObject:[NSString
-                            stringWithFormat:@"%@['%@'][%" PRIuNS "] === %@",
-                                             results, attribute, i,
+                            stringWithFormat:@"%@['%@'][%lu] === %@", results,
+                                             attribute,
+                                             static_cast<unsigned long>(i),
                                              [expected_value objectAtIndex:i]]];
         }
       }
@@ -698,8 +699,9 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
       NSDictionary* expectedDict = [expectedData objectAtIndex:i];
       NSString* itemVerifyingJavaScripts =
           GenerateElementItemVerifyingJavaScripts(
-              [NSString stringWithFormat:@"%@['fields'][%" PRIuNS "]", results,
-                                         controlCount],
+              [NSString
+                  stringWithFormat:@"%@['fields'][%lu]", results,
+                                   static_cast<unsigned long>(controlCount)],
               expectedDict, attributed_to_check, controlCount);
       [verifying_javascripts addObject:itemVerifyingJavaScripts];
     }
@@ -1015,9 +1017,8 @@ void AutofillControllerJsTest::TestInputElementDataEvaluation(
 
   for (NSUInteger i = 1; i < [test_data count]; ++i) {
     NSString* get_element_javascripts = [NSString
-        stringWithFormat:@"window.document.getElementsByTagName('%@')[%" PRIuNS
-                          "]",
-                         tag_name, i - 1];
+        stringWithFormat:@"window.document.getElementsByTagName('%@')[%lu]",
+                         tag_name, static_cast<unsigned long>(i - 1)];
     id actual = web::test::ExecuteJavaScript(
         web_view(),
         [NSString stringWithFormat:@"%@(%@).label === %@",
@@ -1358,8 +1359,9 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
                         @"var controlElements="
                          "__gCrWeb.getRegisteredApi('autofill')."
                          "getFunction('extractAutofillableElementsInForm')(%@);"
-                         "controlElements[%" PRIuNS "] === %@",
-                        parameter, index, expected[index]]));
+                         "controlElements[%lu] === %@",
+                        parameter, static_cast<unsigned long>(index),
+                        expected[index]]));
   }
 }
 
@@ -1371,11 +1373,10 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
   NSArray* attributes_to_check = GetFormFieldAttributeListsToCheck();
 
   for (NSUInteger j = 1; j < [test_data count]; ++j) {
-    NSString* get_element_to_test =
-        [NSString stringWithFormat:@"var element = "
-                                    "window.document.getElementsByTagName('%"
-                                    "@')[%" PRIuNS "]",
-                                   tag_name, j - 1];
+    NSString* get_element_to_test = [NSString
+        stringWithFormat:@"var element = "
+                          "window.document.getElementsByTagName('%@')[%lu]",
+                         tag_name, static_cast<unsigned long>(j - 1)];
     NSDictionary* expected = [test_data objectAtIndex:j];
     // Generates JavaScripts to verify the results. Parameter `results` is
     // @"field" as in the evaluation JavaScripts the results are returned in
@@ -1559,23 +1560,25 @@ void AutofillControllerJsTest::TestExtractNewForms(
     // all forms but the fist one.
     NSString* formName =
         (i == 0) ? @"TestForm"
-                 : [NSString stringWithFormat:@"gChrome~form~%" PRIuNS, i];
+                 : [NSString stringWithFormat:@"gChrome~form~%lu",
+                                              static_cast<unsigned long>(i)];
     [verifying_javascripts
-        addObject:[NSString stringWithFormat:@"forms[%" PRIuNS
-                                              "]['name'] === '%@'",
-                                             i, formName]];
+        addObject:[NSString stringWithFormat:@"forms[%lu]['name'] === '%@'",
+                                             static_cast<unsigned long>(i),
+                                             formName]];
     if (is_origin_window_location) {
       [verifying_javascripts
-          addObject:[NSString stringWithFormat:
-                                  @"forms[%" PRIuNS
-                                   "]['origin'] === window.location.href",
-                                  i]];
+          addObject:[NSString
+                        stringWithFormat:
+                            @"forms[%lu]['origin'] === window.location.href",
+                            static_cast<unsigned long>(i)]];
     }
     // This is the extract mask used by `extractNewForms` function
     // from autofill API.
     [verifying_javascripts
         addObject:GenerateTestItemVerifyingJavaScripts(
-                      [NSString stringWithFormat:@"forms[%" PRIuNS "]", i],
+                      [NSString stringWithFormat:@"forms[%lu]",
+                                                 static_cast<unsigned long>(i)],
                       [expected_items objectAtIndex:i],
                       GetFormFieldAttributeListsToCheck())];
   }

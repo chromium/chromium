@@ -11,7 +11,6 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -400,76 +399,6 @@ TEST(FoundationUtilTest, CFRangeToNSRange) {
   EXPECT_FALSE(CFRangeToNSRange(CFRangeMake(-1, -1), &range_out));
   EXPECT_FALSE(CFRangeToNSRange(CFRangeMake(LONG_MAX, LONG_MAX), &range_out));
   EXPECT_FALSE(CFRangeToNSRange(CFRangeMake(LONG_MIN, LONG_MAX), &range_out));
-}
-
-TEST(StringNumberConversionsTest, FormatNSInteger) {
-  // The PRI[dxu]NS macro assumes that NSInteger is a typedef to "int" on
-  // 32-bit architecture and a typedef to "long" on 64-bit architecture
-  // (respectively "unsigned int" and "unsigned long" for NSUInteger). Use
-  // pointer incompatibility to validate this at compilation.
-#if defined(ARCH_CPU_64_BITS)
-  typedef long FormatNSIntegerAsType;
-  typedef unsigned long FormatNSUIntegerAsType;
-#else
-  typedef int FormatNSIntegerAsType;
-  typedef unsigned int FormatNSUIntegerAsType;
-#endif  // defined(ARCH_CPU_64_BITS)
-
-  NSInteger some_nsinteger;
-  [[maybe_unused]] FormatNSIntegerAsType* pointer_to_some_nsinteger =
-      &some_nsinteger;
-
-  NSUInteger some_nsuinteger;
-  [[maybe_unused]] FormatNSUIntegerAsType* pointer_to_some_nsuinteger =
-      &some_nsuinteger;
-
-  // Check that format specifier works correctly for NSInteger.
-  const struct {
-    NSInteger value;
-    const char* expected;
-    const char* expected_hex;
-  } nsinteger_cases[] = {
-#if !defined(ARCH_CPU_64_BITS)
-      {12345678, "12345678", "bc614e"},
-      {-12345678, "-12345678", "ff439eb2"},
-#else
-      {12345678, "12345678", "bc614e"},
-      {-12345678, "-12345678", "ffffffffff439eb2"},
-      {137451299150l, "137451299150", "2000bc614e"},
-      {-137451299150l, "-137451299150", "ffffffdfff439eb2"},
-#endif  // !defined(ARCH_CPU_64_BITS)
-  };
-
-  for (const auto& nsinteger_case : nsinteger_cases) {
-    EXPECT_EQ(nsinteger_case.expected,
-              StringPrintf("%" PRIdNS, nsinteger_case.value));
-    EXPECT_EQ(nsinteger_case.expected_hex,
-              StringPrintf("%" PRIxNS, nsinteger_case.value));
-  }
-
-  // Check that format specifier works correctly for NSUInteger.
-  const struct {
-    NSUInteger value;
-    const char* expected;
-    const char* expected_hex;
-  } nsuinteger_cases[] = {
-#if !defined(ARCH_CPU_64_BITS)
-      {12345678u, "12345678", "bc614e"},
-      {4282621618u, "4282621618", "ff439eb2"},
-#else
-      {12345678u, "12345678", "bc614e"},
-      {4282621618u, "4282621618", "ff439eb2"},
-      {137451299150ul, "137451299150", "2000bc614e"},
-      {18446743936258252466ul, "18446743936258252466", "ffffffdfff439eb2"},
-#endif  // !defined(ARCH_CPU_64_BITS)
-  };
-
-  for (const auto& nsuinteger_case : nsuinteger_cases) {
-    EXPECT_EQ(nsuinteger_case.expected,
-              StringPrintf("%" PRIuNS, nsuinteger_case.value));
-    EXPECT_EQ(nsuinteger_case.expected_hex,
-              StringPrintf("%" PRIxNS, nsuinteger_case.value));
-  }
 }
 
 TEST(FoundationUtilTest, NSDataToSpan) {
