@@ -1438,6 +1438,20 @@ TEST_F(RationalizeRepeatedZipTest, ZipAndZipSuffix) {
                             ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
 }
 
+// Tests that (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP) is rationalized to
+// (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX).
+TEST_F(RationalizeRepeatedZipTest, ZipPrefixAndHeuristicZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure({
+      {.server_type = NAME_FULL},
+      {.server_type = ADDRESS_HOME_ZIP_PREFIX},
+      {.server_type = NO_SERVER_DATA, .heuristic_type = ADDRESS_HOME_ZIP},
+      {.server_type = ADDRESS_HOME_CITY},
+  });
+  EXPECT_THAT(GetTypes(*form_structure),
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
+                            ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
+}
+
 // Tests that (ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_ZIP_SUFFIX) is rationalized
 // to (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX).
 TEST_F(RationalizeRepeatedZipTest, TwoZipSuffix) {

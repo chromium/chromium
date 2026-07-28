@@ -1012,10 +1012,11 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
   auto has_zip_type = [](const std::unique_ptr<AutofillField>& field) {
     FieldType type = field->ComputedType().GetAddressType();
     return field->is_visible() &&
-           (type == ADDRESS_HOME_ZIP || type == ADDRESS_HOME_ZIP_SUFFIX);
+           (type == ADDRESS_HOME_ZIP || type == ADDRESS_HOME_ZIP_PREFIX ||
+            type == ADDRESS_HOME_ZIP_SUFFIX);
   };
-  // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP or
-  // ADDRESS_HOME_ZIP_SUFFIX.
+  // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP,
+  // ADDRESS_HOME_ZIP_PREFIX or ADDRESS_HOME_ZIP_SUFFIX.
   auto begin = fields_.begin();
   auto end = begin;
   while ((begin = std::find_if(end, fields_.end(), has_zip_type)) !=
@@ -1029,7 +1030,21 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
     const bool is_max_length_small =
         first_zip.max_length() <= kMaxZipCodePartLength &&
         second_zip.max_length() <= kMaxZipCodePartLength;
-    if (second_zip.Type().GetAddressType() == ADDRESS_HOME_ZIP_SUFFIX) {
+    const bool is_first_prefix =
+        first_zip.Type().GetAddressType() == ADDRESS_HOME_ZIP_PREFIX;
+    const bool is_second_suffix =
+        second_zip.Type().GetAddressType() == ADDRESS_HOME_ZIP_SUFFIX;
+    if (is_first_prefix && is_second_suffix) {
+      continue;
+    }
+    if (is_first_prefix) {
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
+          << "Zip Code Rationalization: Converting sequence of (zip_prefix, "
+             "zip) to (zip_prefix, zip_suffix)";
+      second_zip.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP_SUFFIX),
+                           AutofillPredictionSource::kRationalization);
+    } else if (is_second_suffix) {
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
           << "Zip Code Rationalization: Converting sequence of (zip, "
