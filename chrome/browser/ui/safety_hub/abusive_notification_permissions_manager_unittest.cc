@@ -268,16 +268,16 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   // Assert blocklist check count is recorded in UMA metrics.
   histogram_tester.ExpectUniqueSample(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/2,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.NotificationRevocationSource",
       safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist,
-      /* expected_count */ 2);
+      /*expected_bucket_count=*/2);
   histogram_tester.ExpectUniqueSample(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
       AbusiveNotificationPermissionsManager::CheckResult::kPhishing,
-      /* expected_count */ 2);
+      /*expected_bucket_count=*/2);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -311,8 +311,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   // Assert blocklist check count is recorded in UMA metrics.
   histogram_tester.ExpectUniqueSample(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/2,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectBucketCount(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.CheckResult",
       AbusiveNotificationPermissionsManager::CheckResult::kSafe, 1);
@@ -358,8 +358,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   // Assert blocklist check count is recorded in UMA metrics.
   histogram_tester.ExpectUniqueSample(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 1,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -396,8 +396,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
   // Assert blocklist check count is recorded in UMA metrics.
   histogram_tester.ExpectUniqueSample(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -829,8 +829,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_EQ(content_settings.size(), 2u);
   // Assert blocklist check count is recorded in UMA metrics.
   histogram_tester.ExpectUniqueSample(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/2,
+      /*expected_bucket_count=*/1);
 
   // Add another abusive origin. Running the checks again should not block the
   // abusive origin, because a check was just recently run.
@@ -840,13 +840,13 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
   EXPECT_EQ(content_settings.size(), 2u);
   histogram_tester.ExpectTotalCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* expected_count */ 2);
+      safety_hub::kBlocklistCheckCountHistogramName, /*expected_count=*/2);
   histogram_tester.ExpectBucketCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/0,
+      /*expected_count=*/1);
 
   // Fast forwarding a day should revoke the new abusive origin.
   FastForwardBy(base::Days(1));
@@ -859,16 +859,16 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(IsRevokedSettingValueRevoked(url3));
   histogram_tester.ExpectTotalCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* expected_count */ 3);
+      safety_hub::kBlocklistCheckCountHistogramName, /*expected_count=*/3);
   histogram_tester.ExpectBucketCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/0,
+      /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 1,
-      /* expected_count */ 1);
+      safety_hub::kBlocklistCheckCountHistogramName, /*sample=*/1,
+      /*expected_count=*/1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
@@ -921,26 +921,26 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
   histogram_tester.ExpectUniqueSample(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Unknown."
       "Revoked.PermissionChanged",
-      /* sample */ ContentSetting::CONTENT_SETTING_ASK,
-      /* expected_count */ 1);
+      /*sample=*/ContentSetting::CONTENT_SETTING_ASK,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
       "ManualSafeBrowsingRevocation."
       "Revoked.PermissionChanged",
-      /* sample */ ContentSetting::CONTENT_SETTING_ASK,
-      /* expected_count */ 1);
+      /*sample=*/ContentSetting::CONTENT_SETTING_ASK,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
       "SocialEngineeringBlocklist."
       "Revoked.PermissionChanged",
-      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
-      /* expected_count */ 1);
+      /*sample=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
       "SocialEngineeringBlocklist."
       "Ignored.PermissionChanged",
-      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
-      /* expected_count */ 1);
+      /*sample=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -968,8 +968,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
       "SuspiciousContentAutoRevocation."
       "Revoked.PermissionChanged",
-      /* sample */ ContentSetting::CONTENT_SETTING_ALLOW,
-      /* expected_count */ 1);
+      /*sample=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest, GetV5GetHashProtocolManager) {
@@ -1122,7 +1122,7 @@ TEST_F(ShowManualNotificationRevocationsTest,
       "SafeBrowsing.NotificationRevocationSource",
       safe_browsing::NotificationRevocationSource::
           kSafeBrowsingUnwantedRevocation,
-      /* expected_count */ 1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(ShowManualNotificationRevocationsTest,
@@ -1310,7 +1310,7 @@ TEST_F(SuspiciousNotificationRevocationTest,
       "SafeBrowsing.NotificationRevocationSource",
       safe_browsing::NotificationRevocationSource::
           kSuspiciousContentAutoRevocation,
-      /* expected_count */ 1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SuspiciousNotificationRevocationTest,
