@@ -7,7 +7,10 @@
 #include <dlfcn.h>
 #include <sys/resource.h>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_service.h"
@@ -104,6 +107,21 @@ void GoogleTtsStream::SelectVoice(const std::string& voice_name,
   base::FilePath path_prefix =
       base::FilePath(kTempDataDirectory).Append(voice_name);
   base::FilePath pipeline_path = path_prefix.Append("pipeline.pb");
+  if (!base::PathExists(pipeline_path)) {
+    // TODO (b:538255326): Investigate why pipeline.pb is occasionally missing.
+    std::string error_message = base::StringPrintf(
+        "Pipeline file does not exist: %s, voice_name: %s, directory exists: "
+        "%d, parent directory exists: %d",
+        pipeline_path.value().c_str(), voice_name.c_str(),
+        base::DirectoryExists(path_prefix),
+        base::DirectoryExists(base::FilePath(kTempDataDirectory)));
+    LOG(ERROR) << error_message;
+    SCOPED_CRASH_KEY_STRING1024("Tts", "missing_pipeline_voice", error_message);
+    base::debug::DumpWithoutCrashing();
+    std::move(callback).Run(false);
+    return;
+  }
+
   std::move(callback).Run(libchrometts_.GoogleTtsInit(
       pipeline_path.value().c_str(), path_prefix.value().c_str()));
 }
