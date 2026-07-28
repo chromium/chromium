@@ -46,10 +46,10 @@ TEST_F(HitTestQueryTest, OneSurface) {
   FrameSinkId e_id = FrameSinkId(1, 1);
   gfx::Rect e_bounds = gfx::Rect(0, 0, 600, 600);
   gfx::Transform transform_e_to_e;
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds, transform_e_to_e, 0));  // e
+      gfx::RRectF(e_bounds), transform_e_to_e, 0);  // e
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -99,18 +99,18 @@ TEST_F(HitTestQueryTest, OneEmbedderTwoChildren) {
   gfx::Transform transform_e_to_e, transform_e_to_c1, transform_e_to_c2;
   transform_e_to_c1.Translate(-100, -100);
   transform_e_to_c2.Translate(-300, -300);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 2));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 2);  // e
+  active_data_.emplace_back(
       c1_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c1_bounds_in_e, transform_e_to_c1, 0));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(c1_bounds_in_e), transform_e_to_c1, 0);  // c1
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -157,14 +157,14 @@ TEST_F(HitTestQueryTest, OneEmbedderRotatedChild) {
   transform_e_to_c.Translate(-100, -100);
   transform_e_to_c.Skew(2, 3);
   transform_e_to_c.Scale(.5f, .7f);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 1));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 1);  // e
+  active_data_.emplace_back(
       c_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c_bounds_in_e, transform_e_to_c, 0));  // c
+      gfx::RRectF(c_bounds_in_e), transform_e_to_c, 0);  // c
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -211,21 +211,21 @@ TEST_F(HitTestQueryTest, ClippedChildWithTabAndTransparentBackground) {
       transform_c_to_b;
   transform_e_to_c.Translate(-200, -100);
   transform_c_to_b.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 3));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 2));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 3);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            2);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -292,25 +292,25 @@ TEST_F(HitTestQueryTest, ClippedChildWithChildUnderneath) {
   transform_e_to_c.Translate(-200, -100);
   transform_c_to_b.Translate(0, -100);
   transform_e_to_d.Translate(-400, -50);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 4));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 2));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 4);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            2);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
+  active_data_.emplace_back(
       d_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      d_bounds_in_e, transform_e_to_d, 0));  // d
+      gfx::RRectF(d_bounds_in_e), transform_e_to_d, 0);  // d
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -366,25 +366,25 @@ TEST_F(HitTestQueryTest, ClippedChildWithChildUnderneathTransform) {
   transform_e_to_c.Translate(-200, -100);
   transform_e_to_d.Translate(-400, -50);
   transform_c_to_b.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 4));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 2));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 4);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            2);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
+  active_data_.emplace_back(
       d_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      d_bounds_in_e, transform_e_to_d, 0));  // d
+      gfx::RRectF(d_bounds_in_e), transform_e_to_d, 0);  // d
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -452,32 +452,32 @@ TEST_F(HitTestQueryTest, ClippedChildrenWithTabAndTransparentBackground) {
   transform_c1_to_b.Translate(0, -100);
   transform_e_to_c2.Translate(-200, -700);
   transform_c2_to_h.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 6));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c1_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c1_bounds_in_e, transform_e_to_c1, 2));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 6);  // e
+  active_data_.emplace_back(c1_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c1_bounds_in_e), transform_e_to_c1,
+                            2);  // c1
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c1, transform_c1_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c1), transform_c1_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c1, transform_c1_to_b, 0));  // b
-  active_data_.push_back(
-      AggregatedHitTestRegion(c2_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c2_bounds_in_e, transform_e_to_c2, 2));  // c2
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_c1), transform_c1_to_b, 0);  // b
+  active_data_.emplace_back(c2_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c2_bounds_in_e), transform_e_to_c2,
+                            2);  // c2
+  active_data_.emplace_back(
       g_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      g_bounds_in_c2, transform_c2_to_g, 0));  // g
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(g_bounds_in_c2), transform_c2_to_g, 0);  // g
+  active_data_.emplace_back(
       h_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      h_bounds_in_c2, transform_c2_to_h, 0));  // h
+      gfx::RRectF(h_bounds_in_c2), transform_c2_to_h, 0);  // h
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -565,32 +565,32 @@ TEST_F(HitTestQueryTest,
   transform_c1_to_b.Translate(0, -100);
   transform_e_to_c2.Translate(-200, -700);
   transform_c2_to_h.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 6));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c1_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c1_bounds_in_e, transform_e_to_c1, 2));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 6);  // e
+  active_data_.emplace_back(c1_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c1_bounds_in_e), transform_e_to_c1,
+                            2);  // c1
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c1, transform_c1_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c1), transform_c1_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c1, transform_c1_to_b, 0));  // b
-  active_data_.push_back(
-      AggregatedHitTestRegion(c2_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c2_bounds_in_e, transform_e_to_c2, 2));  // c2
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_c1), transform_c1_to_b, 0);  // b
+  active_data_.emplace_back(c2_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c2_bounds_in_e), transform_e_to_c2,
+                            2);  // c2
+  active_data_.emplace_back(
       g_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      g_bounds_in_c2, transform_c2_to_g, 0));  // g
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(g_bounds_in_c2), transform_c2_to_g, 0);  // g
+  active_data_.emplace_back(
       h_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      h_bounds_in_c2, transform_c2_to_h, 0));  // h
+      gfx::RRectF(h_bounds_in_c2), transform_c2_to_h, 0);  // h
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -665,29 +665,29 @@ TEST_F(HitTestQueryTest, MultipleLayerChild) {
   transform_a_to_b.Translate(-50, -30);
   transform_b_to_g.Translate(-150, -200);
   transform_e_to_c2.Translate(-400, -50);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 5));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c1_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c1_bounds_in_e, transform_e_to_c1, 3));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 5);  // e
+  active_data_.emplace_back(c1_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c1_bounds_in_e), transform_e_to_c1,
+                            3);  // c1
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c1, transform_c1_to_a, 2));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c1), transform_c1_to_a, 2);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_a, transform_a_to_b, 1));  // b
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_a), transform_a_to_b, 1);  // b
+  active_data_.emplace_back(
       g_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      g_bounds_in_b, transform_b_to_g, 0));  // g
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(g_bounds_in_b), transform_b_to_g, 0);  // g
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -759,26 +759,26 @@ TEST_F(HitTestQueryTest, MultipleLayerTransparentChild) {
   transform_a_to_b.Translate(-50, -30);
   transform_b_to_g.Translate(-150, -200);
   transform_e_to_c2.Translate(-400, -50);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 5));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c1_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c1_bounds_in_e, transform_e_to_c1, 3));  // c1
-  active_data_.push_back(
-      AggregatedHitTestRegion(a_id, HitTestRegionFlags::kHitTestChildSurface,
-                              a_bounds_in_c1, transform_c1_to_a, 2));  // a
-  active_data_.push_back(
-      AggregatedHitTestRegion(b_id, HitTestRegionFlags::kHitTestChildSurface,
-                              b_bounds_in_a, transform_a_to_b, 1));  // b
-  active_data_.push_back(
-      AggregatedHitTestRegion(g_id, HitTestRegionFlags::kHitTestChildSurface,
-                              g_bounds_in_b, transform_b_to_g, 0));  // g
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 5);  // e
+  active_data_.emplace_back(c1_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c1_bounds_in_e), transform_e_to_c1,
+                            3);  // c1
+  active_data_.emplace_back(a_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(a_bounds_in_c1), transform_c1_to_a,
+                            2);  // a
+  active_data_.emplace_back(b_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(b_bounds_in_a), transform_a_to_b,
+                            1);  // b
+  active_data_.emplace_back(g_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(g_bounds_in_b), transform_b_to_g,
+                            0);  // g
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -825,21 +825,21 @@ TEST_F(HitTestQueryTest, InvalidAggregatedHitTestRegionData) {
       transform_c_to_b;
   transform_e_to_c.Translate(-200, -100);
   transform_c_to_b.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 3));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
-      c_id, HitTestRegionFlags::kHitTestChildSurface, c_bounds_in_e,
-      transform_e_to_c, INT32_MIN));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 3);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            INT32_MIN);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -861,21 +861,21 @@ TEST_F(HitTestQueryTest, InvalidAggregatedHitTestRegionData) {
   EXPECT_FALSE(target2.flags);
 
   active_data_.clear();
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, INT32_MAX));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 2));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, INT32_MAX);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            2);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
   SendHitTestData();
 
   Target target3 =
@@ -885,21 +885,21 @@ TEST_F(HitTestQueryTest, InvalidAggregatedHitTestRegionData) {
   EXPECT_FALSE(target3.flags);
 
   active_data_.clear();
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 3));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 3));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 3);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            3);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
   SendHitTestData();
 
   Target target4 =
@@ -920,19 +920,19 @@ TEST_F(HitTestQueryTest, MouseTouchFlags) {
   gfx::Transform transform_e_to_e, transform_e_to_c1, transform_e_to_c2;
   transform_e_to_c1.Translate(-100, -100);
   transform_e_to_c2.Translate(-75, -75);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse |
           HitTestRegionFlags::kHitTestTouch,
-      e_bounds_in_e, transform_e_to_e, 2));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 2);  // e
+  active_data_.emplace_back(
       c1_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c1_bounds_in_e, transform_e_to_c1, 0));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(c1_bounds_in_e), transform_e_to_c1, 0);  // c1
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestTouch,
-      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -973,10 +973,10 @@ TEST_F(HitTestQueryTest, RootHitTestAskFlag) {
   FrameSinkId e_id = FrameSinkId(1, 1);
   gfx::Rect e_bounds = gfx::Rect(0, 0, 600, 600);
   gfx::Transform transform_e_to_e;
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id, HitTestRegionFlags::kHitTestAsk | HitTestRegionFlags::kHitTestMouse,
-      e_bounds, transform_e_to_e, 0,
-      AsyncHitTestReasons::kIrregularClip));  // e
+      gfx::RRectF(e_bounds), transform_e_to_e, 0,
+      AsyncHitTestReasons::kIrregularClip);  // e
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -1018,19 +1018,19 @@ TEST_F(HitTestQueryTest, ChildHitTestAskFlag) {
   gfx::Transform transform_e_to_e, transform_e_to_c1, transform_e_to_c2;
   transform_e_to_c1.Translate(-100, -100);
   transform_e_to_c2.Translate(-300, -300);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 2));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 2);  // e
+  active_data_.emplace_back(
       c1_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c1_bounds_in_e, transform_e_to_c1, 0));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(c1_bounds_in_e), transform_e_to_c1, 0);  // c1
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestAsk | HitTestRegionFlags::kHitTestMouse,
-      c2_bounds_in_e, transform_e_to_c2, 0,
-      AsyncHitTestReasons::kOverlappedRegion));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0,
+      AsyncHitTestReasons::kOverlappedRegion);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -1084,20 +1084,20 @@ TEST_F(HitTestQueryTest, NestedOOPIFs) {
   gfx::Transform transform_e_to_e, transform_e_to_c, transform_c_to_b;
   transform_e_to_c.Translate(-200, -100);
   transform_c_to_b.Translate(0, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 2));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
-      c_id,
-      HitTestRegionFlags::kHitTestChildSurface |
-          HitTestRegionFlags::kHitTestAsk | HitTestRegionFlags::kHitTestMouse,
-      c_bounds_in_e, transform_e_to_c, 1,
-      AsyncHitTestReasons::kOverlappedRegion));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 2);  // e
+  active_data_.emplace_back(c_id,
+                            HitTestRegionFlags::kHitTestChildSurface |
+                                HitTestRegionFlags::kHitTestAsk |
+                                HitTestRegionFlags::kHitTestMouse,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c, 1,
+                            AsyncHitTestReasons::kOverlappedRegion);  // c
+  active_data_.emplace_back(
       b_id, HitTestRegionFlags::kHitTestAsk | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0,
-      AsyncHitTestReasons::kOverlappedRegion));  // b
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0,
+      AsyncHitTestReasons::kOverlappedRegion);  // b
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -1153,25 +1153,25 @@ TEST_F(HitTestQueryTest, GetTransformToTarget) {
   transform_c_to_b.Translate(0, -100);
   transform_c_to_b.Skew(2, 3);
   transform_c_to_b.Scale(.5f, .7f);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 4));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c_id, HitTestRegionFlags::kHitTestChildSurface,
-                              c_bounds_in_e, transform_e_to_c, 2));  // c
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 4);  // e
+  active_data_.emplace_back(c_id, HitTestRegionFlags::kHitTestChildSurface,
+                            gfx::RRectF(c_bounds_in_e), transform_e_to_c,
+                            2);  // c
+  active_data_.emplace_back(
       a_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      a_bounds_in_c, transform_c_to_a, 0));  // a
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(a_bounds_in_c), transform_c_to_a, 0);  // a
+  active_data_.emplace_back(
       b_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      b_bounds_in_c, transform_c_to_b, 0));  // b
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(b_bounds_in_c), transform_c_to_b, 0);  // b
+  active_data_.emplace_back(
       d_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      d_bounds_in_e, transform_e_to_d, 0));  // d
+      gfx::RRectF(d_bounds_in_e), transform_e_to_d, 0);  // d
   SendHitTestData();
 
   // Check that we can get the correct transform to all regions.
@@ -1232,23 +1232,23 @@ TEST_F(HitTestQueryTest, TransparentOverlayRegions) {
       transform_c1_to_d1;
   transform_e_to_c2.Translate(-200, -100);
   transform_c1_to_d1.Translate(-200, -200);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 3));  // e
-  active_data_.push_back(
-      AggregatedHitTestRegion(c1_id,
-                              HitTestRegionFlags::kHitTestChildSurface |
-                                  HitTestRegionFlags::kHitTestMouse,
-                              c1_bounds_in_e, transform_e_to_c1, 1));  // c1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 3);  // e
+  active_data_.emplace_back(c1_id,
+                            HitTestRegionFlags::kHitTestChildSurface |
+                                HitTestRegionFlags::kHitTestMouse,
+                            gfx::RRectF(c1_bounds_in_e), transform_e_to_c1,
+                            1);  // c1
+  active_data_.emplace_back(
       d1_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      d1_bounds_in_c1, transform_c1_to_d1, 0));  // d1
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(d1_bounds_in_c1), transform_c1_to_d1, 0);  // d1
+  active_data_.emplace_back(
       c2_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c2_bounds_in_e, transform_e_to_c2, 0));  // c2
+      gfx::RRectF(c2_bounds_in_e), transform_e_to_c2, 0);  // c2
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.
@@ -1277,14 +1277,14 @@ TEST_F(HitTestQueryTest, FindTargetForLocationStartingFrom) {
   gfx::Rect c_bounds_in_e = gfx::Rect(0, 0, 200, 200);
   gfx::Transform transform_e_to_e, transform_e_to_c;
   transform_e_to_c.Translate(-100, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(
       e_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      e_bounds_in_e, transform_e_to_e, 1));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+      gfx::RRectF(e_bounds_in_e), transform_e_to_e, 1);  // e
+  active_data_.emplace_back(
       c_id,
       HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse,
-      c_bounds_in_e, transform_e_to_c, 0));  // c
+      gfx::RRectF(c_bounds_in_e), transform_e_to_c, 0);  // c
   SendHitTestData();
 
   // Test a point in the embedder with the embedder as the initial frame sink.
@@ -1336,17 +1336,17 @@ TEST_F(HitTestQueryTest, OverlappedRootView) {
   gfx::Rect c_bounds_in_e = gfx::Rect(0, 0, 800, 800);
   gfx::Transform transform_e_to_e, transform_e_to_c;
   transform_e_to_c.Translate(-200, -100);
-  active_data_.push_back(AggregatedHitTestRegion(
-      e_id,
-      HitTestRegionFlags::kHitTestMine | HitTestRegionFlags::kHitTestMouse |
-          HitTestRegionFlags::kHitTestAsk,
-      e_bounds_in_e, transform_e_to_e, 1,
-      AsyncHitTestReasons::kOverlappedRegion));  // e
-  active_data_.push_back(AggregatedHitTestRegion(
+  active_data_.emplace_back(e_id,
+                            HitTestRegionFlags::kHitTestMine |
+                                HitTestRegionFlags::kHitTestMouse |
+                                HitTestRegionFlags::kHitTestAsk,
+                            gfx::RRectF(e_bounds_in_e), transform_e_to_e, 1,
+                            AsyncHitTestReasons::kOverlappedRegion);  // e
+  active_data_.emplace_back(
       c_id,
       HitTestRegionFlags::kHitTestChildSurface | kHitTestMine |
           HitTestRegionFlags::kHitTestMouse,
-      c_bounds_in_e, transform_e_to_c, 0));  // c
+      gfx::RRectF(c_bounds_in_e), transform_e_to_c, 0);  // c
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.

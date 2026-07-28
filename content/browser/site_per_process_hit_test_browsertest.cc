@@ -61,6 +61,7 @@
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -6988,8 +6989,9 @@ class SitePerProcessHitTestDataGenerationBrowserTest
 
   gfx::QuadF TransformRectToQuadF(
       const viz::AggregatedHitTestRegion& hit_test_region) {
-    return TransformRectToQuadF(hit_test_region.rect, hit_test_region.transform,
-                                false);
+    CHECK(!hit_test_region.rect.HasRoundedCorners());
+    return hit_test_region.transform.MapQuad(
+        gfx::QuadF(hit_test_region.rect.rect()));
   }
 
   bool ApproximatelyEqual(const gfx::PointF& p1, const gfx::PointF& p2) const {
@@ -7004,10 +7006,11 @@ class SitePerProcessHitTestDataGenerationBrowserTest
            ApproximatelyEqual(quad.p4(), other.p4());
   }
 
-  gfx::Rect AxisAlignedLayoutRectFromHitTest(
+  gfx::RectF AxisAlignedLayoutRectFromHitTest(
       const viz::AggregatedHitTestRegion& hit_test_region) {
     DCHECK(hit_test_region.transform.Preserves2dAxisAlignment());
-    return hit_test_region.transform.MapRect(hit_test_region.rect);
+    CHECK(!hit_test_region.rect.HasRoundedCorners());
+    return hit_test_region.transform.MapRect(hit_test_region.rect.rect());
   }
 
  public:
@@ -7056,21 +7059,18 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
       SetupAndGetHitTestData("/frame_tree/page_with_clipped_iframe.html");
   float device_scale_factor = current_device_scale_factor();
   gfx::Transform expected_transform;
-  gfx::Rect original_region(200, 200);
-  gfx::Rect expected_transformed_region = gfx::ScaleToEnclosingRect(
-      original_region, device_scale_factor, device_scale_factor);
-
   uint32_t expected_flags = kFastHitTestFlags;
   // Clip2 has overflow: visible property, so it does not apply clip to iframe.
   // Clip1 and clip3 all preserve 2d axis alignment, so we should allow fast
   // path hit testing for the iframe in V2 hit testing.
-  expected_transformed_region = gfx::ScaleToEnclosingRect(
-      gfx::Rect(100, 100), device_scale_factor, device_scale_factor);
+  gfx::RectF expected_transformed_region(
+      gfx::ScaleToEnclosingRect(gfx::Rect(100, 100), device_scale_factor));
 
   // Apart from the iframe, it also contains data for root and main frame.
   DCHECK(hit_test_data.size() >= 3);
   EXPECT_TRUE(expected_transformed_region.ApproximatelyEqual(
       AxisAlignedLayoutRectFromHitTest(hit_test_data[2]),
+      base::ClampRound(device_scale_factor) + 2,
       base::ClampRound(device_scale_factor) + 2));
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
@@ -7098,14 +7098,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   //
   // Clipped region: x=100/sqrt(2), y=100.
   gfx::Transform expected_transform;
-  gfx::Rect expected_region = gfx::ScaleToEnclosingRect(
-      gfx::Rect(100 / 1.414, 100), device_scale_factor, device_scale_factor);
+  gfx::RectF expected_region(gfx::ScaleToEnclosingRect(
+      gfx::Rect(100 / 1.414, 100), device_scale_factor));
 
   // Compute screen space transform for iframe element, since clip2 is rotated
   // and also clips the iframe, we expect to do slow path hit test on the
   // iframe.
   DCHECK(hit_test_data.size() >= 3);
-  EXPECT_TRUE(expected_region.ApproximatelyEqual(hit_test_data[2].rect,
+  EXPECT_TRUE(expected_region.ApproximatelyEqual(hit_test_data[2].rect.rect(),
+                                                 1 + device_scale_factor,
                                                  1 + device_scale_factor));
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
@@ -7145,18 +7146,19 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
     // by cc. While it does not affect correctness of hit testing, the hit test
     // region with kHitTestAsk will have a different size due to the change of
     // accumulated clips.
-  gfx::Rect expected_region1 = gfx::ScaleToEnclosingRect(
-      gfx::Rect(200, 100 / 1.414f), device_scale_factor, device_scale_factor);
-  gfx::Rect expected_region2 =
-      gfx::ScaleToEnclosingRect(gfx::Rect(100 + 100 / 1.414f, 100 / 1.414f),
-                                device_scale_factor, device_scale_factor);
+  gfx::RectF expected_region1(gfx::ScaleToEnclosingRect(
+      gfx::Rect(200, 100 / 1.414f), device_scale_factor));
+  gfx::RectF expected_region2(gfx::ScaleToEnclosingRect(
+      gfx::Rect(100 + 100 / 1.414f, 100 / 1.414f), device_scale_factor));
 
   // Since iframe is clipped into an octagon, we expect to do slow path hit
   // test on the iframe.
   DCHECK(hit_test_data.size() >= 3);
-  EXPECT_TRUE(expected_region1.ApproximatelyEqual(hit_test_data[2].rect,
+  EXPECT_TRUE(expected_region1.ApproximatelyEqual(hit_test_data[2].rect.rect(),
+                                                  1 + device_scale_factor,
                                                   1 + device_scale_factor) ||
-              expected_region2.ApproximatelyEqual(hit_test_data[2].rect,
+              expected_region2.ApproximatelyEqual(hit_test_data[2].rect.rect(),
+                                                  1 + device_scale_factor,
                                                   1 + device_scale_factor));
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
@@ -7169,10 +7171,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
       SetupAndGetHitTestData("/frame_tree/page_with_clip_path_iframe.html");
   float device_scale_factor = current_device_scale_factor();
   gfx::Transform expected_transform;
-  gfx::Rect expected_region1 = gfx::ScaleToEnclosingRect(
-      gfx::Rect(100, 100), device_scale_factor, device_scale_factor);
-  gfx::Rect expected_region2 = gfx::ScaleToEnclosingRect(
-      gfx::Rect(80, 80), device_scale_factor, device_scale_factor);
+  gfx::RectF expected_region1(
+      gfx::ScaleToEnclosingRect(gfx::Rect(100, 100), device_scale_factor));
+  gfx::RectF expected_region2(
+      gfx::ScaleToEnclosingRect(gfx::Rect(80, 80), device_scale_factor));
 
   // Since iframe is clipped into an irregular quadrilateral, we expect to do
   // slow path hit test on the iframe.
@@ -7181,9 +7183,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   // OOPIF is different to that when BlinkGenPropertyTrees is disabled. So the
   // test is considered passed if either of the regions equals to hit test
   // region.
-  EXPECT_TRUE(expected_region1.ApproximatelyEqual(hit_test_data[2].rect,
+  EXPECT_TRUE(expected_region1.ApproximatelyEqual(hit_test_data[2].rect.rect(),
+                                                  1 + device_scale_factor,
                                                   1 + device_scale_factor) ||
-              expected_region2.ApproximatelyEqual(hit_test_data[2].rect,
+              expected_region2.ApproximatelyEqual(hit_test_data[2].rect.rect(),
+                                                  1 + device_scale_factor,
                                                   1 + device_scale_factor));
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
@@ -7205,11 +7209,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   // Since iframe is occluded by a div in parent frame, we expect to do slow hit
   // test.
   DCHECK(hit_test_data.size() >= 4);
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[3].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[3].rect);
   EXPECT_TRUE(
       expected_transform1.ApproximatelyEqual(hit_test_data[3].transform));
   EXPECT_EQ(kSlowHitTestFlags, hit_test_data[3].flags);
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[2].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[2].rect);
   EXPECT_TRUE(
       expected_transform2.ApproximatelyEqual(hit_test_data[2].transform));
   EXPECT_EQ(kFastHitTestFlags, hit_test_data[2].flags);
@@ -7227,7 +7231,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   // Since iframe clipped by clip-path and has a mask layer, we expect to do
   // slow path hit testing.
   DCHECK(hit_test_data.size() >= 3);
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[2].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[2].rect);
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
   EXPECT_EQ(kSlowHitTestFlags, hit_test_data[2].flags);
@@ -7245,7 +7249,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   // Since iframe clipped by clip-path and has a mask layer, we expect to do
   // slow path hit testing.
   DCHECK(hit_test_data.size() >= 3);
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[2].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[2].rect);
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
   EXPECT_EQ(kSlowHitTestFlags, hit_test_data[2].flags);
@@ -7272,13 +7276,13 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   uint32_t flags = kFastHitTestFlags;
 
   DCHECK(hit_test_data.size() == 4);
-  EXPECT_EQ(expected_region2.ToString(), hit_test_data[3].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region2), hit_test_data[3].rect);
   EXPECT_TRUE(
       expected_transform2.ApproximatelyEqual(hit_test_data[3].transform));
   EXPECT_EQ(flags | viz::HitTestRegionFlags::kHitTestIgnore,
             hit_test_data[3].flags);
 
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[2].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[2].rect);
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
   EXPECT_EQ(flags, hit_test_data[2].flags);
@@ -7306,12 +7310,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   hit_test_data = hit_test_data_change_observer.GetHitTestData();
 
   ASSERT_EQ(4u, hit_test_data.size());
-  EXPECT_EQ(expected_region.ToString(), hit_test_data[2].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region), hit_test_data[2].rect);
   EXPECT_TRUE(
       expected_transform.ApproximatelyEqual(hit_test_data[2].transform));
   EXPECT_EQ(kFastHitTestFlags, hit_test_data[2].flags);
 
-  EXPECT_EQ(expected_region2.ToString(), hit_test_data[3].rect.ToString());
+  EXPECT_EQ(gfx::RRectF(expected_region2), hit_test_data[3].rect);
   EXPECT_TRUE(
       expected_transform2.ApproximatelyEqual(hit_test_data[3].transform));
   // Hit test region with pointer-events: none is marked as kHitTestIgnore. The

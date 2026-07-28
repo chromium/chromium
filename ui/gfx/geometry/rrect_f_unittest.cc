@@ -213,6 +213,13 @@ TEST(RRectFTest, Contains) {
   EXPECT_FALSE(a.Contains(b));
 }
 
+TEST(RRectFTest, ConstructFromRect) {
+  const Rect rect(1, 2, 3, 4);
+  const RRectF rrect(rect);
+  EXPECT_EQ(RectF(rect), rrect.rect());
+  EXPECT_FALSE(rrect.HasRoundedCorners());
+}
+
 TEST(RRectFTest, HasRoundedCorners) {
   RRectF a;
   EXPECT_FALSE(a.HasRoundedCorners());

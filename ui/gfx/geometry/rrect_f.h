@@ -24,6 +24,7 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF {
   RRectF(const RRectF& rect) = default;
   RRectF& operator=(const RRectF& rect) = default;
   explicit RRectF(const SkRRect& rect) : skrrect_(rect) {}
+  explicit RRectF(const Rect& rect) : RRectF(RectF(rect)) {}
   explicit RRectF(const gfx::RectF& rect) : RRectF(rect, 0.f) {}
   RRectF(const gfx::RectF& rect, float radius) : RRectF(rect, radius, radius) {}
   RRectF(const gfx::RectF& rect, float x_rad, float y_rad)

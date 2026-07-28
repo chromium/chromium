@@ -54,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 using testing::_;
 using testing::Contains;
@@ -1759,7 +1760,7 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   HitTestRegion hit_test_region_1;
   hit_test_region_1.frame_sink_id = frame_sink_id;
   hit_test_region_1.flags = HitTestRegionFlags::kHitTestMine;
-  hit_test_region_1.rect.SetRect(100, 100, 200, 400);
+  hit_test_region_1.rect = gfx::RRectF(gfx::RectF(100, 100, 200, 400));
 
   hit_test_region_list.regions.push_back(std::move(hit_test_region_1));
 
@@ -1777,7 +1778,7 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   HitTestRegion hit_test_region_2;
   hit_test_region_2.frame_sink_id = frame_sink_id;
   hit_test_region_2.flags = HitTestRegionFlags::kHitTestAsk;
-  hit_test_region_2.rect.SetRect(400, 100, 300, 400);
+  hit_test_region_2.rect = gfx::RRectF(gfx::RectF(400, 100, 300, 400));
 
   hit_test_region_list.regions.push_back(std::move(hit_test_region_2));
   EXPECT_EQ(manager_->hit_test_manager()->submit_hit_test_region_list_index(),
@@ -1794,7 +1795,7 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_3.frame_sink_id = frame_sink_id;
   hit_test_region_3.async_hit_test_reasons =
       AsyncHitTestReasons::kOverlappedRegion;
-  hit_test_region_3.rect.SetRect(400, 100, 300, 400);
+  hit_test_region_3.rect = gfx::RRectF(gfx::RectF(400, 100, 300, 400));
 
   hit_test_region_list.regions.clear();
   hit_test_region_list.regions.push_back(std::move(hit_test_region_3));
@@ -1813,7 +1814,7 @@ TEST_P(CompositorFrameSinkSupportTest, HitTestRegionValidation) {
   hit_test_region_4.flags = HitTestRegionFlags::kHitTestAsk;
   hit_test_region_4.async_hit_test_reasons =
       AsyncHitTestReasons::kOverlappedRegion;
-  hit_test_region_4.rect.SetRect(400, 100, 300, 400);
+  hit_test_region_4.rect = gfx::RRectF(gfx::RectF(400, 100, 300, 400));
 
   hit_test_region_list.regions.clear();
   hit_test_region_list.regions.push_back(std::move(hit_test_region_4));

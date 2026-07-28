@@ -5,10 +5,14 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_HIT_TEST_HIT_TEST_REGION_LIST_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_HIT_TEST_HIT_TEST_REGION_LIST_MOJOM_TRAITS_H_
 
+#include <algorithm>
+#include <vector>
+
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
 namespace mojo {
@@ -25,7 +29,7 @@ struct StructTraits<viz::mojom::HitTestRegionDataView, viz::HitTestRegion> {
   static uint32_t async_hit_test_reasons(const viz::HitTestRegion& region) {
     return region.async_hit_test_reasons;
   }
-  static const gfx::Rect& rect(const viz::HitTestRegion& region) {
+  static const gfx::RRectF& rect(const viz::HitTestRegion& region) {
     return region.rect;
   }
   static const gfx::Transform& transform(const viz::HitTestRegion& region) {

@@ -23,7 +23,7 @@ ChildFrameInputHelper::ChildFrameInputHelper(RenderWidgetHostViewInput* view,
 void ChildFrameInputHelper::NotifyHitTestRegionUpdated(
     const viz::AggregatedHitTestRegion& region) {
   std::optional<gfx::RectF> screen_rect =
-      region.transform.InverseMapRect(gfx::RectF(region.rect));
+      region.transform.InverseMapRect(region.rect.rect());
   if (!screen_rect) {
     last_stable_screen_rect_ = gfx::RectF();
     last_stable_screen_rect_for_iov2_ = gfx::RectF();

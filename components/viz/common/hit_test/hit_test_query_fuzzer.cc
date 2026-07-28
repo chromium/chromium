@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/common/hit_test/hit_test_query.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include <vector>
 
 #include "base/command_line.h"
-#include "components/viz/common/hit_test/hit_test_query.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/test/fuzzer_util.h"
 
 namespace {
@@ -41,7 +42,7 @@ void AddHitTestRegion(FuzzedDataProvider* fuzz,
       fuzz->ConsumeIntegral<int>(), fuzz->ConsumeIntegral<int>());
   int32_t child_count =
       depth < kMaxDepthAllowed ? fuzz->ConsumeIntegralInRange(0, 10) : 0;
-  regions->emplace_back(frame_sink_id, flags, rect,
+  regions->emplace_back(frame_sink_id, flags, gfx::RRectF(rect),
                         gfx::ConsumeTransform(*fuzz), child_count, reasons);
   // Always add the first frame sink id, because the root needs to be in the
   // list of FrameSinkId.

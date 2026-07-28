@@ -18,6 +18,10 @@
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace gfx {
+class RRectF;
+}  // namespace gfx
+
 namespace viz {
 
 class HitTestAggregatorDelegate;
@@ -83,7 +87,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator : public HitTestQuery::DataProvider {
                    const FrameSinkId& frame_sink_id,
                    uint32_t flags,
                    uint32_t reasons,
-                   const gfx::Rect& rect,
+                   const gfx::RRectF& rect,
                    const gfx::Transform& transform,
                    int32_t child_count);
 

@@ -46,6 +46,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
@@ -1070,7 +1071,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
     ASSERT_EQ(hit_test_region_list->regions.size(), 1u);
     auto& hit_test_region = hit_test_region_list->regions.front();
     EXPECT_EQ(hit_test_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
-    EXPECT_EQ(hit_test_region.rect, viewport_);
+    EXPECT_EQ(hit_test_region.rect, gfx::RRectF(viewport_));
     EXPECT_EQ(hit_test_region.transform, gfx::Transform());
   }
 
@@ -1100,12 +1101,12 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
     ASSERT_EQ(hit_test_region_list->regions.size(), 2u);
     auto& root_region = hit_test_region_list->regions.back();
     EXPECT_EQ(root_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
-    EXPECT_EQ(root_region.rect, viewport_);
+    EXPECT_EQ(root_region.rect, gfx::RRectF(viewport_));
     EXPECT_EQ(root_region.transform, gfx::Transform());
 
     auto& child_region = hit_test_region_list->regions.front();
     EXPECT_EQ(child_region.frame_sink_id, viz::FrameSinkId(2u, 3u));
-    EXPECT_EQ(child_region.rect, gfx::Rect(10, 10));
+    EXPECT_EQ(child_region.rect, gfx::RRectF(gfx::RectF(10, 10)));
 
     gfx::Transform expected_transform =
         gfx::Transform::MakeTranslation(5.0f, 5.0f);
@@ -1153,7 +1154,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, HitTestRegionInNonRootPass) {
     ASSERT_EQ(hit_test_region_list->regions.size(), 1u);
     auto& hit_test_region = hit_test_region_list->regions.front();
     EXPECT_EQ(hit_test_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
-    EXPECT_EQ(hit_test_region.rect, gfx::Rect(100, 100));
+    EXPECT_EQ(hit_test_region.rect, gfx::RRectF(gfx::RectF(100, 100)));
     EXPECT_EQ(hit_test_region.transform,
               gfx::Transform::MakeScale(2.0f) *
                   gfx::Transform::MakeTranslation(-10.0f, -10.0f));

@@ -205,8 +205,11 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     location_transformed =
         GetHitTestRegionData()[region_index].transform.MapPoint(
             location_transformed);
-    if (!gfx::RectF(GetHitTestRegionData()[region_index].rect)
-             .Contains(location_transformed)) {
+    // TODO(crbug.com/40572334): Replace with RRectF::Contains(PointF&) when the
+    // Skia dependency (https://skia-review.googlesource.com/c/skia/+/1286236)
+    // is available.
+    if (!GetHitTestRegionData()[region_index].rect.rect().Contains(
+            location_transformed)) {
       return false;
     }
   }

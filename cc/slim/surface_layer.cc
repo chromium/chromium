@@ -15,6 +15,8 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace cc::slim {
 
@@ -166,7 +168,7 @@ void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                             viz::HitTestRegionFlags::kHitTestTouch |
                             viz::HitTestRegionFlags::kHitTestChildSurface;
     hit_test_region.frame_sink_id = surface_range_.end().frame_sink_id();
-    hit_test_region.rect = quad_state->visible_quad_layer_rect;
+    hit_test_region.rect = gfx::RRectF(quad_state->visible_quad_layer_rect);
     // False will set transform to identity.
     bool rv = transform_to_root.GetInverse(&hit_test_region.transform);
     if (!rv || !hit_test_region.transform.Preserves2dAxisAlignment()) {

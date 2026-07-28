@@ -13293,7 +13293,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
   child1_transform.Translate(-250, -350);
   EXPECT_TRUE(child1_transform.ApproximatelyEqual(
       hit_test_region_list->regions[1].transform));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[1].rect);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 100)),
+            hit_test_region_list->regions[1].rect);
 
   EXPECT_EQ(child_surface_id.frame_sink_id(),
             hit_test_region_list->regions[0].frame_sink_id);
@@ -13306,7 +13307,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
   child2_transform.Translate(-450, -300);
   EXPECT_TRUE(child2_transform.ApproximatelyEqual(
       hit_test_region_list->regions[0].transform));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[0].rect);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 100)),
+            hit_test_region_list->regions[0].rect);
 }
 
 TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, PointerEvents) {
@@ -13369,7 +13371,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, PointerEvents) {
   gfx::Transform child1_transform;
   EXPECT_TRUE(child1_transform.ApproximatelyEqual(
       hit_test_region_list->regions[0].transform));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[0].rect);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 100)),
+            hit_test_region_list->regions[0].rect);
 }
 
 TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
@@ -13432,7 +13435,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
   gfx::Transform child1_transform;
   EXPECT_TRUE(child1_transform.ApproximatelyEqual(
       hit_test_region_list->regions[0].transform));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[0].rect);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 100)),
+            hit_test_region_list->regions[0].rect);
 }
 
 TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
@@ -13499,7 +13503,8 @@ TEST_P(HitTestRegionListGeneratingLayerTreeHostImplTest, InvalidFrameSinkId) {
   gfx::Transform child1_transform;
   EXPECT_TRUE(child1_transform.ApproximatelyEqual(
       hit_test_region_list->regions[0].transform));
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100), hit_test_region_list->regions[0].rect);
+  EXPECT_EQ(gfx::RRectF(gfx::RectF(0, 0, 100, 100)),
+            hit_test_region_list->regions[0].rect);
 }
 
 TEST_P(LayerTreeHostImplTest, SkipOnDrawDoesNotUpdateDrawParams) {

@@ -9,6 +9,7 @@
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
 namespace mojo {
@@ -30,7 +31,7 @@ struct StructTraits<viz::mojom::AggregatedHitTestRegionDataView,
     return region.async_hit_test_reasons;
   }
 
-  static const gfx::Rect& rect(const viz::AggregatedHitTestRegion& region) {
+  static const gfx::RRectF& rect(const viz::AggregatedHitTestRegion& region) {
     return region.rect;
   }
 

@@ -10,6 +10,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace viz {
@@ -64,8 +65,8 @@ struct HitTestRegion {
   // FrameSinkId of this region.
   FrameSinkId frame_sink_id;
 
-  // The rect of the region in the coordinate space of the embedder.
-  gfx::Rect rect;
+  // The rounded rect of the region in the coordinate space of the embedder.
+  gfx::RRectF rect;
 
   // The transform of the region.  The transform applied to the rect
   // defines the space occupied by this region in the coordinate space of
