@@ -59,4 +59,8 @@ found in the LICENSE file.
 
     <!-- Bookmark Bar chip -->
     <dimen name="bookmark_bar_chip_corner_radius">8dp</dimen>
+
+    <!-- Fusebox popover plus button dimensions -->
+    <dimen name="fusebox_popover_plus_button_start_margin">8dp</dimen>
+    <dimen name="fusebox_popover_plus_button_bottom_margin">4dp</dimen>
 </resources>

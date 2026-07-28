@@ -164,6 +164,10 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="textLargeLeading">@dimen/text_size_large_leading</item>
         <!-- LINT.ThenChange(//ui/android/java/res/values/themes.xml:AdaptiveDensityDefaults) -->
 
+        <!-- Fusebox attributes -->
+        <item name="fuseboxPlusButtonStartMargin">0dp</item>
+        <item name="fuseboxPlusButtonBottomMargin">0dp</item>
+
         <!-- Glic task menu attributes -->
         <item name="glicTaskMenuEndIconWidth">@dimen/glic_menu_end_icon_width</item>
         <item name="glicTaskMenuMaxWidth">@dimen/glic_task_menu_max_width</item>
@@ -358,6 +362,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
     <style name="ThemeOverlay.BrowserUI.DesktopDensity" parent="">
         <!-- General dimensions. -->
         <item name="minInteractTargetSize">@dimen/min_click_target_size</item>
+        <item name="fuseboxPlusButtonStartMargin">@dimen/fusebox_popover_plus_button_start_margin</item>
+        <item name="fuseboxPlusButtonBottomMargin">@dimen/fusebox_popover_plus_button_bottom_margin</item>
 
         <!-- Text dimensions. -->
         <item name="textLargeSize">@dimen/text_size_large_desktop</item>
