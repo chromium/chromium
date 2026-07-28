@@ -754,6 +754,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1581962803218266616">Im Finder anzeigen</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] löschen</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> wird lokal verarbeitet und funktioniert offline</translation>
+<translation id="1586075235463145108">Zuerst automatisches Browsen in Chrome für dieses Gerät aktivieren</translation>
 <translation id="1587275751631642843">&amp;JavaScript-Konsole</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Aktualisierung des Logos und des Namens überprüfen</translation>
@@ -1819,6 +1820,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 Kontopasswort, nur auf diesem Gerät gespeichert. Weitere Details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} Kontopasswörter, nur auf diesem Gerät gespeichert. Weitere Details}}</translation>
 <translation id="2428510569851653187">Beschreibe, was du beim Absturz des Tabs getan hast</translation>
 <translation id="2428939361789119025">WLAN deaktivieren</translation>
+<translation id="2431280447889982015">Bildschirm mit Audio auswählen</translation>
 <translation id="243275146591958220">Download abbrechen</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> Apps registriert</translation>
 <translation id="2433237965825924228">Isolierte Web-Apps können Geräte zur Authentifizierung und für sie zugängliche Smartcards steuern. Smartcards enthalten in der Regel Kennungen, die zur Authentifizierung verwendet werden.</translation>
@@ -6185,6 +6187,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5794700615121138172">Freigegebene Linux-Ordner</translation>
 <translation id="5794786537412027208">Alle Chrome-Apps beenden</translation>
 <translation id="5796485699458186843">Neuer Inkognito&amp;tab</translation>
+<translation id="5796656350463724">Tab-Stil</translation>
 <translation id="5796956053441619942">Die URL des Remote-Geräts wird nicht unterstützt</translation>
 <translation id="5798079537501238810">Websites dürfen Zahlungs-Handler installieren</translation>
 <translation id="5798086737841799234">Bestätigungscode eingeben</translation>
@@ -6290,6 +6293,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5864754048328252126">Aktion bei Inaktivität beim Aufladen</translation>
 <translation id="586567932979200359">Du führst <ph name="PRODUCT_NAME" /> vom Datenträgerabbild aus. Wenn du den Browser auf deinem Computer installierst, wird er ohne Datenträgerabbild ausgeführt und immer automatisch aktualisiert.</translation>
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte werden automatisch an Google gesendet</translation>
+<translation id="58659335642601499">Fenster mit Audio auswählen</translation>
 <translation id="5866363217037791319">Task beenden</translation>
 <translation id="5868434909835797817">Das Mikrofon ist auf deinem Gerät deaktiviert</translation>
 <translation id="5868479397518301468">Zeitüberschreitung bei der Anmeldung</translation>

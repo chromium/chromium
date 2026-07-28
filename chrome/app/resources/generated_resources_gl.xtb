@@ -754,6 +754,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1581962803218266616">Mostrar en Finder</translation>
 <translation id="1582955169539260415">eliminar [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">O idioma (<ph name="LANGUAGE" />) procésase de xeito local e funciona sen conexión</translation>
+<translation id="1586075235463145108">Primeiro, activa a navegación automática de Chrome neste dispositivo</translation>
 <translation id="1587275751631642843">Consola de &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Revisa as actualizacións de logotipo e nome</translation>
@@ -1819,6 +1820,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />, 1 conta, contrasinal gardado só neste dispositivo. Máis detalles}other{<ph name="DOMAIN_LINK" />, {NUM_PASSWORDS} contas, contrasinal gardado só neste dispositivo. Máis detalles}}</translation>
 <translation id="2428510569851653187">Describe que estabas facendo cando se bloqueou a pestana</translation>
 <translation id="2428939361789119025">Desactivar wifi</translation>
+<translation id="2431280447889982015">Escoller unha pantalla con audio</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> aplicacións rexistradas</translation>
 <translation id="2433237965825924228">As aplicacións web illadas controlan os dispositivos de autenticación e as tarxetas intelixentes ás que poden acceder. As tarxetas intelixentes normalmente conteñen identificadores que se utilizan para autenticarte.</translation>
@@ -6192,6 +6194,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5794700615121138172">Cartafoles compartidos de Linux</translation>
 <translation id="5794786537412027208">Saír de todas as aplicacións de Chrome</translation>
 <translation id="5796485699458186843">Nova pestana do modo de incógni&amp;to</translation>
+<translation id="5796656350463724">Estilo de pestana</translation>
 <translation id="5796956053441619942">Non se admite o URL do dispositivo remoto</translation>
 <translation id="5798079537501238810">Os sitios poden instalar controladores de pago</translation>
 <translation id="5798086737841799234">Mete o código de confirmación</translation>
@@ -6297,6 +6300,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5864754048328252126">Acción de inactividade durante a carga</translation>
 <translation id="586567932979200359">Estás executando <ph name="PRODUCT_NAME" /> desde a imaxe de disco. Se o instalas no ordenador, poderás executalo sen a imaxe de disco e aseguraraste de mantelo actualizado.</translation>
 <translation id="5865733239029070421">Envía estatísticas de uso e informes de erros automaticamente a Google</translation>
+<translation id="58659335642601499">Escoller unha ventá con audio</translation>
 <translation id="5866363217037791319">Finalizar tarefa</translation>
 <translation id="5868434909835797817">O micrófono está desactivado no dispositivo</translation>
 <translation id="5868479397518301468">Esgotouse o tempo de espera para iniciar sesión</translation>

@@ -754,6 +754,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1581962803218266616">Pokaż w Finderze</translation>
 <translation id="1582955169539260415">usuń [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">Język <ph name="LANGUAGE" /> jest przetwarzany lokalnie, więc działa offline</translation>
+<translation id="1586075235463145108">Najpierw włącz automatyczne przeglądanie w Chrome na tym urządzeniu</translation>
 <translation id="1587275751631642843">Konsola &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normalny</translation>
 <translation id="1588772269240419305">Sprawdź aktualizacje logo i nazwy</translation>
@@ -1817,6 +1818,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto, hasło zapisane tylko na tym urządzeniu. Więcej szczegółów}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konta, hasło zapisane tylko na tym urządzeniu. Więcej szczegółów}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} kont, hasło zapisane tylko na tym urządzeniu. Więcej szczegółów}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konta, hasło zapisane tylko na tym urządzeniu. Więcej szczegółów}}</translation>
 <translation id="2428510569851653187">Opisz, co robiłeś, gdy wystąpiła awaria karty</translation>
 <translation id="2428939361789119025">Wyłączanie sieci Wi-Fi</translation>
+<translation id="2431280447889982015">Wybierz ekran z dźwiękiem</translation>
 <translation id="243275146591958220">Anuluj pobieranie</translation>
 <translation id="2432882794929808179">Zarejestrowane aplikacje: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Izolowane aplikacje internetowe sterują urządzeniami uwierzytelniającymi i kartami inteligentnymi, do których mają dostęp. Karty inteligentne zwykle zawierają identyfikatory używane do uwierzytelniania.</translation>
@@ -6176,6 +6178,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5794700615121138172">Foldery udostępnione Linuksa</translation>
 <translation id="5794786537412027208">Zamknij wszystkie aplikacje Chrome</translation>
 <translation id="5796485699458186843">Nowa &amp;karta incognito</translation>
+<translation id="5796656350463724">Styl karty</translation>
 <translation id="5796956053441619942">URL z urządzenia zdalnego nie jest obsługiwany</translation>
 <translation id="5798079537501238810">Strony mogą instalować moduły do obsługi płatności</translation>
 <translation id="5798086737841799234">Wpisz kod potwierdzenia</translation>
@@ -6281,6 +6284,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5864754048328252126">Bezczynność podczas ładowania</translation>
 <translation id="586567932979200359">Produkt <ph name="PRODUCT_NAME" /> został uruchomiony z obrazu dysku. Zainstalowanie go na komputerze umożliwi uruchamianie bez użycia obrazu dysku i bieżące aktualizowanie.</translation>
 <translation id="5865733239029070421">Automatycznie przesyła do Google statystyki użytkowania i raporty o awariach</translation>
+<translation id="58659335642601499">Wybierz okno z dźwiękiem</translation>
 <translation id="5866363217037791319">Zakończ zadanie</translation>
 <translation id="5868434909835797817">Mikrofon urządzenia jest wyłączony</translation>
 <translation id="5868479397518301468">Przekroczono limit czasu logowania</translation>

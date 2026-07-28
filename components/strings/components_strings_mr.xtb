@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">स्‍मार्ट फोन</translation>
 <translation id="2491120439723279231">सर्व्हरच्या सर्टिफिकेटमध्ये एरर आहेत.</translation>
 <translation id="2491414235131909199">हे पेज एखाद्या एक्स्टेंशनने ब्लॉक केले आहे</translation>
+<translation id="2493122313108999546">आकार बदलला</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
 <translation id="2496402116964818747">पासवर्ड भरण्यासाठी तुमचे फिंगरप्रिंट वापरायचे की नाही हे तुम्ही <ph name="SETTINGS" /> मध्ये बदलू शकता</translation>
 <translation id="2498091847651709837">नवीन कार्ड स्कॅन करा</translation>
@@ -2518,6 +2519,7 @@
 <translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4886565443854420066">तुम्ही सेटिंग्ज बदलण्यापूर्वी Chrome ब्राउझरला हे तुम्हीच असल्याची पडताळणी करायची आहे</translation>
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
+<translation id="4887785555357166111">व्हिडिओ फ्रेम सेव्ह करा</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमधील तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि आणखी बरेच काही हटवण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="4892518386797173871">मागील</translation>
 <translation id="4894390983254799375">जसे की डिव्हाइस आयडी, नाव, OS आवृत्ती आणि OS वापरकर्ता नाव</translation>
@@ -2555,6 +2557,7 @@
 <translation id="4936134414789135531">घातलेले <ph name="VALUE_NAME" /> आढळले नाही.</translation>
 <translation id="4936573216809994970">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ तासाने सुरू होईल</translation>
 <translation id="4936675324097895694">वित्तविषयक</translation>
+<translation id="4939748144644852809">उजवीकडे हलवले</translation>
 <translation id="4941627891654116707">फॉंट आकार</translation>
 <translation id="4943620199112228840">तुमचे मायक्रोफोन वापरा</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
@@ -3211,6 +3214,7 @@
 <translation id="5953516610448771166">या मीडियासाठी लाइव्ह कॅप्शन उपलब्ध नाही. कॅप्शन मिळवण्यासाठी, या साइटकरिता <ph name="CONTENT_SETTINGS" /> ब्लॉक करा.</translation>
 <translation id="5960795367348889467">पडताळणी</translation>
 <translation id="5963413905009737549">विभाग</translation>
+<translation id="5963685100480647029">डावीकडे हलवले</translation>
 <translation id="5964247741333118902">एंबेड केलेला आशय</translation>
 <translation id="5967260682280773804">36 x 48 in</translation>
 <translation id="5967592137238574583">संपर्क माहिती संपादित करा</translation>
@@ -3718,6 +3722,7 @@
 <translation id="671076103358959139">नोंदणी टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्व्हरमध्ये काहीतरी चुकीचे आहे किंवा पत्ता चुकीचा आहे.</translation>
 <translation id="6711700233707023861">व्हेरिएशनची स्ट्रिंग क्लिपबोर्डवर कॉपी केली आहे</translation>
+<translation id="6712343563085762261">वर हलवले</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> ची तुलना करा · <ph name="ITEMS" /> आयटम</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा आणि कॅमेर्‍याचे स्थान ट्रॅक करायचे आहे</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> वरून टॅब पाठवला आहे</translation>
@@ -4612,6 +4617,7 @@
 <translation id="8081087320434522107">सडॅन</translation>
 <translation id="8086429410809447605">स्त्रियांचे कपडे</translation>
 <translation id="8086971161893892807">मसुदा</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> वर तुमचे पेमेंट हाताळण्यासाठी <ph name="APP_ORIGIN" /> लोड करत आहे.</translation>
 <translation id="8088680233425245692">लेख पाहण्यात अयशस्वी.</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8091372947890762290">सक्रियकरण सर्व्हरवर प्रलंबित आहे</translation>
@@ -4807,6 +4813,7 @@
 <translation id="8400929824946688748">नोकरी आणि शिक्षण</translation>
 <translation id="8402442052798347631">तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवरील हल्लेखोर हे तुम्हाला तुमच्या ब्राउझ करण्याच्या पद्धतीवर परिणाम करणारी हानिकारक सॉफ्टवेअर इंस्टॉल करून फसवण्याचा प्रयत्न करू शकतात — उदाहरणार्थ, तुमचे होमपेज बदलून किंवा तुम्ही भेट दिलेल्या साइटवर तुम्हाला अतिरिक्त जाहिराती दाखवून. Chrome हे हानी टाळण्यासाठी सुरक्षिततेकडे परतण्याची आवर्जून शिफारस करते. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">फॅन फिक्शन</translation>
+<translation id="8404028426624581035">खाली हलवले</translation>
 <translation id="8405579342203358118">Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करा</translation>
 <translation id="8405621913275228683">अज्ञात एररमुळे स्कॅन गमवले आहे</translation>
 <translation id="8406071103346257942">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरणे थांबवा</translation>

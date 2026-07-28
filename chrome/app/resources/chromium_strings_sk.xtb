@@ -23,6 +23,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1232234696885483911">Keď otvoríte vyhľadávanie podľa obrázkov, názov stránky, webová adresa a obsah vrátane súborov PDF sa automaticky odošlú na server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kým máte aktívne prihlásenie, môžete v prehliadači Chromium používať svoje heslá a ďalší obsah zo svojho účtu Google. Ak to chcete zmeniť, prejdite do sekcie Váš účet v prehliadači Chromium.</translation>
+<translation id="1244381985120794049">Zobrazovať Gemini v prehliadači Chromium na paneli s ponukami Macu</translation>
 <translation id="1257483544893909270">Na výber časti obrazovky na paneli Gemini v prehliadači Chromium môžete používať klávesovú skratku.</translation>
 <translation id="1262876892872089030">Keď bola táto karta neaktívna, bola uvoľnená pamäť, aby Chromium zostal rýchly. Môžete nastaviť, aby bol tento web vždy vylúčený z nečinnosti.</translation>
 <translation id="1265577313130862557">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor je nebezpečný</translation>
@@ -70,7 +71,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1820835682567584003">Chromium sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa zobrazí výzva na používanie Správcu hesiel Google.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
-<translation id="1846849503013521481">Vaša organizácia bude môcť zobrazovať alebo spravovať určité informácie, aby zabezpečila vašu prácu v prehliadači Chromium</translation>
 <translation id="18552579716432081">Ak chcete odstrániť dáta prehliadania iba z tohto zariadenia a vo svojom účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Stiahnite si Chromium do telefónu a otvárajte alebo vytvárajte nové skupiny kariet, nech ste kdekoľvek.</translation>
 <translation id="185970820835152459">Svoje prihlásené účty Google môžete spravovať. Účty Google sa používajú pre prehliadač Chromium, Obchod Play, Gmail a ďalšie služby. Ak chcete pridať účet inej osoby, napríklad člena rodiny, pridajte radšej novú osobu do svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -593,6 +593,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7368826207863345663">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 13 alebo novší. V tomto počítači používate macOS 12.</translation>
 <translation id="7376384068949534168">Tento web ste v poslednom čase nenavštívili. Chromium odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Otvoriť Internetový obchod Chrome</translation>
+<translation id="7394275517973019558">Zobrazovať Gemini v prehliadači Chromium v oblasti oznámení</translation>
 <translation id="7407655596887111931">Chromium je teraz váš predvolený prehliadač</translation>
 <translation id="7413153308467572558">Pokračujte tam, kde ste prestali: Chromium obnoví vaše karty pri každom reštarte. Ak to chcete vypnúť, prejdite do sekcie</translation>
 <translation id="7427879960656355200">Importovať heslá do prehliadača Chromium</translation>

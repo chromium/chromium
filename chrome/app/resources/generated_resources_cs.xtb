@@ -754,6 +754,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1581962803218266616">Zobrazit ve službě Finder</translation>
 <translation id="1582955169539260415">smazat [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> se zpracovává místně a funguje offline</translation>
+<translation id="1586075235463145108">Nejdřív pro toto zařízení zapněte automatické procházení v Chromu</translation>
 <translation id="1587275751631642843">Konzole JavaScriptu</translation>
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1588772269240419305">Zkontrolujte aktualizace loga a názvu</translation>
@@ -1819,6 +1820,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 účet, heslo je uloženo pouze na tomto zařízení. Další podrobnosti}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účty, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účtu, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účtů, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}}</translation>
 <translation id="2428510569851653187">Popište, co jste dělali, když karta selhala</translation>
 <translation id="2428939361789119025">Vypnout Wi-Fi</translation>
+<translation id="2431280447889982015">Vyberte obrazovku se zvukem</translation>
 <translation id="243275146591958220">Zrušit stahování</translation>
 <translation id="2432882794929808179">Byly zaregistrovány aplikace (<ph name="APP_COUNT" />)</translation>
 <translation id="2433237965825924228">Izolované webové aplikace ovládají ověřovací zařízení a čipové karty, ke kterým mají přístup. Čipové karty obvykle obsahují identifikátory používané k ověřování.</translation>
@@ -6184,6 +6186,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5794700615121138172">Sdílené složky Linuxu</translation>
 <translation id="5794786537412027208">Ukončit všechny aplikace Chrome</translation>
 <translation id="5796485699458186843">Nová anonymní kar&amp;ta</translation>
+<translation id="5796656350463724">Styl karet</translation>
 <translation id="5796956053441619942">Adresa URL ze vzdáleného zařízení není podporována</translation>
 <translation id="5798079537501238810">Weby mohou instalovat obslužné nástroje plateb</translation>
 <translation id="5798086737841799234">Zadejte potvrzovací kód</translation>
@@ -6289,6 +6292,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5864754048328252126">Akce nečinnosti při nabíjení</translation>
 <translation id="586567932979200359">Aplikaci <ph name="PRODUCT_NAME" /> spouštíte z bitové kopie disku. Pokud ji nainstalujte do svého počítače, můžete ji spouštět bez bitové kopie disku a umožníte její aktualizace.</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
+<translation id="58659335642601499">Vyberte okno se zvukem</translation>
 <translation id="5866363217037791319">Ukončit úlohu</translation>
 <translation id="5868434909835797817">Mikrofon je na vašem zařízení vypnutý</translation>
 <translation id="5868479397518301468">Časový limit přihlášení vypršel</translation>

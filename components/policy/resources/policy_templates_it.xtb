@@ -939,6 +939,7 @@ La soglia minima è di 1 minuto.
 <translation id="1625700732886306811">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi su tutti gli indirizzi IP</translation>
 <translation id="1626379196197114720">Consenti uso della cache back-forward</translation>
 <translation id="1628974048137236820">La pagina Nuova scheda non mostra schede</translation>
+<translation id="1628984674324273832">Non consentire Trova e Completa con Gemini.</translation>
 <translation id="163200210584085447">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente. Se viene trovata una corrispondenza, l'accesso ai dispositivi di acquisizione video verrà concesso sulle pagine di accesso SAML. In caso contrario, l'accesso verrà automaticamente negato. Non sono consentite sequenze con caratteri jolly.</translation>
 <translation id="1634770710106162474">Se la policy viene impostata su Attivata, viene eliminato l'avviso visualizzato quando <ph name="PRODUCT_NAME" /> è in esecuzione su un computer o un sistema operativo non supportato.
 
@@ -981,6 +982,17 @@ Se la policy non viene configurata, <ph name="PRODUCT_OS_NAME" /> può seleziona
 <translation id="1654087023995670109">Applica modalità ospite del browser</translation>
 <translation id="1655229863189977773">Imposta le dimensioni della cache su disco in byte</translation>
 <translation id="1655518801232583832">Attiva la risoluzione DNS di sistema all'esterno del servizio di rete</translation>
+<translation id="1656749771365000307">Questa policy definisce l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Ad esempio, se questa policy viene impostata sul valore 1, 1 sarà l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Non inciderà sui valori delle policy impostate manualmente. Questa impostazione definisce i valori predefiniti per le funzionalità di AI generativa incluse in Chrome. Per un elenco delle funzionalità incluse, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.
+
+Alcune policy, ad es. <ph name="GEMINI_SETTINGS_POLICY_NAME" />, supportano solo gli stati Consentita e Non consentita. In questo caso, se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> viene impostata su 0 o 1, questa funzionalità sarà attivata. Se <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> viene impostata su 2, questa funzionalità sarà disattivata. La documentazione relativa a ciascuna funzionalità contiene ulteriori dettagli su come interagisce con i valori in questa policy (ad es. Gemini in Chrome - https://support.google.com/chrome/a/answer/16291696). Questo vale per le seguenti funzionalità: <ph name="GEMINI_IN_CHROME_NAME" />, Google Lens e AI Mode, in quanto sono soggette a garanzie e/o termini di servizio propri (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. Potrebbero anche essere esaminati da persone per migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). Il valore predefinito è 1 per gli utenti Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
@@ -1695,6 +1707,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="2107601598727098402">
         La norma è obsoleta in M72. Utilizza invece CloudManagementEnrollmentToken.
         </translation>
+<translation id="2111355600078097861">Consenti Trova e Completa con Gemini senza migliorare i modelli di AI.</translation>
 <translation id="2112656109118682849">Consenti agli utenti di attivare/disattivare la visualizzazione delle informazioni di sistema nella schermata di accesso</translation>
 <translation id="2113068765175018713">Limita il tempo di attività del dispositivo riavviandolo automaticamente</translation>
 <translation id="211386002920955760">Controlla se un utente aziendale può accedere alla funzionalità di condivisione dei gruppi di schede in Chrome.
@@ -3951,6 +3964,18 @@ Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> è impostata su 
 <translation id="3518293344797498431">Carica la batteria fino a circa l'80% per massimizzarne l'autonomia.</translation>
 <translation id="3518512927469906365">Disattiva il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche</translation>
 <translation id="3519035925054387801">Siti con rilevamento dell'inattività consentito</translation>
+<translation id="3522162663567623647">Questa policy controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /> consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
+
+Se la policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurata o viene disattivata, questa policy viene ignorata e le richieste di installazione delle estensioni non vengono create né caricate.
+Se questa policy non viene configurata o viene disattivata, le richieste di installazione delle estensioni non vengono create né caricate.
+Se la policy viene attivata, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
+
+Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata dalla policy <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
+
+Questa policy viene applicata soltanto se la macchina viene registrata con la policy <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
+Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.
+
+Nota: questa policy si applica solo alle piattaforme che supportano le estensioni.</translation>
 <translation id="3522257170445891912">Se questa policy viene impostata, il flusso di autenticazione dell'accesso avrà uno dei seguenti metodi a seconda del valore dell'impostazione:
 
       Se è impostata su GAIA, l'accesso verrà effettuato tramite il normale flusso di autenticazione GAIA.
@@ -5025,6 +5050,11 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
 
           Se questa policy non viene impostata, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
+<translation id="4224566202253696739">Questa impostazione stabilisce se è possibile caricare file all'interno di <ph name="GEMINI_IN_CHROME_NAME" /> (consulta https://support.google.com/chrome/a/answer/16291696).
+
+0/non configurata = Agli utenti sarà consentito caricare file su <ph name="GEMINI_IN_CHROME_NAME" />.
+
+1 = Agli utenti non sarà consentito caricare file su <ph name="GEMINI_IN_CHROME_NAME" />.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
 <translation id="42267415200641481">Se questa policy viene impostata su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
 
@@ -6419,6 +6449,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="5070539335358964387">Consenti Trova e Completa con Gemini e migliora i modelli di AI.</translation>
 <translation id="5071303485174858500">Viene disattivata la sessione Ospite gestita limitata.</translation>
 <translation id="5073609397321802133">Se la policy viene impostata su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se la policy viene impostata su true in un secondo momento.
 
@@ -9932,6 +9963,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="7136237405361383549">Utilizza il renderer predefinito in base alla configurazione della prova sul campo.</translation>
 <translation id="7138762292550697459">Controlla il timeout minimo della funzione JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Segue le normali tempistiche di ritiro dell'API PrefixedVideoFullscreen</translation>
+<translation id="7140755255968613921">Impostazioni per Trova e Completa con Gemini</translation>
 <translation id="7140760943584613237">Provider di identità cloud Microsoft®</translation>
 <translation id="714219487865269980">Attiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="7144022711746703451">
@@ -10329,6 +10361,19 @@ Non vengono raccolti i valori effettivi dei dati sensibili (come cookie o valori
 <translation id="7402257017733669351">Impedisci al processo del browser di creare codice dinamico</translation>
 <translation id="7406039009275722824">Se disattivi <ph name="CHROME_SYNC_NAME" />, il servizio di backup e ripristino di Android non funzionerà correttamente.</translation>
 <translation id="7406276857470642718">Consente di gestire le impostazioni degli utenti autenticati tramite SAML con un IdP esterno</translation>
+<translation id="7407431811343706437">Consente di stabilire se gli utenti possono usare la funzionalità "Trova e Completa con Gemini" in <ph name="PRODUCT_NAME" />.
+
+0 = Consente di utilizzare la funzionalità e permette al contempo a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i contenuti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). Il valore predefinito è 1 per gli utenti Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Questa policy non si applica quando l'app Gemini è disattivata. Ad esempio, l'app Gemini può essere disattivata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Questa policy consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.
 
       Se la policy viene configurata, gli utenti non possono modificarla. Se non viene configurata, la previsione di rete viene attivata, ma gli utenti possono modificarla.</translation>
@@ -12709,6 +12754,15 @@ Se questa policy viene attivata, verrà utilizzato il nuovo comportamento.
 Se viene disattivata, verrà utilizzato il comportamento precedente.
 
 Se non viene configurata, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
+<translation id="8954797065581717017">Avviso: la configurazione di questa policy allenta il blocco della VPN sempre attiva prima che la VPN si connetta. Il filtro a livello di URL è garantito solo per il traffico del browser Chrome e non si applica alle applicazioni di sistema interne o ad altri tipi di traffico. Anche se questa policy viene applicata in modo forzato, il traffico generato dal sistema può anche ignorare la VPN sempre attiva per eseguire attività come il recupero delle policy e la sincronizzazione dell'orologio di sistema.
+
+Utilizza questa policy per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico permette di determinare se un URL è bloccato o consentito.
+
+Se la policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene impostata, viene configurata una VPN sempre attiva che non sarà connessa, la navigazione verrà bloccata verso tutti gli host, ad eccezione di quelli consentiti dalla policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In questo stato del dispositivo, le policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" /> vengono ignorate. Quando la VPN sempre attiva si connette, vengono applicate le policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" />, mentre la policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene ignorata.
+
+Per questa policy è possibile definire al massimo 1000 voci.
+
+Se la policy non viene impostata, non è possibile navigare nel browser se è attiva la VPN sempre attiva in modalità StrictMode e la VPN non è connessa.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
 <translation id="8963464192296208229">Le impostazioni di F11 usano la scorciatoia che contiene il tasto di modifica Alt</translation>

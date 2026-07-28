@@ -1602,6 +1602,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2243934210752059021">qidiruv + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Kursorni harfma-harf surish uchun strelka tugmalarini bosing</translation>
+<translation id="2246104792527215550">Parollarni avtomatik almashtirish</translation>
 <translation id="2246549592927364792">Rasmlar tavsifi Google orqali olinsinmi?</translation>
 <translation id="2247738527273549923">Qurilmangiz tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="2247870315273396641">Ovozga razm solish</translation>
@@ -5026,6 +5027,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4852383141291180386">Ilova bildirishnomalarini boshqarish</translation>
 <translation id="4852916668365817106">Sichqoncha rangi</translation>
 <translation id="4853020600495124913">Yangi oynada &amp;ochish</translation>
+<translation id="4853328060971905294">Yoniq (satr fokuslansin)</translation>
 <translation id="4854317507773910281">Ruxsat olish uchun ota-onangiz hisobini tanlang</translation>
 <translation id="4854603338816296098">Manzil olib tashlandi</translation>
 <translation id="485480310608090163">Yana sozlamalar va ruxsatlar</translation>
@@ -8017,6 +8019,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{1 varaqda yangi varaq}other{# varaqda yangi varaq}}</translation>
 <translation id="721490496276866468">Parollarni import qilish</translation>
 <translation id="7217208603285112910">Tanlangan matn <ph name="LANGUAGE" /> tilida emas</translation>
+<translation id="7217317914610152390">Yangi “Matnli izohlar” vositasi yordamida matn, fikr va qaydlar qoʻshing</translation>
 <translation id="7219254577985949841">Sayt maʼlumotlari oʻchirilsinmi?</translation>
 <translation id="7219473482981809164">Yuklab olish mumkin bir necha profil topildi. Yuklab olish uchun ulardan birini tanlang.</translation>
 <translation id="7220019174139618249">Parollar “<ph name="FOLDER" />” jildiga eksport qilinmadi</translation>
@@ -10715,6 +10718,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mobil qurilmangizdan axborot olmoqchi</translation>
 <translation id="988320949174893488">Tasodifiy toʻxtalishlar bilan</translation>
 <translation id="988978206646512040">Kodli ibora kiritilishi majburiy</translation>
+<translation id="989111665033316622">Oʻchiq (satr fokuslanmasin)</translation>
 <translation id="992032470292211616">Kengaytma, ilova va mavzular mobil qurilmangizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
 <translation id="992256792861109788">Pushti</translation>
 <translation id="994087375490600917">Yon panellar</translation>

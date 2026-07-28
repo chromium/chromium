@@ -755,6 +755,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1581962803218266616">Pokaži v Finderju</translation>
 <translation id="1582955169539260415">izbriši [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">Jezik <ph name="LANGUAGE" /> se obdela lokalno in deluje brez povezave.</translation>
+<translation id="1586075235463145108">Najprej vklopite samodejno brskanje v Chromu za to napravo</translation>
 <translation id="1587275751631642843">&amp;Konzola JavaScript</translation>
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="1588772269240419305">Pregled posodobitev logotipa in imena</translation>
@@ -1831,6 +1832,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 račun, geslo je shranjeno samo v tej napravi. Več podrobnosti}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} račun, geslo je shranjeno samo v tej napravi. Več podrobnosti}two{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računa, geslo je shranjeno samo v tej napravi. Več podrobnosti}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računi, geslo je shranjeno samo v tej napravi. Več podrobnosti}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računov, geslo je shranjeno samo v tej napravi. Več podrobnosti}}</translation>
 <translation id="2428510569851653187">Opišite, kaj ste počeli, ko se je zavihek zrušil</translation>
 <translation id="2428939361789119025">Izklop Wi-Fi-ja</translation>
+<translation id="2431280447889982015">Izberi zaslon z zvokom</translation>
 <translation id="243275146591958220">Prekliči prenos</translation>
 <translation id="2432882794929808179">Registriranih je toliko aplikacij: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Izolirane spletne aplikacije upravljajo naprave za preverjanje pristnosti in pametne kartice, ki so jim dostopne. Pametne kartice običajno vsebujejo identifikatorje, ki se uporabljajo za preverjanje pristnosti.</translation>
@@ -6310,6 +6312,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5864754048328252126">Dejanje ob nedejavnosti med polnjenjem</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> izvajate s posnetka diska. Če ga namestite v računalnik, ga lahko izvajate brez posnetka diska in s tem zagotovite, da bo vedno posodobljen.</translation>
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
+<translation id="58659335642601499">Izberi okno z zvokom</translation>
 <translation id="5866363217037791319">Končaj opravilo</translation>
 <translation id="5868434909835797817">Mikrofon je izklopljen v napravi</translation>
 <translation id="5868479397518301468">Časovna omejitev za prijavo je potekla</translation>

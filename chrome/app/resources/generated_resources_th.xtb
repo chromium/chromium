@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">แสดงใน Finder</translation>
 <translation id="1582955169539260415">ลบ [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">ภาษา<ph name="LANGUAGE" />ได้รับการประมวลผลในเครื่องและทำงานแบบออฟไลน์</translation>
+<translation id="1586075235463145108">ก่อนอื่นให้เปิดการท่องเว็บอัตโนมัติของ Chrome สำหรับอุปกรณ์นี้</translation>
 <translation id="1587275751631642843">คอนโซล &amp;JavaScript</translation>
 <translation id="1588438908519853928">ปกติ</translation>
 <translation id="1588772269240419305">ตรวจสอบการอัปเดตโลโก้และชื่อ</translation>
@@ -1819,6 +1820,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}}</translation>
 <translation id="2428510569851653187">อธิบายว่าคุณกำลังทำอะไรเมื่อแท็บขัดข้อง</translation>
 <translation id="2428939361789119025">ปิด Wi-Fi</translation>
+<translation id="2431280447889982015">เลือกหน้าจอที่มีเสียง</translation>
 <translation id="243275146591958220">ยกเลิกการดาวน์โหลด</translation>
 <translation id="2432882794929808179">ลงทะเบียนแล้ว <ph name="APP_COUNT" /> แอป</translation>
 <translation id="2433237965825924228">Isolated Web App จะควบคุมอุปกรณ์ตรวจสอบสิทธิ์และสมาร์ทการ์ดที่อุปกรณ์ดังกล่าวเข้าถึงได้ โดยปกติแล้วสมาร์ทการ์ดจะมีตัวระบุที่ใช้เพื่อตรวจสอบสิทธิ์</translation>
@@ -6185,6 +6187,7 @@
 <translation id="5794700615121138172">โฟลเดอร์ที่แชร์ใน Linux</translation>
 <translation id="5794786537412027208">ปิดแอป Chrome ทั้งหมด</translation>
 <translation id="5796485699458186843">แท็บที่ไม่ระบุตัวตนใหม่</translation>
+<translation id="5796656350463724">การจัดรูปแบบแท็บ</translation>
 <translation id="5796956053441619942">ไม่รองรับ URL จากอุปกรณ์ระยะไกล</translation>
 <translation id="5798079537501238810">เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงินได้</translation>
 <translation id="5798086737841799234">ป้อนรหัสยืนยัน</translation>
@@ -6290,6 +6293,7 @@
 <translation id="5864754048328252126">การทำงานสำหรับการไม่ใช้งานขณะที่ชาร์จ</translation>
 <translation id="586567932979200359">คุณกำลังเรียกใช้ <ph name="PRODUCT_NAME" /> จากดิสก์อิมเมจ การติดตั้งผลิตภัณฑ์นี้บนคอมพิวเตอร์จะทำให้คุณเรียกใช้ได้โดยไม่ต้องใช้ดิสก์อิมเมจและคุณมั่นใจได้ว่าผลิตภัณฑ์จะอัปเดตตลอดเวลา</translation>
 <translation id="5865733239029070421">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
+<translation id="58659335642601499">เลือกหน้าต่างที่มีเสียง</translation>
 <translation id="5866363217037791319">สิ้นสุดงาน</translation>
 <translation id="5868434909835797817">ไมโครโฟนในอุปกรณ์ปิดอยู่</translation>
 <translation id="5868479397518301468">การลงชื่อเข้าใช้หมดเวลาแล้ว</translation>

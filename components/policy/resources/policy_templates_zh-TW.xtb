@@ -902,6 +902,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1625700732886306811">允許 <ph name="PRODUCT_NAME" /> 透過所有 IP 位址連線到裝置</translation>
 <translation id="1626379196197114720">允許使用往返快取</translation>
 <translation id="1628974048137236820">新分頁不會顯示卡片</translation>
+<translation id="1628984674324273832">不允許使用「透過 Gemini 尋找並填入資訊」功能。</translation>
 <translation id="163200210584085447">系統會比對這份清單中的模式與要求網址的
       安全性來源。如果找到相符的結果，系統就會
       在 SAML 登入網頁授權存取錄影裝置。如果找不到
@@ -941,6 +942,17 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1654087023995670109">強制執行瀏覽器訪客模式</translation>
 <translation id="1655229863189977773">設定磁碟快取大小 (以位元組為單位)</translation>
 <translation id="1655518801232583832">在網路服務外部啟用系統 DNS 解析</translation>
+<translation id="1656749771365000307">這項政策會定義所有相關生成式 AI 功能的預設設定。舉例來說，如果將這項政策的值設為 1，1 就會是所有相關生成式 AI 功能的預設設定值。這不會影響任何手動設定的政策值。這項設定會定義 Chrome 中涵蓋的生成式 AI 功能預設值。如要查看相關功能的完整清單，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。
+
+「<ph name="GEMINI_SETTINGS_POLICY_NAME" />」等部分政策，只會有「允許」和「不允許」兩種狀態。在此情況下，如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 0 或 1，系統就會啟用這項功能。如果將「<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />」設為 2，系統會停用這項功能。各項功能的說明文件詳細說明這項政策中的值如何影響該功能，例如 Chrome 內建 Gemini：https://support.google.com/chrome/a/answer/16291696。<ph name="GEMINI_IN_CHROME_NAME" />、Google 智慧鏡頭和 AI 模式等功能，皆有專屬的保證和/或服務條款 (https://support.google.com/chrome/a/?p=genai_features_chrome)，因此均適用此規定。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。這些資料也可能會送交專人審查，以提升 AI 模型。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="165769015320654523">自動授權網站連結至指定廠商和產品 ID 的 HID 裝置。</translation>
 <translation id="1659406551862245683">預設的虛擬鍵盤調整大小行為已變更為調整版面配置可視區域的大小</translation>
 <translation id="166427968280387991">Proxy 伺服器：</translation>
@@ -1608,6 +1620,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2107601598727098402">
         這項政策已於 M72 淘汰。請改用 CloudManagementEnrollmentToken。
         </translation>
+<translation id="2111355600078097861">允許使用「透過 Gemini 尋找並填入資訊」功能，但不協助改良 AI 模型。</translation>
 <translation id="2112656109118682849">允許使用者選擇是否讓登入畫面顯示系統資訊</translation>
 <translation id="2113068765175018713">透過自動重新啟動的方式限制裝置的正常運作時間</translation>
 <translation id="211386002920955760">控管企業版使用者能否使用 Chrome 的分頁群組共用功能。
@@ -3783,6 +3796,18 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 <translation id="3518293344797498431">將電池充到約 80% 能盡量延長電池壽命。</translation>
 <translation id="3518512927469906365">停用特定頂層來源的第三方儲存空間分區</translation>
 <translation id="3519035925054387801">允許網站偵測閒置狀態</translation>
+<translation id="3522162663567623647">這項政策可控管 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求，決定使用者能否將要求送交 Google 管理控制台審核。
+
+如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策，且不會建立或上傳擴充功能安裝要求。
+如果不設定這項政策或設為停用，系統不會建立或上傳擴充功能安裝要求。
+如果啟用這項政策，系統就會建立擴充功能安裝要求，並上傳到 Google 管理控制台。
+
+如果使用者嘗試安裝 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 不允許的擴充功能，系統就會建立擴充功能安裝要求。
+
+如果是 <ph name="PRODUCT_NAME" />，裝置必須使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊，這項政策才會生效。
+如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。
+
+注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="3522257170445891912">如果設定這項政策，系統會根據設定值，採用下列其中一種登入驗證流程：如果設為 GAIA，系統會透過一般的 GAIA 驗證流程完成登入程序。如果設為 SAML_INTERSTITIAL，系統預設會自動重新導向至 SAML IdP。使用者仍可返回一般的 GAIA 登入流程。注意：系統不會再顯示 <ph name="PRODUCT_NAME" /> 版本 99 之前的額外使用者確認畫面。如果未設定 SAML IdP，且這項政策已設為 SAML_INTERSTITIAL，系統重新導向將會失敗，並傳回錯誤 400。</translation>
 <translation id="3523630512885826906">使用者螢幕保護程式鎖定畫面圖片顯示間隔。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
@@ -4835,6 +4860,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
           如果不設定這項政策，系統預設會停用自動點擊功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="4212181786686887763">可下載桌布圖片的網址。</translation>
+<translation id="4224566202253696739">這項設定可控管是否允許在 <ph name="GEMINI_IN_CHROME_NAME" /> 中上傳檔案 (請參閱 https://support.google.com/chrome/a/answer/16291696)。
+
+0/未設定 = 允許使用者將檔案上傳至 <ph name="GEMINI_IN_CHROME_NAME" />。
+
+1 = 禁止使用者將檔案上傳至 <ph name="GEMINI_IN_CHROME_NAME" />。</translation>
 <translation id="4224610387358583899">螢幕鎖定延遲</translation>
 <translation id="42267415200641481">如果將這項政策設為 True，系統 DNS 解析 (getaddrinfo()) 可能會在網路程序外執行。實際情況取決於系統設定和功能旗標。
 
@@ -6176,6 +6206,7 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
 
 如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
+<translation id="5070539335358964387">允許使用「透過 Gemini 尋找並填入資訊」功能，並協助改良 AI 模型。</translation>
 <translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
@@ -9529,6 +9560,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7136237405361383549">依據實際測試設定使用預設轉譯器。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函式的最低逾時時間。</translation>
 <translation id="7138792262152376158">依循 PrefixedVideoFullscreen API 的定期淘汰時間表</translation>
+<translation id="7140755255968613921">「透過 Gemini 尋找並填入資訊」設定</translation>
 <translation id="7140760943584613237">Microsoft® 雲端識別資訊提供者</translation>
 <translation id="714219487865269980">啟用鍵盤焦點醒目顯示功能</translation>
 <translation id="7144022711746703451">
@@ -9908,6 +9940,19 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7402257017733669351">防止瀏覽器程序建立動態程式碼</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7406276857470642718">控制透過外部 IdP (使用 SAML) 進行驗證的使用者設定</translation>
+<translation id="7407431811343706437">控管使用者是否能在 <ph name="PRODUCT_NAME" /> 中使用「透過 Gemini 尋找並填入資訊」功能。
+
+0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
+
+1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
+
+2 = 不允許使用這項功能。
+
+如果停用 Gemini 應用程式，這項政策就沒有任何作用。例如，<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策可能會停用 Gemini 應用程式。
+
+如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
+
+如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
@@ -12193,6 +12238,15 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 如果停用這項政策，系統將使用舊行為。
 
 如果不設定這項政策，系統將如同其他 Chromium 使用者一樣使用新行為。</translation>
+<translation id="8954797065581717017">警告：設定這項政策會放寬 VPN 連線前的「永久連線 VPN」鎖定狀態。網址層級篩選功能僅適用於 Chrome 瀏覽器流量，不適用於內部系統應用程式或其他流量類型。這項政策強制執行時，系統流量也可以略過「永久連線的 VPN」，執行擷取政策和同步處理系統時鐘等工作。
+
+請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。
+
+設定 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 後，如果「永久連線的 VPN」已完成設定但未連線，系統將封鎖與所有主機的連線 (<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允許的連線除外)。在這個裝置狀態中，系統會忽略 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" />。「永久連線的 VPN」連線時，系統會套用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策並忽略 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策。
+
+這項政策最多只能輸入 1,000 個項目。
+
+如果不設定這項政策，只要「永久連線的 VPN」處於嚴格模式，但裝置未連上該 VPN，系統將禁止瀏覽器開啟網頁。</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8963464192296208229">F11 設定採用含有 Alt 輔助鍵的快速鍵</translation>

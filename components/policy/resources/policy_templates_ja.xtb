@@ -885,6 +885,7 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="1625700732886306811">すべての IP アドレスのデバイスに接続することを <ph name="PRODUCT_NAME" /> に許可する</translation>
 <translation id="1626379196197114720">バックフォワード キャッシュの使用を許可する</translation>
 <translation id="1628974048137236820">新しいタブページにカードを表示しない</translation>
+<translation id="1628984674324273832">Gemini による検索と自動入力を許可しない。</translation>
 <translation id="163200210584085447">このリストに指定されているパターンと、リクエスト元 URL の
       セキュリティ オリジンが照合されます。一致するものが見つかった場合は、
       動画キャプチャ デバイスへのアクセスが SAML ログインページで許可されます。
@@ -928,6 +929,17 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 <translation id="1654087023995670109">ブラウザのゲストモードを強制的に適用する</translation>
 <translation id="1655229863189977773">ディスク キャッシュ サイズをバイト単位で設定する</translation>
 <translation id="1655518801232583832">システムの DNS 解決をネットワーク サービス外で実行できるようにする</translation>
+<translation id="1656749771365000307">このポリシーでは、対象となるすべての生成 AI 機能のデフォルト設定を定義します。たとえば、このポリシーを値 1 に設定した場合、対象となるすべての生成 AI 機能のデフォルト設定は 1 になります。この設定は、手動で設定したポリシー値には影響しません。この設定は、Chrome で対象となる生成 AI 機能でデフォルトとして定義されます。対象となる機能の一覧については、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。
+
+一部のポリシー（<ph name="GEMINI_SETTINGS_POLICY_NAME" /> など）では、「許可する」と「許可しない」の状態のみがサポートされます。この場合、<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> を 0 または 1 に設定すると、この機能が有効になります。<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> を 2 に設定した場合、この機能は無効になります。各機能のドキュメントには、このポリシーの値で各機能がどのように動作するかについて、より詳しい情報が記載されています（例: Gemini in Chrome - https://support.google.com/chrome/a/answer/16291696）。このポリシーは、<ph name="GEMINI_IN_CHROME_NAME" />、Google レンズ、AI モードに適用されます。これらの機能には、それぞれ独自の保証と利用規約が適用されます（https://support.google.com/chrome/a/?p=genai_features_chrome）。
+
+0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。AI モデルを改善するため、人間のレビュアーが確認する場合もあります。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="165769015320654523">特定のベンダー ID と製品 ID を持つ HID デバイスへの接続を自動的にこれらのサイトに許可します。</translation>
 <translation id="1659406551862245683">仮想キーボードのデフォルトのサイズ変更動作が変えられ、レイアウト ビューポートのサイズ変更が行われる</translation>
 <translation id="166427968280387991">プロキシ サーバー</translation>
@@ -1614,6 +1626,7 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
 <translation id="2107601598727098402">
         このポリシーは M72 でサポート終了となりました。代わりに CloudManagementEnrollmentToken を使用してください。
         </translation>
+<translation id="2111355600078097861">Gemini による検索と自動入力を許可し、AI モデルの改善は許可しない。</translation>
 <translation id="2112656109118682849">ログイン画面でのシステム情報の表示の切り替えをユーザーに許可する</translation>
 <translation id="2113068765175018713">自動再起動を行ってデバイスの稼働時間を制限する</translation>
 <translation id="211386002920955760">企業ユーザーが Chrome のタブグループ共有機能にアクセスできるかどうかを制御します。
@@ -3757,6 +3770,18 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 <translation id="3518293344797498431">バッテリー寿命を最大限に延ばすため、バッテリーを約 80% まで充電する。</translation>
 <translation id="3518512927469906365">特定の最上位のオリジンに対してサードパーティのストレージ パーティションを無効にする</translation>
 <translation id="3519035925054387801">アイドル状態の検出を許可するサイト</translation>
+<translation id="3522162663567623647">このポリシーでは、ユーザーが Google 管理コンソールに <ph name="PRODUCT_NAME" /> 拡張機能のインストールの承認リクエストを送信できるようにするかどうかを管理します。
+
+ポリシー <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> を未設定のままにするか無効にすると、このポリシーは無視され、拡張機能のインストールのリクエストは作成およびアップロードされません。
+このポリシーを未設定のままにするか無効にすると、拡張機能のインストールのリクエストは作成およびアップロードされません。
+このポリシーを有効にすると、拡張機能のインストールのリクエストが作成され、Google 管理コンソールにアップロードされます。
+
+拡張機能のインストールのリクエストは、<ph name="EXTENSION_INSTALL_ALLOWLIST" /> または <ph name="EXTENSION_SETTINGS" /> で許可されていない拡張機能をユーザーがインストールしようとしたときに作成されます。
+
+<ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
+<ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。
+
+注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="3522257170445891912">このポリシーが設定されている場合、ログイン認証フローは設定の値に応じて次のいずれかになります。
 
       GAIA に設定されている場合、ログインは通常の GAIA 認証フローで行われます。
@@ -4840,6 +4865,11 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
           このポリシーを未設定のままにした場合、自動クリックが無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4212181786686887763">壁紙画像をダウンロードすることのできる URL です。</translation>
+<translation id="4224566202253696739">この設定では、<ph name="GEMINI_IN_CHROME_NAME" /> 内でファイルのアップロードを許可するかどうかを制御します（https://support.google.com/chrome/a/answer/16291696 を参照）。
+
+0 または未設定 = ユーザーは <ph name="GEMINI_IN_CHROME_NAME" /> にファイルをアップロードできます。
+
+1 = ユーザーは <ph name="GEMINI_IN_CHROME_NAME" /> にファイルをアップロードできません。</translation>
 <translation id="4224610387358583899">画面ロック遅延時間</translation>
 <translation id="42267415200641481">このポリシーを true に設定した場合は、システム設定と機能フラグに応じて、システムの DNS 解決（getaddrinfo()）をネットワーク プロセス外で実行できるようになります。
 
@@ -6133,6 +6163,7 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
 
 生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
+<translation id="5070539335358964387">Gemini による検索と自動入力、および AI モデルの改善を許可する。</translation>
 <translation id="5071303485174858500">制限付き管理対象ゲスト セッションを無効にする</translation>
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 
@@ -9453,6 +9484,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <translation id="7136237405361383549">フィールド トライアルの設定に基づくデフォルトのレンダラを使用する。</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() 関数の最小タイムアウトを管理します。</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API の通常のサポート終了タイムラインに従います</translation>
+<translation id="7140755255968613921">Gemini による検索と自動入力の設定</translation>
 <translation id="7140760943584613237">Microsoft® のクラウド ID プロバイダ</translation>
 <translation id="714219487865269980">キーボード フォーカスによるハイライト表示を有効にする</translation>
 <translation id="7144022711746703451">
@@ -9810,6 +9842,19 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
 <translation id="7402257017733669351">ブラウザ プロセスで動的コードが作成されないようにする</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7406276857470642718">外部 IdP を使用して SAML で認証されたユーザーの設定を管理する</translation>
+<translation id="7407431811343706437">ユーザーが <ph name="PRODUCT_NAME" /> で「Gemini で検索して自動入力する」機能を使用できるかどうかを制御します。
+
+0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+Gemini アプリが無効になっている場合、このポリシーは無視されます。たとえば、Gemini アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -12091,6 +12136,15 @@ M119 よりデフォルトで無効になります）。
 このポリシーを無効に設定した場合は、従来の動作が使用されます。
 
 このポリシーを未設定のままにした場合は、他の Chromium ユーザーと同じように新しい動作が使用されます。</translation>
+<translation id="8954797065581717017">警告: このポリシーを設定すると、VPN 接続前に常時接続 VPN のロックダウンが緩和されます。URL レベルのフィルタリングは Chrome ブラウザのトラフィックに対してのみ保証され、内部システム アプリケーションや他のトラフィック タイプには適用されません。このポリシーを適用した場合、システム トラフィックは常時接続 VPN をバイパスして、ポリシーの取得やシステム クロックの同期などのタスクを実行することもできます。
+
+このポリシーは、特定のスキームや、他のドメインのサブドメイン、ポート、特定のパスに例外を設定する場合に使用します。設定の際は、https://support.google.com/chrome/a?p=url_blocklist_filter_format で指定された形式を使用します。URL のブロックや許可は、最も具体的なフィルタによって決定されます。
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> を設定した場合、常時接続 VPN が設定済みで、接続されていないときは、すべてのホストへのナビゲーションがブロックされます（ただし、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーで許可されているホストを除きます）。このデバイス状態では、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> は無視されます。常時接続 VPN に接続されているときは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> と <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーが適用され、<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> ポリシーは無視されます。
+
+このポリシーで指定できる URL は最大 1,000 件です。
+
+このポリシーを未設定のままにした場合、厳格モードの常時接続 VPN が有効で接続されていないとき、ブラウザ ナビゲーションはブロックされます。</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
 <translation id="8963464192296208229">F11 の設定で Alt 修飾キーを含むショートカットを使用する</translation>

@@ -755,6 +755,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1581962803218266616">Show in Finder</translation>
 <translation id="1582955169539260415">i-delete ang [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">Lokal na ipinoproseso ang <ph name="LANGUAGE" /> at gumagana ito offline</translation>
+<translation id="1586075235463145108">I-on muna ang awtomatikong pag-browse ng Chrome para sa device na ito</translation>
 <translation id="1587275751631642843">&amp;JavaScript console</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Suriin ang mga update sa logo at pangalan</translation>
@@ -1832,6 +1833,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 account, sa device lang na ito naka-save ang password. Higit pang detalye}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} account, sa device lang na ito naka-save ang password. Higit pang detalye}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} na account, sa device lang na ito naka-save ang password. Higit pang detalye}}</translation>
 <translation id="2428510569851653187">Ilarawan ang ginagawa mo noong nag-crash ang tab</translation>
 <translation id="2428939361789119025">I-off ang Wi-Fi</translation>
+<translation id="2431280447889982015">Pumili ng screen na may audio</translation>
 <translation id="243275146591958220">Kanselahin ang pag-download</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> (na) app ang nakarehistro</translation>
 <translation id="2433237965825924228">Kinokontrol ng mga naka-isolate na web app ang mga device sa pag-authenticate at mga smart card na naa-access ng mga ito. Karaniwang naglalaman ang mga smart card ng mga identifier na ginagamit para i-authenticate ka.</translation>
@@ -6310,6 +6312,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5864754048328252126">Idle na pagkilos habang nagcha-charge</translation>
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
+<translation id="58659335642601499">Pumili ng window na may audio</translation>
 <translation id="5866363217037791319">Tapusin ang gawain</translation>
 <translation id="5868434909835797817">Naka-off ang mikropono sa iyong device</translation>
 <translation id="5868479397518301468">Nag-time out ang pag-sign in</translation>

@@ -755,6 +755,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1581962803218266616">Wys in vinder</translation>
 <translation id="1582955169539260415">vee [<ph name="FINGERPRINT_NAME" />] uit</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> word plaaslik verwerk en werk vanlyn</translation>
+<translation id="1586075235463145108">Skakel eers Chrome-outonavigeer vir hierdie toestel aan</translation>
 <translation id="1587275751631642843">JavaScript-konsole</translation>
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1588772269240419305">Hersien logo- en naamopdatering</translation>
@@ -1832,6 +1833,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 rekening, wagwoord net op hierdie toestel gestoor. Meer besonderhede}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} rekeninge, wagwoord net op hierdie toestel gestoor. Meer besonderhede}}</translation>
 <translation id="2428510569851653187">Beskryf wat jy besig was om te doen toe die oortjie omgeval het</translation>
 <translation id="2428939361789119025">Skakel Wi-Fi af</translation>
+<translation id="2431280447889982015">Kies ’n skerm met oudio</translation>
 <translation id="243275146591958220">Kanselleer aflaai</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps is geregistreer</translation>
 <translation id="2433237965825924228">Geïsoleerde webapps beheer stawingtoestelle en slimkaarte wat vir hulle toeganklik is. Slimkaarte bevat gewoonlik identifiseerders wat gebruik word om jou te staaf.</translation>
@@ -6205,6 +6207,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5794700615121138172">Linux- gedeelde lêers</translation>
 <translation id="5794786537412027208">Beëindig alle Chrome-programme</translation>
 <translation id="5796485699458186843">Nuwe Incognito-oortjie</translation>
+<translation id="5796656350463724">Oortjiestilering</translation>
 <translation id="5796956053441619942">Die URL van die afstandtoestel word nie gesteun nie</translation>
 <translation id="5798079537501238810">Werwe kan betalinghanteerders installeer</translation>
 <translation id="5798086737841799234">Voer bevestigingskode in</translation>
@@ -6310,6 +6313,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5864754048328252126">Rushandeling terwyl dit laai</translation>
 <translation id="586567932979200359">Jy laat loop <ph name="PRODUCT_NAME" /> tans van sy skyfafbeelding af. As jy dit op jou rekenaar installeer, kan jy dit sonder die skyfafbeelding laat loop, en verseker dat dit op datum gehou word.</translation>
 <translation id="5865733239029070421">Stuur gebruikstatistieke en omvalverslae outomaties na Google</translation>
+<translation id="58659335642601499">Kies ’n venster met oudio</translation>
 <translation id="5866363217037791319">Beëindig taak</translation>
 <translation id="5868434909835797817">Mikrofoon op jou toestel is af</translation>
 <translation id="5868479397518301468">Aanmelding het uitgetel</translation>

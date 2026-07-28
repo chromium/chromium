@@ -755,6 +755,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1581962803218266616">Prikaži u Tražiocu</translation>
 <translation id="1582955169539260415">izbriši [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> jezik se obrađuje lokalno i funkcionira offline</translation>
+<translation id="1586075235463145108">Prvo uključite automatsko pregledanje u Chromeu za uređaj</translation>
 <translation id="1587275751631642843">Konzola za &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normalno</translation>
 <translation id="1588772269240419305">Pregledajte ažuriranja logotipa i naziva</translation>
@@ -1829,6 +1830,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 račun; lozinka je sačuvana samo na ovaj uređaj. Više detalja}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} račun; lozinka je sačuvana samo na ovaj uređaj. Više detalja}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računa; lozinka je sačuvana samo na ovaj uređaj. Više detalja}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računa; lozinka je sačuvana samo na ovaj uređaj. Više detalja}}</translation>
 <translation id="2428510569851653187">Opišite šta ste radili kada je došlo do pada kartice</translation>
 <translation id="2428939361789119025">Isključite WiFi</translation>
+<translation id="2431280447889982015">Odaberite ekran sa zvukom</translation>
 <translation id="243275146591958220">Otkaži preuzimanje</translation>
 <translation id="2432882794929808179">Registrirane aplikacije: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Izolirane web aplikacije upravljaju uređajima za autentifikaciju i pametnim karticama kojima mogu pristupati. Pametne kartice obično sadržavaju identifikatore koji se koriste za autentifikaciju.</translation>
@@ -6201,6 +6203,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5794700615121138172">Dijeljeni folderi na Linuxu</translation>
 <translation id="5794786537412027208">Napusti sve Chromeove aplikacije</translation>
 <translation id="5796485699458186843">Nova anonimna &amp;kartica</translation>
+<translation id="5796656350463724">Stil kartice</translation>
 <translation id="5796956053441619942">URL s udaljenog uređaja nije podržan</translation>
 <translation id="5798079537501238810">Web lokacije mogu instalirati obrađivače plaćanja</translation>
 <translation id="5798086737841799234">Unesite kôd za potvrdu</translation>
@@ -6306,6 +6309,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5864754048328252126">Radnja u slučaju neaktivnosti tokom punjenja</translation>
 <translation id="586567932979200359">Pokrećete <ph name="PRODUCT_NAME" /> sa slike diska. Ako ga instalirate na računaru, moći ćete ga pokrenuti bez slike diska i uvijek će biti ažuriran.</translation>
 <translation id="5865733239029070421">Automatski šalje Googleu statistiku korištenja i izvještaje o padovima aplikacije</translation>
+<translation id="58659335642601499">Odaberite prozor sa zvukom</translation>
 <translation id="5866363217037791319">Završi zadatak</translation>
 <translation id="5868434909835797817">Mikrofon je isključen na uređaju</translation>
 <translation id="5868479397518301468">Isteklo je vrijeme za prijavu</translation>

@@ -754,6 +754,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1581962803218266616">Afficher dans le Finder</translation>
 <translation id="1582955169539260415">supprimer [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">La langue suivante est traitée localement et elle fonctionne hors ligne : <ph name="LANGUAGE" /></translation>
+<translation id="1586075235463145108">Tout d'abord, activer la navigation automatique dans Chrome pour cet appareil</translation>
 <translation id="1587275751631642843">Console &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Examiner les mises à jour du logo et du nom</translation>
@@ -1819,6 +1820,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 compte, mot de passe enregistré uniquement sur cet appareil. Plus de détails}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} compte, mot de passe enregistré uniquement sur cet appareil. Plus de détails}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} comptes, mot de passe enregistré uniquement sur cet appareil. Plus de détails}}</translation>
 <translation id="2428510569851653187">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
+<translation id="2431280447889982015">Choisir un écran avec du son</translation>
 <translation id="243275146591958220">Annuler le téléchargement</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> applis enregistrées</translation>
 <translation id="2433237965825924228">Les applis Web isolées contrôlent les appareils d'authentification et les cartes à puce qui leur sont accessibles. Les cartes à puce contiennent généralement des identifiants utilisés pour vous authentifier.</translation>
@@ -6297,6 +6299,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5864754048328252126">Action en cas d'inactivité durant la recharge</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
+<translation id="58659335642601499">Choisir une fenêtre avec du son</translation>
 <translation id="5866363217037791319">Terminer la tâche</translation>
 <translation id="5868434909835797817">Le microphone est désactivé sur votre appareil</translation>
 <translation id="5868479397518301468">Délai de connexion dépassé</translation>

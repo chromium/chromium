@@ -755,6 +755,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1581962803218266616">Sýna í Finder</translation>
 <translation id="1582955169539260415">eyða [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> er meðhöndluð í tækinu og virkar án nettengingar</translation>
+<translation id="1586075235463145108">Byrjaðu á að kveikja á sjálfvirkri vöfrun í Chrome fyrir þetta tæki</translation>
 <translation id="1587275751631642843">&amp;JavaScript-stjórnborð</translation>
 <translation id="1588438908519853928">Venjuleg</translation>
 <translation id="1588772269240419305">Fara yfir uppfærslu lógós og nafns</translation>
@@ -1609,6 +1610,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2243934210752059021">leitarlykill + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Notaðu örvalyklana til að fletta í gegnum atriðin, einn staf í senn</translation>
+<translation id="2246104792527215550">Breyta aðgangsorðum sjálfkrafa</translation>
 <translation id="2246549592927364792">Fá lýsingar á myndum frá Google?</translation>
 <translation id="2247738527273549923">Þessu tæki er stjórnað af fyrirtækinu þínu</translation>
 <translation id="2247870315273396641">Forskoðun raddar</translation>
@@ -1832,6 +1834,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 reikningur, aðgangsorð aðeins vistað í þessu tæki. Nánar}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} reikningur, aðgangsorð aðeins vistað í þessu tæki. Nánar}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} reikningar, aðgangsorð aðeins vistað í þessu tæki. Nánar}}</translation>
 <translation id="2428510569851653187">Lýstu því hvað þú varst að gera þegar flipinn hrundi</translation>
 <translation id="2428939361789119025">Slökkva á Wi-Fi</translation>
+<translation id="2431280447889982015">Velja skjá með hljóði</translation>
 <translation id="243275146591958220">Hætta við niðurhal</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> forrit skráð</translation>
 <translation id="2433237965825924228">Einangruð vefforrit stjórna auðkenningartækum og snjallkortum sem þau hafa aðgang að. Snjallkort innihalda iðulega auðkenni sem eru notuð til að auðkenna þig.</translation>
@@ -5035,6 +5038,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4852383141291180386">Stjórna forritstilkynningum</translation>
 <translation id="4852916668365817106">Litur músar</translation>
 <translation id="4853020600495124913">Opna í &amp;nýjum glugga</translation>
+<translation id="4853328060971905294">Kveikt (kveikja á línufókus)</translation>
 <translation id="4854317507773910281">Veldu reikning foreldris sem á að samþykkja</translation>
 <translation id="4854603338816296098">Heimilisfang fjarlægt</translation>
 <translation id="485480310608090163">Fleiri stillingar og heimildir</translation>
@@ -6310,6 +6314,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5864754048328252126">Aðgerðaleysi meðan á hleðslu stendur</translation>
 <translation id="586567932979200359">Þú ert að keyra <ph name="PRODUCT_NAME" /> af diskmynd þess. Ef þú setur það upp í tölvunni geturðu keyrt það án diskmyndarinnar og tryggt að það sé alltaf uppfært.</translation>
 <translation id="5865733239029070421">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
+<translation id="58659335642601499">Velja glugga með hljóði</translation>
 <translation id="5866363217037791319">Ljúka verkefni</translation>
 <translation id="5868434909835797817">Slökkt er á hljóðnema tækisins</translation>
 <translation id="5868479397518301468">Innskráning rann út á tíma</translation>
@@ -8027,6 +8032,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nýr flipi á 1 flipa}one{Nýr flipi á # flipa}other{Nýr flipi á # flipum}}</translation>
 <translation id="721490496276866468">Flytja inn aðgangsorð</translation>
 <translation id="7217208603285112910">Ekki þýða val á <ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">Bættu texta, ummælum og glósum við með nýja textaskýringarverkfærinu</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
 <translation id="7219473482981809164">Við fundum marga prófíla sem hægt er að sækja. Veldu hverja þeirra þú vilt sækja áður en þú heldur áfram.</translation>
 <translation id="7220019174139618249">Ekki er hægt að flytja lykilorð út í „<ph name="FOLDER" />“</translation>
@@ -10725,6 +10731,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> vill fá upplýsingar úr snjalltækinu þínu</translation>
 <translation id="988320949174893488">Einstaka hökt</translation>
 <translation id="988978206646512040">Ekki er leyft að hafa autt aðgangsorð</translation>
+<translation id="989111665033316622">Slökkt (slökkva á línufókus)</translation>
 <translation id="992032470292211616">Viðbætur, forrit og þemu geta skaðað tækið þitt. Ertu viss um að þú viljir halda áfram?</translation>
 <translation id="992256792861109788">Bleikur</translation>
 <translation id="994087375490600917">Hliðargluggar</translation>

@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">Смартфони</translation>
 <translation id="2491120439723279231">Сертификатът на сървъра съдържа грешки.</translation>
 <translation id="2491414235131909199">Тази страница е блокирана от разширение</translation>
+<translation id="2493122313108999546">Преоразмерихте</translation>
 <translation id="2495083838625180221">Синтактичен анализ на JSON</translation>
 <translation id="2496402116964818747">В <ph name="SETTINGS" /> можете да задавате дали отпечатъкът ви да се използва при попълване на пароли</translation>
 <translation id="2498091847651709837">Сканиране на нова карта</translation>
@@ -2519,6 +2520,7 @@
 <translation id="4885256590493466218">Плащане с <ph name="CARD_DETAIL" /></translation>
 <translation id="4886565443854420066">Браузърът Chrome иска да потвърди самоличността ви, преди да промените настройките</translation>
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
+<translation id="4887785555357166111">Запазване на кадъра от видеоклипа</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да изтриете историята на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
 <translation id="4892518386797173871">Заден</translation>
 <translation id="4894390983254799375">Например идентификатор и име на устройството, версия на операционната система и потребителско име в операционната система.</translation>
@@ -2556,6 +2558,7 @@
 <translation id="4936134414789135531">Вмъкнатият елемент <ph name="VALUE_NAME" /> не бе намерен.</translation>
 <translation id="4936573216809994970">Качването на файловете ви в(ъв) <ph name="CLOUD_PROVIDER" /> ще започне след 1 час</translation>
 <translation id="4936675324097895694">Финанси</translation>
+<translation id="4939748144644852809">Преместихте надясно</translation>
 <translation id="4941627891654116707">Размер на шрифта</translation>
 <translation id="4943620199112228840">Използване на микрофоните ви</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
@@ -3212,6 +3215,7 @@
 <translation id="5953516610448771166">Функцията „Надписи на живо“ не е налице за този медиен формат. За да получите надписи, блокирайте <ph name="CONTENT_SETTINGS" /> за този сайт.</translation>
 <translation id="5960795367348889467">Потвърждаване</translation>
 <translation id="5963413905009737549">Секция</translation>
+<translation id="5963685100480647029">Преместихте наляво</translation>
 <translation id="5964247741333118902">Вградено съдържание</translation>
 <translation id="5967260682280773804">36 x 48 инча</translation>
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
@@ -3718,6 +3722,7 @@
 <translation id="671076103358959139">Означение за регистриране:</translation>
 <translation id="6711464428925977395">Нещо не е наред с прокси сървъра или адресът е неправилен.</translation>
 <translation id="6711700233707023861">Низът на вариациите е копиран в буферната памет</translation>
+<translation id="6712343563085762261">Преместихте нагоре</translation>
 <translation id="6716039223770814796">Сравнение на <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> елемента</translation>
 <translation id="6716672519412350405"><ph name="URL" /> иска да създаде триизмерна карта на заобикалящата ви среда и да следи позицията на камерата</translation>
 <translation id="6717692133381953670">Разделът е изпратен от <ph name="DEVICE_NAME" /></translation>
@@ -4612,6 +4617,7 @@
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086429410809447605">Дамско облекло</translation>
 <translation id="8086971161893892807">Чернова</translation>
+<translation id="8087558780672230449"><ph name="APP_ORIGIN" /> се зарежда, за да обработи плащането ви на <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Преглеждането на статията не бе успешно.</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8091372947890762290">В сървъра се изчаква активиране</translation>
@@ -4807,6 +4813,7 @@
 <translation id="8400929824946688748">Работа и образование</translation>
 <translation id="8402442052798347631">Хакерите, използващи сайта, който опитахте да посетите, може да ви подведат да инсталирате опасен софтуер, който засяга начина ви на сърфиране, като например промени началната ви страница или ви показва допълнителни реклами на посещаваните от вас сайтове. Chrome настоятелно препоръчва да се върнете към безопасната страница, за да се предпазите. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Фен фикшън</translation>
+<translation id="8404028426624581035">Преместихте надолу</translation>
 <translation id="8405579342203358118">Управление на данните, които да се синхронизират, от настройките на Chrome</translation>
 <translation id="8405621913275228683">Сканираният файл е загубен поради неизвестна грешка</translation>
 <translation id="8406071103346257942">спре да използва опцията ви за заключване на екрана при попълване на пароли</translation>

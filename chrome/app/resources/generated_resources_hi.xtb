@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">खोजकर्ता में दिखाएं</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] मिटाएं</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> को स्थानीय तौर पर प्रोसेस किया जाता है और यह ऑफ़लाइन काम करती है</translation>
+<translation id="1586075235463145108">सबसे पहले, इस डिवाइस पर Chrome की ऑटो ब्राउज़ सुविधा चालू करें</translation>
 <translation id="1587275751631642843">&amp;JavaScript कंसोल</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1588772269240419305">लोगो और नाम में हुए बदलावों की समीक्षा करें</translation>
@@ -1609,6 +1610,7 @@
 <translation id="2243934210752059021">खोज बटन + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">आइटम के एक-एक अक्षर पर जाने के लिए, ऐरो वाले बटनों का इस्तेमाल करें</translation>
+<translation id="2246104792527215550">पासवर्ड ऑटोमैटिक तरीके से बदलने की सुविधा</translation>
 <translation id="2246549592927364792">क्या Google से इमेज की जानकारी चाहते हैं?</translation>
 <translation id="2247738527273549923">आपके डिवाइस को आपका संगठन मैनेज करता है</translation>
 <translation id="2247870315273396641">चुनी गई आवाज़ की झलक</translation>
@@ -1832,6 +1834,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> के 1 खाते का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}one{<ph name="DOMAIN_LINK" /> के {NUM_PASSWORDS} खाते का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}other{<ph name="DOMAIN_LINK" /> के {NUM_PASSWORDS} खातों का पासवर्ड सिर्फ़ इस डिवाइस में सेव किया गया. ज़्यादा जानकारी}}</translation>
 <translation id="2428510569851653187">बताएं कि जब टैब क्रैश हुआ तब आप क्या कर रहे थे</translation>
 <translation id="2428939361789119025">वाई-फ़ाई बंद करें</translation>
+<translation id="2431280447889982015">ऑडियो वाली कोई स्क्रीन चुनें</translation>
 <translation id="243275146591958220">डाउनलोड रद्द करें</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> ऐप्लिकेशन रजिस्टर किए गए</translation>
 <translation id="2433237965825924228">आइसोलेटेड वेब ऐप्लिकेशन, पुष्टि करने के लिए इस्तेमाल किए जाने वाले डिवाइस और उनके सभी स्मार्ट कार्ड को कंट्रोल करते हैं. आम तौर पर, स्मार्ट कार्ड में आपकी पहचान की पुष्टि करने के लिए आइडेंटिफ़ायर होते हैं.</translation>
@@ -5033,6 +5036,7 @@
 <translation id="4852383141291180386">ऐप्लिकेशन से मिलने वाली सूचनाएं मैनेज करना</translation>
 <translation id="4852916668365817106">माउस का रंग बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4853020600495124913">&amp;नई विंडो में खोलें</translation>
+<translation id="4853328060971905294">चालू है (लाइन फ़ोकस की सुविधा चालू है)</translation>
 <translation id="4854317507773910281">मंज़ूरी के लिए माता-पिता का खाता चुनें</translation>
 <translation id="4854603338816296098">पता हटाया गया</translation>
 <translation id="485480310608090163">ज़्यादा सेटिंग और अनुमतियां</translation>
@@ -6307,6 +6311,7 @@
 <translation id="5864754048328252126">चार्ज करते समय डिवाइस पर काम नहीं हो रहा है</translation>
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
+<translation id="58659335642601499">ऑडियो वाली कोई विंडो चुनें</translation>
 <translation id="5866363217037791319">टास्क बंद करें</translation>
 <translation id="5868434909835797817">आपके डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="5868479397518301468">साइन इन करने का समय खत्म हो गया</translation>
@@ -8025,6 +8030,7 @@
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{1 टैब में नया टैब}one{# टैब में नया टैब}other{# टैब में नया टैब}}</translation>
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करें</translation>
 <translation id="7217208603285112910">चुना गया कॉन्टेंट <ph name="LANGUAGE" /> भाषा में नहीं है</translation>
+<translation id="7217317914610152390">नए टेक्स्ट एनोटेशन टूल की मदद से, टेक्स्ट, टिप्पणियां, और नोट जोड़ें</translation>
 <translation id="7219254577985949841">क्या आपको साइट डेटा मिटाना है?</translation>
 <translation id="7219473482981809164">हमें ऐसी कई प्रोफ़ाइलें मिली हैं जिन्हें डाउनलोड किया जा सकता है. आगे बढ़ने से पहले वे प्रोफ़ाइलें चुनें जिन्हें आपको डाउनलोड करना है.</translation>
 <translation id="7220019174139618249">पासवर्ड "<ph name="FOLDER" />" में निर्यात नहीं किए जा सकते</translation>
@@ -10722,6 +10728,7 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> को आपके फ़ोन या टैबलेट से जानकारी चाहिए</translation>
 <translation id="988320949174893488">बीच-बीच में रुकना</translation>
 <translation id="988978206646512040">खाली 'पासफ़्रेज़' की अनुमति नहीं है</translation>
+<translation id="989111665033316622">बंद है (लाइन फ़ोकस की सुविधा बंद है)</translation>
 <translation id="992032470292211616">एक्‍सटेंशन, ऐप्स , और थीम आपके डिवाइस को हानि पहुंचा सकते हैं. क्‍या आप वाकई जारी रखना चाहते हैं?</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 <translation id="994087375490600917">साइड पैनल</translation>

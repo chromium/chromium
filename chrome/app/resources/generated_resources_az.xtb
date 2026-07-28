@@ -754,6 +754,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1581962803218266616">Axtarıcıda Göstərin</translation>
 <translation id="1582955169539260415">silin: [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> lokal olaraq emal edilir və oflayn işləyir</translation>
+<translation id="1586075235463145108">Əvvəlcə bu cihaz üçün Chrome avtonaviqasiya funksiyasını aktiv edin</translation>
 <translation id="1587275751631642843">JavaScript konsolu</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Loqo və ad yeniləmələrini nəzərdən keçirin</translation>
@@ -1822,6 +1823,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 hesab, parol yalnız bu cihazda yadda saxlanıldı. Daha ətraflı}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} hesab, parol yalnız bu cihazda yadda saxlanıldı. Daha ətraflı}}</translation>
 <translation id="2428510569851653187">Tabda xəta baş verdiyi zaman nə etdiyinizi təsvir edin</translation>
 <translation id="2428939361789119025">Wi-Fi şəbəkəsini deaktiv edin</translation>
+<translation id="2431280447889982015">Audio olan ekran seçin</translation>
 <translation id="243275146591958220">Endirməni ləğv edin</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> tətbiq qeydiyyatdan keçirilib</translation>
 <translation id="2433237965825924228">İzolyasiya edilmiş veb-tətbiqlər doğrulama cihazlarını və onlara əlçatan olan smart kartları idarə edir. Smart kartlar adətən sizi doğrulamaq üçün istifadə olunan identifikatorlardan ibarətdir.</translation>
@@ -6298,6 +6300,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5864754048328252126">Şarj edilən zaman cihaz fəaliyyətsiz qaldıqda ediləcək əməliyyat</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> məhsulunu onun disk obrazindan işlədirsiniz. Onun kompüterə quraşdırılması disk obrazı olmadan işlətməyinizə imkan verəcək və həmişə güncəl qalmasını sağlayacaq.</translation>
 <translation id="5865733239029070421">İstifadə statistikası və qəza raportlarını avtomatik Google'a göndərir</translation>
+<translation id="58659335642601499">Audio olan pəncərə seçin</translation>
 <translation id="5866363217037791319">Tapşırığı sonlandırın</translation>
 <translation id="5868434909835797817">Mikrofon cihazda deaktivdir</translation>
 <translation id="5868479397518301468">Giriş vaxtı bitdi</translation>

@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">በፈላጊ ውስጥ አሳይ</translation>
 <translation id="1582955169539260415">ሰርዝ [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> በአካባቢው የሚሰናዳ እና ከመስመር ውጭ የሚሰራ ነው</translation>
+<translation id="1586075235463145108">መጀመሪያ ለዚህ መሣሪያ የChrome ራስ-ሰር ማሰስን ያብሩ</translation>
 <translation id="1587275751631642843">&amp;ጃቫስክሪፕት ኮንሶል</translation>
 <translation id="1588438908519853928">መደበኛ</translation>
 <translation id="1588772269240419305">የዓርማ እና ስም ዝማኔዎችን ይገምግሙ</translation>
@@ -1827,6 +1828,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 መለያ፣ የይለፍ ቃል ብቻ በዚህ መሣሪያ ላይ ተቀምጧል። ተጨማሪ ዝርዝሮች}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} መለያ፣ የይለፍ ቃል ብቻ በዚህ መሣሪያ ላይ ተቀምጧል። ተጨማሪ ዝርዝሮች}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} መለያዎች፣ የይለፍ ቃል ብቻ በዚህ መሣሪያ ላይ ተቀምጧል። ተጨማሪ ዝርዝሮች}}</translation>
 <translation id="2428510569851653187">ትሩ ሲሰናከል ምን እየሰሩ እንደነበር ያብራሩ</translation>
 <translation id="2428939361789119025">Wi-Fiን አጥፋ</translation>
+<translation id="2431280447889982015">ኦዲዮ ያለው ማያ ገጽ ምረጥ</translation>
 <translation id="243275146591958220">ማውረድ ይቅር</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> መተግበሪያዎች ተመዝግበዋል</translation>
 <translation id="2433237965825924228">ገለልተኛ የድር መተግበሪያዎች ቁጥጥር ማረጋገጫ መሣሪያዎች እና ለእነሱ ተደራሽ የሆኑ ዘመናዊ ካርዶች። ዘመናዊ ካርዶች በተለምዶ እርስዎን ለማረገጥ የሚሆኑ ለዩዎች ይይዛሉ።</translation>
@@ -6197,6 +6199,7 @@
 <translation id="5794700615121138172">የተጋሩ የLinux አቃፊዎች</translation>
 <translation id="5794786537412027208">ከሁሉም የChrome መተግበሪያዎች ውጣ</translation>
 <translation id="5796485699458186843">አዲስ ማንነት የማያሳውቅ እና ትር</translation>
+<translation id="5796656350463724">የትር የቅጥ አሠራር</translation>
 <translation id="5796956053441619942">የርቀት መቆጣጠሪያ መሣሪያዎ ዩአርኤል አይደገፍም</translation>
 <translation id="5798079537501238810">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን መጫን ይችላሉ</translation>
 <translation id="5798086737841799234">የማረጋገጫ ኮድ ያስገቡ</translation>
@@ -6302,6 +6305,7 @@
 <translation id="5864754048328252126">ኃይል እየሞላ ሳለ የስራ መፍታት እርምጃ</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" />ን ከዲስክ ምስሉ እያሄዱ ነው። ኮምፒውተርዎ ላይ መጫን ያለ ዲስክ ምስሉ እንዲያሂዱት ያስችልዎታል፣ እና እንደተዘመነ መቆየቱን ያረጋግጣል።</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
+<translation id="58659335642601499">ኦዲዮ ያለው መስኮት ምረጥ</translation>
 <translation id="5866363217037791319">ተግባርን ጨርስ</translation>
 <translation id="5868434909835797817">በመሣሪያዎ ላይ ማይክሮፎን ጠፍቷል</translation>
 <translation id="5868479397518301468">የመግባት እረፍት ጊዜ</translation>

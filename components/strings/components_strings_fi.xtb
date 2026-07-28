@@ -984,6 +984,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2485243023686553468">Älypuhelimet</translation>
 <translation id="2491120439723279231">Palvelimen varmenteessa on virheitä.</translation>
 <translation id="2491414235131909199">Laajennus on estänyt tämän sivun</translation>
+<translation id="2493122313108999546">Kokoa muutettu</translation>
 <translation id="2495083838625180221">JSON-jäsentäjä</translation>
 <translation id="2496402116964818747">Voit valita täältä, käytetäänkö sormenjälkeä salasanojen täyttämiseen: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skannaa uusi kortti</translation>
@@ -2557,6 +2558,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4936134414789135531">Lisättyä arvoa (<ph name="VALUE_NAME" />) ei löytynyt.</translation>
 <translation id="4936573216809994970">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa tunnin kuluttua</translation>
 <translation id="4936675324097895694">Talous</translation>
+<translation id="4939748144644852809">Siirretty oikealle</translation>
 <translation id="4941627891654116707">Fonttikoko</translation>
 <translation id="4943620199112228840">Käyttää mikrofoniasi</translation>
 <translation id="4943872375798546930">Ei tuloksia</translation>
@@ -3213,6 +3215,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5953516610448771166">Livetekstitys ei ole saatavilla tälle medialle. Jos haluat tekstityksiä, estä <ph name="CONTENT_SETTINGS" /> tällä sivustolla.</translation>
 <translation id="5960795367348889467">Todennus</translation>
 <translation id="5963413905009737549">Osio</translation>
+<translation id="5963685100480647029">Siirretty vasemmalle</translation>
 <translation id="5964247741333118902">Upotettu sisältö</translation>
 <translation id="5967260682280773804">36 x 48 tuumaa</translation>
 <translation id="5967592137238574583">Muokkaa yhteystietoja</translation>
@@ -3719,6 +3722,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="671076103358959139">Käyttöönottotunnus:</translation>
 <translation id="6711464428925977395">Välityspalvelimessa on jotain vikaa tai osoite on virheellinen.</translation>
 <translation id="6711700233707023861">Muunnelmien merkkijono kopioitu leikepöydälle</translation>
+<translation id="6712343563085762261">Siirretty ylös</translation>
 <translation id="6716039223770814796">Vertaile <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> kohdetta</translation>
 <translation id="6716672519412350405"><ph name="URL" /> pyytää lupaa luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa</translation>
 <translation id="6717692133381953670">Välilehti lähetetty laitteelta  <ph name="DEVICE_NAME" /></translation>
@@ -4613,6 +4617,7 @@ Lisätietoja:
 <translation id="8081087320434522107">Sedan-autot</translation>
 <translation id="8086429410809447605">Naisten vaatteet</translation>
 <translation id="8086971161893892807">Luonnos</translation>
+<translation id="8087558780672230449">Ladataan <ph name="APP_ORIGIN" />, jotta maksu (<ph name="MERCHANT_ORIGIN" />) voidaan käsitellä.</translation>
 <translation id="8088680233425245692">Artikkelin näyttäminen epäonnistui.</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8091372947890762290">Aktivointi odottaa palvelimella</translation>
@@ -4808,6 +4813,7 @@ Lisätietoja:
 <translation id="8400929824946688748">Työ ja koulutus</translation>
 <translation id="8402442052798347631">Hyökkääjät sivustolla, jolle yritit siirtyä, voivat yrittää huijata sinua asentamaan haittaohjelmia, jotka vaikuttavat selauskokemukseen. Ne voivat esimerkiksi vaihtaa aloitussivusi tai näyttää ylimääräisiä mainoksia avaamillasi sivustoilla. Chrome suosittelee, että siirryt takaisin turvalliselle sivustolle. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanifiktio</translation>
+<translation id="8404028426624581035">Siirretty alas</translation>
 <translation id="8405579342203358118">Valitse synkronoitavat tiedot Chromen asetuksista</translation>
 <translation id="8405621913275228683">Skannaus katosi tuntemattoman virheen vuoksi</translation>
 <translation id="8406071103346257942">lopettaa näytön lukituksen avaustavan käytön salasanojen täyttämiseen</translation>

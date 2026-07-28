@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Када отворите претрагу слика, наслов, URL и садржај странице, укључујући PDF-ове, аутоматски се шаљу на сервер. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Док сте пријављени, можете да користите лозинке и друго са Google налога у Chromium-у. Да бисте то променили, идите на Налог у Chromium-у.</translation>
+<translation id="1244381985120794049">Прикажи Gemini у Chromium-у на траци менија Mac-а</translation>
 <translation id="1257483544893909270">Да бисте изабрали део екрана у Gemini-ју у Chromium-у, користите тастерску пречицу.</translation>
 <translation id="1262876892872089030">Док је ова картица била неактивна, меморија је ослобођена да би Chromium био брз. Можете да одаберете да увек изузмете овај сајт из неактивности.</translation>
 <translation id="1265577313130862557">Chromium је блокирао ово преузимање јер је овај фајл опасан</translation>
@@ -71,7 +72,6 @@
 <translation id="1820835682567584003">Chromium покушава да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Следећи пут када отворите Chromium на уређају <ph name="DEVICE_TYPE" />, видећете упит да користите Google менаџер лозинки.</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
-<translation id="1846849503013521481">Да би заштитила ваш рад у Chromium-у, организација ће моћи да прегледа одређене информације или управља њима</translation>
 <translation id="18552579716432081">Да бисте избрисали податке прегледања само са овог уређаја, али не и са Google налога, <ph name="BEGIN_LINK" />одјавите се из Chromium-а<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Преузмите Chromium на телефон да бисте у покрету отварали или правили нове групе картица.</translation>
 <translation id="185970820835152459">Можете да управљате Google налозима на које сте пријављени. Google налози се користе за Chromium прегледач, Play продавницу, Gmail и друго. Ако желите да додате налог за неког другог, нпр. члана породице, уместо тога додајте нову особу на свој уређај <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -594,6 +594,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="7368826207863345663">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 13 или новија верзија. Овај рачунар користи macOS 12.</translation>
 <translation id="7376384068949534168">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Отворите Chrome веб-продавницу</translation>
+<translation id="7394275517973019558">Прикажи Gemini у Chromium-у на системској палети</translation>
 <translation id="7407655596887111931">Chromium је сада подразумевани прегледач</translation>
 <translation id="7413153308467572558">Наставите тамо где сте стали: Chromium враћа картице сваки пут када га рестартујете. Да бисте то искључили, идите у</translation>
 <translation id="7427879960656355200">Увезите лозинке у Chromium</translation>

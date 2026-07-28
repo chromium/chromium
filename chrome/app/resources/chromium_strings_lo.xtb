@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">ເມື່ອທ່ານເປີດການຊອກຫາຮູບ, ລະບົບຈະສົ່ງຊື່ໜ້າ, URL ແລະ ເນື້ອຫາ, ຮວມທັງ PDF ໄປຫາເຊີບເວີໂດຍອັດຕະໂນມັດ. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກບັນຊີ Google ຂອງທ່ານໃນ Chromium ໄດ້. ເພື່ອປ່ຽນສິ່ງນີ້, ໃຫ້ເຂົ້າໄປ “ບັນຊີຂອງທ່ານໃນ Chromium”.</translation>
+<translation id="1244381985120794049">ສະແດງ Gemini ໃນ Chromium ໃນແຖບເມນູຂອງ Mac</translation>
 <translation id="1257483544893909270">ເພື່ອເລືອກພາກສ່ວນໜຶ່ງຂອງໜ້າຈໍໃນ Gemini ໃນ Chromium, ໃຫ້ໃຊ້ຄີລັດ.</translation>
 <translation id="1262876892872089030">ໃນຂະນະທີ່ແຖບນີ້ບໍ່ມີການນຳໃຊ້, ລະບົບຈະເພີ່ມພື້ນທີ່ຫວ່າງໃນໜ່ວຍຄວາມຈຳເພື່ອໃຫ້ໃຊ້ Chromium ໄດ້ຢ່າງວ່ອງໄວຢູ່ຕະຫຼອດ. ທ່ານສາມາດເລືອກຍົກເວັ້ນໃຫ້ເວັບໄຊນີ້ເຮັດວຽກຕະຫຼອດເວລາໄດ້.</translation>
 <translation id="1265577313130862557">Chromium ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ເປັນອັນຕະລາຍ</translation>
@@ -71,7 +72,6 @@
 <translation id="1820835682567584003">Chromium ກຳລັງພະຍາຍາມໃຊ້ <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">ເທື່ອຕໍ່ໄປທີ່ທ່ານເປີດ Chromium ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ, ທ່ານຈະເຫັນຂໍ້ຄວາມແຈ້ງໃຫ້ໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
-<translation id="1846849503013521481">ເພື່ອຮັກສາຄວາມປອດໄພໃຫ້ກັບວຽກຂອງທ່ານໃນ Chromium, ອົງກອນຂອງທ່ານຈະສາມາດເບິ່ງ ຫຼື ຈັດການຂໍ້ມູນບາງຢ່າງໄດ້</translation>
 <translation id="18552579716432081">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນອຸປະກອນນີ້ເທົ່ານັ້ນ, ແຕ່ຍັງຮັກສາຂໍ້ມູນດັ່ງກ່າວໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">ດາວໂຫຼດ Chromium ຢູ່ໂທລະສັບຂອງທ່ານເພື່ອເປີດ ຫຼື ສ້າງກຸ່ມແຖບໃໝ່ໄດ້ທຸກບ່ອນທຸກເວລາ.</translation>
 <translation id="185970820835152459">ທ່ານສາມາດຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວຂອງທ່ານໄດ້. ບັນຊີ Google ຂອງທ່ານແມ່ນໃຊ້ສຳລັບໂປຣແກຣມທ່ອງເວັບ Chromium, Play Store, Gmail ແລະ ອື່ນໆ. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ ເຊັ່ນ: ສະມາຊິກຄອບຄົວ, ໃຫ້ເພີ່ມຄົນໃໝ່ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແທນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -594,6 +594,7 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="7368826207863345663">ເພື່ອຮັບການອັບເດດ Chromium ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ macOS 13 ຂຶ້ນໄປ. ຄອມພິວເຕີເຄື່ອງນີ້ກຳລັງໃຊ້ macOS 12.</translation>
 <translation id="7376384068949534168">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ອອກແລ້ວ.</translation>
 <translation id="73786666777299047">ເປີດ Chrome Web Store</translation>
+<translation id="7394275517973019558">ສະແດງ Gemini ໃນ Chromium ໃນຖາດລະບົບ</translation>
 <translation id="7407655596887111931">ຕອນນີ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານແລ້ວ</translation>
 <translation id="7413153308467572558">ສືບຕໍ່ຈາກບ່ອນທີ່ທ່ານຄ້າງໄວ້: Chromium ຈະກູ້ຄືນແຖບຂອງທ່ານໄດ້ທຸກຄັ້ງທີ່ທ່ານປິດເປີດໃໝ່. ເພື່ອປິດໃຊ້ສິ່ງນີ້, ໃຫ້ໄປຫາ</translation>
 <translation id="7427879960656355200">ນຳເຂົ້າລະຫັດຜ່ານໃສ່ Chromium</translation>

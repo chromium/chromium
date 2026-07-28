@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1232234696885483911">開啟「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會自動傳送至伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登入後，你可以在 Chromium 使用 Google 帳戶儲存的密碼和其他資料。如要變更此設定，請前往「你在 Chromium 的帳戶」。</translation>
+<translation id="1244381985120794049">在 Mac 選單列顯示 Chromium 版 Gemini</translation>
 <translation id="1257483544893909270">如要在 Chromium 版 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">由於此檔案有危險，因此 Chromium 已禁止下載</translation>
@@ -70,7 +71,6 @@
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用「Google 密碼管理工具」。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
-<translation id="1846849503013521481">為確保你在 Chromium 上的工作成果安全，你的機構將可查看或管理特定資料</translation>
 <translation id="18552579716432081">如果只刪除此裝置上的瀏覽資料，並保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1857749206890802997">在手機下載 Chromium，隨時隨地開啟或建立新分頁群組。</translation>
 <translation id="185970820835152459">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -593,6 +593,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7368826207863345663">如要取得日後的 Chromium 更新，你需要 macOS 13 或以上版本。此電腦正在使用 macOS 12。</translation>
 <translation id="7376384068949534168">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="73786666777299047">開啟 Chrome 網上應用程式商店</translation>
+<translation id="7394275517973019558">在系統列顯示 Chromium 版 Gemini</translation>
 <translation id="7407655596887111931">Chromium 現在是你的預設瀏覽器</translation>
 <translation id="7413153308467572558">開啟上次瀏覽的內容：Chromium 會在每次重新啟動後還原分頁。如要關閉此功能，請前往</translation>
 <translation id="7427879960656355200">匯入密碼至 Chromium</translation>

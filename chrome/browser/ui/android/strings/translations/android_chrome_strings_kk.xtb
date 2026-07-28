@@ -267,6 +267,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2145315049852051678">Браузеріңізде ең қауіпсіз параметрлер бар екеніне көз жеткізу үшін Chrome жүйелі түрде тексереді. Тексеру қажет болса, хабарын береміз.</translation>
 <translation id="2149968176347646218">Байланыс қауіпсіз емес</translation>
 <translation id="2149973817440762519">Бетбелгіні өзгерту</translation>
+<translation id="2158475082070321257">Ерекшеленген мәтіннің сілтемесін көшіру</translation>
 <translation id="2163089732491971196">Chrome деректерін Google аккаунтыңызда пайдалану және сақтау үшін құпия фразаңызды енгізіңіз.</translation>
 <translation id="2164015935042801524">Қойындыларды тігінен көрсету үшін осы жерді тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="2166228530126694506">Нұсқасы: <ph name="VERSION_NUMBER" /></translation>
@@ -459,7 +460,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2900528713135656174">Оқиға жасау</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сайтына арналған ұсыныстар көрсетілуде.</translation>
 <translation id="2904300462646366554">Жүктеп алынған PDF файлдары құрылғыңыздағы PDF көру құралдарының бірімен автоматты түрде ашылады.</translation>
-<translation id="2904414404539560095">Қойынды жіберілетін құрылғылар тізімі толық экранға ашылған.</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912247081180973411">Терезелерді жабу</translation>
 <translation id="2912345083818861431">Экран құлпын пайдаланып, ашылған инкогнито қойындыларын көру</translation>
@@ -747,7 +747,6 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="4116038641877404294">Беттерді офлайн пайдалану үшін оларды жүктеп алыңыз</translation>
 <translation id="4121654769234887259">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол <ph name="USERNAME" /> аккаунтына арналған Google Password Manager қызметіне сақталады.</translation>
 <translation id="4132137475637520539">Сілтемені алған кез келген адам қосыла алады</translation>
-<translation id="4135200667068010335">Қойынды жіберілетін құрылғылар тізімі жабық.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, жазудың көп рет таңдалған, бекітілген қойындысы</translation>
 <translation id="4137746084635924146">Ағымдағы құрылғы тілі</translation>
 <translation id="414128724510021958">Компьютерге арналған әдепкісінше сұралған сайттар</translation>
@@ -1406,7 +1405,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6762511428368667596"><ph name="NAME" />, <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Қызығушылықтарыңыз негізінде контент алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="6764137532716892442">Жаңа әрекеттері бар ортақ <ph name="GROUP_TITLE" /> қойындылар тобы</translation>
-<translation id="6767294960381293877">Қойынды жіберілетін құрылғылар тізімі жарты экранға ашылған.</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> инкогнито қойындысы және тағы <ph name="TAB_COUNT_ONE" /> қойынды жабылады.}other{<ph name="INCOGNITO_TAB_COUNT" /> инкогнито қойындысы және тағы <ph name="TAB_COUNT_MANY" /> қойынды жабылады.}}</translation>
 <translation id="6785476624617658922">Chrome және ChromeOS Қосымша қызмет көрсету шарттары</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
@@ -2034,7 +2032,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="9101137867221042551">Басқару</translation>
 <translation id="9102803872260866941">"Алдын ала көру" қойындысы ашылды.</translation>
 <translation id="9102864637938129124">Сайттар мен жарнама берушілер жарнамалардың тиімділігін түсіне алады. Бұл параметр қосулы.</translation>
-<translation id="9104217018994036254">Қойынды жіберілетін құрылғылар тізімі.</translation>
 <translation id="9106148373857059373">Бетбелгілерді сақтау ағыны жабық.</translation>
 <translation id="9108808586816295166">Қауіпсіз DNS барлық уақытта қолжетімді болмауы мүмкін.</translation>
 <translation id="9112483451228487295">Браузер дерегін жылдам жою</translation>

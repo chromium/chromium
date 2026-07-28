@@ -984,6 +984,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2485243023686553468">Smartphone</translation>
 <translation id="2491120439723279231">Servercertifikatet innehåller fel.</translation>
 <translation id="2491414235131909199">Den här sidan har blockerats av ett tillägg</translation>
+<translation id="2493122313108999546">Storleken har ändrats</translation>
 <translation id="2495083838625180221">JSON-analysator</translation>
 <translation id="2496402116964818747">Du kan ändra om du vill använda fingeravtrycket för att fylla i lösenord eller inte i <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Läs in ett nytt kort</translation>
@@ -2556,6 +2557,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4936134414789135531">Det gick inte att hitta de infogade värdet <ph name="VALUE_NAME" />.</translation>
 <translation id="4936573216809994970">Filerna börjar laddas upp till <ph name="CLOUD_PROVIDER" /> om 1 timme</translation>
 <translation id="4936675324097895694">Ekonomi</translation>
+<translation id="4939748144644852809">Flyttades åt höger</translation>
 <translation id="4941627891654116707">Teckenstorlek</translation>
 <translation id="4943620199112228840">använda mikrofonerna</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
@@ -3212,6 +3214,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5953516610448771166">Livetextning är inte tillgängligt för den här mediefilen. Blockera <ph name="CONTENT_SETTINGS" /> för den här webbplatsen om du vill använda textning.</translation>
 <translation id="5960795367348889467">Verifiering</translation>
 <translation id="5963413905009737549">Avsnitt</translation>
+<translation id="5963685100480647029">Flyttades åt vänster</translation>
 <translation id="5964247741333118902">Inbäddat innehåll</translation>
 <translation id="5967260682280773804">36 x 48 tum</translation>
 <translation id="5967592137238574583">Redigera kontaktuppgifter</translation>
@@ -3718,6 +3721,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="671076103358959139">Registreringstoken:</translation>
 <translation id="6711464428925977395">Något är fel med proxyservern eller så är adressen felaktig.</translation>
 <translation id="6711700233707023861">Variantsträngen har kopierats till urklipp</translation>
+<translation id="6712343563085762261">Uppflyttat</translation>
 <translation id="6716039223770814796">Jämför <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> objekt</translation>
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
 <translation id="6717692133381953670">Fliken skickades från <ph name="DEVICE_NAME" /></translation>
@@ -4612,6 +4616,7 @@ Mer information.
 <translation id="8081087320434522107">Sedanbilar</translation>
 <translation id="8086429410809447605">Damkläder</translation>
 <translation id="8086971161893892807">Utkast</translation>
+<translation id="8087558780672230449">Läser in <ph name="APP_ORIGIN" /> för att hantera din betalning via <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Det gick inte att visa artikeln.</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8091372947890762290">Aktiveringen väntar på servern</translation>
@@ -4807,6 +4812,7 @@ Mer information.
 <translation id="8400929824946688748">Jobb och utbildning</translation>
 <translation id="8402442052798347631">Angripare på webbplatsen som du försökte besöka kan lura dig att installera skadlig mjukvara som påverkar hur du surfar, till exempel genom att ändra din startsida eller visa extra annonser på webbplatser som du besöker. Chrome rekommenderar starkt att du går tillbaka till säkra webbplatser för att undvika skada. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanfiction</translation>
+<translation id="8404028426624581035">Nedflyttat</translation>
 <translation id="8405579342203358118">Hantera vilken information som synkroniseras i inställningarna för Chrome</translation>
 <translation id="8405621913275228683">Skanningen har gått förlorad på grund av ett okänt fel</translation>
 <translation id="8406071103346257942">sluta använda skärmlåset för att fylla i lösenord</translation>

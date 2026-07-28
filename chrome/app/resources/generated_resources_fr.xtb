@@ -754,6 +754,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1581962803218266616">Afficher dans le Finder</translation>
 <translation id="1582955169539260415">supprimer [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">La langue "<ph name="LANGUAGE" />" est traitée localement et fonctionne hors connexion</translation>
+<translation id="1586075235463145108">Activez d'abord la navigation automatique dans Chrome pour cet appareil</translation>
 <translation id="1587275751631642843">Console &amp;JavaScript</translation>
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1588772269240419305">Examiner les modifications apportées au logo et au nom</translation>
@@ -1819,6 +1820,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 compte <ph name="DOMAIN_LINK" />. Le mot de passe n'est enregistré que sur cet appareil. Plus de détails}one{{NUM_PASSWORDS} compte <ph name="DOMAIN_LINK" />. Le mot de passe n'est enregistré que sur cet appareil. Plus de détails}other{{NUM_PASSWORDS} comptes <ph name="DOMAIN_LINK" />. Le mot de passe n'est enregistré que sur cet appareil. Plus de détails}}</translation>
 <translation id="2428510569851653187">Décrivez ce que vous faisiez lorsque l'onglet a planté</translation>
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
+<translation id="2431280447889982015">Sélectionner un écran avec audio</translation>
 <translation id="243275146591958220">Annuler le téléchargement</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> appli(s) enregistrée(s)</translation>
 <translation id="2433237965825924228">Les applications Web isolées contrôlent les appareils d'authentification et les cartes à puce auxquelles ils ont accès. Les cartes à puce contiennent généralement des identifiants utilisés pour vous authentifier.</translation>
@@ -6188,6 +6190,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5794700615121138172">Dossiers partagés par Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
 <translation id="5796485699458186843">Nouvel ongle&amp;t de navigation privée</translation>
+<translation id="5796656350463724">Style des onglets</translation>
 <translation id="5796956053441619942">L'URL de l'appareil à distance n'est pas compatible</translation>
 <translation id="5798079537501238810">Les sites peuvent installer des gestionnaires de paiement</translation>
 <translation id="5798086737841799234">Saisissez le code de confirmation</translation>
@@ -6293,6 +6296,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5864754048328252126">Lorsque l'appareil est inactif et en charge</translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
+<translation id="58659335642601499">Sélectionner une fenêtre avec audio</translation>
 <translation id="5866363217037791319">Arrêter la tâche</translation>
 <translation id="5868434909835797817">Le micro est désactivé sur votre appareil</translation>
 <translation id="5868479397518301468">Délai de connexion dépassé</translation>

@@ -315,7 +315,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="4149882025268051530">Houve uma falha no instalador ao descompactar o arquivo. Baixe o Google Chrome novamente.</translation>
 <translation id="415112847282352845">Para acessar seus endereços e muito mais em todos os seus dispositivos, faça login no Chrome. O endereço será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="4153934450158521343">O Chrome será fechado em breve, e os dados serão excluídos</translation>
-<translation id="4159985264221160808">Para proteger seu trabalho no Chrome, a organização poderá acessar ou gerenciar algumas informações</translation>
 <translation id="4173512894976930765">Os sites provavelmente funcionarão como esperado. Sua conta será desconectada da maioria dos sites quando você fechar todas as janelas do Chrome, exceto sua Conta do Google, se tiver feito login no Chrome.</translation>
 <translation id="4175922240926474352">O Chrome bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reiniciar o Chrome em 1 dia}one{Reiniciar o Chrome em # dia}other{Reiniciar o Chrome em # dias}}</translation>

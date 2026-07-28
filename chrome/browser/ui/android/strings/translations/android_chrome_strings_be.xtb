@@ -267,6 +267,7 @@
 <translation id="2145315049852051678">Chrome пастаянна сочыць за тым, каб у вашым браўзеры былі самыя бяспечныя налады. Мы паведамім вам, калі нешта будзе патрабаваць вашай увагі.</translation>
 <translation id="2149968176347646218">Падключэнне не з’яўляецца бяспечным</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
+<translation id="2158475082070321257">Скапіраваць спасылку на вылучаны тэкст</translation>
 <translation id="2163089732491971196">Каб захоўваць даныя Chrome ва Уліковым запісе Google і выкарыстоўваць іх, увядзіце фразу-пароль</translation>
 <translation id="2164015935042801524">Націсніце тут правай кнопкай мышы, каб паказваць укладкі вертыкальна</translation>
 <translation id="2166228530126694506">Версія <ph name="VERSION_NUMBER" /></translation>
@@ -459,7 +460,6 @@
 <translation id="2900528713135656174">Стварыце падзею</translation>
 <translation id="2901411048554510387">Паказваюцца прапановы для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="2904300462646366554">Спампаваныя PDF аўтаматычна адкрываюцца ў адной з праграм для іх прагляду, усталяванай на прыладзе</translation>
-<translation id="2904414404539560095">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на ўвесь экран.</translation>
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
 <translation id="2912247081180973411">Закрыць вокны</translation>
 <translation id="2912345083818861431">Выкарыстоўваць блакіроўку экрана для прагляду адкрытых укладак у рэжыме інкогніта</translation>
@@ -747,7 +747,6 @@
 <translation id="4116038641877404294">Спампуйце старонкі, каб праглядаць іх па-за сеткай</translation>
 <translation id="4121654769234887259">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="USERNAME" />.</translation>
 <translation id="4132137475637520539">Дазволіць далучацца ўсім, у каго ёсць спасылка</translation>
-<translation id="4135200667068010335">Спіс прылад, з якімі можна абагуліць укладку, закрыты.</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="4137746084635924146">Бягучая мова прылады</translation>
 <translation id="414128724510021958">Стандартна запытваюцца сайты для камп’ютараў</translation>
@@ -1406,7 +1405,6 @@
 <translation id="6762511428368667596"><ph name="NAME" />: <ph name="EMAIL" />.</translation>
 <translation id="676305334223455055">Увайдзіце ва ўліковы запіс, каб атрымліваць змесціва на падставе сваіх інтарэсаў</translation>
 <translation id="6764137532716892442">Абагуленая група ўкладак "<ph name="GROUP_TITLE" />", у якой ёсць новыя дзеянні</translation>
-<translation id="6767294960381293877">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на палову экрана.</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="6785476624617658922">Дадатковыя ўмовы выкарыстання Chrome і Chrome OS</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
@@ -2034,7 +2032,6 @@
 <translation id="9101137867221042551">Кіраванне</translation>
 <translation id="9102803872260866941">Укладка перадпрагляду адкрыта</translation>
 <translation id="9102864637938129124">Сайты і рэкламадаўцы могуць ацэньваць эфектыўнасць рэкламы. Гэта налада ўключана.</translation>
-<translation id="9104217018994036254">Спіс прылад, з якімі можна абагуліць укладку.</translation>
 <translation id="9106148373857059373">Укладка захоўвання закладкі закрыта</translation>
 <translation id="9108808586816295166">Абароненая DNS можа не быць даступнай пастаянна</translation>
 <translation id="9112483451228487295">Хуткае выдаленне даных пра работу ў браўзеры</translation>

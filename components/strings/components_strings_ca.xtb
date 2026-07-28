@@ -984,6 +984,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2485243023686553468">Telèfons intel·ligents</translation>
 <translation id="2491120439723279231">El certificat del servidor conté errors.</translation>
 <translation id="2491414235131909199">Una extensió ha bloquejat aquesta pàgina</translation>
+<translation id="2493122313108999546">S'ha canviat la mida</translation>
 <translation id="2495083838625180221">Analitzador JSON</translation>
 <translation id="2496402116964818747">A la <ph name="SETTINGS" />, pots canviar si vols utilitzar l'empremta digital per emplenar contrasenyes</translation>
 <translation id="2498091847651709837">Escaneja una targeta nova</translation>
@@ -2556,6 +2557,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4936134414789135531">No s'ha pogut trobar el valor <ph name="VALUE_NAME" /> inserit.</translation>
 <translation id="4936573216809994970">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 hora</translation>
 <translation id="4936675324097895694">Finances</translation>
+<translation id="4939748144644852809">S'ha mogut cap a la dreta</translation>
 <translation id="4941627891654116707">Cos de font</translation>
 <translation id="4943620199112228840">Utilitzar els micròfons</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
@@ -3212,6 +3214,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5953516610448771166">La funció Subtítols instantanis no està disponible per a aquest contingut multimèdia. Per obtenir subtítols, bloqueja <ph name="CONTENT_SETTINGS" /> per a aquest lloc web.</translation>
 <translation id="5960795367348889467">Verificació</translation>
 <translation id="5963413905009737549">Secció</translation>
+<translation id="5963685100480647029">S'ha mogut cap a l'esquerra</translation>
 <translation id="5964247741333118902">Contingut incrustat</translation>
 <translation id="5967260682280773804">36 x 48 polzades</translation>
 <translation id="5967592137238574583">Edita la informació de contacte</translation>
@@ -3718,6 +3721,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="671076103358959139">Testimoni d'inscripció:</translation>
 <translation id="6711464428925977395">Hi ha hagut algun problema amb el servidor intermediari o l'adreça no és correcta.</translation>
 <translation id="6711700233707023861">S'ha copiat la cadena de variacions al porta-retalls</translation>
+<translation id="6712343563085762261">S'ha mogut cap amunt</translation>
 <translation id="6716039223770814796">Compara <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elements</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vol crear un mapa en 3D del teu entorn i fer un seguiment de la posició de la càmera</translation>
 <translation id="6717692133381953670">S'ha enviat una pestanya des de <ph name="DEVICE_NAME" /></translation>
@@ -4612,6 +4616,7 @@ Detalls addicionals:
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086429410809447605">Moda femenina</translation>
 <translation id="8086971161893892807">Esborrany</translation>
+<translation id="8087558780672230449">S'està carregant <ph name="APP_ORIGIN" /> per gestionar el teu pagament a <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">No s'ha pogut consultar l'article.</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8091372947890762290">L'activació està pendent al servidor</translation>
@@ -4807,6 +4812,7 @@ Detalls addicionals:
 <translation id="8400929824946688748">Feines i educació</translation>
 <translation id="8402442052798347631">Els atacants del lloc web que has provat de visitar poden enganyar-te perquè instal·lis programari nociu que afecti la manera com navegues. Per exemple, poden canviar-te la pàgina d'inici o mostrar-te anuncis addicionals als llocs web que visites. Chrome et recomana que tornis a un lloc web segur per evitar danys. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanficció</translation>
+<translation id="8404028426624581035">S'ha mogut cap avall</translation>
 <translation id="8405579342203358118">Gestiona la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="8405621913275228683">L'escaneig s'ha perdut a causa d'un error desconegut</translation>
 <translation id="8406071103346257942">deixar d'utilitzar el bloqueig de pantalla per emplenar les contrasenyes</translation>

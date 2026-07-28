@@ -984,6 +984,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2485243023686553468">Pametni telefoni</translation>
 <translation id="2491120439723279231">Sertifikat servera sadrži greške.</translation>
 <translation id="2491414235131909199">Dodatak blokira ovu stranicu</translation>
+<translation id="2493122313108999546">Promenjena je veličina</translation>
 <translation id="2495083838625180221">Raščlanjivač JSON datoteka</translation>
 <translation id="2496402116964818747">Možete da promenite da li ćete koristiti otisak prsta za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Skenirajte novu karticu</translation>
@@ -2519,6 +2520,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4885256590493466218">Plaćajte pomoću kartice <ph name="CARD_DETAIL" /></translation>
 <translation id="4886565443854420066">Chrome pregledač želi da potvrdi da ste to vi pre nego što promenite podešavanja</translation>
 <translation id="4887406273302438710">Zaštitite lozinke pomoću Windows Hello-a</translation>
+<translation id="4887785555357166111">Sačuvaj kadar videa</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste izbrisali istoriju pregledanja, kolačiće, keš i drugo u podešavanjima Chrome-a</translation>
 <translation id="4892518386797173871">Zadnji deo</translation>
 <translation id="4894390983254799375">Kao što su ID uređaja, naziv, verzija OS-a i korisničko ime OS-a</translation>
@@ -2556,6 +2558,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4936134414789135531">Umetnuta vrednost <ph name="VALUE_NAME" /> nije pronađena.</translation>
 <translation id="4936573216809994970">Otpremanje fajlova u <ph name="CLOUD_PROVIDER" /> počinje za 1 sat</translation>
 <translation id="4936675324097895694">Finansije</translation>
+<translation id="4939748144644852809">Premešteno je nadesno</translation>
 <translation id="4941627891654116707">Veličina fonta</translation>
 <translation id="4943620199112228840">Koristite mikrofone</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
@@ -3212,6 +3215,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5953516610448771166">Titl uživo nije dostupan za ovaj medijski sadržaj. Da biste omogućili titl, blokirajte <ph name="CONTENT_SETTINGS" /> za ovaj sajt.</translation>
 <translation id="5960795367348889467">Verifikacija</translation>
 <translation id="5963413905009737549">Odeljak</translation>
+<translation id="5963685100480647029">Premešteno je nalevo</translation>
 <translation id="5964247741333118902">Ugrađen sadržaj</translation>
 <translation id="5967260682280773804">36×48 in</translation>
 <translation id="5967592137238574583">Izmenite kontakt informacije</translation>
@@ -3717,6 +3721,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="671076103358959139">Token za registraciju:</translation>
 <translation id="6711464428925977395">Došlo je do greške sa proksi serverom ili je adresa netačna.</translation>
 <translation id="6711700233707023861">String varijanti je kopiran u privremenu memoriju</translation>
+<translation id="6712343563085762261">Premešteno je nagore</translation>
 <translation id="6716039223770814796">Uporedite kategoriji <ph name="COMPARE_SET_NAME" /> · Stavki: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi da pravi 3D mapu okruženja i da prati položaj kamere</translation>
 <translation id="6717692133381953670">Kartica je poslata sa uređaja <ph name="DEVICE_NAME" /></translation>
@@ -4611,6 +4616,7 @@ Dodatni detalji:
 <translation id="8081087320434522107">Sedani</translation>
 <translation id="8086429410809447605">Ženska odeća</translation>
 <translation id="8086971161893892807">Radna verzija</translation>
+<translation id="8087558780672230449">Učitava se aplikacija <ph name="APP_ORIGIN" /> da bi se obradilo plaćanje kod prodavca <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Pregledanje članka nije uspelo.</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8091372947890762290">Aktivacija je na čekanju na serveru</translation>
@@ -4806,6 +4812,7 @@ Dodatni detalji:
 <translation id="8400929824946688748">Poslovi i obrazovanje</translation>
 <translation id="8402442052798347631">Napadači na sajtu koji ste probali da posetite mogu da vas prevare da instalirate štetan softver koji utiče na način na koji pregledate – na primer, tako što će promeniti početnu stranicu ili vam prikazivati dodatne oglase na sajtovima koje posećujete. Chrome iskreno preporučuje da se vratite na bezbedno kako ne bi bilo štete. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Dela poklonika čuvenih likova</translation>
+<translation id="8404028426624581035">Premešteno je nadole</translation>
 <translation id="8405579342203358118">Upravljajte time koje informacije sinhronizujete u podešavanjima Chrome-a</translation>
 <translation id="8405621913275228683">Skeniranje je izgubljeno zbog nepoznate greške</translation>
 <translation id="8406071103346257942">da prestane sa korišćenjem zaključavanja ekrana za popunjavanje lozinki</translation>

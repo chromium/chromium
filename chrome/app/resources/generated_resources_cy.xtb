@@ -1610,6 +1610,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2243934210752059021">search + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Defnyddiwch y bysellau saeth i symud drwy eitemau fesul llythyren</translation>
+<translation id="2246104792527215550">Newid cyfrineiriau yn awtomatig</translation>
 <translation id="2246549592927364792">Cael disgrifiadau o luniau gan Google?</translation>
 <translation id="2247738527273549923">Rheolir eich dyfais gan eich sefydliad</translation>
 <translation id="2247870315273396641">Rhagolwg llais</translation>
@@ -5037,6 +5038,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4852383141291180386">Rheoli hysbysiadau ap</translation>
 <translation id="4852916668365817106">Lliw y llygoden</translation>
 <translation id="4853020600495124913">Agor mewn &amp;ffenestr newydd</translation>
+<translation id="4853328060971905294">Ymlaen (galluogi ffocysu llinell)</translation>
 <translation id="4854317507773910281">Dewiswch gyfrif rhiant i'w gymeradwyo</translation>
 <translation id="4854603338816296098">Cyfeiriad wedi'i dynnu</translation>
 <translation id="485480310608090163">Rhagor o osodiadau a chaniatadau</translation>
@@ -8036,6 +8038,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Tab Newydd mewn 1 Tab}zero{Tab Newydd mewn # Tabiau}two{Tab Newydd mewn # Dab}few{Tab Newydd mewn # Thab}many{Tab Newydd mewn # Thab}other{Tab Newydd mewn # Tab}}</translation>
 <translation id="721490496276866468">Mewnforio cyfrineiriau</translation>
 <translation id="7217208603285112910">Dewis ddim yn <ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">Ychwanegwch destun, sylwadau a nodiadau gyda'r offeryn Anodiadau Testun newydd</translation>
 <translation id="7219254577985949841">Dileu data gwefan?</translation>
 <translation id="7219473482981809164">Rydym wedi dod o hyd i sawl proffil sydd ar gael i'w lawrlwytho. Dewiswch y rhai yr hoffech eu lawrlwytho cyn parhau.</translation>
 <translation id="7220019174139618249">Methu ag allforio cyfrineiriau i "<ph name="FOLDER" />"</translation>
@@ -10734,6 +10737,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="987574372967138078">Mae <ph name="WEBSITE_ORIGIN" /> eisiau cael gwybodaeth o'ch dyfais symudol</translation>
 <translation id="988320949174893488">Rhewi achlysurol</translation>
 <translation id="988978206646512040">Ni chaniateir cyfrinymadrodd gwag</translation>
+<translation id="989111665033316622">Wedi'i ddiffodd (analluogi ffocysu llinell)</translation>
 <translation id="992032470292211616">Gall estyniadau, apiau a themâu niweidio'ch dyfais. Ydych chi'n siŵr eich bod am barhau?</translation>
 <translation id="992256792861109788">Pinc</translation>
 <translation id="994087375490600917">Paneli ochr</translation>

@@ -754,6 +754,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1581962803218266616">Mostra nel Finder</translation>
 <translation id="1582955169539260415">elimina [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">La lingua <ph name="LANGUAGE" /> viene elaborata localmente e funziona offline</translation>
+<translation id="1586075235463145108">Per prima cosa, attiva la navigazione automatica di Chrome per questo dispositivo</translation>
 <translation id="1587275751631642843">Console &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normale</translation>
 <translation id="1588772269240419305">Controlla gli aggiornamenti di logo e nome</translation>
@@ -1818,6 +1819,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 account, password salvata solo su questo dispositivo. Altri dettagli}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} account, password salvata solo su questo dispositivo. Altri dettagli}}</translation>
 <translation id="2428510569851653187">Descrivi cosa stavi facendo quando la scheda si è arrestata in modo anomalo</translation>
 <translation id="2428939361789119025">Disattiva Wi-Fi</translation>
+<translation id="2431280447889982015">Scegli uno schermo con audio</translation>
 <translation id="243275146591958220">Annulla download</translation>
 <translation id="2432882794929808179">App registrate: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Le app web isolate controllano i dispositivi di autenticazione e le smart card a cui possono accedere. Le smart card in genere contengono identificatori utilizzati per autenticarti.</translation>
@@ -6187,6 +6189,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
 <translation id="5794786537412027208">Chiudi tutte le app di Chrome</translation>
 <translation id="5796485699458186843">Nuova scheda Incognito</translation>
+<translation id="5796656350463724">Stile scheda</translation>
 <translation id="5796956053441619942">L'URL del dispositivo remoto non è supportato</translation>
 <translation id="5798079537501238810">I siti possono installare gestori dei pagamenti</translation>
 <translation id="5798086737841799234">Inserisci il codice di conferma</translation>
@@ -6292,6 +6295,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5864754048328252126">Azione stabilita in caso di inattività durante la ricarica</translation>
 <translation id="586567932979200359">Stai eseguendo <ph name="PRODUCT_NAME" /> dall'immagine disco. L'installazione sul computer permette di eseguirlo senza immagine disco e ne garantisce l'aggiornamento.</translation>
 <translation id="5865733239029070421">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
+<translation id="58659335642601499">Scegli una finestra con audio</translation>
 <translation id="5866363217037791319">Termina attività</translation>
 <translation id="5868434909835797817">Microfono non attivo sul dispositivo</translation>
 <translation id="5868479397518301468">Accesso scaduto</translation>

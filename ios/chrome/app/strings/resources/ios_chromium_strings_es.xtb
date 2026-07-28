@@ -228,6 +228,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="5731004036450828399">Para proteger tus llaves de acceso, primero debes crear un PIN de recuperación.
 
         Las llaves de acceso se guardan en el Gestor de contraseñas, lo que te permite usarlas en Chromium en cualquier dispositivo.</translation>
+<translation id="575593940213760950">En el Gestor de contraseñas de <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Sesión iniciada en Chromium</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
 <translation id="5889847953983052353">Si esta opción está activada:

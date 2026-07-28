@@ -258,6 +258,7 @@
 <translation id="3595784445906693824">要使用新的个人资料登录 Chrome 吗？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3598673391539778844">在系统任务栏中显示 Chrome 中的 Gemini</translation>
 <translation id="3622716124581627104">识别事物或地点，并复制或翻译文本。当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
@@ -312,7 +313,6 @@
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
 <translation id="415112847282352845">如需将您的地址等信息同步到您的所有设备上，请登录 Chrome。登录后，该地址将保存到您的 Google 账号。</translation>
 <translation id="4153934450158521343">Chrome 即将关闭并删除数据</translation>
-<translation id="4159985264221160808">为了保障您在 Chrome 上的工作安全，您的组织将能够查看或管理某些信息</translation>
 <translation id="4173512894976930765">网站很可能会按预期运行。关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。</translation>
 <translation id="4175922240926474352">由于网站未使用安全连接，且文件可能已被篡改，因此 Chrome 阻止了此次下载</translation>
 <translation id="4191857738314598978">{0,plural, =1{请于 1 天内重新启动 Chrome}other{请于 # 天内重新启动 Chrome}}</translation>
@@ -782,6 +782,7 @@
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8834965163890861871">Google Chrome 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="8841151363570555833">在 Mac 菜单栏中显示 Chrome 中的 Gemini</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它}other{Chrome 建议您移除它们}}</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>

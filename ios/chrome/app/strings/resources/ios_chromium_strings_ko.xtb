@@ -228,6 +228,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="5731004036450828399">패스키를 안전하게 보호하려면 먼저 복구 PIN을 만들어야 합니다.
 
         패스키는 비밀번호 관리자에 저장됩니다. 비밀번호 관리자를 통해 모든 기기의 Chromium에서 패스키를 사용할 수 있습니다</translation>
+<translation id="575593940213760950"><ph name="EMAIL" />의 비밀번호 관리자에 저장됨</translation>
 <translation id="584550191241316896">Chromium에 로그인함</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5889847953983052353">사용 설정 되어 있을 때:

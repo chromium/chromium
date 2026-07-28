@@ -755,6 +755,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1581962803218266616">Show in Finder</translation>
 <translation id="1582955169539260415">delete [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> is processed locally and works offline</translation>
+<translation id="1586075235463145108">First, turn on Chrome auto browse for this device</translation>
 <translation id="1587275751631642843">&amp;JavaScript console</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Review logo and name updates</translation>
@@ -1832,6 +1833,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> one account, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}}</translation>
 <translation id="2428510569851653187">Describe what you were doing when the tab crashed</translation>
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
+<translation id="2431280447889982015">Choose a screen with audio</translation>
 <translation id="243275146591958220">Cancel download</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps registered</translation>
 <translation id="2433237965825924228">Isolated web apps control authentication devices and smart cards accessible to them. Smart cards usually contain identifiers used to authenticate you.</translation>
@@ -6204,6 +6206,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
 <translation id="5796485699458186843">New Incognito tab</translation>
+<translation id="5796656350463724">Tab styling</translation>
 <translation id="5796956053441619942">The URL from the remote device is not supported</translation>
 <translation id="5798079537501238810">Sites can install payment handlers</translation>
 <translation id="5798086737841799234">Enter confirmation code</translation>
@@ -6309,6 +6312,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5864754048328252126">Idle action while charging</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
+<translation id="58659335642601499">Choose a window with audio</translation>
 <translation id="5866363217037791319">End task</translation>
 <translation id="5868434909835797817">Microphone is off on your device</translation>
 <translation id="5868479397518301468">Sign in timed out</translation>
@@ -9859,7 +9863,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8636500887554457830">Don't allow sites to send pop-ups or use redirects</translation>
 <translation id="8636514272606969031">Side panel pinned</translation>
 <translation id="8638719155236856752">ChromeOS Network Health</translation>
-<translation id="8639963783467694461">Auto-fill settings</translation>
+<translation id="8639963783467694461">Autofill settings</translation>
 <translation id="8640575194957831802">Last opened</translation>
 <translation id="8641946446576357115">Use your passwords on your iOS devices</translation>
 <translation id="8642577642520207435"><ph name="APP_NAME" /> camera permission</translation>

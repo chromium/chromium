@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">‏نمایش در Finder</translation>
 <translation id="1582955169539260415">حذف [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> در دستگاه پردازش می‌شود و آفلاین کار می‌کند</translation>
+<translation id="1586075235463145108">‏ابتدا، «مرور خودکار Chrome» را برای این دستگاه روشن کنید</translation>
 <translation id="1587275751631642843">کنسول &amp;جاوا اسکریپت</translation>
 <translation id="1588438908519853928">معمولی</translation>
 <translation id="1588772269240419305">بازبینی کردن به‌روزرسانی‌های نشان‌واره و نام</translation>
@@ -1831,6 +1832,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> ۱ حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}}</translation>
 <translation id="2428510569851653187">توضیح دهید وقتی برگه خراب شد مشغول انجام چه کاری بودید</translation>
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
+<translation id="2431280447889982015">انتخاب صفحه‌نمایش دارای صدا</translation>
 <translation id="243275146591958220">لغو بارگیری</translation>
 <translation id="2432882794929808179">‫<ph name="APP_COUNT" /> برنامه ثبت شد</translation>
 <translation id="2433237965825924228">برنامه‌های وب مجزا دستگاه‌های اصالت‌سنجی و کارت‌های هوشمند دردسترس آن‌ها را کنترل می‌کنند. کارت‌های هوشمند معمولاً حاوی شناسه‌هایی برای اصالت‌سنجی شما هستند.</translation>
@@ -3773,7 +3775,7 @@
 <translation id="3861852898230054539">‏درحال استفاده از گذرواژه «حساب Google» هستید. برای ورود راحت‌تر به سیستم، می‌توانید گذرواژه <ph name="DEVICE_TYPE" /> راه‌اندازی کنید.</translation>
 <translation id="3861977424605124250">نمایش هنگام راه‌اندازی</translation>
 <translation id="386239283124269513">&amp;بازیابی گروه</translation>
-<translation id="3863215163880213672">وارد کردن و پیوند دادن به <ph name="CERT_GROUP" /></translation>
+<translation id="3863215163880213672">وارد کردن و پیوند کردن به <ph name="CERT_GROUP" /></translation>
 <translation id="3864481028928394786">از این سایت‌ها بازدید کردید و آن‌ها درخواست کردند که میان‌بر شوند. می‌توانید انتخاب کنید که آن‌ها را روشن کنید.</translation>
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="3866142613641074814">گذرواژه‌هایی دارید که درمعرض خطر هستند</translation>
@@ -6203,6 +6205,7 @@
 <translation id="5794700615121138172">‏پوشه‌های هم‌رسانی‌شده Linux</translation>
 <translation id="5794786537412027208">‏خروج از همه برنامه‌های Chrome</translation>
 <translation id="5796485699458186843">برگه ناشناس جدید</translation>
+<translation id="5796656350463724">سبک‌بندی زبانه</translation>
 <translation id="5796956053441619942">نشانی وب از دستگاه دور پشتیبانی نمی‌شود</translation>
 <translation id="5798079537501238810">سایت‌ها می‌توانند کنترل‌کننده پرداخت نصب کنند</translation>
 <translation id="5798086737841799234">کد تأیید را وارد کنید</translation>
@@ -6308,6 +6311,7 @@
 <translation id="5864754048328252126">کنش راکد هنگام شارژ شدن</translation>
 <translation id="586567932979200359">شما <ph name="PRODUCT_NAME" /> را از تصویر دیسک آن اجرا می‌کنید. با نصب آن روی رایانه می‌توانید آن را بدون تصویر دیسک اجرا کنید، و مطمئن شوید که به روز نگه داشته خواهد شد.</translation>
 <translation id="5865733239029070421">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند</translation>
+<translation id="58659335642601499">انتخاب پنجره دارای صدا</translation>
 <translation id="5866363217037791319">پایان دادن به تکلیف</translation>
 <translation id="5868434909835797817">میکروفون در دستگاهتان خاموش است</translation>
 <translation id="5868479397518301468">مهلت زمانی ورود به سیستم پایان یافت</translation>

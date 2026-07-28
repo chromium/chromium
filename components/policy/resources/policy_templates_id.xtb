@@ -944,6 +944,7 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1625700732886306811">Izinkan <ph name="PRODUCT_NAME" /> terhubung ke perangkat di semua alamat IP</translation>
 <translation id="1626379196197114720">Izinkan penggunaan back-forward cache</translation>
 <translation id="1628974048137236820">Halaman Tab Baru tidak akan menampilkan kartu</translation>
+<translation id="1628984674324273832">Jangan izinkan fitur Temukan dan Isi dengan Gemini.</translation>
 <translation id="163200210584085447">Pola dalam daftar ini akan dicocokkan dengan
       asal keamanan URL yang meminta.  Jika ditemukan kecocokan, akses ke perangkat
       perekam video akan diberikan di halaman masuk SAML.  Jika tidak ditemukan
@@ -990,6 +991,17 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih ha
 <translation id="1654087023995670109">Terapkan mode tamu browser</translation>
 <translation id="1655229863189977773">Setel ukuran cache disk dalam bita</translation>
 <translation id="1655518801232583832">Mengaktifkan resolusi DNS sistem di luar layanan jaringan</translation>
+<translation id="1656749771365000307">Kebijakan ini menentukan setelan default untuk semua fitur AI generatif yang tercakup. Misalnya, jika kebijakan ini disetel ke nilai 1, nilai 1 akan menjadi setelan default untuk semua fitur AI generatif yang tercakup. Kebijakan ini tidak akan memengaruhi nilai kebijakan yang disetel secara manual. Setelan ini akan menentukan setelan default untuk fitur AI generatif yang tercakup di Chrome. Buka https://support.google.com/chrome/a?p=generative_ai_settings untuk melihat daftar fitur yang tercakup.
+
+Beberapa kebijakan, misalnya <ph name="GEMINI_SETTINGS_POLICY_NAME" />, hanya mendukung status Diizinkan dan Jangan izinkan. Dalam hal ini, jika <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> disetel ke nilai 0 atau 1, fitur ini akan diaktifkan. Jika <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> disetel ke nilai 2, fitur ini akan dinonaktifkan. Dokumentasi untuk setiap fitur berisi detail selengkapnya tentang cara fitur tersebut berinteraksi dengan nilai dalam kebijakan ini (misalnya Gemini di Chrome - https://support.google.com/chrome/a/answer/16291696). Hal ini berlaku untuk fitur berikut: <ph name="GEMINI_IN_CHROME_NAME" />, Google Lens, dan Mode AI, karena masing-masing fitur tunduk kepada jaminan dan/atau persyaratan layanannya sendiri (https://support.google.com/chrome/a/?p=genai_features_chrome).
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Data ini juga mungkin ditinjau secara manual untuk meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> serta bagi akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="165769015320654523">Otomatis memberikan izin ke situs ini untuk terhubung ke perangkat HID dengan ID produk dan vendor tertentu.</translation>
 <translation id="1659406551862245683">Perilaku pengubahan ukuran keyboard virtual default diubah untuk mengubah ukuran area pandang tata letak</translation>
 <translation id="166427968280387991">Server proxy</translation>
@@ -1709,6 +1721,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="2107601598727098402">
         Kebijakan ini tidak digunakan lagi di M72. Gunakan CloudManagementEnrollmentToken sebagai gantinya.
         </translation>
+<translation id="2111355600078097861">Izinkan fitur Temukan dan Isi dengan Gemini tanpa meningkatkan kualitas model AI.</translation>
 <translation id="2112656109118682849">Izinkan pengguna mengubah tampilan informasi sistem di layar login</translation>
 <translation id="2113068765175018713">Membatasi waktu operasi perangkat dengan melakukan booting ulang secara otomatis</translation>
 <translation id="211386002920955760">Mengontrol apakah pengguna perusahaan dapat mengakses fitur berbagi grup tab di Chrome.
@@ -4031,6 +4044,18 @@ Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true),
 <translation id="3518293344797498431">Isi daya baterai hingga sekitar 80% untuk memaksimalkan masa pakai baterai.</translation>
 <translation id="3518512927469906365">Menonaktifkan partisi penyimpanan pihak ketiga untuk origin tingkat teratas tertentu</translation>
 <translation id="3519035925054387801">Situs yang diizinkan untuk deteksi tidak ada aktivitas</translation>
+<translation id="3522162663567623647">Kebijakan ini mengontrol permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /> yang memungkinkan pengguna mengirim permintaan persetujuan ke konsol Google Admin.
+
+Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan, permintaan penginstalan ekstensi tidak akan dibuat atau diupload.
+Jika kebijakan ini tidak disetel atau disetel ke nonaktif, permintaan penginstalan ekstensi tidak akan dibuat atau diupload.
+Jika kebijakan ini disetel ke aktif, permintaan penginstalan ekstensi akan dibuat dan diupload ke konsol Google Admin.
+
+Permintaan penginstalan ekstensi akan dibuat saat pengguna mencoba menginstal ekstensi yang tidak diizinkan oleh <ph name="EXTENSION_INSTALL_ALLOWLIST" /> atau <ph name="EXTENSION_SETTINGS" />.
+
+Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
+Kebijakan ini akan selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.
+
+Catatan: Kebijakan ini hanya berlaku untuk platform yang mendukung ekstensi.</translation>
 <translation id="3522257170445891912">Jika kebijakan ini disetel, alur autentikasi login akan menggunakan salah satu cara berikut, bergantung pada nilai setelan:
 
       Jika disetel ke GAIA, login akan dilakukan melalui alur autentikasi GAIA normal.
@@ -5130,6 +5155,11 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4212181786686887763">URL tempat gambar wallpaper dapat didownload.</translation>
+<translation id="4224566202253696739">Setelan ini menentukan apakah upload file diizinkan di dalam <ph name="GEMINI_IN_CHROME_NAME" /> (lihat https://support.google.com/chrome/a/answer/16291696).
+
+Nilai 0/tidak disetel = Pengguna akan diizinkan mengupload file ke <ph name="GEMINI_IN_CHROME_NAME" />.
+
+Nilai 1 = Pengguna tidak akan diizinkan mengupload file ke <ph name="GEMINI_IN_CHROME_NAME" />.</translation>
 <translation id="4224610387358583899">Penundaan kunci layar</translation>
 <translation id="42267415200641481">Menyetel kebijakan ini ke benar (true) akan menyebabkan resolusi DNS sistem (getaddrinfo()) dapat berjalan di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.
 
@@ -6567,6 +6597,7 @@ Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
 Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="5070539335358964387">Izinkan fitur Temukan dan Isi dengan Gemini serta tingkatkan kualitas model AI.</translation>
 <translation id="5071303485174858500">Nonaktifkan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="5073609397321802133">Jika kebijakan ditetapkan ke false, halaman Tab Baru tidak akan mengizinkan pengguna menyesuaikan latar belakang. Latar belakang kustom yang ada akan dihapus secara permanen meskipun nanti kebijakan ditetapkan ke true.
 
@@ -10183,6 +10214,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="7136237405361383549">Gunakan perender default berdasarkan konfigurasi uji coba lapangan.</translation>
 <translation id="7138762292550697459">Mengontrol waktu tunggu minimum fungsi setTimeout() JavaScript.</translation>
 <translation id="7138792262152376158">Mengikuti linimasa penghentian reguler untuk PrefixedVideoFullscreen API</translation>
+<translation id="7140755255968613921">Setelan untuk fitur Temukan dan Isi dengan Gemini</translation>
 <translation id="7140760943584613237">Penyedia identitas cloud Microsoft®</translation>
 <translation id="714219487865269980">Aktifkan penyorotan fokus keyboard</translation>
 <translation id="7144022711746703451">
@@ -10611,6 +10643,19 @@ Nilai sebenarnya dari data sensitif (seperti cookie atau nilai input) TIDAK diku
 <translation id="7402257017733669351">Mencegah proses browser membuat kode dinamis</translation>
 <translation id="7406039009275722824">Menonaktifkan <ph name="CHROME_SYNC_NAME" /> akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
 <translation id="7406276857470642718">Mengontrol setelan untuk pengguna yang diautentikasi melalui SAML dengan IdP eksternal</translation>
+<translation id="7407431811343706437">Mengontrol apakah pengguna dapat menggunakan fitur "Temukan dan Isi dengan Gemini" di <ph name="PRODUCT_NAME" />.
+
+Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> serta bagi akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
+
+Kebijakan ini tidak akan berlaku jika aplikasi Gemini dinonaktifkan. Misalnya, aplikasi Gemini dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Kebijakan ini mengontrol prediksi jaringan di <ph name="PRODUCT_NAME" />. Kebijakan ini mengontrol pengambilan data DNS, prakoneksi TCP dan SSL, serta pra-rendering halaman.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, prediksi jaringan akan diaktifkan, tetapi pengguna dapat mengubahnya.</translation>
@@ -13042,6 +13087,15 @@ Jika kebijakan ini diaktifkan, perilaku baru akan digunakan.
 Jika kebijakan ini dinonaktifkan, perilaku lama akan digunakan.
 
 Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna Chromium lainnya.</translation>
+<translation id="8954797065581717017">Peringatan: Mengonfigurasi kebijakan ini akan melonggarkan penguncian VPN Selalu Aktif sebelum VPN terhubung. Pemfilteran tingkat URL hanya dijamin untuk traffic browser Chrome dan tidak berlaku untuk aplikasi sistem internal atau jenis traffic lainnya. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
+
+Gunakan kebijakan ini untuk membuat pengecualian bagi skema tertentu, subdomain dari domain lain, port, atau jalur spesifik, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
+
+Jika <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> disetel, VPN Selalu Aktif dikonfigurasi, dan VPN Selalu Aktif tidak terhubung, navigasi ke semua host akan diblokir, kecuali yang diizinkan oleh kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dalam status perangkat ini, <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diabaikan. Jika VPN Selalu Aktif terhubung, kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan diterapkan dan kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> akan diabaikan.
+
+Kebijakan ini terbatas untuk 1.000 entri.
+
+Jika kebijakan ini tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
 <translation id="8963464192296208229">Setelan F11 menggunakan pintasan yang berisi tombol pengubah alt</translation>

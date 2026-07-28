@@ -754,6 +754,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1581962803218266616">Afișează în Finder</translation>
 <translation id="1582955169539260415">șterge [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">Limba <ph name="LANGUAGE" /> este procesată local și funcționează offline</translation>
+<translation id="1586075235463145108">Mai întâi, activează navigarea automată în Chrome pentru acest dispozitiv</translation>
 <translation id="1587275751631642843">Consolă &amp;JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Examinează actualizările siglei și ale numelui</translation>
@@ -1819,6 +1820,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> Un cont, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} conturi, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} de conturi, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}}</translation>
 <translation id="2428510569851653187">Descrie ce făceai când s-a blocat fila</translation>
 <translation id="2428939361789119025">Dezactivează conexiunea Wi-Fi</translation>
+<translation id="2431280447889982015">Alege un ecran cu conținut audio</translation>
 <translation id="243275146591958220">Anulează descărcarea</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> aplicații înregistrate</translation>
 <translation id="2433237965825924228">Aplicațiile web izolate controlează dispozitivele de autentificare și cardurile inteligente accesibile pentru acestea. Cardurile inteligente conțin de obicei identificatori folosiți pentru a te autentifica.</translation>
@@ -6188,6 +6190,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5794700615121138172">Dosare comune în Linux</translation>
 <translation id="5794786537412027208">Ieși din toate aplicațiile Chrome</translation>
 <translation id="5796485699458186843">Filă incognito &amp;nouă</translation>
+<translation id="5796656350463724">Stilizarea filelor</translation>
 <translation id="5796956053441619942">Adresa URL de pe dispozitivul de la distanță nu este acceptată</translation>
 <translation id="5798079537501238810">Site-urile pot instala handlere pentru plăți</translation>
 <translation id="5798086737841799234">Introdu codul de confirmare</translation>
@@ -6293,6 +6296,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5864754048328252126">Măsura pentru inactivitate în timpul încărcării</translation>
 <translation id="586567932979200359">Rulează <ph name="PRODUCT_NAME" /> din imaginea sa de pe disc. Instalarea sa pe computer îți permite să îl rulezi fără imaginea de pe disc și asigură actualizarea acestuia.</translation>
 <translation id="5865733239029070421">Trimite automat statistici de utilizare și rapoarte de blocare la Google</translation>
+<translation id="58659335642601499">Alege o fereastră cu conținut audio</translation>
 <translation id="5866363217037791319">Încheie activitatea</translation>
 <translation id="5868434909835797817">Microfonul dispozitivului este dezactivat</translation>
 <translation id="5868479397518301468">Conectarea a expirat</translation>

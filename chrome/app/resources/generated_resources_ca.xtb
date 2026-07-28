@@ -754,6 +754,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1581962803218266616">Mostra a Finder</translation>
 <translation id="1582955169539260415">suprimeix [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" />: es processa localment i funciona sense connexió</translation>
+<translation id="1586075235463145108">Primer, activa la navegació automàtica de Chrome per a aquest dispositiu</translation>
 <translation id="1587275751631642843">&amp;Consola de JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Revisa l'actualització del logotip i del nom</translation>
@@ -1819,6 +1820,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 compte; la contrasenya s'ha desat només en aquest dispositiu. Més detalls}other{<ph name="DOMAIN_LINK" />: {NUM_PASSWORDS} comptes; la contrasenya s'ha desat només en aquest dispositiu. Més detalls}}</translation>
 <translation id="2428510569851653187">Descriu què feies quan la pestanya s'ha bloquejat</translation>
 <translation id="2428939361789119025">Desactiva la Wi‑Fi</translation>
+<translation id="2431280447889982015">Tria una pantalla amb àudio</translation>
 <translation id="243275146591958220">Cancel·la la baixada</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> aplicacions registrades</translation>
 <translation id="2433237965825924228">Les aplicacions web aïllades controlen els dispositius d'autenticació i les targetes intel·ligents a què poden accedir. Les targetes intel·ligents solen contenir identificadors que s'utilitzen per autenticar-te.</translation>
@@ -6292,6 +6294,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5864754048328252126">Acció d'inactivitat mentre es carrega</translation>
 <translation id="586567932979200359">Esteu executant <ph name="PRODUCT_NAME" /> des de la imatge de disc. Si instal·leu l'aplicació a l'equip, podreu executar-la sense la imatge de disc i es mantindrà actualitzada.</translation>
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
+<translation id="58659335642601499">Tria una finestra amb àudio</translation>
 <translation id="5866363217037791319">Finalitza la tasca</translation>
 <translation id="5868434909835797817">El micròfon està desactivat al dispositiu</translation>
 <translation id="5868479397518301468">S'ha esgotat el temps d'espera per iniciar la sessió</translation>

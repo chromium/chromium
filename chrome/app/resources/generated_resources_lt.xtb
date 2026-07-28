@@ -755,6 +755,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1581962803218266616">Rodyti ieškojimo priemonėje</translation>
 <translation id="1582955169539260415">ištrinti [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> apdorojama vietoje ir veikia neprisijungus</translation>
+<translation id="1586075235463145108">Pirmiausia įjunkite „Chrome“ automatinį naršymą šiame įrenginyje</translation>
 <translation id="1587275751631642843">&amp;„JavaScript“ pultas</translation>
 <translation id="1588438908519853928">Įprastas</translation>
 <translation id="1588772269240419305">Logotipo ir pavadinimo atnaujinimų peržiūra</translation>
@@ -1832,6 +1833,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{Viena <ph name="DOMAIN_LINK" /> paskyra, slaptažodis išsaugotas tik šiame įrenginyje. Daugiau išsamios informacijos}one{{NUM_PASSWORDS} <ph name="DOMAIN_LINK" /> paskyra, slaptažodis išsaugotas tik šiame įrenginyje. Daugiau išsamios informacijos}few{{NUM_PASSWORDS} <ph name="DOMAIN_LINK" /> paskyros, slaptažodis išsaugotas tik šiame įrenginyje. Daugiau išsamios informacijos}many{{NUM_PASSWORDS} <ph name="DOMAIN_LINK" /> paskyros, slaptažodis išsaugotas tik šiame įrenginyje. Daugiau išsamios informacijos}other{{NUM_PASSWORDS} <ph name="DOMAIN_LINK" /> paskyrų, slaptažodis išsaugotas tik šiame įrenginyje. Daugiau išsamios informacijos}}</translation>
 <translation id="2428510569851653187">Apibūdinkite, ką darėte, kai skirtukas užstrigo</translation>
 <translation id="2428939361789119025">Išjungti „Wi-Fi“</translation>
+<translation id="2431280447889982015">Pasirinkti ekraną su garso įrašu</translation>
 <translation id="243275146591958220">Atšaukti atsisiuntimą</translation>
 <translation id="2432882794929808179">Užregistruota tiek programų: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Izoliuotos žiniatinklio programos valdo autentifikavimo įrenginius ir joms pasiekiamas išmaniąsias korteles. Išmaniosiose kortelėse paprastai yra identifikatorių, naudojamų jums autentifikuoti.</translation>
@@ -6311,6 +6313,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5864754048328252126">Neaktyvus įkraunant</translation>
 <translation id="586567932979200359">„<ph name="PRODUCT_NAME" />“ paleista iš disko vaizdo. Įdiegę ją kompiuteryje, galėsite paleisti be disko vaizdo ir būti tikri, kad ji bus atnaujinama.</translation>
 <translation id="5865733239029070421">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“</translation>
+<translation id="58659335642601499">Pasirinkti langą su garso įrašu</translation>
 <translation id="5866363217037791319">Baigti užduotį</translation>
 <translation id="5868434909835797817">Mikrofonas išjungtas jūsų įrenginyje</translation>
 <translation id="5868479397518301468">Baigėsi skirtasis prisijungimo laikas</translation>

@@ -924,6 +924,7 @@ URL은 http://example.com 또는 https://example.com과 같은 표준 스킴이�
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" />에서 모든 IP 주소의 기기에 연결하도록 허용</translation>
 <translation id="1626379196197114720">뒤로-앞으로 캐시 사용 허용</translation>
 <translation id="1628974048137236820">새 탭 페이지에 카드 표시 안함</translation>
+<translation id="1628984674324273832">Gemini로 정보 찾기 및 자동 완성을 허용하지 않습니다.</translation>
 <translation id="163200210584085447">이 목록의 패턴을 요청 URL의 보안 출처와 비교합니다.
       일치하는 항목이 확인되는 경우 SAML 로그인 페이지에서
       동영상 캡처 기기에 액세스할 수 있는 권한이 부여됩니다.
@@ -963,6 +964,17 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 <translation id="1654087023995670109">브라우저 게스트 모드 시행</translation>
 <translation id="1655229863189977773">디스크 캐시 크기 설정(바이트)</translation>
 <translation id="1655518801232583832">네트워크 서비스 외부에서 시스템 DNS 변환 사용 설정</translation>
+<translation id="1656749771365000307">이 정책은 적용 범위 내의 모든 생성형 AI 기능에 대한 기본 설정을 정의합니다. 예를 들어 정책이 값 1로 설정되면 모든 적용되는 생성형 AI 기능의 기본 설정이 1이 됩니다. 수동으로 설정된 정책 값에는 영향을 미치지 않습니다. 이 설정은 Chrome의 적용 범위에 해당하는 생성형 AI 기능의 기본값을 정의합니다. 적용되는 기능 목록은 https://support.google.com/chrome/a?p=generative_ai_settings를 참고하세요.
+
+<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책과 같은 일부 정책은 허용 및 허용 안 함 상태만 지원합니다. 이 경우 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책을 0 또는 1로 설정하면 이 기능이 사용 설정됩니다. <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책을 2로 설정하면 이 기능이 사용 중지됩니다. 각 기능의 문서에는 이 정책의 값과 상호작용하는 방식에 관한 자세한 내용이 포함되어 있습니다(예: Chrome의 Gemini - https://support.google.com/chrome/a/answer/16291696). 이러한 기능에는 자체 보증 및/또는 서비스 약관(https://support.google.com/chrome/a/?p=genai_features_chrome)이 적용되므로 <ph name="GEMINI_IN_CHROME_NAME" />, Google 렌즈, AI 모드 기능에 적용됩니다.
+
+0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. AI 모델을 개선하기 위해 사람이 데이터를 검토할 수도 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 허용하지 않습니다.
+
+생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="165769015320654523">다음 사이트가 주어진 공급업체 및 제품 ID를 사용해 HID 기기에 연결할 수 있는 권한을 자동으로 부여합니다.</translation>
 <translation id="1659406551862245683">가상 키보드의 기본적인 크기 조절 동작이 레이아웃 표시 영역의 크기를 조절하도록 변경됨</translation>
 <translation id="166427968280387991">프록시 서버</translation>
@@ -1679,6 +1691,7 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2107601598727098402">
         이 정책은 M72부터 지원이 중단되었습니다. 대신 CloudManagementEnrollmentToken을 사용하세요.
         </translation>
+<translation id="2111355600078097861">AI 모델을 개선하지 않고 Gemini로 정보 찾기 및 자동 완성을 허용합니다.</translation>
 <translation id="2112656109118682849">사용자가 로그인 화면의 시스템 정보 표시를 전환하도록 허용</translation>
 <translation id="2113068765175018713">자동으로 재부팅하여 기기 가동 시간 제한</translation>
 <translation id="211386002920955760">기업 사용자가 Chrome에서 탭 그룹 공유 기능에 액세스할 수 있는지 설정합니다.
@@ -3917,6 +3930,18 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <translation id="3518293344797498431">배터리 수명을 최대로 연장하기 위해 배터리를 약 80%까지 충전합니다.</translation>
 <translation id="3518512927469906365">특정 최상위 출처에 대해 서드 파티 저장용량 파티셔닝을 사용 중지합니다.</translation>
 <translation id="3519035925054387801">유휴 감지가 허용되는 사이트</translation>
+<translation id="3522162663567623647">이 정책은 사용자가 Google 관리 콘솔에 승인 요청을 보낼 수 있도록 허용하는 <ph name="PRODUCT_NAME" /> 확장 프로그램 설치 요청을 제어합니다.
+
+<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 정책이 설정되지 않거나 사용 중지되면 정책이 무시되며 확장 프로그램 설치 요청이 생성 또는 업로드되지 않습니다.
+정책이 설정되지 않거나 사용 중지되면 확장 프로그램 설치 요청은 생성 또는 업로드되지 않습니다.
+정책이 사용 설정되면 확장 프로그램 설치 요청이 생성되고 Google 관리 콘솔에 업로드됩니다.
+
+사용자가 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 또는 <ph name="EXTENSION_SETTINGS" />에서 허용되지 않는 확장 프로그램을 설치하려고 하면 확장 프로그램 설치 요청이 생성됩니다.
+
+<ph name="PRODUCT_NAME" />의 경우 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />에 등록되어 있을 때만 적용됩니다.
+<ph name="PRODUCT_OS_NAME" />의 경우 정책이 항상 적용됩니다.
+
+참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="3522257170445891912">정책이 설정되면 설정값에 따라 다음 방식 중 하나로 로그인 인증 절차가 이루어집니다.
 
       GAIA로 설정된 경우 표준 GAIA 인증 절차에 따라 로그인이 진행됩니다.
@@ -5006,6 +5031,11 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />와 충�
 
           정책이 설정되지 않은 경우 처음에는 자동 클릭이 사용 중지되어 있으나 사용자가 언제든지 사용하도록 설정할 수 있습니다.</translation>
 <translation id="4212181786686887763">배경화면 이미지를 다운로드할 수 있는 URL입니다.</translation>
+<translation id="4224566202253696739">이 설정은 <ph name="GEMINI_IN_CHROME_NAME" /> 내에서 파일 업로드가 허용되는지를 제어합니다(https://support.google.com/chrome/a/answer/16291696 참고).
+
+0/설정 안 함 = 사용자가 <ph name="GEMINI_IN_CHROME_NAME" />에 파일을 업로드할 수 있습니다.
+
+1 = 사용자가 <ph name="GEMINI_IN_CHROME_NAME" />에 파일을 업로드하는 것을 허용하지 않습니다.</translation>
 <translation id="4224610387358583899">화면 잠금 지연</translation>
 <translation id="42267415200641481">정책을 true로 설정하면 시스템 구성 및 기능 플래그에 따라 시스템 DNS 변환(getaddrinfo())이 네트워크 프로세스 외부에서 실행될 수 있습니다.
 
@@ -6416,6 +6446,7 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
 
 생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
+<translation id="5070539335358964387">Gemini로 정보 찾기 및 자동 완성을 허용하고 AI 모델을 개선합니다.</translation>
 <translation id="5071303485174858500">제한된 관리 게스트 세션을 사용 중지합니다.</translation>
 <translation id="5073609397321802133">정책이 false로 설정되어 있으면 사용자가 새 탭 페이지의 배경을 맞춤설정할 수 없습니다. 나중에 정책이 true로 설정되더라도 기존의 모든 맞춤 배경이 완전히 삭제됩니다.
 
@@ -9917,6 +9948,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <translation id="7136237405361383549">필드 체험판 구성에 따라 기본 렌더기를 사용합니다.</translation>
 <translation id="7138762292550697459">자바스크립트 setTimeout() 함수의 최소 시간 초과를 제어합니다.</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API의 일반적인 지원 중단 타임라인을 따릅니다.</translation>
+<translation id="7140755255968613921">Gemini로 정보 찾기 및 자동 완성 설정</translation>
 <translation id="7140760943584613237">Microsoft® 클라우드 ID 공급업체</translation>
 <translation id="714219487865269980">키보드 포커스 강조표시 사용 설정</translation>
 <translation id="7144022711746703451">
@@ -10339,6 +10371,19 @@ URL 패턴은 <ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책과 
 <translation id="7402257017733669351">브라우저 프로세스에서 동적 코드를 만들지 못하도록 방지</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" />를 사용 중지하면 Android 백업 및 복원이 제대로 작동하지 않게 됩니다.</translation>
 <translation id="7406276857470642718">외부 IdP로 SAML을 통해 인증된 사용자를 위한 설정을 관리합니다.</translation>
+<translation id="7407431811343706437">사용자가 <ph name="PRODUCT_NAME" />에서 'Gemini로 정보 찾기 및 자동 완성' 기능을 사용할 수 있는지를 제어합니다.
+
+0 = 이 기능을 사용하도록 허용하면서 Google에서 관련 데이터를 사용하여 AI 모델을 개선하도록 허용합니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 기능을 사용하도록 허용하되 Google에서 사용자 콘텐츠(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 허용하지 않습니다.
+
+Gemini 앱이 사용 중지되면 이 정책은 아무런 영향을 미치지 않습니다. 예를 들어 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 Gemini 앱을 사용 중지할 수 있습니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
+
+생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="7407441173422042771">이 정책은 <ph name="PRODUCT_NAME" />의 네트워크 예측을 제어합니다. 또한 DNS 미리 가져오기, TCP 및 SSL 사전 연결, 웹페이지 사전 렌더링을 제어합니다.
 
       정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 네트워크 예측이 사용 설정되지만 사용자가 이를 변경할 수 있습니다.</translation>
@@ -12723,6 +12768,15 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 정책을 사용 중지하면 이전 동작이 사용됩니다.
 
 정책이 설정되지 않으면 다른 Chromium 사용자와 마찬가지로 새 동작이 사용됩니다.</translation>
+<translation id="8954797065581717017">경고: 이 정책을 구성하면 VPN이 연결되기 전에 상시 사용 설정 VPN 잠금이 완화됩니다. URL 레벨 필터링은 Chrome 브라우저 트래픽에만 보장되며 내부 시스템 애플리케이션 또는 기타 트래픽 유형에는 적용되지 않습니다. 이 정책이 시행되는 동안 시스템 트래픽은 상시 사용 설정 VPN을 우회하여 정책 가져오기 및 시스템 시계 동기화와 같은 작업을 수행할 수도 있습니다.
+
+이 정책을 사용하면 https://support.google.com/chrome/a?p=url_blocklist_filter_format에 지정된 형식을 통해 특정 스키마, 다른 도메인의 하위 도메인, 포트 또는 특정 경로에 대한 예외 목록을 열 수 있습니다. 가장 구체적인 필터에 따라 URL 차단 또는 허용 여부가 결정됩니다.
+
+<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책이 설정되어 있으면 상시 사용 설정 VPN이 구성되고, 상시 사용 설정 VPN이 연결되지 않으며, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책에서 허용하는 호스트를 제외한 모든 호스트로의 이동이 차단됩니다. 이 기기 상태에서 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다. 상시 사용 설정 VPN이 연결되면, <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 적용되고 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다.
+
+정책의 항목은 1,000개로 제한됩니다.
+
+정책을 설정하지 않으면 엄격 모드에서 상시 사용 설정 VPN이 활성화되고 VPN이 연결되지 않은 동안 브라우저 탐색이 차단됩니다.</translation>
 <translation id="8955719471735800169">맨위로</translation>
 <translation id="8956312248048980644">기본적으로 출처 관련 에이전트 클러스터링을 허용합니다.</translation>
 <translation id="8963464192296208229">F11 설정은 Alt 수정자가 포함된 단축키를 사용합니다.</translation>

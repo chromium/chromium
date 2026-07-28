@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">智能手機</translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
 <translation id="2491414235131909199">有擴充程式已封鎖此頁面</translation>
+<translation id="2493122313108999546">調整咗大細</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
 <translation id="2496402116964818747">你可在「<ph name="SETTINGS" />」中變更是否要使用指紋填入密碼</translation>
 <translation id="2498091847651709837">掃描新的信用卡</translation>
@@ -2555,6 +2556,7 @@
 <translation id="4936134414789135531">找不到已插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936573216809994970">檔案將於 1 小時後開始上載至 <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="4936675324097895694">金融</translation>
+<translation id="4939748144644852809">向右移咗</translation>
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
@@ -3211,6 +3213,7 @@
 <translation id="5953516610448771166">此媒體無法使用即時字幕功能。如要取得字幕，請封鎖此網站的 <ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="5960795367348889467">驗證</translation>
 <translation id="5963413905009737549">區段</translation>
+<translation id="5963685100480647029">向左移咗</translation>
 <translation id="5964247741333118902">已嵌入的內容</translation>
 <translation id="5967260682280773804">36 x 48 吋</translation>
 <translation id="5967592137238574583">編輯聯絡人資料</translation>
@@ -3717,6 +3720,7 @@
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或地址不正確。</translation>
 <translation id="6711700233707023861">將變數字串複製去剪貼簿</translation>
+<translation id="6712343563085762261">向上移咗</translation>
 <translation id="6716039223770814796">比較<ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> 個項目</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />傳來分頁</translation>
@@ -4611,6 +4615,7 @@
 <translation id="8081087320434522107">轎車</translation>
 <translation id="8086429410809447605">女裝</translation>
 <translation id="8086971161893892807">草稿</translation>
+<translation id="8087558780672230449">正在載入 <ph name="APP_ORIGIN" /> 以處理你在 <ph name="MERCHANT_ORIGIN" /> 的付款。</translation>
 <translation id="8088680233425245692">無法檢視文章。</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8091372947890762290">尚未在伺服器上啟動</translation>
@@ -4806,6 +4811,7 @@
 <translation id="8400929824946688748">職業及教育</translation>
 <translation id="8402442052798347631">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這類網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">同人小說</translation>
+<translation id="8404028426624581035">向下移咗</translation>
 <translation id="8405579342203358118">在 Chrome 設定中管理同步哪些資料</translation>
 <translation id="8405621913275228683">發生不明錯誤，因此遺失掃瞄檔</translation>
 <translation id="8406071103346257942">停止使用螢幕鎖定功能填入密碼</translation>

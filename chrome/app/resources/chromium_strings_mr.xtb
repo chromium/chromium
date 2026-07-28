@@ -22,6 +22,7 @@
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="1232234696885483911">तुम्ही इमेज शोध उघडता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय आपोआप सर्व्हरला पाठवला जाईल. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">तुम्ही साइन इन केलेले असताना, Chromium मध्ये तुमच्या Google खाते मधून तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी वापरू शकता. हे बदलण्यासाठी, “Chromium मधील तुमचे खाते” वर जा.</translation>
+<translation id="1244381985120794049">Mac मेनू बारमधील Chromium मधील Gemini दाखवा</translation>
 <translation id="1257483544893909270">Chromium मधील Gemini मध्ये स्क्रीनचा भाग निवडण्यासाठी, कीबोर्ड शॉर्टकट वापरा.</translation>
 <translation id="1262876892872089030">हा टॅब इनॅक्टिव्ह असताना, Chromium ला जलद ठेवण्यासाठी मेमरी मोकळी करण्यात आली होती. ही साइट इनॅक्टिव्ह राहण्यापासून नेहमी वगळली जावी असे तुम्ही निवडू शकता.</translation>
 <translation id="1265577313130862557">फाइल धोकादायक असल्याने Chromium ने हे डाउनलोड ब्लॉक केले आहे</translation>
@@ -70,7 +71,6 @@
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> याचा प्रयत्न करत आहे</translation>
 <translation id="183031085822326697">तुम्ही पुढील वेळी तुमच्या <ph name="DEVICE_TYPE" /> वर Chromium उघडल्यावर, तुम्हाला Google Password Manager वापरण्यासाठी प्रॉम्प्ट दिसेल.</translation>
 <translation id="1838374766361614909">शोध साफ करा</translation>
-<translation id="1846849503013521481">Chromium वरील तुमचे काम सुरक्षित ठेवण्यासाठी तुमची संस्था विशिष्ट माहिती पाहू किंवा व्यवस्थापित करू शकेल</translation>
 <translation id="18552579716432081">तुमच्या Google खाते मध्ये ब्राउझिंग डेटा राखून ठेवून, तो फक्त या डिव्हाइसवरून हटवण्यासाठी, <ph name="BEGIN_LINK" />Chromium मधून साइन आउट करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="1857749206890802997">फिरतीवर असताना नवीन टॅब गट उघडण्यासाठी किंवा तयार करण्यासाठी तुमच्या फोनवर Chromium डाउनलोड करा.</translation>
 <translation id="185970820835152459">तुम्ही तुमची साइन इन केलेली Google खाती व्यवस्थापित करू शकता. तुमची Google खाती Chromium ब्राउझर, Play Store, Gmail आणि बर्‍याच गोष्टींसाठी वापरली जातात. तुम्हाला कुटुंब सदस्यासारख्या इतर कोणासाठी खाते जोडायचे असल्यास, त्याऐवजी तुमच्या <ph name="DEVICE_TYPE" /> वर नवीन व्यक्ती जोडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -593,6 +593,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="7368826207863345663">भविष्यातील Chromium अपडेट मिळवण्यासाठी, तुमच्याकडे macOS 13 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा काँप्युटर macOS 12 वापरत आहे.</translation>
 <translation id="7376384068949534168">तुम्ही अलीकडे भेट दिलेली नाही. Chromium ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या आहेत.</translation>
 <translation id="73786666777299047">Chrome वेब स्टोअर उघडा</translation>
+<translation id="7394275517973019558">सिस्टीम ट्रेमधील Chromium मधील Gemini दाखवा</translation>
 <translation id="7407655596887111931">Chromium आता तुमचा डीफॉल्ट ब्राउझर आहे</translation>
 <translation id="7413153308467572558">तुम्ही सोडले होते तिथून पुढे सुरू ठेवा: तुम्ही रीस्टार्ट करता, तेव्हा प्रत्येक वेळी Chromium तुमचे टॅब रिस्टोअर करते. हे बंद करण्यासाठी, यावर जा</translation>
 <translation id="7427879960656355200">Chromium वर पासवर्ड इंपोर्ट करा</translation>

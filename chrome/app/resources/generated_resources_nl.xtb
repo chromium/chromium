@@ -1600,6 +1600,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2243934210752059021">Zoeken + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Gebruik de pijltoetsen om per letter door items te navigeren.</translation>
+<translation id="2246104792527215550">Wachtwoorden automatisch wijzigen</translation>
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
 <translation id="2247738527273549923">Je apparaat wordt beheerd door je organisatie</translation>
 <translation id="2247870315273396641">Voorbeeld van stem</translation>
@@ -5020,6 +5021,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4852383141291180386">App-meldingen beheren</translation>
 <translation id="4852916668365817106">Muiskleur</translation>
 <translation id="4853020600495124913">Openen in &amp;nieuw venster</translation>
+<translation id="4853328060971905294">Aan (regelfocus aanzetten)</translation>
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
 <translation id="4854603338816296098">Adres verwijderd</translation>
 <translation id="485480310608090163">Meer instellingen en rechten</translation>
@@ -6186,6 +6188,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5794700615121138172">Gedeelde mappen voor Linux</translation>
 <translation id="5794786537412027208">Alle Chrome-apps sluiten</translation>
 <translation id="5796485699458186843">Nieuw incognito&amp;tabblad</translation>
+<translation id="5796656350463724">Tabstijl</translation>
 <translation id="5796956053441619942">De URL van het apparaat op afstand wordt niet ondersteund</translation>
 <translation id="5798079537501238810">Sites kunnen betalingshandlers installeren</translation>
 <translation id="5798086737841799234">Bevestigingscode invoeren</translation>
@@ -8007,6 +8010,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nieuw tabblad op 1 tabblad}other{Nieuw tabblad op # tabbladen}}</translation>
 <translation id="721490496276866468">Wachtwoorden importeren</translation>
 <translation id="7217208603285112910">Selectie niet in het <ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">Voeg tekst, reacties en notities toe met de nieuwe tool Tekstannotaties</translation>
 <translation id="7219254577985949841">Sitegegevens verwijderen?</translation>
 <translation id="7219473482981809164">We hebben meerdere beschikbare profielen gevonden om te downloaden. Selecteer de profielen die je wilt downloaden voordat je verdergaat.</translation>
 <translation id="7220019174139618249">Kan geen wachtwoorden exporteren naar '<ph name="FOLDER" />'</translation>
@@ -10705,6 +10709,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> wil informatie van je mobiele apparaat opvragen</translation>
 <translation id="988320949174893488">Hapert soms</translation>
 <translation id="988978206646512040">Een lege wachtwoordzin is niet toegestaan</translation>
+<translation id="989111665033316622">Uit (regelfocus uitzetten)</translation>
 <translation id="992032470292211616">Extensies, apps en thema's kunnen schade toebrengen aan je apparaat. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="992256792861109788">Roze</translation>
 <translation id="994087375490600917">Zijvensters</translation>

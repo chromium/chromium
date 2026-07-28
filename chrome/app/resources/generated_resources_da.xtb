@@ -755,6 +755,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1581962803218266616">Vis i Finder</translation>
 <translation id="1582955169539260415">slet [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> behandles lokalt og kan bruges offline</translation>
+<translation id="1586075235463145108">Aktivér først Automatisk browsing i Chrome for denne enhed</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsol</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Gennemgå opdateringer af logo og navn</translation>
@@ -1833,6 +1834,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konti. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}}</translation>
 <translation id="2428510569851653187">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
+<translation id="2431280447889982015">Vælg en skærm med lyd</translation>
 <translation id="243275146591958220">Annuller download</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apps er registreret</translation>
 <translation id="2433237965825924228">Isolerede webapps styrer godkendelsesenheder og chipkort, de har adgang til. Chipkort indeholder normalt id'er, der bruges til at godkende dig.</translation>
@@ -6205,6 +6207,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Afslut alle Chrome-apps</translation>
 <translation id="5796485699458186843">Ny inkognitofane</translation>
+<translation id="5796656350463724">Fanestil</translation>
 <translation id="5796956053441619942">Webadressen fra fjernenheden understøttes ikke</translation>
 <translation id="5798079537501238810">Websites kan installere betalingshandlere</translation>
 <translation id="5798086737841799234">Angiv bekræftelseskoden</translation>
@@ -6310,6 +6313,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5864754048328252126">Handling for inaktivitet under opladning</translation>
 <translation id="586567932979200359">Du kører <ph name="PRODUCT_NAME" /> fra dets diskbillede. Hvis du installerer det på din computer, kan du køre det uden diskbilledet, og det vil blive opdateret løbende.</translation>
 <translation id="5865733239029070421">Sender automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
+<translation id="58659335642601499">Vælg et vindue med lyd</translation>
 <translation id="5866363217037791319">Afslut opgave</translation>
 <translation id="5868434909835797817">Mikrofonen er slået fra på din enhed</translation>
 <translation id="5868479397518301468">Der opstod timeout for login</translation>

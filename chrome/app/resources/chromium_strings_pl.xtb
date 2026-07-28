@@ -21,6 +21,7 @@
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
 <translation id="1232234696885483911">Gdy otworzysz wyszukiwanie obrazów, tytuł, adres URL i zawartość strony, w tym pliki PDF, zostaną automatycznie wysłane na serwer. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Po zalogowaniu się w Chromium możesz używać haseł i innych danych z konta Google. Aby to zmienić, przejdź do sekcji „Twoje konto w Chromium”.</translation>
+<translation id="1244381985120794049">Pokaż Gemini w Chromium na pasku menu Maca</translation>
 <translation id="1257483544893909270">Aby zaznaczyć część ekranu w Gemini w Chromium, użyj skrótu klawiszowego.</translation>
 <translation id="1262876892872089030">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chromium działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
 <translation id="1265577313130862557">Pobieranie zostało zablokowane przez Chromium, bo plik jest niebezpieczny</translation>
@@ -68,7 +69,6 @@
 <translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Gdy następnym razem otworzysz Chromium na urządzeniu <ph name="DEVICE_TYPE" />, zobaczysz prośbę o użycie Menedżera haseł Google.</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
-<translation id="1846849503013521481">Aby zabezpieczyć Twoją pracę w Chromium, Twoja organizacja będzie mogła wyświetlać określone informacje lub nimi zarządzać</translation>
 <translation id="18552579716432081">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Pobierz Chromium na telefon, aby otwierać lub tworzyć nowe grupy kart, gdziekolwiek jesteś.</translation>
 <translation id="185970820835152459">Możesz zarządzać kontami Google, na które się logujesz. Kont Google możesz używać w przeglądarce Chromium, Sklepie Play, Gmailu i innych usługach. Jeśli chcesz dodać konto innej osoby, np. kogoś z rodziny, zamiast tego dodaj nową osobę do urządzenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -589,6 +589,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7368826207863345663">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 13 lub nowszy. Na tym komputerze jest zainstalowany system macOS 12.</translation>
 <translation id="7376384068949534168">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
+<translation id="7394275517973019558">Pokaż Gemini w Chromium w obszarze powiadomień</translation>
 <translation id="7407655596887111931">Chromium jest teraz Twoją przeglądarką domyślną</translation>
 <translation id="7413153308467572558">Wznawianie przeglądania od tego samego miejsca: Chromium po każdym ponownym uruchomieniu przywraca karty. Aby wyłączyć tę funkcję, otwórz</translation>
 <translation id="7427879960656355200">Importuj hasła do Chromium</translation>

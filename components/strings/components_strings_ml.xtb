@@ -726,6 +726,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ഇവ ക്രമരഹിതമായി കാണിച്ചിരിക്കുന്നു. ഏതുസമയത്തും നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം.</translation>
+<translation id="2134584557120247184">ഫ്ലൈറ്റ് ടിക്കറ്റ്</translation>
 <translation id="2137891579555018930">അനുമതിക്കായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="213826338245044447">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="2141000681034340397">നിങ്ങളുടെ ഇൻപുട്ട് എഡിറ്റ് ചെയ്യുക</translation>
@@ -983,6 +984,7 @@
 <translation id="2485243023686553468">സ്‌മാർട്ട് ഫോണുകൾ</translation>
 <translation id="2491120439723279231">സെർവറിന്റെ സർട്ടിഫിക്കറ്റിൽ പിശകുകൾ ഉണ്ട്.</translation>
 <translation id="2491414235131909199">ഒരു വിപുലീകരണം ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="2493122313108999546">വലുപ്പം മാറ്റി</translation>
 <translation id="2495083838625180221">JSON പാർസർ</translation>
 <translation id="2496402116964818747">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കണോ എന്നത് <ph name="SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് മാറ്റാം</translation>
 <translation id="2498091847651709837">പുതിയ കാർഡ് സ്‌കാൻ ചെയ്യുക</translation>
@@ -1423,6 +1425,7 @@
 <translation id="3194737229810486521">നിങ്ങളുടെ ഉപകരണത്തിൽ ശാശ്വതമായി ഡാറ്റ സംഭരിക്കാന്‍ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> എന്നതിലെ <ph name="PRINTER_NAME" /></translation>
+<translation id="3196374699162453920">ബുക്കിംഗ് കോഡ്</translation>
 <translation id="3196902089458890316">മികച്ച പ്രതികരണങ്ങൾക്കായി പ്രസക്തമായ ടാബുകൾ എല്ലായ്‌പ്പോഴും പങ്കിടണോ?</translation>
 <translation id="3197136577151645743">നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
@@ -2040,6 +2043,7 @@
 <translation id="4140905366050378834">വളർത്തുമൃഗങ്ങളുടെ ഭക്ഷണവും വളർത്തുമൃഗ പരിചരണ സാമഗ്രികളും</translation>
 <translation id="4140905530744469899">പ്രൊഫൈൽ ഐഡി:</translation>
 <translation id="4142935452406587478">ട്രേ 10</translation>
+<translation id="4143568335933115324">എത്തിച്ചേരുന്ന എയർപോർട്ട്</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
@@ -2306,6 +2310,7 @@
 <translation id="4543072026714825470">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google Account-ൽ ഈ കാർഡും ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കുക</translation>
 <translation id="4546730006268514143">കൈമാറുന്നത് ടൈംഔട്ട് ആയി</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{ഒരു ദിവസം മുമ്പ് സൃഷ്‌ടിച്ചത്}other{{NUM_DAYS} ദിവസം മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
+<translation id="4550087677305533997">യാത്ര ചെയ്യുന്നയാൾ</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ നിങ്ങൾ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നു</translation>
 <translation id="4557573143631562971">ഭവന ഇൻഷുറൻസ്</translation>
@@ -2359,6 +2364,7 @@
 <translation id="4658801711339831733">Google Drive-ലേക്ക് സ്‌കാൻ സംരക്ഷിച്ചു</translation>
 <translation id="4660592918803576381">Drive-ൽ തുറക്കുക</translation>
 <translation id="4660780573807106293">നിങ്ങളുടെ മോഷൻ, ലൈറ്റ് സെൻസറുകൾ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
+<translation id="4661010630350489875">ഫ്ലെെറ്റ് നമ്പർ</translation>
 <translation id="4661556981531699496">മൃഗങ്ങളും വളർത്തുമൃഗങ്ങളും</translation>
 <translation id="4661868874067696603">കൂടുതൽ വാങ്ങൽ ഓപ്ഷനുകൾ തിരയുക</translation>
 <translation id="4663373278480897665">ക്യാമറ അനുവദനീയം</translation>
@@ -2550,6 +2556,7 @@
 <translation id="4936134414789135531">ചേർത്ത <ph name="VALUE_NAME" /> കണ്ടെത്താനായില്ല.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ ഫയൽ അപ്‌ലോഡ് 1 മണിക്കൂറിനുള്ളിൽ ആരംഭിക്കും</translation>
 <translation id="4936675324097895694">ധനകാര്യം</translation>
+<translation id="4939748144644852809">വലത്തേക്ക് നീക്കി</translation>
 <translation id="4941627891654116707">ഫോണ്ട് വലുപ്പം</translation>
 <translation id="4943620199112228840">നിങ്ങളുടെ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
@@ -2831,6 +2838,7 @@
 <translation id="5391010642126249196">നിങ്ങൾ സന്ദർശിച്ചത്:</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" /> ഉപകരണം</translation>
 <translation id="5391306025131596142">&amp;ചരിത്ര പേജ് തുറക്കുക</translation>
+<translation id="5391870546630695708">പുറപ്പെടുന്ന എയർപോർട്ട്</translation>
 <translation id="539203134595252721">ടേബിൾ ടെന്നീസ്</translation>
 <translation id="5392506727170022660">മെറ്റൽ (സെമി ഗ്ലോസ്)</translation>
 <translation id="5394069166371280357">കുടുംബ-കേന്ദ്രീകൃത ടിവി ഷോകൾ</translation>
@@ -2941,6 +2949,7 @@
 <translation id="5540969246441091044">കുതിരസവാരിക്കാർ</translation>
 <translation id="5541086400771735334">മെയിൽബോക്സ് 7</translation>
 <translation id="5541546772353173584">ഇമെയില്‍‌ ചേര്‍‌ക്കുക</translation>
+<translation id="5541735141423273733">എത്തിച്ചേരുന്ന തീയതി</translation>
 <translation id="5543452229212526547">നിങ്ങളുടെ ടെക്‌സ്‌റ്റും നിങ്ങൾ എഴുതുന്ന പേജിന്റെ ഉള്ളടക്കവും URL-ഉം Google-ലേക്ക് അയയ്ക്കും. AI മെച്ചപ്പെടുത്താൻ, നിങ്ങളുടെ ഉള്ളടക്കം അവലോകകർ ഉപയോഗിക്കുന്നില്ല. നിങ്ങളുടെ സ്ഥാപനത്തിന് ഈ ക്രമീകരണം എപ്പോൾ വേണമെങ്കിലും മാറ്റാം.</translation>
 <translation id="5543564889050342791">മൃഗശാലകൾ, അക്വേറിയങ്ങൾ, വന്യമൃഗസങ്കേതങ്ങൾ</translation>
 <translation id="5543722831081909240">180 ഡിഗ്രി</translation>
@@ -3204,6 +3213,7 @@
 <translation id="5953516610448771166">ഈ മീഡിയയ്ക്ക് തത്സമയ ക്യാപ്ഷൻ ലഭ്യമല്ല. ക്യാപ്ഷനുകൾ നേടാൻ, ഈ സൈറ്റിനുള്ള <ph name="CONTENT_SETTINGS" /> ബ്ലോക്ക് ചെയ്യുക.</translation>
 <translation id="5960795367348889467">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="5963413905009737549">വിഭാഗം</translation>
+<translation id="5963685100480647029">ഇടത്തേക്ക് നീക്കി</translation>
 <translation id="5964247741333118902">ഉൾച്ചേർത്ത ഉള്ളടക്കം</translation>
 <translation id="5967260682280773804">36 x 48 ഇഞ്ച്</translation>
 <translation id="5967592137238574583">കോൺടാക്‌റ്റ് വിവരം എഡിറ്റുചെയ്യുക</translation>
@@ -3710,6 +3720,7 @@
 <translation id="671076103358959139">എന്‍‌റോള്‍‌മെന്‍റ് ടോക്കണ്‍:</translation>
 <translation id="6711464428925977395">പ്രോക്‌സി സെർവറിൽ എന്തോ പ്രശ്‌നമുണ്ട്, അല്ലെങ്കിൽ വിലാസം തെറ്റാണ്.</translation>
 <translation id="6711700233707023861">വേരിയേഷനുകളുടെ സ്ട്രിംഗ് ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
+<translation id="6712343563085762261">മുകളിലേക്ക് നീക്കി</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> താരതമ്യം ചെയ്യുക · <ph name="ITEMS" /> ഇനങ്ങൾ</translation>
 <translation id="6716672519412350405">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും <ph name="URL" /> താല്‍‌പ്പര്യപ്പെടുന്നു</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നയച്ച ടാബ്</translation>
@@ -4602,6 +4613,7 @@
 <translation id="8081087320434522107">സെഡാൻ കാറുകൾ</translation>
 <translation id="8086429410809447605">സ്ത്രീകളുടെ വസ്ത്രങ്ങൾ</translation>
 <translation id="8086971161893892807">ഡ്രാഫ്റ്റ്</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> എന്നതിലെ നിങ്ങളുടെ പേയ്മെന്റ് കൈകാര്യം ചെയ്യാൻ <ph name="APP_ORIGIN" /> ലോഡ് ചെയ്യുന്നു.</translation>
 <translation id="8088680233425245692">ലേഖനം കാണുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8091372947890762290">സെർവറിൽ സജീവമാക്കൽ തീർപ്പാക്കിയിട്ടില്ല</translation>
@@ -4727,6 +4739,7 @@
 <translation id="8288320283441806607">ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ, തിരയലുകളും ബ്രൗസിംഗും കൂടുതൽ മികച്ചതാക്കൂ ഓണാക്കുക</translation>
 <translation id="8288807391153049143">സർട്ടിഫിക്കറ്റ് കാണിക്കുക</translation>
 <translation id="8289355894181816810">ഇത് അർത്ഥമാക്കുന്നത് എന്താണെന്ന് നിങ്ങൾക്ക് ഉറപ്പില്ലെങ്കിൽ നെറ്റ്‌വർക്ക് അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="8289655756644294629">പുറപ്പെടുന്ന തീയതി</translation>
 <translation id="8291367150570302588">ഐഡി കാർഡ്</translation>
 <translation id="829335040383910391">ശബ്‌ദം</translation>
 <translation id="8294425747071240447">AI ലഭ്യമാക്കുന്ന നിർദ്ദേശങ്ങൾ</translation>
@@ -4796,6 +4809,7 @@
 <translation id="8400929824946688748">ജോലിയും വിദ്യാഭ്യാസവും</translation>
 <translation id="8402442052798347631">നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിച്ച സൈറ്റിലെ അറ്റാക്കർമാർ, നിങ്ങൾ ബ്രൗസ് ചെയ്യുന്ന രീതിയെ ബാധിക്കുന്ന തരത്തിലുള്ള ദോഷകരമായ സോഫ്‌റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്യുന്നതിന് നിങ്ങളെ കബളിപ്പിച്ചേക്കാം — ഉദാഹരണത്തിന്, നിങ്ങളുടെ ഹോംപേജ് മാറ്റുകയോ നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിൽ കൂടുതൽ പരസ്യങ്ങൾ കാണിക്കുകയോ ചെയ്യുന്നതിലൂടെ. ദോഷകരമായ കാര്യങ്ങൾ സംഭവിക്കുന്നത് ഒഴിവാക്കാൻ, സുരക്ഷിതമായ നിലയിലേക്ക് മടങ്ങാൻ Chrome ശക്തമായി നിർദ്ദേശിക്കുന്നു. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">ഫാൻ ഫിക്‌ഷൻ</translation>
+<translation id="8404028426624581035">താഴേക്ക് നീക്കി</translation>
 <translation id="8405579342203358118">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="8405621913275228683">അജ്ഞാത പിശക് കാരണം സ്‌കാൻ നഷ്ടപ്പെട്ടു</translation>
 <translation id="8406071103346257942">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നത് നിർത്തുക</translation>

@@ -23,6 +23,7 @@
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="1232234696885483911">আপুনি প্ৰতিচ্ছবিৰ সন্ধান খুলিলে, PDFসমূহকে ধৰি পৃষ্ঠাখনৰ শিৰোনাম, URL আৰু সমল স্বয়ংক্ৰিয়ভাৱে ছাৰ্ভাৰলৈ পঠিওৱা হ’ব। <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">আপুনি ছাইন ইন হৈ থকাৰ সময়ত, আপুনি Chromiumত আপোনাৰ Google একাউণ্টৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু অধিক ব্যৱহাৰ কৰিব পাৰে। এইটো সলনি কৰিবলৈ, “Chromiumত আপোনাৰ একাউণ্ট”লৈ যাওক।</translation>
+<translation id="1244381985120794049">Macৰ মেনু বাৰত Chromiumত Gemini দেখুৱাওক</translation>
 <translation id="1257483544893909270">Chromiumত Geminiত স্ক্ৰীনৰ অংশ বাছনি কৰিবলৈ, কীব’ৰ্ডৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক।</translation>
 <translation id="1262876892872089030">এই টেবটো নিষ্ক্ৰিয় হৈ থকাৰ সময়ত, Chromium দ্ৰুত কৰি ৰাখিবলৈ মেম’ৰী খালী কৰা হৈছে। আপুনি এই ছাইটটো নিষ্ক্ৰিয় হোৱাৰ পৰা সদায় বাদ দিয়াটো বাছনি কৰিব পাৰে।</translation>
 <translation id="1265577313130862557">ফাইলটো বিপজ্জনক হোৱাৰ বাবে Chromiumএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
@@ -71,7 +72,6 @@
 <translation id="1820835682567584003">Chromiumএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
 <translation id="183031085822326697">পৰৱৰ্তী সময়ত আপুনি নিজৰ <ph name="DEVICE_TYPE" />ত Chromium খুলিলে, আপুনি Google Password Manager ব্যৱহাৰ কৰিবলৈ এটা প্ৰম্প্‌ট দেখা পাব।</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
-<translation id="1846849503013521481">Chromiumত আপোনাৰ কাম সুৰক্ষিত কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানে কিছুমান নিৰ্দিষ্ট তথ্য চাব বা পৰিচালনা কৰিব পাৰিব</translation>
 <translation id="18552579716432081">আপোনাৰ Google একাউণ্টত ব্ৰাউজিঙৰ ডেটা ৰাখি কেৱল এই ডিভাইচৰ পৰা সেই ডেটা মচিবলৈ <ph name="BEGIN_LINK" />Chromiumৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
 <translation id="1857749206890802997">অন্য কামৰ মাজতো নতুন টেবৰ গোট খুলিবলৈ বা সৃষ্টি কৰিবলৈ আপোনাৰ ফ’নত Chromium ডাউনল’ড কৰক।</translation>
 <translation id="185970820835152459">আপুনি নিজৰ ছাইন ইন কৰি ৰখা Google একাউণ্টসমূহ পৰিচালনা কৰিব পাৰে। আপোনাৰ Google একাউণ্টসমূহ Chromium ব্ৰাউজাৰ, Play Store, Gmail আৰু বহুতো প্ৰ’ডাক্টত ব্যৱহাৰ কৰা হয়। যদি আপুনি অন্য কাৰোবাৰ বাবে এটা একাউণ্ট যোগ দিব খোজে, যেনে পৰিয়ালৰ কোনো সদস্যৰ বাবে, তাৰ সলনি আপোনাৰ <ph name="DEVICE_TYPE" />ত এগৰাকী নতুন ব্যক্তি যোগ দিয়ক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -594,6 +594,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="7368826207863345663">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক macOS 13 বা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে macOS 12 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="7376384068949534168">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আঁতৰাইছে।</translation>
 <translation id="73786666777299047">Chrome Web Store খোলক</translation>
+<translation id="7394275517973019558">ছিষ্টেমৰ ট্ৰে’ত Chromiumত Gemini দেখুৱাওক</translation>
 <translation id="7407655596887111931">Chromium এতিয়া আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="7413153308467572558">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক: আপুনি প্ৰতিবাৰে ৰিষ্টাৰ্ট কৰোঁতে Chromiumএ আপোনাৰ টেবসমূহ পুনঃস্থাপন কৰে। এইটো অফ কৰিবলৈ ইয়ালৈ যাওক</translation>
 <translation id="7427879960656355200">Chromiumলৈ পাছৱৰ্ড আমদানি কৰক</translation>

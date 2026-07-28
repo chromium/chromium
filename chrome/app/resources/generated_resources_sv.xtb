@@ -755,6 +755,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1581962803218266616">Visa i Finder</translation>
 <translation id="1582955169539260415">radera [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> bearbetas lokalt och kan användas offline</translation>
+<translation id="1586075235463145108">Aktivera först automatisk webbsökning i Chrome för den här enheten</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsol</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Granska uppdateringar av logotyp och namn</translation>
@@ -1832,6 +1833,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Lösenordet har endast sparats på den här enheten. Mer information}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konton. Lösenordet har endast sparats på den här enheten. Mer information}}</translation>
 <translation id="2428510569851653187">Beskriv vad du höll på med när fliken kraschade</translation>
 <translation id="2428939361789119025">Stäng av wifi</translation>
+<translation id="2431280447889982015">Välj en skärm med ljud</translation>
 <translation id="243275146591958220">Avbryt nedladdning</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> appar har registrerats</translation>
 <translation id="2433237965825924228">Isolerade webbappar styr autentiseringsenheter och tillhörande smartkort. Smartkort innehåller vanligtvis identifierare som används för att autentisera dig.</translation>
@@ -6310,6 +6312,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5864754048328252126">Inaktivitetsåtgärd vid laddning</translation>
 <translation id="586567932979200359">Du kör <ph name="PRODUCT_NAME" /> från diskavbildningen. Om du installerar programmet på din dator kan du köra det utan diskavbildningen och du kan vara säker på att det alltid är uppdaterat.</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
+<translation id="58659335642601499">Välj ett fönster med ljud</translation>
 <translation id="5866363217037791319">Avsluta uppgift</translation>
 <translation id="5868434909835797817">Mikrofonen är avstängd på enheten</translation>
 <translation id="5868479397518301468">Tidsgränsen för inloggning har nåtts</translation>

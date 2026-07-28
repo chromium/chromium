@@ -228,6 +228,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="5731004036450828399">For at beskytte dine adgangsnøgler skal du først oprette en pinkode til gendannelse.
 
         Adgangsnøgler gemmes i Adgangskodeadministrator, så du kan bruge dem i Chromium på alle enheder.</translation>
+<translation id="575593940213760950">Til Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Logget ind i Chromium</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5889847953983052353">Ved aktivering:

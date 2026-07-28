@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">ଫାଇଣ୍ଡର୍‌ରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" />କୁ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରାଯାଏ ଏବଂ ଏହା ଅଫଲାଇନରେ କାମ କରେ</translation>
+<translation id="1586075235463145108">ପ୍ରଥମେ, ଏହି ଡିଭାଇସ ପାଇଁ Chrome ସ୍ୱତଃ ବ୍ରାଉଜକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1587275751631642843">&amp;JavaScript କନସୋଲେ</translation>
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1588772269240419305">ଲୋଗୋ ଏବଂ ନାମ ସମ୍ବନ୍ଧିତ ଅପଡେଟଗୁଡ଼ିକର ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
@@ -1821,6 +1822,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 ଆକାଉଣ୍ଟ, ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଛି। ଅଧିକ ବିବରଣୀ}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} ଆକାଉଣ୍ଟ, ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଇଛି। ଅଧିକ ବିବରଣୀ}}</translation>
 <translation id="2428510569851653187">ଟାବ୍ କ୍ରାସ୍ ହେବା ସମୟରେ ଆପଣ କ'ଣ କରୁଥିଲେ ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="2428939361789119025">ୱାଇ-ଫାଇ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2431280447889982015">ଅଡିଓ ସହ ଏକ ସ୍କ୍ରିନ ବାଛନ୍ତୁ</translation>
 <translation id="243275146591958220">ଡାଉନଲୋଡ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> ଆପ୍ସ ପଞ୍ଜିକରଣ କରାଯାଇଛି</translation>
 <translation id="2433237965825924228">Isolated Web Apps ପ୍ରମାଣୀକରଣ ଡିଭାଇସଗୁଡ଼ିକ ଏବଂ ସେଗୁଡ଼ିକରେ ଆକ୍ସେସ କରାଯାଇପାରୁଥିବା ସ୍ମାର୍ଟ କାର୍ଡଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରେ। ସ୍ମାର୍ଟ କାର୍ଡଗୁଡ଼ିକରେ ସାଧାରଣତଃ ଆପଣଙ୍କୁ ଅଥେଣ୍ଟିକେଟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇଥିବା ଚିହ୍ନଟକାରୀ ଥାଏ।</translation>
@@ -6189,6 +6191,7 @@
 <translation id="5794700615121138172">Linux ଦ୍ୱାରା ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ</translation>
 <translation id="5794786537412027208">ସମସ୍ତ Chrome ଆପ୍ସ ପରିତ୍ୟାଗ କରନ୍ତୁ</translation>
 <translation id="5796485699458186843">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
+<translation id="5796656350463724">ଟାବ ଷ୍ଟାଇଲିଂ</translation>
 <translation id="5796956053441619942">ରିମୋଟ ଡିଭାଇସରୁ URL ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="5798079537501238810">ସାଇଟଗୁଡ଼ିକ ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲର୍ ଇନଷ୍ଟଲ୍ କରିପାରିବ</translation>
 <translation id="5798086737841799234">ସୁନିଶ୍ଚିତକରଣ କୋଡ୍ ଲେଖନ୍ତୁ</translation>
@@ -6294,6 +6297,7 @@
 <translation id="5864754048328252126">ବ୍ୟାଟେରୀ ଚାର୍ଜ ହେଉଥିବା ବେଳେ ଡିଭାଇସ୍ ନିଷ୍କ୍ରିୟ ଥିବା ସମୟର ପଦକ୍ଷେପ</translation>
 <translation id="586567932979200359">ଆପଣ <ph name="PRODUCT_NAME" />କୁ ଏହାର ଡିସ୍କ ଛବିରୁ ଚଲାଉଛନ୍ତି। ଏହାକୁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ଦ୍ୱାରା ଆପଣଙ୍କୁ ବିନା ଡିସ୍କ ଛବିରେ ଏହା ଚଲାଇବାକୁ ଦିଏ ଏବଂ ଏହା ଅପ୍ ଟୁ ଡେଟ୍ ରହିବ ବୋଲି ସୁନିଶ୍ଚିତ କରେ।</translation>
 <translation id="5865733239029070421">ସ୍ୱଚାଳିତରୂପେ Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍ ରିପୋର୍ଟ ପଠାଏ</translation>
+<translation id="58659335642601499">ଅଡିଓ ସହ ଏକ ୱିଣ୍ଡୋ ବାଛନ୍ତୁ</translation>
 <translation id="5866363217037791319">ଟାସ୍କ ଶେଷ</translation>
 <translation id="5868434909835797817">ଆପଣଙ୍କ ଡିଭାଇସରେ ମାଇକ୍ରୋଫୋନ ବନ୍ଦ ଅଛି</translation>
 <translation id="5868479397518301468">ସାଇନ ଇନ କରିବାର ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>

@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">‏הצגה ב-Finder</translation>
 <translation id="1582955169539260415">מחיקת [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">העיבוד של <ph name="LANGUAGE" /> נעשה באופן מקומי ונשאר בזיכרון המכשיר</translation>
+<translation id="1586075235463145108">‏קודם צריך להפעיל את התכונה "פעולות אוטומטיות בדפדפן" ב-Chrome במכשיר הזה</translation>
 <translation id="1587275751631642843">‏קונסולת JavaScript&amp;</translation>
 <translation id="1588438908519853928">רגיל</translation>
 <translation id="1588772269240419305">בדיקת עדכוני השם והלוגו</translation>
@@ -1831,6 +1832,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{חשבון אחד באתר <ph name="DOMAIN_LINK" />. הסיסמה נשמרה רק במכשיר הזה. פרטים נוספים}one{‫{NUM_PASSWORDS} חשבונות באתר <ph name="DOMAIN_LINK" />. הסיסמה נשמרה רק במכשיר הזה. פרטים נוספים}two{‫{NUM_PASSWORDS} חשבונות באתר <ph name="DOMAIN_LINK" />. הסיסמה נשמרה רק במכשיר הזה. פרטים נוספים}other{‫{NUM_PASSWORDS} חשבונות באתר <ph name="DOMAIN_LINK" />. הסיסמה נשמרה רק במכשיר הזה. פרטים נוספים}}</translation>
 <translation id="2428510569851653187">יש לתאר מה עשית לפני שהכרטיסייה קרסה</translation>
 <translation id="2428939361789119025">‏כיבוי Wi-Fi</translation>
+<translation id="2431280447889982015">בחירת מסך עם אודיו</translation>
 <translation id="243275146591958220">ביטול ההורדה</translation>
 <translation id="2432882794929808179">‫<ph name="APP_COUNT" /> אפליקציות רשומות</translation>
 <translation id="2433237965825924228">‏אפליקציות אינטרנט מבודדות (IWA) יכולות לשלוט בהתקני אימות ובכרטיסים חכמים שאליהם יש להתקנים גישה. בדרך כלל, כרטיסים חכמים מכילים מזהים שמשמשים לאימות.</translation>
@@ -6204,6 +6206,7 @@
 <translation id="5794700615121138172">‏תיקיות משותפות של Linux</translation>
 <translation id="5794786537412027208">‏יציאה מכל אפליקציות Chrome</translation>
 <translation id="5796485699458186843">&amp;כרטיסיית מצב אנונימי חדשה</translation>
+<translation id="5796656350463724">סגנון הכרטיסייה</translation>
 <translation id="5796956053441619942">‏כתובת ה-URL מהמכשיר שמחובר לרשת אחרת לא נתמכת</translation>
 <translation id="5798079537501238810">‏אתרים מורשים להתקין רכיבי handler של תשלומים</translation>
 <translation id="5798086737841799234">הזנת קוד אישור</translation>
@@ -6309,6 +6312,7 @@
 <translation id="5864754048328252126">מה לעשות בעת חוסר פעילות בזמן טעינה</translation>
 <translation id="586567932979200359">מתבצעת הפעלה של <ph name="PRODUCT_NAME" /> מתמונת הדיסק שלו. התקנתו במחשב מאפשרת לך להפעיל אותו ללא תמונת הדיסק, ומבטיחה שיישאר מעודכן.</translation>
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
+<translation id="58659335642601499">בחירת חלון עם אודיו</translation>
 <translation id="5866363217037791319">סיום המשימה</translation>
 <translation id="5868434909835797817">המיקרופון כבוי במכשיר</translation>
 <translation id="5868479397518301468">פג הזמן הקצוב לכניסה</translation>

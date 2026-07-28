@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">Прикажи во Наоѓач</translation>
 <translation id="1582955169539260415">избриши [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> се обработува локално и функционира офлајн</translation>
+<translation id="1586075235463145108">Прво, вклучете „Автоматско прелистување“ во Chrome за уредов</translation>
 <translation id="1587275751631642843">Конзола за &amp;JavaScript</translation>
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1588772269240419305">Прегледајте ги промените на логото и името</translation>
@@ -1832,6 +1833,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 сметка на <ph name="DOMAIN_LINK" />, лозинката е зачувана само на овој уред. Повеќе детали}one{{NUM_PASSWORDS} сметка на <ph name="DOMAIN_LINK" />, лозинката е зачувана само на овој уред. Повеќе детали}other{{NUM_PASSWORDS} сметки на <ph name="DOMAIN_LINK" />, лозинката е зачувана само на овој уред. Повеќе детали}}</translation>
 <translation id="2428510569851653187">Опишете што правевте кога падна картичката</translation>
 <translation id="2428939361789119025">Исклучи Wi-Fi</translation>
+<translation id="2431280447889982015">Изберете екран со аудио</translation>
 <translation id="243275146591958220">Откажи го преземањето</translation>
 <translation id="2432882794929808179">Регистрирани се <ph name="APP_COUNT" /> апликации</translation>
 <translation id="2433237965825924228">Изолираните веб-апликации ги контролираат уредите за автентикација и паметните картички што им се пристапни. Паметните картички обично содржат идентификатори што се користат за да ве автентицираат.</translation>
@@ -6310,6 +6312,7 @@
 <translation id="5864754048328252126">Дејство при неактивност додека се полни</translation>
 <translation id="586567932979200359">Го активиравте производот <ph name="PRODUCT_NAME" /> од неговата слика на дискот. Со негово инсталирање на компјутер, може да го активирате без сликата на диск и се обезбедува дека ќе биде ажурен.</translation>
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
+<translation id="58659335642601499">Изберете прозорец со аудио</translation>
 <translation id="5866363217037791319">Заврши ја задачата</translation>
 <translation id="5868434909835797817">Микрофонот е исклучен на уредот</translation>
 <translation id="5868479397518301468">Времето за најавување истече</translation>

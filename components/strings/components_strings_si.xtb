@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">ස්මාර්ට් දුරකථන</translation>
 <translation id="2491120439723279231">සේවාදායකයෙහි සහතිකයේ දෝෂ අඩංගුයි.</translation>
 <translation id="2491414235131909199">දිගුවක් මගින් මෙම පිටුව අවහිර කර ඇත</translation>
+<translation id="2493122313108999546">ප්‍රතිප්‍රමාණ කරන ලදි</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" /> හි මුරපද පිරවීම සඳහා ඔබ ඔබේ ඇඟිලි සලකුණ භාවිතා කරන්නේ ද යන්න ඔබට වෙනස් කළ හැක</translation>
 <translation id="2498091847651709837">නව කාඩ්පත ස්කෑන් කරන්න</translation>
@@ -2556,6 +2557,7 @@
 <translation id="4936134414789135531">ඇතුළත් කළ <ph name="VALUE_NAME" /> සොයා ගත නොහැකි විය.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> වෙත ඔබේ ගොනු උඩුගත කිරීම පැය 1කින් ආරම්භ වනු ඇත</translation>
 <translation id="4936675324097895694">මූල්‍යය</translation>
+<translation id="4939748144644852809">දකුණට ගෙන යන ලදි</translation>
 <translation id="4941627891654116707">ෆොන්ට තරම</translation>
 <translation id="4943620199112228840">ඔබේ මයික්‍රෆෝන භාවිතා කරන්න</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
@@ -3212,6 +3214,7 @@
 <translation id="5953516610448771166">සජීවී සිරස්තල මෙම මාධ්‍ය සඳහා ලබා ගත නොහැකිය. සිරස්තල ලබා ගැනීමට, මෙම අඩවිය සඳහා <ph name="CONTENT_SETTINGS" /> අවහිර කරන්න.</translation>
 <translation id="5960795367348889467">සත්‍යාපනය</translation>
 <translation id="5963413905009737549">කොටස</translation>
+<translation id="5963685100480647029">වමට ගෙන යන ලදි</translation>
 <translation id="5964247741333118902">කාවද්දන ලද අන්තර්ගතය</translation>
 <translation id="5967260682280773804">අඟ 36 x 48</translation>
 <translation id="5967592137238574583">සම්බන්ධතා තතු සංස්කරණය</translation>
@@ -3718,6 +3721,7 @@
 <translation id="671076103358959139">ලියාපදිංචි වීමේ ටෝකනය:</translation>
 <translation id="6711464428925977395">ප්‍රොක්සි සේවාදායකයෙහි යම් දෙයක් වැරදිය, නැතහොත් ලිපිනය වැරදිය.</translation>
 <translation id="6711700233707023861">ප්‍රභේදන තන්තුව පසුරු පුවරුවට පිටපත් කරන ලදි</translation>
+<translation id="6712343563085762261">ඉහළට ගෙන යන ලදි</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> සසඳන්න · අයිතම <ph name="ITEMS" />ක්</translation>
 <translation id="6716672519412350405"><ph name="URL" /> හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට සහ කැමරා ස්ථානය හඹා යෑමට අවශ්‍යයි</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> වෙතින් පටිත්ත යවන ලදි</translation>
@@ -4611,6 +4615,7 @@
 <translation id="8081087320434522107">සෙඩාන්</translation>
 <translation id="8086429410809447605">කාන්තා ඇඳුම්</translation>
 <translation id="8086971161893892807">කෙටුම්පත</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> හි ඔබේ ගෙවීම හැසිරවීමට <ph name="APP_ORIGIN" /> පූරණය කරමින්.</translation>
 <translation id="8088680233425245692">ලිපිය බැලීමට අසමත් විය.</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8091372947890762290">සක්‍රීයකරණය සේවාදායකය මත පොරොත්තු වේ</translation>
@@ -4806,6 +4811,7 @@
 <translation id="8400929824946688748">රැකියා සහ අධ්‍යාපනය</translation>
 <translation id="8402442052798347631">ඔබ පිවිසීමට උත්සාහ කළ වෙබ් අඩවියේ ප්‍රහාරකයින් ඔබ බ්‍රවුස් කරන ආකාරය කෙරෙහි බලපාන හානිකර මෘදුකාංග ස්ථාපනය කිරීම සඳහා ඔබව රවටා ගත හැක — උදාහරණයක් ලෙස, ඔබේ මුල් පිටුව වෙනස් කිරීමෙන් හෝ ඔබ පිවිසෙන වෙබ් අඩවිවල අමතර දැන්වීම් පෙන්වීමෙන්. හානිය වළක්වා ගැනීම සඳහා සුරක්ෂිතව ආපසු යාමට Chrome දැඩි ලෙස නිර්දේශ කරයි. <ph name="BEGIN_LEARN_MORE_LINK" />මෙම අනතුරු ඇඟවීම ගැන තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">දිරිමත් කරන්නන්ගේ පරිකල්පන</translation>
+<translation id="8404028426624581035">පහළට ගෙන යන ලදි</translation>
 <translation id="8405579342203358118">Chrome සැකසීම් තුළ ඔබ සමමුමුහුර්ත කරන්නේ කුමන තොරතුරුද යන්න කළමනාකරණය කරන්න</translation>
 <translation id="8405621913275228683">නොදන්නා දෝෂයක් හේතුවෙන් ස්කෑන් කිරීම අහිමි විය</translation>
 <translation id="8406071103346257942">මුරපද පිරවීම සඳහා ඔබේ තිර අගුල භාවිතා කිරීම නවත්වන්න</translation>

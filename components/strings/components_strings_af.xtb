@@ -726,6 +726,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />. <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Dit word in ewekansige volgorde gewys. Jy kan enige tyd jou verstek verander.</translation>
+<translation id="2134584557120247184">Vlugkaartjie</translation>
 <translation id="2137891579555018930">Wag tans vir toestemming …</translation>
 <translation id="213826338245044447">Mobiele boekmerke</translation>
 <translation id="2141000681034340397">Wysig jou invoere</translation>
@@ -983,6 +984,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2485243023686553468">Slimfone</translation>
 <translation id="2491120439723279231">Bediener se sertifikaat bevat foute.</translation>
 <translation id="2491414235131909199">Hierdie bladsy is deur 'n uitbreiding geblokkeer</translation>
+<translation id="2493122313108999546">Grootte verander</translation>
 <translation id="2495083838625180221">JSON-ontleder</translation>
 <translation id="2496402116964818747">Jy kan in <ph name="SETTINGS" /> verander of jy jou vingerafdruk vir die invul van wagwoorde gebruik</translation>
 <translation id="2498091847651709837">Skandeer nuwe kaart</translation>
@@ -1424,6 +1426,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3194737229810486521"><ph name="URL" /> wil data permanent op jou toestel berg</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
+<translation id="3196374699162453920">Besprekingkode</translation>
 <translation id="3196902089458890316">Deel altyd relevante oortjies vir beter antwoorde?</translation>
 <translation id="3197136577151645743">Kan vra om te weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
@@ -2041,6 +2044,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4140905366050378834">Troeteldierkos en troeteldiersorgbenodigdhede</translation>
 <translation id="4140905530744469899">Profiel-ID:</translation>
 <translation id="4142935452406587478">Laai 10</translation>
+<translation id="4143568335933115324">Aankomslughawe</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Koevert Chinees #4</translation>
@@ -2307,6 +2311,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4543072026714825470">Stoor jou kaart en faktureringadres in jou Google-rekening om volgende keer vinniger te betaal.</translation>
 <translation id="4546730006268514143">Oordrag het uitgetel</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 dag gelede geskep}other{{NUM_DAYS} dae gelede geskep}}</translation>
+<translation id="4550087677305533997">Passasier</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Jy gebruik tans jou skermslot vir die invul van wagwoorde</translation>
 <translation id="4557573143631562971">Huisversekering</translation>
@@ -2360,6 +2365,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4658801711339831733">Skandering is in Google Drive gestoor</translation>
 <translation id="4660592918803576381">Maak in Drive oop</translation>
 <translation id="4660780573807106293">Kan vra om jou beweging- en ligsensors te gebruik</translation>
+<translation id="4661010630350489875">Vlugnommer</translation>
 <translation id="4661556981531699496">Troeteldiere en diere</translation>
 <translation id="4661868874067696603">Soek meer koopopsies</translation>
 <translation id="4663373278480897665">Kamera word toegelaat</translation>
@@ -2551,6 +2557,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4936134414789135531">Kon nie die ingevoegde <ph name="VALUE_NAME" /> kry nie.</translation>
 <translation id="4936573216809994970">Jou lêeroplaai na <ph name="CLOUD_PROVIDER" /> sal oor 1 uur begin</translation>
 <translation id="4936675324097895694">Finansies</translation>
+<translation id="4939748144644852809">Na regs geskuif</translation>
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4943620199112228840">Gebruik jou mikrofone</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
@@ -2832,6 +2839,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5391010642126249196">Jy het besoek op</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" />-toestel</translation>
 <translation id="5391306025131596142">Maak geskiedenisbladsy &amp;oop</translation>
+<translation id="5391870546630695708">Vertreklughawe</translation>
 <translation id="539203134595252721">Tafeltennis</translation>
 <translation id="5392506727170022660">Metaal (semiglans)</translation>
 <translation id="5394069166371280357">Gesinsgerigte TV-programme</translation>
@@ -2942,6 +2950,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5540969246441091044">Ruiterkuns</translation>
 <translation id="5541086400771735334">Posbus 7</translation>
 <translation id="5541546772353173584">Voeg e-posadres by</translation>
+<translation id="5541735141423273733">Aankomsdatum</translation>
 <translation id="5543452229212526547">Jou teks en die inhoud en URL van die bladsy waarop jy skryf, sal na Google toe gestuur word. Jou inhoud sal nie deur mense wat kontrolering uitvoer gebruik word om KI te verbeter nie. Jou organisasie kan enige tyd hierdie instellings verander.</translation>
 <translation id="5543564889050342791">Dieretuine, akwariums en reservate</translation>
 <translation id="5543722831081909240">180 grade</translation>
@@ -3205,6 +3214,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5953516610448771166">Intydse Onderskrifte is nie beskikbaar vir hierdie media nie. Blokkeer <ph name="CONTENT_SETTINGS" /> vir hierdie werf om onderskrifte te kry.</translation>
 <translation id="5960795367348889467">Verifikasie</translation>
 <translation id="5963413905009737549">Afdeling</translation>
+<translation id="5963685100480647029">Na links geskuif</translation>
 <translation id="5964247741333118902">Ingebedde inhoud</translation>
 <translation id="5967260682280773804">36x48 dm.</translation>
 <translation id="5967592137238574583">Wysig kontakinligting</translation>
@@ -3711,6 +3721,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="671076103358959139">Inskrywingtoken:</translation>
 <translation id="6711464428925977395">Daar is iets verkeerd met hierdie instaanbediener of die adres is verkeerd.</translation>
 <translation id="6711700233707023861">Variasiestringe is na knipbord gekopieer</translation>
+<translation id="6712343563085762261">Opgeskuif</translation>
 <translation id="6716039223770814796">Vergelyk <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil 'n 3D-kaart van jou omgewing skep en kameraposisie naspoor.</translation>
 <translation id="6717692133381953670">Oortjie is gestuur van <ph name="DEVICE_NAME" /> af</translation>
@@ -4604,6 +4615,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8081087320434522107">Sedans</translation>
 <translation id="8086429410809447605">Vroueklere</translation>
 <translation id="8086971161893892807">Konsep</translation>
+<translation id="8087558780672230449">Laai tans <ph name="APP_ORIGIN" /> om jou betaling op <ph name="MERCHANT_ORIGIN" /> te hanteer.</translation>
 <translation id="8088680233425245692">Kon nie artikel bekyk nie.</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
 <translation id="8091372947890762290">Aktivering wag op die bediener</translation>
@@ -4729,6 +4741,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8288320283441806607">Skakel “Maak soektogte en blaai-ervaring beter” aan om hierdie kenmerk te gebruik</translation>
 <translation id="8288807391153049143">Wys sertifikaat</translation>
 <translation id="8289355894181816810">Kontak jou netwerkadministrateur as jy nie seker is wat dit beteken nie.</translation>
+<translation id="8289655756644294629">Vertrekdatum</translation>
 <translation id="8291367150570302588">ID-kaart</translation>
 <translation id="829335040383910391">klank</translation>
 <translation id="8294425747071240447">Voorstelle, aangedryf deur KI</translation>
@@ -4798,6 +4811,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8400929824946688748">Werksgeleenthede en opvoeding</translation>
 <translation id="8402442052798347631">Aanvallers op die werf wat jy probeer besoek het, kan jou dalk mislei om skadelike sagteware te installeer wat ’n invloed kan hê op die manier waarop jy blaai – byvoorbeeld deur jou tuisblad te verander of vir jou ekstra advertensies te wys op werwe wat jy besoek. Chrome beveel sterk aan dat jy na veiligheid terugkeer om skade te vermy. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Aanhangerfiksie</translation>
+<translation id="8404028426624581035">Afgeskuif</translation>
 <translation id="8405579342203358118">Bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
 <translation id="8405621913275228683">Skandering is weens ’n onbekende fout verloor</translation>
 <translation id="8406071103346257942">hou op om jou skermslot vir die invul van wagwoorde te gebruik</translation>

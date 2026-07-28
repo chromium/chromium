@@ -984,6 +984,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2485243023686553468">Pametni telefoni</translation>
 <translation id="2491120439723279231">V potrdilu strežnika so napake.</translation>
 <translation id="2491414235131909199">To stran je blokirala razširitev.</translation>
+<translation id="2493122313108999546">Velikost je spremenjena</translation>
 <translation id="2495083838625180221">Razčlenjevalnik za JSON</translation>
 <translation id="2496402116964818747">Če želite spremeniti, ali se prstni odtis uporablja za izpolnjevanje gesel, lahko to storite tukaj: <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Optično branje nove kartice</translation>
@@ -2556,6 +2557,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4936134414789135531">Vstavljenega elementa <ph name="VALUE_NAME" /> ni bilo mogoče najti.</translation>
 <translation id="4936573216809994970">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 uro</translation>
 <translation id="4936675324097895694">Finance</translation>
+<translation id="4939748144644852809">Premaknjeno desno</translation>
 <translation id="4941627891654116707">Velikost pisave</translation>
 <translation id="4943620199112228840">Uporaba mikrofonov</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
@@ -3212,6 +3214,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5953516610448771166">Samodejni podnapisi niso na voljo za to predstavnost. Če želite imeti podnapise, blokirajte nastavitev <ph name="CONTENT_SETTINGS" /> za to spletno mesto.</translation>
 <translation id="5960795367348889467">Preverjanje</translation>
 <translation id="5963413905009737549">Razdelek</translation>
+<translation id="5963685100480647029">Premaknjeno levo</translation>
 <translation id="5964247741333118902">Vdelana vsebina</translation>
 <translation id="5967260682280773804">36 x 48 palcev</translation>
 <translation id="5967592137238574583">Urejanje podatkov o stiku</translation>
@@ -3718,6 +3721,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="671076103358959139">Žeton za včlanitev:</translation>
 <translation id="6711464428925977395">Nekaj je narobe s strežnikom proxy ali pa naslov ni pravilen.</translation>
 <translation id="6711700233707023861">Niz različic je kopiran v odložišče</translation>
+<translation id="6712343563085762261">Premaknjeno navzgor</translation>
 <translation id="6716039223770814796">Primerjava: <ph name="COMPARE_SET_NAME" /> · št. izdelkov: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
 <translation id="6717692133381953670">Zavihek je bil poslan iz naprave <ph name="DEVICE_NAME" /></translation>
@@ -4612,6 +4616,7 @@ Dodatne podrobnosti:
 <translation id="8081087320434522107">Limuzine</translation>
 <translation id="8086429410809447605">Ženska oblačila</translation>
 <translation id="8086971161893892807">Osnutek</translation>
+<translation id="8087558780672230449">Nalaganje <ph name="APP_ORIGIN" /> za obdelavo plačila v <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Članka si ni bilo mogoče ogledati.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8091372947890762290">Čakanje na aktivacijo v strežniku</translation>
@@ -4807,6 +4812,7 @@ Dodatne podrobnosti:
 <translation id="8400929824946688748">Zaposlitev in izobrazba</translation>
 <translation id="8402442052798347631">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase. Chrome močno priporoča, da se vrnete na varno, da se izognete škodi. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Zgodbe, ki jih pišejo navdušenci</translation>
+<translation id="8404028426624581035">Premaknjeno navzdol</translation>
 <translation id="8405579342203358118">Upravljajte, kateri podatki se sinhronizirajo v Chromu.</translation>
 <translation id="8405621913275228683">Optično branje je izgubljeno zaradi neznane napake</translation>
 <translation id="8406071103346257942">ustaviti uporabo zaklepanja zaslona za izpolnjevanje gesel.</translation>

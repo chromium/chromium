@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">Finderত দেখুৱাওক</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] মচক</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু ই অফলাইনত কাম কৰে</translation>
+<translation id="1586075235463145108">প্ৰথমে, এই ডিভাইচটোৰ বাবে Chromeৰ স্বয়ংক্ৰিয় ব্ৰাউজ অন কৰক</translation>
 <translation id="1587275751631642843">&amp;JavaScriptৰ কনছ’ল</translation>
 <translation id="1588438908519853928">সাধাৰণ</translation>
 <translation id="1588772269240419305">ল’গ’ আৰু নামৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
@@ -1832,6 +1833,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> ১ টা একাউণ্ট, পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। অধিক সবিশেষ}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} টা একাউণ্ট, পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। অধিক সবিশেষ}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} টা একাউণ্ট, পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। অধিক সবিশেষ}}</translation>
 <translation id="2428510569851653187">টেবটো ক্রেশ্ব হোৱাৰ সময়ত আপুনি কি কৰি আছিল সেয়া বর্ণনা কৰক</translation>
 <translation id="2428939361789119025">ৱাই-ফাই অফ কৰক</translation>
+<translation id="2431280447889982015">অডিঅ’ৰ সৈতে এখন স্ক্ৰীন বাছনি কৰক</translation>
 <translation id="243275146591958220">ডাউনল’ড বাতিল কৰক</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> টা এপ্‌ পঞ্জীয়ন কৰা হৈছে</translation>
 <translation id="2433237965825924228">পোনপটীয়াকৈ বিতৰণ কৰা ৱেব এপে বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ ডিভাইচসমূহ আৰু সেইসমূহত এক্সেছ কৰিব পৰা স্মাৰ্ট কাৰ্ডসমূহ নিয়ন্ত্ৰণ কৰে। স্মাৰ্ট কাৰ্ডসমূহত আপোনাৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ কৰিবলৈ সাধাৰণতে চিনাক্তকাৰী থাকে।</translation>
@@ -5039,7 +5041,7 @@
 <translation id="485480310608090163">অধিক ছেটিং আৰু অনুমতিসমূহ</translation>
 <translation id="4857304314344645169">যিকোনো সমস্যাৰ পৰ্যায়ক্ৰমিক ব্যাখ্যা চাওক</translation>
 <translation id="4857506880242459832">Googleক পূৰ্বৱৰ্তী পৃষ্ঠাখনৰ বিষয়ে সোধক: <ph name="PAGE_TITLE" /></translation>
-<translation id="485806788160414322">মিডিয়া প্লে’ অথবা পজ কৰক</translation>
+<translation id="485806788160414322">মিডিয়া প্লে’ বা পজ কৰক</translation>
 <translation id="4858913220355269194">ফ্ৰিটজ</translation>
 <translation id="4860012864737017059">শেহতীয়া টেব</translation>
 <translation id="486213875233855629">আপোনাৰ প্ৰশাসকে মিউট কৰিছে</translation>
@@ -6203,6 +6205,7 @@
 <translation id="5794700615121138172">Linuxৰ শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ</translation>
 <translation id="5794786537412027208">সকলো Chrome এপৰ পৰা বাহিৰ হওঁক</translation>
 <translation id="5796485699458186843">নতুন ইনক’গ্নিট’ টেব</translation>
+<translation id="5796656350463724">টেবৰ শৈলী</translation>
 <translation id="5796956053441619942">ৰিম'ট ডিভাইচৰ URLটো সমৰ্থিত নহয়</translation>
 <translation id="5798079537501238810">ছাইটে পৰিশোধ নিয়ন্ত্ৰক ইনষ্টল কৰিব পাৰে</translation>
 <translation id="5798086737841799234">নিশ্চিতিৰ ক’ড দিয়ক</translation>
@@ -6308,6 +6311,7 @@
 <translation id="5864754048328252126">চার্জ কৰাৰ সময়ত অন্য একো কাৰ্যকলাপ নকৰাকৈ থকা</translation>
 <translation id="586567932979200359">আপুনি <ph name="PRODUCT_NAME" />ক ইয়াৰ ডিস্কৰ প্ৰতিচ্ছবিৰ পৰা চলাই আছে। আপোনাৰ কম্পিউটাৰত এইটো ইনষ্টল কৰিলে আপুনি ইয়াক ডিস্কৰ প্ৰতিচ্ছবিৰ অবিহনেই ব্যৱহাৰ কৰিব পাৰিব আৰু এই কার্যই এইটো আপ-টু-ডে’ট ৰখাটো সুনিশ্চিত কৰে।</translation>
 <translation id="5865733239029070421">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই</translation>
+<translation id="58659335642601499">অডিঅ’ৰ সৈতে এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="5866363217037791319">কাৰ্য সমাপ্ত কৰক</translation>
 <translation id="5868434909835797817">আপোনাৰ ডিভাইচত মাইক্ৰ’ফ’ন অফ আছে</translation>
 <translation id="5868479397518301468">ছাইন ইন কৰাৰ সময় উকলিছে</translation>

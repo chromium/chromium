@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">Téléphones intelligents</translation>
 <translation id="2491120439723279231">Le certificat du serveur contient des erreurs.</translation>
 <translation id="2491414235131909199">Une extension a bloqué cette page</translation>
+<translation id="2493122313108999546">Redimensionnée</translation>
 <translation id="2495083838625180221">Analyseur JSON</translation>
 <translation id="2496402116964818747">Vous pouvez modifier si vous utilisez votre empreinte digitale pour remplir les mots de passe dans <ph name="SETTINGS" /></translation>
 <translation id="2498091847651709837">Numériser la nouvelle carte</translation>
@@ -2519,6 +2520,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4885256590493466218">Payez avec <ph name="CARD_DETAIL" /> au moment d'effectuer le paiement</translation>
 <translation id="4886565443854420066">Le navigateur Chrome souhaite confirmer votre identité avant que vous modifiiez les paramètres</translation>
 <translation id="4887406273302438710">Protégez vos mots de passe avec Windows Hello</translation>
+<translation id="4887785555357166111">Enregistrer l'image vidéo</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour supprimer votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>
 <translation id="4892518386797173871">Arrière</translation>
 <translation id="4894390983254799375">Comme l'identifiant de l'appareil, le nom, la version du système d'exploitation et le nom d'utilisateur du système d'exploitation</translation>
@@ -2556,6 +2558,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4936134414789135531">Impossible de trouver le <ph name="VALUE_NAME" /> inséré.</translation>
 <translation id="4936573216809994970">Le téléversement de votre fichier vers <ph name="CLOUD_PROVIDER" /> commencera dans une heure</translation>
 <translation id="4936675324097895694">Finance</translation>
+<translation id="4939748144644852809">Déplacée vers la droite</translation>
 <translation id="4941627891654116707">Taille de la police</translation>
 <translation id="4943620199112228840">Utiliser votre micro</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
@@ -3212,6 +3215,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5953516610448771166">Les sous-titres instantanés ne sont pas offerts pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5960795367348889467">Vérification</translation>
 <translation id="5963413905009737549">Section</translation>
+<translation id="5963685100480647029">Déplacée vers la gauche</translation>
 <translation id="5964247741333118902">Contenu intégré</translation>
 <translation id="5967260682280773804">36 po x 48 po</translation>
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
@@ -3718,6 +3722,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="671076103358959139">Jeton d'inscription :</translation>
 <translation id="6711464428925977395">Un problème est survenu avec le serveur mandataire, ou l'adresse est incorrecte.</translation>
 <translation id="6711700233707023861">Chaîne de variantes copiée dans le presse-papiers</translation>
+<translation id="6712343563085762261">Déplacée vers le haut</translation>
 <translation id="6716039223770814796">Comparer <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> éléments</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
 <translation id="6717692133381953670">Onglet envoyé à partir de <ph name="DEVICE_NAME" /></translation>
@@ -4611,6 +4616,7 @@ Détails supplémentaires :
 <translation id="8081087320434522107">Berlines</translation>
 <translation id="8086429410809447605">Vêtements pour femmes</translation>
 <translation id="8086971161893892807">Brouillon</translation>
+<translation id="8087558780672230449">Chargement de <ph name="APP_ORIGIN" /> pour gérer votre paiement sur <ph name="MERCHANT_ORIGIN" /> en cours…</translation>
 <translation id="8088680233425245692">Échec de visionnement de l'article.</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8091372947890762290">Le serveur doit faire l'activation.</translation>
@@ -4806,6 +4812,7 @@ Détails supplémentaires :
 <translation id="8400929824946688748">Emploi et éducation</translation>
 <translation id="8402442052798347631">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel nuisible qui affecte la façon dont vous naviguez, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous visitez. Chrome recommande fortement de revenir à la page de sécurité pour éviter tout dommage. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fanafiction</translation>
+<translation id="8404028426624581035">Déplacée vers le bas</translation>
 <translation id="8405579342203358118">Gérez les données que vous synchronisez dans les paramètres de Chrome</translation>
 <translation id="8405621913275228683">La numérisation a été perdue en raison d'une erreur inconnue</translation>
 <translation id="8406071103346257942">arrêtez d'utiliser le verrouillage de l'écran pour remplir les mots de passe</translation>

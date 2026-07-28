@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">在 Finder 中显示</translation>
 <translation id="1582955169539260415">删除 [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" />内容均在本地处理，且可离线使用</translation>
+<translation id="1586075235463145108">请先为此设备开启 Chrome 自动浏览功能</translation>
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1588772269240419305">查看徽标和名称更新</translation>
@@ -1819,6 +1820,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 个账号，密码仅保存在此设备上。更多详情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 个账号，密码仅保存在此设备上。更多详情}}</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
+<translation id="2431280447889982015">选择要共享的屏幕（含音频）</translation>
 <translation id="243275146591958220">取消下载</translation>
 <translation id="2432882794929808179">注册了 <ph name="APP_COUNT" /> 个应用</translation>
 <translation id="2433237965825924228">独立式 Web 应用 (IWA) 会控制身份验证设备以及这些设备可访问的智能卡。智能卡通常包含用于验证您身份的身份信息。</translation>
@@ -6184,6 +6186,7 @@
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
 <translation id="5796485699458186843">打开新的无痕式标签页(&amp;T)</translation>
+<translation id="5796656350463724">标签页样式</translation>
 <translation id="5796956053441619942">远程设备的网址不受支持</translation>
 <translation id="5798079537501238810">网站可以安装付款处理程序</translation>
 <translation id="5798086737841799234">输入确认码</translation>
@@ -6289,6 +6292,7 @@
 <translation id="5864754048328252126">充电时的闲置操作</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
 <translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送给 Google</translation>
+<translation id="58659335642601499">选择要共享的窗口（含音频）</translation>
 <translation id="5866363217037791319">结束任务</translation>
 <translation id="5868434909835797817">您设备的麦克风处于关闭状态</translation>
 <translation id="5868479397518301468">登录超时</translation>

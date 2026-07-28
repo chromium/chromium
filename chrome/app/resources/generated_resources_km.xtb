@@ -1610,6 +1610,7 @@
 <translation id="2243934210752059021">ស្វែងរក + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">ប្រើប្រាស់​គ្រាប់ចុច​ព្រួញ ដើម្បីផ្លាស់ទី​កាត់​ធាតុ​មួយ​អក្សរ​ម្ដងៗ</translation>
+<translation id="2246104792527215550">ប្ដូរពាក្យសម្ងាត់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2246549592927364792">ទាញយក​ការពណ៌នា​រូបភាពពី Google?</translation>
 <translation id="2247738527273549923">ឧបករណ៍​របស់អ្នក​ស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​​អ្នក</translation>
 <translation id="2247870315273396641">ស្ដាប់សំឡេងសាកល្បង</translation>
@@ -5034,6 +5035,7 @@
 <translation id="4852383141291180386">គ្រប់គ្រងការ​ជូនដំណឹងពីកម្មវិធី</translation>
 <translation id="4852916668365817106">ពណ៌​កណ្ដុរ</translation>
 <translation id="4853020600495124913">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
+<translation id="4853328060971905294">បើក (បើកការផ្ដោតលើបន្ទាត់)</translation>
 <translation id="4854317507773910281">ជ្រើសរើស​គណនីមាតាបិតា​សម្រាប់ការយល់ព្រម</translation>
 <translation id="4854603338816296098">បានលុប​អាសយដ្ឋានចេញ</translation>
 <translation id="485480310608090163">ការកំណត់ និងការអនុញ្ញាតច្រើនទៀត</translation>
@@ -8025,6 +8027,7 @@
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{ផ្ទាំងថ្មី​ក្នុង 1 ផ្ទាំង}other{ផ្ទាំងថ្មី​ក្នុង # ផ្ទាំង}}</translation>
 <translation id="721490496276866468">នាំចូល​ពាក្យសម្ងាត់</translation>
 <translation id="7217208603285112910">ការជ្រើសរើស​ដែលមិនមែន​ជាភាសា<ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">បញ្ចូលអក្សរ មតិ និងកំណត់ចំណាំដោយប្រើឧបករណ៍ចំណារអក្សរថ្មី</translation>
 <translation id="7219254577985949841">លុប​ទិន្នន័យ​គេហទំព័រឬ?</translation>
 <translation id="7219473482981809164">យើងបានរកឃើញ​កម្រងព័ត៌មាន​ជាច្រើនដែលអាច​ទាញយកបាន។ សូមជ្រើសរើស​កម្រងព័ត៌មាន​ដែលអ្នកចង់ទាញយក មុននឹងបន្ត។</translation>
 <translation id="7220019174139618249">មិនអាច​នាំ​ពាក្យ​សម្ងាត់​ចេញទៅ "<ph name="FOLDER" />" បានទេ</translation>
@@ -10724,6 +10727,7 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> ចង់​ទទួលបាន​ព័ត៌មាន​ពីឧបករណ៍​ចល័ត​របស់អ្នក</translation>
 <translation id="988320949174893488">រអាក់រអួលម្តងម្កាល</translation>
 <translation id="988978206646512040">ឃ្លាសម្ងាត់​ដែល​ទទេ​មិនត្រូវ​បាន​អនុញ្ញាត​ទេ</translation>
+<translation id="989111665033316622">បិទ (បិទការផ្ដោតលើបន្ទាត់)</translation>
 <translation id="992032470292211616">កម្មវិធីបន្ថែម កម្មវិធី និងធីមអាចប៉ះពាល់ដល់ឧបករណ៍របស់អ្នក។ តើអ្នកប្រាកដថាអ្នកចង់បន្តទេ?</translation>
 <translation id="992256792861109788">ផ្កា​ឈូក</translation>
 <translation id="994087375490600917">ផ្ទាំង​ចំហៀង</translation>

@@ -730,6 +730,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />։ <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">Ցուցադրվում են պատահական հերթականությամբ։ Ցանկացած ժամանակ կարող եք փոխել ձեր կանխադրվածը։</translation>
+<translation id="2134584557120247184">Ավիատոմս</translation>
 <translation id="2137891579555018930">Սպասում ենք թույլտվության…</translation>
 <translation id="213826338245044447">Բջջային էջանիշներ</translation>
 <translation id="2141000681034340397">Փոփոխեք ձեր մուտքագրումը</translation>
@@ -987,6 +988,7 @@
 <translation id="2485243023686553468">Սմարթֆոններ</translation>
 <translation id="2491120439723279231">Սերվերի վկայագիրը սխալներ է պարունակում:</translation>
 <translation id="2491414235131909199">Այս էջն արգելափակվել է ընդլայնման կողմից</translation>
+<translation id="2493122313108999546">Չափը փոխվեց</translation>
 <translation id="2495083838625180221">JSON վերլուծիչ</translation>
 <translation id="2496402116964818747">Անցեք <ph name="SETTINGS" />՝ ընտրելու, թե արդյոք ուզում եք օգտագործել մատնահետքը գաղտնաբառերի լրացման համար</translation>
 <translation id="2498091847651709837">Որոնել նոր քարտ</translation>
@@ -1430,6 +1432,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
+<translation id="3196374699162453920">Ամրագրման կոդ</translation>
 <translation id="3196902089458890316">Միշտ կիսվե՞լ համապատասխան ներդիրներով՝ ավելի լավ պատասխաններ ստանալու համար</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
@@ -2047,6 +2050,7 @@
 <translation id="4140905366050378834">Կենդանիների կերեր և խնամքի պարագաներ</translation>
 <translation id="4140905530744469899">Պրոֆիլի ID՝</translation>
 <translation id="4142935452406587478">Դարակ 10</translation>
+<translation id="4143568335933115324">Ժամանման օդանավակայանը</translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
@@ -2313,6 +2317,7 @@
 <translation id="4543072026714825470">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտն ու վճարային հասցեն Google հաշվում</translation>
 <translation id="4546730006268514143">Փոխանցման ժամանակը սպառվել է</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{Ստեղծվել է 1 օր առաջ}one{Ստեղծվել է {NUM_DAYS} օր առաջ}other{Ստեղծվել է {NUM_DAYS} օր առաջ}}</translation>
+<translation id="4550087677305533997">Ուղևոր</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">Դուք օգտագործում եք էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="4557573143631562971">Անշարժ գույքի ապահովագրություն</translation>
@@ -2366,6 +2371,7 @@
 <translation id="4658801711339831733">Սկանավորված փաստաթուղթը պահվեց Google Drive-ում</translation>
 <translation id="4660592918803576381">Բացել Drive-ում</translation>
 <translation id="4660780573807106293">Կարող է խնդրել ձեր շարժման և լուսավորության սենսորներն օգտագործելու թույլտվություն</translation>
+<translation id="4661010630350489875">Չվերթի համարը</translation>
 <translation id="4661556981531699496">Ընտանի և վայրի կենդանիներ</translation>
 <translation id="4661868874067696603">Գնման այլ տարբերակների որոնում</translation>
 <translation id="4663373278480897665">Տեսախցիկի օգտագործումը թույլատրված է</translation>
@@ -2557,6 +2563,7 @@
 <translation id="4936134414789135531">Մուտքագրված «<ph name="VALUE_NAME" />» արժեքը չի գտնվել։</translation>
 <translation id="4936573216809994970">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի 1 ժամից</translation>
 <translation id="4936675324097895694">Ֆինանսներ</translation>
+<translation id="4939748144644852809">Տեղափոխվեց աջ</translation>
 <translation id="4941627891654116707">Տառաչափ</translation>
 <translation id="4943620199112228840">Օգտագործել ձեր խոսափողները</translation>
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
@@ -2841,6 +2848,7 @@
 <translation id="5391010642126249196">Դուք այցելել եք</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" /> սարք</translation>
 <translation id="5391306025131596142">&amp;Բացել պատմության էջը</translation>
+<translation id="5391870546630695708">Մեկնման օդանավակայանը</translation>
 <translation id="539203134595252721">Սեղանի թենիս</translation>
 <translation id="5392506727170022660">Մետաղ (կիսափայլուն)</translation>
 <translation id="5394069166371280357">Ընտանեկան հեռուստաշոուներ</translation>
@@ -2951,6 +2959,7 @@
 <translation id="5540969246441091044">Ձիասպորտ</translation>
 <translation id="5541086400771735334">Փոստարկղ 7</translation>
 <translation id="5541546772353173584">Ավելացրեք էլեկտրոնային հասցե</translation>
+<translation id="5541735141423273733">Ժամանման ամսաթիվը</translation>
 <translation id="5543452229212526547">Ձեր տեքստը, ինչպես նաև բովանդակությունը և էջի URL-ը, որտեղ դուք գրում եք, կուղարկվեն Google-ին։ Մեր մասնագետները չեն օգտագործի ձեր բովանդակությունը՝ ԱԲ-ն բարելավելու նպատակով։ Ձեր կազմակերպությունը ցանկացած ժամանակ կարող է փոխել այս կարգավորումները։</translation>
 <translation id="5543564889050342791">Կենդանաբանական այգիներ, ակվարիումներ և արգելոցներ</translation>
 <translation id="5543722831081909240">180 աստիճան</translation>
@@ -3214,6 +3223,7 @@
 <translation id="5953516610448771166">Կենդանի ենթագրերը հասանելի չեն այս մեդիա բովադնակության համար։ Ենթագրեր ստանալու համար արգելափակեք <ph name="CONTENT_SETTINGS" />ն այս կայքի համար</translation>
 <translation id="5960795367348889467">Հաստատում</translation>
 <translation id="5963413905009737549">Հատված</translation>
+<translation id="5963685100480647029">Տեղափոխվեց ձախ</translation>
 <translation id="5964247741333118902">Զետեղված բովանդակություն</translation>
 <translation id="5967260682280773804">36 x 48 դյույմ</translation>
 <translation id="5967592137238574583">Փոփոխեք կոնտակտային տվյալները</translation>
@@ -3720,6 +3730,7 @@
 <translation id="671076103358959139">Գրանցման թոքեն՝</translation>
 <translation id="6711464428925977395">Պրոքսի սերվերի հետ ինչ-որ բան այն չէ, կամ հասցեն սխալ է:</translation>
 <translation id="6711700233707023861">Տարատեսակների տողը պատճենվեց սեղմատախտակին</translation>
+<translation id="6712343563085762261">Տեղափոխվեց վերև</translation>
 <translation id="6716039223770814796">Համեմատել՝ <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> տարր</translation>
 <translation id="6716672519412350405"><ph name="URL" /> կայքն ուզում է ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="6717692133381953670">Այս սարքից (<ph name="DEVICE_NAME" />) ուղարկված ներդիր</translation>
@@ -4613,6 +4624,7 @@
 <translation id="8081087320434522107">Սեդաններ</translation>
 <translation id="8086429410809447605">Կանանց հագուստ</translation>
 <translation id="8086971161893892807">Սևագիր</translation>
+<translation id="8087558780672230449"><ph name="APP_ORIGIN" /> հավելվածը բեռնվում է՝ <ph name="MERCHANT_ORIGIN" /> կայքում վճարումը մշակելու համար։</translation>
 <translation id="8088680233425245692">Չհաջողվեց դիտել հոդվածը:</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8091372947890762290">Ակտիվացումն առկախ է սերվերի վրա</translation>
@@ -4738,6 +4750,7 @@
 <translation id="8288320283441806607">Այս գործառույթն օգտագործելու համար միացրեք «Բարելավել որոնումն ու էջերի դիտումը» պարամետրը</translation>
 <translation id="8288807391153049143">Ցուցադրել հավաստագիրը</translation>
 <translation id="8289355894181816810">Ճշտեք տեղեկությունները ցանցի ադմինիստրատորի հետ:</translation>
+<translation id="8289655756644294629">Մեկնման ամսաթիվ</translation>
 <translation id="8291367150570302588">Նույնականացման քարտ</translation>
 <translation id="829335040383910391">ձայն</translation>
 <translation id="8294425747071240447">Հուշումներ՝ ԱԲ տեխնոլոգիայի հիման վրա</translation>
@@ -4807,6 +4820,7 @@
 <translation id="8400929824946688748">Աշխատանք և կրթություն</translation>
 <translation id="8402442052798347631">Կայքում, որը փորձում էիք այցելել, հաքերները կարող էին խաբեությամբ ստիպել ձեզ վնասաբեր ծրագրեր տեղադրել, որոնք ազդում են համացանցում ձեր դիտարկման վրա (օրինակ՝ փոխում են ձեր գլխավոր էջը կամ ձեր այցելած կայքերում լրացուցիչ գովազդ ցուցադրում)։ Վնասից խուսափելու համար Chrome-ը խորհուրդ է տալիս վերադառնալ անվտանգ էջ։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Երկրպագուների ստեղծագործություններ</translation>
+<translation id="8404028426624581035">Տեղափոխվեց ներքև</translation>
 <translation id="8405579342203358118">Կառավարեք համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում</translation>
 <translation id="8405621913275228683">Անհայտ սխալի պատճառով սկանավորված փաստաթուղթը կորել է</translation>
 <translation id="8406071103346257942">այլևս չօգտագործել էկրանի կողպումը՝ գաղտնաբառեր լրացնելու համար</translation>

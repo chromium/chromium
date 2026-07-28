@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">Прикажи у Finder-у</translation>
 <translation id="1582955169539260415">избришите [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> се обрађује локално и ради офлајн</translation>
+<translation id="1586075235463145108">Прво укључите Chrome аутоматско прегледање за овај уређај</translation>
 <translation id="1587275751631642843">&amp;JavaScript конзола</translation>
 <translation id="1588438908519853928">Нормалан</translation>
 <translation id="1588772269240419305">Прегледајте ажурирања логотипа и назива</translation>
@@ -1818,6 +1819,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 налог, лозинка је сачувана само на овом уређају. Још детаља}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налог, лозинка је сачувана само на овом уређају. Још детаља}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}}</translation>
 <translation id="2428510569851653187">Опишите шта сте радили када је картица отказала</translation>
 <translation id="2428939361789119025">Искључите WiFi</translation>
+<translation id="2431280447889982015">Изаберите екран са звуком</translation>
 <translation id="243275146591958220">Откажи преузимање</translation>
 <translation id="2432882794929808179">Број регистрованих апликација: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Изоловане веб-апликације контролишу уређаје за потврду идентитета и паметне картице којима могу да приступају. Паметне картице обично садрже идентификаторе који се користе за потврду идентитета.</translation>
@@ -6295,6 +6297,7 @@
 <translation id="5864754048328252126">Неактивност током пуњења</translation>
 <translation id="586567932979200359">Покрећете <ph name="PRODUCT_NAME" /> са диска. Инсталација на рачунар омогућава покретање без диска и редовно ажурирање.</translation>
 <translation id="5865733239029070421">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању</translation>
+<translation id="58659335642601499">Изаберите прозор са звуком</translation>
 <translation id="5866363217037791319">Заврши задатак</translation>
 <translation id="5868434909835797817">Микрофон је искључен на уређају</translation>
 <translation id="5868479397518301468">Време за пријављивање је истекло</translation>

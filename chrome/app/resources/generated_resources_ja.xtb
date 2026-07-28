@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">Finder で表示</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] を削除</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> はローカルで処理され、オフラインで使用できます</translation>
+<translation id="1586075235463145108">最初にこのデバイスで Chrome の自動ブラウジングをオンにしてください</translation>
 <translation id="1587275751631642843">JavaScript コンソール(&amp;J)</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1588772269240419305">ロゴと名前の更新内容を確認</translation>
@@ -1818,6 +1819,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> の 1 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}other{<ph name="DOMAIN_LINK" /> の {NUM_PASSWORDS} 個のアカウントとパスワードはこのデバイスのみに保存されました。詳細}}</translation>
 <translation id="2428510569851653187">タブのクラッシュ時に行っていた操作をご説明ください</translation>
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
+<translation id="2431280447889982015">音声付きの画面を選択</translation>
 <translation id="243275146591958220">ダウンロードをキャンセル</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> 個のアプリを登録しました</translation>
 <translation id="2433237965825924228">独立したウェブアプリは、認証デバイスと、そのデバイスで読み取り可能なスマートカードを制御できます。通常、スマートカードには、ユーザーの認証に使用する識別子が含まれます。</translation>
@@ -6184,6 +6186,7 @@
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>
 <translation id="5796485699458186843">新しいシークレット タブ(&amp;T)</translation>
+<translation id="5796656350463724">タブのスタイル</translation>
 <translation id="5796956053441619942">リモート デバイスからの URL はサポートされていません</translation>
 <translation id="5798079537501238810">サイトが支払いハンドラをインストールできるようにする</translation>
 <translation id="5798086737841799234">確認コードを入力してください</translation>
@@ -6289,6 +6292,7 @@
 <translation id="5864754048328252126">充電時のアイドル操作</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
+<translation id="58659335642601499">音声付きのウィンドウを選択</translation>
 <translation id="5866363217037791319">タスクを終了</translation>
 <translation id="5868434909835797817">デバイスのマイクはオフになっています</translation>
 <translation id="5868479397518301468">ログインがタイムアウトしました</translation>

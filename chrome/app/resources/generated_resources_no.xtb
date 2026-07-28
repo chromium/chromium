@@ -755,6 +755,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1581962803218266616">Vis i Finder</translation>
 <translation id="1582955169539260415">slett [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> behandles lokalt og fungerer uten nett</translation>
+<translation id="1586075235463145108">Først må du slå på auto-navigering i Chrome på denne enheten</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsoll</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588772269240419305">Gjennomgå logo- og navneoppdateringer</translation>
@@ -1606,6 +1607,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2243934210752059021">søketasten + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Bruk piltastene for å gå gjennom elementer bokstav for bokstav</translation>
+<translation id="2246104792527215550">Endre passord automatisk</translation>
 <translation id="2246549592927364792">Vil du få bildebeskrivelser fra Google?</translation>
 <translation id="2247738527273549923">Enheten administreres av organisasjonen din</translation>
 <translation id="2247870315273396641">Stemmeforhåndsvisning</translation>
@@ -1829,6 +1831,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />. 1 konto. Passordet er bare lagret på denne enheten. Mer informasjon}other{<ph name="DOMAIN_LINK" />. {NUM_PASSWORDS} kontoer. Passordet er bare lagret på denne enheten. Mer informasjon}}</translation>
 <translation id="2428510569851653187">Beskriv hva du holdt på med da fanen krasjet</translation>
 <translation id="2428939361789119025">Slå av wifi</translation>
+<translation id="2431280447889982015">Velg en skjerm med lyd</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> apper er registrert</translation>
 <translation id="2433237965825924228">Isolerte nettapper kontrollerer autentiseringsenheter og smartkort som er tilgjengelige for dem. Smartkort inneholder vanligvis identifikatorer som brukes til å autentisere deg.</translation>
@@ -5029,6 +5032,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4852383141291180386">Administrer appvarsler</translation>
 <translation id="4852916668365817106">Musefarge</translation>
 <translation id="4853020600495124913">Åpne i &amp;nytt vindu</translation>
+<translation id="4853328060971905294">På (aktiver linjefokus)</translation>
 <translation id="4854317507773910281">Velg foreldrekonto for godkjenning</translation>
 <translation id="4854603338816296098">Adressen er fjernet</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
@@ -6196,6 +6200,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Avslutt alle Chrome-apper</translation>
 <translation id="5796485699458186843">Ny inkognito&amp;fane</translation>
+<translation id="5796656350463724">Fanestil</translation>
 <translation id="5796956053441619942">Nettadressen fra den eksterne enheten støttes ikke</translation>
 <translation id="5798079537501238810">Nettsteder kan installere betalingsbehandlere</translation>
 <translation id="5798086737841799234">Skriv inn bekreftelseskoden</translation>
@@ -6301,6 +6306,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5864754048328252126">Inaktivitetshandling når enheten lades</translation>
 <translation id="586567932979200359">Du kjører <ph name="PRODUCT_NAME" /> fra diskavbildningen. Hvis du installer produktet på datamaskinen, kan du kjøre det uten diskavbildningen og sikre at det holdes oppdatert.</translation>
 <translation id="5865733239029070421">Sender automatisk brukerstatistikk og programstopprapporter til Google</translation>
+<translation id="58659335642601499">Velg et vindu med lyd</translation>
 <translation id="5866363217037791319">Avslutt oppgaven</translation>
 <translation id="5868434909835797817">Mikrofonen er av på enheten</translation>
 <translation id="5868479397518301468">Påloggingen ble tidsavbrutt</translation>
@@ -8017,6 +8023,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Ny fane i 1 fane}other{Ny fane i # faner}}</translation>
 <translation id="721490496276866468">Importer passord</translation>
 <translation id="7217208603285112910">Den markerte teksten er ikke på <ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">Legg til tekst, kommentarer og notater med det nye verktøyet for tekstannoteringer</translation>
 <translation id="7219254577985949841">Vil du slette nettstedsdata?</translation>
 <translation id="7219473482981809164">Vi fant flere profiler som er tilgjengelige for nedlasting. Velg de du vil laste ned, før du går videre.</translation>
 <translation id="7220019174139618249">Kan ikke eksportere passord til «<ph name="FOLDER" />»</translation>
@@ -10715,6 +10722,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> henter informasjon fra mobilenheten din</translation>
 <translation id="988320949174893488">Hakker av og til</translation>
 <translation id="988978206646512040">Tomme passordfraser er ikke tillatt</translation>
+<translation id="989111665033316622">Av (deaktiver linjefokus)</translation>
 <translation id="992032470292211616">Utvidelser, apper og temaer kan skade enheten din. Er du sikker på at du vil fortsette?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="994087375490600917">Sidepaneler</translation>

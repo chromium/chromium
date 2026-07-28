@@ -984,6 +984,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2485243023686553468">Akıllı Telefonlar</translation>
 <translation id="2491120439723279231">Sunucu sertifikası hatalar içeriyor.</translation>
 <translation id="2491414235131909199">Bu sayfa bir uzantı tarafından engellendi</translation>
+<translation id="2493122313108999546">Yeniden boyutlandırıldı</translation>
 <translation id="2495083838625180221">JSON Ayrıştırıcı</translation>
 <translation id="2496402116964818747">Şifreleri doldurmak için parmak izinizi kullanıp kullanmayacağınızı <ph name="SETTINGS" /> bölümünden değiştirebilirsiniz</translation>
 <translation id="2498091847651709837">Yeni kart tara</translation>
@@ -2556,6 +2557,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4936134414789135531">Eklenen <ph name="VALUE_NAME" /> değeri bulunamadı.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> hedefine dosya yükleme işleminiz 1 saat sonra başlayacak</translation>
 <translation id="4936675324097895694">Finans</translation>
+<translation id="4939748144644852809">Sağa taşındı</translation>
 <translation id="4941627891654116707">Yazı tipi boyutu</translation>
 <translation id="4943620199112228840">Mikrofonlarınızı kullanma</translation>
 <translation id="4943872375798546930">Sonuç yok</translation>
@@ -3212,6 +3214,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5953516610448771166">Canlı Altyazı bu medya içeriğinde kullanılamıyor. Altyazıları görmek için bu sitedeki <ph name="CONTENT_SETTINGS" /> ayarını engelleyin.</translation>
 <translation id="5960795367348889467">Doğrulama</translation>
 <translation id="5963413905009737549">Bölüm</translation>
+<translation id="5963685100480647029">Sola taşındı</translation>
 <translation id="5964247741333118902">Yerleştirilmiş içerik</translation>
 <translation id="5967260682280773804">36 x 48 inç</translation>
 <translation id="5967592137238574583">İletişim Bilgilerini Düzenleyin</translation>
@@ -3718,6 +3721,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="671076103358959139">Kayıt Jetonu:</translation>
 <translation id="6711464428925977395">Proxy sunucusunda bir sorun var veya adres yanlış.</translation>
 <translation id="6711700233707023861">Varyasyon dizeleri panoya kopyalandı</translation>
+<translation id="6712343563085762261">Yukarı taşındı</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" />·tablosunu karşılaştır - <ph name="ITEMS" /> öğe</translation>
 <translation id="6716672519412350405"><ph name="URL" />, çevrenizin 3D haritasını oluşturmak ve kamera konumunu takip etmek istiyor</translation>
 <translation id="6717692133381953670">Sekme <ph name="DEVICE_NAME" /> cihazından gönderildi</translation>
@@ -4612,6 +4616,7 @@ Ek ayrıntılar:
 <translation id="8081087320434522107">Sedan araçlar</translation>
 <translation id="8086429410809447605">Kadın Giyim</translation>
 <translation id="8086971161893892807">Taslak</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> adresinde yapılacak ödemenizi işlemek için <ph name="APP_ORIGIN" /> yükleniyor.</translation>
 <translation id="8088680233425245692">Makale görüntülenemedi.</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8091372947890762290">Etkinleştirme sunucuda bekliyor</translation>
@@ -4807,6 +4812,7 @@ Ek ayrıntılar:
 <translation id="8400929824946688748">İş ve Eğitim</translation>
 <translation id="8402442052798347631">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, internette gezinme şeklinizi etkileyen (ör. ana sayfanızı değiştirme veya ziyaret ettiğiniz sitelerde eksta reklam gösterme) zararlı yazılımlar yüklemeniz için sizi kandırabilir. Chrome, zarar görmemek için güvenli bir alana dönmenizi önemle tavsiye eder. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="8403506619177967839">Hayran Kurgu</translation>
+<translation id="8404028426624581035">Aşağı taşındı</translation>
 <translation id="8405579342203358118">Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetin</translation>
 <translation id="8405621913275228683">Tarama, bilinmeyen bir hata nedeniyle kayboldu</translation>
 <translation id="8406071103346257942">şifreleri doldurmak için ekran kilidinizi kullanmayı bırakmak</translation>

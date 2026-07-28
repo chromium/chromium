@@ -754,6 +754,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1581962803218266616">Mostrar en Finder</translation>
 <translation id="1582955169539260415">eliminar [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">El idioma <ph name="LANGUAGE" /> se procesa localmente y funciona sin conexión</translation>
+<translation id="1586075235463145108">Primero, activa Navegación automática de Chrome en este dispositivo</translation>
 <translation id="1587275751631642843">Consola &amp;JavaScript</translation>
 <translation id="1588438908519853928">Modo normal</translation>
 <translation id="1588772269240419305">Revisar actualizaciones de logotipo y nombre</translation>
@@ -1820,6 +1821,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 cuenta. La contraseña se ha guardado solo en este dispositivo. Más detalles}other{<ph name="DOMAIN_LINK" />: {NUM_PASSWORDS} cuentas. La contraseña se ha guardado solo en este dispositivo. Más detalles}}</translation>
 <translation id="2428510569851653187">Describe qué estabas haciendo cuando la pestaña se bloqueó</translation>
 <translation id="2428939361789119025">Desactivar Wi‑Fi</translation>
+<translation id="2431280447889982015">Elige una pantalla con audio</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> aplicaciones registradas</translation>
 <translation id="2433237965825924228">Las aplicaciones web aisladas controlan los dispositivos de autenticación y las tarjetas inteligentes a los que tienen acceso. Las tarjetas inteligentes suelen contener identificadores que se usan para autenticarte.</translation>
@@ -6189,6 +6191,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
 <translation id="5796485699458186843">Nueva pestaña de Incógnito</translation>
+<translation id="5796656350463724">Estilo de pestaña</translation>
 <translation id="5796956053441619942">La URL del dispositivo remoto no es compatible</translation>
 <translation id="5798079537501238810">Los sitios pueden instalar controladores de pago</translation>
 <translation id="5798086737841799234">Introduce el código de confirmación</translation>
@@ -6294,6 +6297,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5864754048328252126">Modo de inactividad durante la carga</translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Al instalar la aplicación en tu ordenador, podrás ejecutarla sin la imagen de disco y, de esta forma, te asegurarás de que siempre esté actualizada.</translation>
 <translation id="5865733239029070421">Envía automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
+<translation id="58659335642601499">Elige una ventana con audio</translation>
 <translation id="5866363217037791319">Finalizar tarea</translation>
 <translation id="5868434909835797817">El micrófono está desactivado en tu dispositivo</translation>
 <translation id="5868479397518301468">Tiempo de espera para iniciar sesión agotado</translation>

@@ -726,6 +726,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">ଏଗୁଡ଼ିକ ରେଣ୍ଡମ ଅର୍ଡରରେ ଦେଖାଯାଏ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କର ଡିଫଲ୍ଟକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
+<translation id="2134584557120247184">ଫ୍ଲାଇଟ ଟିକେଟ</translation>
 <translation id="2137891579555018930">ଅନୁମତି ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
 <translation id="213826338245044447">ମୋବାଇଲ୍‍ ବୁକ୍‍ମାର୍କ</translation>
 <translation id="2141000681034340397">ଆପଣଙ୍କ ଇନପୁଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -983,6 +984,7 @@
 <translation id="2485243023686553468">ସ୍ମାର୍ଟଫୋନଗୁଡ଼ିକ</translation>
 <translation id="2491120439723279231">ସର୍ଭରର ସର୍ଟିଫିକେଟ୍‌‌ରେ ସମସ୍ୟା ରହିଛି।</translation>
 <translation id="2491414235131909199">ଏହି ପୃଷ୍ଠାକୁ ଏକ ଏକ୍ସଟେନସନ୍ ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="2493122313108999546">ରିସାଇଜ କରାଯାଇଛି</translation>
 <translation id="2495083838625180221">JSON ପାର୍‌ସର୍</translation>
 <translation id="2496402116964818747">ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରିବେ ନା ନାହିଁ, ତାହା ଆପଣ <ph name="SETTINGS" />ରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="2498091847651709837">ନୂଆ କାର୍ଡ ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -1422,6 +1424,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ସ୍ଥାୟୀରୂପେ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />ରେ <ph name="PRINTER_NAME" /></translation>
+<translation id="3196374699162453920">ବୁକିଂ କୋଡ</translation>
 <translation id="3196902089458890316">ଉତ୍ତମ ଉତ୍ତର ପାଇଁ ସର୍ବଦା ପ୍ରାସଙ୍ଗିକ ଟାବଗୁଡ଼ିକୁ ସେୟାର କରିବେ?</translation>
 <translation id="3197136577151645743">ଆପଣ କେତେବେଳେ ଏହି ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -2038,6 +2041,7 @@
 <translation id="4140905366050378834">ଗୃହପାଳିତ ପଶୁଙ୍କ ଖାଦ୍ୟ ଏବଂ ଯତ୍ନ ପାଇଁ ସାମଗ୍ରୀ</translation>
 <translation id="4140905530744469899">ପ୍ରୋଫାଇଲ ID:</translation>
 <translation id="4142935452406587478">ଟ୍ରେ 10</translation>
+<translation id="4143568335933115324">ଆଗମନ ଏୟାରପୋର୍ଟ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">ଏନଭେଲପ ଚାଇନିଜ #4</translation>
@@ -2304,6 +2308,7 @@
 <translation id="4543072026714825470">ପରବର୍ତ୍ତୀ ଥର ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଊଣ୍ଟରେ ଆପଣଙ୍କର କାର୍ଡ ଏବଂ ବିଲିଂ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="4546730006268514143">ଟ୍ରାନ୍ସଫର କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{1 ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{{NUM_DAYS} ଦିନ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
+<translation id="4550087677305533997">ଯାତ୍ରୀ</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
 <translation id="4557573143631562971">ହୋମ ବୀମା</translation>
@@ -2357,6 +2362,7 @@
 <translation id="4658801711339831733">Google Driveରେ ସ୍କାନକୁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="4660592918803576381">Driveରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4660780573807106293">ଆପଣଙ୍କ ମୋସନ ଏବଂ ଲାଇଟ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚରାଯାଇପାରେ</translation>
+<translation id="4661010630350489875">ଫ୍ଲାଇଟ ନମ୍ବର</translation>
 <translation id="4661556981531699496">ଗୃହପାଳିତ ପଶୁ ଓ ଜୀବଜନ୍ତୁ</translation>
 <translation id="4661868874067696603">କ୍ରୟ କରିବାର ଅଧିକ ବିକଳ୍ପ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4663373278480897665">କ୍ୟାମେରା ଅନୁମୋଦିତ ଅଟେ</translation>
@@ -2548,6 +2554,7 @@
 <translation id="4936134414789135531">ଇନସାର୍ଟ କରାଯାଇଥିବା <ph name="VALUE_NAME" /> ମିଳିଲା ନାହିଁ।</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ଘଣ୍ଟାରେ ଆରମ୍ଭ ହେବ</translation>
 <translation id="4936675324097895694">ଫାଇନାନ୍ସ</translation>
+<translation id="4939748144644852809">ଡାହାଣପଟକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="4941627891654116707">ଫଣ୍ଟର ଆକାର</translation>
 <translation id="4943620199112228840">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
@@ -2829,6 +2836,7 @@
 <translation id="5391010642126249196">ଆପଣ ଭିଜିଟ କରିଛନ୍ତି</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" /> ଡିଭାଇସ</translation>
 <translation id="5391306025131596142">&amp;ଇତିହାସ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
+<translation id="5391870546630695708">ପ୍ରସ୍ଥାନ ଏୟାରପୋର୍ଟ</translation>
 <translation id="539203134595252721">ଟେବୁଲ ଟେନିସ</translation>
 <translation id="5392506727170022660">ମେଟାଲ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="5394069166371280357">ଟିଭି ପରିବାର-ଅନୁକୂଳ ଶୋ'ଗୁଡ଼ିକ</translation>
@@ -2939,6 +2947,7 @@
 <translation id="5540969246441091044">ଅଶ୍ଵାରୋହଣ</translation>
 <translation id="5541086400771735334">ମେଲବକ୍ସ 7</translation>
 <translation id="5541546772353173584">ଇମେଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="5541735141423273733">ଆଗମନ ତାରିଖ</translation>
 <translation id="5543452229212526547">ଆପଣଙ୍କ ଟେକ୍ସଟ ଓ ବିଷୟବସ୍ତୁ ଏବଂ ଆପଣ ଲେଖୁଥିବା ପୃଷ୍ଠାର URL Googleକୁ ପଠାଯିବ। AIକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ବିଷୟବସ୍ତୁକୁ ମାନବ ରିଭ୍ୟୁଅରମାନଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯିବ ନାହିଁ। ଆପଣଙ୍କ ସଂସ୍ଥା ଯେ କୌଣସି ସମୟରେ ଏହି ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>
 <translation id="5543564889050342791">ଚିିଡ଼ିଆଖାନା, ଆକ୍ୱାରିଅମ ଏବଂ ସଂରକ୍ଷିତ ଅଞ୍ଚଳଗୁଡ଼ିକ</translation>
 <translation id="5543722831081909240">180 ଡିଗ୍ରୀ</translation>
@@ -3202,6 +3211,7 @@
 <translation id="5953516610448771166">ଏହି ମିଡିଆ ପାଇଁ ଲାଇଭ କ୍ୟାପସନ ଉପଲବ୍ଧ ନାହିଁ। କ୍ୟାପସନଗୁଡ଼ିକ ପାଇବାକୁ, ଏହି ସାଇଟ ପାଇଁ <ph name="CONTENT_SETTINGS" />କୁ ବ୍ଲକ କରନ୍ତୁ।</translation>
 <translation id="5960795367348889467">ଯାଞ୍ଚକରଣ</translation>
 <translation id="5963413905009737549">ବିଭାଗ</translation>
+<translation id="5963685100480647029">ବାମପଟକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="5964247741333118902">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁ</translation>
 <translation id="5967260682280773804">36 x 48 ଇଞ୍ଚ</translation>
 <translation id="5967592137238574583">ଯୋଗାଯୋଗ ସୂଚନା ଏଡିଟ୍ କରନ୍ତୁ</translation>
@@ -3707,6 +3717,7 @@
 <translation id="671076103358959139">ନାମାଙ୍କିତ ଟୋକନ୍:</translation>
 <translation id="6711464428925977395">ପ୍ରକ୍ସି ସର୍ଭରରେ କିଛି ତ୍ରୁଟି ଅଛି କିମ୍ବା ଠିକଣା ଭୁଲ୍ ଅଛି।</translation>
 <translation id="6711700233707023861">ଭେରିଏସନ ଷ୍ଟ୍ରିଂକୁ କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
+<translation id="6712343563085762261">ଉପରକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ଆଇଟମକୁ ତୁଳନା କରନ୍ତୁ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />ରୁ ପଠାଯାଇଥିବା ଟାବ</translation>
@@ -4600,6 +4611,7 @@
 <translation id="8081087320434522107">ସେଡାନଗୁଡ଼ିକ</translation>
 <translation id="8086429410809447605">ମହିଳାମାନଙ୍କ ପୋଷାକ</translation>
 <translation id="8086971161893892807">ଡ୍ରାଫ୍ଟ</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" />ରେ ଆପଣଙ୍କ ପେମେଣ୍ଟକୁ ପରିଚାଳନା କରିବା ପାଇଁ <ph name="APP_ORIGIN" /> ଲୋଡ କରାଯାଉଛି।</translation>
 <translation id="8088680233425245692">ନିବନ୍ଧ ଦେଖିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8091372947890762290">ଏହାକୁ ସର୍ଭର୍‌ରେ ସକ୍ରିୟ କରିବାକୁ ହେବ</translation>
@@ -4725,6 +4737,7 @@
 <translation id="8288320283441806607">ଏହି ଫିଚର ବ୍ୟବହାର କରିବାକୁ "ସର୍ଚ୍ଚ ଏବଂ ବ୍ରାଉଜିଂକୁ ଆହୁରି ଭଲ କରନ୍ତୁ" ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8288807391153049143">ସାର୍ଟିଫିକେଟ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="8289355894181816810">ଯଦି ଆପଣ ସୁନିଶ୍ଚିତ ନୁହନ୍ତି ଯେ ଏହାର ଅର୍ଥ କ'ଣ, ତେବେ ଆପଣଙ୍କର ନେଟ୍‍ୱାର୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
+<translation id="8289655756644294629">ପ୍ରସ୍ଥାନ ତାରିଖ</translation>
 <translation id="8291367150570302588">ID କାର୍ଡ</translation>
 <translation id="829335040383910391">ସାଉଣ୍ଡ</translation>
 <translation id="8294425747071240447">AI ଦ୍ୱାରା ପରିଚାଳିତ ପରାମର୍ଶ</translation>
@@ -4794,6 +4807,7 @@
 <translation id="8400929824946688748">ଚାକିରି ଓ ଶିକ୍ଷା</translation>
 <translation id="8402442052798347631">ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କୁ କ୍ଷତିକାରକ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରିବା ପାଇଁ ପ୍ରତାରଣା କରିପାରନ୍ତି ଯାହା ଆପଣଙ୍କ ବ୍ରାଉଜ କରିବା ପ୍ରକ୍ରିୟାକୁ ପ୍ରଭାବିତ କରିପାରେ - ଉଦାହରଣ ସ୍ୱରୂପ, ଆପଣଙ୍କ ହୋମପେଜ ପରିବର୍ତ୍ତନ କରି କିମ୍ବା ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟରେ ଅତିରିକ୍ତ ବିଜ୍ଞାପନ ଦେଖାଇ। କ୍ଷତିକୁ ଏଡ଼ାଇବା ପାଇଁ ସୁରକ୍ଷାକୁ ଫେରିବା ନିମନ୍ତେ Chrome ଦୃଢ଼ ଭାବେ ସୁପାରିଶ କରେ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">ଫେନ ଫିକ୍ସନ</translation>
+<translation id="8404028426624581035">ତଳକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="8405579342203358118">Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8405621913275228683">ଏକ ଅଜଣା ତ୍ରୁଟି ଯୋଗୁଁ ସ୍କାନ ହଜିଯାଇଛି</translation>
 <translation id="8406071103346257942">ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>

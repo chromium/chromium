@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">Smartfonlar</translation>
 <translation id="2491120439723279231">Serverin sertifikatında xətalar var.</translation>
 <translation id="2491414235131909199">Bu səhifə artırma tərəfindən bloklanıb</translation>
+<translation id="2493122313108999546">Ölçüsü dəyişdirildi</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" /> bölməsində parolları doldurmaq üçün barmaq izindən istifadə edib-etməməyi dəyişə bilərsiniz</translation>
 <translation id="2498091847651709837">Yeni kartı skan edin</translation>
@@ -2552,6 +2553,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4936134414789135531">Daxil edilən <ph name="VALUE_NAME" /> tapılmadı.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi 1 saat sonra başlayacaq</translation>
 <translation id="4936675324097895694">Maliyyə</translation>
+<translation id="4939748144644852809">Sağa köçürüldü</translation>
 <translation id="4941627891654116707">Şrift ölçüsü</translation>
 <translation id="4943620199112228840">Mikrofonlardan istifadə edin</translation>
 <translation id="4943872375798546930">Nəticə yoxdur</translation>
@@ -3208,6 +3210,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5953516610448771166">Canlı Altyazı bu media üçün əlçatan deyil. Altyazıları əldə etmək üçün bu saytda <ph name="CONTENT_SETTINGS" /> ayarını blok edin.</translation>
 <translation id="5960795367348889467">Doğrulama</translation>
 <translation id="5963413905009737549">Bölmə</translation>
+<translation id="5963685100480647029">Sola köçürüldü</translation>
 <translation id="5964247741333118902">Daxil edilmiş kontent</translation>
 <translation id="5967260682280773804">36 x 48 düym</translation>
 <translation id="5967592137238574583">Kontakt Məlumatını Redaktə Edin</translation>
@@ -3714,6 +3717,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="671076103358959139">Qeydiyyat Açarı:</translation>
 <translation id="6711464428925977395">Proksi serveri ilə bağlı nəsə xəta var və ya ünvan yanlışdır.</translation>
 <translation id="6711700233707023861">Variasiya sətri mübadilə buferinə kopiyalandı</translation>
+<translation id="6712343563085762261">Yuxarı köçürüldü</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elementi müqayisə edin</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və kamera mövqeyini izləmək istəyir</translation>
 <translation id="6717692133381953670">Tab <ph name="DEVICE_NAME" /> cihazından göndərilib</translation>
@@ -4607,6 +4611,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8081087320434522107">Sedan</translation>
 <translation id="8086429410809447605">Qadın Geyimi</translation>
 <translation id="8086971161893892807">Qaralama</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> üzrə ödənişinizi idarə etmək üçün <ph name="APP_ORIGIN" /> yüklənir.</translation>
 <translation id="8088680233425245692">Məqaləyə baxmaq olmadı.</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8091372947890762290">Aktivləşdirmə serverdə gözlənilir</translation>
@@ -4802,6 +4807,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8400929824946688748">İş və Təhsil</translation>
 <translation id="8402442052798347631">Daxil olmağa cəhd etdiyiniz saytda hücumçular əsas səhifəni dəyişməklə və ya əlavə reklamlar göstərməklə sizi axtarış təcrübənizə təsir edən zərərli proqram təminatı quraşdırmağa təşviq edə bilər. Zərərdən yayınmaq üçün Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Həvəskar fantastika</translation>
+<translation id="8404028426624581035">Aşağı köçürüldü</translation>
 <translation id="8405579342203358118">Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə edin</translation>
 <translation id="8405621913275228683">Naməlum xəta səbəbindən skan itdi</translation>
 <translation id="8406071103346257942">parolları daxil etmək üçün ekran kilidindən istifadə etməyi dayandırın</translation>

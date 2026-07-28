@@ -21,6 +21,7 @@
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="1232234696885483911">เมื่อคุณเปิดการค้นหารูปภาพ ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยังเซิร์ฟเวอร์โดยอัตโนมัติ <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">เมื่อลงชื่อเข้าใช้อยู่ คุณจะใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้ หากต้องการเปลี่ยน ให้ไปที่ "บัญชีของคุณใน Chromium"</translation>
+<translation id="1244381985120794049">แสดง Gemini ใน Chromium ในแถบเมนูของ Mac</translation>
 <translation id="1257483544893909270">ใช้แป้นพิมพ์ลัดเพื่อเลือกส่วนหนึ่งของหน้าจอใน Gemini ใน Chromium</translation>
 <translation id="1262876892872089030">ขณะที่แท็บนี้ไม่มีการใช้งาน ระบบจะเพิ่มพื้นที่ว่างในหน่วยความจำเพื่อให้ใช้ Chromium ได้อย่างรวดเร็วอยู่เสมอ ทั้งนี้คุณจะเลือกยกเว้นให้เว็บไซต์นี้ทำงานตลอดเวลาได้</translation>
 <translation id="1265577313130862557">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์เป็นอันตราย</translation>
@@ -68,7 +69,6 @@
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
-<translation id="1846849503013521481">องค์กรของคุณจะดูหรือจัดการข้อมูลบางอย่างได้เพื่อรักษาความปลอดภัยให้กับการทำงานของคุณใน Chromium</translation>
 <translation id="18552579716432081">หากต้องการลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="1857749206890802997">ดาวน์โหลด Chromium บนโทรศัพท์เพื่อเปิดหรือสร้างกลุ่มแท็บใหม่ได้ทุกที่ทุกเวลา</translation>
 <translation id="185970820835152459">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chromium, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -591,6 +591,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="7368826207863345663">คุณจะต้องใช้ macOS 13 ขึ้นไปเพื่อรับการอัปเดต Chromium ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 12</translation>
 <translation id="7376384068949534168">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" />ออกแล้ว</translation>
 <translation id="73786666777299047">เปิด Chrome เว็บสโตร์</translation>
+<translation id="7394275517973019558">แสดง Gemini ใน Chromium ในถาดระบบ</translation>
 <translation id="7407655596887111931">ตอนนี้ Chromium เป็นเบราว์เซอร์เริ่มต้นของคุณแล้ว</translation>
 <translation id="7413153308467572558">ดำเนินการต่อจากที่ค้างไว้: Chromium จะคืนค่าแท็บทุกครั้งที่คุณรีสตาร์ท หากต้องการปิดตัวเลือกนี้ ให้ไปที่</translation>
 <translation id="7427879960656355200">นำเข้ารหัสผ่านไปยัง Chromium</translation>

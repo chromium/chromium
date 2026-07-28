@@ -985,6 +985,7 @@
 <translation id="2485243023686553468">Смартфоны</translation>
 <translation id="2491120439723279231">Ёсць памылкі ў сертыфікаце сервера.</translation>
 <translation id="2491414235131909199">Старонка заблакіравана пашырэннем</translation>
+<translation id="2493122313108999546">Памер зменены</translation>
 <translation id="2495083838625180221">Аналізатар JSON</translation>
 <translation id="2496402116964818747">Наладзіць выкарыстанне адбітка пальца для ўводу пароляў можна ў раздзеле "<ph name="SETTINGS" />"</translation>
 <translation id="2498091847651709837">Сканіраваць новую картку</translation>
@@ -2556,6 +2557,7 @@
 <translation id="4936134414789135531">Устаўленае значэнне "<ph name="VALUE_NAME" />" не знойдзена.</translation>
 <translation id="4936573216809994970">Запампоўванне файлаў у <ph name="CLOUD_PROVIDER" /> пачнецца праз 1 гадзіну</translation>
 <translation id="4936675324097895694">Фінансы</translation>
+<translation id="4939748144644852809">Перамешчана ўправа</translation>
 <translation id="4941627891654116707">Памер шрыфту</translation>
 <translation id="4943620199112228840">Выкарыстоўваць мікрафоны</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
@@ -3211,6 +3213,7 @@
 <translation id="5953516610448771166">Імгненныя субцітры для гэтага медыяфайла недаступныя. Каб атрымаць субцітры, заблакіруйце для гэтага сайта <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5960795367348889467">Спраўджанне</translation>
 <translation id="5963413905009737549">Раздзел</translation>
+<translation id="5963685100480647029">Перамешчана ўлева</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5967260682280773804">36 x 48 цаляў</translation>
 <translation id="5967592137238574583">Рэдагаваць кантактныя звесткі</translation>
@@ -3717,6 +3720,7 @@
 <translation id="671076103358959139">Маркер рэгістрацыі:</translation>
 <translation id="6711464428925977395">Нешта не так з проксі-серверам або адрас няправільны.</translation>
 <translation id="6711700233707023861">Радок з мадыфікацыямі скапіраваны ў буфер абмену</translation>
+<translation id="6712343563085762261">Перамешчана ўверх</translation>
 <translation id="6716039223770814796">Параўнаць: <ph name="COMPARE_SET_NAME" />, элементаў: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="6717692133381953670">Укладка адпраўлена з прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -4611,6 +4615,7 @@
 <translation id="8081087320434522107">Седаны</translation>
 <translation id="8086429410809447605">Жаночае адзенне</translation>
 <translation id="8086971161893892807">Чарнавая</translation>
+<translation id="8087558780672230449">Загружаецца <ph name="APP_ORIGIN" />, каб апрацаваць ваш плацеж на сайце <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Не ўдалося паглядзець артыкул.</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8091372947890762290">Чакаецца актывацыя на серверы</translation>
@@ -4806,6 +4811,7 @@
 <translation id="8400929824946688748">Вакансіі і адукацыя</translation>
 <translation id="8402442052798347631">На сайце, які вы спрабавалі наведаць, дзейнічаюць зламыснікі. Яны могуць падманам прымусіць вас усталяваць шкоднае праграмнае забеспячэнне, якое перашкаджае прагляду змесціва ў інтэрнэце (напрыклад, змяняе галоўную старонку ці паказвае дадатковую рэкламу на сайтах). Chrome настойліва рэкамендуе вярнуцца на бяспечную старонку, каб пазбегнуць шкоды. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Фэн-фікшн</translation>
+<translation id="8404028426624581035">Перамешчана ўніз</translation>
 <translation id="8405579342203358118">Вызначайце, якая іменна інфармацыя будзе сінхранізавацца, праз налады Chrome</translation>
 <translation id="8405621913275228683">Вынік сканіравання страчаны з-за невядомай памылкі</translation>
 <translation id="8406071103346257942">перастаць выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>

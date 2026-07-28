@@ -21,6 +21,7 @@
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Quan obris la cerca d'imatges, el títol, l'URL i el contingut de la pàgina (inclosos els PDF) s'enviaran automàticament al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Amb la sessió iniciada, pots utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chromium. Per canviar-ho, ves a El teu compte a Chromium.</translation>
+<translation id="1244381985120794049">Mostra Gemini a Chromium a la barra de menú de Mac</translation>
 <translation id="1257483544893909270">Per seleccionar una part de la pantalla a Gemini a Chromium, utilitza les tecles de drecera.</translation>
 <translation id="1262876892872089030">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chromium funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="1265577313130862557">Chromium ha bloquejat aquesta baixada perquè el fitxer és perillós</translation>
@@ -69,7 +70,6 @@
 <translation id="1820835682567584003">Chromium està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">La propera vegada que obris Chromium al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per utilitzar el gestor de contrasenyes de Google.</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
-<translation id="1846849503013521481">Per protegir la teva feina a Chromium, la teva organització podrà veure o gestionar determinada informació</translation>
 <translation id="18552579716432081">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Baixa Chromium al telèfon per obrir o crear grups de pestanyes nous siguis on siguis.</translation>
 <translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -592,6 +592,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7368826207863345663">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 13 o una versió posterior. Aquest ordinador utilitza macOS 12.</translation>
 <translation id="7376384068949534168">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
+<translation id="7394275517973019558">Mostra Gemini a Chromium a la safata del sistema</translation>
 <translation id="7407655596887111931">Ara Chromium és el teu navegador predeterminat</translation>
 <translation id="7413153308467572558">Continua des d'on ho vas deixar: Chromium restaura les teves pestanyes cada vegada que reinicies el navegador. Per desactivar-ho, ves a</translation>
 <translation id="7427879960656355200">Importa les contrasenyes a Chromium</translation>

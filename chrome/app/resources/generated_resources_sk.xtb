@@ -754,6 +754,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1581962803218266616">Zobraziť v aplikácii Finder</translation>
 <translation id="1582955169539260415">odstrániť [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> sa spracúva miestne a funguje offline</translation>
+<translation id="1586075235463145108">Najprv pre toto zariadenie zapnite automatickú navigáciu v Chrome</translation>
 <translation id="1587275751631642843">&amp;Konzola jazyka JavaScript</translation>
 <translation id="1588438908519853928">Normálny</translation>
 <translation id="1588772269240419305">Kontrola aktualizácií loga a názvu</translation>
@@ -1819,6 +1820,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> – 1 účet, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}few{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} účty, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} účtov, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}}</translation>
 <translation id="2428510569851653187">Opíšte, čo ste robili, keď karta zlyhala</translation>
 <translation id="2428939361789119025">Vypnúť Wi-Fi</translation>
+<translation id="2431280447889982015">Vybrať obrazovku so zvukom</translation>
 <translation id="243275146591958220">Zrušiť sťahovanie</translation>
 <translation id="2432882794929808179">Registrované aplikácie: <ph name="APP_COUNT" /></translation>
 <translation id="2433237965825924228">Izolované webové aplikácie ovládajú overovacie zariadenia a inteligentné karty, ktoré majú k dispozícii. Inteligentné karty zvyčajne obsahujú identifikátory, pomocou ktorých sa overuje vaša totožnosť.</translation>
@@ -6189,6 +6191,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5794700615121138172">Zdieľané priečinky v systéme Linux</translation>
 <translation id="5794786537412027208">Ukončiť všetky aplikácie Chrome</translation>
 <translation id="5796485699458186843">Nová karta inkognito</translation>
+<translation id="5796656350463724">Štýl karty</translation>
 <translation id="5796956053441619942">Webová adresa zo vzdialeného zariadenia nie je podporovaná</translation>
 <translation id="5798079537501238810">Weby môžu inštalovať obslužné nástroje platieb</translation>
 <translation id="5798086737841799234">Zadajte potvrdzovací kód</translation>
@@ -6294,6 +6297,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5864754048328252126">Akcia pri nečinnosti počas nabíjania</translation>
 <translation id="586567932979200359">Prehliadač <ph name="PRODUCT_NAME" /> je spustený z jeho obrazu disku. Inštalácia do počítača vám umožní spustiť ho bez obrazu disku a zabezpečí jeho aktualizáciu.</translation>
 <translation id="5865733239029070421">Automaticky odosiela štatistiky o používaní a správy o zlyhaní Googlu</translation>
+<translation id="58659335642601499">Vybrať okno so zvukom</translation>
 <translation id="5866363217037791319">Ukončiť úlohu</translation>
 <translation id="5868434909835797817">Mikrofón zariadenia je vypnutý</translation>
 <translation id="5868479397518301468">Prihlásenie vypršalo</translation>
@@ -9948,7 +9952,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="870536819717176711">Keď sa rozhodnete zdieľať aktuálnu kartu s Gemini, celý jej obsah, médiá a webová adresa sa odošlú Googlu.</translation>
 <translation id="8705629851992224300">Váš bezpečnostný kľúč sa nepodarilo prečítať</translation>
 <translation id="8706111173576263877">QR kód bol naskenovaný.</translation>
-<translation id="8707318721234217615">Medzery medzi písmom</translation>
+<translation id="8707318721234217615">Rozostupy medzi písmenami</translation>
 <translation id="8707562594602678416">Miesta</translation>
 <translation id="8708000541097332489">Vymazať po ukončení</translation>
 <translation id="870805141700401153">Komerčné podpisovanie kódu Microsoft</translation>

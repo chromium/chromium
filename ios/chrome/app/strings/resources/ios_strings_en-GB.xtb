@@ -2306,11 +2306,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8637431369725868556">Get protection from dangerous sites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
-<translation id="8639963783467694461">Auto-fill settings</translation>
+<translation id="8639963783467694461">Autofill settings</translation>
 <translation id="8642417828095157370">Tabs are shared for more relevant answers</translation>
 <translation id="8643403533759285912">Delete group</translation>
 <translation id="8647280737650867362">Couldn't untrack the price.</translation>
 <translation id="8654802032646794042">Cancel</translation>
+<translation id="8655861111558401309">Select Delete browsing data</translation>
 <translation id="8659875081143553823">Just a sec</translation>
 <translation id="8660600697590740984">Lens copied image</translation>
 <translation id="866266761389616183">Aw, snap!</translation>

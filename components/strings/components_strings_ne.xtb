@@ -726,6 +726,7 @@
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131511685263818470"><ph name="SEARCH_ENGINE_NAME" />। <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="2132825047782982803">यिनीहरू क्रमरहित रूपमा देखाइएका छन्। तपाईं जुनसुकै बेला आफ्नो डिफल्ट रोजाइ बदल्न सक्नुहुन्छ।</translation>
+<translation id="2134584557120247184">उडानको टिकट</translation>
 <translation id="2137891579555018930">अनुमति प्राप्त गर्न बाँकी छ…</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
 <translation id="2141000681034340397">आफ्नो इनपुट बदल्नुहोस्</translation>
@@ -983,6 +984,7 @@
 <translation id="2485243023686553468">स्मार्ट फोनहरू</translation>
 <translation id="2491120439723279231">सर्भरको प्रमाणपत्रमा त्रुटिहरू छन्।</translation>
 <translation id="2491414235131909199">कुनै एक्स्टेन्सनले यो पेज ब्लक गरेको छ</translation>
+<translation id="2493122313108999546">आकार बदलिएको छ</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
 <translation id="2496402116964818747">तपाईं <ph name="SETTINGS" /> मा गई पासवर्ड हाल्दा फिंगरप्रिन्ट प्रयोग गर्ने कि नगर्ने भन्ने बदल्न सक्नुहुन्छ</translation>
 <translation id="2498091847651709837">नयाँ कार्ड स्क्यान गर्नुहोस्</translation>
@@ -1421,6 +1423,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा डेटा भण्डारण गर्न चाहन्छ</translation>
 <translation id="3194765668709099364">Klarna</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> मा <ph name="PRINTER_NAME" /></translation>
+<translation id="3196374699162453920">बुकिङ कोड</translation>
 <translation id="3196902089458890316">अझ राम्रा जवाफहरू प्राप्त गर्न सान्दर्भिक ट्याबहरू सधैँ सेयर गर्ने हो?</translation>
 <translation id="3197136577151645743">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई के कस्ता जानकारी सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -2039,6 +2042,7 @@
 <translation id="4140905366050378834">घरपालुवा जनावरको खाना तथा हेरचाहका सामग्री</translation>
 <translation id="4140905530744469899">प्रोफाइलको आइडी:</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
+<translation id="4143568335933115324">आगमन विमानस्थल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">अमेरिकन एक्स्प्रेस</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
@@ -2305,6 +2309,7 @@
 <translation id="4543072026714825470">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड र बिलिङ ठेगाना सेभ गर्नुहोस्</translation>
 <translation id="4546730006268514143">ट्रान्स्फर गर्ने समय सकिएको छ</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{१ दिनअघि बनाइएको}other{{NUM_DAYS} दिनअघि बनाइएको}}</translation>
+<translation id="4550087677305533997">यात्रु</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">तपाईं पासवर्डहरू हाल्नका निम्ति स्क्रिन लक प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="4557573143631562971">घरको बीमा</translation>
@@ -2358,6 +2363,7 @@
 <translation id="4658801711339831733">स्क्यान गरिएको फाइल Google Drive मा सेभ गरिएको छ</translation>
 <translation id="4660592918803576381">Drive मा खोल्नुहोस्</translation>
 <translation id="4660780573807106293">तपाईंको डिभाइसका मोसन तथा लाइट सेन्सरहरू प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
+<translation id="4661010630350489875">उडान नम्बर</translation>
 <translation id="4661556981531699496">घरपालुवा तथा अन्य जनावरहरू</translation>
 <translation id="4661868874067696603">खरिदसम्बन्धी थप विकल्पहरू खोज्नुहोस्</translation>
 <translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
@@ -2549,6 +2555,7 @@
 <translation id="4936134414789135531">हालिएको <ph name="VALUE_NAME" /> भेट्टाउन सकिएन।</translation>
 <translation id="4936573216809994970">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया १ मा सुरु हुने छ</translation>
 <translation id="4936675324097895694">अर्थ वाणिज्य</translation>
+<translation id="4939748144644852809">दायाँतिर सारिएको छ</translation>
 <translation id="4941627891654116707">फन्टको आकार</translation>
 <translation id="4943620199112228840">माइक्रोफोन प्रयोग गर्न</translation>
 <translation id="4943872375798546930">कुनै नतिजा छैन</translation>
@@ -2830,6 +2837,7 @@
 <translation id="5391010642126249196">तपाईंले ट्याब खोलेको समय:</translation>
 <translation id="5391030615542642809"><ph name="MANUFACTURER" /> डिभाइस</translation>
 <translation id="5391306025131596142">हिस्ट्री पेज खोल्नुहोस्</translation>
+<translation id="5391870546630695708">प्रस्थान विमानस्थल</translation>
 <translation id="539203134595252721">टेबल टेनिस</translation>
 <translation id="5392506727170022660">मेटल (सेमी-ग्लस)</translation>
 <translation id="5394069166371280357">परिवार लक्षित टिभी सोहरू</translation>
@@ -2940,6 +2948,7 @@
 <translation id="5540969246441091044">घोडचढी</translation>
 <translation id="5541086400771735334">मेलबक्स ७</translation>
 <translation id="5541546772353173584">इमेल थप्नुहोस्</translation>
+<translation id="5541735141423273733">आगमन मिति</translation>
 <translation id="5543452229212526547">तपाईंले लेख्नुभएको टेक्स्ट र तपाईंको पेजमा भएका कन्टेन्ट र सो पेजको URL Google मा पठाइने छन्। समीक्षकहरू AI को गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंको कन्टेन्ट प्रयोग गर्ने छैनन्। तपाईंको सङ्गठनले जुनसुकै बेला यी सेटिङ परिवर्तन गर्न सक्छ।</translation>
 <translation id="5543564889050342791">चिडियाखाना, एक्वारियम तथा आरक्षहरू</translation>
 <translation id="5543722831081909240">१८० डिग्री</translation>
@@ -3203,6 +3212,7 @@
 <translation id="5953516610448771166">यो मिडियामा लाइभ क्याप्सन उपलब्ध छैन। क्याप्सनहरू प्राप्त गर्न यो साइटमा <ph name="CONTENT_SETTINGS" /> ब्लक गर्नुहोस्।</translation>
 <translation id="5960795367348889467">पुष्टि गर्ने प्रक्रिया</translation>
 <translation id="5963413905009737549">खण्ड</translation>
+<translation id="5963685100480647029">सारेर बायाँतिर लगिएको छ</translation>
 <translation id="5964247741333118902">इम्बेड गरिएको सामग्री</translation>
 <translation id="5967260682280773804">३६ x ४८ इन्च</translation>
 <translation id="5967592137238574583">सम्पर्कसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
@@ -3709,6 +3719,7 @@
 <translation id="671076103358959139">दर्ता टोकन:</translation>
 <translation id="6711464428925977395">प्रोक्सी सर्भरमा केही त्रुटि वा ठेगाना गलत छ।</translation>
 <translation id="6711700233707023861">भेरिएसन स्ट्रिङ क्लिपबोर्डमा कपी गरियो</translation>
+<translation id="6712343563085762261">माथि सारिएको छ</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> को तुलना गर्नुहोस् · <ph name="ITEMS" /> वटा सामग्री</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ले तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन चाहन्छ</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> बाट पठाइएको ट्याब</translation>
@@ -4602,6 +4613,7 @@
 <translation id="8081087320434522107">सेडान कारहरू</translation>
 <translation id="8086429410809447605">महिलाका लुगा</translation>
 <translation id="8086971161893892807">ड्राफ्ट</translation>
+<translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> मा तपाईंको भुक्तानी प्राप्त गर्न <ph name="APP_ORIGIN" /> लोड गरिँदै छ।</translation>
 <translation id="8088680233425245692">लेख गर्न असफल भयो।</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8091372947890762290">सक्रियता सर्भरमा विचाराधीन छ</translation>
@@ -4727,6 +4739,7 @@
 <translation id="8288320283441806607">यो सुविधा प्रयोग गर्न "खोज्ने तथा ब्राउज गर्ने प्रक्रिया अझ सरल बनाउनुहोस्" सेटिङ अन गर्नुहोस्</translation>
 <translation id="8288807391153049143">प्रमाणपत्र देखाउनुहोस्</translation>
 <translation id="8289355894181816810">यसको अर्थ के हो भनेर निश्चित हुन नसकेमा तपाईंको नेटवर्क प्रशासकलाई सम्पर्क गर्नुहोस् ।</translation>
+<translation id="8289655756644294629">प्रस्थान मिति</translation>
 <translation id="8291367150570302588">परिचयपत्र</translation>
 <translation id="829335040383910391">साउन्ड</translation>
 <translation id="8294425747071240447">AI मा आधारित सुझावहरू</translation>
@@ -4796,6 +4809,7 @@
 <translation id="8400929824946688748">जागिर तथा शिक्षा</translation>
 <translation id="8402442052798347631">तपाईंले खोल्न खोज्नुभएको साइटमा ह्याकरहरूले तपाईंलाई झुक्याएर तपाईंले ब्राउज गर्ने तरिकामा प्रभाव पार्ने (जस्तै, तपाईंको होमपेज परिवर्तन गर्ने वा तपाईंले खोल्ने साइटहरूमा अतिरिक्त विज्ञापन देखाउने) हानिकारक सफ्टवेयर इन्स्टल गर्न लगाउन सक्छन्। तपाईंलाई कुनै हानि नहोस् भन्नाका लागि Chrome ले तपाईंलाई यो साइट नखोल्न सिफारिस गर्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">फ्यान फिक्सन</translation>
+<translation id="8404028426624581035">तल सारिएको छ</translation>
 <translation id="8405579342203358118">Chrome का सेटिङमा गई के कस्ता जानकारी सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8405621913275228683">कुनै अज्ञात त्रुटिका कारण स्क्यान गरिएको फाइल गुमेको छ</translation>
 <translation id="8406071103346257942">पासवर्डहरू हाल्नका निम्ति स्क्रिन लक प्रयोग गर्न छाड्नुहोस्</translation>

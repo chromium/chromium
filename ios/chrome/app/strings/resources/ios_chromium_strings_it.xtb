@@ -228,6 +228,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="5731004036450828399">Per proteggere le tue passkey, devi prima creare un PIN di recupero.
 
         Le passkey vengono salvate in Gestore delle password, che ti consente di usarle in Chromium su qualsiasi dispositivo.</translation>
+<translation id="575593940213760950">Su Gestore delle password per l'account <ph name="EMAIL" /></translation>
 <translation id="584550191241316896">Accesso a Chromium eseguito</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5889847953983052353">Quando la funzionalità è attiva:

@@ -1610,6 +1610,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2243934210752059021">carian + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Gunakan kekunci anak panah untuk menelusuri item huruf demi huruf</translation>
+<translation id="2246104792527215550">Tukar kata laluan secara automatik</translation>
 <translation id="2246549592927364792">Dapatkan perihalan imej daripada Google?</translation>
 <translation id="2247738527273549923">Peranti anda diurus oleh organisasi anda</translation>
 <translation id="2247870315273396641">Pratonton suara</translation>
@@ -5037,6 +5038,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4852383141291180386">Urus pemberitahuan apl</translation>
 <translation id="4852916668365817106">Warna tetikus</translation>
 <translation id="4853020600495124913">Buka dalam tetingkap &amp;baharu</translation>
+<translation id="4853328060971905294">Dihidupkan (dayakan fokus garis)</translation>
 <translation id="4854317507773910281">Pilih akaun ibu/bapa untuk kelulusan</translation>
 <translation id="4854603338816296098">Alamat dialih keluar</translation>
 <translation id="485480310608090163">Lagi tetapan dan kebenaran</translation>
@@ -8029,6 +8031,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Tab Baharu dalam 1 Tab}other{Tab Baharu dalam # Tab}}</translation>
 <translation id="721490496276866468">Import kata laluan</translation>
 <translation id="7217208603285112910">Pilihan bukan dalam bahasa <ph name="LANGUAGE" /></translation>
+<translation id="7217317914610152390">Tambahkan teks, ulasan dan nota dengan alat Anotasi Teks baharu</translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
 <translation id="7219473482981809164">Kami telah menemukan beberapa profil yang tersedia untuk dimuat turun. Pilih profil yang ingin anda muat turun sebelum meneruskan.</translation>
 <translation id="7220019174139618249">Tidak dapat mengeksport kata laluan ke "<ph name="FOLDER" />"</translation>
@@ -10728,6 +10731,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> mahu mendapatkan maklumat daripada peranti mudah alih anda</translation>
 <translation id="988320949174893488">Tersentak-sentak Sekali-sekala</translation>
 <translation id="988978206646512040">Ungkapan laluan yang dikosongkan tidak dibenarkan</translation>
+<translation id="989111665033316622">Dimatikan (lumpuhkan fokus garis)</translation>
 <translation id="992032470292211616">Sambungan, apl dan tema boleh mengancam peranti anda. Adakah anda pasti mahu meneruskan?</translation>
 <translation id="992256792861109788">Merah Jambu</translation>
 <translation id="994087375490600917">Panel sisi</translation>

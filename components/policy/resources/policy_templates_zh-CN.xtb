@@ -914,6 +914,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1625700732886306811">允许 <ph name="PRODUCT_NAME" /> 连接到位于任何 IP 地址的设备</translation>
 <translation id="1626379196197114720">允许使用往返缓存</translation>
 <translation id="1628974048137236820">“新标签页”页面不会显示卡片</translation>
+<translation id="1628984674324273832">不允许使用 Gemini 智能查找和填充。</translation>
 <translation id="163200210584085447">系统会将此列表中的网址格式与请求网址的安全来源进行比对。如果找到了匹配项，系统将允许相应网址通过 SAML 登录页面访问视频捕获设备。如果未找到匹配项，系统将自动拒绝授予访问权限。不允许使用通配符模式。</translation>
 <translation id="1634770710106162474">如果此政策已启用，当 <ph name="PRODUCT_NAME" /> 在不受支持的计算机或操作系统中运行时，系统将不会显示警告。
 
@@ -949,6 +950,17 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1654087023995670109">强制采用浏览器访客模式</translation>
 <translation id="1655229863189977773">设置磁盘缓存大小（字节）</translation>
 <translation id="1655518801232583832">在网络服务外启用系统 DNS 解析</translation>
+<translation id="1656749771365000307">此政策用于为其涵盖的所有生成式 AI 功能定义默认设置。例如，如果此政策的值设为 1，则 1 将是其涵盖的所有生成式 AI 功能的默认设置。这不会影响任何手动设置的政策值。此设置将为 Chrome 中涵盖的生成式 AI 功能定义默认值。如需查看此政策涵盖的功能列表，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。
+
+<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 等某些政策仅支持“允许”和“不允许”两种状态。在这种情况下，如果将 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 设为 0 或 1，系统就会启用相应功能。如果将 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 设为 2，系统则会停用相应功能。各项功能的文档都详细介绍了此政策中的值对各自的影响，例如，对于 Chrome 中的 Gemini，可以访问 https://support.google.com/chrome/a/answer/16291696。此政策适用于以下功能：<ph name="GEMINI_IN_CHROME_NAME" />、Google 智能镜头和 AI 模式，而它们受各自的保障和/或服务条款的约束 (https://support.google.com/chrome/a/?p=genai_features_chrome)。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。工作人员也可能会审核这些数据，以改进 AI 模型。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="1659406551862245683">更改默认的虚拟键盘调整大小行为，以调整布局视口的大小</translation>
 <translation id="166427968280387991">代理服务器</translation>
@@ -1645,6 +1657,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="2107601598727098402">
         此政策在 M72 中已弃用。请改用 CloudManagementEnrollmentToken。
         </translation>
+<translation id="2111355600078097861">允许使用 Gemini 智能查找和填充功能，但不改进 AI 模型。</translation>
 <translation id="2112656109118682849">允许用户在登录屏幕上显示/隐藏系统信息</translation>
 <translation id="2113068765175018713">通过自动重启限制设备的正常运行时间</translation>
 <translation id="211386002920955760">控制企业用户是否可以使用 Chrome 中的标签页分组共享功能。
@@ -3863,6 +3876,18 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 <translation id="3518293344797498431">将电池充至 80% 左右，以最大限度延长电池寿命。</translation>
 <translation id="3518512927469906365">为特定顶级源停用第三方存储分区</translation>
 <translation id="3519035925054387801">已允许检测空闲状态的网站</translation>
+<translation id="3522162663567623647">此政策旨在控制 <ph name="PRODUCT_NAME" /> 扩展程序安装请求，可允许用户将请求发送到 Google 管理控制台以供审批。
+
+如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策，并且不会创建或上传扩展程序安装请求。
+如果此政策未设置或已停用，系统将不会创建或上传扩展程序安装请求。
+如果此政策已启用，系统将会创建扩展程序安装请求并将其上传到 Google 管理控制台。
+
+当用户尝试安装 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 所不允许的扩展程序时，系统将会创建扩展程序安装请求。
+
+对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后才有效。
+对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。
+
+注意：此政策仅适用于支持扩展程序的平台。</translation>
 <translation id="3522257170445891912">如果此政策已设置，登录身份验证流程将采用下列方式之一，具体取决于所设置的值：
 
       如果设为 GAIA，系统将通过常规的 GAIA 身份验证流程完成登录。
@@ -4928,6 +4953,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
           如果未设置此政策，则“自动点击”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4212181786686887763">可供下载相应壁纸图片的网址。</translation>
+<translation id="4224566202253696739">此设置控制是否允许在 <ph name="GEMINI_IN_CHROME_NAME" /> 中上传文件（请参阅 https://support.google.com/chrome/a/answer/16291696）。
+
+0/未设置表示允许用户将文件上传到 <ph name="GEMINI_IN_CHROME_NAME" />。
+
+1 表示不允许用户向 <ph name="GEMINI_IN_CHROME_NAME" /> 上传文件。</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
 <translation id="42267415200641481">如果此政策设为 true，系统 DNS 解析（getaddrinfo()）可能在网络进程外运行，具体取决于系统配置和功能标志。
 
@@ -6273,6 +6303,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
 
 如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
+<translation id="5070539335358964387">允许使用 Gemini 智能查找和填充功能并改进 AI 模型。</translation>
 <translation id="5071303485174858500">停用受限受管理访客会话。</translation>
 <translation id="5073609397321802133">如果此政策设为 false，“新标签页”页面将不允许用户自定义背景。所有现有的自定义背景都将被永久移除，即使此政策后来又改设为 true 也是如此。
 
@@ -9689,6 +9720,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="7136237405361383549">使用现场试验配置中的默认渲染程序。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函数的最短超时时间。</translation>
 <translation id="7138792262152376158">遵循 PrefixedVideoFullscreen API 的常规弃用时间表</translation>
+<translation id="7140755255968613921">Gemini 智能查找和填充功能的设置</translation>
 <translation id="7140760943584613237">Microsoft® Cloud Identity 提供方</translation>
 <translation id="714219487865269980">允许使用键盘焦点突出显示</translation>
 <translation id="7144022711746703451">
@@ -10078,6 +10110,19 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 <translation id="7402257017733669351">阻止浏览器进程创建动态代码</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7406276857470642718">此政策旨在控制通过 SAML 向外部 IdP 验证身份的用户的设置</translation>
+<translation id="7407431811343706437">控制用户是否可以在 <ph name="PRODUCT_NAME" /> 中使用 Gemini 智能查找和填充功能。
+
+0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果 Gemini 应用已停用，此政策将不会产生任何影响。例如，可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策停用 Gemini 应用。
+
+如果未设置此政策，该工具的行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，系统会开启网络预测功能，但用户可以更改设置。</translation>
@@ -12393,6 +12438,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 如果此政策已停用，系统将会使用旧行为。
 
 如果此政策未设置，系统则会像其余 Chromium 用户一样使用新行为。</translation>
+<translation id="8954797065581717017">警告：配置此政策会放宽 VPN 连接前的始终开启的 VPN 锁定状态。网址级过滤仅适用于 Chrome 浏览器流量，不适用于内部系统应用或其他流量类型。即使是在执行此政策的情况下，系统流量也可以绕过始终开启的 VPN，执行政策提取和系统时钟同步等任务。
+
+您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。某个网址是否会遭到屏蔽取决于最具体的过滤条件。
+
+如果设置了 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 并配置了始终开启的 VPN，但是未连接始终开启的 VPN，系统会阻止导航到所有主机（<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允许的主机除外）。在此设备状态下，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 会被忽略。当连接始终开启的 VPN 时，系统会使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策，而 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策会被忽略。
+
+此政策最多只能包含 1,000 个条目。
+
+如果未设置此政策，那么当“始终开启的 VPN”处于严格模式且 VPN 未连接时，系统将禁止任何浏览器导航。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8963464192296208229">F11 设置使用包含 Alt 辅助键的快捷键</translation>

@@ -754,6 +754,7 @@
 <translation id="1581962803218266616">在 Finder 中顯示</translation>
 <translation id="1582955169539260415">刪除 [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">系統會在本機處理<ph name="LANGUAGE" />內容，而且這些內容可以離線運作</translation>
+<translation id="1586075235463145108">請先在這部裝置啟用 Chrome 自動瀏覽功能</translation>
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1588438908519853928">一般</translation>
 <translation id="1588772269240419305">查看標誌和名稱更新</translation>
@@ -1819,6 +1820,7 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}}</translation>
 <translation id="2428510569851653187">說明分頁當掉時你正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
+<translation id="2431280447889982015">選擇含音訊的畫面</translation>
 <translation id="243275146591958220">取消下載</translation>
 <translation id="2432882794929808179">已註冊 <ph name="APP_COUNT" /> 個應用程式</translation>
 <translation id="2433237965825924228">隔離網頁應用程式可控制驗證裝置和可存取的智慧卡。智慧卡通常內含用於驗證身分的 ID。</translation>
@@ -6180,6 +6182,7 @@
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5796485699458186843">新無痕分頁</translation>
+<translation id="5796656350463724">分頁樣式</translation>
 <translation id="5796956053441619942">不支援遠端裝置中的網址</translation>
 <translation id="5798079537501238810">網站可以安裝付款處理常式</translation>
 <translation id="5798086737841799234">輸入確認碼</translation>
@@ -6285,6 +6288,7 @@
 <translation id="5864754048328252126">充電時的閒置動作</translation>
 <translation id="586567932979200359">你正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。你可以直接在電腦上安裝程式，往後無需透過磁碟映像即可直接執行，而且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用統計資料和當機報告傳送給 Google</translation>
+<translation id="58659335642601499">選擇含音訊的視窗</translation>
 <translation id="5866363217037791319">結束工作</translation>
 <translation id="5868434909835797817">你裝置的麥克風已關閉</translation>
 <translation id="5868479397518301468">登入逾時</translation>

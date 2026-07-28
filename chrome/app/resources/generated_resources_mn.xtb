@@ -1609,6 +1609,7 @@
 <translation id="2243934210752059021">хайлт + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> - <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Зүйлс хооронд үсэг үсгээр шилжихийн тулд суман товчийг ашиглана уу</translation>
+<translation id="2246104792527215550">Нууц үгнүүдийг автоматаар өөрчлөх</translation>
 <translation id="2246549592927364792">Google-с зургийн тайлбар авах уу?</translation>
 <translation id="2247738527273549923">Таны төхөөрөмжийг танай байгууллагаас удирддаг</translation>
 <translation id="2247870315273396641">Дуу хоолойг урьдчилан үзэх</translation>
@@ -5035,6 +5036,7 @@
 <translation id="4852383141291180386">Аппын мэдэгдлүүдийг удирдах</translation>
 <translation id="4852916668365817106">Хулганын өнгө</translation>
 <translation id="4853020600495124913">&amp; Шинэ цонхонд нээх</translation>
+<translation id="4853328060971905294">Асаах (мөрийн сонголтыг идэвхжүүлэх)</translation>
 <translation id="4854317507773910281">Зөвшөөрөл хүсэх эцэг эхийн бүртгэлийг сонгоно уу</translation>
 <translation id="4854603338816296098">Хаягийг хассан</translation>
 <translation id="485480310608090163">Бусад тохиргоо болон зөвшөөрөл</translation>
@@ -8026,6 +8028,7 @@
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{1 табын шинэ таб}other{# табын шинэ таб}}</translation>
 <translation id="721490496276866468">Нууц үгнүүдийг импорт хийх</translation>
 <translation id="7217208603285112910">Сонголт <ph name="LANGUAGE" /> хэлээр биш байна</translation>
+<translation id="7217317914610152390">Текстэн тэмдэглэгээний шинэ хэрэгслээр текст, сэтгэгдэл, тэмдэглэл нэмнэ үү</translation>
 <translation id="7219254577985949841">Сайтын өгөгдлийг устгах уу?</translation>
 <translation id="7219473482981809164">Бид татах боломжтой олон профайл оллоо. Үргэлжлүүлэхийн өмнө татахыг хүссэн профайлаа сонгоно уу.</translation>
 <translation id="7220019174139618249">Нууц үгийг "<ph name="FOLDER" />"-д экспорт хийх боломжгүй</translation>
@@ -10721,6 +10724,7 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> таны хөдөлгөөнт төхөөрөмжөөс мэдээлэл авахыг хүсэж байна</translation>
 <translation id="988320949174893488">Хааяа тохиолддог гацалт</translation>
 <translation id="988978206646512040">Хоосон нэвтрэх үг зөвшөөрдөггүй</translation>
+<translation id="989111665033316622">Унтраах (мөрийн сонголтыг идэвхгүй болгох)</translation>
 <translation id="992032470292211616">Өргөтгөл, хэрэглээний апп болон холбогдох загвар нь таны төхөөрөмжийг гэмтээх магадлалтай байна. Та үргэжлүүлэхийг хүсэж байна уу?</translation>
 <translation id="992256792861109788">Ягаан</translation>
 <translation id="994087375490600917">Хажуугийн самбар</translation>

@@ -755,6 +755,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1581962803218266616">Megjelenítés a Finderben</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] törlése</translation>
 <translation id="1583127975413389276">A(z) <ph name="LANGUAGE" /> nyelv feldolgozása helyben, offline történik</translation>
+<translation id="1586075235463145108">Először kapcsolja be a Chrome automatikus böngészés funkcióját ezen az eszközön</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konzol</translation>
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1588772269240419305">Logó és név módosításainak áttekintése</translation>
@@ -1607,6 +1608,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2243934210752059021">keresés + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">A nyílbillentyűk segítségével betűről betűre mozoghat az elemek között.</translation>
+<translation id="2246104792527215550">Jelszavak automatikus módosítása</translation>
 <translation id="2246549592927364792">Szeretne képleírásokat kapni a Google-tól?</translation>
 <translation id="2247738527273549923">Az eszközt az Ön szervezete kezeli</translation>
 <translation id="2247870315273396641">Hangrészlet meghallgatása</translation>
@@ -1830,6 +1832,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> – 1 fiók; a jelszót csak erre az eszközre mentette a rendszer. További részletek.}other{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} fiók; a jelszót csak erre az eszközre mentette a rendszer. További részletek.}}</translation>
 <translation id="2428510569851653187">Írja le, hogy mit csinált a lap összeomlásakor</translation>
 <translation id="2428939361789119025">A Wi-Fi kikapcsolása</translation>
+<translation id="2431280447889982015">Válasszon hangos képernyőt</translation>
 <translation id="243275146591958220">Letöltés megszakítása</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> alkalmazás regisztrálva</translation>
 <translation id="2433237965825924228">Az izolált internetes alkalmazások vezérelhetik a hitelesítési eszközöket és a számukra hozzáférhető intelligens kártyákat Az intelligens kártyák általában olyan azonosítókat tartalmaznak, amelyek az Ön hitelesítésére szolgálnak.</translation>
@@ -5032,6 +5035,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4852383141291180386">Alkalmazásértesítések kezelése</translation>
 <translation id="4852916668365817106">Egér színe</translation>
 <translation id="4853020600495124913">Megnyitás új &amp;ablakban</translation>
+<translation id="4853328060971905294">Bekapcsolva (sorfókusz engedélyezése)</translation>
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
 <translation id="4854603338816296098">Cím eltávolítva</translation>
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
@@ -6202,6 +6206,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5794700615121138172">Megosztott Linux-mappák</translation>
 <translation id="5794786537412027208">Összes Chrome-alkalmazás bezárása</translation>
 <translation id="5796485699458186843">Új inkognitó lap</translation>
+<translation id="5796656350463724">Lap stílusa</translation>
 <translation id="5796956053441619942">A távoli eszköztől származó URL nem támogatott</translation>
 <translation id="5798079537501238810">A webhelyek telepíthetik a fizetéskezelőket</translation>
 <translation id="5798086737841799234">Megerősítő kód megadása</translation>
@@ -6307,6 +6312,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5864754048328252126">Tétlenségi művelet töltés közben</translation>
 <translation id="586567932979200359">A <ph name="PRODUCT_NAME" /> alkalmazást jelenleg a lemezképéről futtatja. Ha telepíti a számítógépére, akkor futtathatja a lemezkép nélkül is, emellett biztosan naprakészen tartja.</translation>
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
+<translation id="58659335642601499">Válasszon ki egy ablakot, amelynek van hangja</translation>
 <translation id="5866363217037791319">Feladat befejezése</translation>
 <translation id="5868434909835797817">Eszközén ki van kapcsolva a mikrofon</translation>
 <translation id="5868479397518301468">Lejárt a bejelentkezés időkorlátja</translation>
@@ -8023,6 +8029,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Új lap 1 lapon}other{Új lap # lapon}}</translation>
 <translation id="721490496276866468">Jelszavak importálása</translation>
 <translation id="7217208603285112910">A kijelölés nem áll rendelkezésre <ph name="LANGUAGE" /> nyelven</translation>
+<translation id="7217317914610152390">Szöveget, megjegyzéseket és jegyzeteket adhat hozzá az új Szöveges jelölések eszközzel.</translation>
 <translation id="7219254577985949841">Törli a webhelyadatokat?</translation>
 <translation id="7219473482981809164">Több letölthető profilt is találtunk. A továbblépés előtt válassza ki, hogy melyeket szeretné letölteni.</translation>
 <translation id="7220019174139618249">Nem sikerült a jelszavak exportálása a következő helyre: <ph name="FOLDER" /></translation>
@@ -10720,6 +10727,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="987574372967138078">A(z) <ph name="WEBSITE_ORIGIN" /> információkat szeretne lekérni az Ön mobileszközéről</translation>
 <translation id="988320949174893488">Időnként akadozik</translation>
 <translation id="988978206646512040">Üres összetett jelszó nem engedélyezett</translation>
+<translation id="989111665033316622">Kikapcsolva (sorfókusz letiltása)</translation>
 <translation id="992032470292211616">A bővítmények, alkalmazások és témák károsíthatják eszközét. Biztosan folytatja?</translation>
 <translation id="992256792861109788">Rózsaszín</translation>
 <translation id="994087375490600917">Oldalsó panelek</translation>

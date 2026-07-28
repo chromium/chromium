@@ -755,6 +755,7 @@
 <translation id="1581962803218266616">Näytä Finderissä</translation>
 <translation id="1582955169539260415">poista [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> käsitellään paikallisesti ja toimii ilman verkkoyhteyttä</translation>
+<translation id="1586075235463145108">Laita ensin Chromen automaattiselaus päälle tällä laitteella</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsoli</translation>
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1588772269240419305">Logon ja nimen päivitysten tarkistaminen</translation>
@@ -1831,6 +1832,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />, 1 tili, salasana tallennettu vain tälle laitteelle. Lisätietoja}other{<ph name="DOMAIN_LINK" />, {NUM_PASSWORDS} tiliä, salasana tallennettu vain tälle laitteelle. Lisätietoja}}</translation>
 <translation id="2428510569851653187">Kerro, mitä olit tekemässä juuri ennen kaatumista.</translation>
 <translation id="2428939361789119025">Laita Wi-Fi pois päältä</translation>
+<translation id="2431280447889982015">Valitse näyttö, jossa on ääntä</translation>
 <translation id="243275146591958220">Peru lataus</translation>
 <translation id="2432882794929808179"><ph name="APP_COUNT" /> sovellusta rekisteröity</translation>
 <translation id="2433237965825924228">Eristetyt verkkosovellukset hallitsevat todennuslaitteita ja älykortteja, joihin niillä on pääsy. Älykortit sisältävät yleensä tunnisteita, joita käytetään todentamiseen.</translation>
@@ -6306,6 +6308,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5864754048328252126">Epäaktiivisuustoiminto latauksessa</translation>
 <translation id="586567932979200359">Käytät tuotetta <ph name="PRODUCT_NAME" /> sen levyvedoksen kautta. Asentamalla tuotteen tietokoneellesi voit käyttää sitä ilman levyvedosta ja varmistat, että tuote pysyy päivitettynä.</translation>
 <translation id="5865733239029070421">Lähettää automaattisesti käyttötilastoja ja virheraportteja Googlelle</translation>
+<translation id="58659335642601499">Valitse ikkuna, jossa on ääntä</translation>
 <translation id="5866363217037791319">Lopeta tehtävä</translation>
 <translation id="5868434909835797817">Mikrofoni on pois päältä laitteellasi</translation>
 <translation id="5868479397518301468">Kirjautuminen aikakatkaistu</translation>

@@ -984,6 +984,7 @@
 <translation id="2485243023686553468">Паметни телефони</translation>
 <translation id="2491120439723279231">Сертификатот на серверот содржи грешки.</translation>
 <translation id="2491414235131909199">Страницава е блокирана од екстензија</translation>
+<translation id="2493122313108999546">Големината е променета</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747">Во <ph name="SETTINGS" /> може да одредувате дали вашиот отпечаток да се користи за пополнување лозинки</translation>
 <translation id="2498091847651709837">Скенирај нова картичка</translation>
@@ -2556,6 +2557,7 @@
 <translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
 <translation id="4936573216809994970">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по 1 час</translation>
 <translation id="4936675324097895694">Финансии</translation>
+<translation id="4939748144644852809">Преместено надесно</translation>
 <translation id="4941627891654116707">Големина на фонтот</translation>
 <translation id="4943620199112228840">да ги користи вашите микрофони</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
@@ -3212,6 +3214,7 @@
 <translation id="5953516610448771166">„Автоматски титлови“ не е достапна за овие аудиовизуелни содржини. За да добиете титлови, блокирајте <ph name="CONTENT_SETTINGS" /> за сајтов.</translation>
 <translation id="5960795367348889467">Проверка</translation>
 <translation id="5963413905009737549">Секција</translation>
+<translation id="5963685100480647029">Преместено налево</translation>
 <translation id="5964247741333118902">Вметнати содржини</translation>
 <translation id="5967260682280773804">36 x 48 инчи</translation>
 <translation id="5967592137238574583">Изменете ги информациите за контакт</translation>
@@ -3718,6 +3721,7 @@
 <translation id="671076103358959139">Токен за регистрација:</translation>
 <translation id="6711464428925977395">Нешто не е во ред со прокси-серверот или адресата е неточна.</translation>
 <translation id="6711700233707023861">Низата на варијации е копирана во привремената меморија</translation>
+<translation id="6712343563085762261">Преместено нагоре</translation>
 <translation id="6716039223770814796">Споредете <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ставки</translation>
 <translation id="6716672519412350405"><ph name="URL" /> сака да создаде 3D-карта на опкружувањето и да ја следи позицијата на камерата</translation>
 <translation id="6717692133381953670">Картичката е испратена од <ph name="DEVICE_NAME" /></translation>
@@ -4611,6 +4615,7 @@
 <translation id="8081087320434522107">Седани</translation>
 <translation id="8086429410809447605">Женска облека</translation>
 <translation id="8086971161893892807">Нацрт</translation>
+<translation id="8087558780672230449">Се вчитува <ph name="APP_ORIGIN" /> за да се обработи вашето плаќање на <ph name="MERCHANT_ORIGIN" />.</translation>
 <translation id="8088680233425245692">Не успеа да прикаже напис.</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8091372947890762290">Активирањето чека на ред на серверот</translation>
@@ -4806,6 +4811,7 @@
 <translation id="8400929824946688748">Работни места и образование</translation>
 <translation id="8402442052798347631">Напаѓачите на сајтот што се обидовте да го отворите може да ве измамат да инсталирате штетен софтвер што влијае на тоа како прелистувате, на пример, со променување на вашата почетна страница или прикажување дополнителни реклами на сајтовите што ги отворате. Chrome силно препорачува да се вратите на безбедно за да се избегнат штети. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Приказни од обожаватели</translation>
+<translation id="8404028426624581035">Преместено надолу</translation>
 <translation id="8405579342203358118">Управувајте со податоците коишто се синхронизираат во поставките за Chrome</translation>
 <translation id="8405621913275228683">Скенираната ставка е изгубена поради непозната грешка</translation>
 <translation id="8406071103346257942">престане да го користи заклучувањето екран за пополнување лозинки</translation>
