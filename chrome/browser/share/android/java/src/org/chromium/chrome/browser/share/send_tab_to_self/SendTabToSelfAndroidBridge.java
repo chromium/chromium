@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
@@ -40,6 +41,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -110,11 +113,12 @@ public class SendTabToSelfAndroidBridge {
                         targetDeviceSyncCacheGuid,
                         url,
                         title,
-                        result -> showPostSendUi(webContents, result, targetDeviceName),
+                        result -> showPostSendUi(profile, webContents, result, targetDeviceName),
                         entryPoint);
     }
 
     private static void showPostSendUi(
+            Profile profile,
             @Nullable WebContents webContents,
             @SendTabToSelfResult int result,
             String targetDeviceName) {
@@ -122,10 +126,12 @@ public class SendTabToSelfAndroidBridge {
             return;
         }
 
-        if (!maybeShowPostSendSnackbar(webContents, result, targetDeviceName)) {
+        String userEmail = getUserEmail(profile);
+
+        if (!maybeShowPostSendSnackbar(webContents, result, targetDeviceName, userEmail)) {
             // Fallback to Toast if no SnackbarManager is available. This is the case if a URL
             // is shared from a different app via the system Share Sheet.
-            showPostSendFallbackToast(result, targetDeviceName);
+            showPostSendFallbackToast(result, targetDeviceName, userEmail);
         }
     }
 
@@ -134,7 +140,8 @@ public class SendTabToSelfAndroidBridge {
     private static boolean maybeShowPostSendSnackbar(
             @Nullable WebContents webContents,
             @SendTabToSelfResult int result,
-            String targetDeviceName) {
+            String targetDeviceName,
+            @Nullable String userEmail) {
         SnackbarManager snackbarManager = null;
         Context context = null;
 
@@ -163,7 +170,7 @@ public class SendTabToSelfAndroidBridge {
         // If no SnackbarManager is available, no snackbar can be shown.
         if (snackbarManager == null || context == null) return false;
 
-        String message = getSnackbarMessage(context, result, targetDeviceName);
+        String message = getSnackbarMessage(context, result, targetDeviceName, userEmail);
         Snackbar snackbar =
                 Snackbar.make(
                         message, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_SEND_TAB_TO_SELF);
@@ -173,9 +180,11 @@ public class SendTabToSelfAndroidBridge {
 
     // Shows the post-send toast; to be used as a fallback if the snackbar can't be shown.
     private static void showPostSendFallbackToast(
-            @SendTabToSelfResult int result, String targetDeviceName) {
+            @SendTabToSelfResult int result,
+            String targetDeviceName,
+            @Nullable String userEmail) {
         Context context = ContextUtils.getApplicationContext();
-        String message = getSnackbarMessage(context, result, targetDeviceName);
+        String message = getSnackbarMessage(context, result, targetDeviceName, userEmail);
         // Note: `org.chromium.ui.widget.Toast` does not work in this situation (where Chrome is not
         // in the foreground), since it uses a custom view, which Android does not allow from the
         // background. So here a standard Android Toast has to be used instead.
@@ -183,12 +192,13 @@ public class SendTabToSelfAndroidBridge {
     }
 
     private static String getSnackbarMessage(
-            Context context, @SendTabToSelfResult int result, String targetDeviceName) {
+            Context context,
+            @SendTabToSelfResult int result,
+            String targetDeviceName,
+            @Nullable String userEmail) {
         switch (result) {
             case SendTabToSelfResult.SUCCESS:
-                return context.getString(
-                        R.string.send_tab_to_self_post_send_success_toast_android,
-                        targetDeviceName);
+                return getSuccessMessage(context, targetDeviceName, userEmail);
             case SendTabToSelfResult.SUCCESS_THROTTLED:
                 return context.getString(
                         R.string.send_tab_to_self_post_send_throttled_toast_android,
@@ -199,6 +209,34 @@ public class SendTabToSelfAndroidBridge {
             default:
                 return context.getString(R.string.send_tab_to_self_post_send_failure_toast);
         }
+    }
+
+    private static String getSuccessMessage(
+            Context context, String targetDeviceName, @Nullable String userEmail) {
+        if (!TextUtils.isEmpty(userEmail)) {
+            return context.getString(
+                    R.string.send_tab_to_self_post_send_success_toast_android,
+                    targetDeviceName,
+                    userEmail);
+        }
+        return context.getString(
+                R.string.send_tab_to_self_post_send_success_toast_no_email_android,
+                targetDeviceName);
+    }
+
+    private static @Nullable String getUserEmail(Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) {
+            return null;
+        }
+
+        AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
+        if (accountInfo == null || !accountInfo.canHaveEmailAddressDisplayed()) {
+            return null;
+        }
+
+        return AccountInfo.getEmailFrom(accountInfo);
     }
 
     /**

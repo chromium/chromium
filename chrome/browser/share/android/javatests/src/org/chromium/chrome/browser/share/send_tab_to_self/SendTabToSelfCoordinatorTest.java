@@ -564,7 +564,7 @@ public class SendTabToSelfCoordinatorTest {
                     Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
                     Criteria.checkThat(
                             snackbarMessage.getText().toString(),
-                            Matchers.is("Sent to Chrome on your Device."));
+                            Matchers.is("Sent to Chrome on your Device • test@gmail.com"));
                 });
 
         histogramWatcher.assertExpected();
@@ -616,7 +616,7 @@ public class SendTabToSelfCoordinatorTest {
                     Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
                     Criteria.checkThat(
                             snackbarMessage.getText().toString(),
-                            Matchers.is("Sent to Chrome on your Device."));
+                            Matchers.is("Sent to Chrome on your Device • test@gmail.com"));
                 });
     }
 
@@ -661,7 +661,8 @@ public class SendTabToSelfCoordinatorTest {
                                 event.getClassName() != null ? event.getClassName().toString() : "";
                         String eventText = event.getText().toString();
                         if (className.contains("android.widget.Toast")
-                                && eventText.contains("Sent to Chrome on your Device.")) {
+                                && eventText.contains(
+                                        "Sent to Chrome on your Device • test@gmail.com")) {
                             toastDisplayed.set(true);
                         }
                     }
