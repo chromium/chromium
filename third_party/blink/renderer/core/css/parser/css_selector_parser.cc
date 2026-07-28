@@ -457,10 +457,8 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     wtf_size_t subpos = output_.size();
     base::span<CSSSelector> selector =
         ConsumeComplexSelector(stream, nesting_type, result_flags);
-    if (selector.empty()) {
-      failed_parsing_ = true;
-    }
-    if (failed_parsing_ || !AtEndOfComplexSelector(stream)) {
+    if (selector.empty() || failed_parsing_ ||
+        !AtEndOfComplexSelector(stream)) {
       output_.resize(subpos);  // Drop what we parsed so far.
       stream.EnsureLookAhead();
       stream.Restore(state);
@@ -545,9 +543,8 @@ void CSSSelectorParser::AddPlaceholderSelectorIfNeeded(
   wtf_size_t end = stream.LookAheadOffset();
 
   if (nesting_type != CSSNestingType::kNone ||
-      (failed_parsing_ &&
-       RuntimeEnabledFeatures::
-           SerializeInvalidSelectorsInForgivingSelectorListEnabled())) {
+      RuntimeEnabledFeatures::
+          SerializeInvalidSelectorsInForgivingSelectorListEnabled()) {
     PushUnparsedComplexSelector(nesting_type,
                                 stream.StringRangeAt(start, end - start)
                                     .StripWhiteSpace()

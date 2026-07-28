@@ -39,7 +39,7 @@ CSSSelectorList* CSSSelectorList::Empty() {
       MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());
   new (list->first_selector_) CSSSelector();
   list->first_selector_[0].SetMatch(CSSSelector::kInvalidList);
-  DCHECK(!list->IsValid());
+  DCHECK(list->IsInvalidWithoutUnparsed());
   return list;
 }
 
@@ -64,10 +64,16 @@ CSSSelectorList* CSSSelectorList::Copy() const {
 HeapVector<CSSSelector> CSSSelectorList::Copy(
     const CSSSelector* selector_list) {
   HeapVector<CSSSelector> selectors;
-  for (const CSSSelector* selector = selector_list; selector;
-       selector = selector->IsLastInSelectorList()
-                      ? nullptr
-                      : UNSAFE_BUFFERS(selector + 1)) {
+
+  const CSSSelector* selector = selector_list;
+
+  if (!selector || CSSSelectorList::IsInvalidWithoutUnparsed(*selector)) {
+    return selectors;
+  }
+
+  for (; selector; selector = selector->IsLastInSelectorList()
+                                  ? nullptr
+                                  : UNSAFE_BUFFERS(selector + 1)) {
     selectors.push_back(*selector);
   }
   return selectors;

@@ -3311,6 +3311,40 @@ TEST(CSSSelectorParserTest, UnparsedInvalid) {
         EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*arg));
       }
     }
+
+    {
+      HeapVector<CSSSelector> vector = ParseSelector(":is(col.selected || td)");
+      ASSERT_EQ(1u, vector.size());
+      const CSSSelector& selector = vector.front();
+      EXPECT_EQ(feature_enabled ? ":is(col.selected || td)" : ":is()",
+                selector.SelectorText());
+
+      // :is()
+      EXPECT_EQ(CSSSelector::PseudoType::kPseudoIs, selector.GetPseudoType());
+      const CSSSelectorList* selector_list = selector.SelectorList();
+      ASSERT_TRUE(selector_list);
+      EXPECT_FALSE(selector_list->IsValid());
+
+      // Arguments (normal iteration)
+      EXPECT_FALSE(selector_list->First());
+
+      // Arguments (including unparsed invalid)
+      const CSSSelector* arg = selector_list->FirstIncludingUnparsedInvalid();
+      if (feature_enabled) {
+        // 1st: unparsed selector containing a column combinator (||), which is
+        // not supported yet.
+        EXPECT_TRUE(arg);
+        if (arg) {
+          EXPECT_EQ(CSSSelector::MatchType::kInvalidList, arg->Match());
+          EXPECT_TRUE(arg->IsUnparsedInvalid());
+          EXPECT_EQ("col.selected || td", arg->Value());
+          // End of arguments.
+          EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*arg));
+        }
+      } else {
+        EXPECT_FALSE(arg);
+      }
+    }
   }
 }
 

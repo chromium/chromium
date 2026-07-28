@@ -258,10 +258,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
     {
       const CSSSelectorList* empty = CSSSelectorList::Empty();
       ASSERT_TRUE(empty);
-      const CSSSelectorList* copy = empty->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = empty->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(empty->first_selector_);
+      EXPECT_EQ(0, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {empty, copy}) {
+      for (const CSSSelectorList* list : {empty, copy1, copy2}) {
         EXPECT_FALSE(list->IsValid());
         EXPECT_EQ(0, list->ComputeLength());
 
@@ -275,10 +281,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(1, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_TRUE(list->IsValid());
         EXPECT_EQ(1, list->ComputeLength());
 
@@ -300,10 +312,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(3, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_TRUE(list->IsValid());
         EXPECT_EQ(3, list->ComputeLength());
 
@@ -341,10 +359,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(feature_enabled ? 1 : 0, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_FALSE(list->IsValid());
         EXPECT_EQ(feature_enabled ? 1 : 0, list->ComputeLength());
 
@@ -371,10 +395,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
                                          ->First()
                                          ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(feature_enabled ? 3 : 0, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_FALSE(list->IsValid());
         EXPECT_EQ(feature_enabled ? 3 : 0, list->ComputeLength());
 
@@ -417,10 +447,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(feature_enabled ? 3 : 1, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_TRUE(list->IsValid());
         EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
 
@@ -460,10 +496,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(feature_enabled ? 3 : 1, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_TRUE(list->IsValid());
         EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
 
@@ -509,10 +551,16 @@ TEST(CSSSelector, CopyUnparsedInvalidList) {
               ->First()
               ->SelectorList();
       ASSERT_TRUE(inner);
-      const CSSSelectorList* copy = inner->Copy();
-      ASSERT_TRUE(copy);
+      const CSSSelectorList* copy1 = inner->Copy();
+      ASSERT_TRUE(copy1);
+      HeapVector<CSSSelector> vector =
+          CSSSelectorList::Copy(inner->first_selector_);
+      EXPECT_EQ(feature_enabled ? 3 : 1, vector.size());
+      const CSSSelectorList* copy2 =
+          CSSSelectorList::AdoptSelectorVector(vector);
+      ASSERT_TRUE(copy2);
 
-      for (const CSSSelectorList* list : {inner, copy}) {
+      for (const CSSSelectorList* list : {inner, copy1, copy2}) {
         EXPECT_TRUE(list->IsValid());
         EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
 

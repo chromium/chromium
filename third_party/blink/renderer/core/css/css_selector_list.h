@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_LIST_H_
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -169,8 +170,13 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   void Trace(Visitor* visitor) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CSSSelector, CopyUnparsedInvalidList);
+
+  static bool IsInvalidWithoutUnparsed(const CSSSelector& first) {
+    return !IsValid(first) && !first.IsUnparsedInvalid();
+  }
   bool IsInvalidWithoutUnparsed() const {
-    return !IsValid() && !first_selector_->IsUnparsedInvalid();
+    return IsInvalidWithoutUnparsed(*first_selector_);
   }
 
   // All of the remaining CSSSelector objects are allocated on
