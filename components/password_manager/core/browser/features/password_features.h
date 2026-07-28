@@ -209,9 +209,6 @@ BASE_DECLARE_FEATURE(kRetryCapturePageContent);
 extern const base::FeatureParam<base::TimeDelta> kCapturePageContentDelay;
 extern const base::FeatureParam<int> kCapturePageContentRetryCount;
 
-// Shows a confirmation dialog before filling grouped credentials from the
-// manual fallback popup on Desktop.
-BASE_DECLARE_FEATURE(kShowConfirmationForGroupedCredentials);
 
 // Shows a tab with password change instead of bubble/settings page after
 // successful password change.
