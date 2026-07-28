@@ -89,6 +89,8 @@ import java.util.concurrent.TimeoutException;
 @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    // Disable minimum show duration to allow controls to hide immediately on scroll.
+    ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION,
     "disable-features=IPH_FeedHeaderMenu"
 })
 public class FeedV2NewTabPageTest {

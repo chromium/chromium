@@ -101,10 +101,12 @@ public class NewTabAnimationLayout extends Layout {
     private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final NonNullObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier;
     private final OverridableTabCount mOverridableTabCount;
+    private final BrowserControlsManager mBrowserControlsManager;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     private final TopInsetProvider mTopInsetProvider;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
     private final NewBackgroundTabAnimationData mNewBackgroundTabAnimationData;
+    private final boolean mIsBottomBarEnabledInNtp;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private @Nullable NewBackgroundTabAnimationHostView mBackgroundHostView;
@@ -164,6 +166,7 @@ public class NewTabAnimationLayout extends Layout {
         mNtpSearchBoxTransitionPercentageSupplier =
                 toolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
         mOverridableTabCount = mToolbarManager.getOverridableTabCount();
+        mBrowserControlsManager = browserControlsManager;
         mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
         mTopInsetProvider = topInsetProvider;
         mNewBackgroundTabAnimationData =
@@ -172,6 +175,9 @@ public class NewTabAnimationLayout extends Layout {
         // Set up observer to handle edge-to-edge changes.
         mTopInsetProviderObserver = this::onToEdgeChange;
         mTopInsetProvider.addObserver(mTopInsetProviderObserver);
+        mIsBottomBarEnabledInNtp =
+                BottomBarConfigUtils.isBottomBarEnabled(context)
+                        && !BottomBarConfigUtils.shouldDisableOnNtp();
     }
 
     @Override
@@ -745,8 +751,18 @@ public class NewTabAnimationLayout extends Layout {
         mSkipForceAnimationToFinish = true;
         forceHidingImmediatelyIfNeeded(isRegularNtp);
 
-        if (!isRegularNtp && mBrowserControlsVisibilityToken == TokenHolder.INVALID_TOKEN) {
+        // Acquire a persistent controls token for non-regular NTPs or when the NTP has the bottom
+        // bar enabled. This forces BrowserControlsState.SHOWN so NtpScrollListener pauses
+        // scroll-to-hide behavior and locks controls in place during the background tab animation.
+        if ((!isRegularNtp || mIsBottomBarEnabledInNtp)
+                && mBrowserControlsVisibilityToken == TokenHolder.INVALID_TOKEN) {
             mBrowserControlsVisibilityToken = mBrowserVisibilityDelegate.showControlsPersistent();
+        }
+        // Immediately snap controls to offset 0 (fully visible) if the NTP has the bottom bar
+        // enabled, ensuring mNewBackgroundTabAnimationData.captureState() measures the target tab
+        // switcher button in its resting visible position.
+        if (isRegularNtp && mIsBottomBarEnabledInNtp) {
+            mBrowserControlsManager.showAndroidControls(/* animate= */ false);
         }
 
         Rect compositorViewRect = new Rect();

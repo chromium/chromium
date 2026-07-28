@@ -46,6 +46,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -88,6 +89,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -143,8 +145,9 @@ public class NewTabAnimationLayoutUnitTest {
             new TransitiveTopInsetProvider();
     private final SettableNonNullObservableSupplier<Float>
             mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
-    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate =
-            new BrowserStateBrowserControlsVisibilityDelegate(ObservableSuppliers.alwaysFalse());
+    private final FakeBrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate =
+            new FakeBrowserStateBrowserControlsVisibilityDelegate(
+                    ObservableSuppliers.alwaysFalse());
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
@@ -269,8 +272,7 @@ public class NewTabAnimationLayoutUnitTest {
     @After
     public void tearDown() throws Exception {
         mNewTabAnimationLayout.destroy();
-        java.lang.reflect.Field field =
-                ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
+        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
         field.setAccessible(true);
         field.set(null, null);
     }
@@ -504,7 +506,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -566,7 +568,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -622,7 +624,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -639,8 +641,7 @@ public class NewTabAnimationLayoutUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOnTabCreated_NtpToWebPage_bottomToolbarCoordination() throws Exception {
         // Configure bottom toolbar preference
-        java.lang.reflect.Field field =
-                ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
+        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
         field.setAccessible(true);
         field.set(null, false); // Set static field to false (bottom toolbar)
 
@@ -682,7 +683,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -697,8 +698,7 @@ public class NewTabAnimationLayoutUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOnTabCreated_WebPageToNtp_bottomToolbarCoordination() throws Exception {
         // Configure bottom toolbar preference
-        java.lang.reflect.Field field =
-                ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
+        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
         field.setAccessible(true);
         field.set(null, false); // Set static field to false (bottom toolbar)
 
@@ -746,7 +746,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -809,7 +809,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -881,7 +881,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -953,7 +953,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -989,7 +989,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNtp.supportsEdgeToEdge()).thenReturn(true);
 
         // Configure bottom toolbar preference (remains on bottom on Incognito NTP)
-        java.lang.reflect.Field prefField =
+        Field prefField =
                 ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
         prefField.setAccessible(true);
         prefField.set(null, false); // Bottom toolbar
@@ -1039,7 +1039,7 @@ public class NewTabAnimationLayoutUnitTest {
         NewForegroundTabAnimationHostView hostView = viewCaptor.getValue();
 
         // Use reflection to access private mInitialRect
-        java.lang.reflect.Field initialRectField =
+        Field initialRectField =
                 NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
         initialRectField.setAccessible(true);
         Rect initialRect = (Rect) initialRectField.get(hostView);
@@ -1073,6 +1073,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
         verify(mNewTabAnimationLayout, times(1)).forceAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
+        assertEquals(1, mBrowserVisibilityDelegate.showControlsPersistentCallCount);
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
         verify(mAnimationHostView, times(1)).addView(any(NewBackgroundTabAnimationHostView.class));
 
@@ -1081,6 +1082,7 @@ public class NewTabAnimationLayoutUnitTest {
         verify(mAnimationHostView, times(1))
                 .removeView(any(NewBackgroundTabAnimationHostView.class));
         verify(mTabModelSelector, never()).selectModel(false);
+        assertEquals(1, mBrowserVisibilityDelegate.releasePersistentShowingTokenCallCount);
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
     }
 
@@ -1127,8 +1129,35 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
 
+        assertEquals(0, mBrowserVisibilityDelegate.showControlsPersistentCallCount);
+
         RobolectricUtil.runAllBackgroundAndUi();
 
+        assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testOnTabCreated_tabCreatedInBackground_ntp_bottomBarEnabled() {
+        setNtp();
+        when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        assertEquals(1, mBrowserVisibilityDelegate.showControlsPersistentCallCount);
+        verify(mBrowserControlsManager).showAndroidControls(false);
+        assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(1, mBrowserVisibilityDelegate.releasePersistentShowingTokenCallCount);
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
     }
 
@@ -1162,6 +1191,29 @@ public class NewTabAnimationLayoutUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
+    }
+
+    private static class FakeBrowserStateBrowserControlsVisibilityDelegate
+            extends BrowserStateBrowserControlsVisibilityDelegate {
+        public int showControlsPersistentCallCount;
+        public int releasePersistentShowingTokenCallCount;
+
+        public FakeBrowserStateBrowserControlsVisibilityDelegate(
+                NonNullObservableSupplier<Boolean> persistentFullscreenMode) {
+            super(persistentFullscreenMode);
+        }
+
+        @Override
+        public int showControlsPersistent() {
+            showControlsPersistentCallCount++;
+            return super.showControlsPersistent();
+        }
+
+        @Override
+        public void releasePersistentShowingToken(int token) {
+            releasePersistentShowingTokenCallCount++;
+            super.releasePersistentShowingToken(token);
+        }
     }
 
     private void setNtp() {

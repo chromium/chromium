@@ -36,6 +36,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -105,6 +106,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -1365,6 +1367,17 @@ public class NewTabPage
             if (!(provider instanceof BrowserControlsVisibilityManager)) return;
 
             BrowserControlsVisibilityManager manager = (BrowserControlsVisibilityManager) provider;
+
+            // If browser controls are locked persistently in the SHOWN state (e.g., during layout
+            // transitions or background tab creation animations), ignore scroll events to prevent
+            // hiding the bottom controls.
+            BrowserControlsVisibilityDelegate visibilityDelegate =
+                    manager.getBrowserVisibilityDelegate();
+            if (visibilityDelegate != null
+                    && visibilityDelegate.get() == BrowserControlsState.SHOWN) {
+                return;
+            }
+
             int bottomControlsHeight = manager.getBottomControlsHeight();
             if (bottomControlsHeight <= 0) return;
 
