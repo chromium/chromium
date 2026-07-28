@@ -512,6 +512,13 @@ void Tab::Layout(PassKey) {
 }
 
 bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
+#if BUILDFLAG(IS_MAC)
+  if (event.key_code() == ui::VKEY_RETURN && event.IsControlDown()) {
+    ShowContextMenu(GetKeyboardContextMenuLocation(),
+                    ui::mojom::MenuSourceType::kKeyboard);
+    return true;
+  }
+#endif
   if (event.key_code() == ui::VKEY_RETURN && !IsSelected()) {
     controller_->SelectTab(this, event);
     return true;
