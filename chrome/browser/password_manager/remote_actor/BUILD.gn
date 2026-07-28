@@ -9,6 +9,8 @@ source_set("remote_actor") {
     "remote_actor_credential_sharing_service_factory.h",
     "remote_actor_credential_sharing_service_impl.cc",
     "remote_actor_credential_sharing_service_impl.h",
+    "remote_actor_credential_store_client.cc",
+    "remote_actor_credential_store_client.h",
     "remote_actor_request_helper.cc",
     "remote_actor_request_helper.h",
   ]
@@ -21,6 +23,7 @@ source_set("remote_actor") {
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//google_apis",
+    "//google_apis/common",
     "//net",
     "//services/network/public/cpp",
     "//url",
@@ -31,6 +34,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "remote_actor_credential_sharing_service_impl_unittest.cc",
+    "remote_actor_credential_store_client_unittest.cc",
     "remote_actor_request_helper_unittest.cc",
   ]
   deps = [

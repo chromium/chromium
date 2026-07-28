@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
 
@@ -15,7 +17,10 @@ RemoteActorCredentialSharingServiceImpl::
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(url_loader_factory),
+      credential_store_(std::make_unique<RemoteActorCredentialStoreClient>(
+          identity_manager,
+          std::move(url_loader_factory))) {}
 
 RemoteActorCredentialSharingServiceImpl::
     ~RemoteActorCredentialSharingServiceImpl() = default;

@@ -13,9 +13,6 @@
 
 namespace password_manager {
 
-class RemoteActorCredentialPermissionClient;
-class RemoteActorCredentialStore;
-
 // Interface for the service that coordinates password sharing with remote
 // actors.
 class RemoteActorCredentialSharingService : public KeyedService {
