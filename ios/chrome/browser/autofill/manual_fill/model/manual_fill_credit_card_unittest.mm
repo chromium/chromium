@@ -23,7 +23,7 @@ autofill::CreditCard::CardInfoRetrievalEnrollmentState
 TEST_F(ManualFillCreditCardiOSTest, Creation) {
   NSString* GUID = @"1234-5678-abcd";
   NSString* network = @"Viza";
-  UIImage* icon = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  UIImage* icon = SymbolWithPointSize(SymbolCreditCard, 16);
   NSString* bankName = @"Bank of 'Merica";
   NSString* cardHolder = @"Fred Itcard";
   NSString* number = @"4321 1234 4321 1234";
@@ -65,7 +65,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
 TEST_F(ManualFillCreditCardiOSTest, Equality) {
   NSString* GUID = @"1234-5678-abcd";
   NSString* network = @"Viza";
-  UIImage* icon = DefaultSymbolWithPointSize(@"tortoise.fill", 16);
+  UIImage* icon = SymbolWithPointSize(SymbolCreditCard, 16);
   NSString* bankName = @"Bank of 'Merica";
   NSString* cardHolder = @"Fred Itcard";
   NSString* number = @"4321 1234 4321 1234";

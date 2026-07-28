@@ -438,8 +438,8 @@ UIImage* GetManualFillSymbol() {
   UIImage* closeButtonSymbol =
       SymbolWithPointSize(SymbolKeyboardDown, kSymbolActionPointSize);
 
-  UIImage* atMemorySymbol = CustomSymbolWithPointSize(
-      kMagnifyingglassSparkSymbol, kSymbolActionPointSize);
+  UIImage* atMemorySymbol =
+      SymbolWithPointSize(SymbolMagnifyingglassSpark, kSymbolActionPointSize);
 
   [formInputAccessoryView
             setUpWithLeadingView:self.leadingView
