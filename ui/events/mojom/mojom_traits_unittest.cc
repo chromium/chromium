@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <array>
+#include <limits>
 #include <utility>
 
 #include "build/build_config.h"
@@ -15,6 +16,7 @@
 #include "ui/events/mojom/event.mojom.h"
 #include "ui/events/mojom/event_mojom_traits.h"
 #include "ui/events/test/keyboard_layout.h"
+#include "ui/gfx/geometry/clamp_float_geometry.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
@@ -217,6 +219,31 @@ TEST(StructTraitsTest, FloatingPointLocations) {
     EXPECT_EQ(location, output->AsLocatedEvent()->location_f());
     EXPECT_EQ(root_location, output->AsLocatedEvent()->root_location_f());
   }
+}
+
+TEST(StructTraitsTest, NonFiniteLocationsSanitized) {
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const float inf = std::numeric_limits<float>::infinity();
+  const float clamped_limit = gfx::ClampFloatGeometry(inf);  // float_max / 1e6
+
+  const gfx::PointF location(nan, inf);
+  const gfx::PointF root_location(inf, nan);
+  const base::TimeTicks time_stamp = base::TimeTicks::Now();
+
+  MouseEvent mouse_event(EventType::kMousePressed, location, root_location,
+                         time_stamp, EF_NONE, EF_NONE);
+
+  std::unique_ptr<Event> event_copy = mouse_event.Clone();
+  std::unique_ptr<Event> output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::Event>(event_copy, output));
+
+  // Verify that NaN is sanitized to 0.0f and infinity is clamped to the limit.
+  EXPECT_EQ(0.0f, output->AsLocatedEvent()->location_f().x());
+  EXPECT_EQ(clamped_limit, output->AsLocatedEvent()->location_f().y());
+
+  EXPECT_EQ(clamped_limit, output->AsLocatedEvent()->root_location_f().x());
+  EXPECT_EQ(0.0f, output->AsLocatedEvent()->root_location_f().y());
 }
 
 TEST(StructTraitsTest, KeyEventPropertiesSerialized) {
