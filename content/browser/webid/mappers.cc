@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verification_request.h"
 #include "content/browser/webid/flags.h"
@@ -445,21 +446,23 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
     return {};
   }
 
-  std::vector<IdentityRequestDialogDisclosureField> list;
+  base::flat_set<IdentityRequestDialogDisclosureField> set;
   for (const auto& field : *fields) {
     if (field == kDefaultFieldName) {
-      list.push_back(IdentityRequestDialogDisclosureField::kName);
+      set.insert(IdentityRequestDialogDisclosureField::kName);
     } else if (field == kDefaultFieldEmail) {
-      list.push_back(IdentityRequestDialogDisclosureField::kEmail);
+      set.insert(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kDefaultFieldPicture) {
-      list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+      set.insert(IdentityRequestDialogDisclosureField::kPicture);
     } else if (field == kFieldPhoneNumber) {
-      list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+      set.insert(IdentityRequestDialogDisclosureField::kPhoneNumber);
     } else if (field == kFieldUsername) {
-      list.push_back(IdentityRequestDialogDisclosureField::kUsername);
+      set.insert(IdentityRequestDialogDisclosureField::kUsername);
     }
   }
-  return list;
+  // the ordering will be determined by the value in the Enum definition.
+  return std::vector<IdentityRequestDialogDisclosureField>(set.begin(),
+                                                           set.end());
 }
 
 void ComputeAccountFields(
