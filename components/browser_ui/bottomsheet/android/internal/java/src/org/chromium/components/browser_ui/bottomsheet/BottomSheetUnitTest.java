@@ -954,4 +954,22 @@ public class BottomSheetUnitTest {
                                 .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width)
                         == sheet.getMaxSheetWidth());
     }
+
+    @Test
+    public void testTargetState_ExpandingFromPeek() {
+        BottomSheet.setSmallScreenForTesting(false);
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(SHEET_PEEK_HEIGHT).when(mSheetContent).getPeekHeight();
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+
+        int targetState =
+                mBottomSheet.forceScrollingStateForTesting(
+                        SHEET_PEEK_HEIGHT + 20, /* yUpwardsVelocity= */ 1.0f);
+        assertEquals(SheetState.HALF, targetState);
+    }
 }

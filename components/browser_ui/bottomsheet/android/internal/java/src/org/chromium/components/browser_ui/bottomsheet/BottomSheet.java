@@ -1540,7 +1540,7 @@ class BottomSheet extends FrameLayout
         @SheetState
         int largestCollapsingState = getLargestCollapsingState(sheetMovesDown, sheetHeight);
         @SheetState int smallestExpandingState = SheetState.FULL;
-        for (@SheetState int i = smallestExpandingState - 1; i > largestCollapsingState + 1; i--) {
+        for (@SheetState int i = smallestExpandingState - 1; i > largestCollapsingState; i--) {
             if (i == SheetState.HALF && !isHalfStateEnabled()) continue;
             if (i == SheetState.PEEK && !isPeekStateEnabled()) continue;
 
