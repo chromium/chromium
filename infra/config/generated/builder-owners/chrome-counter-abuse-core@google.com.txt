@@ -1,2 +1,0 @@
-ci/win-no-safe-browsing-rel
-try/win-no-safe-browsing-rel
