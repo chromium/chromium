@@ -35,6 +35,8 @@ source_set("autofill_and_passwords") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/bubble/ui_bundled:constants",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",

@@ -20,6 +20,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -124,7 +126,10 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 @end
 
-@implementation AutofillCreditCardTableViewController
+@implementation AutofillCreditCardTableViewController {
+  // Presenter for the Level Up Payment Methods walkthrough IPH.
+  BubbleViewControllerPresenter* _levelUpPaymentMethodsWalkthroughIPHPresenter;
+}
 
 #pragma mark - ViewController Life Cycle.
 
@@ -150,6 +155,19 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 }
 
 #pragma mark - UIViewController
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [_levelUpPaymentMethodsWalkthroughIPHPresenter dismissAnimated:NO];
+    _levelUpPaymentMethodsWalkthroughIPHPresenter = nil;
+  }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self maybeShowLevelUpWalkthroughIPH];
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -385,10 +403,14 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobileCreditCardSettingsClose"));
+  base::RecordAction(
+      base::UserMetricsAction("MobileCreditCardSettingsCompleted"));
 }
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobileCreditCardSettingsBack"));
+  base::RecordAction(
+      base::UserMetricsAction("MobileCreditCardSettingsCompleted"));
 }
 
 - (void)settingsWillBeDismissed {
@@ -404,6 +426,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   _personalDataManager = nullptr;
   _browser = nullptr;
 
+  [_levelUpPaymentMethodsWalkthroughIPHPresenter dismissAnimated:NO];
+  _levelUpPaymentMethodsWalkthroughIPHPresenter = nil;
   _settingsAreDismissed = YES;
 }
 
@@ -963,6 +987,68 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     (AutofillCvcStorageViewCoordinator*)coordinator {
   DCHECK_EQ(coordinator, _cvcStorageCoordinator);
   [self stopCvcStorageCoordinator];
+}
+
+#pragma mark - Private
+
+// Presents the Level Up Payment Methods walkthrough IPH if needed.
+- (void)maybeShowLevelUpWalkthroughIPH {
+  if (!self.shouldShowLevelUpPaymentMethodsWalkthroughIPH ||
+      _settingsAreDismissed) {
+    return;
+  }
+
+  UIView* targetView = self.view;
+  CHECK(targetView.window);
+
+  CGPoint anchorPoint = CGPointZero;
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+
+  if (self.tableView.visibleCells.count > 0) {
+    UITableViewCell* cell = self.tableView.visibleCells.firstObject;
+    if (cell.window) {
+      CGPoint anchorPointInCell =
+          CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMaxY(cell.bounds));
+      anchorPoint = [cell convertPoint:anchorPointInCell toView:cell.window];
+      arrowDirection = BubbleArrowDirectionUp;
+    }
+  } else {
+    anchorPoint = CGPointMake(0.5 * CGRectGetWidth(targetView.bounds),
+                              0.5 * CGRectGetHeight(targetView.bounds));
+  }
+
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PAYMENT_METHODS);
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType reason) {
+        [weakSelf dismissLevelUpPaymentMethodsWalkthroughIPH];
+      };
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+                   initWithText:text
+                          title:nil
+                 arrowDirection:arrowDirection
+                      alignment:BubbleAlignmentBottomOrTrailing
+                     bubbleType:BubbleViewTypeRichWithNext
+                pageControlPage:BubblePageControlPageFourth
+          totalPageControlPages:4
+          customNextButtonTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT)
+              dismissalCallback:dismissalCallback];
+  presenter.dismissalTimerDisabled = YES;
+
+  if ([presenter canPresentInView:targetView anchorPoint:anchorPoint]) {
+    self.shouldShowLevelUpPaymentMethodsWalkthroughIPH = NO;
+    _levelUpPaymentMethodsWalkthroughIPHPresenter = presenter;
+    [presenter presentInViewController:self anchorPoint:anchorPoint];
+  }
+}
+
+// Handles dismissal of the Level Up Payment Methods walkthrough IPH.
+- (void)dismissLevelUpPaymentMethodsWalkthroughIPH {
+  _levelUpPaymentMethodsWalkthroughIPHPresenter = nil;
 }
 
 @end

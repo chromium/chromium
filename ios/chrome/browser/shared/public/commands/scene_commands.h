@@ -86,6 +86,12 @@ enum class TabGridOpeningMode {
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController
               hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
 
+// TODO(crbug.com/41352590): Do not pass baseViewController through dispatcher.
+// Shows the Settings UI, presenting from `baseViewController` and showing
+// Level Up walkthrough IPH if specified.
+- (void)showSettingsFromViewController:(UIViewController*)baseViewController
+       shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH;
+
 // Shows the settings UI for price tracking notifications.
 - (void)showPriceTrackingNotificationsSettings;
 

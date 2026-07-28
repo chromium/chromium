@@ -293,7 +293,7 @@ struct EnhancedSafeBrowsingActivePromoData
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker>
       _featureEngagementTracker;
-  // Presenter for the signin IPH.
+  // Presenter for the signin or Level Up IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
 
   // Discover feed visibility browser agent.
@@ -514,6 +514,7 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   [self maybeShowSigninIPH];
+  [self maybeShowLevelUpWalkthroughIPH];
 }
 
 #pragma mark SettingsRootTableViewController
@@ -1917,6 +1918,114 @@ struct EnhancedSafeBrowsingActivePromoData
   _bubblePresenter = nil;
 }
 
+// Presents the Level Up Payment Methods walkthrough IPH if needed.
+- (void)maybeShowLevelUpWalkthroughIPH {
+  if (!self.shouldShowLevelUpPaymentMethodsWalkthroughIPH ||
+      _settingsAreDismissed || !IsYourSavedInfoSettingsPageIosEnabled()) {
+    return;
+  }
+
+  UIView* targetView = self.view;
+  CHECK(targetView.window);
+
+  NSString* text = l10n_util::GetNSString(
+      IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_AUTOFILL_AND_PASSWORDS);
+
+  NSIndexPath* targetIndexPath = [self.tableViewModel
+      indexPathForItemType:SettingsItemTypeAutofillAndPasswords
+         sectionIdentifier:SettingsSectionIdentifierBasics];
+
+  if (!targetIndexPath) {
+    return;
+  }
+
+  CGPoint anchorPoint = CGPointZero;
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:targetIndexPath];
+  if (cell.window) {
+    CGPoint anchorPointInCell =
+        CGPointMake(CGRectGetMidX(cell.bounds), CGRectGetMaxY(cell.bounds));
+    anchorPoint = [cell convertPoint:anchorPointInCell toView:cell.window];
+    arrowDirection = BubbleArrowDirectionUp;
+  } else {
+    anchorPoint = CGPointMake(0.5 * CGRectGetWidth(targetView.bounds),
+                              0.5 * CGRectGetHeight(targetView.bounds));
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType reason) {
+        [weakSelf levelUpWalkthroughStep3DidDismissWithReason:reason];
+      };
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+                   initWithText:text
+                          title:nil
+                 arrowDirection:arrowDirection
+                      alignment:BubbleAlignmentBottomOrTrailing
+                     bubbleType:BubbleViewTypeRichWithNext
+                pageControlPage:BubblePageControlPageThird
+          totalPageControlPages:4
+          customNextButtonTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT)
+              dismissalCallback:dismissalCallback];
+  presenter.dismissalTimerDisabled = YES;
+
+  if ([presenter canPresentInView:targetView anchorPoint:anchorPoint]) {
+    self.shouldShowLevelUpPaymentMethodsWalkthroughIPH = NO;
+    _bubblePresenter = presenter;
+    [presenter presentInViewController:self anchorPoint:anchorPoint];
+  }
+}
+
+// Handles dismissal of the Level Up Payment Methods walkthrough IPH.
+- (void)levelUpWalkthroughStep3DidDismissWithReason:
+    (IPHDismissalReasonType)reason {
+  _bubblePresenter = nil;
+  switch (reason) {
+    case IPHDismissalReasonType::kTappedNext:
+    case IPHDismissalReasonType::kTappedAnchorView:
+    case IPHDismissalReasonType::kTappedIPH:
+      [self showAutofillAndPasswordsWithLevelUpWalkthroughIPH:YES];
+      break;
+    default:
+      break;
+  }
+}
+
+// Shows the Autofill & Passwords settings page, optionally triggering the
+// Level Up Payment Methods walkthrough IPH.
+- (void)showAutofillAndPasswordsWithLevelUpWalkthroughIPH:(BOOL)shouldShowIPH {
+  if (_autofillAndPasswordsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  [_autofillAndPasswordsCoordinator stop];
+
+  _autofillAndPasswordsCoordinator = [[AutofillAndPasswordsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser
+                              referrer:autofill::autofill_metrics::
+                                           AutofillSettingsReferrer::
+                                               kSettingsMenu];
+  _autofillAndPasswordsCoordinator.delegate = self;
+  _autofillAndPasswordsCoordinator
+      .shouldShowLevelUpPaymentMethodsWalkthroughIPH = shouldShowIPH;
+  [_autofillAndPasswordsCoordinator start];
+}
+
+// Shows the Payment Methods settings page, optionally triggering the Level Up
+// Payment Methods walkthrough IPH.
+- (void)showCreditCardSettingsWithLevelUpWalkthroughIPH:(BOOL)shouldShowIPH {
+  AutofillCreditCardTableViewController* controller =
+      [[AutofillCreditCardTableViewController alloc] initWithBrowser:_browser];
+  controller.shouldShowLevelUpPaymentMethodsWalkthroughIPH = shouldShowIPH;
+  [self.navigationController pushViewController:controller animated:YES];
+}
+
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
   const base::DictValue& dict = _profile->GetPrefs()->GetDict(
@@ -2274,6 +2383,9 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // Remove Enhanced Safe Browsing Promo.
   [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
+
+  [_bubblePresenter dismissAnimated:NO];
+  _bubblePresenter = nil;
 
   // Stop children coordinators.
   [_geminiSettingsCoordinator stop];

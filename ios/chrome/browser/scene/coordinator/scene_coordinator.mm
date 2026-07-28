@@ -649,6 +649,21 @@ inline LayoutStateScenePassKey PassKey() {
 
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController
               hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
+  [self showSettingsFromViewController:baseViewController
+              hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot
+       shouldShowLevelUpWalkthroughIPH:NO];
+}
+
+- (void)showSettingsFromViewController:(UIViewController*)baseViewController
+       shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH {
+  [self showSettingsFromViewController:baseViewController
+              hasDefaultBrowserBlueDot:NO
+       shouldShowLevelUpWalkthroughIPH:shouldShowLevelUpWalkthroughIPH];
+}
+
+- (void)showSettingsFromViewController:(UIViewController*)baseViewController
+              hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot
+       shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH {
   if (!baseViewController) {
     baseViewController = self.activeViewController;
   }
@@ -670,8 +685,10 @@ inline LayoutStateScenePassKey PassKey() {
 
   __weak __typeof(self) weakSelf = self;
   auto presentSettings = ^{
-    [weakSelf presentSettingsWithBaseViewController:baseViewController
-                           hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
+    [weakSelf
+        presentSettingsWithBaseViewController:baseViewController
+                     hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot
+              shouldShowLevelUpWalkthroughIPH:shouldShowLevelUpWalkthroughIPH];
   };
 
   if (signinInProgress) {
@@ -1779,14 +1796,17 @@ inline LayoutStateScenePassKey PassKey() {
 // and blue dot promo state.
 - (void)presentSettingsWithBaseViewController:
             (UIViewController*)baseViewController
-                     hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
+                     hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot
+              shouldShowLevelUpWalkthroughIPH:
+                  (BOOL)shouldShowLevelUpWalkthroughIPH {
   [self.sceneState.profileState.appState.deferredRunner
       runBlockNamed:kStartupInitPrefObservers];
 
   _settingsNavigationController = [SettingsNavigationController
       mainSettingsControllerForBrowser:_regularBrowser.get()
                               delegate:self
-              hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
+              hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot
+       shouldShowLevelUpWalkthroughIPH:shouldShowLevelUpWalkthroughIPH];
   [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];

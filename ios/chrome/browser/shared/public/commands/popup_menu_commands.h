@@ -13,6 +13,9 @@
 // Called to present the Level Up Password Checkup walkthrough IPH step.
 - (void)showLevelUpPasswordCheckupWalkthroughIPH;
 
+// Called to present the Level Up Payment Methods walkthrough IPH step.
+- (void)showLevelUpPaymentMethodsWalkthroughIPH;
+
 // Called to present the Level Up Quick Delete walkthrough IPH step.
 - (void)showLevelUpQuickDeleteWalkthroughIPH;
 

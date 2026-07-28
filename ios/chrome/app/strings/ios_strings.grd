@@ -4567,11 +4567,20 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_DELETE_BROWSING_DATA" desc="Text of the bubble for the Level Up walkthrough prompting the user to select Delete Browsing Data. [iOS only]">
         Select Delete Browsing Data
       </message>
+      <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_AUTOFILL_AND_PASSWORDS" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Autofill and passwords. [iOS only]">
+        Open Autofill and passwords
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_CHROME_MENU" desc="Text of the bubble for the Level Up walkthrough prompting the user to open the Chrome menu. [iOS only]">
+        Open the Chrome menu
+      </message>
       <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PASSWORD_CHECKUP" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Password Checkup. [iOS only]">
         Open Password Checkup
       </message>
       <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PASSWORD_MANAGER" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Password Manager. [iOS only]">
         Open Password Manager
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_PAYMENT_METHODS" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Payment Methods. [iOS only]">
+        Open Payments
       </message>
       <message name="IDS_IOS_LEVEL_UP_WALKTHROUGH_OPEN_SETTINGS" desc="Text of the bubble for the Level Up walkthrough prompting the user to open Settings. [iOS only]">
         Open Settings

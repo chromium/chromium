@@ -24,6 +24,10 @@ class Browser;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Whether the Level Up Payment Methods Walkthrough IPH should be presented when
+// the view appears.
+@property(nonatomic, assign) BOOL shouldShowLevelUpPaymentMethodsWalkthroughIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SETTINGS_TABLE_VIEW_CONTROLLER_H_

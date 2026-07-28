@@ -30,6 +30,10 @@ enum class AutofillSettingsReferrer;
 
 @property(nonatomic, weak) id<AutofillAndPasswordsCoordinatorDelegate> delegate;
 
+// Whether the Level Up Payment Methods Walkthrough IPH should be presented when
+// the view appears.
+@property(nonatomic, assign) BOOL shouldShowLevelUpPaymentMethodsWalkthroughIPH;
+
 // Designated initializer.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController

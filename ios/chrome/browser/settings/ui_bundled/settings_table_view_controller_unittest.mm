@@ -389,6 +389,20 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
        sectionIdentifier:SettingsSectionIdentifierInfo]);
 }
 
+// Verifies that the Level Up walkthrough target item (Autofill and Passwords)
+// exists in SettingsTableViewController.
+TEST_F(SettingsTableViewControllerTest, HasAutofillAndPasswordsLevelUpItem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kYourSavedInfoSettingsPageIos);
+
+  CreateController();
+  CheckController();
+
+  EXPECT_TRUE([controller().tableViewModel
+      hasItemForItemType:SettingsItemTypeAutofillAndPasswords
+       sectionIdentifier:SettingsSectionIdentifierBasics]);
+}
+
 // Verifies that the default browser blue dot is displayed when indicated.
 TEST_F(SettingsTableViewControllerTest, TestHasDefaultBrowserBlueDot) {
   VerifyDefaultBrowwserBlueDot(true);

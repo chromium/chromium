@@ -392,6 +392,22 @@ TEST_P(AutofillAndPasswordsTableViewControllerTest,
   }
 }
 
+// Verifies that the Level Up walkthrough target item (Payment Methods)
+// exists in AutofillAndPasswordsTableViewController.
+TEST_P(AutofillAndPasswordsTableViewControllerTest,
+       HasPaymentMethodsLevelUpItem) {
+  AutofillAndPasswordsTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAndPasswordsTableViewController>(
+          controller());
+
+  [view_controller setAutofillCreditCardEnabled:YES];
+  [view_controller loadModel];
+
+  EXPECT_TRUE([view_controller.tableViewModel
+      hasItemForItemType:SettingsItemTypeAutofillCreditCard
+       sectionIdentifier:SettingsSectionIdentifierBasics]);
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AutofillAndPasswordsTableViewControllerTest);
 

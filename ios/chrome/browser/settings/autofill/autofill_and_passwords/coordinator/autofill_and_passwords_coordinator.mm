@@ -106,6 +106,8 @@ enum class YourSavedInfoDataCategory {
   _viewController = [[AutofillAndPasswordsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
+  _viewController.shouldShowLevelUpPaymentMethodsWalkthroughIPH =
+      self.shouldShowLevelUpPaymentMethodsWalkthroughIPH;
 
   ProfileIOS* profile = self.browser->GetProfile();
   autofill::EntityDataManager* entityDataManager =

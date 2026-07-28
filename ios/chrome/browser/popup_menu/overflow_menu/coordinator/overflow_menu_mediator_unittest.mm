@@ -1178,6 +1178,14 @@ TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
   EXPECT_EQ(BadgeTypeNone, settingsDestination.badge);
 }
 
+// Verifies that the Level Up walkthrough target item (Settings destination)
+// exists in OverflowMenuMediator.
+TEST_F(OverflowMenuMediatorTest, HasSettingsLevelUpDestination) {
+  CreateMediator(/*incognito=*/NO);
+  mediator_.model = model_;
+  EXPECT_NE(GetDestination(kToolsMenuSettingsId), nil);
+}
+
 // Tests that there is an error badge on the Settings destination when there is
 // an account error that will be indicated in the Settings menu. The account is
 // signed.

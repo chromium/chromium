@@ -48,6 +48,10 @@
 // walkthrough.
 - (void)showLevelUpPasswordCheckupWalkthroughIPH;
 
+// Displays an IPH bubble on the tools menu button for Level Up Payment Methods
+// walkthrough.
+- (void)showLevelUpPaymentMethodsWalkthroughIPH;
+
 // Displays an IPH bubble on the tools menu button for Level Up Quick Delete
 // walkthrough.
 - (void)showLevelUpQuickDeleteWalkthroughIPH;

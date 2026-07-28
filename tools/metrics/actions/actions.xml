@@ -28034,6 +28034,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileCreditCardSettingsCompleted">
+  <owner>pabouchard@google.com</owner>
+  <description>
+    Reported when the credit card settings are completed. iOS only.
+  </description>
+</action>
+
 <action name="MobileCrossDeviceTabJourney">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>

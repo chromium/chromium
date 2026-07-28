@@ -74,6 +74,10 @@
 @property(nonatomic, weak) id<AutofillAndPasswordsTableViewControllerDelegate>
     delegate;
 
+// Whether the Level Up Payment Methods Walkthrough IPH should be presented when
+// the view appears.
+@property(nonatomic, assign) BOOL shouldShowLevelUpPaymentMethodsWalkthroughIPH;
+
 // Delegate for sign-in promo view events.
 @property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoDelegate;
 

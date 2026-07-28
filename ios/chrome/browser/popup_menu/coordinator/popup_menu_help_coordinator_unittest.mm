@@ -4,16 +4,22 @@
 
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_help_coordinator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -115,6 +121,14 @@ TEST_F(PopupMenuHelpCoordinatorTest, DontShowBlueDotSetOnForeground) {
 
   EXPECT_FALSE([popup_menu_help_coordinator_ hasBlueDotForOverflowMenu]);
   EXPECT_OCMOCK_VERIFY((id)popupMenuUIUpdating_);
+}
+
+// Verifies that the Level Up walkthrough target item (Tools menu layout guide)
+// can be created in the LayoutGuideCenter.
+TEST_F(PopupMenuHelpCoordinatorTest, HasToolsMenuLayoutGuideLevelUpTarget) {
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(browser_.get());
+  EXPECT_NE([layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide], nil);
 }
 
 }  // namespace

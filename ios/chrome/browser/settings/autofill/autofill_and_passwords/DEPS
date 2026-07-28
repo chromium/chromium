@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/authentication/ui_bundled/cells",
   "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/device_reauth",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/signin/model",

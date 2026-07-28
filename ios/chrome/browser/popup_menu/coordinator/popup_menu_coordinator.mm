@@ -577,6 +577,10 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   [self.popupMenuHelpCoordinator showLevelUpPasswordCheckupWalkthroughIPH];
 }
 
+- (void)showLevelUpPaymentMethodsWalkthroughIPH {
+  [self.popupMenuHelpCoordinator showLevelUpPaymentMethodsWalkthroughIPH];
+}
+
 - (void)showLevelUpQuickDeleteWalkthroughIPH {
   [self.popupMenuHelpCoordinator showLevelUpQuickDeleteWalkthroughIPH];
 }

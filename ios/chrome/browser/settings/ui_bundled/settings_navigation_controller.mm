@@ -195,9 +195,23 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
             hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
+  return [self mainSettingsControllerForBrowser:browser
+                                       delegate:delegate
+                       hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot
+                shouldShowLevelUpWalkthroughIPH:NO];
+}
+
++ (instancetype)
+    mainSettingsControllerForBrowser:(Browser*)browser
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate
+            hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot
+     shouldShowLevelUpWalkthroughIPH:(BOOL)shouldShowLevelUpWalkthroughIPH {
   SettingsTableViewController* controller = [[SettingsTableViewController alloc]
                initWithBrowser:browser
       hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
+  controller.shouldShowLevelUpPaymentMethodsWalkthroughIPH =
+      shouldShowLevelUpWalkthroughIPH;
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:controller
