@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2);
 // If this feature is enabled, physical double-tap gestures will be detected
 // and used to trigger sending tabs to self on Android devices.
 BASE_DECLARE_FEATURE(kSendTabToSelfGesture);
+
+// If this feature is enabled, a Sent Tab To Self notification will open
+// the appropriate native app if it is available.
+BASE_DECLARE_FEATURE(kSendTabToSelfOpenNativeApp);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

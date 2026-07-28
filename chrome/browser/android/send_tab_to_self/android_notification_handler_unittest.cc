@@ -33,7 +33,10 @@
 namespace send_tab_to_self {
 namespace {
 
+using base::Bucket;
+using base::BucketsAre;
 using testing::Eq;
+using testing::NiceMock;
 using testing::Property;
 
 constexpr char kExampleUrl[] = "https://www.example.com/";
@@ -63,6 +66,7 @@ class MockAndroidNotificationHandler : public AndroidNotificationHandler {
               (std::string_view device_name,
                content::WebContents* web_contents),
               (override));
+  MOCK_METHOD(bool, OpenInNativeAppIfPossible, (const GURL& url), (override));
 };
 
 class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -89,7 +93,8 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_interface_);
 
-    handler_ = std::make_unique<MockAndroidNotificationHandler>(model());
+    handler_ =
+        std::make_unique<NiceMock<MockAndroidNotificationHandler>>(model());
     model()->SetLocalCacheGuid(kDeviceId);
   }
 
@@ -565,5 +570,135 @@ TEST_F(AndroidNotificationHandlerWithTabGridAutoOpenSupportTest,
   TabModelList::RemoveTabModel(tab_model_.get());
 }
 
+class AndroidNotificationHandlerWithNativeAppSupportTest
+    : public AndroidNotificationHandlerTest {
+  base::test::ScopedFeatureList feature_list{kSendTabToSelfOpenNativeApp};
+};
+
+TEST_F(AndroidNotificationHandlerWithNativeAppSupportTest,
+       ShouldAutoOpenWithNativeAppFlagEnabled) {
+  base::HistogramTester histogram_tester;
+  TabModelList::AddTabModel(tab_model_.get());
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  EXPECT_CALL(*handler(), ShowNotification).Times(0);
+  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+
+  handler()->DisplayNewEntries({entry});
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
+TEST_F(AndroidNotificationHandlerWithNativeAppSupportTest,
+       ShouldOpenInNativeAppImmediately) {
+  base::HistogramTester histogram_tester;
+  TabModelList::AddTabModel(tab_model_.get());
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  // There should be no notification nor message banner because it opened in the
+  // native app.
+  EXPECT_CALL(*handler(), ShowNotification).Times(0);
+  EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
+  EXPECT_CALL(*handler(), OpenInNativeAppIfPossible(GURL(kExampleUrl)))
+      .WillOnce(testing::Return(true));
+
+  handler()->DisplayNewEntries({entry});
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kOpenedInNativeAppImmediately, 1);
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
+TEST_F(AndroidNotificationHandlerTest,
+       ShouldOpenOnlyFirstInNativeAppAndNotifyForSecond) {
+  base::test::ScopedFeatureList feature_list(kSendTabToSelfOpenNativeApp);
+
+  base::HistogramTester histogram_tester;
+  TabModelList::AddTabModel(tab_model_.get());
+
+  const SendTabToSelfEntry* entry1 =
+      model()->AddEntryRemotely(GURL("https://www.example.com/app1"), "Title 1",
+                                kDeviceId, PageContext(), NavigationHistory());
+  const SendTabToSelfEntry* entry2 =
+      model()->AddEntryRemotely(GURL("https://www.example.com/app2"), "Title 2",
+                                kDeviceId, PageContext(), NavigationHistory());
+  const std::string guid1 = entry1->GetGUID();
+  const std::string guid2 = entry2->GetGUID();
+
+  // The first entry should open in the native app immediately; the second
+  // should show a notification. There should be no message banners.
+  EXPECT_CALL(*handler(),
+              OpenInNativeAppIfPossible(GURL("https://www.example.com/app1")))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*handler(),
+              OpenInNativeAppIfPossible(GURL("https://www.example.com/app2")))
+      .Times(0);
+  EXPECT_CALL(*handler(), ShowNotification(Property(
+                              &SendTabToSelfEntry::GetGUID, Eq(guid2))));
+  EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
+
+  handler()->DisplayNewEntries({entry1, entry2});
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid1)->IsOpened());
+  EXPECT_FALSE(model()->GetEntryByGUID(guid2)->IsOpened());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Sharing.SendTabToSelf.AutoOpenOutcome2"),
+      BucketsAre(Bucket(AutoOpenOutcome::kOpenedInNativeAppImmediately, 1),
+                 Bucket(AutoOpenOutcome::kUnopenedImmediately, 1)));
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
+class AndroidNotificationHandlerModelNotReadyWithNativeAppSupportTest
+    : public AndroidNotificationHandlerModelNotReadyTest {
+  base::test::ScopedFeatureList feature_list{kSendTabToSelfOpenNativeApp};
+};
+
+TEST_F(AndroidNotificationHandlerModelNotReadyWithNativeAppSupportTest,
+       ShouldOpenInNativeAppOnModelReady) {
+  base::HistogramTester histogram_tester;
+  TabModelList::AddTabModel(tab_model_.get());
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  EXPECT_CALL(*handler(), ShowNotification).Times(0);
+  EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
+  EXPECT_CALL(*handler(), OpenInNativeAppIfPossible(GURL(kExampleUrl)))
+      .WillOnce(testing::Return(true));
+
+  // Mark the model as ready. This should trigger the auto-open of the pending
+  // entry.
+  model()->SetIsReady(true);
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kOpenedInNativeAppUponActivation, 1);
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
 }  // namespace
 }  // namespace send_tab_to_self

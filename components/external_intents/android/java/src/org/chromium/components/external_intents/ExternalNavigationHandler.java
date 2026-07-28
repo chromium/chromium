@@ -2828,12 +2828,13 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * Check whether the given package is a specialized handler for given ResolveInfos.
      *
      * @param packageName Package name to check against. If null, checks if any package is a
-     *         specialized handler.
+     *     specialized handler.
      * @param infos The list of ResolveInfos to check.
      * @return Whether the given package (or any package if null) is a specialized handler in the
-     *         given ResolveInfos.
+     *     given ResolveInfos.
      */
-    public static boolean isPackageSpecializedHandler(String packageName, List<ResolveInfo> infos) {
+    public static boolean isPackageSpecializedHandler(
+            @Nullable String packageName, List<ResolveInfo> infos) {
         return !getSpecializedHandlersWithFilter(infos, packageName).isEmpty();
     }
 

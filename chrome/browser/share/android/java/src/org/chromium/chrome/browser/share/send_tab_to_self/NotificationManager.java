@@ -13,6 +13,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Browser;
@@ -21,6 +23,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -40,6 +43,7 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 
 /**
  * Manages all SendTabToSelf related notifications for Android. This includes displaying, handling
@@ -53,6 +57,54 @@ public class NotificationManager {
     private static final String NOTIFICATION_ACTION_DISMISS = "send_tab_to_self.dismiss";
     private static final String NOTIFICATION_ACTION_TIMEOUT = "send_tab_to_self.timeout";
 
+    private static boolean openInNativeAppIfPossible(@Nullable Uri uri) {
+        if (uri == null) return false;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)) {
+            return false;
+        }
+        Context context = ContextUtils.getApplicationContext();
+
+        // Create an implicit Intent, to be used for looking up whether a matching native app (a
+        // "specialized handler") exists.
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(intent);
+
+        ResolveInfo resolveInfo =
+                PackageManagerUtils.resolveActivity(
+                        intent,
+                        PackageManager.GET_RESOLVED_FILTER | PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo == null) return false;
+
+        if (resolveInfo.activityInfo == null) return false;
+        String packageName = resolveInfo.activityInfo.packageName;
+        if (packageName == null) return false;
+
+        boolean isBrowser =
+                ExternalNavigationHandler.getInstalledBrowserPackages().contains(packageName);
+
+        if (!isBrowser) {
+            // There is a matching native app! Start the Intent to launch that app.
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (IntentUtils.safeStartActivity(context, intent)) {
+                return true;
+            }
+            // Else: Fall back to Chrome if something went wrong with the native app.
+        }
+        return false;
+    }
+
+    /**
+     * Opens the URL in the matching native app, if there is one.
+     *
+     * @param url The URL to open.
+     * @return true if the native app was launched, false otherwise.
+     */
+    @CalledByNative
+    public static boolean openInNativeAppIfPossible(String url) {
+        if (url == null) return false;
+        return openInNativeAppIfPossible(Uri.parse(url));
+    }
+
     /**
      * Opens the URL for the Send Tab To Self notification.
      *
@@ -64,7 +116,12 @@ public class NotificationManager {
      *     restoration and is expected to be set only for trusted navigations.
      */
     private static void openUrl(@Nullable Uri uri, @Nullable String scrollToTextFragment) {
+        if (openInNativeAppIfPossible(uri)) {
+            return;
+        }
+
         Context context = ContextUtils.getApplicationContext();
+
         Intent intent =
                 new Intent()
                         .setAction(Intent.ACTION_VIEW)
