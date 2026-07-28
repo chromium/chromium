@@ -30,9 +30,11 @@ if (!is_android) {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/views:status_bubble",
       "//chrome/browser/ui/web_applications",
+      "//components/find_in_page",
       "//components/headless/console_message_logger",
       "//components/javascript_dialogs",
       "//components/page_load_metrics/browser",
+      "//components/printing/browser",
       "//content/public/browser",
       "//ui/base",
     ]

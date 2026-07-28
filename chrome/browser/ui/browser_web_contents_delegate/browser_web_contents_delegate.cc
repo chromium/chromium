@@ -16,6 +16,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,10 +56,13 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/paint_preview/browser/paint_preview_client.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/printing/browser/print_composite_client.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -71,9 +75,11 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
@@ -102,6 +108,28 @@ BASE_FEATURE(kBackgroundActorTaskPopupsOpenInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 DEFINE_USER_DATA(BrowserWebContentsDelegate);
+
+namespace {
+
+const extensions::Extension* GetExtensionForOrigin(
+    Profile* profile,
+    const GURL& security_origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!security_origin.SchemeIs(extensions::kExtensionScheme)) {
+    return nullptr;
+  }
+
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          security_origin.GetHost());
+  DCHECK(extension);
+  return extension;
+#else
+  return nullptr;
+#endif
+}
+
+}  // namespace
 
 BrowserWebContentsDelegate::BrowserWebContentsDelegate(
     BrowserWindowInterface* browser,
@@ -1181,5 +1209,108 @@ void BrowserWebContentsDelegate::RegisterProtocolHandler(
         std::make_unique<
             custom_handlers::RegisterProtocolHandlerPermissionRequest>(
             registry, handler, url, std::move(*blocker)));
+  }
+}
+
+void BrowserWebContentsDelegate::UnregisterProtocolHandler(
+    content::RenderFrameHost* requesting_frame,
+    const std::string& protocol,
+    const GURL& url,
+    bool user_gesture) {
+  // user_gesture will be used in case we decide to have confirmation bubble
+  // for user while un-registering the handler.
+  content::BrowserContext* context = requesting_frame->GetBrowserContext();
+  if (context->IsOffTheRecord()) {
+    return;
+  }
+
+  custom_handlers::ProtocolHandler handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
+  registry->RemoveHandler(handler);
+}
+
+void BrowserWebContentsDelegate::FindReply(content::WebContents* web_contents,
+                                           int request_id,
+                                           int number_of_matches,
+                                           const gfx::Rect& selection_rect,
+                                           int active_match_ordinal,
+                                           bool final_update) {
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
+  if (!find_tab_helper) {
+    return;
+  }
+
+  find_tab_helper->HandleFindReply(request_id, number_of_matches,
+                                   selection_rect, active_match_ordinal,
+                                   final_update);
+}
+
+void BrowserWebContentsDelegate::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  const extensions::Extension* extension =
+      GetExtensionForOrigin(browser_->GetProfile(), request.security_origin);
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), extension);
+}
+
+void BrowserWebContentsDelegate::ProcessSelectAudioOutput(
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+#if defined(TOOLKIT_VIEWS)
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessSelectAudioOutputRequest(
+      &*browser_, request, std::move(callback));
+#else
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kUnknown));
+#endif
+}
+
+bool BrowserWebContentsDelegate::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  const extensions::Extension* extension =
+      GetExtensionForOrigin(profile, security_origin.GetURL());
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type,
+                                   extension);
+}
+
+std::string BrowserWebContentsDelegate::GetTitleForMediaControls(
+    content::WebContents* web_contents) {
+  return app_browser_controller_
+             ? app_browser_controller_->GetTitleForMediaControls()
+             : std::string();
+}
+
+void BrowserWebContentsDelegate::PrintCrossProcessSubframe(
+    content::WebContents* web_contents,
+    const gfx::Rect& rect,
+    int document_cookie,
+    content::RenderFrameHost* subframe_host) const {
+  auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
+  if (client) {
+    client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
+  }
+}
+
+void BrowserWebContentsDelegate::CapturePaintPreviewOfSubframe(
+    content::WebContents* web_contents,
+    const gfx::Rect& rect,
+    const base::UnguessableToken& guid,
+    content::RenderFrameHost* render_frame_host) {
+  auto* client =
+      paint_preview::PaintPreviewClient::FromWebContents(web_contents);
+  if (client) {
+    client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
   }
 }

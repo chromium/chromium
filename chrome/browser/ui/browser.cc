@@ -328,29 +328,6 @@ namespace {
 // How long we wait before updating the browser chrome while loading a page.
 constexpr base::TimeDelta kUIUpdateCoalescingTime = base::Milliseconds(200);
 
-
-const extensions::Extension* GetExtensionForOrigin(
-    Profile* profile,
-    const GURL& security_origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!security_origin.SchemeIs(extensions::kExtensionScheme)) {
-    return nullptr;
-  }
-
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
-          security_origin.GetHost());
-  DCHECK(extension);
-  return extension;
-#else
-  return nullptr;
-#endif
-}
-
-
-
-
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1545,19 +1522,8 @@ void Browser::UnregisterProtocolHandler(
     const std::string& protocol,
     const GURL& url,
     bool user_gesture) {
-  // user_gesture will be used in case we decide to have confirmation bubble
-  // for user while un-registering the handler.
-  content::BrowserContext* context = requesting_frame->GetBrowserContext();
-  if (context->IsOffTheRecord()) {
-    return;
-  }
-
-  ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
-      protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
-
-  custom_handlers::ProtocolHandlerRegistry* registry =
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
-  registry->RemoveHandler(handler);
+  BrowserWebContentsDelegate::From(this)->UnregisterProtocolHandler(
+      requesting_frame, protocol, url, user_gesture);
 }
 
 void Browser::FindReply(WebContents* web_contents,
@@ -1566,15 +1532,9 @@ void Browser::FindReply(WebContents* web_contents,
                         const gfx::Rect& selection_rect,
                         int active_match_ordinal,
                         bool final_update) {
-  find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents);
-  if (!find_tab_helper) {
-    return;
-  }
-
-  find_tab_helper->HandleFindReply(request_id, number_of_matches,
-                                   selection_rect, active_match_ordinal,
-                                   final_update);
+  BrowserWebContentsDelegate::From(this)->FindReply(
+      web_contents, request_id, number_of_matches, selection_rect,
+      active_match_ordinal, final_update);
 }
 
 void Browser::RequestPointerLock(WebContents* web_contents,
@@ -1613,43 +1573,28 @@ void Browser::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  const extensions::Extension* extension =
-      GetExtensionForOrigin(profile_, request.security_origin);
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), extension);
+  BrowserWebContentsDelegate::From(this)->RequestMediaAccessPermission(
+      web_contents, request, std::move(callback));
 }
 
 void Browser::ProcessSelectAudioOutput(
     const content::SelectAudioOutputRequest& request,
     content::SelectAudioOutputCallback callback) {
-#if defined(TOOLKIT_VIEWS)
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessSelectAudioOutputRequest(
-      this, request, std::move(callback));
-#else
-  std::move(callback).Run(
-      base::unexpected(content::SelectAudioOutputError::kUnknown));
-#endif
+  BrowserWebContentsDelegate::From(this)->ProcessSelectAudioOutput(
+      request, std::move(callback));
 }
 
 bool Browser::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  const extensions::Extension* extension =
-      GetExtensionForOrigin(profile, security_origin.GetURL());
-  return MediaCaptureDevicesDispatcher::GetInstance()
-      ->CheckMediaAccessPermission(render_frame_host, security_origin, type,
-                                   extension);
+  return BrowserWebContentsDelegate::From(this)->CheckMediaAccessPermission(
+      render_frame_host, security_origin, type);
 }
 
 std::string Browser::GetTitleForMediaControls(WebContents* web_contents) {
-  auto* const app_browser_controller =
-      web_app::AppBrowserController::From(this);
-  return app_browser_controller
-             ? app_browser_controller->GetTitleForMediaControls()
-             : std::string();
+  return BrowserWebContentsDelegate::From(this)->GetTitleForMediaControls(
+      web_contents);
 }
 
 void Browser::GetAIPageContent(
@@ -1679,10 +1624,8 @@ void Browser::PrintCrossProcessSubframe(
     const gfx::Rect& rect,
     int document_cookie,
     content::RenderFrameHost* subframe_host) const {
-  auto* client = printing::PrintCompositeClient::FromWebContents(web_contents);
-  if (client) {
-    client->PrintCrossProcessSubframe(rect, document_cookie, subframe_host);
-  }
+  BrowserWebContentsDelegate::From(this)->PrintCrossProcessSubframe(
+      web_contents, rect, document_cookie, subframe_host);
 }
 #endif
 
@@ -1692,11 +1635,8 @@ void Browser::CapturePaintPreviewOfSubframe(
     const gfx::Rect& rect,
     const base::UnguessableToken& guid,
     content::RenderFrameHost* render_frame_host) {
-  auto* client =
-      paint_preview::PaintPreviewClient::FromWebContents(web_contents);
-  if (client) {
-    client->CaptureSubframePaintPreview(guid, rect, render_frame_host);
-  }
+  BrowserWebContentsDelegate::From(this)->CapturePaintPreviewOfSubframe(
+      web_contents, rect, guid, render_frame_host);
 }
 #endif
 

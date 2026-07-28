@@ -222,6 +222,38 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
                                const std::string& protocol,
                                const GURL& url,
                                bool user_gesture) override;
+  void UnregisterProtocolHandler(content::RenderFrameHost* requesting_frame,
+                                 const std::string& protocol,
+                                 const GURL& url,
+                                 bool user_gesture) override;
+  void FindReply(content::WebContents* web_contents,
+                 int request_id,
+                 int number_of_matches,
+                 const gfx::Rect& selection_rect,
+                 int active_match_ordinal,
+                 bool final_update) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  void ProcessSelectAudioOutput(
+      const content::SelectAudioOutputRequest& request,
+      content::SelectAudioOutputCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const url::Origin& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
+  void PrintCrossProcessSubframe(
+      content::WebContents* web_contents,
+      const gfx::Rect& rect,
+      int document_cookie,
+      content::RenderFrameHost* subframe_host) const override;
+  void CapturePaintPreviewOfSubframe(
+      content::WebContents* web_contents,
+      const gfx::Rect& rect,
+      const base::UnguessableToken& guid,
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   const base::ElapsedTimer creation_timer_;
