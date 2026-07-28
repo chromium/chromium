@@ -9,7 +9,9 @@
 
 #include "base/feature.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_view_rust.h"
+#include "base/time/time.h"
 #include "third_party/rust/sfv/v0_15/wrapper/functions.h"
 #include "third_party/rust/sfv/v0_15/wrapper/lib.rs.h"
 
@@ -122,44 +124,84 @@ void set_parameter_byte_sequence(Parameters& params,
 
 namespace net::structured_headers {
 
+namespace {
+
+template <typename Parse>
+auto ParseAndRecordMetrics(std::string_view time_metric,
+                           std::string_view success_metric,
+                           Parse&& parse) {
+  const base::TimeTicks start = base::TimeTicks::Now();
+  auto result = parse();
+  base::UmaHistogramMicrosecondsTimes(time_metric,
+                                      base::TimeTicks::Now() - start);
+  base::UmaHistogramBoolean(success_metric, !!result);
+  return result;
+}
+
+}  // namespace
+
 BASE_FEATURE(kStructuredHeadersInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::optional<ParameterizedItem> ParseItem(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     ParameterizedMember member;
-    bool ok = sfv::decode_item(base::StringViewToRustSlice(str), member);
+    bool ok = ParseAndRecordMetrics(
+        "Net.StructuredHeaders.ParseItem.RustTime",
+        "Net.StructuredHeaders.ParseItem.RustSuccess", [&]() {
+          return sfv::decode_item(base::StringViewToRustSlice(str), member);
+        });
     if (!ok) {
       return std::nullopt;
     }
     return ParameterizedItem(std::move(member.member.back().item),
                              std::move(member.params));
   }
-  return quiche::structured_headers::ParseItem(str);
+
+  return ParseAndRecordMetrics(
+      "Net.StructuredHeaders.ParseItem.CppTime",
+      "Net.StructuredHeaders.ParseItem.CppSuccess",
+      [&]() { return quiche::structured_headers::ParseItem(str); });
 }
 
 std::optional<List> ParseList(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     List list;
-    bool ok = sfv::decode_list(base::StringViewToRustSlice(str), list);
+    bool ok = ParseAndRecordMetrics(
+        "Net.StructuredHeaders.ParseList.RustTime",
+        "Net.StructuredHeaders.ParseList.RustSuccess", [&] {
+          return sfv::decode_list(base::StringViewToRustSlice(str), list);
+        });
     if (!ok) {
       return std::nullopt;
     }
     return list;
   }
-  return quiche::structured_headers::ParseList(str);
+
+  return ParseAndRecordMetrics(
+      "Net.StructuredHeaders.ParseList.CppTime",
+      "Net.StructuredHeaders.ParseList.CppSuccess",
+      [&]() { return quiche::structured_headers::ParseList(str); });
 }
 
 std::optional<Dictionary> ParseDictionary(std::string_view str) {
   if (base::FeatureList::IsEnabled(kStructuredHeadersInRust)) {
     Dictionary dictionary;
-    bool ok =
-        sfv::decode_dictionary(base::StringViewToRustSlice(str), dictionary);
+    bool ok = ParseAndRecordMetrics(
+        "Net.StructuredHeaders.ParseDictionary.RustTime",
+        "Net.StructuredHeaders.ParseDictionary.RustSuccess", [&] {
+          return sfv::decode_dictionary(base::StringViewToRustSlice(str),
+                                        dictionary);
+        });
     if (!ok) {
       return std::nullopt;
     }
     return dictionary;
   }
-  return quiche::structured_headers::ParseDictionary(str);
+
+  return ParseAndRecordMetrics(
+      "Net.StructuredHeaders.ParseDictionary.CppTime",
+      "Net.StructuredHeaders.ParseDictionary.CppSuccess",
+      [&]() { return quiche::structured_headers::ParseDictionary(str); });
 }
 
 }  // namespace net::structured_headers
