@@ -63,6 +63,8 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   // Get the live layer from the cache.
   scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
 
+  TabAndroid* GetTab(int tab_id);
+
   // Returns the static ThumbnailLayer for a `tab_id`. Note that the lifecycle
   // of the thumbnail is managed by the ThumbnailCache and not the
   // ThumbnailLayer. When displaying a layer it is important that
