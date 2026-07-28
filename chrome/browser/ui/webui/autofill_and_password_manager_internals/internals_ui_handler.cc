@@ -17,12 +17,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -142,6 +144,10 @@ void InternalsUIHandler::RegisterMessages() {
       base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiCache,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getAutofillAiEntities",
+      base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiEntities,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "removeAutofillAiCacheEntry",
       base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
                           base::Unretained(this)));
@@ -229,6 +235,79 @@ void InternalsUIHandler::OnGetAutofillAiCache(const base::ListValue& args) {
   }
 
   FireWebUIListener("display-autofill-ai-cache", std::move(results));
+}
+
+namespace {
+
+// Returns a human-readable string representation of
+// `EntityInstance::RecordType` such as `kLocal`, `kServerWallet`, or
+// `kPersonalContext`.
+std::string_view RecordTypeToStringView(
+    EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return "Local";
+    case EntityInstance::RecordType::kServerWallet:
+      return "Server Wallet";
+    case EntityInstance::RecordType::kPersonalContext:
+      return "Personal Context";
+  }
+}
+
+}  // namespace
+
+void InternalsUIHandler::OnGetAutofillAiEntities(const base::ListValue& args) {
+  EntityDataManager* entity_data_manager =
+      AutofillEntityDataManagerFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()));
+  if (entity_data_manager && !entity_data_observation_.IsObserving()) {
+    entity_data_observation_.Observe(entity_data_manager);
+  }
+  SendAutofillAiEntitiesToWebUI();
+}
+
+void InternalsUIHandler::OnEntityInstancesChanged() {
+  SendAutofillAiEntitiesToWebUI();
+}
+
+void InternalsUIHandler::SendAutofillAiEntitiesToWebUI() {
+  EntityDataManager* entity_data_manager =
+      AutofillEntityDataManagerFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()));
+  if (!entity_data_manager) {
+    FireWebUIListener("display-autofill-ai-entities", base::ListValue());
+    return;
+  }
+
+  base::ListValue results;
+  for (const EntityInstance& entity :
+       entity_data_manager->GetEntityInstances()) {
+    base::ListValue attributes_list;
+    for (AttributeType attribute_type : entity.type().attributes()) {
+      base::optional_ref<const AttributeInstance> attribute_instance =
+          entity.attribute(attribute_type);
+      std::string value;
+      if (attribute_instance &&
+          !attribute_instance->GetCompleteRawInfo().empty()) {
+        value =
+            attribute_type.is_obfuscated()
+                ? "<redacted>"
+                : base::UTF16ToUTF8(attribute_instance->GetCompleteRawInfo());
+      }
+      attributes_list.Append(base::DictValue()
+                                 .Set("name", attribute_type.name_as_string())
+                                 .Set("value", std::move(value)));
+    }
+    results.Append(
+        base::DictValue()
+            .Set("guid", entity.guid().value())
+            .Set("nickname", entity.nickname())
+            .Set("entityType", entity.type().name_as_string())
+            .Set("recordType", RecordTypeToStringView(entity.record_type()))
+            .Set("attributes", std::move(attributes_list)));
+  }
+
+  FireWebUIListener("display-autofill-ai-entities", std::move(results));
 }
 
 void InternalsUIHandler::OnLoaded(const base::ListValue& args) {

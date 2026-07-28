@@ -60,6 +60,7 @@ if (!is_android) {
     deps = [
       ":autofill_and_password_manager_internals",
       "//base",
+      "//chrome/browser/autofill",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//content/public/browser",
