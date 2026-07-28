@@ -1307,7 +1307,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.MainFrame2"
-    units="ms" expires_after="2026-11-22">
+    units="ms" expires_after="2027-01-24">
   <owner>aattar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

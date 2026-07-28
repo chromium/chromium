@@ -981,7 +981,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground.First"
-    units="ms" expires_after="2026-11-22">
+    units="ms" expires_after="2027-01-24">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -996,7 +996,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Cookie.SQLitePersistentCookieStore.Backend.LoadAndNotifyInBackground2"
-    units="ms" expires_after="2026-11-22">
+    units="ms" expires_after="2027-01-24">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>

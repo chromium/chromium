@@ -72,7 +72,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.RequestLatency.{Status}" units="ms"
-    expires_after="2026-11-25">
+    expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -92,7 +92,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.RequestSize" units="bytes"
-    expires_after="2026-11-25">
+    expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -365,7 +365,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.SecureChannel.SendHandshakeRequestLatency.{Status}"
-    units="ms" expires_after="2026-11-25">
+    units="ms" expires_after="2027-01-24">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>

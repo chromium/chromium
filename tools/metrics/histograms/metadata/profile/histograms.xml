@@ -884,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.DefaultBrowser"
-    enum="FirstRunDefaultBrowserChoice" expires_after="2026-11-22">
+    enum="FirstRunDefaultBrowserChoice" expires_after="2027-01-24">
   <owner>dgn@chromium.org</owner>
   <owner>for-you-fre@google.com</owner>
   <summary>

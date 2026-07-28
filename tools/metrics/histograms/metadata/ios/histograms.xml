@@ -754,7 +754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextMenu.PreviewImageMemoryFootprint" units="KB"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>olivierrobin@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -3001,7 +3001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Prompt.ContextAttachment" enum="Boolean"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
@@ -3199,7 +3199,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-11-22">
+<histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2027-01-24">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>

@@ -1245,7 +1245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DataProtection.VerdictCacheEvent"
-    enum="DataProtectionVerdictCacheEvent" expires_after="2026-11-22">
+    enum="DataProtectionVerdictCacheEvent" expires_after="2027-01-24">
   <owner>alshawwa@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>

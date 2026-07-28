@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleNumberOfCodeGCsTriggered" units="gcs"
-    expires_after="2026-11-22">
+    expires_after="2027-01-24">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
