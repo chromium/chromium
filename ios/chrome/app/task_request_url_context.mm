@@ -70,6 +70,19 @@ MobileSessionCallerApp GetCallerApp(NSString* source_app, NSURL* url) {
   return CALLER_APP_OTHER;
 }
 
+// Returns whether the URL specifies opening default browser settings.
+bool IsShowDefaultBrowserSettings(NSURL* url) {
+  NSURLComponents* components = [NSURLComponents componentsWithURL:url
+                                           resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem* item in components.queryItems) {
+    if ([item.name isEqualToString:@"poa"] &&
+        [item.value isEqualToString:@"default-browser-settings"]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Records metrics for opening a URL context.
 void RecordMetrics(UIOpenURLContext* url_context) {
   NSURL* url = url_context.URL;
@@ -79,6 +92,11 @@ void RecordMetrics(UIOpenURLContext* url_context) {
 
   base::UmaHistogramEnumeration("Startup.MobileSessionStartFromApps",
                                 caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
+
+  if (IsShowDefaultBrowserSettings(url)) {
+    base::UmaHistogramEnumeration("Startup.ShowDefaultPromoFromApps",
+                                  caller_app, MOBILE_SESSION_CALLER_APP_COUNT);
+  }
 }
 
 }  // namespace

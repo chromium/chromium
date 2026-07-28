@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -74,4 +75,23 @@ TEST_F(TaskRequestForURLContextTest, TestStartupMobileSessionStartFromApps) {
   EXPECT_NE(request, nil);
 
   histogram_tester.ExpectTotalCount("Startup.MobileSessionStartFromApps", 1);
+}
+
+// Tests that Startup.ShowDefaultPromoFromApps is logged when URL contains the
+// default browser settings query item.
+TEST_F(TaskRequestForURLContextTest, TestStartupShowDefaultPromoFromApps) {
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"https://www.example.com?poa=default-browser-settings"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [[TaskRequestForURLContext alloc] initWithURLContext:context
+                                                sceneState:scene_state_
+                                               isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  histogram_tester.ExpectTotalCount("Startup.ShowDefaultPromoFromApps", 1);
+  histogram_tester.ExpectBucketCount("Startup.ShowDefaultPromoFromApps",
+                                     CALLER_APP_THIRD_PARTY, 1);
 }
