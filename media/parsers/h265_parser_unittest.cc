@@ -924,4 +924,28 @@ TEST_F(H265CrossSliceTest, AcceptsMatchingShortTermRefPicSet) {
             H265Parser::kOk);
 }
 
+TEST_F(H265CrossSliceTest, RejectsNonFirstSliceSegmentWithoutPriorSliceHeader) {
+  H26xAnnexBBitstreamBuilder builder;
+  BuildSpsAndPps(builder);
+  AppendSecondSlice(builder, H265NALU::IDR_W_RADL);
+  builder.Flush();
+  parser_.SetStream(builder.data());
+
+  H265NALU nalu;
+  int sps_id;
+  int pps_id;
+  ASSERT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  ASSERT_EQ(nalu.nal_unit_type, H265NALU::SPS_NUT);
+  ASSERT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+  ASSERT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  ASSERT_EQ(nalu.nal_unit_type, H265NALU::PPS_NUT);
+  ASSERT_EQ(parser_.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+
+  ASSERT_EQ(parser_.AdvanceToNextNALU(&nalu), H265Parser::kOk);
+  ASSERT_EQ(nalu.nal_unit_type, H265NALU::IDR_W_RADL);
+  H265SliceHeader shdr;
+  EXPECT_EQ(parser_.ParseSliceHeader(nalu, &shdr, nullptr),
+            H265Parser::kInvalidStream);
+}
+
 }  // namespace media
