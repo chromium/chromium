@@ -612,7 +612,8 @@ void PageSchedulerImpl::MaybeInitializeBackgroundCPUTimeBudgetPool(
     return;
 
   cpu_time_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
-      "background", &tracing_controller_, lazy_now->Now());
+      "background", &tracing_controller_, lazy_now->Now(),
+      "Scheduler.BackgroundBudgetMs", main_thread_scheduler_->TracingTrack());
 
   BackgroundThrottlingSettings settings = GetBackgroundThrottlingSettings();
 

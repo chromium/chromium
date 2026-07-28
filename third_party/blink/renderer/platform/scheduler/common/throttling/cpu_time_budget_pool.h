@@ -19,9 +19,12 @@ namespace scheduler {
 // on total cpu time.
 class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
  public:
-  CPUTimeBudgetPool(const char* name,
-                    TraceableVariableController* tracing_controller,
-                    base::TimeTicks now);
+  CPUTimeBudgetPool(
+      const char* name,
+      TraceableVariableController* tracing_controller,
+      base::TimeTicks now,
+      perfetto::StaticString counter_track_name = "Scheduler.CpuBudgetMs",
+      perfetto::Track parent_track = perfetto::ThreadTrack::Current());
   CPUTimeBudgetPool(const CPUTimeBudgetPool&) = delete;
   CPUTimeBudgetPool& operator=(const CPUTimeBudgetPool&) = delete;
 
@@ -93,8 +96,7 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
   // that at least one task will be run every max_throttling_delay.
   std::optional<base::TimeDelta> max_throttling_delay_;
 
-  TraceableCounter<base::TimeDelta,
-                   TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+  TraceableCounter<base::TimeDelta, "renderer.scheduler.status">
       current_budget_level_;
   base::TimeTicks last_checkpoint_;
   double cpu_percentage_;

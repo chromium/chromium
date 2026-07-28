@@ -312,6 +312,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Snapshots this MainThreadSchedulerImpl for tracing.
   void CreateTraceEventObjectSnapshot() const;
 
+  perfetto::Track TracingTrack() const { return *tracing_track_; }
+
   // Called when one of associated page schedulers has changed audio state.
   void OnAudioStateChanged();
 
@@ -679,6 +681,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // because they require one to initialize themselves.
   TraceableVariableController tracing_controller_;
 
+  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+      tracing_track_;
+
   // Used for experiments on finch. On main thread instantiation, we cache
   // the values of base::Feature flags using this struct, since calling
   // base::Feature::IsEnabled is a relatively expensive operation.
@@ -744,43 +749,36 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~MainThreadOnly();
 
     IdleTimeEstimator idle_time_estimator;
-    TraceableState<UseCase, "renderer.scheduler"> current_use_case;
+    TraceableState<UseCase, "renderer.scheduler.status"> current_use_case;
     Policy current_policy;
     base::TimeTicks current_policy_expiration_time;
     base::TimeTicks estimated_next_frame_begin;
     base::TimeTicks current_task_start_time;
     base::TimeTicks discrete_input_response_start_time;
     base::TimeDelta compositor_frame_interval;
-    TraceableCounter<int, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableCounter<int, "renderer.scheduler.status">
         renderer_pause_count;  // Renderer is paused if non-zero.
 
     bool renderer_hidden = false;
     std::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
     std::optional<base::ScopedSampleMetadata> renderer_frozen_metadata;
     bool renderer_backgrounded = kLaunchingProcessIsBackgrounded;
-    TraceableState<bool, "renderer.scheduler"> blocking_input_expected_soon;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")>
+    TraceableState<bool, "renderer.scheduler.status">
+        blocking_input_expected_soon;
+    TraceableState<bool, "renderer.scheduler.status">
         in_idle_period_for_testing;
     TraceableState<bool, "renderer"> is_audio_playing;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")>
+    TraceableState<bool, "renderer.scheduler.status">
         compositor_will_send_main_frame_not_expected;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")>
-        has_navigated;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug")>
-        pause_timers_for_webview;
+    TraceableState<bool, "renderer.scheduler.status"> has_navigated;
+    TraceableState<bool, "renderer.scheduler.status"> pause_timers_for_webview;
     // If true, indicates that CPU performance management is applied.
-    TraceableState<bool, "renderer.scheduler"> restrict_cpu_performance;
+    TraceableState<bool, "renderer.scheduler.status"> restrict_cpu_performance;
     base::TimeTicks background_status_changed_at;
     HashSet<PageSchedulerImpl*> page_schedulers;  // Not owned.
     base::ObserverList<RAILModeObserver>::Unchecked
         rail_mode_observers;  // Not owned.
     MainThreadMetricsHelper metrics_helper;
-    TraceableState<std::optional<TaskDescriptionForTracing>,
-                   TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-        task_description_for_tracing;  // Don't use except for tracing.
-    TraceableState<std::optional<TaskPriority>,
-                   TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-        task_priority_for_tracing;  // Only used for tracing.
 
     // Holds task queues that are currently running.
     // The queue for the inmost task is at the top of stack when there are
@@ -845,23 +843,22 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     PendingUserInput::Monitor pending_input_monitor;
     UserModel user_model;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         awaiting_touch_start_response;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         awaiting_discrete_input_response;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         begin_main_frame_on_critical_path;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         last_gesture_was_compositor_driven;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
-        default_gesture_prevented;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status"> default_gesture_prevented;
+    TraceableState<bool, "renderer.scheduler.status">
         have_seen_a_blocking_gesture;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         waiting_for_any_main_frame_contentful_paint;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         waiting_for_any_main_frame_meaningful_paint;
-    TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
+    TraceableState<bool, "renderer.scheduler.status">
         have_seen_input_since_navigation;
   };
 
