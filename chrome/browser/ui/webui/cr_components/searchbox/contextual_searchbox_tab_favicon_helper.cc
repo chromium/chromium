@@ -11,13 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
-#include "components/favicon/core/favicon_service.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,17 +40,6 @@ std::optional<GURL> GetFaviconDataUrl(content::WebContents* web_contents) {
     return std::nullopt;
   }
   return GURL(webui::GetBitmapDataUrl(bitmap));
-}
-
-void OnFaviconServiceResult(
-    base::OnceCallback<void(const std::optional<GURL>&)> callback,
-    const favicon_base::FaviconRawBitmapResult& result) {
-  if (!result.is_valid() || !result.bitmap_data ||
-      result.bitmap_data->size() == 0) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  std::move(callback).Run(GURL(webui::GetPngDataUrl(*result.bitmap_data)));
 }
 
 }  // namespace
@@ -154,42 +138,24 @@ ContextualSearchboxTabFaviconHelper::~ContextualSearchboxTabFaviconHelper() =
 
 void ContextualSearchboxTabFaviconHelper::WaitForTabFaviconLoad(
     int32_t tab_id,
-    Profile* profile,
     base::OnceCallback<void(const std::optional<GURL>&)> callback) {
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
-  if (!tab) {
+  if (!tab || !tab->GetContents()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  if (tab->GetContents()) {
-    content::WebContents* web_contents = tab->GetContents();
-    if (!web_contents->IsLoading()) {
-      if (auto data_url = GetFaviconDataUrl(web_contents)) {
-        std::move(callback).Run(std::move(*data_url));
-        return;
-      }
-    } else {
-      auto waiter = std::make_unique<Waiter>(this, tab, std::move(callback));
-      active_waiters_.push_back(std::move(waiter));
+  content::WebContents* web_contents = tab->GetContents();
+  if (!web_contents->IsLoading()) {
+    if (auto data_url = GetFaviconDataUrl(web_contents)) {
+      std::move(callback).Run(std::move(*data_url));
       return;
     }
   }
 
-  if (profile) {
-    if (auto* favicon_service = FaviconServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS)) {
-      favicon_service->GetRawFaviconForPageURL(
-          tab->GetURL(), {favicon_base::IconType::kFavicon}, 16,
-          /*fallback_to_host=*/true,
-          base::BindOnce(&OnFaviconServiceResult, std::move(callback)),
-          &cancelable_task_tracker_);
-      return;
-    }
-  }
-
-  std::move(callback).Run(std::nullopt);
+  auto waiter = std::make_unique<Waiter>(this, tab, std::move(callback));
+  active_waiters_.push_back(std::move(waiter));
 }
 
 void ContextualSearchboxTabFaviconHelper::RemoveWaiter(Waiter* waiter) {

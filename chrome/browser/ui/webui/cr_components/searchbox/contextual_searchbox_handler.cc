@@ -404,8 +404,7 @@ ContextualSearchboxHandler::CreateTabPreviewEncodingOptions(
 void ContextualSearchboxHandler::WaitForTabFaviconLoad(
     int32_t tab_id,
     WaitForTabFaviconLoadCallback callback) {
-  tab_favicon_helper_->WaitForTabFaviconLoad(tab_id, profile_,
-                                             std::move(callback));
+  tab_favicon_helper_->WaitForTabFaviconLoad(tab_id, std::move(callback));
 }
 
 // Helper class that observes the WebContents of the active tab for navigation.

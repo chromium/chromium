@@ -3515,38 +3515,6 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   all_tabs_.pop_back();
 }
 
-TEST_F(ContextualSearchboxHandlerTestTabsTest,
-       WaitForTabFaviconLoad_UnloadedTab) {
-  auto unloaded_mock_tab = std::make_unique<tabs::MockTabInterface>();
-  tabs::TabInterface* unloaded_tab = unloaded_mock_tab.get();
-
-  ui::UnownedUserDataHost unloaded_user_data_host;
-  ON_CALL(*unloaded_mock_tab, GetUnownedUserDataHost())
-      .WillByDefault(testing::ReturnRef(unloaded_user_data_host));
-  ON_CALL(testing::Const(*unloaded_mock_tab), GetUnownedUserDataHost())
-      .WillByDefault(testing::ReturnRef(unloaded_user_data_host));
-  ON_CALL(*unloaded_mock_tab, GetTabFeatures())
-      .WillByDefault(testing::Return(nullptr));
-  ON_CALL(testing::Const(*unloaded_mock_tab), GetTabFeatures())
-      .WillByDefault(testing::Return(nullptr));
-  ON_CALL(*unloaded_mock_tab, GetContents)
-      .WillByDefault(testing::Return(nullptr));
-  ON_CALL(*unloaded_mock_tab, GetURL)
-      .WillByDefault(testing::Return(GURL("https://www.unloaded.com")));
-  ON_CALL(*unloaded_mock_tab, GetTabHandle).WillByDefault(testing::Return(999));
-
-  all_tabs_.push_back(unloaded_tab);
-  ON_CALL(*tab_list(), GetAllTabs()).WillByDefault(testing::Return(all_tabs_));
-
-  base::test::TestFuture<const std::optional<GURL>&> future;
-  handler().WaitForTabFaviconLoad(999, future.GetCallback());
-  auto result = future.Take();
-
-  EXPECT_EQ(result, std::nullopt);
-
-  all_tabs_.pop_back();
-}
-
 TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs_UsesServerLimit) {
   base::FieldTrialParams params;
   params[ntp_composebox::kContextMenuMaxTabSuggestions.name] = "2";
