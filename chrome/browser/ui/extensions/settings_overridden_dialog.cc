@@ -82,8 +82,6 @@ class SettingsOverriddenDialogDelegate : public ui::DialogModelDelegate {
     HandleDialogResult(selected_setting_.value());
   }
 
-  SettingsOverriddenDialogController* controller() { return controller_.get(); }
-
  private:
   void HandleDialogResult(DialogResult result) {
     DCHECK(!result_)
@@ -203,6 +201,10 @@ void ShowSettingsOverriddenDialog(
   SettingsOverriddenDialogController::ShowParams show_params =
       controller->GetShowParams();
 
+  // Notify the controller before its ownership is passed to the dialog, since
+  // showing the dialog may run a nested loop that destroys it.
+  controller->OnDialogWillBeShown();
+
   auto dialog_delegate_unique =
       std::make_unique<SettingsOverriddenDialogDelegate>(std::move(controller));
   SettingsOverriddenDialogDelegate* dialog_delegate =
@@ -227,8 +229,6 @@ void ShowSettingsOverriddenDialog(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   ShowModalDialog(parent, dialog_builder.Build());
-
-  dialog_delegate->controller()->OnDialogShown();
 }
 
 }  // namespace extensions

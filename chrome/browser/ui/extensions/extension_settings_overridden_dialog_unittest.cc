@@ -130,7 +130,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), *profile());
   EXPECT_TRUE(controller.ShouldShow());
-  controller.OnDialogShown();
+  controller.OnDialogWillBeShown();
 
   controller.HandleDialogResult(DialogResult::kChangeSettingsBack);
   histogram_tester.ExpectUniqueSample(kTestDialogResultHistogramName,
@@ -151,7 +151,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), *profile());
   EXPECT_TRUE(controller.ShouldShow());
-  controller.OnDialogShown();
+  controller.OnDialogWillBeShown();
 
   controller.HandleDialogResult(DialogResult::kKeepNewSettings);
   histogram_tester.ExpectUniqueSample(kTestDialogResultHistogramName,
@@ -168,7 +168,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), *profile());
-  controller.OnDialogShown();
+  controller.OnDialogWillBeShown();
 
   controller.HandleDialogResult(DialogResult::kDialogDismissed);
   histogram_tester.ExpectUniqueSample(kTestDialogResultHistogramName,
@@ -186,7 +186,7 @@ TEST_F(
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), *profile());
-  controller.OnDialogShown();
+  controller.OnDialogWillBeShown();
 
   controller.HandleDialogResult(DialogResult::kDialogClosedWithoutUserAction);
   histogram_tester.ExpectUniqueSample(
@@ -205,7 +205,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
     ExtensionSettingsOverriddenDialog controller(
         CreateTestDialogParams(extension->id()), *profile());
     EXPECT_TRUE(controller.ShouldShow());
-    controller.OnDialogShown();
+    controller.OnDialogWillBeShown();
     controller.HandleDialogResult(DialogResult::kDialogDismissed);
   }
 
@@ -226,7 +226,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
     ExtensionSettingsOverriddenDialog controller(
         CreateTestDialogParams(extension_one->id()), *profile());
     EXPECT_TRUE(controller.ShouldShow());
-    controller.OnDialogShown();
+    controller.OnDialogWillBeShown();
     controller.HandleDialogResult(DialogResult::kDialogDismissed);
   }
 
@@ -245,7 +245,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), *profile());
   EXPECT_TRUE(controller.ShouldShow());
-  controller.OnDialogShown();
+  controller.OnDialogWillBeShown();
 
   registrar()->UninstallExtension(
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);

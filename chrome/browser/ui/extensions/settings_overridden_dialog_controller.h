@@ -93,8 +93,8 @@ class SettingsOverriddenDialogController {
   // synchronously.
   virtual ShowParams GetShowParams() = 0;
 
-  // Notifies the controller that the dialog has been shown.
-  virtual void OnDialogShown() = 0;
+  // Notifies the controller that the dialog will be shown.
+  virtual void OnDialogWillBeShown() = 0;
 
   // Handles the result of the dialog being shown.
   virtual void HandleDialogResult(DialogResult result) = 0;

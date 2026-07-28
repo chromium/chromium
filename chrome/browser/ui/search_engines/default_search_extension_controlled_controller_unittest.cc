@@ -348,7 +348,7 @@ TEST_F(DefaultSearchExtensionControlledControllerTest,
       ExtensionSettingsOverriddenDialog::ShowParams(u"Title", u"Body",
                                                     nullptr));
   ExtensionSettingsOverriddenDialog dialog(std::move(params), profile_);
-  dialog.OnDialogShown();
+  dialog.OnDialogWillBeShown();
 
   DefaultSearchExtensionControlledController owned_controller(browser_window_,
                                                               profile_);

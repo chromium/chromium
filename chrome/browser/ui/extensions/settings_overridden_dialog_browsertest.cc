@@ -63,7 +63,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
  private:
   bool ShouldShow() override { return true; }
   ShowParams GetShowParams() override { return show_params_; }
-  void OnDialogShown() override {}
+  void OnDialogWillBeShown() override {}
   void HandleDialogResult(DialogResult result) override {
     ASSERT_FALSE(dialog_result_out_->has_value());
     *dialog_result_out_ = result;

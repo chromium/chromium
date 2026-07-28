@@ -103,7 +103,7 @@ class ExtensionSettingsOverriddenDialog
   // SettingsOverriddenDialogController:
   bool ShouldShow() override;
   ShowParams GetShowParams() override;
-  void OnDialogShown() override;
+  void OnDialogWillBeShown() override;
   void HandleDialogResult(DialogResult result) override;
 
   // Sets a callback to be invoked when the dialog result is handled.
