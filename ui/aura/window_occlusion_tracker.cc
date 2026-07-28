@@ -449,13 +449,10 @@ void WindowOcclusionTracker::NotifyOcclusionState(
 
   for (auto& it : tracked_windows_) {
     Window* window = it.first;
-    if (it.second.occlusion_state == Window::OcclusionState::UNKNOWN) {
-      continue;
-    }
-
     // Fallback to VISIBLE/HIDDEN if the maximum number of times that
     // occlusion can be recomputed was exceeded.
-    if (exceeded_max_num_times_occlusion_recomputed.value_or(false)) {
+    if (exceeded_max_num_times_occlusion_recomputed.value_or(false) &&
+        it.second.occlusion_state != Window::OcclusionState::UNKNOWN) {
       if (WindowIsVisible(window)) {
         it.second.occlusion_state = Window::OcclusionState::VISIBLE;
       } else {
@@ -466,6 +463,10 @@ void WindowOcclusionTracker::NotifyOcclusionState(
 
     auto occlusion_state =
         it.second.locked_occlusion_state.value_or(it.second.occlusion_state);
+    if (occlusion_state == Window::OcclusionState::UNKNOWN) {
+      continue;
+    }
+
     auto occluded_region = it.second.locked_occlusion_state
                                ? it.second.locked_occluded_region
                                : it.second.occluded_region;

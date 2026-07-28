@@ -570,6 +570,39 @@ TEST_P(WindowOcclusionTrackerOpacityTest,
   EXPECT_FALSE(delegate_a->is_expecting_call());
 }
 
+TEST_F(WindowOcclusionTrackerTest, LockStateOnUnknownWindow) {
+  MockWindowDelegate* delegate = new MockWindowDelegate();
+
+  aura::Window* window = nullptr;
+
+  std::unique_ptr<WindowOcclusionTracker::ScopedPause> pause =
+      std::make_unique<WindowOcclusionTracker::ScopedPause>();
+  // Create and track a window while paused. Its occlusion state will be UNKNOWN
+  // because the tracker has not computed occlusion yet.
+  window = CreateTrackedWindow(delegate, gfx::Rect(0, 0, 10, 10));
+  EXPECT_EQ(window->GetOcclusionState(), Window::OcclusionState::UNKNOWN);
+
+  {
+    // Lock the UNKNOWN state.
+    WindowOcclusionTracker::ScopedLockState lock(window);
+
+    // Unpause, which forces MaybeComputeOcclusion -> NotifyOcclusionState.
+    // Because the window's locked state is UNKNOWN, the tracker must safely
+    // skip it and refrain from broadcasting UNKNOWN to SetOcclusionInfo()
+    // which would crash.
+    pause.reset();
+
+    // The window's notified state should remain UNKNOWN.
+    EXPECT_EQ(window->GetOcclusionState(), Window::OcclusionState::UNKNOWN);
+
+    // Expect the window to correctly update to VISIBLE when the lock releases.
+    delegate->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
+  }
+
+  EXPECT_FALSE(delegate->is_expecting_call());
+  EXPECT_EQ(window->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+}
+
 // Verify that one window whose bounds are covered by a set of two opaque
 // windows is occluded.
 //  ______
