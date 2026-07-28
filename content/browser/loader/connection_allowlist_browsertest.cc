@@ -45,6 +45,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "content/public/test/test_devtools_protocol_client.h"
@@ -76,6 +77,7 @@
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -5646,6 +5648,319 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
 
   // The JWKS request is blocked.
   EXPECT_FALSE(monitor.GetRequestInfo(JwksURL()).has_value());
+}
+
+// When the framed document opts into blanket enforcement via
+// `Allow-Connection-Allowlist-From: *`, the embedder's required allowlist (with
+// the `response-origin` token resolved against the frame's origin) is installed
+// as the frame's enforced allowlist and actually restricts its connections.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       BlanketOptInEnforcesEmbedderAllowlist) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  TestNavigationManager manager(shell()->web_contents(), child_url);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', '(response-origin)');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                                        child_url)));
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_TRUE(manager.was_successful());
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // The required allowlist (the embedder's requirement, with `response-origin`
+  // resolved against the frame's origin) is propagated to the committed frame.
+  auto* child_impl = static_cast<RenderFrameHostImpl*>(child_rfh);
+  ASSERT_TRUE(child_impl->required_connection_allowlist().has_value());
+  EXPECT_EQ(
+      child_impl->required_connection_allowlist()->allowlist,
+      std::vector<std::string>({url::Origin::Create(child_url).Serialize()}));
+
+  // The installed allowlist is actually enforced on the frame's connections: a
+  // same-origin WebSocket is allowed, a cross-origin one is blocked.
+  GURL allowed_ws_url = net::test_server::GetWebSocketURL(
+      embedded_https_test_server(), "a.test", "/echo-with-no-extension");
+  EXPECT_EQ("open", EvalJs(child_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const ws = new WebSocket($1);
+      ws.onopen = () => { ws.close(); resolve('open'); };
+      ws.onerror = () => resolve('error');
+    });
+  )",
+                                                allowed_ws_url)));
+
+  GURL denied_ws_url = net::test_server::GetWebSocketURL(
+      embedded_https_test_server(), "b.test", "/echo-with-no-extension");
+  EXPECT_EQ("error", EvalJs(child_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      const ws = new WebSocket($1);
+      ws.onopen = () => { ws.close(); resolve('open'); };
+      ws.onerror = () => resolve('error');
+    });
+  )",
+                                                 denied_ws_url)));
+}
+
+// A frame that neither opts in nor delivers a satisfying Connection-Allowlist
+// is blocked with net::ERR_BLOCKED_BY_RESPONSE.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       NoOptInNoAllowlistBlockedWithErrorCode) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  NavigationHandleObserver handle_observer(shell()->web_contents(), child_url);
+  TestNavigationManager manager(shell()->web_contents(), child_url);
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', '(response-origin)');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                                        child_url)));
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_FALSE(manager.was_successful());
+  EXPECT_TRUE(handle_observer.is_error());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, handle_observer.net_error_code());
+}
+
+// A descendant frame with no `connectionallowlist` attribute inherits its
+// ancestor's required allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       InheritedRequirementEnforcedWithoutAttribute) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  RegisterResponse("/grandchild.html",
+                   ResponseEntry("<html><body>grandchild</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  GURL grandchild_url =
+      embedded_https_test_server().GetURL("a.test", "/grandchild.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  // Level 1: a frame whose embedder requires `(response-origin)` and which opts
+  // in. It now requires that allowlist of any document it frames.
+  {
+    TestNavigationManager manager(shell()->web_contents(), child_url);
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', '(response-origin)');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                                          child_url)));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(manager.was_successful());
+  }
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // Wait for the child document to finish loading so its <body> exists before
+  // creating the nested frame inside it below (the navigation having committed
+  // does not guarantee the body has been parsed yet).
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Level 2: a frame created by the level-1 frame with no `connectionallowlist`
+  // attribute. It inherits the level-1 frame's requirement.
+  {
+    TestNavigationManager manager(shell()->web_contents(), grandchild_url);
+    EXPECT_TRUE(ExecJs(child_rfh, JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                            grandchild_url)));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(manager.was_successful());
+  }
+  RenderFrameHost* grandchild_rfh = ChildFrameAt(child_rfh, 0);
+  ASSERT_TRUE(grandchild_rfh);
+
+  auto* grandchild_impl = static_cast<RenderFrameHostImpl*>(grandchild_rfh);
+  ASSERT_TRUE(grandchild_impl->required_connection_allowlist().has_value());
+  EXPECT_EQ(
+      grandchild_impl->required_connection_allowlist()->allowlist,
+      std::vector<std::string>({url::Origin::Create(child_url).Serialize()}));
+}
+
+// A descendant frame whose `connectionallowlist` attribute would loosen the
+// inherited requirement (it additionally lists https://extra.test/) has its
+// attribute discarded in favor of the stricter inherited requirement. This also
+// guards against the bypass where an attribute's unresolved `response-origin`
+// token leaves an empty allowlist that would trivially subsume any requirement.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       NeverLoosenInheritedRequirement) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  RegisterResponse("/grandchild.html",
+                   ResponseEntry("<html><body>grandchild</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  GURL grandchild_url =
+      embedded_https_test_server().GetURL("a.test", "/grandchild.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  // Level 1: requires `(response-origin)` and opts in.
+  {
+    TestNavigationManager manager(shell()->web_contents(), child_url);
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', '(response-origin)');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                                          child_url)));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(manager.was_successful());
+  }
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // Wait for the child document to finish loading so its <body> exists before
+  // creating the nested frame inside it below (the navigation having committed
+  // does not guarantee the body has been parsed yet).
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Level 2: its attribute additionally lists https://extra.test/, which would
+  // loosen the inherited requirement. The navigation still commits (it opts
+  // in), but the looser attribute is discarded.
+  {
+    TestNavigationManager manager(shell()->web_contents(), grandchild_url);
+    EXPECT_TRUE(ExecJs(child_rfh,
+                       JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', $1);
+        f.src = $2;
+        document.body.appendChild(f);
+      )",
+                                 R"(("https://extra.test/" response-origin))",
+                                 grandchild_url)));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(manager.was_successful());
+  }
+  RenderFrameHost* grandchild_rfh = ChildFrameAt(child_rfh, 0);
+  ASSERT_TRUE(grandchild_rfh);
+
+  // Only the inherited embedder origin is required; https://extra.test/ (from
+  // the discarded attribute) is not present.
+  auto* grandchild_impl = static_cast<RenderFrameHostImpl*>(grandchild_rfh);
+  ASSERT_TRUE(grandchild_impl->required_connection_allowlist().has_value());
+  EXPECT_EQ(
+      grandchild_impl->required_connection_allowlist()->allowlist,
+      std::vector<std::string>({url::Origin::Create(child_url).Serialize()}));
+}
+
+// A frame with a local-scheme URL (about:srcdoc, about:blank) inherits its
+// origin from its initiator rather than deriving one from its URL. Resolving
+// its embedder's `(response-origin)` token against `about:srcdoc` would produce
+// an opaque origin, which would then be propagated to the frame's descendants
+// as their requirement. The token must resolve to the inherited origin instead.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       ResponseOriginResolvesToInheritedOriginForLocalScheme) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/grandchild.html",
+                   ResponseEntry("<html><body>grandchild</body></html>",
+                                 {{"Allow-Connection-Allowlist-From", "*"}}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL grandchild_url =
+      embedded_https_test_server().GetURL("a.test", "/grandchild.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  // Level 1: an `about:srcdoc` frame whose embedder requires
+  // `(response-origin)`. Local schemes allow blanket enforcement, so the
+  // requirement is installed on the frame and cascades to its descendants.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(shell()->web_contents(), R"(
+        const f = document.createElement('iframe');
+        f.setAttribute('connectionallowlist', '(response-origin)');
+        f.srcdoc = '<html><body>child</body></html>';
+        document.body.appendChild(f);
+      )"));
+    observer.Wait();
+    ASSERT_TRUE(observer.last_navigation_succeeded());
+    ASSERT_EQ(GURL(url::kAboutSrcdocURL), observer.last_navigation_url());
+  }
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // The token resolves to the origin the srcdoc frame actually inherits (its
+  // embedder's), not an opaque origin derived from "about:srcdoc".
+  auto* child_impl = static_cast<RenderFrameHostImpl*>(child_rfh);
+  ASSERT_TRUE(child_impl->required_connection_allowlist().has_value());
+  EXPECT_EQ(child_impl->required_connection_allowlist()->allowlist,
+            std::vector<std::string>(
+                {url::Origin::Create(embedder_url).Serialize()}));
+
+  // Wait for the srcdoc document to finish loading so its <body> exists before
+  // creating the nested frame inside it below (the navigation having committed
+  // does not guarantee the body has been parsed yet).
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Level 2: a frame created by the srcdoc frame inherits that requirement, so
+  // it must see the inherited origin rather than an opaque one.
+  {
+    TestNavigationManager manager(shell()->web_contents(), grandchild_url);
+    EXPECT_TRUE(ExecJs(child_rfh, JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.src = $1;
+        document.body.appendChild(f);
+      )",
+                                            grandchild_url)));
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(manager.was_successful());
+  }
+  RenderFrameHost* grandchild_rfh = ChildFrameAt(child_rfh, 0);
+  ASSERT_TRUE(grandchild_rfh);
+
+  auto* grandchild_impl = static_cast<RenderFrameHostImpl*>(grandchild_rfh);
+  ASSERT_TRUE(grandchild_impl->required_connection_allowlist().has_value());
+  EXPECT_EQ(grandchild_impl->required_connection_allowlist()->allowlist,
+            std::vector<std::string>(
+                {url::Origin::Create(embedder_url).Serialize()}));
 }
 
 }  // namespace

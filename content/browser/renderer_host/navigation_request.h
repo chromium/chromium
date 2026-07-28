@@ -75,6 +75,7 @@
 #include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
@@ -946,6 +947,11 @@ class CONTENT_EXPORT NavigationRequest
 
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
+
+  // Moves out the required Connection-Allowlist computed for this navigation
+  // (Connection-Allowlist embedded enforcement). Stored on the
+  // RenderFrameHost at commit so child frames can inherit it.
+  std::optional<network::ConnectionAllowlist> TakeRequiredConnectionAllowlist();
 
   bool is_credentialless() const { return is_credentialless_; }
 
@@ -2213,6 +2219,31 @@ class CONTENT_EXPORT NavigationRequest
   };
   CSPEmbeddedEnforcementResult CheckCSPEmbeddedEnforcement();
 
+  // Connection-Allowlist embedded enforcement: the embedder of a frame may use
+  // the `connectionallowlist` attribute to require that the framed document is
+  // subject to a Connection-Allowlist at least as strict as the required one.
+  // The framed document opts in either by serving an `Allow-Connection-
+  // Allowlist-From` response header that names the embedder (or `*`), or by
+  // delivering its own Connection-Allowlist that subsumes the required one.
+  // Framed documents that do neither are blocked. This mirrors CSP embedded
+  // enforcement. See https://github.com/WICG/connection-allowlists/issues/1.
+  //
+  // SetupConnectionAllowlistEmbeddedEnforcement() snapshots the frame's
+  // `connectionallowlist` attribute (parsed in the renderer) and combines it
+  // with the parent's required allowlist (never loosening it).
+  // CheckConnectionAllowlistEmbeddedEnforcement() inspects the response,
+  // resolves the deferred `response-origin` token against the framed origin,
+  // and decides whether the required allowlist may be enforced on the frame
+  // (possibly blocking it).
+  void SetupConnectionAllowlistEmbeddedEnforcement();
+
+  enum class ConnectionAllowlistEmbeddedEnforcementResult {
+    ALLOW_RESPONSE,
+    BLOCK_RESPONSE,
+  };
+  ConnectionAllowlistEmbeddedEnforcementResult
+  CheckConnectionAllowlistEmbeddedEnforcement();
+
   // Called before a commit. Updates the history index and length held in
   // CommitNavigationParams. This is used to update this shared state with the
   // renderer process.
@@ -3180,6 +3211,22 @@ class CONTENT_EXPORT NavigationRequest
   // Holds the required CSP for this navigation. This will be moved into
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
+
+  // Connection-Allowlist embedded enforcement state. `required_connection_-
+  // allowlist_` is the allowlist the embedder requires of this frame, computed
+  // at navigation start and (after the response) resolved + validated. It is
+  // moved into the RenderFrameHost at commit so child frames can inherit it.
+  // `enforce_required_connection_allowlist_` is set when the framed document
+  // opted into blanket enforcement, meaning the required allowlist should be
+  // installed as the frame's enforced allowlist at commit.
+  std::optional<network::ConnectionAllowlist> required_connection_allowlist_;
+  bool enforce_required_connection_allowlist_ = false;
+  // Whether `required_connection_allowlist_` came from this frame's
+  // `connectionallowlist` attribute (vs. inherited from the parent). Such a
+  // requirement must be validated against the parent's requirement only after
+  // its `response-origin` token is resolved, in
+  // CheckConnectionAllowlistEmbeddedEnforcement().
+  bool required_connection_allowlist_from_attribute_ = false;
 
   // Whether the document loaded by this navigation will be committed inside an
   // iframe credentialless. Documents loaded inside credentialless iframes get

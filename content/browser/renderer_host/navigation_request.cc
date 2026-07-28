@@ -175,6 +175,8 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/cpp/connection_allowlist_parser.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -3098,6 +3100,7 @@ void NavigationRequest::BeginNavigationImpl() {
   // attribute might have change while waiting for the beforeunload handlers to
   // complete.
   SetupCSPEmbeddedEnforcement();
+  SetupConnectionAllowlistEmbeddedEnforcement();
 
   if (!NeedsUrlLoader()) {
     // The types of pages that don't need a URL Loader should never get served
@@ -3115,6 +3118,14 @@ void NavigationRequest::BeginNavigationImpl() {
     // - MHTML document, not supported by CSPEE (https://crbug.com/1164353).
     if (CheckCSPEmbeddedEnforcement() ==
         CSPEmbeddedEnforcementResult::BLOCK_RESPONSE) {
+      NOTREACHED();
+    }
+
+    // Likewise, these local-scheme / MHTML navigations always allow blanket
+    // enforcement of an embedder-required Connection-Allowlist, so they are
+    // never blocked here.
+    if (CheckConnectionAllowlistEmbeddedEnforcement() ==
+        ConnectionAllowlistEmbeddedEnforcementResult::BLOCK_RESPONSE) {
       NOTREACHED();
     }
 
@@ -3596,6 +3607,11 @@ void NavigationRequest::SetRequiredCSP(
 
 network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
   return std::move(required_csp_);
+}
+
+std::optional<network::ConnectionAllowlist>
+NavigationRequest::TakeRequiredConnectionAllowlist() {
+  return std::move(required_connection_allowlist_);
 }
 
 const PolicyContainerPolicies*
@@ -4963,6 +4979,17 @@ void NavigationRequest::OnResponseStarted(
       CSPEmbeddedEnforcementResult::BLOCK_RESPONSE) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CSP),
+        true /* skip_throttles */, std::nullopt /* error_page_content*/,
+        false /* collapse_frame */);
+    // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
+    // has destroyed the NavigationRequest.
+    return;
+  }
+
+  if (CheckConnectionAllowlistEmbeddedEnforcement() ==
+      ConnectionAllowlistEmbeddedEnforcementResult::BLOCK_RESPONSE) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
         true /* skip_throttles */, std::nullopt /* error_page_content*/,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
@@ -8236,6 +8263,160 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   return CSPEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
 
+void NavigationRequest::SetupConnectionAllowlistEmbeddedEnforcement() {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return;
+  }
+  if (IsInMainFrame()) {
+    return;
+  }
+  // TODO(https://crbug.com/1129645): MHTML iframe not supported yet.
+  if (IsForMhtmlSubframe()) {
+    return;
+  }
+  // The feature currently does not impact fenced frames, matching
+  // NetworkRestrictionsNavigationThrottle.
+  if (frame_tree_node()->IsInFencedFrameTree()) {
+    return;
+  }
+
+  std::optional<network::ConnectionAllowlist> frame_attribute =
+      frame_tree_node()->connection_allowlist_attribute();
+  const std::optional<network::ConnectionAllowlist>& parent_required =
+      frame_tree_node()->parent()->required_connection_allowlist();
+
+  if (frame_attribute) {
+    // The frame's attribute may carry an unresolved `response-origin` token
+    // (resolved against the framed response, which isn't known yet), so the
+    // never-loosen check against the parent's requirement is deferred to
+    // CheckConnectionAllowlistEmbeddedEnforcement(), after resolution.
+    required_connection_allowlist_ = std::move(frame_attribute);
+    required_connection_allowlist_from_attribute_ = true;
+    // Advertise the requirement to the framed document via the request header,
+    // mirroring CSP embedded enforcement's `Sec-Required-CSP` (see the spec's
+    // "Advertising the requirement" section).
+    SetRequestHeader("Sec-Required-Connection-Allowlist",
+                     required_connection_allowlist_->serialized_value);
+    return;
+  }
+
+  if (parent_required) {
+    // The parent's requirement cascades into this frame, so it must be
+    // advertised on this navigation's request as well.
+    required_connection_allowlist_ = parent_required;
+    SetRequestHeader("Sec-Required-Connection-Allowlist",
+                     required_connection_allowlist_->serialized_value);
+  }
+}
+
+NavigationRequest::ConnectionAllowlistEmbeddedEnforcementResult
+NavigationRequest::CheckConnectionAllowlistEmbeddedEnforcement() {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+  // We enforce embedded enforcement only for subframes.
+  if (IsInMainFrame()) {
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+  if (IsSameDocument()) {
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+  if (!required_connection_allowlist_) {
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+
+  // Resolve the deferred `response-origin` token (which could not be resolved
+  // in the renderer) against the framed document's origin. Local-scheme
+  // documents (about:blank, about:srcdoc) inherit their origin from their
+  // initiator instead of deriving one from their URL, so
+  // `url::Origin::Create(GetURL())` would resolve the token to an opaque origin
+  // and propagate it to this frame's descendants. `GetOriginToCommit()` cannot
+  // be used because this also runs before the response is processed, for
+  // navigations that need no URLLoader. Ignoring sandbox flags matches how the
+  // network service resolves the token for a delivered `Connection-Allowlist`.
+  if (required_connection_allowlist_->match_response_origin) {
+    required_connection_allowlist_->allowlist.push_back(
+        GetOriginForURLLoaderFactoryUnchecked().Serialize());
+    required_connection_allowlist_->match_response_origin = false;
+  }
+
+  // Never loosen an inherited requirement: if the requirement came from this
+  // frame's `connectionallowlist` attribute, it is honored only if -- once its
+  // `response-origin` token is resolved -- it is at least as strict as
+  // (subsumes) the parent's required allowlist. Otherwise it is discarded in
+  // favor of the parent's requirement. This is checked here rather than in
+  // Setup because an unresolved `response-origin` attribute has an empty
+  // allowlist that would trivially (and incorrectly) subsume any requirement.
+  if (required_connection_allowlist_from_attribute_) {
+    const std::optional<network::ConnectionAllowlist>& parent_required =
+        frame_tree_node()->parent()->required_connection_allowlist();
+    if (parent_required &&
+        !network::ConnectionAllowlistSubsumes(
+            *parent_required, *required_connection_allowlist_)) {
+      // TODO(crbug.com/538219521): Surface this "the embedder's
+      // `connectionallowlist` attribute is less strict than an ancestor's
+      // requirement and was discarded" diagnostic as a DevTools issue rather
+      // than a console message.
+      required_connection_allowlist_ = parent_required;
+    }
+  }
+
+  // The `response()` can be null for navigations that do not require a
+  // URLLoader (about:blank, about:srcdoc, ...).
+  const network::mojom::OriginOrWildcardHeaderValue*
+      allow_connection_allowlist_from =
+          response()
+              ? response()
+                    ->parsed_headers->allow_connection_allowlist_from.get()
+              : nullptr;
+
+  if (network::AllowsBlanketEnforcementOfRequiredConnectionAllowlist(
+          GetParentFrame()->GetLastCommittedOrigin(), GetURL(),
+          allow_connection_allowlist_from)) {
+    // The framed document opted in (via `Allow-Connection-Allowlist-From` or a
+    // local scheme). Install the required allowlist as the frame's enforced
+    // allowlist at commit.
+    //
+    // TODO(crbug.com/447954811): For local-scheme frames (about:blank,
+    // about:srcdoc, data:, ...), policies are inherited rather than taken from
+    // the delivered response, so installing the requirement needs separate
+    // handling in IncorporateDeliveredPoliciesForLocalURL(). Until then, only
+    // frames whose policies come from the delivered response enforce the
+    // requirement (the navigation is still allowed for local schemes).
+    if (!GetURL().SchemeIsLocal()) {
+      enforce_required_connection_allowlist_ = true;
+    }
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+
+  // Navigations that do not need a URLLoader allow blanket enforcement above,
+  // except for MHTML iframes (not yet supported).
+  if (!response()) {
+    CHECK(IsForMhtmlSubframe());
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+
+  // TODO(crbug.com/538219521): Surface an invalid
+  // 'Allow-Connection-Allowlist-From' response header value as a DevTools
+  // issue rather than a console message.
+
+  // The framed document may instead satisfy the requirement by delivering its
+  // own Connection-Allowlist that is at least as strict (subsumes the required
+  // one). In that case its own allowlist remains enforced.
+  const std::optional<network::ConnectionAllowlist>& delivered =
+      response()->parsed_headers->connection_allowlists.enforced;
+  if (delivered && network::ConnectionAllowlistSubsumes(
+                       *required_connection_allowlist_, *delivered)) {
+    return ConnectionAllowlistEmbeddedEnforcementResult::ALLOW_RESPONSE;
+  }
+
+  // TODO(crbug.com/538219521): Surface this "refused to display: the frame
+  // neither accepts the requirement via Allow-Connection-Allowlist-From nor
+  // delivers a Connection-Allowlist at least as strict" diagnostic as a
+  // DevTools issue rather than a console message.
+  return ConnectionAllowlistEmbeddedEnforcementResult::BLOCK_RESPONSE;
+}
+
 void NavigationRequest::UpdateHistoryParamsInCommitNavigationParams() {
   NavigationController& navigation_controller =
       frame_tree_node_->navigator().controller();
@@ -11228,6 +11409,8 @@ void NavigationRequest::ComputePoliciesToCommit() {
         true);
   }
 
+  network::ConnectionAllowlists connection_allowlists_to_commit;
+  bool has_connection_allowlists = false;
   if (ResponseContainsConnectionAllowlist(response_head_.get()) &&
       base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     // Connection allowlist needs to be enforced once the allowlist response
@@ -11235,8 +11418,29 @@ void NavigationRequest::ComputePoliciesToCommit() {
     //
     // The allowlist is stored in the policy container if the base::Feature is
     // enabled.
+    connection_allowlists_to_commit =
+        std::move(response_head_->parsed_headers->connection_allowlists);
+    has_connection_allowlists = true;
+  }
+
+  // Connection-Allowlist embedded enforcement: when the framed document opted
+  // into blanket enforcement (validated in
+  // CheckConnectionAllowlistEmbeddedEnforcement(), which also resolved the
+  // `response-origin` token), the embedder's required allowlist becomes the
+  // frame's enforced allowlist. This is only set for non-local schemes, whose
+  // committed policies come from these delivered policies.
+  if (enforce_required_connection_allowlist_) {
+    DCHECK(required_connection_allowlist_.has_value());
+    connection_allowlists_to_commit.enforced = required_connection_allowlist_;
+    if (connection_allowlists_to_commit.response_url.is_empty()) {
+      connection_allowlists_to_commit.response_url = GetURL();
+    }
+    has_connection_allowlists = true;
+  }
+
+  if (has_connection_allowlists) {
     policy_container_builder_->SetConnectionAllowlists(
-        std::move(response_head_->parsed_headers->connection_allowlists));
+        std::move(connection_allowlists_to_commit));
   }
 
   if (!devtools_instrumentation::ShouldBypassCSP(*this)) {

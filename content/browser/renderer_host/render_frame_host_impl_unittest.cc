@@ -9,9 +9,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "components/input/timeout_monitor.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/site_instance_impl.h"
@@ -41,6 +43,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
@@ -565,6 +568,38 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
       grandchild_frame->GetNetworkIsolationKey().GetNonce().has_value());
   EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
+}
+
+// A compromised renderer that delivers a `connectionallowlist` iframe attribute
+// whose serialized value is not a valid HTTP header value (e.g. it contains
+// CR/LF) must be terminated. Otherwise the value would flow to
+// NavigationRequest::SetupConnectionAllowlistEmbeddedEnforcement() and crash
+// the browser process at net::HttpRequestHeaders::SetHeader().
+TEST_F(RenderFrameHostImplTest,
+       InvalidConnectionAllowlistAttributeIsBadMessage) {
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  auto attributes = blink::mojom::IframeAttributes::New();
+  network::ConnectionAllowlist required_connection_allowlist;
+  required_connection_allowlist.serialized_value =
+      "(response-origin)\r\nX-Injected: evil";
+  attributes->required_connection_allowlist =
+      std::move(required_connection_allowlist);
+
+  base::HistogramTester histograms;
+  main_test_rfh()->DidChangeIframeAttributes(child_frame->GetFrameToken(),
+                                             std::move(attributes));
+
+  // The renderer is terminated with the dedicated bad-message reason, and the
+  // malicious attribute is never stored on the child.
+  histograms.ExpectUniqueSample(
+      "Stability.BadMessageTerminated.Content",
+      bad_message::RFH_INVALID_CONNECTION_ALLOWLIST_ATTRIBUTE, 1);
+  EXPECT_FALSE(child_frame->frame_tree_node()
+                   ->connection_allowlist_attribute()
+                   .has_value());
 }
 
 TEST_F(RenderFrameHostImplTest, SpeculativeFrameHostIsCredentialless) {

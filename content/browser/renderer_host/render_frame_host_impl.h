@@ -125,6 +125,7 @@
 #include "net/net_buildflags.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
@@ -2352,6 +2353,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
+  // The Connection-Allowlist required of documents framed by this one, via the
+  // `connectionallowlist` attribute (Connection-Allowlist embedded
+  // enforcement). Used to propagate the requirement to descendant frames.
+  const std::optional<network::ConnectionAllowlist>&
+  required_connection_allowlist() const {
+    return required_connection_allowlist_;
+  }
+
   bool IsCredentialless() const override;
 
   bool IsLastCrossDocumentNavigationStartedByUser() const override;
@@ -3458,6 +3467,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, NavigationStateKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
                            CreateNewWindowInvalidDisposition);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
+                           InvalidConnectionAllowlistAttributeIsBadMessage);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            FindImmediateLocalRoots);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
@@ -5422,6 +5433,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // https://w3c.github.io/webappsec-cspee/#required-csp,
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
+
+  // The Connection-Allowlist this document requires of the documents it frames
+  // (Connection-Allowlist embedded enforcement), stored when the frame commits
+  // the navigation so descendant frames can inherit it.
+  std::optional<network::ConnectionAllowlist> required_connection_allowlist_;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

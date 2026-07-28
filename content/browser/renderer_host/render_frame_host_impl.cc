@@ -263,9 +263,11 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/http/http_util.h"
 #include "net/net_buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
@@ -815,14 +817,15 @@ enum class RendererLoadType {
   kReplaceCurrentItem,
 };
 
-bool ValidateCSPAttribute(const std::string& value) {
-  static const size_t kMaxLengthCSPAttribute = 4096;
-  if (!base::IsStringASCII(value)) {
-    return false;
-  }
-  if (value.length() > kMaxLengthCSPAttribute ||
-      value.find('\n') != std::string::npos ||
-      value.find('\r') != std::string::npos) {
+bool ValidateIframeAttributeHeaderValue(const std::string& value) {
+  // The `csp` and `connectionallowlist` iframe attributes are re-emitted
+  // verbatim as the `Sec-Required-CSP` / `Sec-Required-Connection-Allowlist`
+  // HTTP request headers, so their values must be valid HTTP header values. A
+  // well-behaved renderer never delivers an invalid value.
+  static const size_t kMaxLengthIframeAttributeHeaderValue = 4096;
+  if (!base::IsStringASCII(value) ||
+      !net::HttpUtil::IsValidHeaderValue(value) ||
+      value.length() > kMaxLengthIframeAttributeHeaderValue) {
     return false;
   }
   return true;
@@ -9976,10 +9979,25 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,
     blink::mojom::IframeAttributesPtr attributes) {
   if (attributes->parsed_csp_attribute &&
-      !ValidateCSPAttribute(
+      !ValidateIframeAttributeHeaderValue(
           attributes->parsed_csp_attribute->header->header_value)) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_CSP_ATTRIBUTE);
+    return;
+  }
+
+  // The `connectionallowlist` attribute value is re-emitted verbatim as the
+  // `Sec-Required-Connection-Allowlist` request header during embedded
+  // enforcement (see
+  // NavigationRequest::SetupConnectionAllowlistEmbeddedEnforcement()). Validate
+  // it here so a compromised renderer cannot smuggle an invalid header value
+  // (e.g. one containing CR/LF), which would otherwise crash the browser
+  // process later at net::HttpRequestHeaders::SetHeader().
+  if (attributes->required_connection_allowlist &&
+      !ValidateIframeAttributeHeaderValue(
+          attributes->required_connection_allowlist->serialized_value)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_INVALID_CONNECTION_ALLOWLIST_ATTRIBUTE);
     return;
   }
 
@@ -16760,6 +16778,11 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Store the required CSP (it will be used by the AncestorThrottle if
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
+
+  // Store the required Connection-Allowlist (used when this frame embeds a
+  // subframe, to propagate the requirement during that subframe's navigation).
+  required_connection_allowlist_ =
+      navigation_request->TakeRequiredConnectionAllowlist();
 
   // After commit, the browser process's access of the features' state becomes
   // read-only. (i.e. It can only get feature state, not set)

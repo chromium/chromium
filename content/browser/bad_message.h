@@ -391,6 +391,7 @@ enum BadMessageReason {
   RFH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 363,
   RFPH_FORM_SUBMISSION_FROM_SANDBOXED_FRAME = 364,
   INSTALLED_APP_PROVIDER_FACTORY_INVALID_FRAME = 365,
+  RFH_INVALID_CONNECTION_ALLOWLIST_ATTRIBUTE = 366,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
