@@ -1600,6 +1600,47 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextSentenceGranularity) {
   g_object_unref(root_obj);
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextInvalidBoundaryAndGranularity) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kTextField;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue,
+                          "A decently long string.");
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  g_object_ref(root_obj);
+
+  ASSERT_TRUE(ATK_IS_TEXT(root_obj));
+  AtkText* atk_text = ATK_TEXT(root_obj);
+
+  // The AT-SPI bridge can pass a boundary as an unvalidated integer.
+  // No text is returned for an unrecognized boundary (7 in this case).
+  int start_offset = 0, end_offset = 0;
+  char* content = atk_text_get_text_at_offset(
+      atk_text, 0, static_cast<AtkTextBoundary>(7), &start_offset, &end_offset);
+  EXPECT_EQ(content, nullptr);
+  EXPECT_EQ(start_offset, -1);
+  EXPECT_EQ(end_offset, -1);
+  g_free(content);
+
+#if ATK_CHECK_VERSION(2, 10, 0)
+  // Likewise for an unrecognized granularity (5 in this case).
+  start_offset = 0;
+  end_offset = 0;
+  content = atk_text_get_string_at_offset(atk_text, 0,
+                                          static_cast<AtkTextGranularity>(5),
+                                          &start_offset, &end_offset);
+  EXPECT_EQ(content, nullptr);
+  EXPECT_EQ(start_offset, -1);
+  EXPECT_EQ(end_offset, -1);
+  g_free(content);
+#endif
+
+  g_object_unref(root_obj);
+}
+
 #if ATK_CHECK_VERSION(2, 10, 0)
 TEST_F(AXPlatformNodeAuraLinuxTest, DISABLED_TestAtkTextParagraphGranularity) {
   // TODO(nektar): Enable navigating by paragraphs in plain text.

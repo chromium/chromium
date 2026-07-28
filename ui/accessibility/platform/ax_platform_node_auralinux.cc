@@ -1149,8 +1149,16 @@ char* GetTextAtOffset(AtkText* atk_text,
                       int* start_offset,
                       int* end_offset) {
   g_return_val_if_fail(ATK_IS_TEXT(atk_text), nullptr);
-  ax::mojom::TextBoundary boundary = FromAtkTextBoundary(atk_boundary);
-  return GetTextWithBoundaryType(atk_text, offset, boundary, start_offset,
+
+  std::optional<ax::mojom::TextBoundary> boundary =
+      FromAtkTextBoundary(atk_boundary);
+  if (!boundary) {
+    *start_offset = -1;
+    *end_offset = -1;
+    return nullptr;
+  }
+
+  return GetTextWithBoundaryType(atk_text, offset, *boundary, start_offset,
                                  end_offset);
 }
 
@@ -1312,8 +1320,13 @@ char* GetStringAtOffset(AtkText* atk_text,
   *start_offset = -1;
   *end_offset = -1;
 
-  ax::mojom::TextBoundary boundary = FromAtkTextGranularity(atk_granularity);
-  return GetTextWithBoundaryType(atk_text, offset, boundary, start_offset,
+  std::optional<ax::mojom::TextBoundary> boundary =
+      FromAtkTextGranularity(atk_granularity);
+  if (!boundary) {
+    return nullptr;
+  }
+
+  return GetTextWithBoundaryType(atk_text, offset, *boundary, start_offset,
                                  end_offset);
 }
 

@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TEXT_BOUNDARY_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TEXT_BOUNDARY_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -26,13 +28,16 @@ namespace ui {
 
 #if BUILDFLAG(USE_ATK)
 // Converts from an ATK text boundary to an ax::mojom::TextBoundary.
+// Returns std::nullopt for an unrecognized value.
 COMPONENT_EXPORT(AX_PLATFORM)
-ax::mojom::TextBoundary FromAtkTextBoundary(AtkTextBoundary boundary);
+std::optional<ax::mojom::TextBoundary> FromAtkTextBoundary(
+    AtkTextBoundary boundary);
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-// Same as above, but for an older version of the API.
+// Same as above, but for the newer version of the API.
 COMPONENT_EXPORT(AX_PLATFORM)
-ax::mojom::TextBoundary FromAtkTextGranularity(AtkTextGranularity granularity);
+std::optional<ax::mojom::TextBoundary> FromAtkTextGranularity(
+    AtkTextGranularity granularity);
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
 

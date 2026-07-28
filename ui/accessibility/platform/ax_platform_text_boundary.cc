@@ -4,13 +4,16 @@
 
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
 
 #if BUILDFLAG(USE_ATK)
-ax::mojom::TextBoundary FromAtkTextBoundary(AtkTextBoundary boundary) {
+std::optional<ax::mojom::TextBoundary> FromAtkTextBoundary(
+    AtkTextBoundary boundary) {
   // These are listed in order of their definition in the ATK header.
   switch (boundary) {
     case ATK_TEXT_BOUNDARY_CHAR:
@@ -28,10 +31,13 @@ ax::mojom::TextBoundary FromAtkTextBoundary(AtkTextBoundary boundary) {
     case ATK_TEXT_BOUNDARY_LINE_END:
       return ax::mojom::TextBoundary::kLineEnd;
   }
+  // |boundary| can arrive from the AT-SPI bridge as an unvalidated integer.
+  return std::nullopt;
 }
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-ax::mojom::TextBoundary FromAtkTextGranularity(AtkTextGranularity granularity) {
+std::optional<ax::mojom::TextBoundary> FromAtkTextGranularity(
+    AtkTextGranularity granularity) {
   // These are listed in order of their definition in the ATK header.
   switch (granularity) {
     case ATK_TEXT_GRANULARITY_CHAR:
@@ -45,6 +51,8 @@ ax::mojom::TextBoundary FromAtkTextGranularity(AtkTextGranularity granularity) {
     case ATK_TEXT_GRANULARITY_PARAGRAPH:
       return ax::mojom::TextBoundary::kParagraphStart;
   }
+  // |granularity| can arrive from the AT-SPI bridge as an unvalidated integer.
+  return std::nullopt;
 }
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
