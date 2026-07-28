@@ -42,6 +42,7 @@ class RemoteActorCredentialSharingServiceImpl
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<RemoteActorCredentialStoreClient> credential_store_;
+  std::unique_ptr<RemoteActorCredentialPermissionClient> permission_client_;
 };
 
 }  // namespace password_manager

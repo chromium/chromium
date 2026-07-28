@@ -4,6 +4,8 @@
 
 source_set("remote_actor") {
   sources = [
+    "remote_actor_credential_permission_client.cc",
+    "remote_actor_credential_permission_client.h",
     "remote_actor_credential_sharing_service.h",
     "remote_actor_credential_sharing_service_factory.cc",
     "remote_actor_credential_sharing_service_factory.h",
@@ -21,6 +23,7 @@ source_set("remote_actor") {
     "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//components/keyed_service/core",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//google_apis/common",
@@ -33,6 +36,7 @@ source_set("remote_actor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "remote_actor_credential_permission_client_unittest.cc",
     "remote_actor_credential_sharing_service_impl_unittest.cc",
     "remote_actor_credential_store_client_unittest.cc",
     "remote_actor_request_helper_unittest.cc",

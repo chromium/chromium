@@ -411,6 +411,7 @@ after discussions on the right group.
       <annotation id="read_aloud_synthesize"/>
       <annotation id="tab_context_ephemeral_key_fetch"/>
       <annotation id="remote_actor_passbox_client"/>
+      <annotation id="remote_actor_permission_service"/>
     </sender>
   </group>
   <group name="Admin Features">
