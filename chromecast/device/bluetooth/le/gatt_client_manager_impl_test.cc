@@ -1038,6 +1038,83 @@ TEST_F(GattClientManagerTest, RemoteDeviceCharacteristicSetRegisterIndication) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(GattClientManagerTest,
+       RemoteDeviceCharacteristicAfterOnServicesRemoved) {
+  const auto kServices = GenerateServices();
+  Connect(kTestAddr1);
+  scoped_refptr<RemoteDevice> device = GetDevice(kTestAddr1);
+  bluetooth_v2_shlib::Gatt::Client::Delegate* delegate =
+      gatt_client_->delegate();
+  delegate->OnServicesAdded(kTestAddr1, kServices);
+  base::RunLoop().RunUntilIdle();
+  std::vector<scoped_refptr<RemoteService>> services =
+      GetServices(device.get());
+  ASSERT_EQ(kServices.size(), services.size());
+
+  scoped_refptr<RemoteService> service = services[0];
+  std::vector<scoped_refptr<RemoteCharacteristic>> characteristics =
+      service->GetCharacteristics();
+  ASSERT_GE(characteristics.size(), 1ul);
+  scoped_refptr<RemoteCharacteristic> characteristic = characteristics[0];
+  ASSERT_TRUE(characteristic);
+
+  // Drop local references so the device owns the only service reference.
+  characteristics.clear();
+  service.reset();
+  services.clear();
+
+  // The peripheral removes the service while the caller still holds a
+  // characteristic reference.
+  delegate->OnServicesRemoved(kTestAddr1, kServices[0].handle,
+                              kServices[1].handle);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0ul, GetServices(device.get()).size());
+
+  // Operations on the stale characteristic should fail cleanly.
+  EXPECT_CALL(*gatt_client_, SetCharacteristicNotification(_, _, _)).Times(0);
+  EXPECT_CALL(cb_, Run(false));
+  characteristic->SetRegisterNotificationOrIndication(true, cb_.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(GattClientManagerTest, RemoteDeviceCharacteristicAfterServiceReplaced) {
+  const auto kServices = GenerateServices();
+  Connect(kTestAddr1);
+  scoped_refptr<RemoteDevice> device = GetDevice(kTestAddr1);
+  bluetooth_v2_shlib::Gatt::Client::Delegate* delegate =
+      gatt_client_->delegate();
+  delegate->OnServicesAdded(kTestAddr1, kServices);
+  base::RunLoop().RunUntilIdle();
+  std::vector<scoped_refptr<RemoteService>> services =
+      GetServices(device.get());
+  ASSERT_EQ(kServices.size(), services.size());
+
+  scoped_refptr<RemoteService> service = services[0];
+  std::vector<scoped_refptr<RemoteCharacteristic>> characteristics =
+      service->GetCharacteristics();
+  ASSERT_GE(characteristics.size(), 1ul);
+  scoped_refptr<RemoteCharacteristic> characteristic = characteristics[0];
+  ASSERT_TRUE(characteristic);
+
+  // Drop local references so the device owns the only service reference.
+  characteristics.clear();
+  service.reset();
+  services.clear();
+
+  // The peripheral re-advertises the same services, replacing the existing
+  // ones while the caller still holds a characteristic reference.
+  delegate->OnServicesAdded(kTestAddr1, kServices);
+  base::RunLoop().RunUntilIdle();
+
+  // Operations on the stale characteristic should fail cleanly.
+  EXPECT_CALL(*gatt_client_, SetCharacteristicNotification(_, _, _)).Times(0);
+  EXPECT_CALL(cb_, Run(false));
+  characteristic->SetRegisterNotificationOrIndication(true, cb_.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(GattClientManagerTest, RemoteDeviceDescriptor) {
   const std::vector<uint8_t> kTestData1 = {0x1, 0x2, 0x3};
   const std::vector<uint8_t> kTestData2 = {0x4, 0x5, 0x6};

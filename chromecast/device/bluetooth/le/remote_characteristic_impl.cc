@@ -181,6 +181,10 @@ void RemoteCharacteristicImpl::SetRegisterNotificationOrIndication(
     RemoteCharacteristic::StatusCallback cb) {
   MAKE_SURE_IO_THREAD(SetRegisterNotificationOrIndication, enable,
                       BindToCurrentSequence(std::move(cb)));
+  if (!gatt_client_manager_) {
+    LOG(ERROR) << __func__ << " failed: Destroyed";
+    EXEC_CB_AND_RET(cb, false);
+  }
 
   if (CharacteristicHasNotify(characteristic_)) {
     SetRegisterNotificationOrIndicationInternal(false, enable, std::move(cb));

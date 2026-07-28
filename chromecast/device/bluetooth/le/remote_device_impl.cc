@@ -486,6 +486,8 @@ void RemoteDeviceImpl::OnServicesRemoved(uint16_t start_handle,
     if (it->second->handle() >= start_handle &&
         it->second->handle() <= end_handle) {
       for (auto& characteristic : it->second->GetCharacteristics()) {
+        static_cast<RemoteCharacteristicImpl*>(characteristic.get())
+            ->Invalidate();
         handle_to_characteristic_.erase(characteristic->handle());
       }
       it = uuid_to_service_.erase(it);
@@ -502,6 +504,8 @@ void RemoteDeviceImpl::OnServicesAdded(
     auto it = uuid_to_service_.find(service.uuid);
     if (it != uuid_to_service_.end()) {
       for (auto& characteristic : it->second->GetCharacteristics()) {
+        static_cast<RemoteCharacteristicImpl*>(characteristic.get())
+            ->Invalidate();
         handle_to_characteristic_.erase(characteristic->handle());
       }
     }
