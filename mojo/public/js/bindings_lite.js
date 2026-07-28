@@ -1107,26 +1107,21 @@ mojo.internal.Decoder = class {
    * @return {*}
    */
   decodeStructField(structField, version) {
-    const decode =
-        (field) => {
-          const byteOffset =
-              mojo.internal.kStructHeaderSize + field.packedOffset;
-          const value = field.type.$.decode(
-              this, byteOffset, field.packedBitOffset, !!field.nullable);
-
-          if (value === null && !field.nullable) {
-            throw new Error(
-                `Received ${field.name} with invalid null field ` +
-                `"${field.name}"`)
-          }
-          return value;
-        }
-
     if (structField.minVersion > version) {
       return structField.defaultValue;
     }
 
-    return decode(structField);
+    const byteOffset =
+        mojo.internal.kStructHeaderSize + structField.packedOffset;
+    const value = structField.type.$.decode(
+        this, byteOffset, structField.packedBitOffset, !!structField.nullable);
+
+    if (value === null && !structField.nullable) {
+      throw new Error(
+          `Received ${structField.name} with invalid null field ` +
+          `"${structField.name}"`);
+    }
+    return value;
   }
 
   /**
