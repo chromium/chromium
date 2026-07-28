@@ -235,6 +235,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -5695,9 +5696,18 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - PictureInPictureCommands
 
 - (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config {
+  // Use the scene's active view controller if available (e.g., when in
+  // Incognito mode) so that presentation is performed on a view controller
+  // that is currently in the window hierarchy. Fall back to the coordinator's
+  // default view controller if the active scene UI is not fully initialized
+  // (e.g., in unit testing environments or early startup).
+  id<SceneUIProvider> sceneUIProvider =
+      (id<SceneUIProvider>)self.browser->GetSceneState().controller;
+  UIViewController* baseViewController =
+      sceneUIProvider.activeViewController ?: self.viewController;
   _pictureInPictureCoordinator = [[PictureInPictureCoordinator alloc]
       initWithConfiguration:config
-         baseViewController:self.viewController
+         baseViewController:baseViewController
                     browser:self.browser];
   [_pictureInPictureCoordinator start];
 }
