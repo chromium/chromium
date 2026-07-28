@@ -881,8 +881,6 @@ static_library("test_support") {
       "../browser/ui/views/profiles/profile_picker_view_test_utils.h",
       "../browser/ui/views/profiles/profiles_pixel_test_utils.cc",
       "../browser/ui/views/profiles/profiles_pixel_test_utils.h",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.cc",
-      "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h",
     ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
@@ -3754,7 +3752,10 @@ if (!is_android) {
       deps += [ "//ui/events:test_support" ]
     }
     if (toolkit_views) {
-      deps += [ "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests" ]
+      deps += [
+        "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
+        "//chrome/browser/web_applications/isolated_web_apps/window_management:browser_tests",
+      ]
       if (use_aura) {
         deps += [ "//ui/aura:test_support" ]
       }
@@ -9134,6 +9135,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/translate",
         "//chrome/browser/ui/views/translate:interactive_ui_tests",
         "//chrome/browser/ui/views/translate:test_support",
+        "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
         "//chrome/browser/ui/views/webid:interactive_ui_tests",
         "//chrome/browser/ui/views/zoom:interactive_ui_tests",
         "//chrome/browser/ui/web_applications:launch_utils",

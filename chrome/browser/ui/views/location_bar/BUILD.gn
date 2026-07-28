@@ -344,6 +344,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/record_replay",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/views/translate",
+    "//chrome/browser/ui/views/web_apps/frame_toolbar:test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
