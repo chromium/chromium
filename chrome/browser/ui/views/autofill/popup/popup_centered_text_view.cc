@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_centered_text_view.h"
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -16,7 +16,7 @@ namespace {
 constexpr int kHeight = 48;
 }  // namespace
 
-PopupNoSuggestionsView::PopupNoSuggestionsView(const std::u16string& message) {
+PopupCenteredTextView::PopupCenteredTextView(const std::u16string& message) {
   SetUseDefaultFillLayout(true);
   AddChildView(
       views::Builder<views::Label>()
@@ -28,9 +28,9 @@ PopupNoSuggestionsView::PopupNoSuggestionsView(const std::u16string& message) {
           .Build());
 }
 
-PopupNoSuggestionsView::~PopupNoSuggestionsView() = default;
+PopupCenteredTextView::~PopupCenteredTextView() = default;
 
-BEGIN_METADATA(PopupNoSuggestionsView)
+BEGIN_METADATA(PopupCenteredTextView)
 END_METADATA
 
 }  // namespace autofill
