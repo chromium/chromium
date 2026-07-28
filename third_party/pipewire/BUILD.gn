@@ -481,7 +481,7 @@ copy("pipewire_conf") {
 
 group("all") {
   testonly = true
-  deps = [
+  data_deps = [
     ":libpipewire",
     ":pipewire",
     ":pipewire_conf",
