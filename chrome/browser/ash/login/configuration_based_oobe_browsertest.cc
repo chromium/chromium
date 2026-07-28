@@ -250,4 +250,26 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest,
       UpdateView::kScreenId);
 }
 
+// Check that when welcome, network and skip HID screen options are passed via
+// OOBE configuration on a Chromebox, the HID detection screen is skipped and
+// we proceed to the update screen.
+IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest, TestSkipHID) {
+  base::test::ScopedChromeOSVersionInfo version{"DEVICETYPE=CHROMEBOX",
+                                                base::Time::Now()};
+
+  LoadConfiguration();
+  OobeScreenWaiter(UpdateView::kScreenId).Wait();
+}
+
+// Check that when skip HID screen option is passed via OOBE configuration on a
+// Chromebox, the HID detection screen is skipped and we proceed to the welcome
+// screen.
+IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest, TestSkipHIDScreen) {
+  base::test::ScopedChromeOSVersionInfo version{"DEVICETYPE=CHROMEBOX",
+                                                base::Time::Now()};
+
+  LoadConfiguration();
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+}
+
 }  // namespace ash
