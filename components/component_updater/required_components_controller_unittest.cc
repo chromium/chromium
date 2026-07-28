@@ -144,5 +144,59 @@ TEST_F(RequiredComponentsControllerTest, ComponentsUpdateError) {
                "Component 'Component' update error, error code: 42");
 }
 
+TEST_F(RequiredComponentsControllerTest, ChainedExplicitComponent) {
+  CreateController({"*", "ChainedComponent"});
+
+  ASSERT_TRUE(RequestComponentUpdate("Component1", "id1"));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](RequiredComponentsController* controller) {
+            update_client::CrxUpdateItem update_item;
+            update_item.id = "id1";
+            update_item.state = update_client::ComponentState::kUpToDate;
+            controller->OnEvent(update_item);
+          },
+          base::Unretained(controller_.get())),
+      base::Milliseconds(10));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](RequiredComponentsControllerTest* test_fixture) {
+            test_fixture->RequestComponentUpdate("ChainedComponent", "id2");
+          },
+          base::Unretained(this)),
+      base::Milliseconds(20));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](RequiredComponentsController* controller) {
+            update_client::CrxUpdateItem update_item;
+            update_item.id = "id2";
+            update_item.state = update_client::ComponentState::kUpdated;
+            controller->OnEvent(update_item);
+          },
+          base::Unretained(controller_.get())),
+      base::Milliseconds(30));
+
+  base::ElapsedTimer timer;
+  EnsureRequiredComponentsReady();
+  base::TimeDelta elapsed = timer.Elapsed();
+
+  EXPECT_GT(elapsed, base::Milliseconds(25));
+}
+
+TEST_F(RequiredComponentsControllerTest, ExplicitComponentTimeout) {
+  CreateController({"ExplicitComponent"});
+
+  EXPECT_DEATH(
+      controller_->EnsureRequiredComponentsReady(base::Milliseconds(10)),
+      "Timed out waiting for all the required components to update. Pending "
+      "components: \"ExplicitComponent\".");
+}
+
 }  // namespace
 }  // namespace component_updater

@@ -65,6 +65,13 @@ For example:
 - To require a specific component: `["Hyphenation"]`
 - To require components starting with "Widevine": `["Widevine*"]`
 
+**Note:** When a component is explicitly listed by its full name without
+wildcards, Chrome for Testing will wait for that component to be installed and
+ready even if its registration is delayed during startup (for example,
+components chained from a manifest component). When wildcards are used, Chrome
+for Testing only waits for matching components that have been registered
+during early startup.
+
 #### Component Installation Directory
 
 By default, components are installed within the browser's user data directory.
@@ -102,6 +109,12 @@ browser should discover and load these pre-saved components.
 
 - **Startup Block**: Chrome will block startup until all required components
   are successfully updated/installed or the timeout is reached.
+  - If a required component is explicitly listed by its full name without
+    wildcards, Chrome will wait for that component to be installed and ready
+    even if it is not registered immediately at startup (for example,
+    components chained from a manifest component).
+  - If components are specified using wildcards (`*` or `?`), Chrome only
+    waits for matching components that have been registered during early startup.
 - **Fail Fast**: If a component fails to update or the timeout expires, Chrome
   will terminate with a fatal error. This ensures that tests do not run in an
   incomplete state.

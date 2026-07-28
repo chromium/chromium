@@ -136,6 +136,17 @@ void RequiredComponentsController::CheckComponentsReady() {
     return;
   }
 
+  // Some required components may be registered later in the startup sequence
+  // (e.g., components chained from a manifest component). If a component is
+  // explicitly listed by its full name without wildcards, do not mark
+  // required components as ready until that component has been updated.
+  if (std::ranges::any_of(components_, [this](const auto& component) {
+        return component.find_first_of("*?") == std::string::npos &&
+               !ready_components_.contains(component);
+      })) {
+    return;
+  }
+
   if (!update_start_time_.is_null()) {
     LOG(WARNING) << "Required components updated in "
                  << (base::TimeTicks::Now() - update_start_time_);
@@ -149,8 +160,22 @@ void RequiredComponentsController::CheckComponentsReady() {
 }
 
 std::string RequiredComponentsController::GetRequestedComponentNames() const {
-  std::string result;
+  base::flat_set<std::string> names;
   for (const auto& [id, name] : requested_components_) {
+    names.insert(name);
+  }
+
+  // Include explicitly listed required components (without wildcards) that are
+  // still pending even if they have not been registered yet (e.g., chained
+  // components whose registration was delayed).
+  for (const auto& component : components_) {
+    if (component.find_first_of("*?") == std::string::npos &&
+        !ready_components_.contains(component)) {
+      names.insert(component);
+    }
+  }
+  std::string result;
+  for (const auto& name : names) {
     if (!result.empty()) {
       result += ", ";
     }

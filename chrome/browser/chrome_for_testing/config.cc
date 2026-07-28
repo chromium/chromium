@@ -46,7 +46,7 @@ constexpr char kRequiredComponentsUpdateTimeout[] =
 constexpr base::TimeDelta kMinRequiredComponentsUpdateTimeout =
     base::Seconds(1);
 constexpr base::TimeDelta kMaxRequiredComponentsUpdateTimeout =
-    base::Minutes(5);
+    base::Minutes(15);
 
 bool VerifyRequiredComponents(base::ListValue* required_components) {
   for (const auto& required_component : *required_components) {
