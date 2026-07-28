@@ -6,7 +6,9 @@
 
 #include <windows.h>
 
+#include <array>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 #include "base/files/file_path.h"
@@ -782,5 +784,118 @@ TEST_F(ClipboardWinTest, ReadDataAsyncEmptyClipboard) {
   ASSERT_TRUE(data_future.Wait());
   EXPECT_TRUE(data_future.Get().empty());
 }
+
+namespace {
+
+constexpr int kBitmapDepthTestWidth = 3;
+constexpr int kBitmapDepthTestHeight = 1;
+constexpr size_t kDibRowAlignmentBits = 32;
+constexpr size_t kDibRowAlignmentBytes = 4;
+
+std::vector<uint8_t> SolidRedRow(int bit_count) {
+  switch (bit_count) {
+    case 1:
+      // The first three high-order bits select palette entry 1.
+      return {0xe0};
+    case 4:
+      // Each high/low nibble selects palette entry 1.
+      return {0x11, 0x10};
+    case 8:
+      return {0x01, 0x01, 0x01};
+    case 16:
+      // BI_RGB 16bpp uses RGB555; 0x7c00 is full red.
+      return {0x00, 0x7c, 0x00, 0x7c, 0x00, 0x7c};
+    case 24:
+      // 24bpp DIB pixels are stored in BGR order.
+      return {0x00, 0x00, 0xff, 0x00, 0x00, 0xff, 0x00, 0x00, 0xff};
+    case 32:
+      // 32bpp BI_RGB pixels are stored in BGRA order.
+      return {0x00, 0x00, 0xff, 0xff, 0x00, 0x00,
+              0xff, 0xff, 0x00, 0x00, 0xff, 0xff};
+  }
+  return {};
+}
+
+std::vector<uint8_t> CreateSolidRedDib(int bit_count) {
+  BITMAPINFOHEADER header = {};
+  header.biSize = sizeof(header);
+  header.biWidth = kBitmapDepthTestWidth;
+  header.biHeight = kBitmapDepthTestHeight;
+  header.biPlanes = 1;
+  header.biBitCount = bit_count;
+  header.biCompression = BI_RGB;
+  header.biClrUsed = bit_count <= 8 ? 2 : 0;
+
+  std::vector<uint8_t> dib(sizeof(header), 0);
+  base::as_writable_byte_span(dib)
+      .first(sizeof(header))
+      .copy_from(base::byte_span_from_ref(header));
+
+  if (header.biClrUsed) {
+    std::array<RGBQUAD, 2> palette = {};
+    palette[1].rgbRed = 0xff;
+    base::span<const uint8_t> palette_bytes = base::as_byte_span(palette);
+    dib.insert(dib.end(), palette_bytes.begin(), palette_bytes.end());
+  }
+
+  std::vector<uint8_t> row = SolidRedRow(bit_count);
+  const size_t row_stride =
+      ((kBitmapDepthTestWidth * bit_count + kDibRowAlignmentBits - 1) /
+       kDibRowAlignmentBits) *
+      kDibRowAlignmentBytes;
+  row.resize(row_stride, 0);
+  dib.insert(dib.end(), row.begin(), row.end());
+  return dib;
+}
+
+std::string BitmapDepthTestName(const testing::TestParamInfo<int>& test_info) {
+  switch (test_info.param) {
+    case 1:
+      return "OneBpp";
+    case 4:
+      return "FourBpp";
+    case 8:
+      return "EightBpp";
+    case 16:
+      return "SixteenBpp";
+    case 24:
+      return "TwentyFourBpp";
+    case 32:
+      return "ThirtyTwoBpp";
+  }
+  return "Unsupported";
+}
+
+class ClipboardWinBitmapDepthTest : public ClipboardWinTest,
+                                    public testing::WithParamInterface<int> {};
+
+TEST_P(ClipboardWinBitmapDepthTest, ReadsSupportedBitDepth) {
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRawDataForTest(ClipboardFormatType(CF_DIB),
+                               CreateSolidRedDib(GetParam()));
+  }
+
+  std::vector<uint8_t> png = clipboard_test_util::ReadPng(
+      Clipboard::GetForCurrentThread(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
+  ASSERT_FALSE(png.empty());
+
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png);
+  ASSERT_EQ(bitmap.width(), kBitmapDepthTestWidth);
+  ASSERT_EQ(bitmap.height(), kBitmapDepthTestHeight);
+  for (int x = 0; x < kBitmapDepthTestWidth; ++x) {
+    EXPECT_EQ(bitmap.getColor(x, 0), SK_ColorRED);
+  }
+
+  Clipboard::GetForCurrentThread()->Clear(ClipboardBuffer::kCopyPaste);
+}
+
+INSTANTIATE_TEST_SUITE_P(SupportedBitDepths,
+                         ClipboardWinBitmapDepthTest,
+                         testing::Values(1, 4, 8, 16, 24, 32),
+                         BitmapDepthTestName);
+
+}  // namespace
 
 }  // namespace ui
