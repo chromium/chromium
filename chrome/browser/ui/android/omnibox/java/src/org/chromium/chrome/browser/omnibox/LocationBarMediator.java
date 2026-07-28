@@ -948,7 +948,7 @@ class LocationBarMediator
             mScrimHandler.setVisibility(
                     mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
-        mCurrentInput.getPreviewMatchUrlSupplier().set(getPreviewMatchUrl(defaultMatch));
+        mCurrentInput.setPreviewMatchUrl(getPreviewMatchUrl(defaultMatch));
 
         if (mUrlCoordinator.shouldAutocomplete()) {
             String siteSearchLabel = null;
@@ -2918,7 +2918,7 @@ class LocationBarMediator
         // null value before the observer is disconnected in StatusMediator#endInput. This will
         // no longer be needed after implementing drafting w/o focus TODO(b/530079993), because
         // suspend input won't clear the favicon anymore.
-        input.getPreviewMatchUrlSupplier().set(null);
+        input.setPreviewMatchUrl(null);
 
         mAutocompleteCoordinator.endInput();
         mStatusCoordinator.endInput();

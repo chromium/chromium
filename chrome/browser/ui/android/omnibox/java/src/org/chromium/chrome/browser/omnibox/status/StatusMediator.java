@@ -1072,8 +1072,7 @@ public class StatusMediator
 
     private boolean isUrlBarTextSearch() {
         return (mInputSessionState == null
-                || mInputSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get()
-                        == null);
+                || mInputSessionState.getAutocompleteInput().getPreviewMatchUrl() == null);
     }
 
     private boolean isPageInfoMovedToAppMenu() {

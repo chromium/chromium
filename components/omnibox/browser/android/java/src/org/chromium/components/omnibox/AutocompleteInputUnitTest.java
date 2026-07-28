@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ import java.util.Set;
 public class AutocompleteInputUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Callback<Integer> mCallback;
+    private @Mock Callback<GURL> mGurlCallback;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
@@ -614,5 +617,27 @@ public class AutocompleteInputUnitTest {
         assertEquals(AutocompleteState.ENABLED, mInput.getAutocompleteState());
         assertEquals("new_text", mInput.getUserText());
         assertEquals(2, mInput.getSelection().from);
+    }
+
+    @Test
+    public void testPreviewMatchUrlObserver() {
+        GURL url1 = JUnitTestGURLs.BLUE_1;
+        GURL url2 = JUnitTestGURLs.RED_1;
+
+        // Connect observer and set supplier
+        mInput.getPreviewMatchUrlSupplier().addSyncObserver(mGurlCallback);
+        mInput.setPreviewMatchUrl(url1);
+
+        // Observer triggered with new value
+        assertEquals(url1, mInput.getPreviewMatchUrl());
+        verify(mGurlCallback).onResult(url1);
+
+        // Disconnect observer and set supplier
+        mInput.getPreviewMatchUrlSupplier().removeObserver(mGurlCallback);
+        mInput.setPreviewMatchUrl(url2);
+
+        // Observer not triggered
+        assertEquals(url2, mInput.getPreviewMatchUrl());
+        verifyNoMoreInteractions(mGurlCallback);
     }
 }

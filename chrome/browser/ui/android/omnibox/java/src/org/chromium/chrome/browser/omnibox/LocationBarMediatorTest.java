@@ -754,7 +754,7 @@ public class LocationBarMediatorTest {
                 true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(anyLong(), anyString(), anyString(), anyLong(), any(), any());
-        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
@@ -781,14 +781,14 @@ public class LocationBarMediatorTest {
         mMediator.onSuggestionsChanged(defaultMatch, true);
         verify(mPrerenderJni)
                 .prerenderMaybe(123L, "text", JUnitTestGURLs.RED_1.getSpec(), 456L, mProfile, mTab);
-        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
         var state = mSessionState;
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
     }
 
     @Test
@@ -801,7 +801,7 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
 
         mMediator.onSuggestionsChanged(null, false);
-        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
         verify(mUrlCoordinator).setAutocompleteText("text", null, null, null);
     }
 
@@ -823,10 +823,10 @@ public class LocationBarMediatorTest {
                         .setUrl(JUnitTestGURLs.RED_1)
                         .build();
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
 
         mMediator.suspendInput();
-        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getPreviewMatchUrl());
     }
 
     @Test

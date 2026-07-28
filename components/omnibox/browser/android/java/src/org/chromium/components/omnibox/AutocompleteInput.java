@@ -331,8 +331,18 @@ public class AutocompleteInput implements UserData {
         return mSiteSearchData;
     }
 
-    /** Returns the supplier of the preview match URL for this input. */
-    public SettableNullableObservableSupplier<GURL> getPreviewMatchUrlSupplier() {
+    /** Sets the preview match URL. */
+    public void setPreviewMatchUrl(@Nullable GURL url) {
+        mPreviewMatchUrlSupplier.set(url);
+    }
+
+    /** Returns the preview match URL. */
+    public @Nullable GURL getPreviewMatchUrl() {
+        return mPreviewMatchUrlSupplier.get();
+    }
+
+    /** Returns supplier of the preview match URL. */
+    public NullableObservableSupplier<GURL> getPreviewMatchUrlSupplier() {
         return mPreviewMatchUrlSupplier;
     }
 
