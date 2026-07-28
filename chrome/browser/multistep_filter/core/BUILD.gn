@@ -36,7 +36,7 @@ source_set("unit_tests") {
   testonly = true
   sources = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [
       "multistep_filter_log_router_factory_unittest.cc",
       "multistep_filter_service_factory_unittest.cc",

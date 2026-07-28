@@ -7,7 +7,7 @@ source_set("multistep_filter") {
   public_deps = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     public_deps += [
       "//chrome/browser/multistep_filter/core",
       "//chrome/browser/ui/tabs",
@@ -37,7 +37,7 @@ source_set("test_support") {
   testonly = true
   sources = []
   deps = []
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [ "chrome_filter_navigation_observer_test_api.h" ]
     deps += [
       ":multistep_filter",
@@ -51,7 +51,7 @@ source_set("unit_tests") {
   sources = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [
       "chrome_filter_navigation_observer_unittest.cc",
       "multistep_filter_ui_delegate_impl_unittest.cc",
@@ -87,7 +87,7 @@ source_set("browser_tests") {
   sources = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [ "multistep_filter_browsertest.cc" ]
     deps += [
       ":multistep_filter",

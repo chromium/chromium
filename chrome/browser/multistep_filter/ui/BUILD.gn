@@ -7,7 +7,7 @@ source_set("ui") {
   public_deps = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [
       "filter_ui_controller.cc",
       "filter_ui_controller.h",
@@ -54,7 +54,7 @@ source_set("test_support") {
   sources = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [ "filter_ui_controller_test_api.h" ]
     deps += [
       ":ui",
@@ -68,7 +68,7 @@ source_set("unit_tests") {
   sources = []
   deps = []
 
-  if (!is_android && !is_ios) {
+  if (!is_android) {
     sources += [ "filter_ui_controller_unittest.cc" ]
     deps += [
       ":test_support",

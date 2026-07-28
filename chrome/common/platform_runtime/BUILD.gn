@@ -28,7 +28,7 @@ source_set("unit_tests") {
 # TODO(quarz): Use loadble_module everwhere & change GetNativeLibraryName()
 #     to GetLoadableModuleName().
 
-if (is_mac || is_ios) {
+if (is_mac) {
   _target_type = "shared_library"
 } else {
   _target_type = "loadable_module"
