@@ -25,7 +25,7 @@ There are a number of different ways to do so:
     skip over tests. Examples include involve adding `DISABLED_` to the test
     method name for GTest-based tests, `@unittest.skip` for Python-based tests,
     or using the
-    [DisabledTest](../../base/test/android/javatests/src/org/chromium/base/test/DisabledTest.java)
+    [DisabledTest](../../base/test/android/javatests/src/org/chromium/base/test/util/DisabledTest.java)
     annotation for JUnit-based Java tests (this works in both instrumentation
     and Robolectric tests). In these cases, you don't run the test by default,
     but you can determine the list of disabled tests at runtime because the
