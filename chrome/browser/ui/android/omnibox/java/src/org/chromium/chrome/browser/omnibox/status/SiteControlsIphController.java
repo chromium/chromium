@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -20,7 +21,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 public class SiteControlsIphController {
     private final UserEducationHelper mUserEducationHelper;
     private final AppMenuHandler mAppMenuHandler;
-    private final View mToolbarMenuButton;
+    private final @Nullable View mToolbarMenuButton;
 
     /**
      * Constructor for {@link SiteControlsIphController}.
@@ -31,7 +32,7 @@ public class SiteControlsIphController {
      */
     public SiteControlsIphController(
             UserEducationHelper userEducationHelper,
-            View toolbarMenuButton,
+            @Nullable View toolbarMenuButton,
             AppMenuHandler appMenuHandler) {
         mUserEducationHelper = userEducationHelper;
         mToolbarMenuButton = toolbarMenuButton;
@@ -43,6 +44,9 @@ public class SiteControlsIphController {
      * controls" item.
      */
     public void showIph() {
+        if (mToolbarMenuButton == null || !mToolbarMenuButton.isShown()) {
+            return;
+        }
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
                                 mToolbarMenuButton.getResources(),
