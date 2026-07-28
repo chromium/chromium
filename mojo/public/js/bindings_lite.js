@@ -853,14 +853,28 @@ mojo.internal.Decoder = class {
   }
 
   decodeString(offset) {
-    const data = this.decodeArray({elementType: mojo.internal.Uint8}, offset);
-    if (!data)
+    // Absolute from the underlying data buffer, not the current data view.
+    const arrayAbsoluteOffset = this.decodeOffset(offset);
+    if (!arrayAbsoluteOffset)
       return null;
 
     if (!mojo.internal.Decoder.textDecoder)
       mojo.internal.Decoder.textDecoder = new TextDecoder('utf-8');
-    return mojo.internal.Decoder.textDecoder.decode(
-        new Uint8Array(data).buffer);
+
+    // Array header is [num_bytes, num_elements]. We want to grab the number
+    // of elements. decodeUint32 is a relative method, so we have to translate
+    // absolute back to relative.
+    const numElements =
+        this.decodeUint32((arrayAbsoluteOffset - this.data_.byteOffset) + 4);
+    // Fast path.
+    if (numElements === 0) {
+      return '';
+    }
+    // 8 bytes accounts for the header.
+    const arrayDataAbsoluteOffset = arrayAbsoluteOffset + 8;
+
+    return mojo.internal.Decoder.textDecoder.decode(new Uint8Array(
+        this.data_.buffer, arrayDataAbsoluteOffset, numElements));
   }
 
   decodeOffset(offset) {
