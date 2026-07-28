@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_app_switcher_helper.h",
+    "test_app_switcher_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app",
+    "//ios/chrome/test/providers/app_switcher",
+    "//ios/public/provider/chrome/browser/app_switcher:app_switcher_api",
+    "//url",
+  ]
+}
