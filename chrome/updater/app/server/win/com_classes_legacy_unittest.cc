@@ -391,6 +391,44 @@ TEST_F(LegacyAppCommandWebImplTest, SkipsPingSmokeTest) {
   EXPECT_EQ(exit_code, 7U);
 }
 
+TEST(AppWebImplTest, ServerInstallDataIndex) {
+  base::test::TaskEnvironment environment;
+
+  Microsoft::WRL::ComPtr<LegacyOnDemandImpl> on_demand =
+      Microsoft::WRL::Make<LegacyOnDemandImpl>();
+  Microsoft::WRL::ComPtr<IDispatch> bundle_dispatch;
+  ASSERT_HRESULT_SUCCEEDED(on_demand->createAppBundleWeb(&bundle_dispatch));
+  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
+  ASSERT_HRESULT_SUCCEEDED(bundle_dispatch.As(&bundle));
+  ASSERT_HRESULT_SUCCEEDED(
+      bundle->createInstalledApp(base::win::ScopedBstr(kAppId1).Get()));
+  Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
+  ASSERT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
+  Microsoft::WRL::ComPtr<IAppWeb> app;
+  ASSERT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+
+  EXPECT_HRESULT_SUCCEEDED(app->put_serverInstallDataIndex(
+      base::win::ScopedBstr(L"installdataindex").Get()));
+  {
+    base::win::ScopedBstr install_data_index;
+    EXPECT_HRESULT_SUCCEEDED(
+        app->get_serverInstallDataIndex(install_data_index.Receive()));
+    EXPECT_STREQ(install_data_index.Get(), L"installdataindex");
+  }
+
+  // Values exceeding the input-length limit are rejected and do not change the
+  // stored value.
+  EXPECT_EQ(app->put_serverInstallDataIndex(
+                base::win::ScopedBstr(std::wstring(0x4001, L'a')).Get()),
+            E_INVALIDARG);
+  {
+    base::win::ScopedBstr install_data_index;
+    EXPECT_HRESULT_SUCCEEDED(
+        app->get_serverInstallDataIndex(install_data_index.Receive()));
+    EXPECT_STREQ(install_data_index.Get(), L"installdataindex");
+  }
+}
+
 TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(StringFromGuid(__uuidof(GoogleUpdate3WebUserClass)),

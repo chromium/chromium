@@ -573,7 +573,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
     VLOG(2) << __func__;
-    current_operation_ = CurrentOperation::kCheckingForUpdates;
+    {
+      base::AutoLock lock{lock_};
+      current_operation_ = CurrentOperation::kCheckingForUpdates;
+    }
     return DoOperation(
         base::BindOnce(&AppWebImpl::CheckForUpdateImpl, AppWebImplPtr(this)));
   }
@@ -594,7 +597,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   HRESULT UpdateOrInstall() {
     VLOG(2) << __func__;
-    current_operation_ = CurrentOperation::kUpdatingOrInstalling;
+    {
+      base::AutoLock lock{lock_};
+      current_operation_ = CurrentOperation::kUpdatingOrInstalling;
+    }
     return DoOperation(base::BindOnce(
         is_install_ ? &AppWebImpl::InstallImpl : &AppWebImpl::UpdateImpl,
         AppWebImplPtr(this)));
@@ -613,9 +619,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     request.brand_code = brand_code_;
     request.ap = ap_;
 
-    update_service->Install(
-        request, {}, install_data_index_, UpdateService::Priority::kForeground,
-        language_, state_change_callback, std::move(complete_callback));
+    update_service->Install(request, {}, GetInstallDataIndex(),
+                            UpdateService::Priority::kForeground, language_,
+                            state_change_callback,
+                            std::move(complete_callback));
   }
 
   void UpdateImpl(
@@ -625,7 +632,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       scoped_refptr<UpdateService> update_service) {
     CHECK(update_service);
 
-    update_service->Update(app_id_, install_data_index_,
+    update_service->Update(app_id_, GetInstallDataIndex(),
                            UpdateService::Priority::kForeground,
                            policy_same_version_update_, language_,
                            state_change_callback, std::move(complete_callback));
@@ -633,7 +640,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   // Legacy compatibility: sets a flag that causes `get_currentState` to return
   // `STATE_READY_TO_INSTALL` when the update state is `kUpdateAvailable`.
-  void SetReadyToInstall() { set_ready_to_install_ = true; }
+  void SetReadyToInstall() {
+    base::AutoLock lock{lock_};
+    set_ready_to_install_ = true;
+  }
 
   // Overrides for IAppWeb.
   IFACEMETHODIMP get_appId(BSTR* app_id) override {
@@ -854,16 +864,20 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     }
 
     *install_data_index =
-        base::win::ScopedBstr(base::UTF8ToWide(install_data_index_)).Release();
+        base::win::ScopedBstr(base::UTF8ToWide(GetInstallDataIndex()))
+            .Release();
     return S_OK;
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR install_data_index) override {
-    if (!install_data_index) {
+    std::optional<std::string> install_data_index_str =
+        ValidateInstallDataIndex(install_data_index);
+    if (!install_data_index_str) {
       return E_INVALIDARG;
     }
 
-    install_data_index_ = base::WideToUTF8(install_data_index);
+    base::AutoLock lock{lock_};
+    install_data_index_ = *std::move(install_data_index_str);
     return S_OK;
   }
 
@@ -935,6 +949,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     result_ = result;
   }
 
+  std::string GetInstallDataIndex() const {
+    base::AutoLock lock{lock_};
+    return install_data_index_;
+  }
+
   // Handles the update service callbacks.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -944,19 +963,20 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   std::string brand_code_;
   std::string ap_;
   std::string language_;
-  std::string install_data_index_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
-  bool set_ready_to_install_ = false;
   ProgressSampler download_progress_sampler_;
   ProgressSampler install_progress_sampler_;
 
-  // Access to `state_update_` and `result_` must be serialized by using the
-  // lock.
+  // Serializes access to the members that may be read or written on multiple
+  // COM RPC threads.
   mutable base::Lock lock_;
-  std::optional<UpdateService::UpdateState> state_update_;
-  std::optional<UpdateService::Result> result_;
-  CurrentOperation current_operation_ = CurrentOperation::kUnknown;
+  std::string install_data_index_ GUARDED_BY(lock_);
+  bool set_ready_to_install_ GUARDED_BY(lock_) = false;
+  CurrentOperation current_operation_ GUARDED_BY(lock_) =
+      CurrentOperation::kUnknown;
+  std::optional<UpdateService::UpdateState> state_update_ GUARDED_BY(lock_);
+  std::optional<UpdateService::Result> result_ GUARDED_BY(lock_);
 };
 
 // This class implements the legacy Omaha3 IAppBundleWeb interface as expected
