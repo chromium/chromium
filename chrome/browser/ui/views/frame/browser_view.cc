@@ -3333,18 +3333,18 @@ void BrowserView::CutCopyPaste(int command_id) {
     }
   }
 
-  // Any Views which want to handle the clipboard commands in the Chrome menu
-  // should:
-  //   (a) Register ctrl-X/C/V as accelerators
-  //   (b) Implement CanHandleAccelerators() to not return true unless they're
-  //       focused, as the FocusManager will try all registered accelerator
-  //       handlers, not just the focused one.
-  // Currently, Textfield (which covers the omnibox and find bar, and likely any
-  // other native UI in the future that wants to deal with clipboard commands)
-  // does the above.
-  ui::Accelerator accelerator;
-  GetAccelerator(command_id, &accelerator);
-  GetFocusManager()->ProcessAccelerator(accelerator);
+  // If a native View (such as the Omnibox or FindBar) is focused, execute the
+  // accelerator directly on it rather than processing through FocusManager
+  // (which would re-enter BrowserView and ActionItems).
+  views::View* focused_view = GetFocusManager()->GetFocusedView();
+  if (focused_view) {
+    ui::Accelerator accelerator;
+    if (GetAccelerator(command_id, &accelerator) &&
+        focused_view->CanHandleAccelerators() &&
+        focused_view->AcceleratorPressed(accelerator)) {
+      return;
+    }
+  }
 #endif  // BUILDFLAG(IS_MAC)
 }
 
