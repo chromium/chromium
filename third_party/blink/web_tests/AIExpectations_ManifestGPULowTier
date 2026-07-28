@@ -33,3 +33,6 @@ crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/audio/* [ F
 crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure ]
 crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/availability.tentative.https.window.html [ Failure ]
 crbug.com/534759859 external/wpt/ai/language-model/prompt/multimodal/create.tentative.https.window.html [ Failure ]
+
+# Temporarily skip translator WPTs until TranslateKit model sideloading is enabled on trybots.
+crbug.com/536951687 external/wpt/ai/translator/* [ Skip ]

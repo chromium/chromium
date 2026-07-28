@@ -515,6 +515,13 @@
       },
     },
   },
+  'linux_gpu_high_tier_ai_wpt_dimensions': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '10de|1002|8086:4680|8086:a780|8086:a7a0',
+      },
+    },
+  },
   'linux_intel_uhd_630_experimental': {
     'fail_if_unused': False,
     'swarming': {

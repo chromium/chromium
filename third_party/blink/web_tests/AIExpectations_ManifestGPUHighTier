@@ -27,3 +27,6 @@ external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.ht
 
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
+
+# Temporarily skip translator WPTs until TranslateKit model sideloading is enabled on trybots.
+crbug.com/536951687 external/wpt/ai/translator/* [ Skip ]

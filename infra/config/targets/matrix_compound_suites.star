@@ -925,6 +925,28 @@ targets.legacy_matrix_compound_suite(
                 "non-gce",
             ],
         ),
+        "chrome_ai_wpt_tests_manifest_cpu_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "x64_ai_wpt_shards",
+            ],
+        ),
+        "chrome_ai_wpt_tests_manifest_gpu_high_tier_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "x64_ai_wpt_shards",
+                "linux_gpu_high_tier_ai_wpt_dimensions",
+            ],
+        ),
+        "chrome_ai_wpt_tests_manifest_gpu_low_tier_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "x64_ai_wpt_shards",
+            ],
+        ),
         # TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
         # "litert_lm_advanced_main_legacy_tests_gpu_suite": targets.legacy_matrix_config(
         #     mixins = [
