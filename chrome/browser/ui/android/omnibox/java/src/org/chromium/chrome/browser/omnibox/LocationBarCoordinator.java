@@ -354,6 +354,8 @@ public class LocationBarCoordinator
                         mWindowAndroid,
                         autocompleteAnchorView,
                         alignmentView,
+                        mLocationBarLayout::getAlignmentViewTargetWidth,
+                        mLocationBarLayout::getAlignmentViewLeftOffset,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
                         baseChromeLayout,
                         () ->

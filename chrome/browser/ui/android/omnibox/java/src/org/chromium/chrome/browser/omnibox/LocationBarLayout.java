@@ -534,6 +534,23 @@ public class LocationBarLayout extends ConstraintLayout {
     }
 
     /**
+     * Returns the target width (in px) that the dropdown embedder should use to align the
+     * suggestions window, defaulting to the alignment view's measured width. Subclasses (such as
+     * {@link LocationBarTablet}) may override this to publish an explicit popover alignment width.
+     */
+    /* package */ int getAlignmentViewTargetWidth() {
+        return getAlignmentView().getMeasuredWidth();
+    }
+
+    /**
+     * Returns the horizontal offset to apply to the alignment view's position when positioning the
+     * suggestions dropdown window.
+     */
+    /* package */ int getAlignmentViewLeftOffset() {
+        return 0;
+    }
+
+    /**
      * This should be called when the autocomplete request type for the active omnibox session
      * changes to/from specialized (e.g. aim)/conventional (e.g. plain old search). It is not
      * assumed that this will be called when the session ends.
