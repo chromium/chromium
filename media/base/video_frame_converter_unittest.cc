@@ -109,6 +109,7 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
     case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
+    case PIXEL_FORMAT_P010LE:
       break;
 
     default:
@@ -247,6 +248,32 @@ TEST(VideoFrameConverterRegressionTest, WeirdScaling) {
   ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
 }
 
+std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {
+  auto format_to_string = [](VideoPixelFormat format) {
+    std::string name = VideoPixelFormatToString(format);
+    const std::string prefix = "PIXEL_FORMAT_";
+    if (name.find(prefix) == 0) {
+      name = name.substr(prefix.length());
+    }
+    return name;
+  };
+
+  std::string result = format_to_string(testing::get<0>(info.param)) + "To" +
+                       format_to_string(testing::get<1>(info.param));
+  switch (testing::get<2>(info.param)) {
+    case TestConversionType::kNormal:
+      result += "_Normal";
+      break;
+    case TestConversionType::kScaled:
+      result += "_Scaled";
+      break;
+    case TestConversionType::kOdd:
+      result += "_Odd";
+      break;
+  }
+  return result;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     VideoFrameConverterTest,
@@ -278,9 +305,11 @@ INSTANTIATE_TEST_SUITE_P(
                                      PIXEL_FORMAT_I444,
                                      PIXEL_FORMAT_I444A,
                                      PIXEL_FORMAT_NV12,
-                                     PIXEL_FORMAT_NV12A),
+                                     PIXEL_FORMAT_NV12A,
+                                     PIXEL_FORMAT_P010LE),
                      testing::Values(TestConversionType::kNormal,
                                      TestConversionType::kScaled,
-                                     TestConversionType::kOdd)));
+                                     TestConversionType::kOdd)),
+    PrintTestParams);
 
 }  // namespace media
