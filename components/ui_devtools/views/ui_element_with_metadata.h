@@ -23,11 +23,13 @@ class UIElementWithMetaData : public UIElement {
   ~UIElementWithMetaData() override;
 
   // UIElement:
+  std::vector<UIElement::PropertyGroup> GetPropertyGroups() const override;
   std::vector<UIElement::ClassProperties> GetCustomPropertiesForMatchedStyle()
       const override;
   void GetVisible(bool* visible) const override;
   void SetVisible(bool visible) override;
-  bool SetPropertiesFromString(const std::string& text) override;
+  bool SetPropertiesFromString(size_t group_index,
+                               const std::string& text) override;
   void InitSources() override;
 
  protected:

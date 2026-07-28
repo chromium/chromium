@@ -68,6 +68,17 @@
                                                         #property_type); \
   AddMemberData(std::move(property_name##_prop));
 
+// This is similar to ADD_PROPERTY_METADATA, but allows you to specify custom
+// getter and setter names. This is useful when the accessor methods do not
+// follow the standard GetXXXX and SetXXXX naming convention.
+#define ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(property_type, property_name,  \
+                                               getter_name, setter_name, ...) \
+  auto property_name##_prop =                                                 \
+      std::make_unique<METADATA_PROPERTY_TYPE_INTERNAL_CUSTOM_ACCESSORS(      \
+          property_type, getter_name, setter_name, ##__VA_ARGS__)>(           \
+          #property_name, #property_type);                                    \
+  AddMemberData(std::move(property_name##_prop));
+
 // This will fail to compile if the property accessor isn't in the form of
 // GetXXXX. If an explicit type converter is specified, it must have already
 // been specialized. See the comments in type_converter.h for further

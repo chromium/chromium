@@ -18,11 +18,16 @@ namespace ui_devtools {
 
 // TODO(crbug.com/41340254): Remove this file when LayerElement exists
 
-// Appends Layer properties to ret (ex: layer-type, layer-mask, etc).
+// Appends Layer properties to ret (ex: type, layer_mask_layer, etc).
 // This is used to display information about the layer on devtools.
 // Note that ret may not be empty when it's passed in.
 void AppendLayerPropertiesMatchedStyle(const ui::Layer* layer,
                                        std::vector<UIElement::UIProperty>* ret);
+
+// Sets a property on ui::Layer from a string value. Returns true if successful.
+bool SetLayerPropertyFromString(ui::Layer* layer,
+                                const std::string& name,
+                                const std::string& value);
 
 }  // namespace ui_devtools
 

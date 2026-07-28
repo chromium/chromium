@@ -18,6 +18,67 @@ static int node_ids = 0;
 
 }  // namespace
 
+UIElement::UIProperty::UIProperty(std::string name, std::string value)
+    : name_(name), value_(value) {}
+
+UIElement::UIProperty::UIProperty(
+    std::string name,
+    std::string value,
+    ui::metadata::MemberMetaDataBase* member_metadata,
+    InstanceGetter instance_getter)
+    : name_(name),
+      value_(value),
+      member_metadata_(member_metadata),
+      instance_getter_(instance_getter) {}
+
+UIElement::UIProperty::UIProperty(const UIElement::UIProperty& other) = default;
+UIElement::UIProperty::UIProperty(UIElement::UIProperty&& other) = default;
+UIElement::UIProperty& UIElement::UIProperty::operator=(
+    const UIElement::UIProperty& other) = default;
+UIElement::UIProperty& UIElement::UIProperty::operator=(
+    UIElement::UIProperty&& other) = default;
+
+UIElement::UIProperty::~UIProperty() = default;
+
+UIElement::PropertyGroup::PropertyGroup(
+    std::string group_name,
+    InstanceGetter instance_getter,
+    ui::metadata::ClassMetaData* class_metadata,
+    std::vector<UIProperty> properties,
+    base::RepeatingClosure on_changed_callback)
+    : group_name_(group_name),
+      instance_getter_(instance_getter),
+      class_metadata_(class_metadata),
+      properties_(properties),
+      on_changed_callback_(on_changed_callback) {}
+
+UIElement::PropertyGroup::PropertyGroup(
+    std::string group_name,
+    InstanceGetter instance_getter,
+    std::vector<UIProperty> properties,
+    CustomPropertySetter custom_setter,
+    base::RepeatingClosure on_changed_callback)
+    : group_name_(group_name),
+      instance_getter_(instance_getter),
+      properties_(properties),
+      custom_setter_(custom_setter),
+      on_changed_callback_(on_changed_callback) {}
+
+UIElement::PropertyGroup::PropertyGroup(std::string group_name,
+                                        std::vector<UIProperty> properties)
+    : group_name_(group_name), properties_(properties) {}
+
+UIElement::PropertyGroup::PropertyGroup(const UIElement::PropertyGroup& other) =
+    default;
+UIElement::PropertyGroup::PropertyGroup(UIElement::PropertyGroup&& other) =
+    default;
+UIElement::PropertyGroup& UIElement::PropertyGroup::operator=(
+    const UIElement::PropertyGroup& other) = default;
+UIElement::PropertyGroup& UIElement::PropertyGroup::operator=(
+    UIElement::PropertyGroup&& other) = default;
+
+UIElement::PropertyGroup::~PropertyGroup() = default;
+
 UIElement::ClassProperties::ClassProperties(
     std::string class_name,
     std::vector<UIElement::UIProperty> properties)
@@ -132,7 +193,12 @@ UIElement::UIElement(const UIElementType type,
   delegate_->OnUIElementAdded(nullptr, this);
 }
 
-bool UIElement::SetPropertiesFromString(const std::string& text) {
+std::vector<UIElement::PropertyGroup> UIElement::GetPropertyGroups() const {
+  return {};
+}
+
+bool UIElement::SetPropertiesFromString(size_t group_index,
+                                        const std::string& text) {
   return false;
 }
 

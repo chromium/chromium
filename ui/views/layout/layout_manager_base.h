@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/types/pass_key.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +35,9 @@ class View;
 // CalculateProposedLayout(). Used in interpolating and animating layouts.
 class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
                                        public ViewObserver {
+ public:
+  METADATA_HEADER(LayoutManagerBase, LayoutManager)
+
  public:
   using PassKeyType = base::NonCopyablePassKey<LayoutManagerBase>;
 

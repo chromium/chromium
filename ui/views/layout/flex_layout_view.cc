@@ -168,7 +168,3 @@ ADD_PROPERTY_METADATA(FlexAllocationOrder, FlexAllocationOrder)
 END_METADATA
 
 }  // namespace views
-
-DEFINE_ENUM_CONVERTERS(views::FlexAllocationOrder,
-                       {views::FlexAllocationOrder::kNormal, u"kNormal"},
-                       {views::FlexAllocationOrder::kReverse, u"kReverse"})

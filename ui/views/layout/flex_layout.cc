@@ -18,6 +18,7 @@
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1310,5 +1311,44 @@ gfx::Size FlexLayout::DefaultFlexRuleImpl(const FlexLayout* flex_layout,
   }
   return flex_layout->CalculateProposedLayout(size_bounds).host_size;
 }
+
+BEGIN_METADATA(FlexLayout)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(LayoutOrientation,
+                                       Orientation,
+                                       orientation,
+                                       SetOrientation)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(LayoutAlignment,
+                                       MainAxisAlignment,
+                                       main_axis_alignment,
+                                       SetMainAxisAlignment)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(LayoutAlignment,
+                                       CrossAxisAlignment,
+                                       cross_axis_alignment,
+                                       SetCrossAxisAlignment)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(gfx::Insets,
+                                       InteriorMargin,
+                                       interior_margin,
+                                       SetInteriorMargin)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(int,
+                                       MinimumCrossAxisSize,
+                                       minimum_cross_axis_size,
+                                       SetMinimumCrossAxisSize)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(bool,
+                                       CollapseMargins,
+                                       collapse_margins,
+                                       SetCollapseMargins)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(bool,
+                                       IncludeHostInsetsInLayout,
+                                       include_host_insets_in_layout,
+                                       SetIncludeHostInsetsInLayout)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(bool,
+                                       IgnoreDefaultMainAxisMargins,
+                                       ignore_default_main_axis_margins,
+                                       SetIgnoreDefaultMainAxisMargins)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(FlexAllocationOrder,
+                                       FlexAllocationOrder,
+                                       flex_allocation_order,
+                                       SetFlexAllocationOrder)
+END_METADATA
 
 }  // namespace views

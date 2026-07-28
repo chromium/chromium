@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -67,5 +68,8 @@ std::vector<raw_ptr<View, VectorExperimental>>
 LayoutManager::GetChildViewsInPaintOrder(const View* host) const {
   return host->children();
 }
+
+BEGIN_METADATA_BASE(LayoutManager)
+END_METADATA
 
 }  // namespace views

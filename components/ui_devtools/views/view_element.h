@@ -35,6 +35,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   void OnViewBoundsChanged(views::View* view) override;
 
   // UIElement:
+  std::vector<UIElement::PropertyGroup> GetPropertyGroups() const override;
   void GetBounds(gfx::Rect* bounds) const override;
   void SetBounds(const gfx::Rect& bounds) override;
   std::vector<std::string> GetAttributes() const override;

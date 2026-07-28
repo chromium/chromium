@@ -11,6 +11,10 @@
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace ui_devtools {
@@ -48,13 +52,15 @@ void TestBooleanCustomPropertySetting(ui_devtools::ViewElement* element,
   // Check the property can be set accordingly.
   std::string new_value(base::ToString(!init_value));
   std::string separator(":");
-  element->SetPropertiesFromString(property_name + separator + new_value);
+  element->SetPropertiesFromString(indices.first,
+                                   property_name + separator + new_value);
   props = element->GetCustomPropertiesForMatchedStyle();
   ui_props = props[indices.first].properties_;
   EXPECT_EQ(ui_props[indices.second].name_, property_name);
   EXPECT_EQ(ui_props[indices.second].value_, new_value);
 
-  element->SetPropertiesFromString(property_name + separator + old_value);
+  element->SetPropertiesFromString(indices.first,
+                                   property_name + separator + old_value);
   props = element->GetCustomPropertiesForMatchedStyle();
   ui_props = props[indices.first].properties_;
   EXPECT_EQ(ui_props[indices.second].name_, property_name);
@@ -189,7 +195,7 @@ TEST_F(ViewElementTest, SetPropertiesFromString) {
       GetPropertyIndices(element(), kEnabledProperty);
 
   // Test setting a non-existent property has no effect.
-  element()->SetPropertiesFromString("Enable:false");
+  element()->SetPropertiesFromString(indices.first, "Enable:false");
   std::vector<UIElement::ClassProperties> props =
       element()->GetCustomPropertiesForMatchedStyle();
   std::vector<UIElement::UIProperty> ui_props =
@@ -199,14 +205,14 @@ TEST_F(ViewElementTest, SetPropertiesFromString) {
   EXPECT_EQ(ui_props[indices.second].value_, "true");
 
   // Test setting empty string for property value has no effect.
-  element()->SetPropertiesFromString("Enabled:");
+  element()->SetPropertiesFromString(indices.first, "Enabled:");
   props = element()->GetCustomPropertiesForMatchedStyle();
   ui_props = props[indices.first].properties_;
   EXPECT_EQ(ui_props[indices.second].name_, kEnabledProperty);
   EXPECT_EQ(ui_props[indices.second].value_, "true");
 
   // Ensure setting pure whitespace doesn't crash.
-  ASSERT_NO_FATAL_FAILURE(element()->SetPropertiesFromString("   \n  "));
+  ASSERT_NO_FATAL_FAILURE(element()->SetPropertiesFromString(0U, "   \n  "));
 }
 
 TEST_F(ViewElementTest, SettingVisibilityOnView) {
@@ -315,31 +321,31 @@ TEST_F(ViewElementTest, ColorProperty) {
   DCHECK_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
   EXPECT_TRUE(element()->SetPropertiesFromString(
-      "--ColorProperty: rgba(0,0,  255, 1);"));
+      0U, "--ColorProperty: rgba(0,0,  255, 1);"));
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorBLUE);
 
   EXPECT_TRUE(element()->SetPropertiesFromString(
-      "--ColorProperty: hsl(240, 84%, 28%);"));
+      0U, "--ColorProperty: hsl(240, 84%, 28%);"));
   EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(255, 0x0B, 0x0B, 0x47));
 
   EXPECT_TRUE(element()->SetPropertiesFromString(
-      "--ColorProperty: hsla(240, 84%, 28%, 0.5);"));
+      0U, "--ColorProperty: hsla(240, 84%, 28%, 0.5);"));
   EXPECT_EQ(view()->GetColorProperty(), SkColorSetARGB(128, 0x0B, 0x0B, 0x47));
 }
 
 TEST_F(ViewElementTest, BadColorProperty) {
   DCHECK_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  element()->SetPropertiesFromString("--ColorProperty: #0352fc");
+  element()->SetPropertiesFromString(0U, "--ColorProperty: #0352fc");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  element()->SetPropertiesFromString("--ColorProperty: rgba(1,2,3,4);");
+  element()->SetPropertiesFromString(0U, "--ColorProperty: rgba(1,2,3,4);");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  element()->SetPropertiesFromString("--ColorProperty: rgba(1,2,3,4;");
+  element()->SetPropertiesFromString(0U, "--ColorProperty: rgba(1,2,3,4;");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 
-  element()->SetPropertiesFromString("--ColorProperty: rgb(1,2,3,4;)");
+  element()->SetPropertiesFromString(0U, "--ColorProperty: rgb(1,2,3,4;)");
   EXPECT_EQ(view()->GetColorProperty(), SK_ColorGRAY);
 }
 
@@ -466,6 +472,143 @@ TEST_F(ViewElementTest, OutOfOrderObserverTest) {
   EXPECT_EQ(attrs[0], "class");
   std::string& name = attrs[1];
   EXPECT_EQ(name, "AlwaysOnTopView");
+}
+
+TEST_F(ViewElementTest, LayoutManagerPropertyGroupTest) {
+  views::FlexLayout* flex_layout =
+      view()->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  flex_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  std::vector<UIElement::PropertyGroup> groups = element()->GetPropertyGroups();
+  bool found_layout_manager = false;
+  std::optional<size_t> lm_group_index;
+  for (size_t i = 0; i < groups.size(); ++i) {
+    if (groups[i].group_name_.find("LayoutManager") != std::string::npos) {
+      found_layout_manager = true;
+      lm_group_index = i;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_layout_manager);
+
+  // Set Orientation via property group
+  element()->SetPropertiesFromString(*lm_group_index, "orientation: kVertical");
+  EXPECT_EQ(flex_layout->orientation(), views::LayoutOrientation::kVertical);
+}
+
+TEST_F(ViewElementTest, LayoutManagerLifetimeSafetyTest) {
+  view()->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  std::vector<UIElement::PropertyGroup> groups = element()->GetPropertyGroups();
+  std::optional<size_t> lm_group_index;
+  for (size_t i = 0; i < groups.size(); ++i) {
+    if (groups[i].group_name_.find("LayoutManager") != std::string::npos) {
+      lm_group_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(lm_group_index.has_value());
+
+  // Destroy the LayoutManager by setting it to nullptr
+  view()->SetLayoutManager(nullptr);
+
+  // Setting properties on old group_index should safely fail without crashing
+  EXPECT_FALSE(element()->SetPropertiesFromString(*lm_group_index,
+                                                  "orientation: kVertical"));
+}
+
+TEST_F(ViewElementTest, BorderAndBackgroundGroupTest) {
+  view()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(5, 10)));
+  view()->SetBackground(views::CreateSolidBackground(SK_ColorRED));
+
+  std::vector<UIElement::PropertyGroup> groups = element()->GetPropertyGroups();
+  bool found_border = false;
+  bool found_bg = false;
+  std::optional<size_t> border_group_index;
+  std::optional<size_t> bg_group_index;
+
+  for (size_t i = 0; i < groups.size(); ++i) {
+    if (groups[i].group_name_ == "Border") {
+      found_border = true;
+      border_group_index = i;
+    } else if (groups[i].group_name_ == "Background") {
+      found_bg = true;
+      bg_group_index = i;
+    }
+  }
+  EXPECT_TRUE(found_border);
+  EXPECT_TRUE(found_bg);
+
+  // Test updating Border insets
+  element()->SetPropertiesFromString(*border_group_index,
+                                     "insets: 15,20,15,20");
+  EXPECT_EQ(view()->GetBorder()->GetInsets(),
+            gfx::Insets::TLBR(15, 20, 15, 20));
+
+  // Test updating Background color
+  element()->SetPropertiesFromString(*bg_group_index, "color: rgba(0,255,0,1)");
+  EXPECT_EQ(view()->GetBackground()->color(), ui::ColorVariant(SK_ColorGREEN));
+}
+
+TEST_F(ViewElementTest, SuppressLayoutManagerOnLayoutViewTest) {
+  auto flex_layout_view = std::make_unique<views::FlexLayoutView>();
+  testing::NiceMock<MockUIElementDelegate> flex_delegate;
+  ViewElement flex_element(flex_layout_view.get(), &flex_delegate, nullptr);
+
+  std::vector<UIElement::PropertyGroup> groups =
+      flex_element.GetPropertyGroups();
+  bool found_layout_manager_group = false;
+  for (const auto& group : groups) {
+    if (group.group_name_.find("LayoutManager") != std::string::npos) {
+      found_layout_manager_group = true;
+      break;
+    }
+  }
+  // LayoutManager property group should be suppressed on FlexLayoutView.
+  EXPECT_FALSE(found_layout_manager_group);
+}
+
+TEST_F(ViewElementTest, LayerGroupInspectionAndMutationTest) {
+  view()->SetPaintToLayer();
+  ui::Layer* layer = view()->layer();
+  ASSERT_NE(layer, nullptr);
+
+  std::vector<UIElement::PropertyGroup> groups = element()->GetPropertyGroups();
+  std::optional<size_t> layer_group_index;
+  for (size_t i = 0; i < groups.size(); ++i) {
+    if (groups[i].group_name_ == "Layer") {
+      layer_group_index = i;
+      break;
+    }
+  }
+  ASSERT_TRUE(layer_group_index.has_value());
+
+  // Verify C++ identifier property names are used
+  const auto& props = groups[*layer_group_index].properties_;
+  bool found_opacity = false;
+  bool found_visible = false;
+  bool found_type = false;
+  for (const auto& prop : props) {
+    if (prop.name_ == "opacity") {
+      found_opacity = true;
+    }
+    if (prop.name_ == "visible") {
+      found_visible = true;
+    }
+    if (prop.name_ == "type") {
+      found_type = true;
+    }
+  }
+  EXPECT_TRUE(found_opacity);
+  EXPECT_TRUE(found_visible);
+  EXPECT_TRUE(found_type);
+
+  // Test updating layer opacity via property group
+  element()->SetPropertiesFromString(*layer_group_index, "opacity: 0.5");
+  EXPECT_FLOAT_EQ(layer->opacity(), 0.5f);
+
+  // Test updating layer visibility via property group
+  element()->SetPropertiesFromString(*layer_group_index, "visible: false");
+  EXPECT_FALSE(layer->IsVisible());
 }
 
 }  // namespace ui_devtools

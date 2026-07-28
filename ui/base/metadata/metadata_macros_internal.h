@@ -116,6 +116,14 @@
       decltype(std::declval<TheClass>().Get##property_name()),             \
       &TheClass::Get##property_name, ##__VA_ARGS__>
 
+#define METADATA_PROPERTY_TYPE_INTERNAL_CUSTOM_ACCESSORS(        \
+    property_type, getter_name, setter_name, ...)                \
+  ui::metadata::ObjectPropertyMetaData<                          \
+      TheClass, property_type, decltype(&TheClass::setter_name), \
+      &TheClass::setter_name,                                    \
+      decltype(std::declval<TheClass>().getter_name()),          \
+      &TheClass::getter_name, ##__VA_ARGS__>
+
 #define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name, \
                                                  ...)                          \
   ui::metadata::ObjectPropertyReadOnlyMetaData<                                \

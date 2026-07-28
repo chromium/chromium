@@ -411,3 +411,7 @@ std::string Span::ToString() const {
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::FlexAllocationOrder,
+                       {views::FlexAllocationOrder::kNormal, u"kNormal"},
+                       {views::FlexAllocationOrder::kReverse, u"kReverse"})

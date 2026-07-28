@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_types.h"
@@ -72,6 +73,9 @@ namespace views {
 // preferred width was not explicitly specified and where the containing columns
 // are resizable (resize > 0) and don't have a fixed width.
 class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
+ public:
+  METADATA_HEADER(TableLayout, LayoutManagerBase)
+
  public:
   // Use for `horizontal_resize` or `vertical_resize` when the column or row is
   // not resizable.

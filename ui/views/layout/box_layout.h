@@ -41,6 +41,9 @@ class VIEWS_EXPORT BoxLayoutFlexSpecification {
 // Excess space will not be distributed.
 class VIEWS_EXPORT BoxLayout : public LayoutManagerBase {
  public:
+  METADATA_HEADER(BoxLayout, LayoutManagerBase)
+
+ public:
   using Orientation = LayoutOrientation;
 
   // This specifies that the start/center/end of the collective child views is

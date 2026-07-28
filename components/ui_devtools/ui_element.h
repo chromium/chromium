@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/devtools_export.h"
 #include "components/ui_devtools/dom.h"
@@ -17,7 +18,17 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
+namespace ui::metadata {
+class ClassMetaData;
+class MemberMetaDataBase;
+}  // namespace ui::metadata
+
 namespace ui_devtools {
+
+using InstanceGetter = base::RepeatingCallback<void*()>;
+using CustomPropertySetter =
+    base::RepeatingCallback<bool(const std::string& name,
+                                 const std::string& value)>;
 
 class UIElementDelegate;
 
@@ -26,13 +37,71 @@ enum UIElementType { WINDOW, WIDGET, VIEW, ROOT, FRAMESINK, SURFACE };
 
 class UI_DEVTOOLS_EXPORT UIElement {
  public:
+  // Please Note: Holding the `member_metadata` reference is safe here since it
+  // represents a *class* type, not an instance type. It is allocated and cached
+  // globally within the metadata system and it's lifetime persists until
+  // shutdown. It will outlive the lifetime of any instances of the structs
+  // below. Multiple instances of a given class will reference the same class
+  // metadata. If the raw_ptr<> checks ever trigger as dangling, something very
+  // bad has likely happened.
   struct UI_DEVTOOLS_EXPORT UIProperty {
-    UIProperty(std::string name, std::string value)
-        : name_(name), value_(value) {}
+    UIProperty(std::string name, std::string value);
+    UIProperty(std::string name,
+               std::string value,
+               ui::metadata::MemberMetaDataBase* member_metadata,
+               InstanceGetter instance_getter);
+    UIProperty(const UIProperty& copy);
+    UIProperty(UIProperty&& move);
+    UIProperty& operator=(const UIProperty& copy);
+    UIProperty& operator=(UIProperty&& move);
+    ~UIProperty();
 
     std::string name_;
     std::string value_;
+    raw_ptr<ui::metadata::MemberMetaDataBase> member_metadata_ = nullptr;
+    InstanceGetter instance_getter_;
   };
+
+  // PropertyGroup hosts properties of Layer, LayoutManager, Border, etc.. which
+  // are sub-objects of certain UIElements. They have no independent UIElement
+  // representation, so they're exposed through the PropertyGroup on the owning
+  // UIElement.
+  struct UI_DEVTOOLS_EXPORT PropertyGroup {
+    PropertyGroup(
+        std::string group_name,
+        InstanceGetter instance_getter,
+        ui::metadata::ClassMetaData* class_metadata,
+        std::vector<UIProperty> properties,
+        base::RepeatingClosure on_changed_callback = base::RepeatingClosure());
+    PropertyGroup(
+        std::string group_name,
+        InstanceGetter instance_getter,
+        std::vector<UIProperty> properties,
+        CustomPropertySetter custom_setter,
+        base::RepeatingClosure on_changed_callback = base::RepeatingClosure());
+    PropertyGroup(std::string group_name, std::vector<UIProperty> properties);
+    PropertyGroup(const PropertyGroup& copy);
+    PropertyGroup(PropertyGroup&& move);
+    PropertyGroup& operator=(const PropertyGroup& copy);
+    PropertyGroup& operator=(PropertyGroup&& move);
+    ~PropertyGroup();
+
+    std::string group_name_;
+    InstanceGetter instance_getter_;
+    raw_ptr<ui::metadata::ClassMetaData> class_metadata_ = nullptr;
+    std::vector<UIProperty> properties_;
+    CustomPropertySetter custom_setter_;
+    base::RepeatingClosure on_changed_callback_;
+
+    void* GetInstance() const {
+      return instance_getter_ ? instance_getter_.Run() : nullptr;
+    }
+
+    bool has_metadata() const {
+      return class_metadata_ != nullptr && instance_getter_;
+    }
+  };
+
   struct UI_DEVTOOLS_EXPORT ClassProperties {
     ClassProperties(std::string name, std::vector<UIProperty> properties);
     ClassProperties(const ClassProperties& copy);
@@ -102,6 +171,9 @@ class UI_DEVTOOLS_EXPORT UIElement {
   template <class T>
   int FindUIElementIdForBackendElement(T* element) const;
 
+  // Returns structured property groups for element and linked objects.
+  virtual std::vector<PropertyGroup> GetPropertyGroups() const;
+
   // Returns properties grouped by the class they are from.
   virtual std::vector<ClassProperties> GetCustomPropertiesForMatchedStyle()
       const;
@@ -111,10 +183,10 @@ class UI_DEVTOOLS_EXPORT UIElement {
   virtual void GetVisible(bool* visible) const = 0;
   virtual void SetVisible(bool visible) = 0;
 
-  // Set this element's property values according to |text|.
-  // |text| is the string passed in through StyleDeclarationEdit::text from
-  // the frontend.
-  virtual bool SetPropertiesFromString(const std::string& text);
+  // Set this element's property values for the specified group. |text| is the
+  // string passed in through StyleDeclarationEdit::text from the frontend.
+  virtual bool SetPropertiesFromString(size_t group_index,
+                                       const std::string& text);
 
   // If element exists, returns its associated native window and its screen
   // bounds. Otherwise, returns null and empty bounds.

@@ -13,6 +13,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/normalized_geometry.h"
 #include "ui/views/view_class_properties.h"
@@ -723,5 +724,30 @@ void BoxLayout::CalculateChildBounds(const SizeBounds& size_bounds,
     child_layout.bounds = Denormalize(orientation_, actual);
   }
 }
+
+BEGIN_METADATA(BoxLayout)
+ADD_PROPERTY_METADATA(BoxLayout::Orientation, Orientation)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(BoxLayout::MainAxisAlignment,
+                                       MainAxisAlignment,
+                                       main_axis_alignment,
+                                       set_main_axis_alignment)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(BoxLayout::CrossAxisAlignment,
+                                       CrossAxisAlignment,
+                                       cross_axis_alignment,
+                                       set_cross_axis_alignment)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(gfx::Insets,
+                                       InsideBorderInsets,
+                                       inside_border_insets,
+                                       set_inside_border_insets)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(int,
+                                       MinimumCrossAxisSize,
+                                       minimum_cross_axis_size,
+                                       set_minimum_cross_axis_size)
+ADD_PROPERTY_METADATA_CUSTOM_ACCESSORS(int,
+                                       BetweenChildSpacing,
+                                       between_child_spacing,
+                                       set_between_child_spacing)
+ADD_PROPERTY_METADATA(bool, CollapseMarginsSpacing)
+END_METADATA
 
 }  // namespace views

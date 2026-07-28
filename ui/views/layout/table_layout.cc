@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
@@ -899,5 +900,8 @@ bool TableLayout::CanUseMinimum(const ViewState& view_state) const {
                               col.size_type() != ColumnSize::kFixed;
                      });
 }
+
+BEGIN_METADATA(TableLayout)
+END_METADATA
 
 }  // namespace views
