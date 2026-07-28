@@ -53,11 +53,6 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     const ui::BackGestureEvent& gesture,
     SwipeEdge edge,
     NavigationDirection navigation_direction) {
-  std::optional<int> index =
-      navigation_direction == NavigationDirection::kForward
-          ? navigation_controller_->GetIndexForGoForward()
-          : navigation_controller_->GetIndexForGoBack();
-  CHECK(index.has_value());
 
   if (animator_) {
     // It's possible for a user to start a second gesture when the first gesture
@@ -70,6 +65,17 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     DestroyAnimator();
   }
 
+  std::optional<int> index =
+      navigation_direction == NavigationDirection::kForward
+          ? navigation_controller_->GetIndexForGoForward()
+          : navigation_controller_->GetIndexForGoBack();
+  if (!index.has_value()) {
+    // TODO(crbug.com/530682179): The embedder should only delegate the
+    // history navigation task to this manager if there is a destination
+    // entry.
+    // Make it a CHECK once we have figured the root cause for this call.
+    return;
+  }
   auto* destination_entry = navigation_controller_->GetEntryAtIndex(*index);
   if (!destination_entry) {
     // TODO(crbug.com/530682179): The embedder should only delegate the
