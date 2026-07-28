@@ -1803,6 +1803,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.PermissionDeniedErrorReason"
+    enum="MissivePermissionDeniedErrorReason" expires_after="2027-05-01">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Recorded once each time reporting::error::PERMISSION_DENIED is returned in
+    src/platform2/missive/. There is a 1:1 relationship between the UMA values
+    and error messages used with reporting::error::PERMISSION_DENIED so that we
+    can understand exactly which parts of the code are failing.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.ResourceExhaustedCase"
     enum="ResourceExhaustedCase" expires_after="2027-05-01">
   <owner>nancylanxiao@google.com</owner>

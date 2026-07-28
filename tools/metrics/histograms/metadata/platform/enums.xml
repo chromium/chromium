@@ -728,6 +728,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="Destination not exist"/>
 </enum>
 
+<enum name="MissivePermissionDeniedErrorReason">
+  <summary>
+    Defined as PermissionDeniedErrorReason in
+    src/platform2/missive/util/reporting_errors.h
+  </summary>
+  <int value="0" label="SECURE_DESTINATION_FORBIDDEN"/>
+</enum>
+
 <enum name="ModemfwdCheckForWedgedModemResult">
   <int value="0" label="Modem present"/>
   <int value="1" label="Modem present after reboot"/>
@@ -2909,7 +2917,7 @@ Full version information for the fingerprint enum values:
   <int value="16" label="UNABLE_TO_BUILD_REPORT_QUEUE"/>
   <int value="17" label="UPLOAD_CLIENT_DESTRUCTED"/>
   <int value="18" label="UPLOAD_CLIENT_NO_DBUS_RESPONSE"/>
-  <int value="19" label="MAX_VALUE"/>
+  <int value="19" label="SENDER_UNIX_USER_LOOKUP_FAILED"/>
 </enum>
 
 <enum name="WiFiPCIStatus">
