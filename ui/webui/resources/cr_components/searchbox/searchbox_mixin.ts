@@ -431,7 +431,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     }
 
     hasMatches(): boolean {
-      return this.result !== null && !!this.result.matches &&
+      return !!this.result && !!this.result.matches &&
           this.result.matches.length > 0;
     }
 

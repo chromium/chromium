@@ -88,6 +88,7 @@ class OmniboxPopupPresenterBase
   virtual std::unique_ptr<OmniboxPopupDeactivationBlocker>
   CreateDeactivationBlocker();
   virtual void OnFileSelectionClosed();
+  virtual void NotifyEscapeKeyPressed() {}
   bool has_active_blockers() const { return deactivation_blockers_count_ > 0; }
 
   // Show or hide the popup widget with web view.

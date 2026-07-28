@@ -12,7 +12,7 @@ export {OmniboxAimAppElement} from './aim_app.js';
 export {OmniboxPopupAppElement} from './app.js';
 export {OmniboxFullAppElement} from './full_app.js';
 export {OmniboxComposeboxElement} from './omnibox_composebox.js';
-export {browserProxyFactory as omniboxPopupBrowserProxyFactory, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
+export {browserProxyFactory as omniboxPopupBrowserProxyFactory, OmniboxEscapeAction, type OmniboxInputState, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
 export {browserProxyFactory as aimBrowserProxyFactory, PageCallbackRouter as OmniboxPopupAimPageCallbackRouter, PageHandlerRemote as OmniboxPopupAimPageHandlerRemote, PageRemote as OmniboxPopupAimPageRemote} from './omnibox_popup_aim.mojom-webui.js';
 export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
 export {sanitizeTextForPaste, stripJavascriptSchemas} from './utils.js';
