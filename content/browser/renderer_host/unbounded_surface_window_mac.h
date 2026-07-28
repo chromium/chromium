@@ -27,7 +27,7 @@ class NSEvent;
 #include "components/viz/host/host_frame_sink_client.h"
 
 namespace ui {
-class LayerSolidColor;
+class LayerSurface;
 class RecyclableCompositorMac;
 class DisplayCALayerTree;
 }  // namespace ui
@@ -116,7 +116,7 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
 #endif
 
   std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
-  std::unique_ptr<ui::LayerSolidColor> root_layer_;
+  std::unique_ptr<ui::LayerSurface> root_layer_;
   std::unique_ptr<ui::DisplayCALayerTree> display_ca_layer_tree_;
   base::WeakPtrFactory<UnboundedSurfaceWindow> weak_ptr_factory_{this};
 };

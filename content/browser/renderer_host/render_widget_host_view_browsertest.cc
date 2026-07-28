@@ -1625,7 +1625,7 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
     // On Mac, DelegatedFrameHost only behaves the same as on other platforms
     // when it has no parent UI layer.
     ASSERT_FALSE(
-        GetBrowserCompositor()->DelegatedFrameHostGetLayer()->parent());
+        GetBrowserCompositor()->GetDelegatedFrameHostLayer()->parent());
 #endif
   }
 
