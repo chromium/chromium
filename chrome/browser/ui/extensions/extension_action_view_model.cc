@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -36,8 +37,10 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
@@ -488,6 +491,31 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
   }
 
   RecordInvocationSource(source);
+
+  extensions::ExtensionPrefs* prefs =
+      extensions::ExtensionPrefs::Get(browser_->GetProfile());
+  if (prefs) {
+    std::string time_str;
+    if (prefs->ReadPrefAsString(
+            extension_->id(),
+            extensions::pref_names::kPrefInstallTimeForActionMetric,
+            &time_str)) {
+      base::Time install_time =
+          base::ValueToTime(base::Value(time_str)).value_or(base::Time());
+      if (!install_time.is_null()) {
+        base::TimeDelta elapsed_time = base::Time::Now() - install_time;
+        if (!elapsed_time.is_negative()) {
+          base::UmaHistogramLongTimes(
+              "Extensions.Toolbar.TimeToFirstActionClick", elapsed_time);
+        }
+        prefs->UpdateExtensionPref(
+            extension_->id(),
+            extensions::pref_names::kPrefInstallTimeForActionMetric,
+            std::nullopt);
+      }
+    }
+  }
+
   // Asynchronously close the menu in case the action didn't trigger a
   // focus-stealing popup.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

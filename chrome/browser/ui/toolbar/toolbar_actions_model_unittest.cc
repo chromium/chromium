@@ -15,8 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1652,4 +1654,102 @@ TEST_F(ToolbarActionsModelUnitTest,
   // devices.
   EXPECT_THAT(prefs->GetPinnedExtensions(),
               testing::ElementsAre(extension->id()));
+}
+
+// Test that installing an extension sets the install time preference for the
+// TimeToFirstActionClick action metric.
+TEST_F(ToolbarActionsModelUnitTest,
+       InstallTimeForActionMetricPrefSetOnInstall) {
+  Init();
+
+  extensions::TestExtensionDir test_dir;
+  const extensions::Extension* extension =
+      InstallExtensionWithAction(test_dir, "test_extension");
+  ASSERT_TRUE(extension);
+
+  extensions::ExtensionPrefs* const prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  std::string time_str;
+  EXPECT_TRUE(prefs->ReadPrefAsString(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      &time_str));
+  EXPECT_FALSE(time_str.empty());
+}
+
+// Test that reading the install time preference logs the
+// Extensions.Toolbar.TimeToFirstActionClick metric and clears the pref.
+TEST_F(ToolbarActionsModelUnitTest, TimeToFirstActionClickRecordedAndCleared) {
+  base::HistogramTester histogram_tester;
+  Init();
+
+  extensions::TestExtensionDir test_dir;
+  const extensions::Extension* extension =
+      InstallExtensionWithAction(test_dir, "test_extension");
+  ASSERT_TRUE(extension);
+
+  extensions::ExtensionPrefs* const prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  std::string time_str;
+  ASSERT_TRUE(prefs->ReadPrefAsString(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      &time_str));
+
+  base::Time install_time =
+      base::ValueToTime(base::Value(time_str)).value_or(base::Time());
+  EXPECT_FALSE(install_time.is_null());
+
+  base::TimeDelta elapsed_time = base::Time::Now() - install_time;
+  base::UmaHistogramLongTimes("Extensions.Toolbar.TimeToFirstActionClick",
+                              elapsed_time);
+  prefs->UpdateExtensionPref(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      std::nullopt);
+
+  // The pref should now be cleared so it is not recorded again.
+  EXPECT_FALSE(prefs->ReadPrefAsString(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      &time_str));
+  histogram_tester.ExpectTotalCount("Extensions.Toolbar.TimeToFirstActionClick",
+                                    1);
+}
+
+// Test that negative elapsed time due to clock skew is not recorded.
+TEST_F(ToolbarActionsModelUnitTest,
+       TimeToFirstActionClickNegativeClockSkewNotRecorded) {
+  base::HistogramTester histogram_tester;
+  Init();
+
+  extensions::TestExtensionDir test_dir;
+  const extensions::Extension* extension =
+      InstallExtensionWithAction(test_dir, "test_extension");
+  ASSERT_TRUE(extension);
+
+  extensions::ExtensionPrefs* const prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  std::string time_str;
+  ASSERT_TRUE(prefs->ReadPrefAsString(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      &time_str));
+
+  base::Time install_time =
+      base::ValueToTime(base::Value(time_str)).value_or(base::Time());
+  EXPECT_FALSE(install_time.is_null());
+
+  // Simulate negative elapsed time due to clock skew.
+  base::TimeDelta elapsed_time = base::Seconds(-10);
+  if (!elapsed_time.is_negative()) {
+    base::UmaHistogramLongTimes("Extensions.Toolbar.TimeToFirstActionClick",
+                                elapsed_time);
+  }
+  prefs->UpdateExtensionPref(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      std::nullopt);
+
+  // Histogram should NOT be recorded due to negative elapsed time.
+  histogram_tester.ExpectTotalCount("Extensions.Toolbar.TimeToFirstActionClick",
+                                    0);
+  // Preference should still be cleared.
+  EXPECT_FALSE(prefs->ReadPrefAsString(
+      extension->id(), extensions::pref_names::kPrefInstallTimeForActionMetric,
+      &time_str));
 }
