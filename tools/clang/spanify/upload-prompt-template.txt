@@ -127,6 +127,12 @@ When finishing the task respond only with a summary of the changes
 Start the task now and edit the code directly to implement these
 improvements.
 
+Here is the compilation error from building this branch:
+
+```
+{{COMPILATION_ERROR}}
+```
+
 Here is the git diff of the current branch compared to main:
 
 ```diff

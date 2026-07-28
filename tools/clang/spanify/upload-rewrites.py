@@ -212,7 +212,11 @@ def get_modified_files(submodule, sub_main, branch):
     return " ".join(files_res.stdout.splitlines()).strip()
 
 
-def create_prompt_file(files, submodule, branch, sub_main):
+def create_prompt_file(files,
+                       submodule,
+                       branch,
+                       sub_main,
+                       compilation_error=""):
     """Creates the prompt file with target files and git diff."""
     # Capture full git diff compared to upstream main base
     diff_res = sh(f"git diff {sub_main}...{branch}", cwd=submodule)
@@ -233,6 +237,7 @@ def create_prompt_file(files, submodule, branch, sub_main):
     prompt = prompt.replace("{{TARGET_FILES}}", files)
     prompt = prompt.replace("{{GIT_DIFF}}", git_diff)
     prompt = prompt.replace("{{UNSAFE_BUFFERS_DOCS}}", UNSAFE_BUFFERS_DOCS)
+    prompt = prompt.replace("{{COMPILATION_ERROR}}", compilation_error)
 
     # Write prompt contents to a temporary file inside the jetski temp
     # directory to ensure it is never committed
@@ -421,7 +426,8 @@ def compile_branch(platform, target, submodule, index=None):
     else:
         compilation_errors = analyze_error(stdout_str, stderr_str)
 
-    return [compile_result, compilation_errors]
+    clean_output = strip_ansi(full_output)
+    return [compile_result, compilation_errors, clean_output]
 
 
 def commit_if_changes(submodule):
@@ -717,9 +723,8 @@ Then refined with jetski-cli and at last manually refined"""
         commit_applied_edits(submodule)
 
         print("Compiling branch to check if automatic spanification passes...")
-        [compile_result,
-         compilation_errors] = compile_branch(platform, target, submodule,
-                                              index)
+        [compile_result, compilation_errors,
+         clean_output] = compile_branch(platform, target, submodule, index)
 
         llm_output = ""
         if compile_result != "SUCCESS":
@@ -730,7 +735,7 @@ Then refined with jetski-cli and at last manually refined"""
             # Create prompt file with target files and git diff
             [prompt_file_path,
              working_dir] = create_prompt_file(files, submodule, branch,
-                                               sub_main)
+                                               sub_main, clean_output)
 
             if not prompt_file_path:
                 break
@@ -741,8 +746,8 @@ Then refined with jetski-cli and at last manually refined"""
 
             commit_if_changes(submodule)
 
-            [compile_result,
-             compilation_errors] = compile_branch(platform, target, submodule)
+            [compile_result, compilation_errors,
+             clean_output] = compile_branch(platform, target, submodule, index)
         else:
             print("Automatic spanification compiled successfully! "
                   "Skipping jetski-cli.")
