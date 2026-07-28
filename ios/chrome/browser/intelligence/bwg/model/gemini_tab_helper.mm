@@ -577,8 +577,7 @@ void GeminiTabHelper::FaviconUrlUpdated(
         configurationWithPointSize:gfx::kFaviconSize
                             weight:UIImageSymbolWeightBold
                              scale:UIImageSymbolScaleMedium];
-    new_favicon =
-        DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+    new_favicon = SymbolWithConfiguration(SymbolGlobeAmericas, configuration);
   }
 
   if (new_favicon != current_favicon_ &&
@@ -710,8 +709,8 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
   UIImage* badge_image;
   BOOL should_hide_badge_after_chip_collapse = NO;
   if (IsChromeNextIaEnabled()) {
-    badge_image = CustomSymbolTemplateWithPointSize(kTextSparkSymbol,
-                                                    kBadgeSymbolPointSize);
+    badge_image =
+        SymbolTemplateWithPointSize(SymbolTextSpark, kBadgeSymbolPointSize);
     should_hide_badge_after_chip_collapse = NO;
   } else {
     badge_image =

@@ -484,7 +484,7 @@ void GetPresetNTPBackgroundPreview(
     _customizeHomepageAction.symbolTintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
     _customizeHomepageAction.fallbackPreviewImage =
-        DefaultSymbolWithConfiguration(kPencilSymbol, nil);
+        SymbolWithConfiguration(SymbolPencil, nil);
   }
   [self configureThemePreviewForCustomizeHomepageAction];
   return _customizeHomepageAction;

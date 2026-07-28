@@ -203,8 +203,7 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
       UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
           configurationWithPointSize:kCloseButtonWidthHeight
                               weight:UIImageSymbolWeightSemibold];
-      UIImage* closeButtonImage =
-          DefaultSymbolWithConfiguration(@"xmark", config);
+      UIImage* closeButtonImage = SymbolWithConfiguration(SymbolXMark, config);
       [button setImage:closeButtonImage forState:UIControlStateNormal];
       button.tintColor = [UIColor colorNamed:kTextTertiaryColor];
       break;
