@@ -28,6 +28,7 @@ class TestTarget : public Target {
     return last_sent_composition_;
   }
   const std::u16string& last_sent_commit() const { return last_sent_commit_; }
+  const std::u16string& last_sent_paste() const { return last_sent_paste_; }
 
  private:
   void SetExternallySourcedComposition(
@@ -40,8 +41,13 @@ class TestTarget : public Target {
     last_sent_commit_ = text;
   }
 
+  void PasteIntoNode(const std::u16string& text) override {
+    last_sent_paste_ = text;
+  }
+
   std::u16string last_sent_composition_;
   std::u16string last_sent_commit_;
+  std::u16string last_sent_paste_;
 };
 
 class DictationTargetTest : public ChromeRenderViewHostTestHarness {
@@ -116,6 +122,93 @@ TEST_F(DictationTargetTest, FocusChangeBeforeComposition) {
   target.SetComposition(u"A", true);
   EXPECT_EQ(target.last_sent_composition(), u"A");
   EXPECT_EQ(target.last_sent_commit(), u"");
+}
+
+TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallback) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails{target_id, /*richly_editable=*/true});
+
+  target.SetComposition(u"hello", true);
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.SetComposition(u"hello\nworld", true);
+  // When a newline is encountered, stop composition.
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.SetComposition(u"hello\nworld again", true);
+  // Do not compose additional text in the fallback state.
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.CommitComposition(u"hello\nworld again.");
+  // The entire text should be pasted.
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"hello\nworld again.");
+}
+
+TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallbackWithFocusLoss) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails{target_id, /*richly_editable=*/true});
+
+  target.SetComposition(u"hello", true);
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.SetComposition(u"hello\nworld", true);
+  // When a newline is encountered, stop composition.
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.OnFocusChanged(MakeFocusChange(2));
+
+  // As the composition was cleared before the focus change committed anything,
+  // the entire text should be pasted.
+  target.CommitComposition(u"hello\nworld again.");
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"hello\nworld again.");
+}
+
+TEST_F(DictationTargetTest, RichlyEditableFocusLossBeforeNewline) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails{target_id, /*richly_editable=*/true});
+
+  target.SetComposition(u"hello", true);
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.OnFocusChanged(MakeFocusChange(2));
+
+  // As the composition was committed by the focus change, only the remaining
+  // text should be pasted.
+  target.CommitComposition(u"hello\nworld again.");
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"\nworld again.");
+}
+
+TEST_F(DictationTargetTest, NonRichlyEditableNewlineNoPasteFallback) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails{target_id, /*richly_editable=*/false});
+
+  target.SetComposition(u"hello\nworld", true);
+  EXPECT_EQ(target.last_sent_composition(), u"hello\nworld");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.CommitComposition(u"hello\nworld");
+  EXPECT_EQ(target.last_sent_composition(), u"hello\nworld");
+  EXPECT_EQ(target.last_sent_commit(), u"hello\nworld");
+  EXPECT_EQ(target.last_sent_paste(), u"");
 }
 
 }  // namespace

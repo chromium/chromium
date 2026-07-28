@@ -2760,6 +2760,21 @@ TEST_F(RenderWidgetHostTest, SetAndCommitExternallySourcedComposition) {
   }
 }
 
+TEST_F(RenderWidgetHostTest, PasteIntoNode) {
+  std::u16string text = u"hello";
+  GlobalDOMNodeId node_id;
+  node_id.target_element_dom_id = blink::DOMNodeIdType(123);
+
+  host_->PasteIntoNode(text, node_id);
+
+  {
+    MockWidgetInputHandler::MessageVector dispatched_messages =
+        host_->mock_render_input_router()->GetAndResetDispatchedMessages();
+    ASSERT_EQ(1u, dispatched_messages.size());
+    EXPECT_EQ("PasteIntoNode", dispatched_messages[0]->name());
+  }
+}
+
 // Tests that vertical scroll direction changes are propagated to the delegate.
 TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
   const auto NotifyVerticalScrollDirectionChanged =

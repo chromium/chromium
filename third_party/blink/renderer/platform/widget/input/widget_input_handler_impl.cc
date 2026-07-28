@@ -172,6 +172,15 @@ void WidgetInputHandlerImpl::ImeCommitText(
       std::move(callback)));
 }
 
+void WidgetInputHandlerImpl::PasteIntoNode(
+    const String& text,
+    mojom::blink::DOMNodeIdPtr target_dom_node_id) {
+  RunOnMainThread(base::BindOnce(&WidgetBase::PasteIntoNode, widget_, text,
+                                 target_dom_node_id
+                                     ? DOMNodeIdType(target_dom_node_id->value)
+                                     : DOMNodeIdType()));
+}
+
 void WidgetInputHandlerImpl::ImeFinishComposingText(bool keep_selection) {
   RunOnMainThread(base::BindOnce(&WidgetBase::ImeFinishComposingText, widget_,
                                  keep_selection));

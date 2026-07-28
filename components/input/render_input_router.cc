@@ -76,6 +76,10 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                      ImeCommitTextCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
+  void PasteIntoNode(const std::u16string& text,
+                     const blink::DOMNodeIdType& target_dom_node_id) override {
+    DLOG(WARNING) << "Input request on unbound interface";
+  }
   void ImeFinishComposingText(bool keep_selection) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }

@@ -88,6 +88,13 @@ void MockWidgetInputHandler::ImeCommitText(
     std::move(callback).Run();
 }
 
+void MockWidgetInputHandler::PasteIntoNode(
+    const std::u16string& text,
+    const blink::DOMNodeIdType& target_dom_node_id) {
+  dispatched_messages_.emplace_back(
+      std::make_unique<DispatchedMessage>("PasteIntoNode"));
+}
+
 void MockWidgetInputHandler::ImeFinishComposingText(bool keep_selection) {
   dispatched_messages_.emplace_back(
       std::make_unique<DispatchedFinishComposingMessage>(keep_selection));

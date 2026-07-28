@@ -305,6 +305,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                      const gfx::Range& replacement_range,
                      int relative_cursor_pos,
                      DOMNodeIdType target_dom_node_id);
+  void PasteIntoNode(const String& text, DOMNodeIdType target_dom_node_id);
   void ImeFinishComposingText(bool keep_selection);
   bool IsForProvisionalFrame();
   void FlushInputProcessedCallback();

@@ -63,6 +63,8 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
                      int32_t relative_cursor_position,
                      mojom::blink::DOMNodeIdPtr target_dom_node_id,
                      ImeCommitTextCallback callback) override;
+  void PasteIntoNode(const String& text,
+                     mojom::blink::DOMNodeIdPtr target_dom_node_id) override;
   void ImeFinishComposingText(bool keep_selection) override;
   void RequestTextInputStateUpdate() override;
   void RequestCompositionUpdates(bool immediate_request,

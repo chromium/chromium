@@ -201,6 +201,20 @@ namespace blink {
 
 namespace {
 
+Element* GetElementFromDOMNodeId(DOMNodeIdType target_dom_node_id) {
+  if (target_dom_node_id.is_null()) {
+    return nullptr;
+  }
+  Node* node = DOMNodeIds::NodeForId(target_dom_node_id.value());
+  if (!node) {
+    return nullptr;
+  }
+  if (Element* element = DynamicTo<Element>(node)) {
+    return element;
+  }
+  return node->parentElement();
+}
+
 // Used for IME operations which can accept a target node for composition. Focus
 // will temporarily be set to the target node for the operation, then restored.
 class TargetImeNodeFocusChangeScope {
@@ -208,17 +222,7 @@ class TargetImeNodeFocusChangeScope {
 
  public:
   explicit TargetImeNodeFocusChangeScope(DOMNodeIdType target_dom_node_id) {
-    if (target_dom_node_id.is_null()) {
-      return;
-    }
-    Node* node = DOMNodeIds::NodeForId(target_dom_node_id.value());
-    if (!node) {
-      return;
-    }
-    Element* element = DynamicTo<Element>(node);
-    if (!element) {
-      element = node->parentElement();
-    }
+    Element* element = GetElementFromDOMNodeId(target_dom_node_id);
     if (!element) {
       return;
     }
@@ -4319,6 +4323,19 @@ void WebFrameWidgetImpl::CommitText(
                      base::checked_cast<int>(replacement_range.length()))
           : WebRange(),
       relative_cursor_pos);
+}
+
+void WebFrameWidgetImpl::PasteIntoNode(const String& text,
+                                       DOMNodeIdType target_dom_node_id) {
+  Element* target_element = GetElementFromDOMNodeId(target_dom_node_id);
+  if (!target_element) {
+    target_element = FocusedElement();
+  }
+  if (!target_element) {
+    return;
+  }
+
+  WebElement(target_element).PasteText(text, /*replace_all=*/false);
 }
 
 void WebFrameWidgetImpl::FinishComposingText(bool keep_selection) {
