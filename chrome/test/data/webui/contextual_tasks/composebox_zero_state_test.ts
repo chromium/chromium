@@ -17,7 +17,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -1108,9 +1107,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     anchor.click();
     await microtasksFinished();
 
-    const [url, disposition] = await testProxy.handler.whenCalled('openUrl');
+    const url = await mockComposeboxPageHandler.whenCalled('navigateUrl');
     assertEquals('https://google.com/', url);
-    assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
   });
 
   test(

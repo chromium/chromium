@@ -52,8 +52,10 @@ template("build_webui") {
     # build_webui() targets are generally not allowed to refer to parent
     # folders. A temporary exception is added for the folders below, which will
     # be removed once experimentation in these folders concludes.
-    _in_folder_exceptions =
-        [ "//chrome/browser/resources/omnibox/aim_eligibility_extension:build" ]
+    _in_folder_exceptions = [
+      "//chrome/browser/resources/omnibox/aim_eligibility_extension:build",
+      "//chrome/browser/resources/contextual_tasks/extension:build",
+    ]
     _current_label = get_label_info(":$target_name", "label_no_toolchain")
     assert(
         filter_include([ _current_label ], _in_folder_exceptions) != [],

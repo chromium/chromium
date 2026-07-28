@@ -14,7 +14,6 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, createContextualTasksAppElement, fixtureUrl, simulateLoadCommit} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-// </if>
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
 // Remove the element to prevent background loadabort events from triggering
@@ -1225,6 +1224,7 @@ suite('ContextualTasksAppTest', function() {
         assertEquals(WindowOpenDisposition.NEW_FOREGROUND_TAB, disposition);
       });
 
+  // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
   test('side panel zero state plays animations immediately', async () => {
     loadTimeData.overrideValues({isZeroState: true});
     const {appElement} = await createContextualTasksAppElement(
@@ -1309,4 +1309,5 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(appElement.classList.contains('play-zero-state'));
     assertTrue(appElement.$.composebox.classList.contains('play-zero-state'));
   });
+  // </if> not is_android or enable_webui_contextual_tasks_composebox
 });

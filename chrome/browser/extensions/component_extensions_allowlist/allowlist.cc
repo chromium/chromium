@@ -17,6 +17,7 @@
 #include "chrome/grit/aim_eligibility_extension_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "chrome/grit/contextual_tasks_extension_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "printing/buildflags/buildflags.h"
@@ -95,7 +96,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_HANGOUT_SERVICES_MANIFEST_V3:
 #endif
     case IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON:
-    case IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST:
+    case IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON:
     case IDR_GLIC_EXTENSION_MANIFEST:
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST:
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST_MV3:

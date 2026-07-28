@@ -24,13 +24,11 @@ import {InputType, ToolMode} from '//resources/mojo/components/omnibox/composebo
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {IconType} from './contextual_tasks.mojom-webui.js';
-import type {InjectedInput, PageHandlerInterface} from './contextual_tasks.mojom-webui.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import type {InjectedInput} from './contextual_tasks.mojom-webui.js';
 
 const ICON_TYPE_TO_NAME: {[id: number]: string} = {
   [IconType.kUnspecified]: 'unspecified',
@@ -116,7 +114,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       },
       showContextMenu_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
       voiceSearchCoherenceEnabled_: {
         type: Boolean,
@@ -200,7 +197,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;
-  private contextualTasksHandler_: PageHandlerInterface;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxListenerIds_: number[] = [];
   private shouldSubmitAfterUpload_: boolean = false;
@@ -237,7 +233,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
-    this.contextualTasksHandler_ = BrowserProxyImpl.getInstance().handler;
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
@@ -451,8 +446,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     e.detail.event.preventDefault();
     const anchor = e.detail.event.target as HTMLAnchorElement;
     if (anchor && anchor.href) {
-      this.contextualTasksHandler_.openUrl(
-          anchor.href, WindowOpenDisposition.NEW_FOREGROUND_TAB);
+      this.pageHandler_.navigateUrl(anchor.href);
     }
   }
 

@@ -92,10 +92,6 @@ inline constexpr char kGlicPublicKey[] =
     "YVUWJKu8V5ZyGWRJTtyo0tQiyNOx/kf3/"
     "f43CtsAKtsbFqJy9i9ux7JmF+KoORP1fjBJs0zpOGXWHbqIQIDAQAB";
 
-// The extension ID of the Contextual Tasks extension.
-inline constexpr char kContextualTasksExtensionId[] =
-    "glbjnfimcajjenihimblfaponejbkoph";
-
 // The extension id of the Gemini testing extension.
 inline constexpr char kGlicTestExtensionId[] =
     "oljbkhokcbpaencibijkoolhipplkeoc";

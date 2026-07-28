@@ -325,6 +325,10 @@ inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";
 inline constexpr char kAimEligibilityExtensionId[] =
     "kgjeljgkbckpoekmgjfplammhcggiiaf";
 
+// The extension id of the Contextual Tasks component extension.
+inline constexpr char kContextualTasksExtensionId[] =
+    "glbjnfimcajjenihimblfaponejbkoph";
+
 // The extension id of the Files Manager application.
 inline constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 

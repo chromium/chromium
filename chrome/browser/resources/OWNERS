@@ -1,3 +1,5 @@
 file://ui/webui/PLATFORM_OWNERS
 
 per-file profile_signin_confirmation*=achuith@chromium.org
+
+per-file rewrite_imports.py=kiehl@google.com,mercerd@google.com,mahmadi@chromium.org

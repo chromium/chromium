@@ -7,15 +7,14 @@ import("//ui/webui/resources/tools/optimize_webui.gni")
 
 action("rewrite_mojo_binding_imports") {
   visibility = [ ":*" ]
-  script = "rewrite_imports.py"
-  in_dir = "$root_gen_dir/chrome/browser/ui/webui/omnibox/aim_eligibility"
-  out_dir = "$target_gen_dir/mojo"
+  script = "//chrome/browser/resources/rewrite_imports.py"
+  in_file = "$root_gen_dir/chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom-webui.ts"
+  out_file = "$target_gen_dir/mojo/aim_eligibility.mojom-webui.ts"
   deps = [ "//chrome/browser/ui/webui/omnibox/aim_eligibility:mojo_bindings_ts__generator" ]
-  outputs = [ "$out_dir/aim_eligibility.mojom-webui.ts" ]
+  outputs = [ out_file ]
   args = [
-    rebase_path(in_dir, root_build_dir),
-    rebase_path(out_dir, root_build_dir),
-    "aim_eligibility.mojom-webui.ts",
+    rebase_path(in_file, root_build_dir),
+    rebase_path(out_file, root_build_dir),
   ]
 }
 

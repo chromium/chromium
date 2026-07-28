@@ -11,6 +11,12 @@
   "permissions": [
     "contextualTasksPrivate"
   ],
+  "host_permissions": [
+    "chrome://resources/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' chrome://resources; object-src 'self';"
+  },
   "externally_connectable": {
     "matches": [
       "https://google.com/search*",

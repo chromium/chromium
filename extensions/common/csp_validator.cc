@@ -76,6 +76,7 @@ constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
     // Used for ComponentExtensionWorkerChromeResourcesBrowserTest.
     extension_misc::kChromeResourcesTestExtensionId,
     extension_misc::kAimEligibilityExtensionId,
+    extension_misc::kContextualTasksExtensionId,
 };
 
 using Directive = CSPParser::Directive;

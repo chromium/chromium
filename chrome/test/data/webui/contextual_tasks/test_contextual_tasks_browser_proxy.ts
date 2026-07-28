@@ -6,13 +6,12 @@ import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.moj
 import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
-import type {PageHandler as ComposeboxPageHandler, PageHandlerFactory as ComposeboxPageHandlerFactory} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {TestSearchboxPageHandler} from './test_searchbox_page_handler.js';
 import {HANDSHAKE_RESPONSE_BYTES} from './contextual_tasks_test_utils.js';
 
 class MockPage extends TestBrowserProxy implements PageInterface {
@@ -484,11 +483,9 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
  * Tasks page to the browser on start up.
  */
 export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
-    BrowserProxy, ComposeboxPageHandlerFactory {
+    BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: TestContextualTasksPageHandler;
-  composeboxHandler: TestBrowserProxy&ComposeboxPageHandler;
-  searchboxHandler: TestSearchboxPageHandler;
   page: MockPage;
   callbackRouterRemote: PageRemote;
 
@@ -496,25 +493,12 @@ export class TestContextualTasksBrowserProxy extends TestBrowserProxy implements
    * @param url The URL to load in the webview.
    */
   constructor(url: string) {
-    super([
-      'createPageHandler',
-    ]);
+    super([]);
     this.callbackRouter = new PageCallbackRouter();
     this.page = new MockPage();
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
     this.handler = new TestContextualTasksPageHandler(url, this.page);
-    this.composeboxHandler = new TestBrowserProxy();
-    this.searchboxHandler = new TestSearchboxPageHandler();
     this.callbackRouterRemote.onCookieSyncCompleted();
-  }
-
-  createPageHandler() {
-    this.methodCalled('createPageHandler');
-    return {
-      handler: this.handler,
-      composeboxHandler: this.composeboxHandler,
-      searchboxHandler: this.searchboxHandler,
-    };
   }
 }

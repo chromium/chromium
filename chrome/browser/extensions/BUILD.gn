@@ -536,6 +536,7 @@ source_set("extensions") {
     "//chrome/browser/renderer_host",
     "//chrome/browser/resource_coordinator:utils",
     "//chrome/browser/resources:component_extension_resources",
+    "//chrome/browser/resources/contextual_tasks/extension:resources",
     "//chrome/browser/resources/omnibox/aim_eligibility_extension:resources",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",

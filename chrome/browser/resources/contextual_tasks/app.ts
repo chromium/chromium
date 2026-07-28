@@ -20,6 +20,7 @@ import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
 
+
 import '//resources/cr_elements/cr_button/cr_button.js';
 import './error_dialog.js';
 import './error_page.js';
@@ -260,14 +261,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       friendlyZeroStateTitle: {type: String},
       friendlyZeroStateSubtitle: {type: String},
       occluders_: {type: Array},
-      showOnboardingTooltip_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showOnboardingTooltip'),
-      },
-      showLensSearchTooltip_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('askGCoBrowseEnabled'),
-      },
+      showOnboardingTooltip_: {type: Boolean},
+      showLensSearchTooltip_: {type: Boolean},
       lensSearchTooltipShowing_: {type: Boolean},
       energyEffectEnabled_: {
         type: Boolean,

@@ -61,7 +61,8 @@ class ContextualTasksExtensionMessagingTest : public ExtensionApiTest {
       const std::vector<base::test::FeatureRef>& disabled_features = {}) {
     std::vector<base::test::FeatureRef> enabled = {
         extensions_features::kApiContextualTasksPrivate,
-        contextual_tasks::kContextualTasks};
+        contextual_tasks::kContextualTasks,
+        contextual_tasks::kContextualTasksRearchitecture};
     enabled.insert(enabled.end(), enabled_features.begin(),
                    enabled_features.end());
     feature_list_.InitWithFeatures(enabled, disabled_features);

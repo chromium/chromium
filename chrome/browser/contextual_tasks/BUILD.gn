@@ -66,6 +66,14 @@ source_set("contextual_tasks") {
     "//third_party/abseil-cpp:absl",
     "//third_party/omnibox_proto",
   ]
+
+  if (enable_extensions_core) {
+    sources += [
+      "contextual_tasks_extension_bridge.h",
+      "contextual_tasks_extension_bridge_factory.h",
+    ]
+  }
+
   if (!is_android) {
     public_deps += [ "//components/policy/core/browser" ]
   }
@@ -173,6 +181,17 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_actions",
       "//components/policy/core/browser",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [
+      "contextual_tasks_extension_bridge.cc",
+      "contextual_tasks_extension_bridge_factory.cc",
+    ]
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
     ]
   }
 }

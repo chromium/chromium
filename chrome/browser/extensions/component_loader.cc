@@ -39,6 +39,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "chrome/grit/contextual_tasks_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -416,7 +417,7 @@ void ComponentLoader::AddGlicExtension() {
 void ComponentLoader::AddContextualTasksExtension() {
   if (base::FeatureList::IsEnabled(
           extensions_features::kApiContextualTasksPrivate)) {
-    Add(IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST,
+    Add(IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST_JSON,
         base::FilePath(FILE_PATH_LITERAL("contextual_tasks_extension")));
   }
 }

@@ -269,6 +269,7 @@ source_set("keyed_service_factories") {
 
   deps = [
     ":api_implementations",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/extensions",
     "//chrome/common:buildflags",
     "//components/safe_browsing:buildflags",
