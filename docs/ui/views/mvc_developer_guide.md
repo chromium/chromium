@@ -19,9 +19,9 @@ We break up the traditional Controller into the Coordinator and View Controller.
 #### Coordinator:
 * Public API of the component
 * In charge of when features become active or inactive
-* Owned by the coordinator of it’s parent component
+* Owned by the coordinator of its parent component
 * Creates and owns the view controller
-* May create and own UI models or manage the models of it’s child coordinators
+* May create and own UI models or manage the models of its child coordinators
 
 #### View Controller:
 * Sets up views based on model data
@@ -34,7 +34,7 @@ We break up the traditional Controller into the Coordinator and View Controller.
 # Visual of Components
 ![visual of components](images/mvc_visual_of_components.png)
 
-Note: In this diagram the coordinator is owning the model, but the model can also be owned by the parent coordinator or outside components if it’s a backend model.
+Note: In this diagram the coordinator owns the model, but the model can also be owned by the parent coordinator or outside components if it’s a backend model.
 
 #### Concrete Examples
 Simple example from the Chrome Labs feature.
