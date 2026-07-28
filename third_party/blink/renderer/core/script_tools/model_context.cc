@@ -1036,7 +1036,7 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
   if (expected_target_origin->IsOpaque()) {
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kDataError,
+                          DOMExceptionCode::kNotSupportedError,
                           "Cannot execute tools that live in a document with "
                           "an opaque origin."));
   }
