@@ -19,6 +19,7 @@ class CollaborationMessagingPageActionController;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FromGWSNavigationAndKeepAliveRequestObserver;
+class HttpAuthCacheStatus;
 class IntentPickerViewPageActionController;
 class LensOverlayController;
 class LensOverlayHomeworkPageActionController;
@@ -517,6 +518,10 @@ class TabFeatures {
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;
+
+  // Records use counters for cross-partition subresource loads that used
+  // server HTTP auth.
+  std::unique_ptr<HttpAuthCacheStatus> http_auth_cache_status_;
 
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 

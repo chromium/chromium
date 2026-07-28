@@ -496,8 +496,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   // Create the HttpAuthCacheStatus to start observing resource load
   // completions.
-  HttpAuthCacheStatus::HttpAuthCacheStatus::CreateForWebContents(
-      tab.GetContents());
+  http_auth_cache_status_ =
+      std::make_unique<HttpAuthCacheStatus>(tab.GetContents());
 
   if (web_app::AreWebAppsEnabled(profile)) {
     web_app::WebAppTabHelper::Create(&tab, tab.GetContents());

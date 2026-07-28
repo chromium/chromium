@@ -175,7 +175,6 @@
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tab_helper.h"
-#include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
@@ -382,10 +381,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     sensitive_content::AndroidSensitiveContentClient::CreateForWebContents(
         web_contents, "SensitiveContent.Chrome.");
   }
-
-  // Create the HttpAuthCacheStatus to start observing resource load
-  // completions.
-  HttpAuthCacheStatus::HttpAuthCacheStatus::CreateForWebContents(web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
@@ -601,12 +596,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // events from PermissionRequestManager and AsyncCheckTracker in its
   // constructor. Therefore, PermissionRequestManager and AsyncCheckTracker need
   // to be created before SafeBrowsingTabObserver is created.
-  // ClientSideDetectionHost uses ScopedAutofillManagersObservation which expects
-  // ContentAutofillClient (gated by enable_browser_autofill) to be created.
+  // ClientSideDetectionHost uses ScopedAutofillManagersObservation which
+  // expects ContentAutofillClient (gated by enable_browser_autofill) to be
+  // created.
   if (enable_browser_autofill) {
     safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
         web_contents,
-        std::make_unique<safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
+        std::make_unique<
+            safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
   }
   safe_browsing::TriggerCreator::MaybeCreateTriggersForWebContents(
       profile, web_contents);

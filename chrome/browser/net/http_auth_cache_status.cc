@@ -12,7 +12,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
@@ -20,16 +19,8 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
-// static
-void HttpAuthCacheStatus::CreateForWebContents(
-    content::WebContents* web_contents) {
-  content::WebContentsUserData<HttpAuthCacheStatus>::CreateForWebContents(
-      web_contents);
-}
-
 HttpAuthCacheStatus::HttpAuthCacheStatus(content::WebContents* web_contents)
-    : content::WebContentsUserData<HttpAuthCacheStatus>(*web_contents),
-      content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 HttpAuthCacheStatus::~HttpAuthCacheStatus() = default;
 
@@ -61,6 +52,3 @@ void HttpAuthCacheStatus::ResourceLoadComplete(
         blink::mojom::WebFeature::kDidUseServerHttpAuthOnCrossPartitionRequest);
   }
 }
-
-// Data key required for WebContentsUserData.
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HttpAuthCacheStatus);

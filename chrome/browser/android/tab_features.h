@@ -51,6 +51,8 @@ namespace lens {
 class TabContextualizationController;
 }  // namespace lens
 
+class HttpAuthCacheStatus;
+
 namespace tabs {
 
 class TabInterface;
@@ -86,6 +88,7 @@ class TabFeatures {
 
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
+  std::unique_ptr<HttpAuthCacheStatus> http_auth_cache_status_;
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;
