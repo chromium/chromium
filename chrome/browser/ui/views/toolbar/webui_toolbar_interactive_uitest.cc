@@ -1725,7 +1725,8 @@ class WebUIToolbarFocusInteractiveUiTestBase
           let curr = active;
           while (curr && curr !== el) {
             if (curr.id && curr.id !== 'container' &&
-                curr.id !== 'textInput' && curr.id !== 'button') {
+                curr.id !== 'buttonWrapper' && curr.id !== 'textInput' &&
+                curr.id !== 'button') {
               return curr.id;
             }
             if (curr.id === 'container') {

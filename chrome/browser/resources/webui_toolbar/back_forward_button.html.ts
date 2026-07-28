@@ -7,21 +7,33 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BackForwardButtonElement} from './back_forward_button.js';
 
 export function getHtml(this: BackForwardButtonElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
-<cr-icon-button
-    iron-icon="${this.getIronIcon_()}"
-    ?disabled="${!this.state.enabled}"
-    aria-label="${this.getAriaLabel_()}"
+<!-- buttonWrapper expands the clickable hit target to window edges
+  (Fitts' law). The title attribute is duplicated on buttonWrapper so hovering
+  over the expanded padding area properly displays the native browser
+  tooltip (browsers prioritize the identical inner button title when hovered
+  directly). Note: Because <div> has no native disabled behavior, ?disabled
+  is applied strictly as a CSS selector hook for styling disabled states. -->
+<div id="buttonWrapper"
     title="${this.getTooltip_()}"
-    style="margin-inline-start: ${this.leadingMargin}px"
-    ?is-menu-open="${this.state.isContextMenuVisible}"
-    @pointerdown="${this.pressHandler_.onPointerdown}"
-    @pointerup="${this.pressHandler_.onPointerup}"
-    @pointercancel="${this.pressHandler_.onPointercancel}"
+    ?disabled="${!this.state.enabled}"
+    style="--back-forward-button-leading-margin: ${this.leadingMargin}px;"
+    @pointerdown="${this.onPointerdown_}"
+    @pointerup="${this.onPointerup_}"
+    @pointercancel="${this.onPointercancel_}"
+    @pointerleave="${this.onPointerleave_}"
     @pointerenter="${this.onPointerenter_}"
     @contextmenu="${this.pressHandler_.onContextmenu}"
     @click="${this.onClick_}">
+  <cr-icon-button id="button"
+      iron-icon="${this.getIronIcon_()}"
+      ?disabled="${!this.state.enabled}"
+      aria-label="${this.getAriaLabel_()}"
+      title="${this.getTooltip_()}"
+      ?is-menu-open="${this.state.isContextMenuVisible}">
   </cr-icon-button>
-
+</div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

@@ -79,6 +79,7 @@ build_webui("build") {
     "app.css",
     "app_menu_button.css",
     "avatar_button.css",
+    "back_forward_button.css",
     "content_setting_icon.css",
     "content_settings_icons.css",
     "extensions.css",

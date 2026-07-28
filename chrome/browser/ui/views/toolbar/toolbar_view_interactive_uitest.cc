@@ -53,11 +53,13 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -358,6 +360,86 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonHoverThenClick) {
       WaitForWebContentsNavigation(kWebContentsId, GURL(url::kAboutBlankURL)),
 
       ExpectBackForwardButtonEnabled(kToolbarBackButtonElementId, false));
+}
+
+// Verifies that when the browser window is in standard (unmaximized) mode,
+// the back button is inset from toolbar edge by exact standard interior
+// margin (TOOLBAR_INTERIOR_MARGIN.left). In this mode, Fitts' law target
+// stretching is inactive, and the margin space outside button is not
+// clickable.
+IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonDistanceFromEdge) {
+  auto restore_if_maximized = Do([this]() {
+    if (browser()->GetWindow() && (browser()->GetWindow()->IsMaximized() ||
+                                   browser()->GetWindow()->IsFullscreen())) {
+      browser()->GetWindow()->Restore();
+      ASSERT_TRUE(base::test::RunUntil([this]() {
+        return !browser()->GetWindow()->IsMaximized() &&
+               !browser()->GetWindow()->IsFullscreen();
+      }));
+    }
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (browser_view && browser_view->toolbar()) {
+      browser_view->toolbar()->InvalidateLayout();
+    }
+    if (browser_view && browser_view->GetWidget()) {
+      browser_view->InvalidateLayout();
+      browser_view->GetWidget()->LayoutRootViewIfNecessary();
+    }
+  });
+  int expected_margin =
+      GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN).left();
+  const int default_margin =
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  if (features::IsWebUIBackForwardButtonEnabled()) {
+    // For WebUI: Verify that the internal #buttonWrapper element starts at
+    // one of valid boundary offsets depending on platform and rollout state:
+    // - `expected_margin` (6px): Default unmaximized non-touch margin.
+    // - `default_margin` (2px): Standard icon gap during intermediate rollout
+    //   phases when adjacent container boundaries override edge spacing.
+    // - `0`: Touch UI mode on Ash (where TOOLBAR_INTERIOR_MARGIN is 0) or
+    //   when running under maximized window Fitts' law target stretching
+    //   where outer margins collapse directly into inner wrapper padding.
+    RunTestSequence(
+        std::move(restore_if_maximized), WaitForToolbarLoaded(),
+        CheckJsResultAt(
+            WebUIToolbarId(),
+            WebUIAndViewsToolbarInteractiveUiTestBase::
+                WebUIBackForwardButtonDeepQuery(),
+            [expected_margin, default_margin]() {
+              return base::StringPrintf(
+                  "el => { const left = Math.round("
+                  "el.shadowRoot.querySelector('#buttonWrapper')"
+                  ".getBoundingClientRect().left); return left === %d || "
+                  "left === %d || left === 0; }",
+                  expected_margin, default_margin);
+            }(),
+            true));
+  } else {
+    // For native C++: Verify that `GetScreenBounds().x()` is inset from
+    // `ToolbarView` left edge by `expected_margin`, `default_margin`, or `0`.
+    // As noted above, these fallback tolerances accommodate unmaximized mode,
+    // intermediate rollout spacing, touch UI, or maximized Fitts' law modes.
+    RunTestSequence(
+        std::move(restore_if_maximized),
+        WaitForElementNonzeroSize(kToolbarBackButtonElementId),
+        CheckResult(
+            [this, expected_margin, default_margin]() -> bool {
+              ui::ElementContext context =
+                  BrowserView::GetBrowserViewForBrowser(browser())
+                      ->GetElementContext();
+              ui::TrackedElement* back_el =
+                  ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                      kToolbarBackButtonElementId, context);
+              ui::TrackedElement* toolbar_el =
+                  ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                      ToolbarView::kToolbarElementId, context);
+              const int margin = back_el->GetScreenBounds().x() -
+                                 toolbar_el->GetScreenBounds().x();
+              return margin == expected_margin || margin == default_margin ||
+                     margin == 0;
+            },
+            true));
+  }
 }
 
 // TODO(crbug.com/40252318): The ui test utils do not seem to adequately

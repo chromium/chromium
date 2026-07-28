@@ -12,6 +12,7 @@ build_webui_tests("build") {
 
   files = [
     "app_menu_button_test.ts",
+    "back_forward_button_test.ts",
     "battery_saver_button_test.ts",
     "content_setting_icon_test.ts",
     "cr_lazy_iconset_test.ts",

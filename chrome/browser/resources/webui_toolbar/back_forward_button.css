@@ -1,0 +1,49 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./toolbar_button.css.js
+ * #scheme=relative
+ * #include=toolbar-button
+ * #css_wrapper_metadata_end */
+
+#buttonWrapper {
+  align-items: center;
+  display: flex;
+  height: 100%;
+}
+
+:host(#back) {
+  align-self: stretch;
+  height: auto;
+  justify-content: flex-start;
+  width: auto;
+}
+
+:host(#back) #buttonWrapper {
+  /* Enforce content-box so adding padding-inline-start cleanly extends the
+   * total target width beyond --button-width (defined in toolbar_button.css)
+   * without shrinking inner icon space or altering visual icon coordinates. */
+  box-sizing: content-box;
+  /* In maximized/fullscreen windows, increasing
+   * --back-forward-button-leading-margin reduces margin-inline-start
+   * toward 0 while adding equivalent padding-inline-start and width.
+   * This stretches the #buttonWrapper click target to the screen edge
+   * (Fitts' law) while keeping the inner button at its exact visual
+   * position. The 6px fallback in var(--toolbar-interior-margin-start, 6px)
+   * corresponds to the default non-touch GetLayoutInsets(
+   * LayoutInset::TOOLBAR_INTERIOR_MARGIN).left() in layout_constants.cc.
+   * Note: We reference the logical -start variable to consistently match
+   * margin-inline-start without physical-to-logical CSS discrepancies. */
+  margin-inline-start: calc(
+      var(--toolbar-interior-margin-start, 6px) -
+      var(--back-forward-button-leading-margin, 0px));
+  padding-inline-start: var(--back-forward-button-leading-margin, 0);
+  width: var(--button-width);
+}
+
+#buttonWrapper:not([disabled]):hover #button {
+  background-color: var(--cr-hover-background-color);
+}

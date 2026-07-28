@@ -1571,6 +1571,12 @@ void ToolbarView::InitLayout() {
             views::MaximumFlexSizeRule::kPreferred));
   }
 
+  if (features::IsWebUIToolbarEnabled() && toolbar_webview_) {
+    // Strip default C++ outer margins from `toolbar_webview_` since WebUI CSS
+    // handles internal toolbar spacing.
+    toolbar_webview_->SetProperty(views::kMarginsKey, gfx::Insets());
+  }
+
   // Order 1 is reserved for the location bar if kOmniboxResizingPrioritization
   // is enabled.
   constexpr int kToolbarFlexOrderStart = 2;
@@ -1624,22 +1630,73 @@ void ToolbarView::LayoutCommon() {
     SetRefreshMargins(avatar_, avatar_->IsLabelPresentAndVisible());
   }
 
+  const bool is_rtl = base::i18n::IsRTL();
+
+  // Zero out leading or trailing interior margins for WebUI toolbar so that
+  // `toolbar_webview_` spans the full width of the container edge-to-edge.
+  // WebUI handles standard toolbar indentation internally via CSS.
+  // Note: Because `gfx::Insets` operate in physical screen coordinates, we
+  // check `base::i18n::IsRTL()` to invert which physical edge corresponds to
+  // the leading Back/Forward button versus the trailing App Menu button.
+  // TODO(crbug.com/538651978): Once the entire toolbar migrates to 100%
+  // WebUI, simplify these individual feature checks to a single global check.
+  if (features::IsWebUIBackForwardButtonEnabled()) {
+    if (is_rtl) {
+      interior_margin.set_right(0);
+    } else {
+      interior_margin.set_left(0);
+    }
+  }
+  if (features::IsWebUIAppMenuButtonEnabled()) {
+    if (is_rtl) {
+      interior_margin.set_left(0);
+    } else {
+      interior_margin.set_right(0);
+    }
+  }
   layout_manager_->SetInteriorMargin(interior_margin);
 
   // Extend buttons to the window edge if we're either in a maximized or
   // fullscreen window. This makes the buttons easier to hit, see Fitts' law.
+  // Note on layout synchronization: In Chromium UI Views, window maximize,
+  // restore, or fullscreen transitions automatically invalidate container
+  // geometry and invoke `ToolbarView::Layout()`. This layout pass guarantees
+  // `SetBackButtonLeadingMargin` remains reliably synchronized with window
+  // bounds without requiring supplemental widget observation hooks.
   const bool extend_buttons_to_edge =
       browser_->GetWindow() && (browser_->GetWindow()->IsMaximized() ||
                                 browser_->GetWindow()->IsFullscreen());
-  const int margin = extend_buttons_to_edge ? interior_margin.left() : 0;
+  const gfx::Insets default_insets =
+      GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
   if (features::IsWebUIBackForwardButtonEnabled()) {
-    toolbar_webview_->SetBackButtonLeadingMargin(margin);
+    // When maximized, the button's clickable area should extend to the screen
+    // edge (Fitts' law). Since the leading interior margin was set to 0 above
+    // for WebUI, we fetch the default toolbar inset directly. We check
+    // `is_rtl` so we accurately pick the physical leading inset (`right` for
+    // RTL versus `left` for LTR). WebUI CSS uses this value to replace outer
+    // margin with inner padding, stretching the click target to the screen
+    // edge while keeping the icon visually in place.
+    const int webui_margin =
+        extend_buttons_to_edge
+            ? (is_rtl ? default_insets.right() : default_insets.left())
+            : 0;
+    toolbar_webview_->SetBackButtonLeadingMargin(webui_margin);
   } else {
+    const int margin = extend_buttons_to_edge ? interior_margin.left() : 0;
     back_->SetLeadingMargin(margin);
   }
 
+  // When maximized or fullscreen, extend the trailing app menu button to the
+  // window edge per Fitts' law. Because `interior_margin` may have had its
+  // trailing edge zeroed out above when WebUI App Menu Button is enabled, use
+  // `default_insets` to reliably acquire the physical trailing inset (`left`
+  // in RTL versus `right` in LTR).
   const int trailing_margin =
-      extend_buttons_to_edge ? interior_margin.right() : 0;
+      extend_buttons_to_edge
+          ? (features::IsWebUIAppMenuButtonEnabled()
+                 ? (is_rtl ? default_insets.left() : default_insets.right())
+                 : interior_margin.right())
+          : 0;
   GetAppMenuControl()->SetTrailingMargin(trailing_margin);
 
   if (toolbar_divider_ && extensions_container_) {

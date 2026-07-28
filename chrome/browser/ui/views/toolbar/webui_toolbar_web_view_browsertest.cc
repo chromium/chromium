@@ -355,14 +355,17 @@ std::string AddMockPointerCaptureFunctions(const char* target) {
   return base::StringPrintf(
       R"({
         var element = %s;
+        var elements = [element, element?.parentElement].filter(Boolean);
         var hasCapture = null;
-        element.setPointerCapture = (id) => { hasCapture = id; };
-        element.hasPointerCapture = (id) => { return id == hasCapture; };
-        element.releasePointerCapture = (id) => {
-          if (id == hasCapture || id == '*') {
-            hasCapture = null;
-          }
-        };
+        for (var el of elements) {
+          el.setPointerCapture = (id) => { hasCapture = id; };
+          el.hasPointerCapture = (id) => { return id == hasCapture; };
+          el.releasePointerCapture = (id) => {
+            if (id == hasCapture || id == '*') {
+              hasCapture = null;
+            }
+          };
+        }
       })",
       target);
 }
@@ -781,9 +784,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   control_rect.Offset(-view_rect.OffsetFromOrigin());
 
-  // Sample a point in the background area (e.g. 5,5 from top-left).
-  gfx::Rect background_probe_rect(control_rect.x() + 5, control_rect.y() + 5, 1,
-                                  1);
+  // Sample a point in the background area (offset past the 6px leading margin).
+  gfx::Rect background_probe_rect(control_rect.x() + 12, control_rect.y() + 5,
+                                  1, 1);
 
   // Verify back button background is transparent when not highlighted.
   EXPECT_TRUE(base::test::RunUntil([&]() {
