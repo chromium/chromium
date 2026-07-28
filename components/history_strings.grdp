@@ -316,5 +316,8 @@
   <message name="IDS_HISTORY_ACTOR_TASK_TOOLTIP_GEMINI" desc="This string indicates entries in Chrome history that are the result of Gemini in Chrome browsing while performing a task for the user. When users view their Chrome history, this string appears as a tooltip on a Gemini history entry." translateable="false">
     Gemini task
   </message>
+  <message name="IDS_HISTORY_REVIEW_GEMINI_ACTIVITY" desc="Command in the history entry drop-down menu. Opens Gemini Apps Activity page." translateable="false">
+    Review Gemini activity
+  </message>
 
 </grit-part>

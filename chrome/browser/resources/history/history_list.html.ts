@@ -78,6 +78,12 @@ export function getHtml(this: HistoryListElement) {
               @click="${this.onMoreFromSiteClick_}">
             $i18n{moreFromSite}
           </button>
+          <button id="menuReviewGeminiActivityButton" class="dropdown-item"
+              ?hidden="${!this.canShowReviewGeminiActivity_()}"
+              @click="${this.onReviewGeminiActivityClick_}">
+            $i18n{reviewGeminiActivity}
+          </button>
+          <div class="hr" ?hidden="${!this.canShowReviewGeminiActivity_()}"></div>
           <button id="menuRemoveButton" class="dropdown-item"
               ?hidden="${!this.canDeleteHistory_}"
               ?disabled="${this.pendingDelete}"

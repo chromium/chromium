@@ -7,6 +7,7 @@ import 'chrome://history/history.js';
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
 import {BrowserProxyImpl, foreignSessionBrowserProxyFactory, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -39,8 +40,6 @@ suite('Metrics', function() {
 
     actionMap = testProxy.actionMap;
     histogramMap = testProxy.histogramMap;
-
-    app = document.createElement('history-app');
   });
 
   /**
@@ -53,6 +52,7 @@ suite('Metrics', function() {
     testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo(query), value: queryResults},
     }));
+    app = document.createElement('history-app');
     document.body.appendChild(app);
     await testProxy.handler.whenCalled('queryHistory');
     return microtasksFinished();
@@ -407,5 +407,28 @@ suite('Metrics', function() {
     const histogram = histogramMap['HistoryPage.NonActorContextMenuActions'];
     assertTrue(!!histogram);
     assertEquals(1, histogram[VisitContextMenuAction.REMOVE_BOOKMARK_CLICKED]);
+  });
+
+  test('review-gemini-activity-button-clicked-for-actor-visit', async () => {
+    loadTimeData.overrideValues({
+      myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
+      isCriticalActionsEnabled: true,
+    });
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    await finishSetup([historyEntry]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuReviewGeminiActivityButton');
+
+    const histogram = histogramMap['HistoryPage.ActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(
+        1, histogram[VisitContextMenuAction.REVIEW_GEMINI_ACTIVITY_CLICKED]);
+    assertEquals(
+        1, testProxy.actionMap['EntryMenuReviewGeminiActivity']);
   });
 });

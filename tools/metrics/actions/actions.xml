@@ -17157,6 +17157,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="HistoryPage_EntryMenuReviewGeminiActivity">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <description>
+    Triggered when the user clicks 'Review Gemini activity' in a context menu on
+    chrome://history. This option is conditionally shown only for actor
+    (agent-initiated) visits when critical actions are enabled.
+  </description>
+</action>
+
 <action name="HistoryPage_EntryMenuShowMoreFromSite">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

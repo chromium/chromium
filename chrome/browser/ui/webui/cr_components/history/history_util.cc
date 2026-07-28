@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/history_resources.h"
@@ -66,6 +67,7 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
       {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
+      {"reviewGeminiActivity", IDS_HISTORY_REVIEW_GEMINI_ACTIVITY},
       {"searchPrompt", IDS_HISTORY_SEARCH_PROMPT},
       {"searchResult", IDS_HISTORY_SEARCH_RESULT},
       {"searchResults", IDS_HISTORY_SEARCH_RESULTS},
@@ -91,6 +93,9 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
           critical_actions::features::kCriticalActionHistory)
           ? IDS_HISTORY_ACTOR_TASK_TOOLTIP_GEMINI
           : IDS_HISTORY_ACTOR_TASK_TOOLTIP);
+
+  source->AddString("myActivityGeminiAppsUrl",
+                    chrome::kMyActivityGeminiAppsUrl);
 
   PrefService* prefs = profile->GetPrefs();
   bool allow_deleting_history =

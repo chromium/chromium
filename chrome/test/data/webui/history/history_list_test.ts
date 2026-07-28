@@ -501,6 +501,94 @@ suite('HistoryListTest', function() {
         Array.from(items).slice(0, 3).map(i => i.selected));
   });
 
+  test('ReviewGeminiActivityViaMenuButton', async function() {
+    loadTimeData.overrideValues({
+      myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
+      isCriticalActionsEnabled: true,
+    });
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuReviewGeminiActivityButton');
+    assertTrue(!!reviewButton);
+    assertFalse(reviewButton.hidden);
+
+    const hr = element.shadowRoot.querySelector<HTMLElement>('#sharedMenu .hr');
+    assertTrue(!!hr);
+    assertFalse(hr.hidden);
+
+    reviewButton.click();
+    await microtasksFinished();
+
+    const url = await testProxy.whenCalled('navigateToUrl');
+    assertEquals('https://myactivity.google.com/product/gemini', url);
+  });
+
+  test(
+      'ReviewGeminiActivityHiddenWhenCriticalActionsDisabled',
+      async function() {
+        loadTimeData.overrideValues({
+          myActivityGeminiAppsUrl:
+              'https://myactivity.google.com/product/gemini',
+          isCriticalActionsEnabled: false,
+        });
+        const historyEntry =
+            createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+        historyEntry.isActorVisit = true;
+        await finishSetup([historyEntry]);
+
+        const item = element.shadowRoot.querySelector('history-item');
+        assertTrue(!!item);
+        item.$.menuButton.click();
+        await microtasksFinished();
+
+        element.$.sharedMenu.get();
+        const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+            '#menuReviewGeminiActivityButton');
+        assertTrue(!!reviewButton);
+        assertTrue(reviewButton.hidden);
+
+        const hr =
+            element.shadowRoot.querySelector<HTMLElement>('#sharedMenu .hr');
+        assertTrue(!!hr);
+        assertTrue(hr.hidden);
+      });
+
+  test('ReviewGeminiActivityHiddenForNonActorVisit', async function() {
+    loadTimeData.overrideValues({
+      myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
+      isCriticalActionsEnabled: true,
+    });
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = false;
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuReviewGeminiActivityButton');
+    assertTrue(!!reviewButton);
+    assertTrue(reviewButton.hidden);
+
+    const hr = element.shadowRoot.querySelector<HTMLElement>('#sharedMenu .hr');
+    assertTrue(!!hr);
+    assertTrue(hr.hidden);
+  });
+
   test('DeleteDisabledWhilePending', async function() {
     let items: NodeListOf<HistoryItemElement>;
     await finishSetup(TEST_HISTORY_RESULTS);
