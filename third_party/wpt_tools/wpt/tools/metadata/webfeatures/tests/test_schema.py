@@ -1,7 +1,7 @@
 # mypy: allow-untyped-defs
 
 from dataclasses import asdict
-from ..schema import WebFeaturesFile, FeatureEntry, SpecialFileEnum, FeatureFile
+from ..schema import FileMatchingMode, WebFeaturesFile, FeatureEntry, SpecialFileEnum, FeatureFile
 
 import pytest
 import re
@@ -11,24 +11,18 @@ import re
     [
         (
             {
-                "rules": [
+                "features": [
                     {
-                        "file1": ["feature1"]
-                    },
-                    {
-                        "file2": ["feature1"]
+                        "name": "feature1",
+                        "files": ["file1", "file2"],
                     }
                 ]
             },
             {
-                "rules": [
+                "features": [
                     {
-                        "feature_ids": ["feature1"],
-                        "file": "file1"
-                    },
-                    {
-                        "feature_ids": ["feature1"],
-                        "file": "file2"
+                        "name": "feature1",
+                        "files": ["file1", "file2"],
                     }
                 ]
             },
@@ -37,38 +31,52 @@ import re
         ),
         (
             {
-                "rules": [
+                "features": [
                     {
-                        "**": ["feature1"]
+                        "name": "feature1",
+                        "files": "**",
                     }
                 ]
             },
             {
-                "rules": [
+                "features": [
                     {
-                        "feature_ids": ["feature1"],
-                        "file": SpecialFileEnum.RECURSIVE,
+                        "name": "feature1",
+                        "files": SpecialFileEnum.RECURSIVE,
                     }
                 ]
             },
             None,
             None
+        ),
+        (
+            {
+                "features": [
+                    {
+                        "name": "feature1",
+                        "files": ["**"],
+                    }
+                ]
+            },
+            None,
+            ValueError,
+            "Feature feature1 contains \"**\" in a list. It should be `files: \"**\"`"
         ),
         (
             {},
             None,
             ValueError,
-            "Object missing required keys: ['rules']"
+            "Object missing required keys: ['features']"
         ),
         (
             {
-                "rules": [
+                "features": [
                     {}
                 ]
             },
             None,
             ValueError,
-            "Input value {} contains zero keys"
+            "Object missing required keys: ['files', 'name']"
         ),
     ])
 def test_web_features_file(input, expected_result, expected_exception_type, exception_message):
@@ -82,11 +90,11 @@ def test_web_features_file(input, expected_result, expected_exception_type, exce
     "input,expected_result",
     [
         (
-            FeatureEntry({"file1": ["test1"]}),
+            FeatureEntry({"name": "test1", "files":["file1"]}),
             False
         ),
         (
-            FeatureEntry({SpecialFileEnum.RECURSIVE.value: ["test2"]}),
+            FeatureEntry({"name": "test2", "files": SpecialFileEnum.RECURSIVE}),
             True
         ),
     ])
@@ -94,23 +102,39 @@ def test_does_feature_apply_recursively(input, expected_result):
     assert input.does_feature_apply_recursively() == expected_result
 
 @pytest.mark.parametrize(
-    "input_feature,input_files,expected_result",
+    "input_feature,input_files,expected_result,expected_match_mode",
     [
         (
             FeatureFile("*"),
             ["test.html", "TEST.HTML"],
             ["test.html", "TEST.HTML"],
+            FileMatchingMode.INCLUDE,
         ),
         (
             FeatureFile("test.html"),
             ["test.html", "TEST.HTML"],
             ["test.html"],
+            FileMatchingMode.INCLUDE,
+        ),
+        (
+            FeatureFile("!test.html"),
+            ["test.html", "TEST.HTML"],
+            ["test.html"],
+            FileMatchingMode.EXCLUDE,
         ),
         (
             FeatureFile("test*.html"),
             ["test.html", "test1.html", "TEST1.HTML", "test2.html", "test-2.html", "foo.html"],
             ["test.html", "test1.html", "test2.html", "test-2.html"],
+            FileMatchingMode.INCLUDE,
+        ),
+        (
+            FeatureFile("!test*.html"),
+            ["test.html", "test1.html", "TEST1.HTML", "test2.html", "test-2.html", "foo.html"],
+            ["test.html", "test1.html", "test2.html", "test-2.html"],
+            FileMatchingMode.EXCLUDE,
         ),
     ])
-def test_feature_file_match_files(input_feature, input_files, expected_result):
+def test_feature_file_match_files(input_feature, input_files, expected_result, expected_match_mode):
     assert input_feature.match_files(input_files) == expected_result
+    assert input_feature.matching_mode == expected_match_mode
