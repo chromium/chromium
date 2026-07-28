@@ -88,11 +88,19 @@ class LevelUpService::LevelUpTabGroupObserver
   // BrowserListObserver implementation.
   void OnBrowserAdded(const BrowserList* browser_list,
                       Browser* browser) override {
+    if (browser->type() != Browser::Type::kRegular &&
+        browser->type() != Browser::Type::kInactive) {
+      return;
+    }
     web_state_list_observation_.AddObservation(browser->GetWebStateList());
   }
 
   void OnBrowserRemoved(const BrowserList* browser_list,
                         Browser* browser) override {
+    if (browser->type() != Browser::Type::kRegular &&
+        browser->type() != Browser::Type::kInactive) {
+      return;
+    }
     web_state_list_observation_.RemoveObservation(browser->GetWebStateList());
   }
 
