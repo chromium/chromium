@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="spec/resources/custom-elements-helpers.js"></script>
+<body>
+<script>
+'use strict';
+(() => {
+
+promise_test((t) => {
+  assert_true(!!window.testRunner, 'Requires testRunner.evaluateScriptInIsolatedWorld');
+  return create_window_in_test(t)
+  .then((w) => {
+    function in_isolated_world() {
+      let f = document.querySelector('iframe');
+      let w = f.contentWindow;
+      let docRegistry = w.document.customElementRegistry;
+      w.postMessage(
+          `document.customElementRegistry=${docRegistry}`,
+          '*');
+    }
+
+    var p = new Promise((resolve) => {
+      w.addEventListener('message', t.step_func((event) => {
+        assert_equals(event.data,
+                      'document.customElementRegistry=null',
+                      'document.customElementRegistry should be null ' +
+                      'in isolated worlds');
+        resolve();
+      }));
+    });
+
+    testRunner.evaluateScriptInIsolatedWorld(
+      1,
+      `(${in_isolated_world.toString()})();`);
+
+    return p;
+  });
+}, 'No document.customElementRegistry in isolated worlds');
+
+promise_test((t) => {
+  assert_true(!!window.testRunner, 'Requires testRunner.evaluateScriptInIsolatedWorld');
+  return create_window_in_test(t)
+  .then((w) => {
+    function in_isolated_world() {
+      let f = document.querySelector('iframe');
+      let w = f.contentWindow;
+      let el = w.document.createElement('div');
+      w.document.body.appendChild(el);
+      let elRegistry = el.customElementRegistry;
+      w.postMessage(
+          `element.customElementRegistry=${elRegistry}`,
+          '*');
+    }
+
+    var p = new Promise((resolve) => {
+      w.addEventListener('message', t.step_func((event) => {
+        assert_equals(event.data,
+                      'element.customElementRegistry=null',
+                      'element.customElementRegistry should be null ' +
+                      'in isolated worlds');
+        resolve();
+      }));
+    });
+
+    testRunner.evaluateScriptInIsolatedWorld(
+      1,
+      `(${in_isolated_world.toString()})();`);
+
+    return p;
+  });
+}, 'No element.customElementRegistry in isolated worlds');
+
+promise_test((t) => {
+  return create_window_in_test(t)
+  .then((w) => {
+    // In the main world, document.customElementRegistry should still work.
+    assert_not_equals(w.document.customElementRegistry, null,
+        'document.customElementRegistry should be accessible in main world');
+    assert_equals(w.document.customElementRegistry,
+                  w.customElements,
+                  'document.customElementRegistry should equal ' +
+                  'window.customElements in main world');
+  });
+}, 'document.customElementRegistry accessible in main world');
+
+promise_test((t) => {
+  assert_true(!!window.testRunner, 'Requires testRunner.evaluateScriptInIsolatedWorld');
+  return create_window_in_test(t)
+  .then((w) => {
+    // Create a scoped registry and attach it to a shadow root in main world.
+    let scopedRegistry = new w.CustomElementRegistry();
+    let host = w.document.createElement('div');
+    w.document.body.appendChild(host);
+    let shadow = host.attachShadow({
+      mode: 'open',
+      customElementRegistry: scopedRegistry
+    });
+    let innerEl = w.document.createElement('span', {
+      customElementRegistry: scopedRegistry
+    });
+    shadow.appendChild(innerEl);
+
+    // Sanity check: verify scoped registry is actually attached in main world
+    // before testing isolation.
+    assert_equals(shadow.customElementRegistry, scopedRegistry,
+        'shadow root should have the scoped registry in main world');
+    assert_equals(innerEl.customElementRegistry, scopedRegistry,
+        'element created with scoped registry should use it in main world');
+
+    function in_isolated_world() {
+      let f = document.querySelector('iframe');
+      let w = f.contentWindow;
+      // Find the shadow host we created in main world.
+      let host = w.document.body.querySelector('div');
+      let shadow = host.shadowRoot;
+      let innerEl = shadow.querySelector('span');
+      // Try to access scoped registry from isolated world.
+      let shadowRegistry = shadow.customElementRegistry;
+      let elRegistry = innerEl.customElementRegistry;
+      w.postMessage(
+          `shadow.customElementRegistry=${shadowRegistry}` +
+          `|element.customElementRegistry=${elRegistry}`,
+          '*');
+    }
+
+    var p = new Promise((resolve) => {
+      w.addEventListener('message', t.step_func((event) => {
+        assert_equals(event.data,
+                      'shadow.customElementRegistry=null' +
+                      '|element.customElementRegistry=null',
+                      'scoped registry should not be accessible ' +
+                      'from isolated worlds');
+        resolve();
+      }));
+    });
+
+    testRunner.evaluateScriptInIsolatedWorld(
+      1,
+      `(${in_isolated_world.toString()})();`);
+
+    return p;
+  });
+}, 'No scoped customElementRegistry in isolated worlds');
+
+})();
+</script>

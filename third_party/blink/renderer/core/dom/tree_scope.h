@@ -188,7 +188,24 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void ClearAdoptedStyleSheets();
 
 
-  CustomElementRegistry* customElementRegistry() const;
+  // Returns the custom element registry associated with this tree scope.
+  //
+  // DOMWrapperWorld rule: any caller that will hand the returned registry
+  // to script must pass the caller's ScriptState. Without it, an isolated
+  // world (e.g., an extension content script) can reach a registry created
+  // in a different world (typically the main world) and leak raw cross-
+  // world v8 objects -- e.g., custom-element constructors handed out via
+  // the shared `when_defined_promise_map_`. When ScriptState is supplied,
+  // this method returns nullptr if the registry's creation world differs
+  // from the caller's world (or, for the global registry, if the caller is
+  // not in the main world).
+  //
+  // Callers that only use the registry for blink-internal work (creating
+  // elements, managing element<->registry associations, serialization,
+  // etc.) may omit `script_state` (or pass nullptr) to bypass the world
+  // check.
+  CustomElementRegistry* customElementRegistry(
+      ScriptState* script_state = nullptr) const;
   // Return true when custom element registry was set successfully, return false
   // otherwise.
   bool SetCustomElementRegistry(CustomElementRegistry*);
