@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This class sets up the environment for running the native tests inside an
 // android application. It outputs (to a fifo) markers identifying the
 // START/PASSED/CRASH of the test suite, FAILURE/SUCCESS of individual tests,
@@ -20,7 +15,10 @@
 #include <signal.h>
 #include <string.h>
 
+#include <array>
 #include <iterator>
+#include <string>
+#include <string_view>
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -31,6 +29,7 @@
 #include "base/debug/debugger.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread_restrictions.h"
 #include "gtest/gtest.h"
@@ -57,30 +56,19 @@ namespace android {
 
 namespace {
 
-const char kLogTag[] = "chromium";
-const char kCrashedMarker[] = "[ CRASHED      ]\n";
-
-// The list of signals which are considered to be crashes.
-const int kExceptionSignals[] = {
-  SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, -1
-};
-
-struct sigaction g_old_sa[NSIG];
+std::array<struct sigaction, NSIG> g_old_sa;
 
 // This function runs in a compromised context. It should not allocate memory.
 void SignalHandler(int sig, siginfo_t* info, void* reserved) {
-  // Output the crash marker.
-  write(STDOUT_FILENO, kCrashedMarker, sizeof(kCrashedMarker) - 1);
-  g_old_sa[sig].sa_sigaction(sig, info, reserved);
+  RAW_LOG(INFO, "[ CRASHED      ]\n");
+  g_old_sa[static_cast<size_t>(sig)].sa_sigaction(sig, info, reserved);
 }
 
-// Writes printf() style string to Android's logger where |priority| is one of
+// Writes string to Android's logger where |priority| is one of
 // the levels defined in <android/log.h>.
-void AndroidLog(int priority, const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  __android_log_vprint(priority, kLogTag, format, args);
-  va_end(args);
+void AndroidLog(int priority, const std::string& message) {
+  static constexpr char kLogTag[] = "chromium";
+  __android_log_write(priority, kLogTag, message.c_str());
 }
 
 }  // namespace
@@ -119,7 +107,7 @@ static void JNI_NativeTest_RunTests(
 
   // Fully initialize command line with arguments.
   base::CommandLine::ForCurrentProcess()->AppendArguments(
-      base::CommandLine(argc, &argv[0]), false);
+      base::CommandLine(argc, argv.data()), false);
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -129,19 +117,23 @@ static void JNI_NativeTest_RunTests(
   // A few options, such "--gtest_list_tests", will just use printf directly
   // Always redirect stdout to a known file.
   if (freopen(stdout_file_path.value().c_str(), "a+", stdout) == NULL) {
-    AndroidLog(ANDROID_LOG_ERROR, "Failed to redirect stream to file: %s: %s\n",
-               stdout_file_path.value().c_str(), strerror(errno));
+    AndroidLog(
+        ANDROID_LOG_ERROR,
+        base::StringPrintf("Failed to redirect stream to file: %s: %s\n",
+                           stdout_file_path.value().c_str(), strerror(errno)));
     exit(EXIT_FAILURE);
   }
   // TODO(jbudorick): Remove this after resolving crbug.com/726880
-  AndroidLog(ANDROID_LOG_INFO, "Redirecting stdout to file: %s\n",
-             stdout_file_path.value().c_str());
+  AndroidLog(ANDROID_LOG_INFO,
+             base::StringPrintf("Redirecting stdout to file: %s\n",
+                                stdout_file_path.value().c_str()));
   dup2(STDOUT_FILENO, STDERR_FILENO);
 
   if (command_line.HasSwitch(switches::kWaitForDebugger)) {
     AndroidLog(ANDROID_LOG_VERBOSE,
-               "Native test waiting for GDB because flag %s was supplied",
-               switches::kWaitForDebugger);
+               base::StringPrintf(
+                   "Native test waiting for GDB because flag %s was supplied",
+                   switches::kWaitForDebugger));
     base::debug::WaitForDebugger(24 * 60 * 60, true);
   }
 
@@ -155,7 +147,7 @@ static void JNI_NativeTest_RunTests(
   // bypassing global destructors and ensuring the fuzzer exits cleanly.
   atexit([]() { _exit(0); });
 #endif
-  main(argc, &argv[0]);
+  main(argc, argv.data());
 
 // Explicitly write profiling data to LLVM profile file.
 #if BUILDFLAG(CLANG_PROFILING)
@@ -174,14 +166,14 @@ static void JNI_NativeTest_RunTests(
 // TODO(nileshagrawal): now that we're using FIFO, test scripts can detect EOF.
 // Remove the signal handlers.
 void InstallHandlers() {
-  struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
+  struct sigaction sa = {};
 
   sa.sa_sigaction = SignalHandler;
   sa.sa_flags = SA_SIGINFO;
 
-  for (unsigned int i = 0; kExceptionSignals[i] != -1; ++i) {
-    sigaction(kExceptionSignals[i], &sa, &g_old_sa[kExceptionSignals[i]]);
+  // The list of signals which are considered to be crashes.
+  for (int sig : {SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS}) {
+    sigaction(sig, &sa, &g_old_sa[sig]);
   }
 }
 
