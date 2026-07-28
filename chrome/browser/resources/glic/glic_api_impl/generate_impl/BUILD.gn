@@ -4,7 +4,6 @@
 
 import("//build/config/python.gni")
 import("//third_party/node/node.gni")
-import("//tools/typescript/ts_library.gni")
 
 generator_ts_sources = [
   "code_writer.ts",
@@ -30,20 +29,29 @@ action_with_pydeps("parse_mojom") {
   ]
 }
 
-ts_library("check_generator_types") {
-  in_files = generator_ts_sources
-  tsconfig_base = "tsconfig.json"
+node("check_generator_types") {
+  script = "run_tsc.py"
+  inputs = [
+             "tsconfig.json",
+             "//third_party/node/node_modules/typescript/lib/tsc.js",
+           ] + generator_ts_sources
+  outputs = [ "$target_gen_dir/check_generator_types.stamp" ]
+  args = [
+    rebase_path(outputs[0], root_build_dir),
+    rebase_path("//third_party/node/node.py", root_build_dir),
+    rebase_path("//third_party/node/node_modules/typescript/lib/tsc.js",
+                root_build_dir),
+    "--project",
+    rebase_path("tsconfig.json", root_build_dir),
+  ]
 }
 
 node("generate_enum_conversions") {
   script = "//third_party/node/node.py"
-  inputs = [
-    "$target_gen_dir/gen_enum_conversions.js",
-    "$target_gen_dir/mojom_ast.json",
-  ]
+  inputs = [ "$target_gen_dir/mojom_ast.json" ] + generator_ts_sources
   outputs = [ "$target_gen_dir/enum_conversions.ts" ]
   args = [
-    rebase_path("$target_gen_dir/gen_enum_conversions.js", root_build_dir),
+    rebase_path("gen_enum_conversions.ts", root_build_dir),
     rebase_path("$target_gen_dir/mojom_ast.json", root_build_dir),
     rebase_path(outputs[0], root_build_dir),
   ]

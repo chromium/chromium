@@ -17,9 +17,9 @@
  * optional default annotations.
  */
 
-import type {MojomEnum, MojomField, MojomModule, MojomStruct, MojomType, MojomUnion} from './mojom_types.js';
-import {parseTsType} from './ts_types.js';
-import type {Enum, Field, Interface, TsEnumValue} from './ts_types.js';
+import type {MojomEnum, MojomField, MojomModule, MojomStruct, MojomType, MojomUnion} from './mojom_types.ts';
+import {parseTsType} from './ts_types.ts';
+import type {Enum, Field, Interface, TsEnumValue} from './ts_types.ts';
 
 export const ENUM_MAPPINGS: Record<string, Record<string, string|null>> = {
   'WebClientMode': {'kUnknown': null},

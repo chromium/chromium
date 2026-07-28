@@ -6,7 +6,7 @@
  * Utilities for writing ts code.
  */
 
-import {type Interface, type TsEnum, type TsField, type TsInterface, withoutIgnored} from './ts_types.js';
+import {type Interface, type TsEnum, type TsField, type TsInterface, withoutIgnored} from './ts_types.ts';
 
 const OPEN_BRACE = /[{\[(]/;
 const CLOSE_BRACE = /[}\])]/;

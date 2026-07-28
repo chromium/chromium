@@ -1,13 +1,23 @@
 {
   "extends": "../../../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
-    "target": "ESNext",
-    "module": "NodeNext",
+    "erasableSyntaxOnly": true,
+    "target": "esnext",
+    "module": "nodenext",
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+
     "lib": ["es2022", "dom"],
     "types": [
       "node",
       "trusted-types"
     ]
-  }
+  },
+  "files": [
+    "gen_enum_conversions.ts",
+    "gen_sources.ts"
+  ]
 }
