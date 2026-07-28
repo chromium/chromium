@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/logging.h"
@@ -30,6 +31,8 @@ FakeServerSyncInvalidationSender::~FakeServerSyncInvalidationSender() {
 
 void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver) {
+  CHECK(!std::ranges::contains(fake_gcm_drivers_, fake_gcm_driver))
+      << "AddFakeGCMDriver called for already registered FakeGCMDriver!";
   // It's safe to cast since SyncTest uses FakeGCMProfileService.
   fake_gcm_drivers_.push_back(fake_gcm_driver);
   fake_gcm_driver->AddConnectionObserver(this);

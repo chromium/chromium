@@ -992,19 +992,19 @@ void SyncTest::TearDownOnMainThread() {
 void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
   profile->RemoveObserver(this);
 
+  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
+    CHECK(profile_to_fake_gcm_driver_.contains(profile));
+    fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
+        profile_to_fake_gcm_driver_[profile]);
+    profile_to_fake_gcm_driver_.erase(profile);
+  }
+
   for (size_t index = 0; index < profiles_.size(); ++index) {
     if (profiles_[index] != profile) {
       continue;
     }
 
     CheckForDataTypeFailures(/*client_index=*/index);
-
-    // |profile_to_fake_gcm_driver_| may be empty when using an external server.
-    if (profile_to_fake_gcm_driver_.contains(profile)) {
-      fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
-          profile_to_fake_gcm_driver_[profile]);
-      profile_to_fake_gcm_driver_.erase(profile);
-    }
     profiles_[index] = nullptr;
     clients_[index].reset();
 #if !BUILDFLAG(IS_ANDROID)
@@ -1057,6 +1057,9 @@ std::unique_ptr<KeyedService> SyncTest::CreateGCMProfileService(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(!profile_to_fake_gcm_driver_.contains(profile))
+      << "CreateGCMProfileService called multiple times for profile: "
+      << profile->GetDebugName() << ", is_otr: " << context->IsOffTheRecord();
 
   auto fake_gcm_driver =
       std::make_unique<FakeSyncGCMDriver>(profile, blocking_task_runner);
