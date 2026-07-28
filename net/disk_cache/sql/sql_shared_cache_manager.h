@@ -63,6 +63,12 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
       bool require_shared_cache_db_id,
       base::OnceCallback<void(scoped_refptr<SqlSharedCacheHandle>)> callback);
 
+  // Asynchronously deletes the shared cache resources specified by `resources`.
+  // The resources are grouped by their database ID and deleted from their
+  // corresponding isolated databases. Invokes `callback` upon completion.
+  void DeleteResources(std::vector<SqlSharedCacheResourceId> resources,
+                       base::OnceClosure callback);
+
  private:
   // Handle used to signal completion of a serialized database operation.
   // When destroyed, `FinishDbOperation()` is invoked to run the next queued
@@ -103,6 +109,12 @@ class NET_EXPORT_PRIVATE SqlSharedCacheManager {
       base::OnceCallback<void(scoped_refptr<SqlSharedCacheHandle>)> callback,
       DbOperationHandle db_operation_handle,
       base::expected<std::string, SqlSharedCacheIndexDatabase::Error> result);
+
+  void DeleteNextResourceGroup(
+      absl::flat_hash_map<SqlSharedCacheDbId, std::vector<SqlSharedCacheRowId>>
+          grouped_resources,
+      base::OnceClosure callback,
+      DbOperationHandle db_operation_handle);
 
   const raw_ref<SqlPersistentStore> store_;
   const base::FilePath directory_;

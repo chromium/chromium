@@ -295,4 +295,209 @@ TEST_P(SqlSharedCacheManagerTest, DestructionTriggersCleanup) {
   CreateAndInitStore();
 }
 
+TEST_P(SqlSharedCacheManagerTest, DeleteResourcesEmpty) {
+  base::test::TestFuture<void> future;
+  GetManager()->DeleteResources({}, future.GetCallback());
+  FlushPendingTask();
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_P(SqlSharedCacheManagerTest, DeleteResourcesNonExistentDbId) {
+  base::test::TestFuture<void> future;
+  GetManager()->DeleteResources(
+      {{SqlSharedCacheDbId(99999), SqlSharedCacheRowId(1)}},
+      future.GetCallback());
+  FlushPendingTask();
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_P(SqlSharedCacheManagerTest, DeleteResourcesSingleCache) {
+  net::NetworkIsolationKey nik(net::SchemefulSite(GURL("https://foo.test")),
+                               net::SchemefulSite(GURL("https://bar.test")));
+
+  scoped_refptr<SqlSharedCacheHandle> handle;
+  GetManager()->GetCacheByNik(
+      nik, /*require_shared_cache_db_id=*/true,
+      base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
+        handle = std::move(h);
+      }));
+  FlushPendingTask();
+  ASSERT_TRUE(handle);
+  ASSERT_TRUE((*handle)->shared_cache_db_id().has_value());
+  SqlSharedCacheDbId db_id = *(*handle)->shared_cache_db_id();
+
+  // Insert two test entries.
+  CacheEntryKey key1("0/0/https://example.com/1");
+  CacheEntryKey key2("0/0/https://example.com/2");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future1;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(key1, headers, 3, body)
+      .Then(insert_future1.GetCallback());
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future2;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(key2, headers, 3, body)
+      .Then(insert_future2.GetCallback());
+  FlushPendingTask();
+
+  auto insert_res1 = insert_future1.Take();
+  auto insert_res2 = insert_future2.Take();
+  ASSERT_TRUE(insert_res1.has_value());
+  ASSERT_TRUE(insert_res2.has_value());
+  SqlSharedCacheRowId row1 = *insert_res1;
+  SqlSharedCacheRowId row2 = *insert_res2;
+
+  // Verify entries can be read before deletion.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
+      read_before_future;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .Then(read_before_future.GetCallback());
+  FlushPendingTask();
+  EXPECT_TRUE(read_before_future.Get().has_value());
+
+  // Delete resources using SqlSharedCacheManager.
+  base::test::TestFuture<void> delete_future;
+  GetManager()->DeleteResources({{db_id, row1}, {db_id, row2}},
+                                delete_future.GetCallback());
+  FlushPendingTask();
+  EXPECT_TRUE(delete_future.IsReady());
+
+  // Verify entries cannot be read after deletion.
+  base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
+      read_after_future1;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .Then(read_after_future1.GetCallback());
+  base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
+      read_after_future2;
+  (*handle)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(key2, row2, /*offset=*/0, read_buf)
+      .Then(read_after_future2.GetCallback());
+  FlushPendingTask();
+
+  auto read_res1 = read_after_future1.Take();
+  auto read_res2 = read_after_future2.Take();
+  EXPECT_FALSE(read_res1.has_value());
+  EXPECT_EQ(read_res1.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+  EXPECT_FALSE(read_res2.has_value());
+  EXPECT_EQ(read_res2.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+}
+
+TEST_P(SqlSharedCacheManagerTest, DeleteResourcesMultipleCaches) {
+  net::NetworkIsolationKey nik1(net::SchemefulSite(GURL("https://foo1.test")),
+                                net::SchemefulSite(GURL("https://bar1.test")));
+  net::NetworkIsolationKey nik2(net::SchemefulSite(GURL("https://foo2.test")),
+                                net::SchemefulSite(GURL("https://bar2.test")));
+
+  scoped_refptr<SqlSharedCacheHandle> handle1;
+  GetManager()->GetCacheByNik(
+      nik1, /*require_shared_cache_db_id=*/true,
+      base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
+        handle1 = std::move(h);
+      }));
+  scoped_refptr<SqlSharedCacheHandle> handle2;
+  GetManager()->GetCacheByNik(
+      nik2, /*require_shared_cache_db_id=*/true,
+      base::BindLambdaForTesting([&](scoped_refptr<SqlSharedCacheHandle> h) {
+        handle2 = std::move(h);
+      }));
+  FlushPendingTask();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  ASSERT_TRUE((*handle1)->shared_cache_db_id().has_value());
+  ASSERT_TRUE((*handle2)->shared_cache_db_id().has_value());
+
+  SqlSharedCacheDbId db_id1 = *(*handle1)->shared_cache_db_id();
+  SqlSharedCacheDbId db_id2 = *(*handle2)->shared_cache_db_id();
+
+  // Insert entries into cache 1 and cache 2.
+  CacheEntryKey key1("0/0/https://example.com/1");
+  CacheEntryKey key2("0/0/https://example.com/2");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future1;
+  (*handle1)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(key1, headers, 3, body)
+      .Then(insert_future1.GetCallback());
+  base::test::TestFuture<base::expected<SqlSharedCacheRowId,
+                                        SqlSharedCacheIsolatedDatabase::Error>>
+      insert_future2;
+  (*handle2)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Insert)
+      .WithArgs(key2, headers, 3, body)
+      .Then(insert_future2.GetCallback());
+  FlushPendingTask();
+
+  auto insert_res1 = insert_future1.Take();
+  auto insert_res2 = insert_future2.Take();
+  ASSERT_TRUE(insert_res1.has_value());
+  ASSERT_TRUE(insert_res2.has_value());
+  SqlSharedCacheRowId row1 = *insert_res1;
+  SqlSharedCacheRowId row2 = *insert_res2;
+
+  // Delete resources across multiple caches.
+  base::test::TestFuture<void> delete_future;
+  GetManager()->DeleteResources({{db_id1, row1}, {db_id2, row2}},
+                                delete_future.GetCallback());
+  FlushPendingTask();
+  EXPECT_TRUE(delete_future.IsReady());
+
+  // Verify entries in both caches cannot be read after deletion.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
+      read_after_future1;
+  (*handle1)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(key1, row1, /*offset=*/0, read_buf)
+      .Then(read_after_future1.GetCallback());
+  base::test::TestFuture<SqlSharedCacheIsolatedDatabase::ReadResultOrError>
+      read_after_future2;
+  (*handle2)
+      ->isolated_database_for_testing()
+      .AsyncCall(&SqlSharedCacheIsolatedDatabase::Read)
+      .WithArgs(key2, row2, /*offset=*/0, read_buf)
+      .Then(read_after_future2.GetCallback());
+  FlushPendingTask();
+
+  auto read_res1 = read_after_future1.Take();
+  auto read_res2 = read_after_future2.Take();
+  EXPECT_FALSE(read_res1.has_value());
+  EXPECT_EQ(read_res1.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+  EXPECT_FALSE(read_res2.has_value());
+  EXPECT_EQ(read_res2.error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+}
+
 }  // namespace disk_cache

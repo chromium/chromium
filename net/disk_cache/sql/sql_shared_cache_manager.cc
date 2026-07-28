@@ -213,6 +213,66 @@ void SqlSharedCacheManager::OnGetNikStringForDbId(
       result.value(), shared_cache_db_id, std::move(db_operation_handle)));
 }
 
+void SqlSharedCacheManager::DeleteResources(
+    std::vector<SqlSharedCacheResourceId> resources,
+    base::OnceClosure callback) {
+  absl::flat_hash_map<SqlSharedCacheDbId, std::vector<SqlSharedCacheRowId>>
+      grouped_resources;
+  for (const auto& resource : resources) {
+    grouped_resources[resource.db_id].push_back(resource.row_id);
+  }
+  PostDbOperation(
+      base::BindOnce(&SqlSharedCacheManager::DeleteNextResourceGroup,
+                     weak_factory_.GetWeakPtr(), std::move(grouped_resources),
+                     std::move(callback)));
+}
+
+void SqlSharedCacheManager::DeleteNextResourceGroup(
+    absl::flat_hash_map<SqlSharedCacheDbId, std::vector<SqlSharedCacheRowId>>
+        grouped_resources,
+    base::OnceClosure callback,
+    DbOperationHandle db_operation_handle) {
+  if (grouped_resources.empty()) {
+    if (callback) {
+      std::move(callback).Run();
+    }
+    return;
+  }
+
+  auto it = grouped_resources.begin();
+  const SqlSharedCacheDbId db_id = it->first;
+  std::vector<SqlSharedCacheRowId> row_ids = std::move(it->second);
+  grouped_resources.erase(it);
+
+  auto next_task =
+      base::BindOnce(&SqlSharedCacheManager::DeleteNextResourceGroup,
+                     weak_factory_.GetWeakPtr(), std::move(grouped_resources),
+                     std::move(callback), std::move(db_operation_handle));
+
+  DoGetCacheByDbId(
+      db_id,
+      base::BindOnce(
+          [](std::vector<SqlSharedCacheRowId> row_ids,
+             base::OnceClosure next_task,
+             scoped_refptr<SqlSharedCacheHandle> handle) {
+            if (handle && *handle) {
+              auto* cache = handle->get();
+              cache->DeleteEntries(
+                  row_ids,
+                  base::BindOnce(
+                      [](base::OnceClosure next_task,
+                         base::expected<void,
+                                        SqlSharedCacheIsolatedDatabase::Error>
+                             result) { std::move(next_task).Run(); },
+                      std::move(next_task)));
+            } else {
+              std::move(next_task).Run();
+            }
+          },
+          std::move(row_ids), std::move(next_task)),
+      DbOperationHandle(base::DoNothing()));
+}
+
 void SqlSharedCacheManager::OnSqlSharedCacheUnreferenced(
     SqlSharedCache& cache) {
   PostDbOperation(
