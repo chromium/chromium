@@ -812,6 +812,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/animation/TranslationAnimatorFactoryUnitTest.java",
     "junit/src/org/chromium/ui/animation/transition/IntegerValueTransitionUnitTest.java",
     "junit/src/org/chromium/ui/animation/transition/ShrinkTransitionUnitTest.java",
+    "junit/src/org/chromium/ui/base/AcceleratorManagerTest.java",
     "junit/src/org/chromium/ui/base/ActivityKeyboardVisibilityDelegateUnitTest.java",
     "junit/src/org/chromium/ui/base/ActivityResultTrackerImplTest.java",
     "junit/src/org/chromium/ui/base/ApplicationViewportInsetTrackerTest.java",
