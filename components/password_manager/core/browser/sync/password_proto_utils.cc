@@ -6,11 +6,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "url/gurl.h"
 
 using autofill::FormData;
 using autofill::FormFieldData;
@@ -374,6 +376,16 @@ StoredCredential StoredCredentialFromSpecifics(
     cred.actor_login_approved = password_data.actor_login_approved();
   }
   return cred;
+}
+
+std::string GetClientTag(const sync_pb::PasswordSpecificsData& password_data) {
+  GURL origin(password_data.origin());
+
+  return base::EscapePath(origin.is_valid() ? origin.spec() : "") + "|" +
+         base::EscapePath(password_data.username_element()) + "|" +
+         base::EscapePath(password_data.username_value()) + "|" +
+         base::EscapePath(password_data.password_element()) + "|" +
+         base::EscapePath(password_data.signon_realm());
 }
 
 }  // namespace password_manager

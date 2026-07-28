@@ -253,6 +253,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:impl",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -495,6 +496,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/signin",
       "//chrome/browser/signin:test_support",
       "//chrome/browser/ui/hats",

@@ -123,6 +123,10 @@ class RemoteActorCredentialSharingImpl
   // Callback triggered when the user selects a credential or cancels the dialog.
   void OnDialogResult(std::optional<PasswordForm> selected_form);
 
+  // Callback triggered when the sharing service completes the operation.
+  void OnShareCompleted(RequestAgentAuthenticationCallback callback,
+                        bool success);
+
   // Asynchronously posts a failure response to the Mojo callback.
   void RespondWithError(RequestAgentAuthenticationCallback callback);
 

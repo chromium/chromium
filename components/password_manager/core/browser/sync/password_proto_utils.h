@@ -71,6 +71,9 @@ StoredCredential StoredCredentialFromSpecifics(
 sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
     const sync_pb::PasswordSpecificsData& password_specifics_data);
 
+// Returns the client tag for the given `password_data`.
+std::string GetClientTag(const sync_pb::PasswordSpecificsData& password_data);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_PROTO_UTILS_H_

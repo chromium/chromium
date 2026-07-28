@@ -12,12 +12,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service.h"
+#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -26,6 +28,7 @@
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -44,6 +47,8 @@
 #include "url/origin.h"
 
 namespace password_manager {
+
+namespace {
 
 class MockBadMessageHelper {
  public:
@@ -97,6 +102,27 @@ class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
               (override));
 };
 
+class MockRemoteActorCredentialSharingService
+    : public RemoteActorCredentialSharingService {
+ public:
+  MockRemoteActorCredentialSharingService() = default;
+  ~MockRemoteActorCredentialSharingService() override = default;
+
+  MOCK_METHOD(
+      void,
+      SharePassword,
+      (const RemoteActorCredentialSharingService::ShareParameters& params,
+       RemoteActorCredentialSharingService::SharePasswordCallback callback),
+      (override));
+};
+
+std::unique_ptr<KeyedService> CreateMockRemoteActorCredentialSharingService(
+    content::BrowserContext* context) {
+  return std::make_unique<
+      testing::NiceMock<MockRemoteActorCredentialSharingService>>();
+}
+
+}  // namespace
 class RemoteActorCredentialSharingImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -126,6 +152,14 @@ class RemoteActorCredentialSharingImplTest
     profile_store_ = CreateAndUseTestPasswordStore(profile());
     account_store_ = CreateAndUseTestAccountPasswordStore(profile());
 
+    mock_sharing_service_ =
+        static_cast<MockRemoteActorCredentialSharingService*>(
+            RemoteActorCredentialSharingServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile(),
+                    base::BindRepeating(
+                        &CreateMockRemoteActorCredentialSharingService)));
+
     // Default sync config: active.
     SetSyncActive(true);
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
@@ -146,6 +180,7 @@ class RemoteActorCredentialSharingImplTest
     }
     mock_client_ = nullptr;
     mock_sync_service_ = nullptr;
+    mock_sharing_service_ = nullptr;
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -299,10 +334,12 @@ class RemoteActorCredentialSharingImplTest
 
     content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
     base::test::TestFuture<bool> result;
+    base::test::TestFuture<void> dialog_shown_future;
+    dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
     remote->RequestAgentAuthentication(account_info_.gaia.ToString(),
                                        "google.com", "actor_id",
                                        result.GetCallback());
-    base::RunLoop().RunUntilIdle();
+    dialog_shown_future.Get();
 
     if (last_dialog_credentials_.size() != 1u) {
       return false;
@@ -336,6 +373,8 @@ class RemoteActorCredentialSharingImplTest
   raw_ptr<syncer::MockSyncService> mock_sync_service_ = nullptr;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
+  raw_ptr<MockRemoteActorCredentialSharingService> mock_sharing_service_ =
+      nullptr;
 
   AccountInfo account_info_;
 
@@ -406,8 +445,9 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   EXPECT_FALSE(result.Get());
 }
 
-// Verify behavior with empty arguments.
-TEST_F(RemoteActorCredentialSharingImplTest, RequestWithEmptyArguments) {
+// Verify behavior with empty Gaia ID (returns false).
+TEST_F(RemoteActorCredentialSharingImplTest,
+       RequestWithEmptyGaiaIdReturnsFalse) {
   NavigateAndCommit(GURL("https://gemini.google.com"));
   content::RenderFrameHostTester::For(main_rfh())
       ->InitializeRenderFrameIfNeeded();
@@ -422,8 +462,8 @@ TEST_F(RemoteActorCredentialSharingImplTest, RequestWithEmptyArguments) {
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  remote->RequestAgentAuthentication(/*gaia_id=*/"", /*domain=*/"",
-                                     /*remote_actor_id=*/"",
+  remote->RequestAgentAuthentication(/*gaia_id=*/"", /*domain=*/"google.com",
+                                     /*remote_actor_id=*/"actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
 }
@@ -447,18 +487,20 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   std::string long_string(1000000, 'a');
 
   MockBadMessageHelper bad_message_helper;
-  base::RunLoop run_loop;
-  EXPECT_CALL(
-      bad_message_helper,
-      OnBadMessage(testing::HasSubstr(
-          "RemoteActorCredentialSharing: Argument length limit exceeded")))
-      .WillOnce([&run_loop](const std::string&) { run_loop.Quit(); });
+  base::test::TestFuture<std::string> bad_message_future;
+  EXPECT_CALL(bad_message_helper, OnBadMessage)
+      .WillOnce([&bad_message_future](const std::string& error) {
+        bad_message_future.SetValue(error);
+      });
 
   remote->RequestAgentAuthentication(/*gaia_id=*/long_string,
                                      /*domain=*/"google.com",
                                      /*remote_actor_id=*/long_string,
                                      base::DoNothing());
-  run_loop.Run();
+  EXPECT_THAT(
+      bad_message_future.Get(),
+      testing::HasSubstr(
+          "RemoteActorCredentialSharing: Argument length limit exceeded"));
 }
 
 // Verify behavior with special/null characters.
@@ -510,17 +552,19 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
 
   MockBadMessageHelper bad_message_helper;
-  base::RunLoop run_loop;
-  EXPECT_CALL(bad_message_helper,
-              OnBadMessage(testing::HasSubstr(
-                  "RemoteActorCredentialSharing: Request from subframe")))
-      .WillOnce([&run_loop](const std::string&) { run_loop.Quit(); });
+  base::test::TestFuture<std::string> bad_message_future;
+  EXPECT_CALL(bad_message_helper, OnBadMessage)
+      .WillOnce([&bad_message_future](const std::string& error) {
+        bad_message_future.SetValue(error);
+      });
 
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
                                      /*remote_actor_id=*/"actor_id",
                                      base::DoNothing());
-  run_loop.Run();
+  EXPECT_THAT(bad_message_future.Get(),
+              testing::HasSubstr(
+                  "RemoteActorCredentialSharing: Request from subframe"));
 }
 
 // Verify that calling RequestAgentAuthentication without user activation
@@ -540,18 +584,20 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
 
   MockBadMessageHelper bad_message_helper;
-  base::RunLoop run_loop;
-  EXPECT_CALL(
-      bad_message_helper,
-      OnBadMessage(testing::HasSubstr(
-          "RemoteActorCredentialSharing: Request without user gesture")))
-      .WillOnce([&run_loop](const std::string&) { run_loop.Quit(); });
+  base::test::TestFuture<std::string> bad_message_future;
+  EXPECT_CALL(bad_message_helper, OnBadMessage)
+      .WillOnce([&bad_message_future](const std::string& error) {
+        bad_message_future.SetValue(error);
+      });
 
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
                                      /*remote_actor_id=*/"actor_id",
                                      base::DoNothing());
-  run_loop.Run();
+  EXPECT_THAT(
+      bad_message_future.Get(),
+      testing::HasSubstr(
+          "RemoteActorCredentialSharing: Request without user gesture"));
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
@@ -579,25 +625,51 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  base::RunLoop run_loop;
-  dialog_shown_quit_closure_ = run_loop.QuitClosure();
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.gaia.ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
   // Wait for the dialog to be shown (factory called).
-  run_loop.Run();
+  dialog_shown_future.Get();
 
   ASSERT_EQ(last_dialog_credentials_.size(), 1u);
   EXPECT_EQ(last_dialog_credentials_[0]->username_value, u"user");
   EXPECT_EQ(last_dialog_credential_domain_, "https://google.com");
 
+  using ::testing::_;
+  using ::testing::AllOf;
+  using ::testing::Field;
+  using ::testing::IsEmpty;
+  using ::testing::Not;
+
+  EXPECT_CALL(
+      *mock_sharing_service_,
+      SharePassword(AllOf(Field(&RemoteActorCredentialSharingService::
+                                    ShareParameters::username,
+                                u"user"),
+                          Field(&RemoteActorCredentialSharingService::
+                                    ShareParameters::password,
+                                u"pass"),
+                          Field(&RemoteActorCredentialSharingService::
+                                    ShareParameters::web_origin,
+                                "https://google.com"),
+                          Field(&RemoteActorCredentialSharingService::
+                                    ShareParameters::agent_oauth_client_id,
+                                "actor_id"),
+                          Field(&RemoteActorCredentialSharingService::
+                                    ShareParameters::password_client_tag_hash,
+                                Not(IsEmpty()))),
+                    _))
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+
   // Simulate user selecting the credential.
   SimulateDialogSelection(*last_dialog_credentials_[0]);
 
-  // Selecting a credential should return false (no-op backend for now).
-  EXPECT_FALSE(result.Get());
+  // Selecting a credential should return true (success).
+  EXPECT_TRUE(result.Get());
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
@@ -624,14 +696,14 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  base::RunLoop run_loop;
-  dialog_shown_quit_closure_ = run_loop.QuitClosure();
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.gaia.ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
-  run_loop.Run();
+  dialog_shown_future.Get();
 
   ASSERT_EQ(last_dialog_credentials_.size(), 1u);
 
@@ -676,14 +748,14 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  base::RunLoop run_loop;
-  dialog_shown_quit_closure_ = run_loop.QuitClosure();
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.gaia.ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
-  run_loop.Run();
+  dialog_shown_future.Get();
 
   // Only account_user should be in the dialog.
   ASSERT_EQ(last_dialog_credentials_.size(), 1u);
@@ -728,14 +800,14 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  base::RunLoop run_loop;
-  dialog_shown_quit_closure_ = run_loop.QuitClosure();
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
       /*gaia_id=*/account_info_.gaia.ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
-  run_loop.Run();
+  dialog_shown_future.Get();
 
   // Only profile_user should be in the dialog.
   ASSERT_EQ(last_dialog_credentials_.size(), 1u);
@@ -748,7 +820,9 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 TEST_F(RemoteActorCredentialSharingImplTest, ReauthEnabled_Success) {
   auto remote = SetUpAndBindFlow();
   SetupMockAuthenticator(/*reauth_required=*/true, /*auth_success=*/true);
-  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
+  EXPECT_CALL(*mock_sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_TRUE(RunSharingFlowAndSelect(remote));
 }
 
 TEST_F(RemoteActorCredentialSharingImplTest, ReauthEnabled_Failure) {
@@ -760,7 +834,9 @@ TEST_F(RemoteActorCredentialSharingImplTest, ReauthEnabled_Failure) {
 TEST_F(RemoteActorCredentialSharingImplTest, ReauthDisabled_NoPrompt) {
   auto remote = SetUpAndBindFlow();
   SetupMockAuthenticator(/*reauth_required=*/false);
-  EXPECT_FALSE(RunSharingFlowAndSelect(remote));
+  EXPECT_CALL(*mock_sharing_service_, SharePassword)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_TRUE(RunSharingFlowAndSelect(remote));
 }
 #endif
 

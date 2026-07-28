@@ -79,16 +79,6 @@ enum class SyncMetadataReadError {
   kMaxValue = kReadSuccessButClearedDueToUndecryptablePasswords,
 };
 
-std::string ComputeClientTag(
-    const sync_pb::PasswordSpecificsData& password_data) {
-  GURL origin(password_data.origin());
-
-  return base::EscapePath(origin.is_valid() ? origin.spec() : "") + "|" +
-         base::EscapePath(password_data.username_element()) + "|" +
-         base::EscapePath(password_data.username_value()) + "|" +
-         base::EscapePath(password_data.password_element()) + "|" +
-         base::EscapePath(password_data.signon_realm());
-}
 
 sync_pb::PasswordSpecificsData PasswordFromEntityChange(
     const syncer::EntityChange& entity_change) {
@@ -883,7 +873,7 @@ std::string PasswordSyncBridge::GetClientTag(
   DCHECK(entity_data.specifics.has_password())
       << "EntityData does not have password specifics.";
 
-  return ComputeClientTag(
+  return password_manager::GetClientTag(
       entity_data.specifics.password().client_only_encrypted_data());
 }
 
