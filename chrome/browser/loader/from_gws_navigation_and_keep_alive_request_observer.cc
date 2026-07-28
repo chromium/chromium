@@ -27,7 +27,7 @@ FromGWSNavigationAndKeepAliveRequestObserver::
 
 // static
 std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
-FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreateForWebContents(
+FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
