@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_finish_diagnostic_logging_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_start_diagnostic_logging_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -54,6 +55,18 @@ bool IsRangeError(ScriptState* script_state,
   };
 
   return Has("name", "RangeError") && Has("message", message);
+}
+
+bool IsDOMException(ScriptState* script_state,
+                    ScriptValue value,
+                    const String& name,
+                    const String& message) {
+  auto* dom_exception =
+      V8DOMException::ToWrappable(script_state->GetIsolate(), value.V8Value());
+  if (!dom_exception) {
+    return false;
+  }
+  return dom_exception->name() == name && dom_exception->message() == message;
 }
 
 class MockRTCLoggingDispatcher : public mojom::blink::RTCLoggingDispatcher {
@@ -138,6 +151,30 @@ class RTCTest : public testing::Test {
   void TearDown() override {
     holder_->GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::RTCLoggingDispatcher::Name_, {});
+  }
+
+  template <typename Action>
+  void ExpectRejectsOnDetachedFrame(Action action, bool detach_first = false) {
+    RTC* rtc = nullptr;
+    if (!detach_first) {
+      rtc = GetRTC();
+    }
+    auto other_holder = std::make_unique<DummyPageHolder>();
+    ScriptState* other_script_state =
+        ToScriptStateForMainWorld(&other_holder->GetFrame());
+    ScriptState::Scope scope(other_script_state);
+    holder_->GetFrame().Detach(FrameDetachType::kRemove);
+    if (detach_first) {
+      rtc = GetRTC();
+    }
+    EXPECT_TRUE(action(rtc, GetScriptState()).IsEmpty());
+    auto promise = action(rtc, other_script_state);
+    ScriptPromiseTester tester(other_script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    EXPECT_TRUE(
+        IsDOMException(other_script_state, tester.Value(), "InvalidStateError",
+                       "No local DOM window; is this a detached window?"));
   }
 
  public:
@@ -303,6 +340,34 @@ TEST_F(RTCTest, CancelDiagnosticLogging) {
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(mock_dispatcher().cancel_called());
+}
+
+TEST_F(RTCTest, StartDiagnosticLoggingOnDetachedFrame) {
+  auto* options = RTCStartDiagnosticLoggingOptions::Create();
+  ExpectRejectsOnDetachedFrame([&](RTC* rtc, ScriptState* state) {
+    return rtc->startDiagnosticLogging(state, options);
+  });
+}
+
+TEST_F(RTCTest, FinishDiagnosticLoggingOnDetachedFrame) {
+  auto* options = RTCFinishDiagnosticLoggingOptions::Create();
+  ExpectRejectsOnDetachedFrame([&](RTC* rtc, ScriptState* state) {
+    return rtc->finishDiagnosticLogging(state, options);
+  });
+}
+
+TEST_F(RTCTest, CancelDiagnosticLoggingOnDetachedFrame) {
+  ExpectRejectsOnDetachedFrame([](RTC* rtc, ScriptState* state) {
+    return rtc->cancelDiagnosticLogging(state);
+  });
+}
+
+TEST_F(RTCTest, CancelDiagnosticLoggingOnAlreadyDetachedFrame) {
+  ExpectRejectsOnDetachedFrame(
+      [](RTC* rtc, ScriptState* state) {
+        return rtc->cancelDiagnosticLogging(state);
+      },
+      /*detach_first=*/true);
 }
 
 }  // namespace
