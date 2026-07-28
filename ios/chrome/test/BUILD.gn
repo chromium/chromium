@@ -242,8 +242,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:unit_tests",
     "//ios/chrome/browser/autocomplete/model:unit_tests",
-    "//ios/chrome/browser/autofill/atmemory/coordinator:unit_tests",
-    "//ios/chrome/browser/autofill/atmemory/ui:unit_tests",
     "//ios/chrome/browser/autofill/authentication/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/authentication/public:unit_tests",
     "//ios/chrome/browser/autofill/autofill_ai/ui:unit_tests",

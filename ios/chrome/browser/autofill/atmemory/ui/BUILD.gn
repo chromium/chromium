@@ -4,36 +4,13 @@
 
 source_set("ui") {
   sources = [
-    "at_memory_consumer.h",
     "at_memory_granular_fill_view_controller.h",
     "at_memory_granular_fill_view_controller.mm",
     "at_memory_view_controller.h",
     "at_memory_view_controller.mm",
   ]
   deps = [
-    "//components/strings:components_strings_grit",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/atmemory/public",
-    "//ios/chrome/browser/autofill/atmemory/utils",
-    "//ios/chrome/browser/autofill/autofill_ai/public",
-    "//ios/chrome/browser/net/model",
-    "//ios/chrome/browser/shared/ui:buildflags",
-    "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "at_memory_view_controller_unittest.mm" ]
-  deps = [
-    ":ui",
-    "//testing/gtest",
   ]
 }

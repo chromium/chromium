@@ -7,26 +7,9 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
-@class AtMemoryGranularFillItem;
-@class AtMemoryGranularFillViewController;
-
-@protocol AtMemoryGranularFillViewControllerDelegate <NSObject>
-// Notifies that a chip was tapped with its content.
-- (void)granularFillViewController:
-            (AtMemoryGranularFillViewController*)viewController
-                  didSelectContent:(NSString*)content;
-@end
-
 // View controller that displays the details page with tap-to-fill chips for
 // AtMemory granular fill.
 @interface AtMemoryGranularFillViewController : ChromeTableViewController
-
-// The granular fill items to display in the table view.
-@property(nonatomic, copy) NSArray<AtMemoryGranularFillItem*>* items;
-
-// The delegate for this view controller.
-@property(nonatomic, weak) id<AtMemoryGranularFillViewControllerDelegate>
-    delegate;
 
 @end
 

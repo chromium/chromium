@@ -6,35 +6,14 @@ source_set("coordinator") {
   sources = [
     "at_memory_coordinator.h",
     "at_memory_coordinator.mm",
-    "at_memory_mediator.h",
-    "at_memory_mediator.mm",
     "scoped_at_memory_search_provider_override.h",
     "scoped_at_memory_search_provider_override.mm",
   ]
   deps = [
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
-    "//ios/chrome/browser/autofill/manual_fill/model",
-    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/common/ui/colors",
-    "//ios/public/provider/chrome/browser/keyboard:keyboard_api",
-    "//ui/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "at_memory_mediator_unittest.mm" ]
-  deps = [
-    ":coordinator",
-    "//ios/chrome/browser/autofill/atmemory/public",
-    "//ios/chrome/browser/autofill/atmemory/ui",
-    "//ios/chrome/browser/autofill/manual_fill/public",
-    "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }
