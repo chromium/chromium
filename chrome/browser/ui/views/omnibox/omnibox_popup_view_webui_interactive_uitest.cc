@@ -427,6 +427,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
   }));
 }
 
+// TODO(crbug.com/536046012): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
                        DISABLED_DeactivationWithTextDoesNotClearPopupState) {
   // Focus the location bar to ensure the Omnibox has active focus and the popup

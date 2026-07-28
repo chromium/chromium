@@ -203,6 +203,7 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
   // Therefore, turn off the 'embedded-permission-showing' flag that forces
   // omnibox to ignore focus-out events via function.
   if (active) {
+    weak_factory_.InvalidateWeakPtrs();
     OnWidgetActivated();
     return;
   }
@@ -233,17 +234,12 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
-  // Abort deactivation if the widget has regained active status,
-  // which may occur when switching tabs.
-  if (GetWidget() && GetWidget()->IsActive()) {
-    return;
-  }
-
   const bool user_input_in_progress =
       controller()->edit_model()->user_input_in_progress();
   const std::u16string& user_text = controller()->edit_model()->user_text();
   const std::u16string permanent_text =
       controller()->edit_model()->GetPermanentDisplayText();
+  const std::u16string full_url = controller()->client()->GetFormattedFullURL();
 
   // If the view is showing text that's not user-text, revert the text to the
   // permanent display text. This usually occurs if Steady State Elisions is on
@@ -252,9 +248,10 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
   // the permanent text. An example of this scenario is someone typing on the
   // new tab page and then deleting everything using backspace/delete.
   const bool should_revert_non_user_text =
-      !user_input_in_progress && (user_text != permanent_text);
+      !user_input_in_progress && user_text != permanent_text;
   const bool should_revert_matching_text =
-      user_input_in_progress && (user_text == permanent_text);
+      user_input_in_progress &&
+      (user_text == permanent_text || user_text == full_url);
 
   if (should_revert_non_user_text || should_revert_matching_text) {
     controller()->edit_model()->Revert();

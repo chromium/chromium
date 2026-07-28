@@ -188,7 +188,7 @@ class FullWebUIOmniboxInteractiveTest
                    if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                               ->GetLocationBar()
                                               ->GetOmniboxPopupView()) {
-                     popup_view->OnFocus();
+                     popup_view->OnFocus(/*query_zps=*/true);
                    }
                  }),
                  WaitForPopupReady());
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
         if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                    ->GetLocationBar()
                                    ->GetOmniboxPopupView()) {
-          popup_view->OnFocus();
+          popup_view->OnFocus(/*query_zps=*/true);
         }
       }),
       // Verify popup is open, text remains empty, and WebUI input is
