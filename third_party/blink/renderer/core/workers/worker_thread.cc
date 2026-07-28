@@ -820,7 +820,8 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
   // are observer of the |GlobalScope()| (see the DedicatedWorker class) and
   // they initiate thread termination on destruction of the parent context.
   GlobalScope()->NotifyContextDestroyed();
-  GetIsolate()->ContextDisposedNotification(/*dependant_context=*/false);
+  GetIsolate()->ContextDisposedNotification(
+      v8::ContextDependants::kNoDependants);
 
   worker_scheduler_->Dispose();
 
