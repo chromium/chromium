@@ -99,9 +99,6 @@ class PasswordChangeDelegate {
   // the observer via `PasswordChangeDelegate::AddObserver`.
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies listeners about new state.
-    virtual void OnStateChanged(State new_state) {}
-
     // Invoked before `delegate` is destroyed. Should be used to stop observing.
     virtual void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) {}
   };

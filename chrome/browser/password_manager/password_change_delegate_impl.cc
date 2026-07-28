@@ -634,8 +634,6 @@ void PasswordChangeDelegateImpl::UpdateState(State new_state) {
     return;
   }
   current_state_ = new_state;
-  observers_.Notify(&PasswordChangeDelegate::Observer::OnStateChanged,
-                    new_state);
   ui_controller_->UpdateState(new_state);
 
   if (auto logger = GetLoggerIfAvailable(originator_)) {

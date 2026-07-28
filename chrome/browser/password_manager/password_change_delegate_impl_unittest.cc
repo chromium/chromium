@@ -92,10 +92,6 @@ class MockPasswordChangeDelegateObserver
     : public PasswordChangeDelegate::Observer {
  public:
   MOCK_METHOD(void,
-              OnStateChanged,
-              (PasswordChangeDelegate::State),
-              (override));
-  MOCK_METHOD(void,
               OnPasswordChangeStopped,
               (PasswordChangeDelegate*),
               (override));
@@ -397,23 +393,6 @@ TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
           .password_change_submission()
           .quality();
   EXPECT_TRUE(quality.has_login_form_data());
-}
-
-TEST_F(PasswordChangeDelegateImplTest, DelegateNotifiesObserver) {
-  CreateDelegate();
-
-  MockPasswordChangeDelegateObserver observer;
-  delegate()->AddObserver(&observer);
-
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForAgreement);
-
-  EXPECT_CALL(
-      observer,
-      OnStateChanged(
-          PasswordChangeDelegate::State::kWaitingForChangePasswordForm));
-  delegate()->OnPrivacyNoticeAccepted();
-  delegate()->RemoveObserver(&observer);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Success) {
