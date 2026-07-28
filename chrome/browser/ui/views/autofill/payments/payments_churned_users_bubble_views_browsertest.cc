@@ -3,15 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_churned_users_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -23,6 +27,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -31,20 +37,32 @@
 
 namespace autofill {
 
+inline constexpr int kSecurityTreatmentId = 1;
+inline constexpr int kConvenienceTreatmentId = 2;
+
 class PaymentsChurnedUsersBubbleViewsBrowserTest
-    : public ::InProcessBrowserTest {
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<int> {
  public:
   PaymentsChurnedUsersBubbleViewsBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableResurrectingPaymentsUsers);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillEnableResurrectingPaymentsUsers,
+        {{"autofill_enable_resurrecting_payments_churned_users_treatment",
+          base::NumberToString(GetParam())}});
   }
   ~PaymentsChurnedUsersBubbleViewsBrowserTest() override = default;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override { ShowBubble(); }
 
   void ShowBubble(base::OnceClosure accept_callback = base::DoNothing(),
                   base::OnceClosure cancel_callback = base::DoNothing(),
                   base::OnceClosure closed_callback = base::DoNothing()) {
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page")));
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
+        "user@example.com", signin::ConsentLevel::kSignin);
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContentsForTesting(
             browser()->tab_strip_model()->GetActiveWebContents());
@@ -112,13 +130,22 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest, ShowBubble) {
+INSTANTIATE_TEST_SUITE_P(,
+                         PaymentsChurnedUsersBubbleViewsBrowserTest,
+                         testing::Values(kSecurityTreatmentId,
+                                         kConvenienceTreatmentId));
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest, InvokeUi) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest, ShowBubble) {
   ShowBubble();
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        AcceptCallbackTriggered) {
   base::test::TestFuture<void> accept_future;
   ShowBubble(accept_future.GetCallback(), base::DoNothing(), base::DoNothing());
@@ -130,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
   EXPECT_TRUE(accept_future.Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        CancelCallbackTriggered) {
   base::test::TestFuture<void> cancel_future;
   ShowBubble(base::DoNothing(), cancel_future.GetCallback(), base::DoNothing());
@@ -142,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
   EXPECT_TRUE(cancel_future.Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        ClosedCallbackTriggered) {
   base::test::TestFuture<void> closed_future;
   ShowBubble(base::DoNothing(), base::DoNothing(), closed_future.GetCallback());
@@ -156,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
 }
 
 // TODO(crbug.com/529904307): Disabled due to flakey test.
-IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        DISABLED_ReshowBubbleOnIconClick) {
   ShowBubble();
 

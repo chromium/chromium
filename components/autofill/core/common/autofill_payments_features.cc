@@ -242,6 +242,9 @@ BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
 // prompted to turn it back on in instances where they can benefit from it.
 BASE_FEATURE(kAutofillEnableResurrectingPaymentsUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillEnableResurrectingPaymentsUsersTreatment{
+    &kAutofillEnableResurrectingPaymentsUsers,
+    "autofill_enable_resurrecting_payments_churned_users_treatment", 1};
 
 // When enabled, the 'Save and Fill' suggestion will be offered in the credit
 // card dropdown menu for users who don't have any cards saved in Autofill.

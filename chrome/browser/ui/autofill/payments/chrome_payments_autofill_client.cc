@@ -1314,10 +1314,22 @@ void ChromePaymentsAutofillClient::ShowPaymentsChurnedUsersUI(
   if (!tab_interface) {
     return;
   }
+
+  signin::IdentityManager* identity_manager = client_->GetIdentityManager();
+  if (!identity_manager) {
+    return;
+  }
+
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      GetPaymentsDataManager().GetAccountInfoForPaymentsServer());
+  if (account_info.IsEmpty()) {
+    return;
+  }
+
   if (PaymentsChurnedUsersBubbleController* controller =
           PaymentsChurnedUsersBubbleController::From(*tab_interface)) {
     controller->Show(std::move(accept_callback), std::move(cancel_callback),
-                     std::move(closed_callback));
+                     std::move(closed_callback), std::move(account_info));
   }
 #endif
 }

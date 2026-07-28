@@ -1443,6 +1443,26 @@
     </message>
   </if>
 
+  <!-- Payments churned users strings -->
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_ACCEPT_BUTTON_LABEL" desc="Accept button label for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+    Turn on
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CANCEL_BUTTON_LABEL" desc="Cancel button label for the payments churned users bubble. On cancellation, the bubble is closed.">
+    No thanks
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_SECURITY_TITLE" desc="Security title for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+    Check out securely with autofill
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_TITLE" desc="Convenience title for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+    Check out faster with autofill
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_SECURITY_DESCRIPTION" desc="Security description for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+    Turn on autofill to safely check out online. Your card details are encrypted in Google Wallet.
+  </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_DESCRIPTION" desc="Convenience description for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+    Fill card details automatically when you check out online. Cards are saved in Google Wallet securely.
+  </message>
+
   <!-- Autofill IBAN preferences -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_ADD_LOCAL_IBAN" desc="Button in the Payment methods page that allows the user to add a new IBAN that will be saved locally. It is also the title for the local IBAN editor when a user is adding a new IBAN." formatter_data="android_java">

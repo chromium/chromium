@@ -231,6 +231,22 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
       account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
 }
 
+std::unique_ptr<views::BoxLayoutView> CreateUserAvatarAndEmailView(
+    const std::u16string& user_email,
+    const ui::ImageModel& user_avatar) {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL))
+      .SetID(DialogViewId::USER_INFORMATION_VIEW)
+      .AddChildren(views::Builder<views::ImageView>().SetImage(user_avatar),
+                   views::Builder<views::Label>()
+                       .SetText(user_email)
+                       .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                       .SetTextStyle(views::style::STYLE_SECONDARY))
+      .Build();
+}
+
 TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
     const std::u16string& window_title,
     TitleWithIconAfterLabelView::Icon icon_to_show) {
@@ -341,19 +357,7 @@ std::unique_ptr<views::View> CreateLegalMessageView(
 
   // Extra child view for user identity information including the avatar and
   // the email.
-  result->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetBetweenChildSpacing(
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL))
-          .SetID(DialogViewId::USER_INFORMATION_VIEW)
-          .AddChildren(views::Builder<views::ImageView>().SetImage(user_avatar),
-                       views::Builder<views::Label>()
-                           .SetText(user_email)
-                           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                           .SetTextStyle(views::style::STYLE_SECONDARY))
-          .Build());
+  result->AddChildView(CreateUserAvatarAndEmailView(user_email, user_avatar));
   return result;
 }
 
