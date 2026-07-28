@@ -669,38 +669,4 @@ TEST_F(ActorTaskTest, ActorTabHelperActuatingState) {
   EXPECT_FALSE(helper->IsActuating());
 }
 
-// Tests that PromptToSelectCredential saves the credential locally, and runs
-// the callback with a valid credential and should_store_permission = false.
-TEST_F(ActorTaskTest,
-       PromptToSelectCredentialWillSaveCredentialsAndInvokeCallback) {
-  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
-  actor_login::Credential cred;
-  cred.id = actor_login::Credential::Id(42);
-  cred.request_origin = origin;
-
-  // There is only one available credential for the user to choose from, so it
-  // will be selected.
-  std::vector<actor_login::Credential> credentials = {cred};
-
-  ToolDelegate* tool_delegate = task_.get();
-  base::test::TestFuture<std::optional<actor_login::Credential>, bool> future;
-
-  tool_delegate->PromptToSelectCredential(credentials, future.GetCallback());
-
-  // Extract the values from the callback parameters.
-  const auto& callback_result = future.Get();
-  const std::optional<actor_login::Credential>& selected_credential =
-      std::get<0>(callback_result);
-  ASSERT_TRUE(selected_credential.has_value());
-  EXPECT_EQ(selected_credential->id, cred.id);
-  EXPECT_FALSE(std::get<1>(callback_result));
-
-  // Verify that `GetUserSelectedCredential` returns the selected credential.
-  std::optional<ToolDelegate::CredentialWithPermission> stored_result =
-      tool_delegate->GetUserSelectedCredential(origin);
-  ASSERT_TRUE(stored_result.has_value());
-  EXPECT_EQ(stored_result->credential.id, cred.id);
-  EXPECT_FALSE(stored_result->always_allow);
-}
-
 }  // namespace actor

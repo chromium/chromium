@@ -24,6 +24,7 @@ source_set("actor_task_ui_protocols") {
   deps = [
     ":actor_types",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser/actor_login:common",
     "//ios/web/public",
   ]
 }

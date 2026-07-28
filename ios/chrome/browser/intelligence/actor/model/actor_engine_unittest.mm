@@ -10,6 +10,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
@@ -61,15 +62,8 @@ class FakeToolDelegate : public ToolDelegate {
   ActorTaskId GetTaskId() const override { return ActorTaskId(1); }
   AggregatedJournal& GetJournal() const override { return *journal_; }
   ActorToolFactory& GetToolFactory() const override { return *tool_factory_; }
-  actor_login::ActorLoginService* GetActorLoginService() override {
+  ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override {
     return nullptr;
-  }
-  void PromptToSelectCredential(
-      const std::vector<actor_login::Credential>& credentials,
-      CredentialSelectedCallback callback) override {}
-  std::optional<CredentialWithPermission> GetUserSelectedCredential(
-      const url::Origin& request_origin) const override {
-    return std::nullopt;
   }
   void InterruptFromTool() override {}
   void UninterruptFromTool() override {}

@@ -14,13 +14,18 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "components/autofill/core/browser/actor/actor_form_filling_service.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/fake_tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
@@ -38,6 +43,37 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+// A fake implementation of ActorTaskInterventionDelegate.
+@interface FakeActorTaskInterventionDelegate
+    : NSObject <ActorTaskInterventionDelegate>
+@property(nonatomic, assign) BOOL selectFromSuggestionsCalled;
+@property(nonatomic, strong) NSArray<ActorFormSuggestion*>* promptedSuggestions;
+@end
+
+@implementation FakeActorTaskInterventionDelegate {
+  void (^_completionHandler)(ActorFormSuggestion*, BOOL);
+}
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+        completionHandler:
+            (void (^)(ActorFormSuggestion* selectedSuggestion,
+                      BOOL shouldStorePermission))completionHandler {
+  _selectFromSuggestionsCalled = YES;
+  _promptedSuggestions = suggestions;
+  _completionHandler = [completionHandler copy];
+}
+
+- (void)runCompletionWithSuggestion:(ActorFormSuggestion*)selectedSuggestion
+              shouldStorePermission:(BOOL)shouldStorePermission {
+  if (_completionHandler) {
+    void (^_completion)(ActorFormSuggestion*, BOOL) = _completionHandler;
+    _completionHandler = nil;
+    _completion(selectedSuggestion, shouldStorePermission);
+  }
+}
+@end
 
 namespace actor {
 
@@ -128,7 +164,17 @@ class AttemptLoginToolTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(profile_.get());
 
-    delegate_.set_actor_login_service(&fake_actor_login_service_);
+    auto fake_service = std::make_unique<FakeActorLoginService>();
+    fake_actor_login_service_ptr_ = fake_service.get();
+
+    auto form_filling_handler = ActorTaskFormFillingHandler::CreateForTesting(
+        ActorTaskId(1), std::move(fake_service), nullptr);
+    intervention_delegate_ = [[FakeActorTaskInterventionDelegate alloc] init];
+    form_filling_handler->SetInterventionDelegateForTesting(
+        intervention_delegate_);
+    form_filling_handler_ptr_ = form_filling_handler.get();
+
+    delegate_.set_form_filling_handler(std::move(form_filling_handler));
   }
 
   base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
@@ -172,10 +218,31 @@ class AttemptLoginToolTest : public PlatformTest {
     return web_state_ptr;
   }
 
-  FakeToolDelegate& delegate() { return delegate_; }
+  FakeActorLoginService* fake_actor_login_service() {
+    return fake_actor_login_service_ptr_;
+  }
 
-  FakeActorLoginService& fake_actor_login_service() {
-    return fake_actor_login_service_;
+  ActorTaskFormFillingHandler* form_filling_handler() {
+    return form_filling_handler_ptr_;
+  }
+
+  FakeActorTaskInterventionDelegate* intervention_delegate() {
+    return intervention_delegate_;
+  }
+
+  void CloseAllWebStatesHelper() {
+    CloseAllWebStates(*GetWebStateList(),
+                      WebStateList::ClosingReason::kDefault);
+  }
+
+  void CancelToolAndRefocus(AttemptLoginTool* tool,
+                            base::WeakPtr<web::WebState> web_state,
+                            base::OnceClosure callback) {
+    tool->Cancel();
+    if (web_state) {
+      web_state->WasShown();
+    }
+    std::move(callback).Run();
   }
 
  private:
@@ -183,8 +250,10 @@ class AttemptLoginToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   std::unique_ptr<TestBrowser> browser_;
-  FakeActorLoginService fake_actor_login_service_;
   FakeToolDelegate delegate_;
+  raw_ptr<FakeActorLoginService> fake_actor_login_service_ptr_ = nullptr;
+  raw_ptr<ActorTaskFormFillingHandler> form_filling_handler_ptr_ = nullptr;
+  FakeActorTaskInterventionDelegate* intervention_delegate_;
 };
 
 // Tests that creating the tool succeeds when given a valid tab ID corresponding
@@ -215,7 +284,7 @@ TEST_F(AttemptLoginToolTest, Execute_NoWebState) {
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
   // Destroy WebState.
-  CloseAllWebStates(*GetWebStateList(), WebStateList::ClosingReason::kDefault);
+  CloseAllWebStatesHelper();
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -233,7 +302,7 @@ TEST_F(AttemptLoginToolTest, Execute_GetCredentialsError) {
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
-  fake_actor_login_service().get_credentials_error_ =
+  fake_actor_login_service()->get_credentials_error_ =
       actor_login::ActorLoginError::kServiceBusy;
 
   base::test::TestFuture<ToolExecutionResult> future;
@@ -253,7 +322,7 @@ TEST_F(AttemptLoginToolTest, Execute_GetCredentialsEmpty) {
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
-  fake_actor_login_service().credentials_ = {};
+  fake_actor_login_service()->credentials_ = {};
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -275,15 +344,15 @@ TEST_F(AttemptLoginToolTest, Execute_UserDeclinesCredential) {
   actor_login::Credential cred;
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = false;
-  fake_actor_login_service().credentials_ = {cred};
+  fake_actor_login_service()->credentials_ = {cred};
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
   // Trigger the user selecting the credential.
-  ASSERT_TRUE(delegate().prompt_to_select_called());
-  delegate().RunPromptCallback(/*selected_credential=*/{},
-                               /*should_store_permission=*/false);
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  [intervention_delegate() runCompletionWithSuggestion:nil
+                                 shouldStorePermission:false];
 
   EXPECT_EQ(future.Get().code(),
             mojom::ActionResultCode::kLoginNoCredentialsAvailable);
@@ -304,15 +373,15 @@ TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = true;
 
-  fake_actor_login_service().credentials_ = {cred};
+  fake_actor_login_service()->credentials_ = {cred};
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
   EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
-  EXPECT_TRUE(fake_actor_login_service().attempt_login_called_);
-  EXPECT_EQ(fake_actor_login_service().attempted_credentials_.front().id,
+  EXPECT_TRUE(fake_actor_login_service()->attempt_login_called_);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.front().id,
             cred.id);
-  EXPECT_TRUE(fake_actor_login_service().attempted_should_store_permission_);
+  EXPECT_TRUE(fake_actor_login_service()->attempted_should_store_permission_);
 }
 
 // Tests that when login requires device re-authentication, the tool waits for
@@ -331,8 +400,8 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Shown_Retry_Success) {
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = false;
 
-  fake_actor_login_service().credentials_ = {cred};
-  fake_actor_login_service().attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->attempted_should_require_reauth_ = true;
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -341,19 +410,24 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Shown_Retry_Success) {
   EXPECT_FALSE(future.IsReady());
 
   // Trigger the user selecting the credential.
-  ASSERT_TRUE(delegate().prompt_to_select_called());
-  delegate().RunPromptCallback(cred, /*should_store_permission=*/false);
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(1u, intervention_delegate().promptedSuggestions.count);
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate().promptedSuggestions[0]
+            shouldStorePermission:false];
 
   // Still not completed because the first attempt returned
   // kErrorDeviceReauthRequired and we are waiting on focus.
   EXPECT_FALSE(future.IsReady());
 
   // Simulate tab focus/visible again.
-  web_state_ptr->WasShown();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&web::WebState::WasShown, web_state_ptr->GetWeakPtr()));
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kOk);
-  EXPECT_EQ(fake_actor_login_service().attempted_credentials_.size(), 2u);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 2u);
 }
 
 // Tests that if the WebState is destroyed while waiting for device
@@ -371,20 +445,25 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_WebStateDestroyed) {
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = false;
 
-  fake_actor_login_service().credentials_ = {cred};
-  fake_actor_login_service().attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->attempted_should_require_reauth_ = true;
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
   // Trigger the user selecting the credential.
-  ASSERT_TRUE(delegate().prompt_to_select_called());
-  delegate().RunPromptCallback(cred, /*should_store_permission=*/false);
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(1u, intervention_delegate().promptedSuggestions.count);
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate().promptedSuggestions[0]
+            shouldStorePermission:false];
 
   EXPECT_FALSE(future.IsReady());
 
   // Simulate web state destroyed.
-  CloseAllWebStates(*GetWebStateList(), WebStateList::ClosingReason::kDefault);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&AttemptLoginToolTest::CloseAllWebStatesHelper,
+                                base::Unretained(this)));
   EXPECT_EQ(future.Get().code(), mojom::ActionResultCode::kTabWentAway);
 }
 
@@ -404,24 +483,32 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Cancel) {
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = false;
 
-  fake_actor_login_service().credentials_ = {cred};
-  fake_actor_login_service().attempted_should_require_reauth_ = true;
+  fake_actor_login_service()->credentials_ = {cred};
+  fake_actor_login_service()->attempted_should_require_reauth_ = true;
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
 
   // Trigger the user selecting the credential.
-  ASSERT_TRUE(delegate().prompt_to_select_called());
-  delegate().RunPromptCallback(cred, /*should_store_permission=*/false);
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(1u, intervention_delegate().promptedSuggestions.count);
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate().promptedSuggestions[0]
+            shouldStorePermission:false];
 
   EXPECT_FALSE(future.IsReady());
 
   // Cancel execution, and simulate re-focusing.
-  tool->Cancel();
-  web_state_ptr->WasShown();
+  base::test::TestFuture<void> cancel_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AttemptLoginToolTest::CancelToolAndRefocus,
+                     base::Unretained(this), base::Unretained(tool.get()),
+                     web_state_ptr->GetWeakPtr(), cancel_future.GetCallback()));
+  EXPECT_TRUE(cancel_future.Wait());
 
   // Since we cancelled, AttemptLogin should not have been called a second time.
-  EXPECT_EQ(fake_actor_login_service().attempted_credentials_.size(), 1u);
+  EXPECT_EQ(fake_actor_login_service()->attempted_credentials_.size(), 1u);
 }
 
 // Tests that if the page changes (e.g. user navigates away) while the
@@ -440,7 +527,7 @@ TEST_F(AttemptLoginToolTest, Execute_PageChangedDuringSelection) {
   cred.id = actor_login::Credential::Id(123);
   cred.has_persistent_permission = false;
 
-  fake_actor_login_service().credentials_ = {cred};
+  fake_actor_login_service()->credentials_ = {cred};
 
   base::test::TestFuture<ToolExecutionResult> future;
   tool->Execute(future.GetCallback());
@@ -454,8 +541,11 @@ TEST_F(AttemptLoginToolTest, Execute_PageChangedDuringSelection) {
   fake_nav_manager->SetVisibleItem(new_navigation_item.get());
 
   // Trigger the user selecting the credential.
-  ASSERT_TRUE(delegate().prompt_to_select_called());
-  delegate().RunPromptCallback(cred, /*should_store_permission=*/false);
+  ASSERT_TRUE(intervention_delegate().selectFromSuggestionsCalled);
+  ASSERT_EQ(1u, intervention_delegate().promptedSuggestions.count);
+  [intervention_delegate()
+      runCompletionWithSuggestion:intervention_delegate().promptedSuggestions[0]
+            shouldStorePermission:false];
   EXPECT_EQ(future.Get().code(),
             mojom::ActionResultCode::kLoginPageChangedDuringSelection);
 }

@@ -35,6 +35,10 @@ source_set("actor_tool_factory") {
 
 source_set("actor_tool_interface") {
   sources = [
+    "actor_form_suggestion.h",
+    "actor_form_suggestion.mm",
+    "actor_task_form_filling_handler.h",
+    "actor_task_form_filling_handler.mm",
     "actor_tool.h",
     "actor_tool.mm",
     "actor_tool_java_script_feature_util.h",
@@ -46,8 +50,14 @@ source_set("actor_tool_interface") {
 
   deps = [
     "//base",
+    "//components/actor/core:journal",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser/actor",
+    "//components/autofill/ios/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
@@ -510,6 +520,7 @@ source_set("unit_tests") {
     ":type_tool_ts",
     ":wait_tool",
     "//base/test:test_support",
+    "//components/autofill/core/browser/actor",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
@@ -519,6 +530,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",

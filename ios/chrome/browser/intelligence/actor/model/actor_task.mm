@@ -15,9 +15,9 @@
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
-#import "components/password_manager/core/browser/actor_login/actor_login_service_impl.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -197,20 +197,6 @@ void ActorTask::DeferActCompletion(ActCallback callback,
                                            weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ActorTask::SetUserSelectedCredential(
-    const actor_login::Credential& credential,
-    bool should_store_permission,
-    base::OnceClosure affiliations_fetched) {
-  CredentialWithPermission credential_with_permission;
-  credential_with_permission.credential = credential;
-  credential_with_permission.always_allow = should_store_permission;
-  user_selected_credentials_[credential.request_origin] =
-      credential_with_permission;
-  // TODO(crbug.com/472291829): Implement affiliation service related logic
-  // to fetch affiliated domains so we can reuse the permission.
-  std::move(affiliations_fetched).Run();
-}
-
 void ActorTask::DidStopLoading(web::WebState* web_state) {
   OnWebStateFinishedLoading(web_state);
 }
@@ -250,38 +236,15 @@ void ActorTask::UninterruptFromTool() {
   SetState(ActorTaskState::kActing);
 }
 
-actor_login::ActorLoginService* ActorTask::GetActorLoginService() {
-  if (!actor_login_service_) {
-    actor_login_service_ =
-        std::make_unique<actor_login::ActorLoginServiceImpl>();
+ActorTaskFormFillingHandler* ActorTask::GetActorTaskFormFillingHandler() {
+  if (!form_filling_handler_) {
+    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
+    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
+        base::PassKey<ActorTask>(), GetJournal(), task_id_);
+    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorTask>(),
+                                                   intervention_handler_);
   }
-  return actor_login_service_.get();
-}
-
-void ActorTask::PromptToSelectCredential(
-    const std::vector<actor_login::Credential>& credentials,
-    CredentialSelectedCallback callback) {
-  CHECK(!credentials.empty());
-
-  // TODO(crbug.com/472291829): Placeholder values in place of the real
-  // credential and permission the user has selected in the drop-down.
-  const actor_login::Credential& selected_credential = credentials.front();
-  bool should_store_permission = false;
-  base::OnceClosure affiliations_fetched_callback = base::BindOnce(
-      std::move(callback), std::make_optional(selected_credential),
-      should_store_permission);
-
-  SetUserSelectedCredential(selected_credential, should_store_permission,
-                            std::move(affiliations_fetched_callback));
-}
-
-std::optional<ToolDelegate::CredentialWithPermission>
-ActorTask::GetUserSelectedCredential(const url::Origin& request_origin) const {
-  auto it = user_selected_credentials_.find(request_origin);
-  if (it != user_selected_credentials_.end()) {
-    return it->second;
-  }
-  return std::nullopt;
+  return form_filling_handler_.get();
 }
 
 void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {

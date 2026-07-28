@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/fake_tool_delegate.h"
 
 #import "base/types/expected.h"
+#import "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#import "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -24,28 +26,9 @@ ActorToolFactory& FakeToolDelegate::GetToolFactory() const {
   return *tool_factory_;
 }
 
-actor_login::ActorLoginService* FakeToolDelegate::GetActorLoginService() {
-  return actor_login_service_;
-}
-
-void FakeToolDelegate::PromptToSelectCredential(
-    const std::vector<actor_login::Credential>& credentials,
-    CredentialSelectedCallback callback) {
-  prompt_to_select_called_ = true;
-  prompted_credentials_ = credentials;
-  prompt_callback_ = std::move(callback);
-}
-
-std::optional<ToolDelegate::CredentialWithPermission>
-FakeToolDelegate::GetUserSelectedCredential(
-    const url::Origin& request_origin) const {
-  if (user_selected_credential_.has_value()) {
-    ToolDelegate::CredentialWithPermission result;
-    result.credential = *user_selected_credential_;
-    result.always_allow = should_store_permission_;
-    return result;
-  }
-  return std::nullopt;
+ActorTaskFormFillingHandler*
+FakeToolDelegate::GetActorTaskFormFillingHandler() {
+  return form_filling_handler_.get();
 }
 
 void FakeToolDelegate::InterruptFromTool() {}

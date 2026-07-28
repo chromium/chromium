@@ -18,10 +18,12 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "url/origin.h"
 
+@class ActorTaskInterventionHandler;
 @class CRBProtocolObservers;
 
 namespace web {
@@ -110,12 +112,7 @@ class ActorTask : public web::WebStateObserver,
   ActorToolFactory& GetToolFactory() const override;
   void InterruptFromTool() override;
   void UninterruptFromTool() override;
-  actor_login::ActorLoginService* GetActorLoginService() override;
-  void PromptToSelectCredential(
-      const std::vector<actor_login::Credential>& credentials,
-      CredentialSelectedCallback callback) override;
-  std::optional<CredentialWithPermission> GetUserSelectedCredential(
-      const url::Origin& request_origin) const override;
+  ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override;
 
   // Sets the actuation state on all controlled `WebState`s based on
   // `actuating`.
@@ -135,13 +132,6 @@ class ActorTask : public web::WebStateObserver,
   // timer.
   void DeferActCompletion(ActCallback callback,
                           std::vector<ActionResult> results);
-
-  // TODO(crbug.com/472291829): Implement affiliation service related logic to
-  // fetch affiliated domains so we can reuse the permission.
-  // Caches any user selected credential during task execution.
-  void SetUserSelectedCredential(const actor_login::Credential& credential,
-                                 bool should_store_permission,
-                                 base::OnceClosure affiliations_fetched);
 
   // Handles observation removal when a WebState finishes loading or is
   // destroyed. Also resolves the deferred callback if no more WebStates are
@@ -202,14 +192,14 @@ class ActorTask : public web::WebStateObserver,
   // observers inside are held weakly.
   __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
 
-  // For multi-step login, these are the credentials that the user has chosen to
-  // allow the actor to use in this task, as well as whether the user has given
-  // permission for this credential to always be used.
-  base::flat_map<url::Origin, CredentialWithPermission>
-      user_selected_credentials_;
+  // The handler for form filling and login tasks.
+  std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
 
-  // The login service to log into websites.
-  std::unique_ptr<actor_login::ActorLoginService> actor_login_service_;
+  // Handler object that intercepts task UI interventions.
+  //
+  // TODO(crbug.com/496195979): This is a temporary placeholder. Replace by the
+  // real one when implemented.
+  __strong ActorTaskInterventionHandler* intervention_handler_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
