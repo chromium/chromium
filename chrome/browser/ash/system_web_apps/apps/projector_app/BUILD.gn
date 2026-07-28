@@ -22,6 +22,7 @@ static_library("projector_app") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/ash/projector",
     "//chrome/common",
     "//chromeos/ash/components/channel",
