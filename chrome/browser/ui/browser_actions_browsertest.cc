@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
       kActionDevTools,           kActionSendTabToSelf,
       kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage,
       kActionFederation,         kActionCycleToNextTab,
-      kActionCycleToPrevTab};
+      kActionCycleToPrevTab,     kActionShowReadingModeSidePanel};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 

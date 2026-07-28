@@ -606,6 +606,39 @@ void BrowserActions::InitializeSidePanelActions() {
               ui::kColorIcon))
           .Build());
 
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                std::underlying_type_t<SidePanelOpenTrigger>
+                    side_panel_trigger =
+                        context.GetProperty(kSidePanelOpenTriggerKey);
+                ReadAnythingOpenTrigger open_trigger =
+                    ReadAnythingOpenTrigger::kAppMenu;
+                if (side_panel_trigger != -1) {
+                  std::optional<ReadAnythingOpenTrigger> mapped_trigger =
+                      read_anything::SidePanelToReadAnythingOpenTrigger(
+                          static_cast<SidePanelOpenTrigger>(
+                              side_panel_trigger));
+                  if (mapped_trigger.has_value()) {
+                    open_trigger = mapped_trigger.value();
+                  }
+                }
+                read_anything::ReadAnythingEntryPointController::ShowUI(
+                    bwi, open_trigger);
+              },
+              bwi))
+          .SetActionId(kActionShowReadingModeSidePanel)
+          .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+          .SetTooltipText(l10n_util::GetStringFUTF16(IDS_READING_MODE_TOOLTIP,
+                                                     reading_mode_shortcut))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kMenuBookIcon
+                                                : kMenuBookChromeRefreshOldIcon,
+              ui::kColorIcon))
+          .Build());
+
   if (lens::features::IsLensOverlayEnabled()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

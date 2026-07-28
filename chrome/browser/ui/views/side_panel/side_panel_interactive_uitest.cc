@@ -413,17 +413,13 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       browser()->browser_window_features()->side_panel_ui();
   side_panel_ui->SetNoDelaysForTesting(true);
 
-  chrome::ExecuteCommandWithContext(
-      browser(), IDC_SHOW_READING_MODE_SIDE_PANEL,
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(
-              kSidePanelOpenTriggerKey,
-              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
-                  SidePanelOpenTrigger::kToolbarButton))
-          .Build());
-
-  EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+  RunTestSequence(OpenReadingModeSidePanel(),
+                  CheckResult(
+                      [side_panel_ui]() {
+                        return side_panel_ui->IsSidePanelEntryShowing(
+                            SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+                      },
+                      true));
 }
 
 // Verify that we can open the CustomizeChrome side panel from the 3dot -> More
