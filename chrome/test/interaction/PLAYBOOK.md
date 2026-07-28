@@ -8,129 +8,7 @@ See also: [API overview](./README.md)
 
 Kombucha is a paradigm for writing interaction tests in Chrome. It is a simple, framework-agnostic, gray-box testing framework implemented in C++ (with JavaScript support) that lives in the same codebase as existing Chrome browser and interaction tests.
 
-## Table of Contents {#table-of-contents}
-
- - [Overview](#overview)
-   - [Table of Contents](#table-of-contents)
-   - [The Basics](#the-basics)
-   - [Getting Started](#getting-started)
-   - [Basic Sample](#basic-sample)
-   - [Next Steps: Verifying Browser Changes](#next-steps:-verifying-browser-changes)
-   - [Advanced: Probing Web Page Contents](#advanced:-probing-web-page-contents)
-   - [Advanced: Waiting for Non-UI State](#advanced:-waiting-for-non-ui-state)
-     - [Polling State](#polling-state)
-     - [Case Study: Translation](#case-study:-translation)
-   - [Best Practices](#best-practices)
-     - [Setup](#setup)
-     - [Callbacks](#callbacks)
-     - [Custom Verbs](#custom-verbs)
-       - [Breaking out Common Functionality As a Custom Verb](#breaking-out-common-functionality-as-a-custom-verb)
-       - [Nested Steps()](#nested-steps\(\))
-       - [Nested Custom Verbs](#nested-custom-verbs)
-     - [The Interact-Observe-Verify Pattern](#the-interact-observe-verify-pattern)
-       - [Verifying Transient Objects and States: WithoutDelay](#verifying-transient-objects-and-states:-withoutdelay)
-     - [Describe Your Steps](#describe-your-steps)
-     - [Logging](#logging)
-   - [Test Log Output, What if my Test Fails?](#test-log-output,-what-if-my-test-fails?)
-     - [Simple Step Failure Log](#step-failure-log)
-       - [A Note About “Step Numbers”](#a-note-about-“step-numbers”)
-     - [Timeout Test Failure Log](#timeout-test-failure-log)
-   - [Restarting the Browser](#restarting-the-browser)
-   - [Sample Code](#sample-code)
- - [FAQ](#faq)
-   - [Writing Tests with Kombucha](#writing-tests-with-kombucha)
-   - [How do I use Kombucha in my tests?](#how-do-i-use-kombucha-in-my-tests?)
-   - [What should go in SetUp\[OnMainThread\] or at the top of my test vs. in RunTestSequence?](#what-should-go-in-setup[onmainthread]-or-at-the-top-of-my-test-vs.-in-runtestsequence?)
-   - [How should I test my feature using Kombucha?](#how-should-i-test-my-feature-using-kombucha?)
-   - [What if I already have a class that inherits from Test or InProcessBrowserTest?](#what-if-i-already-have-a-class-that-inherits-from-test-or-inprocessbrowsertest?)
-   - [Can I use Kombucha in browser\_tests or just interactive\_ui\_tests?](#can-i-use-kombucha-in-browser_tests-or-just-interactive_ui_tests?)
-   - [Where should I put my tests?](#where-should-i-put-my-tests?)
-   - [Can I use Kombucha without a browser/browser window?](#can-i-use-kombucha-without-a-browser/browser-window?)
-   - [Can I write Kombucha tests for Ash or a ChromeOS app?](#can-i-write-kombucha-tests-for-ash-or-a-chromeos-app?)
-   - [Elements, Activation, and Events](#elements,-activation,-and-events)
-   - [What is an “element”?](#what-is-an-“element”?)
-   - [What is a “context”?](#what-is-a-“context”?)
-   - [What does it mean for an element to be “shown” or “hidden”?](#what-does-it-mean-for-an-element-to-be-“shown”-or-“hidden”?)
-   - [What does it mean for an element to be “activated”?](#what-does-it-mean-for-an-element-to-be-“activated”?)
-   - [What are custom events for/why should I use them?](#what-are-custom-events-for/why-should-i-use-them?)
-   - [Can I send a custom event if I don’t have access to Views from my code?](#can-i-send-a-custom-event-if-i-don’t-have-access-to-views-from-my-code?)
-   - [Can I send a custom event if I don’t have a specific element to send it through?](#can-i-send-a-custom-event-if-i-don’t-have-a-specific-element-to-send-it-through?)
-   - [How do I wait for a dialog or menu to open?](#how-do-i-wait-for-a-dialog-or-menu-to-open?)
-   - [How do I wait for a dialog or menu to close?](#how-do-i-wait-for-a-dialog-or-menu-to-close?)
-   - [How do I make sure something isn’t present in the UI?](#how-do-i-make-sure-something-isn’t-present-in-the-ui?)
-   - [How do I know what function signature a verb expects for callbacks?](#how-do-i-know-what-function-signature-a-verb-expects-for-callbacks?)
-   - [When passing a callback or check to a verb, do I need to call Bind?](#when-passing-a-callback-or-check-to-a-verb,-do-i-need-to-call-bind?)
-   - [Performing Actions](#performing-actions)
-   - [How do I click a button?](#how-do-i-click-a-button?)
-   - [How do I input text?](#how-do-i-input-text?)
-   - [Can I send keypresses as part of a test?](#can-i-send-keypresses-as-part-of-a-test?)
-   - [How do I select an item from a menu or dropdown?](#how-do-i-select-an-item-from-a-menu-or-dropdown?)
-   - [How do I move or click the mouse?](#how-do-i-move-or-click-the-mouse?)
-   - [Should I use PressButton or MoveMouse/ClickMouse?](#should-i-use-pressbutton-or-movemouse/clickmouse?)
-   - [How do I do stuff that isn’t covered by an action like PressButton()?](#how-do-i-do-stuff-that-isn’t-covered-by-an-action-like-pressbutton\(\)?)
-   - [What if I have a common step or set of steps I want to do in multiple tests?](#what-if-i-have-a-common-step-or-set-of-steps-i-want-to-do-in-multiple-tests?)
-   - [Test Checks](#test-checks)
-   - [How do I perform checks in my test?](#how-do-i-perform-checks-in-my-test?)
-   - [Can I still use EXPECT…() and ASSERT…()?](#can-i-still-use-expect…\(\)-and-assert…\(\)?)
-   - [Do I need to pass a testing::Matcher when I use a Check?](#do-i-need-to-pass-a-testing::matcher-when-i-use-a-check?)
-   - [How do I do a pixel (Skia Gold) test?](#how-do-i-do-a-pixel-\(skia-gold\)-test?)
-   - [Unnamed and Duplicate UI Elements](#unnamed-and-duplicate-ui-elements)
-   - [I need to check an element that doesn’t have an identifier. How do I do it?](#i-need-to-check-an-element-that-doesn’t-have-an-identifier.-how-do-i-do-it?)
-   - [I need to refer to a specific element, but its identifier is not unique.](#i-need-to-refer-to-a-specific-element,-but-its-identifier-is-not-unique.)
-   - [How do I refer to an element in a different window?](#how-do-i-refer-to-an-element-in-a-different-window?)
-   - [Troubleshooting](#troubleshooting)
-   - [What are the ways a Kombucha test can fail?](#what-are-the-ways-a-kombucha-test-can-fail?)
-   - [My test failed; how do I figure out why?](#my-test-failed;-how-do-i-figure-out-why?)
-   - [The step number in the failure message doesn’t seem right?](#the-step-number-in-the-failure-message-doesn’t-seem-right?)
-   - [My test timed out; how do I figure out where it failed?](#my-test-timed-out;-how-do-i-figure-out-where-it-failed?)
-   - [My test failed due to an element losing visibility; what do I do?](#my-test-failed-due-to-an-element-losing-visibility;-what-do-i-do?)
-   - [Something changed/went away between the trigger and step callback\!](#something-changed/went-away-between-the-trigger-and-step-callback!)
-   - [My test is still crashing, what can I do?](#my-test-is-still-crashing,-what-can-i-do?)
-   - [How do I add logging to my test?](#how-do-i-add-logging-to-my-test?)
-   - [My test can’t find a UI element but I’m sure it’s visible. What should I do?](#my-test-can’t-find-a-ui-element-but-i’m-sure-it’s-visible.-what-should-i-do?)
-   - [Testing element(s) in another context](#testing-element\(s\)-in-another-context)
-   - [My test fails to find an element, but only on some platforms or builders?](#my-test-fails-to-find-an-element,-but-only-on-some-platforms-or-builders?)
-   - [I’m waiting for an event but it never arrives?](#i’m-waiting-for-an-event-but-it-never-arrives?)
-   - [I’m trying to test a tab modal dialog but the test can’t find the dialog?](#i’m-trying-to-test-a-tab-modal-dialog-but-the-test-can’t-find-the-dialog?)
-   - [Waiting for State Changes and Events](#waiting-for-state-changes-and-events)
-   - [What types of things does the Kombucha API let me wait for?](#what-types-of-things-does-the-kombucha-api-let-me-wait-for?)
-   - [How do I wait for an event that’s not supported in the Kombucha API?](#how-do-i-wait-for-an-event-that’s-not-supported-in-the-kombucha-api?)
-   - [How do I wait for an asynchronous task to complete?](#how-do-i-wait-for-an-asynchronous-task-to-complete?)
-   - [How do I wait for a Views animation to complete?](#how-do-i-wait-for-a-views-animation-to-complete?)
-   - [I have events that can happen in different orders \- how do I avoid a race condition?](#i-have-events-that-can-happen-in-different-orders---how-do-i-avoid-a-race-condition?)
-   - [I have events that will happen simultaneously; how do I wait for all of them?](#i-have-events-that-will-happen-simultaneously;-how-do-i-wait-for-all-of-them?)
-   - [My test gets stuck in a RunLoop \- help\!](#my-test-gets-stuck-in-a-runloop---help!)
-   - [Testing Web Pages and WebUI](#testing-web-pages-and-webui)
-   - [I need to check the contents of a web page \- how do I do that?](#i-need-to-check-the-contents-of-a-web-page---how-do-i-do-that?)
-   - [What is a DeepQuery? How do they work?](#what-is-a-deepquery?-how-do-they-work?)
-   - [How do I instrument a web page that I’m about to open?](#how-do-i-instrument-a-web-page-that-i’m-about-to-open?)
-   - [How do I navigate to a specific web page?](#how-do-i-navigate-to-a-specific-web-page?)
-   - [I want to open a page using the omnibox \- how do I do that?](#i-want-to-open-a-page-using-the-omnibox---how-do-i-do-that?)
-   - [How do I instrument a WebUI that isn’t in a tab?](#how-do-i-instrument-a-webui-that-isn’t-in-a-tab?)
-   - [Can I instrument a page that isn’t a chrome:// page or WebUI?](#can-i-instrument-a-page-that-isn’t-a-chrome://-page-or-webui?)
-   - [Should I use MoveMouseTo/ClickMouse or inject an element.click() to press a button?](#should-i-use-movemouseto/clickmouse-or-inject-an-element.click\(\)-to-press-a-button?)
-   - [Can I send keyboard accelerators to a web page?](#can-i-send-keyboard-accelerators-to-a-web-page?)
-   - [Can I send keyboard accelerators to dialog?](#can-i-send-keyboard-accelerators-to-dialog?)
-   - [How do I check element properties in a web page?](#how-do-i-check-element-properties-in-a-web-page?)
-   - [How do I check javascript variables in a web page?](#how-do-i-check-javascript-variables-in-a-web-page?)
-   - [What is WaitForStateChange for?](#what-is-waitforstatechange-for?)
-   - [How do I wait for a web page to update?](#how-do-i-wait-for-a-web-page-to-update?)
-   - [How do I deal with lazy-loaded web elements?](#how-do-i-deal-with-lazy-loaded-web-elements?)
-   - [I’m trying to check a WebUI element but sometimes it fails because the element isn’t there?](#i’m-trying-to-check-a-webui-element-but-sometimes-it-fails-because-the-element-isn’t-there?)
-   - [Testing User Education Experiences](#testing-user-education-experiences)
-   - [How do I test my IPH or Tutorial?](#how-do-i-test-my-iph-or-tutorial?)
-   - [How do I test a WebUI IPH or Tutorial?](#how-do-i-test-a-webui-iph-or-tutorial?)
-   - [I’m trying to test my WebUI IPH/Tutorial but the test can’t find an anchor?](#i’m-trying-to-test-my-webui-iph/tutorial-but-the-test-can’t-find-an-anchor?)
-   - [Advanced Test Construction](#advanced-test-construction)
-   - [Can I procedurally generate test steps?](#can-i-procedurally-generate-test-steps?)
-   - [Can I perform test steps conditionally?](#can-i-perform-test-steps-conditionally?)
-   - [Can I call RunTestSequence more than once in the same test?](#can-i-call-runtestsequence-more-than-once-in-the-same-test?)
-   - [General Testing Issues](#general-testing-issues)
-   - [I need to load a web page but it isn’t working\!](#i-need-to-load-a-web-page-but-it-isn’t-working!)
-   - [How do I root cause test flakes (especially on CQ/CI)?](#how-do-i-root-cause-test-flakes-\(especially-on-cq/ci\)?)
-   - [Reproducing Flakes](#reproducing-flakes)
-   - [Root-Causing Flakes](#root-causing-flakes)
-   - [What if the bug is in the test framework itself?](#what-if-the-bug-is-in-the-test-framework-itself?)
+[TOC]
 
 ## The Basics {#the-basics}
 
@@ -413,11 +291,13 @@ class TranslateBubbleViewUiTest : public InteractiveBrowserTest {
   auto NavigateAndWaitForLanguageDetection(
       ElementIdentifier page_id,
       const GURL& gurl, const std::string& expected_lang) {
-    return Steps(
+    auto steps = Steps(
       NavigateWebContents(page_id, gurl),
       Do(base::BindOnce(
           &TranslateBubbleViewUiTest::WaitForExpectedLanguage
           base::Unretained(this), expected_lang))
+      AddDescriptionPrefix(steps, "NavigateAndWaitForLanguageDetection");
+      return steps;
     );
   }
 };
@@ -455,7 +335,7 @@ class TranslateBubbleViewUiTest : public InteractiveBrowserTest {
   auto NavigateAndWaitForLanguageDetection(
       ElementIdentifier page_id,
       const GURL& gurl, const std::string& expected_lang) {
-    return Steps(
+    auto steps = Steps(
       NavigateWebContents(page_id, gurl),
       // If the detected language isn’t already the expected one, wait for
       // detection to complete.
@@ -468,6 +348,8 @@ class TranslateBubbleViewUiTest : public InteractiveBrowserTest {
            CheckResult(GetSourceLanguage(), expected_lang))
       ),
     );
+    AddDescriptionPrefix(steps, "NavigateAndWaitForLanguageDetection");
+    return steps;
   }
 };
 
@@ -600,7 +482,7 @@ Remember: a goal of Kombucha is to absolutely minimize boilerplate in tests. So 
 
 ### Custom Verbs {#custom-verbs}
 
-Custom verbs are ways to share common functionality between tests. By convention, a custom verb is a function on your test fixture with return type **auto** that returns either a **StepBuilder** or **MultiStep**. This section has some examples of using custom verbs for shared steps as well as setup.
+Custom verbs are ways to share common functionality between tests. By convention, a custom verb is a function on your test fixture with return type **auto** that returns either a **StepBuilder** or **MultiStep**. Custom verbs should also use `SetDescriptionPrefix()` to provide debugging context for their constituent sub-steps. This section has some examples of using custom verbs for shared steps as well as setup.
 
 #### Breaking out Common Functionality As a Custom Verb {#breaking-out-common-functionality-as-a-custom-verb}
 
@@ -632,7 +514,10 @@ RunTestSequence(
   // ...
 ```
 
-Here’s a custom verb in test fixture class that generates the common setup steps. By convention, custom verbs return **auto**:
+Here’s a custom verb in test fixture class that generates the common setup steps.
+By convention, custom verbs return **auto**. Custom verbs should also use
+`AddDescriptionPrefix()` to ensure that if a step inside the custom verb fails,
+it will be easy to identify the exact step causing the issue.
 
 ```cpp
 class MyTestFixture : public InteractiveBrowserTest {
@@ -643,17 +528,19 @@ class MyTestFixture : public InteractiveBrowserTest {
   // triggered yet. Navigates in `page_id`.
   auto PrimeSideSearchToRun(
       ElementIdentifier page_id, GURL srp_url, GURL non_srp_url) {
-    return Steps(
+    auto steps = Steps(
       // Navigate to a SRP URL and then once to a non-SRP URL.
       NavigateWebContents(page_id, srp_url),
       NavigateWebContents(page_id, non_srp_url),
       // Ensure that the side search button is present, but the side search
       // panel isn't open.
       WaitForShow(kSideSearchButtonElementId),
-      EnsureNotPresent(kSidePanelElementId));
+      EnsureNotPresent(kSidePanelElementId),
       // Going back will increase the returned-to-SRP count to 1.
       PressButton(kBackButtonElementId),
-      WaitForWebContentsNavigation(page_id),
+      WaitForWebContentsNavigation(page_id));
+    AddDescriptionPrefix(steps, "PrimeSideSearchToRun");
+    return steps;
   }
 ```
 
@@ -685,13 +572,15 @@ Note that since the arguments to **Steps** can be either **StepBuilders** or **M
 
 ```cpp
 auto CustomVerb(bool include_extra_steps) {
-  return Steps(
+  auto steps = Steps(
     // step before conditional
     include_extra_steps ?
         Steps(/* extra steps to include*/) :
         MultiStep(),
     // steps after conditional
   );
+  AddDescriptionPrefix(steps, "CustomVerb");
+  return steps;
 }
 ```
 
@@ -701,15 +590,19 @@ Custom verbs, being step generators, can be used by other custom verbs:
 
 ```cpp
 auto CustomVerb1() {
-  return Steps(...);
+  auto steps = Steps(...);
+  AddDescriptionPrefix(steps, "CustomVerb1");
+  return steps;
 }
 
 auto CustomVerb2() {
-  return Steps(
+  auto steps = Steps(
     // ...
     CustomVerb1(),
     // ...
   );
+  AddDescriptionPrefix(steps, "CustomVerb2");
+  return steps;
 }
 ```
 
@@ -799,7 +692,7 @@ auto CloseDialog(int expected_model_count) {
                   expected_model_count,
                   base::StringPrintf("Check model count equals %d",
                                      expected_model_count)));
-  AddDescription(steps, "CloseDialog( %s )");
+  AddDescriptionPrefix(steps, "CloseDialog( %s )");
   return steps;
 }
 ```
@@ -997,10 +890,12 @@ class MyInteractiveTest : public InteractiveBrowserTest {
   ~MyInteractiveTest() override = default;
 
   auto DoCommonSetup() {
-    return Steps(
+    auto steps = Steps(
       // Common set-up steps go here.
       // If any of the setup steps fail, the test sequence will fail.
     );
+    AddDescriptionPrefix(steps, "DoCommonSetup()");
+    return steps;
   }
 };
 
@@ -1309,11 +1204,13 @@ class MyFeaturePage2Test : public InteractiveBrowserTest {
  public:
   // ...
   auto DoCommonSetUp() {
-    return Steps(
+    auto steps = Steps(
       PressButton(kMyFeatureEntryPointElementId),
       WaitForShow(kMyFeatureUIElementId),
       SelectDropdownItem(kMyFeatureModeElementId, 2),
       WaitForShow(kMyFeaturePage2ElementId));
+    AddDescriptionPrefix(steps, "DoCommonSetUp()");
+    return steps;
   }
 };
 
@@ -2225,9 +2122,11 @@ Here’s an example of a conditional step using a custom verb:
 auto MaybeCheckHistogram(int expected_count) {
   // The histogram will only be populated if GetParam() is true, so only
   // check it if it’s true.
-  return GetParam() ?
+  auto steps = GetParam() ?
       Steps(Check(&GetHistogramValue, expected_count)) :
       Steps();
+  AddDescriptionPrefix(steps, "MaybeCheckHistogram()");
+  return steps;
 }
 
 RunTestSequence(
