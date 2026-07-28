@@ -58,5 +58,8 @@ per-file render_process_host_sandbox_policy_win_browsertest.cc=file://sandbox/wi
 # View transitions test.
 per-file view_transition_browsertest.cc=vmpstr@chromium.org
 
+# Unbounded element test.
+per-file unbounded_element_browsertest.cc=masonf@chromium.org
+
 # Local Network Access
 per-file local_network_access*.*=file://content/browser/security/local_network_access/OWNERS
