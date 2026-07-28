@@ -245,7 +245,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AutofillAiSuggestionGenerator> generator_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};

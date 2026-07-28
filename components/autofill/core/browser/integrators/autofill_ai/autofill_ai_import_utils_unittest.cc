@@ -171,7 +171,7 @@ class AutofillAiImportUtilsTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   test::AutofillUnitTestEnvironment autofill_environment_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   syncer::TestSyncService sync_service_;

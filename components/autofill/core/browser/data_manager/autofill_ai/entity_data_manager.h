@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history {
 class DeletionInfo;
@@ -205,10 +206,16 @@ class EntityDataManager
   // level) because the device's re-auth state can change.
   void EnforceEntityReauthRequirements();
 
-  // Removes any cached `kPersonalContext` entities from `entities_` that
-  // represent the same entity as any non-pContext entity in the cache, based
-  // on their merge constraints.
+  // Posts a background task to find any cached `kPersonalContext` entities
+  // in `entities_` that represent the same entity as any non-pContext entity
+  // in the cache, based on their merge constraints.
   void DedupePersonalContextEntities();
+
+  // Callback for `DedupePersonalContextEntities()`. Removes the entities
+  // identified by `duplicate_guids` from `entities_` and notifies observers if
+  // any entities were removed.
+  void RemoveDuplicatePersonalContextEntities(
+      absl::flat_hash_set<EntityInstance::EntityId> duplicate_guids);
 
   // Becomes true after the response of the initial LoadEntitiesFromDatabase()
   // and remains true from then on.

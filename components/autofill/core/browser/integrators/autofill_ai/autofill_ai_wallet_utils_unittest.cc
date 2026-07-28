@@ -70,7 +70,7 @@ class AutofillAiWalletUtilsTest : public ::testing::Test {
   EntityDataManager& edm() { return *autofill_client().GetEntityDataManager(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   NiceMock<MockAutofillClient> autofill_client_;

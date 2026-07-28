@@ -60,7 +60,7 @@ class EntityInstanceCleanerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillAiDedupeEntities};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   syncer::TestSyncService sync_service_;
