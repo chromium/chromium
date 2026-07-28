@@ -156,10 +156,20 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
   // Usage flags to allow the display compositor to draw from it, video to
   // decode from it, and webgl/canvas to read from it.
-  gpu::SharedImageUsageSet usage =
-      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  // The swapchain presenter currently only supports NV12 and P010 overlay,
+  // with BGRA only as fallback when DWM continuously fails to overlay submitted
+  // video. As a result, we should not allow overlay for non-NV12/P010 formats
+  // which may cause chroma downsampling when blitting into the back buffer.
+  // See https://crbugs.com/331679628 for more details.
+  if (output_si_format == viz::MultiPlaneFormat::kP010 ||
+      output_si_format == viz::MultiPlaneFormat::kNV12) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   HRESULT hr = S_OK;
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;

@@ -944,26 +944,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                      scoped_refptr<D3D11PictureBuffer>(picture_buffer)));
   frame->SetReleaseMailboxCB(
       base::BindOnce(release_mailbox_cb_, std::move(wait_complete_cb)));
-  // For NV12, overlay is allowed by default. If the decoder is going to support
-  // non-NV12 textures, then this may have to be conditionally set. Also note
-  // that ALLOW_OVERLAY is required for encrypted video path.
-  //
-  // Since all of our picture buffers allow overlay, we just set this to true.
-  // However, we may choose to set ALLOW_OVERLAY to false even if
-  // the finch flag is enabled.  We may not choose to set ALLOW_OVERLAY if the
-  // flag is off, however.
-  frame->metadata().allow_overlay = true;
-  // The swapchain presenter currently only supports NV12 and P010 overlay,
-  // with BGRA only as fallback when DWM continuously fails to overlay submitted
-  // video. As a result, we should not allow overlay for non-NV12/P010 formats
-  // which may cause chroma downsampling when blitting into the back buffer.
-  // See https://crbugs.com/331679628 for more details.
-  auto output_si_format = texture_selector_->OutputSharedImageFormat();
-  if (!config_.is_encrypted()) {
-    frame->metadata().allow_overlay =
-        output_si_format == viz::MultiPlaneFormat::kP010 ||
-        output_si_format == viz::MultiPlaneFormat::kNV12;
-  }
+  frame->metadata().allow_overlay =
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   frame->metadata().power_efficient = true;
 
   // If the output texture is in RGB pixel format, then the color space needs to
@@ -981,7 +963,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().is_webgpu_compatible =
       !(gpu_workarounds_.disable_sharing_nv12_from_d3d11_to_d3d12 &&
-        output_si_format == viz::MultiPlaneFormat::kNV12) &&
+        texture_selector_->OutputSharedImageFormat() ==
+            viz::MultiPlaneFormat::kNV12) &&
       use_shared_handle_;
 
   output_cb_.Run(frame);

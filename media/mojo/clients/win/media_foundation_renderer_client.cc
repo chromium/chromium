@@ -405,8 +405,9 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
-
-  video_frame->metadata().allow_overlay = true;
+  CHECK(video_frame->HasSharedImage());
+  video_frame->metadata().allow_overlay =
+      video_frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
   if (cdm_context_) {
     video_frame->metadata().protected_video = true;

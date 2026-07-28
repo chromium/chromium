@@ -188,7 +188,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                             gfx::ColorSpace::TransferID::BT709),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+                gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                gpu::SHARED_IMAGE_USAGE_SCANOUT,
             GL_TEXTURE_EXTERNAL_OES, "DCOMPTextureWrapperImpl");
 
     CHECK(shared_image);
