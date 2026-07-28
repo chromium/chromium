@@ -225,7 +225,7 @@ BASE_FEATURE(kOmniboxWebUIDetachWebContentsOnHide, ENABLED);
 
 // When enabled, the Omnibox WebUI popup will mark its web contents as hidden
 // when hidden, to unlock frames from compositor cache.
-BASE_FEATURE(kOmniboxWebUIPopupMarkAsHidden, DISABLED);
+BASE_FEATURE(kOmniboxWebUIPopupMarkAsHidden, ENABLED);
 
 // When enabled, the WebUI searchbox will bypass OmniboxController and
 // OmniboxEditModel.
