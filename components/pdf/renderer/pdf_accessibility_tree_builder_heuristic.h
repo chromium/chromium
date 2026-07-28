@@ -8,17 +8,23 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
+#include "pdf/accessibility_structs.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 
 namespace chrome_pdf {
 struct AccessibilityButtonInfo;
+struct AccessibilityCharInfo;
 struct AccessibilityChoiceFieldInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
 struct AccessibilityLinkInfo;
 struct AccessibilityTextFieldInfo;
+struct AccessibilityTextRunInfo;
 }  // namespace chrome_pdf
 
 namespace ui {
@@ -42,6 +48,49 @@ class PdfAccessibilityTreeBuilder;
 //    spacing, and spatial relationships.
 //
 
+// Heuristic rules used to classify a text block as a heading.
+enum class HeadingClassifier {
+  // Not classified as a heading.
+  kNone,
+  // Classified based on font size.
+  kFontSize,
+  // Classified based on bold styling.
+  kBoldStyle,
+  // Classified because all characters are uppercase.
+  kAllUppercase,
+};
+
+// Bundles raw page layout data (text runs, characters, start indices) used by
+// the heuristic tree builder.
+struct PageLayoutData {
+  // All the accessibility text runs on the page.
+  base::raw_span<const chrome_pdf::AccessibilityTextRunInfo> text_runs;
+
+  // All of the character info for the page.
+  base::raw_span<const chrome_pdf::AccessibilityCharInfo> chars;
+
+  // The starting character index for each text run on the page.
+  base::raw_span<const uint32_t> text_run_start_indices;
+};
+
+// Computed page-specific metrics and classification thresholds used as
+// decision factors by the heuristic tree builder.
+struct HeuristicThresholds {
+  // The line spacing threshold above which a paragraph break is identified.
+  float paragraph_spacing_threshold;
+
+  // A mapping from a text run's font size to its heading level (ranges from 1
+  // to 6).
+  const raw_ref<const std::map<float, int>> heading_font_size_mapping;
+
+  // The median font size on the page.
+  float median_font_size;
+
+  // The minimum font size threshold required for a run to be considered a
+  // heading.
+  float heading_font_size_threshold;
+};
+
 // This class implements the complete heuristic accessibility tree building
 // algorithm for untagged PDFs.
 class PdfAccessibilityTreeBuilderHeuristic {
@@ -61,7 +110,8 @@ class PdfAccessibilityTreeBuilderHeuristic {
   void BuildPageTree();
 
  private:
-  ui::AXNodeData* CreateBlockLevelNode(float font_size);
+  ui::AXNodeData* CreateBlockLevelNode(float font_size,
+                                       const HeuristicThresholds& thresholds);
 
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,
@@ -112,12 +162,6 @@ class PdfAccessibilityTreeBuilderHeuristic {
   );
 
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
-
-  // Heuristic-specific state for sequential processing and analysis.
-  float heading_font_size_threshold_ = 0;
-  float paragraph_spacing_threshold_ = 0;
-  // Key: font size, value: heading level (should be in the range [1-6]).
-  std::map<float, int> font_size_heading_mapping_;
 
   // Sequential index tracking for page objects.
   uint32_t current_link_index_ = 0;
