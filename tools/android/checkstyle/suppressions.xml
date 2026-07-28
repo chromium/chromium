@@ -29,4 +29,6 @@
   <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for
        consistency with the native code. -->
   <suppress checks="AbbreviationAsWord" files=".*Accessibility.*" />
+  <!-- AccessibilityState needs to use AccessibilityManager to retrieve accessibility state from the OS. -->
+  <suppress id="AccessibilityManagerUsage" files="AccessibilityState(.*Test)?\.java"/>
 </suppressions>

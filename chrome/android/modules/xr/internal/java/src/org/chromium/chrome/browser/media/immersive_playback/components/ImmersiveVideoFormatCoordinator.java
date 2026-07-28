@@ -32,6 +32,9 @@ public class ImmersiveVideoFormatCoordinator {
     public interface Delegate extends ImmersiveVideoFormatMediator.FormatListener {
         /** Called when hover state of the format panel changes. */
         void onFormatPanelHoverChanged(boolean hovered);
+
+        /** Called when accessibility focus state of the format panel changes. */
+        void onFormatPanelAccessibilityFocusChanged(boolean focused);
     }
 
     private final PropertyModel mModel =
@@ -93,6 +96,8 @@ public class ImmersiveVideoFormatCoordinator {
         }
 
         mView = createView();
+        mView.setAccessibilityFocusListener(
+                mFormatControlDelegate::onFormatPanelAccessibilityFocusChanged);
         mRadioGroup = mView.getRadioGroup();
         mHolder = mSessionManager.createPanelEntity(mView, "FormatSelectionPanel");
         mMediator = new ImmersiveVideoFormatMediator(mFormatControlDelegate, mModel);

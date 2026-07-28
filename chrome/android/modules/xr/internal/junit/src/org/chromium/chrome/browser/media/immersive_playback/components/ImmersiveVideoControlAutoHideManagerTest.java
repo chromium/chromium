@@ -94,4 +94,30 @@ public class ImmersiveVideoControlAutoHideManagerTest {
         ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
         verify(mMockRunnable).run();
     }
+
+    @Test
+    public void testControlPanelAccessibilityFocus_PreventsTimerFromFiring() {
+        mManager.startTimer();
+        mManager.onControlPanelAccessibilityFocusChanged(true);
+
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable, never()).run();
+
+        mManager.onControlPanelAccessibilityFocusChanged(false);
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable).run();
+    }
+
+    @Test
+    public void testFormatPanelAccessibilityFocus_PreventsTimerFromFiring() {
+        mManager.startTimer();
+        mManager.onFormatPanelAccessibilityFocusChanged(true);
+
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable, never()).run();
+
+        mManager.onFormatPanelAccessibilityFocusChanged(false);
+        ShadowLooper.idleMainLooper(TEST_DELAY_MS, TimeUnit.MILLISECONDS);
+        verify(mMockRunnable).run();
+    }
 }

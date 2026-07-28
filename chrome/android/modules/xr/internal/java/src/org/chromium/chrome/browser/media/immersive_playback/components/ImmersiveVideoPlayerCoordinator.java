@@ -6,7 +6,12 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -88,6 +93,27 @@ public class ImmersiveVideoPlayerCoordinator {
                 }
             };
 
+    private final View.AccessibilityDelegate mAccessibilityDelegate =
+            new View.AccessibilityDelegate() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfo info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_CLICK);
+                    info.setClickable(true);
+                }
+
+                @Override
+                public boolean performAccessibilityAction(
+                        View host, int action, @Nullable Bundle args) {
+                    if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+                        mDelegate.onPlayerPanelClicked();
+                        return true;
+                    }
+                    return super.performAccessibilityAction(host, action, args);
+                }
+            };
+
     private @Nullable CompositorView mCompositorView;
     private @Nullable ImmersiveVideoPlayerMediator mMediator;
     private @Nullable XrSurfaceEntityHolder mHolder;
@@ -116,9 +142,19 @@ public class ImmersiveVideoPlayerCoordinator {
 
         mMediator = new ImmersiveVideoPlayerMediator(mModel);
         mCompositorView = createCompositorView(mActivity, mWindowAndroid, mSessionManager);
+        View playerView = mCompositorView.getView();
+        if (playerView != null) {
+            playerView.setFocusable(true);
+            playerView.setFocusableInTouchMode(true);
+            playerView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            playerView.setContentDescription(
+                    mActivity.getString(org.chromium.chrome.R.string.accessibility_video_player));
+            playerView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+            playerView.setAccessibilityDelegate(mAccessibilityDelegate);
+        }
         mHolder =
-                (mCompositorView.getView() instanceof XrSurfaceEntityView)
-                        ? ((XrSurfaceEntityView) mCompositorView.getView()).getHolder()
+                (playerView instanceof XrSurfaceEntityView)
+                        ? ((XrSurfaceEntityView) playerView).getHolder()
                         : null;
 
         if (mHolder != null) {
@@ -136,6 +172,10 @@ public class ImmersiveVideoPlayerCoordinator {
         if (mHolder != null) {
             mSessionManager.getMainPanelEntity().setEntityEnabled(false);
             mHolder.setEntityEnabled(true);
+        }
+        View playerView = mCompositorView != null ? mCompositorView.getView() : null;
+        if (playerView != null) {
+            playerView.requestFocus();
         }
     }
 
@@ -193,6 +233,23 @@ public class ImmersiveVideoPlayerCoordinator {
     public void setInteractable(boolean interactable) {
         if (mHolder != null) {
             mHolder.getInteractableComponent().setInteractable(interactable);
+        }
+    }
+
+    /** Requests accessibility focus on the player view. */
+    @SuppressLint("AccessibilityFocus")
+    public void requestFocusForAccessibility() {
+        View playerView = mCompositorView != null ? mCompositorView.getView() : null;
+        if (playerView != null) {
+            playerView.post(
+                    () -> {
+                        playerView.requestFocus();
+                        playerView.performAccessibilityAction(
+                                android.view.accessibility.AccessibilityNodeInfo
+                                        .ACTION_ACCESSIBILITY_FOCUS,
+                                null);
+                        playerView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    });
         }
     }
 

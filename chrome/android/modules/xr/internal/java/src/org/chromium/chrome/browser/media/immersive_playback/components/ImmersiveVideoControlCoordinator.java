@@ -40,6 +40,9 @@ public class ImmersiveVideoControlCoordinator {
 
         /** Called when the pose of the control panel changes during movement. */
         void onControlPanelPoseChanged(XrPose pose);
+
+        /** Called when accessibility focus state of the control panel changes. */
+        void onControlPanelAccessibilityFocusChanged(boolean focused);
     }
 
     private final PropertyModel mModel =
@@ -99,6 +102,8 @@ public class ImmersiveVideoControlCoordinator {
 
         mMediator = new ImmersiveVideoControlMediator(mModel, mVideoControlDelegate);
         mView = createView(mActivity, mMediator);
+        mView.setAccessibilityFocusListener(
+                mVideoControlDelegate::onControlPanelAccessibilityFocusChanged);
         mHolder = mSessionManager.createPanelEntity(mView, "MediaControlPanel");
         mHolder.getMovableComponent().addMoveListener(mOnMoveListener);
 

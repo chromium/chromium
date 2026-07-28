@@ -196,6 +196,11 @@ public class ImmersiveVideoPlaybackCoordinator
     }
 
     @Override
+    public void onControlPanelAccessibilityFocusChanged(boolean focused) {
+        mAutoHideManager.onControlPanelAccessibilityFocusChanged(focused);
+    }
+
+    @Override
     public void togglePlayPause(boolean isPlaying) {
         mPlaybackDelegate.togglePlayPause(isPlaying);
     }
@@ -232,6 +237,11 @@ public class ImmersiveVideoPlaybackCoordinator
         mAutoHideManager.onFormatPanelHoverChanged(hovered);
     }
 
+    @Override
+    public void onFormatPanelAccessibilityFocusChanged(boolean focused) {
+        mAutoHideManager.onFormatPanelAccessibilityFocusChanged(focused);
+    }
+
     // =========================================================================
     // Private Helpers - Panel Management
     // =========================================================================
@@ -264,6 +274,7 @@ public class ImmersiveVideoPlaybackCoordinator
     private void hideControlPanel() {
         hideFormatSelectionPanel();
         mControlCoordinator.dismiss();
+        mPlayerCoordinator.requestFocusForAccessibility();
         mAutoHideManager.stopTimer();
     }
 

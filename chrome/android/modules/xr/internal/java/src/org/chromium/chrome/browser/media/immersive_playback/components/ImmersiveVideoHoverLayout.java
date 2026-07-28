@@ -8,6 +8,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,6 +28,16 @@ public class ImmersiveVideoHoverLayout extends LinearLayout {
     private @Nullable HoverListener mHoverListener;
     private boolean mIsCurrentlyHovered;
 
+    /** Listener for accessibility focus changes. */
+    @FunctionalInterface
+    public interface AccessibilityFocusListener {
+        /** Called when the accessibility focus state changes. */
+        void onAccessibilityFocusChanged(boolean focused);
+    }
+
+    private @Nullable AccessibilityFocusListener mAccessibilityFocusListener;
+    private boolean mIsAccessibilityFocused;
+
     public ImmersiveVideoHoverLayout(Context context) {
         super(context);
     }
@@ -43,6 +55,10 @@ public class ImmersiveVideoHoverLayout extends LinearLayout {
         mHoverListener = listener;
     }
 
+    public void setAccessibilityFocusListener(@Nullable AccessibilityFocusListener listener) {
+        mAccessibilityFocusListener = listener;
+    }
+
     private void handleHoverExit() {
         if (mIsCurrentlyHovered) {
             mIsCurrentlyHovered = false;
@@ -52,11 +68,21 @@ public class ImmersiveVideoHoverLayout extends LinearLayout {
         }
     }
 
+    private void handleAccessibilityFocusExit() {
+        if (mIsAccessibilityFocused) {
+            mIsAccessibilityFocused = false;
+            if (mAccessibilityFocusListener != null) {
+                mAccessibilityFocusListener.onAccessibilityFocusChanged(false);
+            }
+        }
+    }
+
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         if (visibility != VISIBLE) {
             handleHoverExit();
+            handleAccessibilityFocusExit();
         }
     }
 
@@ -64,6 +90,55 @@ public class ImmersiveVideoHoverLayout extends LinearLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         handleHoverExit();
+        handleAccessibilityFocusExit();
+    }
+
+    /**
+     * Note: This method is only called for accessibility events dispatched by descendants. If this
+     * layout itself becomes focusable and receives accessibility focus directly, those events will
+     * not trigger this callback.
+     */
+    @Override
+    public boolean requestSendAccessibilityEvent(View child, AccessibilityEvent event) {
+        int eventType = event.getEventType();
+        if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+            if (!mIsAccessibilityFocused) {
+                mIsAccessibilityFocused = true;
+                if (mAccessibilityFocusListener != null) {
+                    mAccessibilityFocusListener.onAccessibilityFocusChanged(true);
+                }
+            }
+        } else if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+            post(() -> checkAccessibilityFocus());
+        }
+        return super.requestSendAccessibilityEvent(child, event);
+    }
+
+    private void checkAccessibilityFocus() {
+        boolean hasFocus = hasAccessibilityFocus();
+        if (mIsAccessibilityFocused != hasFocus) {
+            mIsAccessibilityFocused = hasFocus;
+            if (mAccessibilityFocusListener != null) {
+                mAccessibilityFocusListener.onAccessibilityFocusChanged(hasFocus);
+            }
+        }
+    }
+
+    private boolean hasAccessibilityFocus() {
+        return isAccessibilityFocused() || hasAccessibilityFocus(this);
+    }
+
+    private boolean hasAccessibilityFocus(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            if (child.isAccessibilityFocused()) {
+                return true;
+            }
+            if (child instanceof ViewGroup && hasAccessibilityFocus((ViewGroup) child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
