@@ -11038,4 +11038,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(third_id.is_empty());
 }
 
+// Regression test for crbug.com/526541915. A page registers a navigate event
+// handler, then a same-origin navigation commits a new document. The browser
+// resets has_navigate_event_handler_ on commit. The new page has no navigate
+// handler, so the flag stays false. This must not crash.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       NavigateEventHandlerResetOnNewDocument) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Page registers a navigate event handler via JS.
+  EXPECT_TRUE(ExecJs(root_frame_host(),
+                     "navigation.addEventListener('navigate', () => {})"));
+  EXPECT_TRUE(root_frame_host()->has_navigate_event_handler());
+
+  // Same-origin navigation commits a new document (no navigate handler).
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a2));
+
+  // Browser should have reset the flag on document commit. No crash.
+  EXPECT_FALSE(root_frame_host()->has_navigate_event_handler());
+}
+
 }  // namespace content

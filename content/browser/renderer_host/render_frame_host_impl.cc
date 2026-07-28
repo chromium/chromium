@@ -9008,9 +9008,6 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(
 }
 
 void RenderFrameHostImpl::NavigateEventHandlerPresenceChanged(bool present) {
-  // TODO(https://crbug.com/526541915): CHECK-exclusion: Convert to CHECK once
-  // we are sure this isn't hit.
-  DCHECK_NE(has_navigate_event_handler_, present);
   has_navigate_event_handler_ = present;
 }
 
