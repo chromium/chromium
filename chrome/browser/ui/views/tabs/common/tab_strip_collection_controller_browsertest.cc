@@ -193,9 +193,20 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
 }
 
+// TODO(crbug.com/539987012): Enable this test on MacOS once the flakiness is
+// fixed.
+// This could have been "disabled" by only having the test compile on ChromeOS
+// by updating L204, but that also involves updating L221-227, where OS
+// specific code is running. These changes make it easier to revert the
+// "disabling" of the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClickTabInImmersiveMode DISABLED_ClickTabInImmersiveMode
+#else
+#define MAYBE_ClickTabInImmersiveMode ClickTabInImmersiveMode
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
-                       ClickTabInImmersiveMode) {
+                       MAYBE_ClickTabInImmersiveMode) {
   // Add another tab to switch to.
   AppendTab();
 
