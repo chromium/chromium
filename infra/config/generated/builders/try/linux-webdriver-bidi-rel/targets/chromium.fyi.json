@@ -5,6 +5,25 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
+        "name": "webdriver_bidi_e2e_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "webdriver_bidi_e2e_tests",
+        "test_id_prefix": "ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "module_name": "//third_party/chromium-bidi:webdriver_bidi_unittests",
         "module_scheme": "mocha",
         "name": "webdriver_bidi_unittests",

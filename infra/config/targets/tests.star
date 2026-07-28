@@ -3055,6 +3055,13 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "webdriver_bidi_e2e_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.isolated_script_test(
     name = "webgpu_blink_web_tests",
     mixins = [
         "has_native_resultdb_integration",

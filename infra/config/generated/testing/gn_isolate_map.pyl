@@ -2375,6 +2375,11 @@
     "module_scheme": "junit",
     "skip_usage_check": True,
   },
+  "webdriver_bidi_e2e_tests": {
+    "label": "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
+    "type": "generated_script",
+    "skip_usage_check": True,
+  },
   "webdriver_bidi_unittests": {
     "label": "//third_party/chromium-bidi:webdriver_bidi_unittests",
     "type": "generated_script",
