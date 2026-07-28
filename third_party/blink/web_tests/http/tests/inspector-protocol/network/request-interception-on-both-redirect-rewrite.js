@@ -12,10 +12,12 @@
   await setUpInterception();
   testRunner.log('Test Ready.');
 
-  await session.protocol.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'Request'},
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await session.protocol.Fetch.enable({
+    patterns: [
+      {urlPattern: '*', requestStage: 'Request'},
+      {urlPattern: '*', requestStage: 'Response'}
+    ]
+  });
   testRunner.log('Request interception patterns sent.');
 
   session.evaluate(`fetch('${testRunner.url('../resources/redirect1.php')}').then(r => r.text())`);
@@ -33,17 +35,18 @@
   const interceptionEvent = await waitForInterceptionEvent("/final.html");
   testRunner.log('Modifying final.html\'s response after we receive response.');
   var body = '<html>\n<body>This content was rewritten!</body>\n</html>';
-  var dummyHeaders = [
-    'HTTP/1.1 200 OK',
-    'Date: ' + (new Date()).toUTCString(),
-    'Connection: closed',
-    'Content-Length: ' + body.size,
-    'Content-Type: text/html'
-  ];
   testRunner.log('Modifying request with new body.');
-  session.protocol.Network.continueInterceptedRequest({
-    interceptionId: interceptionEvent.params.interceptionId,
-    rawResponse: btoa(dummyHeaders.join('\r\n') + '\r\n\r\n' + body)
+  session.protocol.Fetch.fulfillRequest({
+    requestId: interceptionEvent.params.requestId,
+    responseCode: 200,
+    responsePhrase: 'OK',
+    responseHeaders: [
+      {name: 'Date', value: (new Date()).toUTCString()},
+      {name: 'Connection', value: 'closed'},
+      {name: 'Content-Length', value: String(body.length)},
+      {name: 'Content-Type', value: 'text/html'}
+    ],
+    body: btoa(body)
   });
 
   var responseReceivedEvent = await waitForResponseReceivedEvent('final.html');
@@ -79,7 +82,7 @@
   }
 
   async function waitForInterceptionEvent(expectedUrlSuffix) {
-    const event = await session.protocol.Network.onceRequestIntercepted();
+    const event = await session.protocol.Fetch.onceRequestPaused();
     const url = event.params.request.url;
     if (!url.endsWith(expectedUrlSuffix)) {
       testRunner.log(`FAIL: expected url ending with "${expectedUrlSuffix}", got "${url}"`);
@@ -95,7 +98,7 @@
       return;
     logInterceptionEvent(event);
     testRunner.log(`Continuing a request to ${event.params.request.url}`);
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+    session.protocol.Fetch.continueRequest({requestId: event.params.requestId});
   }
 
   function waitForResponseReceivedEvent(fileName) {
@@ -116,22 +119,32 @@
     var responseHeaders = event.params.responseHeaders;
     if (responseHeaders) {
       testRunner.log('  responseHeaders:');
-      for (var headerName of Object.keys(event.params.responseHeaders).sort()) {
-        var headerValue = event.params.responseHeaders[headerName].split(';')[0]; // Sometimes "; charset=UTF-8" gets in here.
-        if (headersHideList.has(headerName.toLowerCase()))
+      responseHeaders.sort((a, b) => a.name.localeCompare(b.name));
+      for (const {name, value} of responseHeaders) {
+        let headerValue =
+            value.split(';')[0];  // Sometimes "; charset=UTF-8" gets in here.
+        if (headersHideList.has(name.toLowerCase()))
           continue;
-        if (headersMaskList.has(headerName.toLowerCase()))
+        if (headersMaskList.has(name.toLowerCase()))
           headerValue = '<Masked>';
-        testRunner.log(`    ${headerName}: ${headerValue}`);
+        testRunner.log(`    ${name}: ${headerValue}`);
       }
     } else {
       testRunner.log('  responseHeaders: <None>');
     }
 
-    if (event.params.redirectUrl)
-      testRunner.log('  redirectUrl: ' + event.params.redirectUrl.split('/').pop());
+    let redirectUrl;
+    for (const h of responseHeaders || []) {
+      if (h.name.toLowerCase() === 'location')
+        redirectUrl = h.value;
+    }
+    if (event.params.responseStatusCode &&
+        event.params.responseStatusCode >= 300 &&
+        event.params.responseStatusCode < 400 && redirectUrl)
+      testRunner.log('  redirectUrl: ' + redirectUrl.split('/').pop());
 
-    var bodyData = await session.protocol.Network.getResponseBodyForInterception({interceptionId: event.params.interceptionId});
+    const bodyData = await session.protocol.Fetch.getResponseBody(
+        {requestId: event.params.requestId});
     if (bodyData.error) {
       testRunner.log('  responseBody:');
       testRunner.log('    Error<' + bodyData.error.message + '>');

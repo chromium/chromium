@@ -2,7 +2,7 @@
   var {page, session, dp} = await testRunner.startBlank(
       `Tests to ensure iframe can change to data url while intercepting response.`);
 
-  session.protocol.Network.onRequestIntercepted(async event => {
+  session.protocol.Fetch.onRequestPaused(async event => {
     var urlPart = event.params.request.url.split('/').pop();
     testRunner.log('Request Intercepted: ' + urlPart);
 
@@ -12,7 +12,7 @@
       await session.evaluate(`iframe.src ='data:,Dummy data';`);
     }
     testRunner.log('Continuing request unchanged');
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+    session.protocol.Fetch.continueRequest({requestId: event.params.requestId});
     testRunner.log('');
   });
 
@@ -21,7 +21,8 @@
   await session.protocol.Network.setCacheDisabled({cacheDisabled: true});
   session.protocol.Network.enable();
   testRunner.log('Network agent enabled');
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "http://*", interceptionStage: 'HeadersReceived'}]});
+  await session.protocol.Fetch.enable(
+      {patterns: [{urlPattern: 'http://*', requestStage: 'Response'}]});
 
   var requestId = '';
   session.protocol.Network.onRequestWillBeSent(event => {

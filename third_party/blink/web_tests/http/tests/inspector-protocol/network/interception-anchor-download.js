@@ -7,7 +7,7 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
+  await dp.Fetch.enable({patterns: [{}]});
 
   session.evaluate(`
     const a = document.createElement('a');
@@ -17,7 +17,7 @@
     a.click();
   `);
 
-  const event = await dp.Network.onceRequestIntercepted();
+  const event = await dp.Fetch.onceRequestPaused();
   testRunner.log(`Intercepted: ${event.params.request.url}`);
 
   testRunner.completeTest();

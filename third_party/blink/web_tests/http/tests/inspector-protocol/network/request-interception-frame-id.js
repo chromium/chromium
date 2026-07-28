@@ -6,12 +6,12 @@
   session.protocol.Page.enable();
 
   var redirectFilenameToFrameId = new Map();
-  session.protocol.Network.onRequestIntercepted(event => {
+  session.protocol.Fetch.onRequestPaused(event => {
     var filename = event.params.request.url.split('/').pop();
     redirectFilenameToFrameId.set(filename, event.params.frameId);
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+    session.protocol.Fetch.continueRequest({requestId: event.params.requestId});
   });
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "*"}]});
+  await session.protocol.Fetch.enable({patterns: [{urlPattern: '*'}]});
 
   await session.evaluateAsync(`(function() {
     function waitForLoad(loadable) {

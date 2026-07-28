@@ -7,7 +7,8 @@
 
   var requestInterceptedDict = {
     'redirect-iframe.html': event => helper.allowRequest(event),
-    'redirect1.pl': event => helper.mockResponse(event, 'HTTP/1.1 404 Not Found\r\n\r\n'),
+    'redirect1.pl': event => helper.mockResponse(
+        event, {responseCode: 404, responsePhrase: 'Not Found'}),
   };
 
   await helper.startInterceptionTest(requestInterceptedDict);

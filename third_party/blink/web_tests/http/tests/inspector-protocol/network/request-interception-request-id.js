@@ -3,15 +3,15 @@
       `Verifies that requestIntercepted has a requestId corresponding to requestWillBeSent's requestId`);
 
   await dp.Network.enable();
-  await dp.Network.setRequestInterception({patterns: [{urlPattern: '*'}]});
+  await dp.Fetch.enable({patterns: [{urlPattern: '*'}]});
 
   const [requestWillBeSent, requestIntercepted, evaluate] = await Promise.all([
-    dp.Network.onceRequestWillBeSent(),
-    dp.Network.onceRequestIntercepted(),
+    dp.Network.onceRequestWillBeSent(), dp.Fetch.onceRequestPaused(),
     session.evaluate(`fetch('${testRunner.url('./resources/test.css')}')`)
   ]);
 
-  const idsAreEqual = requestWillBeSent.params.requestId === requestIntercepted.params.requestId;
+  const idsAreEqual = requestWillBeSent.params.requestId ===
+      requestIntercepted.params.networkId;
   testRunner.log(`requestIntercepted.requestId === requestWillBeSent.requestId: ${idsAreEqual}`);
   testRunner.completeTest();
 })

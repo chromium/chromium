@@ -7,7 +7,10 @@
 
   var requestInterceptedDict = {
     'xhr-iframe.html': event => helper.allowRequest(event),
-    'example.txt': event => helper.mockResponse(event, 'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nPayload for the Mock XHR response;'),
+    'example.txt': event => helper.mockResponse(event, {
+      responseHeaders: [{name: 'Content-Type', value: 'text/plain'}],
+      body: 'Payload for the Mock XHR response;'
+    }),
   };
 
   // The XHR triggered in the onload handler of the iframe races with the frameStoppedLoading event

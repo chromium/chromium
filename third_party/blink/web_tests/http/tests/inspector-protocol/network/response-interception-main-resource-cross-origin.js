@@ -1,9 +1,9 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startBlank(`Tests to ensure response interception works with cross origin redirects.`);
-  dp.Network.onRequestIntercepted(event => {
-      testRunner.log('Request Intercepted: ' + event.params.request.url);
-      testRunner.log('');
-      testRunner.completeTest();
+  dp.Fetch.onRequestPaused(event => {
+    testRunner.log('Request Intercepted: ' + event.params.request.url);
+    testRunner.log('');
+    testRunner.completeTest();
   });
 
   await dp.Network.clearBrowserCookies();
@@ -12,7 +12,12 @@
   await session.protocol.Network.enable();
   testRunner.log('Network agent enabled');
   testRunner.log('Setting interception patterns to intercept: http://127.0.0.1:8000/devtools/network/resources/redirect-cross-origin-empty-html.php');
-  await dp.Network.setRequestInterception({patterns: [{urlPattern: "http://localhost:8000/devtools/network/resources/empty.html", interceptionStage: 'HeadersReceived'}]});
+  await dp.Fetch.enable({
+    patterns: [{
+      urlPattern: 'http://localhost:8000/devtools/network/resources/empty.html',
+      requestStage: 'Response'
+    }]
+  });
   testRunner.log('');
 
   testRunner.log('Navigating to: http://127.0.0.1:8000/devtools/network/resources/redirect-cross-origin-empty-html.php');

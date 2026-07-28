@@ -7,14 +7,15 @@
   await session.protocol.Page.enable();
   testRunner.log('Page agent enabled');
 
-  session.protocol.Network.onRequestIntercepted(async event => {
+  session.protocol.Fetch.onRequestPaused(async event => {
     var filename = event.params.request.url.split('/').pop();
     testRunner.log('Request Intercepted: ' + filename);
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, errorReason: 'AddressUnreachable'});
+    session.protocol.Fetch.failRequest(
+        {requestId: event.params.requestId, errorReason: 'AddressUnreachable'});
   });
 
   testRunner.log('Intercept scripts only');
-  await session.protocol.Network.setRequestInterception({patterns: [{resourceType: "Script"}]});
+  await session.protocol.Fetch.enable({patterns: [{resourceType: 'Script'}]});
   session.evaluate(`
     var iframe = document.createElement('iframe');
     iframe.src = '${testRunner.url('./resources/resource-iframe.html')}';
@@ -26,7 +27,8 @@
   });
 
   testRunner.log('Intercept stylesheets only');
-  await session.protocol.Network.setRequestInterception({patterns: [{resourceType: "Stylesheet"}]});
+  await session.protocol.Fetch.enable(
+      {patterns: [{resourceType: 'Stylesheet'}]});
   session.evaluate(`
     var iframe = document.createElement('iframe');
     iframe.src = '${testRunner.url('./resources/resource-iframe.html')}';

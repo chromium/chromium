@@ -70,21 +70,39 @@
         this._completeTest();
     };
 
-    this._session.protocol.Network.onRequestIntercepted(event => {
+    this._session.protocol.Fetch.onAuthRequired(event => {
       var filename = event.params.request.url.split('/').pop();
-      var id = this._canonicalId(event.params.interceptionId);
+      var id = this._canonicalId(event.params.requestId);
+      this._filenameToInterceptionId[filename] = id;
+      if (!requestInterceptedDict.hasOwnProperty(filename + '+Auth')) {
+        this._completeTest('FAILED: unexpected auth challenge ' +
+                           JSON.stringify(event.params));
+        return;
+      }
+      this._log(id, 'Auth required for ' + id);
+      requestInterceptedDict[filename + '+Auth'](event);
+    });
+
+    this._session.protocol.Fetch.onRequestPaused(event => {
+      const filename = event.params.request.url.split('/').pop();
+      const id = this._canonicalId(event.params.requestId);
       this._filenameToInterceptionId[filename] = id;
       if (!requestInterceptedDict.hasOwnProperty(filename)) {
         this._completeTest('FAILED: unexpected request interception ' +
             JSON.stringify(event.params));
         return;
       }
-      if (event.params.hasOwnProperty('authChallenge')) {
-        this._log(id, 'Auth required for ' + id);
-        requestInterceptedDict[filename + '+Auth'](event);
-        return;
+      if (!this._interceptionRequestParams[id])
+        this._interceptionRequestParams[id] = event.params.request;
+      let redirectUrl;
+      for (var h of event.params.responseHeaders || []) {
+        if (h.name.toLowerCase() === 'location')
+          redirectUrl = h.value;
       }
-      if (event.params.hasOwnProperty('redirectUrl')) {
+      if (event.params.responseStatusCode &&
+          event.params.responseStatusCode >= 300 &&
+          event.params.responseStatusCode < 400 && redirectUrl) {
+        event.params.redirectUrl = redirectUrl;
         var errorReason = '';
         if (event.params.responseErrorReason)
           errorReason = event.params.responseErrorReason + ' ';
@@ -149,10 +167,11 @@
     this._testRunner.log('Network agent enabled');
     var patterns = [];
     if (interceptionStage === 'HeadersReceived' || interceptionStage === 'Both')
-      patterns.push({urlPattern: "*", interceptionStage: 'HeadersReceived'});
+      patterns.push({urlPattern: '*', requestStage: 'Response'});
     if (interceptionStage === undefined || interceptionStage === 'Request' || interceptionStage === 'Both')
-      patterns.push({urlPattern: "*", interceptionStage: 'Request'});
-    await this._session.protocol.Network.setRequestInterception({patterns: patterns});
+      patterns.push({urlPattern: '*', requestStage: 'Request'});
+    await this._session.protocol.Fetch.enable(
+        {patterns: patterns, handleAuthRequests: true});
     this._testRunner.log('Request interception enabled');
     await this._session.protocol.Page.enable();
     this._testRunner.log('Page agent enabled');
@@ -161,13 +180,14 @@
   }
 
   allowRequest(event) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, 'allowRequest ' + id);
-    this._session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+    var params = {requestId: event.params.requestId};
+    this._session.protocol.Fetch.continueRequest(params);
   }
 
   modifyRequest(event, params) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     var mods = [];
     for (var property in params) {
       if (!params.hasOwnProperty(property))
@@ -186,47 +206,84 @@
     }
 
     this._log(id, 'modifyRequest ' + id + ': ' + mods.join('; '));
-    params['interceptionId'] = event.params.interceptionId;
-    this._session.protocol.Network.continueInterceptedRequest(params);
+    params['requestId'] = event.params.requestId;
+    if (params.postData)
+      params.postData = btoa(params.postData);
+    if (params.responseCode || params.responseHeaders || params.body) {
+      this._session.protocol.Fetch.fulfillRequest({
+        requestId: event.params.requestId,
+        responseCode: params.responseCode || 200,
+        responsePhrase: params.responsePhrase || 'OK',
+        responseHeaders: params.responseHeaders || [],
+        body: params.body !== undefined ? btoa(params.body) : undefined
+      });
+      return;
+    }
+    this._session.protocol.Fetch.continueRequest(params);
   }
 
   blockRequest(event, errorReason) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, 'blockRequest ' + id + ' ' + errorReason);
-    this._session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, errorReason});
+    this._session.protocol.Fetch.failRequest(
+        {requestId: event.params.requestId, errorReason: errorReason});
   }
 
-  mockResponse(event, rawResponse) {
-    var id = this._canonicalId(event.params.interceptionId);
+  mockResponse(event, {
+    responseCode = 200,
+    responsePhrase = 'OK',
+    responseHeaders = [],
+    body = ''
+  }) {
+    const id = this._canonicalId(event.params.requestId);
     this._log(id, 'mockResponse ' + id);
-    rawResponse = btoa(rawResponse);
-    this._session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, rawResponse});
+    const fulfillParams = {
+      requestId: event.params.requestId,
+      responseCode,
+      responsePhrase,
+      responseHeaders
+    };
+    fulfillParams.body = btoa(body);
+    this._session.protocol.Fetch.fulfillRequest(fulfillParams);
   }
 
   disableRequestInterception(event) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, '----- disableRequestInterception -----');
-    this._session.protocol.Network.setRequestInterception({patterns: []});
+    this._session.protocol.Fetch.disable();
+    this._session.protocol.Fetch
+        .continueRequest({requestId: event.params.requestId})
+        .catch(() => {});
   }
 
   cancelAuth(event) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, '----- Cancel Auth -----');
-    this._session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, authChallengeResponse: {response: 'CancelAuth'}});
+    this._session.protocol.Fetch.continueWithAuth({
+      requestId: event.params.requestId,
+      authChallengeResponse: {response: 'CancelAuth'}
+    });
   }
 
   defaultAuth(event) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, '----- Use Default Auth -----');
-    this._session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, authChallengeResponse: {response: 'Default'}});
+    this._session.protocol.Fetch.continueWithAuth({
+      requestId: event.params.requestId,
+      authChallengeResponse: {response: 'Default'}
+    });
   }
 
   provideAuthCredentials(event, username, password) {
-    var id = this._canonicalId(event.params.interceptionId);
+    var id = this._canonicalId(event.params.requestId);
     this._log(id, '----- Provide Auth Credentials -----');
-    this._session.protocol.Network.continueInterceptedRequest({
-      interceptionId: event.params.interceptionId,
-      authChallengeResponse: { response: 'ProvideCredentials', username: username, password: password }
+    this._session.protocol.Fetch.continueWithAuth({
+      requestId: event.params.requestId,
+      authChallengeResponse: {
+        response: 'ProvideCredentials',
+        username: username,
+        password: password
+      }
     });
   }
 })

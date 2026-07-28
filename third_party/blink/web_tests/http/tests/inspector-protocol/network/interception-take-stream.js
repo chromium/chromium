@@ -7,9 +7,8 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await dp.Fetch.enable(
+      {patterns: [{urlPattern: '*', requestStage: 'Response'}]});
 
   const bodyPattern = 'The_quick_brown_fox_jumps_over_the_lazy_dog_0123456789';
 
@@ -36,9 +35,10 @@
     let paramStr = Object.keys(params).map(k => `${k}=${params[k]}`).join('&');
     const url = `/devtools/network/resources/resource.php?${paramStr}`;
     session.evaluate(`fetch("${url}");`);
-    const intercepted = (await dp.Network.onceRequestIntercepted()).params;
-    lastInterceptionId = intercepted.interceptionId;
-    let response = await dp.Network.takeResponseBodyForInterceptionAsStream({interceptionId: lastInterceptionId});
+    const intercepted = (await dp.Fetch.onceRequestPaused()).params;
+    lastInterceptionId = intercepted.requestId;
+    let response = await dp.Fetch.takeResponseBodyAsStream(
+        {requestId: lastInterceptionId});
     if (response.error) {
       testRunner.log(`Error taking stream: ${response.error.message}`);
       return;
@@ -49,7 +49,8 @@
 
   function cancelAndClose() {
     if (lastInterceptionId) {
-      dp.Network.continueInterceptedRequest({interceptionId: lastInterceptionId, errorReason: 'Aborted'});
+      dp.Fetch.failRequest(
+          {requestId: lastInterceptionId, errorReason: 'Aborted'});
       lastInterceptionId = undefined;
     }
     if (lastStreamId) {
@@ -135,7 +136,8 @@
       const stream = await startRequestAndTakeStream(100);
       if (!stream)
         return;
-      let response = await dp.Network.takeResponseBodyForInterceptionAsStream({interceptionId: lastInterceptionId});
+      let response = await dp.Fetch.takeResponseBodyAsStream(
+          {requestId: lastInterceptionId});
       testRunner.log(`Trying to take stream twice: ${response.error.message}`);
     },
 
@@ -143,7 +145,8 @@
       const stream = await startRequestAndTakeStream(100);
       if (!stream)
         return;
-      dp.Network.continueInterceptedRequest({interceptionId: lastInterceptionId, errorReason: 'Aborted'});
+      dp.Fetch.failRequest(
+          {requestId: lastInterceptionId, errorReason: 'Aborted'});
       lastInterceptionId = undefined;
       let result = (await dp.IO.read({handle: stream, size: 100})).result;
       testRunner.log(`data: ${result.data} (${result.data.length}) eof: ${result.eof}`);
@@ -155,7 +158,8 @@
       const stream = await startRequestAndTakeStream(100);
       if (!stream)
         return;
-      const response = await dp.Network.continueInterceptedRequest({interceptionId: lastInterceptionId});
+      const response =
+          await dp.Fetch.continueRequest({requestId: lastInterceptionId});
       testRunner.log(`Attempting to continue as is after taking request: ${response.error.message}`);
     },
 

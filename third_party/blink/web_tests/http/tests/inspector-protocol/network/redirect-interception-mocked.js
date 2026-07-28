@@ -10,11 +10,11 @@
     'redirect1.pl': event => helper.allowRequest(event),
     'redirect2.pl': event => helper.allowRequest(event),
     'redirect3.pl': event => {
-      var rawResponse =
-          'HTTP/1.1 200 OK\r\n' +
-          'Content-Type: application/javascript\r\n\r\n' +
-          'console.log("Hello from the mock resource");';
-      helper.mockResponse(event, rawResponse);
+      helper.mockResponse(event, {
+        responseHeaders:
+            [{name: 'Content-Type', value: 'application/javascript'}],
+        body: 'console.log("Hello from the mock resource");'
+      });
     },
   };
 

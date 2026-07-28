@@ -2,8 +2,8 @@
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that browser does not crash or hit DCHECK() when an intercepted request is abandoned.`);
   await dp.Network.enable();
-  await dp.Network.setRequestInterception({patterns: [{}]});
+  await dp.Fetch.enable({patterns: [{}]});
   dp.Page.navigate({url: 'http://a.com'});
-  await dp.Network.onceRequestIntercepted();
+  await dp.Fetch.onceRequestPaused();
   testRunner.completeTest();
 })

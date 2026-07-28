@@ -8,27 +8,28 @@
   await session.protocol.Page.enable();
   await dp.Page.setLifecycleEventsEnabled({enabled: true});
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
+  await dp.Fetch.enable({patterns: [{}]});
 
   const loadPromise = dp.Page.onceLifecycleEvent(event => event.params.name === 'load');
 
   dp.Page.navigate({ url: 'http://test-url/' });
 
-  let params = (await dp.Network.onceRequestIntercepted()).params;
+  let params = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`Intercepted: ${params.request.url}`);
   respondWithRedirct(params, 'http://test-url/redirect1');
 
-  params = (await dp.Network.onceRequestIntercepted()).params;
+  params = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`Intercepted: ${params.request.url}`);
   respondWithRedirct(params, 'http://test-url/redirect2');
 
-  params = (await dp.Network.onceRequestIntercepted()).params;
+  params = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`Intercepted: ${params.request.url}`);
   respondWithRedirct(params, 'http://test-url/final');
 
-  params = (await dp.Network.onceRequestIntercepted()).params;
+  params = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`Intercepted: ${params.request.url}`);
-  respond(params, ['HTTP/1.1 200 OK', 'Content-Type: text/html'], '<body>Hello, world!</body>');
+  respond(params, [{name: 'Content-Type', value: 'text/html'}],
+          '<body>Hello, world!</body>');
 
   await loadPromise;
   const body = await session.evaluate('document.body.textContent');
@@ -36,15 +37,20 @@
 
   testRunner.completeTest();
 
-  function respond(params, headers, body) {
-    const headersText = headers.join("\r\n");
-    const response = headersText + "\r\n\r\n" + (body || "");
-    dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId, rawResponse: btoa(response)});
+  function respond(params, headers, body, responseCode = 200,
+                   responsePhrase = 'OK') {
+    dp.Fetch.fulfillRequest({
+      requestId: params.requestId,
+      responseCode,
+      responsePhrase,
+      responseHeaders: headers,
+      body: btoa(body || '')
+    });
   }
 
   function respondWithRedirct(params, url) {
     testRunner.log(`Redirecting to ${url}`);
-    respond(params, ['HTTP/1.1 302 Moved', `Location: ${url}`], null);
+    respond(params, [{name: 'Location', value: url}], null, 302, 'Moved');
   }
 })
 

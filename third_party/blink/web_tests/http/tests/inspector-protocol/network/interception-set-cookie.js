@@ -5,16 +5,17 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
-  dp.Network.onRequestIntercepted(e => {
-    const response = [
-        'HTTP/1.1 200 OK',
-        'Set-Cookie: my_special_cookie=no_domain',
-        'Content-Type: text/html',
-        '',
-        '<html>Hello world</html>'];
-    const rawResponse = btoa(response.join('\r\n'));
-    dp.Network.continueInterceptedRequest({interceptionId: e.params.interceptionId, rawResponse});
+  await dp.Fetch.enable({patterns: [{}]});
+  dp.Fetch.onRequestPaused(e => {
+    dp.Fetch.fulfillRequest({
+      requestId: e.params.requestId,
+      responseCode: 200,
+      responseHeaders: [
+        {name: 'Set-Cookie', value: 'my_special_cookie=no_domain'},
+        {name: 'Content-Type', value: 'text/html'}
+      ],
+      body: btoa('<html>Hello world</html>')
+    });
   });
 
   dp.Page.navigate({url: 'http://127.0.0.1:8000/inspector-protocol/network/resources/simple.html'});

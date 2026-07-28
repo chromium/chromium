@@ -7,14 +7,16 @@
   await session.protocol.Page.enable();
   testRunner.log('Page agent enabled');
 
-  session.protocol.Network.onRequestIntercepted(async event => {
+  session.protocol.Fetch.onRequestPaused(async event => {
     var filename = event.params.request.url.split('/').pop();
     testRunner.log('Request Intercepted: ' + filename);
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, errorReason: 'AddressUnreachable'});
+    session.protocol.Fetch.failRequest(
+        {requestId: event.params.requestId, errorReason: 'AddressUnreachable'});
     testRunner.completeTest();
   });
 
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "*/image.png"}]});
+  await session.protocol.Fetch.enable(
+      {patterns: [{urlPattern: '*/image.png'}]});
   session.evaluate(`
     var img = new Image();
     img.src = 'image.png#SOME_HASH';

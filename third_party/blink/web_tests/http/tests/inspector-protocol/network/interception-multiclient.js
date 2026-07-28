@@ -11,8 +11,8 @@
 
   await dp2.Network.enable();
   testRunner.log('-- request stage for client 1 and client 2');
-  await dp2.Network.setRequestInterception({patterns: [{}]});
-  await dp.Network.setRequestInterception({patterns: [{}]});
+  await dp2.Fetch.enable({patterns: [{}]});
+  await dp.Fetch.enable({patterns: [{}]});
 
   function continueInterceptedRequest(protocol, clientName, event) {
     const params = event.params;
@@ -24,40 +24,49 @@
     } else {
       testRunner.log(`${clientName}: intercepted request to ${url}`);
     }
-    protocol.Network.continueInterceptedRequest({interceptionId : params.interceptionId});
+    protocol.Fetch.continueRequest({requestId: params.requestId});
   }
 
   const listener1 = continueInterceptedRequest.bind(this, dp, "client 1");
-  dp.Network.onRequestIntercepted(listener1);
-  dp2.Network.onRequestIntercepted(continueInterceptedRequest.bind(this, dp2, "client 2"));
+  dp.Fetch.onRequestPaused(listener1);
+  dp2.Fetch.onRequestPaused(
+      continueInterceptedRequest.bind(this, dp2, 'client 2'));
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
 
   testRunner.log('-- request stage for client 1, both stages for client 2');
 
-  await dp2.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'Request'},
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await dp2.Fetch.enable({
+    patterns: [
+      {urlPattern: '*', requestStage: 'Request'},
+      {urlPattern: '*', requestStage: 'Response'}
+    ]
+  });
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
 
   testRunner.log('-- both stages for client 1 and client 2');
 
-  await dp.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'Request'},
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await dp.Fetch.enable({
+    patterns: [
+      {urlPattern: '*', requestStage: 'Request'},
+      {urlPattern: '*', requestStage: 'Response'}
+    ]
+  });
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
 
   testRunner.log('-- mock response from client 1');
 
-  dp.Network.offRequestIntercepted(listener1);
-  dp.Network.onRequestIntercepted(event => {
+  dp.Fetch.offRequestPaused(listener1);
+  dp.Fetch.onRequestPaused(event => {
     const params = event.params;
     testRunner.log(`client 1: rejecting request to ${params.request.url}`);
-    dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId, rawResponse: btoa("HTTP/1.1 418 I'm a teapot\r\n\r\n")});
+    dp.Fetch.fulfillRequest({
+      requestId: params.requestId,
+      responseCode: 418,
+      responsePhrase: 'I\'m a teapot'
+    });
   });
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
@@ -65,11 +74,16 @@
   testRunner.log('-- mock response from client 3');
 
   const dp3 = (await page.createSession()).protocol;
-  await dp3.Network.setRequestInterception({patterns: [{}]});
-  dp3.Network.onceRequestIntercepted().then(event => {
+  await dp3.Fetch.enable({patterns: [{}]});
+  dp3.Fetch.onceRequestPaused().then(event => {
     const params = event.params;
     testRunner.log(`client 3: resolving response to ${params.request.url}`);
-    dp3.Network.continueInterceptedRequest({interceptionId: params.interceptionId, rawResponse: btoa("HTTP/1.1 200\r\n\r\nHello, world!")});
+    dp3.Fetch.fulfillRequest({
+      requestId: params.requestId,
+      responseCode: 200,
+      responsePhrase: 'OK',
+      body: btoa('Hello, world!')
+    });
   });
 
   const body = await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
@@ -77,21 +91,22 @@
 
   testRunner.log('-- url rewrite from client 3');
 
-  dp3.Network.onceRequestIntercepted().then(event => {
+  dp3.Fetch.onceRequestPaused().then(event => {
     const params = event.params;
     const newURL = `${params.request.url}?jscontent=1`;
     testRunner.log(`client 3: overriding URL from ${params.request.url} to ${newURL}`);
-    dp3.Network.continueInterceptedRequest({interceptionId: params.interceptionId, url: newURL});
+    dp3.Fetch.continueRequest({requestId: params.requestId, url: newURL});
   });
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
 
   testRunner.log('-- failing request from client 3');
 
-  dp3.Network.onceRequestIntercepted().then(event => {
+  dp3.Fetch.onceRequestPaused().then(event => {
     const params = event.params;
     testRunner.log(`client 3: failing request from ${params.request.url}`);
-    dp3.Network.continueInterceptedRequest({interceptionId: params.interceptionId, errorReason: "Aborted"});
+    dp3.Fetch.failRequest(
+        {requestId: params.requestId, errorReason: 'Aborted'});
   });
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);

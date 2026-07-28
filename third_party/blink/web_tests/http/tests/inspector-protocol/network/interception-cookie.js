@@ -6,10 +6,10 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
-  dp.Network.onRequestIntercepted(e => {
+  await dp.Fetch.enable({patterns: [{}]});
+  dp.Fetch.onRequestPaused(e => {
     testRunner.log('Cookie: ' + e.params.request.headers['Cookie']);
-    dp.Network.continueInterceptedRequest({interceptionId: e.params.interceptionId});
+    dp.Fetch.continueRequest({requestId: e.params.requestId});
   });
 
   await session.evaluateAsync(`document.cookie = 'foo=bar';`);

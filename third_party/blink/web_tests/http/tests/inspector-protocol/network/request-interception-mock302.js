@@ -7,7 +7,11 @@
 
   var requestInterceptedDict = {
     'redirect-iframe.html': event => helper.allowRequest(event),
-    'redirect1.pl': event => helper.mockResponse(event, 'HTTP/1.1 302 Found\r\nLocation: final.js\r\n\r\n'),
+    'redirect1.pl': event => helper.mockResponse(event, {
+      responseCode: 302,
+      responsePhrase: 'Found',
+      responseHeaders: [{name: 'Location', value: 'final.js'}]
+    }),
     'final.js': event => helper.allowRequest(event),
   };
 

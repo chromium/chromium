@@ -7,13 +7,14 @@
 
   var requestInterceptedDict = {
     'redirect-iframe.html': event => {
-      var rawResponse =
-          'HTTP/1.1 200 OK\r\n' +
-          'Content-Type: text/html; charset=UTF-8\r\n\r\n' +
-          '<html><head><script>' +
-          'console.log("Hello from the mocked iframe.")' +
-          '</' + 'script></head></html>';
-      helper.mockResponse(event, rawResponse);
+      helper.mockResponse(event, {
+        responseHeaders:
+            [{name: 'Content-Type', value: 'text/html; charset=UTF-8'}],
+        body: '<html><head><script>' +
+            'console.log("Hello from the mocked iframe.")' +
+            '</' +
+            'script></head></html>'
+      });
     },
   };
 

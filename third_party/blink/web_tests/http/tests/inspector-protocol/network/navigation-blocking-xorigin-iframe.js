@@ -8,13 +8,16 @@
 
   let interceptionLog = [];
   async function onRequestIntercepted(dp, e) {
-    const response = {interceptionId: e.params.interceptionId};
+    const response = {requestId: e.params.requestId};
 
     if (e.params.request.url === 'http://devtools.oopif-b.test:8000/inspector-protocol/resources/test-page.html')
       response.errorReason = 'Aborted';
     interceptionLog.push(e.params.request.url + (response.errorReason ? `: ${response.errorReason}` : ''));
 
-    await dp.Network.continueInterceptedRequest(response);
+    if (response.errorReason)
+      await dp.Fetch.failRequest(response);
+    else
+      await dp.Fetch.continueRequest(response);
   }
 
   // Main frame load + initial oopif-a load + initial oopif-b load +
@@ -28,10 +31,9 @@
   async function initalizeTarget(dp) {
     allTargets.push(dp);
     await Promise.all([
-      dp.Network.setRequestInterception({patterns: [{}]}),
-      dp.Network.onRequestIntercepted(onRequestIntercepted.bind(this, dp)),
-      dp.Network.enable(),
-      dp.Page.enable()
+      dp.Fetch.enable({patterns: [{}]}),
+      dp.Fetch.onRequestPaused(onRequestIntercepted.bind(this, dp)),
+      dp.Network.enable(), dp.Page.enable()
     ]);
     dp.Page.onFrameStartedLoading(e => {
       ++loadCount;

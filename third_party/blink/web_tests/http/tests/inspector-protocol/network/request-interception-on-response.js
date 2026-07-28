@@ -12,24 +12,25 @@
       testRunner.log('Request Intercepted: ' + event.params.request.url.split('/').pop());
       testRunner.log('  responseStatusCode: ' + event.params.responseStatusCode);
       testRunner.log('  responseHeaders:');
-      for (var headerName of Object.keys(event.params.responseHeaders).sort()) {
-        var headerValue = event.params.responseHeaders[headerName];
-        if (headersMaskList.has(headerName.toLowerCase()))
+      event.params.responseHeaders.sort((a, b) => a.name.localeCompare(b.name));
+      for (const {name, value} of event.params.responseHeaders) {
+        let headerValue = value;
+        if (headersMaskList.has(name.toLowerCase()))
           headerValue = '<Masked>';
-        testRunner.log(`    ${headerName}: ${headerValue}`);
+        testRunner.log(`    ${name}: ${headerValue}`);
       }
-      var bodyData = await session.protocol.Network.getResponseBodyForInterception({interceptionId: event.params.interceptionId});
+      var bodyData = await session.protocol.Fetch.getResponseBody(
+          {requestId: event.params.requestId});
       testRunner.log('  responseBody:');
       testRunner.log(bodyData.result.base64Encoded ? atob(bodyData.result.body) : bodyData.result.body);
-      var body = '<html>\n<body>This content was rewritten!</body>\n</html>';
-      var dummyHeaders = [
-        'HTTP/1.1 200 OK',
-        'Date: ' + (new Date()).toUTCString(),
-        'Connection: closed',
-        'Content-Length: ' + body.size,
-        'Content-Type: text/html'
+      const body = '<html>\n<body>This content was rewritten!</body>\n</html>';
+      const dummyHeaders = [
+        {name: 'Date', value: (new Date()).toUTCString()},
+        {name: 'Connection', value: 'closed'},
+        {name: 'Content-Length', value: String(body.length)},
+        {name: 'Content-Type', value: 'text/html'}
       ];
-      helper.modifyRequest(event, {rawResponse: btoa(dummyHeaders.join('\r\n') + '\r\n\r\n' + body)});
+      helper.modifyRequest(event, {responseHeaders: dummyHeaders, body});
       testRunner.log('');
     }
   };

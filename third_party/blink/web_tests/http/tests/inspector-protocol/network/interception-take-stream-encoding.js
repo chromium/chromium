@@ -6,9 +6,8 @@
   await session.protocol.Network.setCacheDisabled({cacheDisabled: true});
   await session.protocol.Network.enable();
 
-  await dp.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await dp.Fetch.enable(
+      {patterns: [{urlPattern: '*', requestStage: 'Response'}]});
 
   let lastInterceptionId;
   let lastStreamId;
@@ -16,9 +15,10 @@
     cancelAndClose();
     const url = testRunner.url(`resources/charset.php?test=${charset}`);
     session.evaluate(`fetch("${url}");`);
-    const intercepted = (await dp.Network.onceRequestIntercepted()).params;
-    lastInterceptionId = intercepted.interceptionId;
-    let response = await dp.Network.takeResponseBodyForInterceptionAsStream({interceptionId: lastInterceptionId});
+    const intercepted = (await dp.Fetch.onceRequestPaused()).params;
+    lastInterceptionId = intercepted.requestId;
+    let response = await dp.Fetch.takeResponseBodyAsStream(
+        {requestId: lastInterceptionId});
     if (response.error) {
       testRunner.log(`Error taking stream: ${response.error.message}`);
       return;
@@ -29,7 +29,8 @@
 
   function cancelAndClose() {
     if (lastInterceptionId) {
-      dp.Network.continueInterceptedRequest({interceptionId: lastInterceptionId, errorReason: 'Aborted'});
+      dp.Fetch.failRequest(
+          {requestId: lastInterceptionId, errorReason: 'Aborted'});
       lastInterceptionId = undefined;
     }
     if (lastStreamId) {

@@ -24,7 +24,7 @@
       requestInterceptionWaitingMap.set(fileName, null);
   });
 
-  session.protocol.Network.onRequestIntercepted(async event => {
+  session.protocol.Fetch.onRequestPaused(async event => {
     var fileName = nameForUrl(event.params.request.url);
     // Because requestWillBeSent and interception requests come from different processes, they may come in random order,
     // This will syncronize them to ensure requestWillBeSent is processed first and will stall here till it does.
@@ -34,16 +34,19 @@
     testRunner.log('Request Intercepted: ' + fileName);
 
     var rawContent = dataForNames[fileName];
-    var headers = [
-      'HTTP/1.1 200 OK',
-      'Date: ' + (new Date()).toUTCString(),
-      'Server: Test Interception',
-      'Connection: closed',
-      'Content-Length: ' + rawContent.length,
-      'Content-Type: text/html',
-    ];
-    var encodedResponse = btoa(headers.join('\r\n') + '\r\n\r\n' + rawContent);
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId, rawResponse: encodedResponse});
+    session.protocol.Fetch.fulfillRequest({
+      requestId: event.params.requestId,
+      responseCode: 200,
+      responsePhrase: 'OK',
+      responseHeaders: [
+        {name: 'Date', value: (new Date()).toUTCString()},
+        {name: 'Server', value: 'Test Interception'},
+        {name: 'Connection', value: 'closed'},
+        {name: 'Content-Length', value: String(rawContent.length)},
+        {name: 'Content-Type', value: 'text/html'}
+      ],
+      body: btoa(rawContent)
+    });
   });
 
   session.protocol.Network.onLoadingFailed(event => { throw 'This test should never fail to load a resource.' });
@@ -85,7 +88,7 @@
 
   function setPatterns(patterns) {
     testRunner.log('setRequestInterception(' + JSON.stringify(patterns) + ')');
-    return session.protocol.Network.setRequestInterception({patterns});
+    return session.protocol.Fetch.enable({patterns});
   }
 
   testRunner.log('');

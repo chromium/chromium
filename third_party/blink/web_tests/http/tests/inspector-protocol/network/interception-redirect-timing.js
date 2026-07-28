@@ -5,25 +5,27 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
-  dp.Network.onRequestIntercepted(e => {
+  await dp.Fetch.enable({patterns: [{}]});
+  dp.Fetch.onRequestPaused(e => {
     const params = e.params;
-    let response;
     testRunner.log(`intercepted ${params.request.url}`);
     if (/before-redirect$/.test(params.request.url)) {
-      response = [
-        'HTTP/1.1 303 See Other',
-        'Location: http://example.com/after-redirect',
-        '',''];
+      dp.Fetch.fulfillRequest({
+        requestId: params.requestId,
+        responseCode: 303,
+        responsePhrase: 'See Other',
+        responseHeaders:
+            [{name: 'Location', value: 'http://example.com/after-redirect'}]
+      });
     } else {
-      response = [
-        'HTTP/1.1 200 OK',
-        'Content-Type: text/html',
-        '',
-        '<html>Hello world</html>'];
+      dp.Fetch.fulfillRequest({
+        requestId: params.requestId,
+        responseCode: 200,
+        responsePhrase: 'OK',
+        responseHeaders: [{name: 'Content-Type', value: 'text/html'}],
+        body: btoa('<html>Hello world</html>')
+      });
     }
-    const rawResponse = btoa(response.join('\r\n'));
-    dp.Network.continueInterceptedRequest({interceptionId: e.params.interceptionId, rawResponse});
   });
 
   const requestTimes = [];

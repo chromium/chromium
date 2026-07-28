@@ -8,9 +8,9 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
-  dp.Network.onRequestIntercepted(e => {
-    dp.Network.continueInterceptedRequest({interceptionId: e.params.interceptionId});
+  await dp.Fetch.enable({patterns: [{}]});
+  dp.Fetch.onRequestPaused(e => {
+    dp.Fetch.continueRequest({requestId: e.params.requestId});
   });
 
   dp.Page.navigate({url: 'http://127.0.0.1:8000/inspector-protocol/network/resources/cookie-same-site.pl'});

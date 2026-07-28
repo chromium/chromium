@@ -4,9 +4,7 @@
 
   await dp.Network.enable();
   await dp.Page.enable();
-  await dp.Network.setRequestInterception({
-    patterns: [{ urlPattern: '*' }]
-  });
+  await dp.Fetch.enable({patterns: [{urlPattern: '*'}]});
   const messagesByURL = new Map();
   function addMessage(url, message) {
     let messages = messagesByURL.get(url);
@@ -16,19 +14,17 @@
     }
     messages.push(message);
   }
-  dp.Network.onRequestIntercepted(event => {
+  dp.Fetch.onRequestPaused(event => {
     const url = event.params.request.url;
     if (url.endsWith('page-with-subresource.html')) {
       addMessage(url, '2 - continuing to load');
-      dp.Network.continueInterceptedRequest({
-        interceptionId: event.params.interceptionId,
+      dp.Fetch.continueRequest({
+        requestId: event.params.requestId,
       });
     } else {
       addMessage(url, '2 - blocking');
-      dp.Network.continueInterceptedRequest({
-        interceptionId: event.params.interceptionId,
-        errorReason: 'BlockedByClient'
-      });
+      dp.Fetch.failRequest(
+          {requestId: event.params.requestId, errorReason: 'BlockedByClient'});
     }
   });
 

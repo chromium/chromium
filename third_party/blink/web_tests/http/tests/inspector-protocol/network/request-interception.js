@@ -10,11 +10,11 @@
     'i-dont-exist.css': event => helper.modifyRequest(event, {url: 'test.css'}),
     'script.js': event => helper.blockRequest(event, 'ConnectionFailed'),
     'script2.js': event => {
-      var rawResponse =
-          'HTTP/1.1 200 OK\r\n' +
-          'Content-Type: application/javascript\r\n\r\n' +
-          'console.log("Hello from the mock resource");';
-      helper.mockResponse(event, rawResponse);
+      helper.mockResponse(event, {
+        responseHeaders:
+            [{name: 'Content-Type', value: 'application/javascript'}],
+        body: 'console.log("Hello from the mock resource");'
+      });
     },
     'post-echo.pl': event => helper.allowRequest(event),
   };

@@ -16,13 +16,15 @@
       var responseHeaders = event.params.responseHeaders;
       if (responseHeaders) {
         testRunner.log('  responseHeaders:');
-        for (var headerName of Object.keys(event.params.responseHeaders).sort()) {
-          var headerValue = event.params.responseHeaders[headerName].split(';')[0]; // Sometimes "; charset=UTF-8" gets in here.
-          if (headersHideList.has(headerName.toLowerCase()))
+        responseHeaders.sort((a, b) => a.name.localeCompare(b.name));
+        for (const {name, value} of responseHeaders) {
+          let headerValue =
+              value.split(';')[0];  // Sometimes "; charset=UTF-8" gets in here.
+          if (headersHideList.has(name.toLowerCase()))
             continue;
-          if (headersMaskList.has(headerName.toLowerCase()))
+          if (headersMaskList.has(name.toLowerCase()))
             headerValue = '<Masked>';
-          testRunner.log(`    ${headerName}: ${headerValue}`);
+          testRunner.log(`    ${name}: ${headerValue}`);
         }
       } else {
         testRunner.log('  responseHeaders: <None>');
@@ -31,7 +33,8 @@
       if (event.params.redirectUrl)
         testRunner.log('  redirectUrl: ' + event.params.redirectUrl.split('/').pop());
 
-      var bodyData = await session.protocol.Network.getResponseBodyForInterception({interceptionId: event.params.interceptionId});
+      var bodyData = await session.protocol.Fetch.getResponseBody(
+          {requestId: event.params.requestId});
       if (bodyData.error) {
         testRunner.log('  responseBody:');
         testRunner.log('    error: ' + bodyData.error.message);
@@ -40,16 +43,16 @@
         testRunner.log(bodyData.result.base64Encoded ? atob(bodyData.result.body) : bodyData.result.body);
       }
       if (event.params.redirectUrl) {
-        var body = '<html>\n<body>This content was rewritten!</body>\n</html>';
-        var dummyHeaders = [
-          'HTTP/1.1 200 OK',
-          'Date: ' + (new Date()).toUTCString(),
-          'Connection: closed',
-          'Content-Length: ' + body.size,
-          'Content-Type: text/html'
+        const body =
+            '<html>\n<body>This content was rewritten!</body>\n</html>';
+        const dummyHeaders = [
+          {name: 'Date', value: (new Date()).toUTCString()},
+          {name: 'Connection', value: 'closed'},
+          {name: 'Content-Length', value: String(body.length)},
+          {name: 'Content-Type', value: 'text/html'}
         ];
         testRunner.log('Modifying request with new body.');
-        helper.modifyRequest(event, {rawResponse: btoa(dummyHeaders.join('\r\n') + '\r\n\r\n' + body)});
+        helper.modifyRequest(event, {responseHeaders: dummyHeaders, body});
       } else {
         testRunner.log('Continue request unchanged.');
         helper.allowRequest(event);

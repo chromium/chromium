@@ -6,7 +6,7 @@
   await dp.Network.setCacheDisabled({cacheDisabled: true});
   await dp.Page.enable();
 
-  await dp.Network.setRequestInterception({patterns: [{}]});
+  await dp.Fetch.enable({patterns: [{}]});
   dp.Runtime.evaluate({expression: `
     document.body.innerHTML = '<iframe src="http://127.0.1.1:8000/whatever"></iframe>';
   `});
@@ -29,12 +29,18 @@
   dp.Network.onRequestWillBeSentExtraInfo(() => requestExtraInfoCount++);
   dp.Network.onResponseReceivedExtraInfo(() => responseExtraInfoCount++);
 
-  let params = (await dp.Network.onceRequestIntercepted()).params;
-  const response = "HTTP/1.1 303 See other\r\n" +
-      "Location: http://127.0.0.1:8000/devtools/resources/empty.html\r\n\r\n";
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId, rawResponse: btoa(response)});
-  params = (await dp.Network.onceRequestIntercepted()).params;
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  let params = (await dp.Fetch.onceRequestPaused()).params;
+  dp.Fetch.fulfillRequest({
+    requestId: params.requestId,
+    responseCode: 303,
+    responsePhrase: 'See other',
+    responseHeaders: [{
+      name: 'Location',
+      value: 'http://127.0.0.1:8000/devtools/resources/empty.html'
+    }]
+  });
+  params = (await dp.Fetch.onceRequestPaused()).params;
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   printResponse(await dp.Network.onceResponseReceived());
 

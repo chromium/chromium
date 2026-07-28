@@ -7,28 +7,27 @@
   await session.protocol.Network.enable();
   await session.protocol.Runtime.enable();
 
-  await dp.Network.setRequestInterception({patterns: [
-    {urlPattern: '*', interceptionStage: 'HeadersReceived'}
-  ]});
+  await dp.Fetch.enable(
+      {patterns: [{urlPattern: '*', requestStage: 'Response'}]});
 
 
   testRunner.log('Regular navigation: ');
   dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php'});
-  let {params} = await dp.Network.onceRequestIntercepted();
-  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  let {params} = await dp.Fetch.onceRequestPaused();
+  testRunner.log(`Intercepted ${params.request.url}`);
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   testRunner.log('Download via content-disposition: ');
   dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1'});
-  ({params} = await dp.Network.onceRequestIntercepted());
-  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  ({params} = await dp.Fetch.onceRequestPaused());
+  testRunner.log(`Intercepted ${params.request.url}`);
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   testRunner.log('Download via unhandled MIME type: ');
   dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?mime_type=application/octet-stream'});
-  ({params} = await dp.Network.onceRequestIntercepted());
-  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  ({params} = await dp.Fetch.onceRequestPaused());
+  testRunner.log(`Intercepted ${params.request.url}`);
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   testRunner.log('Now downloading by clicking a link: ');
   session.evaluate(`
@@ -38,9 +37,9 @@
     document.body.appendChild(a);
     a.click();
   `);
-  ({params} = await dp.Network.onceRequestIntercepted());
-  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  ({params} = await dp.Fetch.onceRequestPaused());
+  testRunner.log(`Intercepted ${params.request.url}`);
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   testRunner.completeTest();
 })

@@ -2,9 +2,9 @@
   var {page, session, dp} = await testRunner.startBlank(
       `Tests interception to ensure if subrequest's content is not ready and we continue the renderer does not crash see: crbug.com/785502.`);
 
-  session.protocol.Network.onRequestIntercepted(async event => {
+  session.protocol.Fetch.onRequestPaused(async event => {
     testRunner.log('Request Intercepted: ' + event.params.request.url.split('/').pop());
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+    session.protocol.Fetch.continueRequest({requestId: event.params.requestId});
     testRunner.log('');
   });
 
@@ -13,7 +13,8 @@
   await session.protocol.Network.setCacheDisabled({cacheDisabled: true});
   session.protocol.Network.enable();
   testRunner.log('Network agent enabled');
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "*", interceptionStage: 'HeadersReceived'}]});
+  await session.protocol.Fetch.enable(
+      {patterns: [{urlPattern: '*', requestStage: 'Response'}]});
 
   var requestId = '';
   session.protocol.Network.onRequestWillBeSent(event => {

@@ -6,18 +6,18 @@
   dp.Page.enable();
   dp.Runtime.enable();
 
-  dp.Network.setRequestInterception({patterns: [{}]});
+  dp.Fetch.enable({patterns: [{}]});
   session.evaluate(`
       navigator.sendBeacon('beacon','this is Major Tom to ground control');
   `);
-  const params = (await dp.Network.onceRequestIntercepted()).params;
+  const params = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`Intercepted URL: ${params.request.url} type: ${params.resourceType}`);
-  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+  dp.Fetch.continueRequest({requestId: params.requestId});
 
   dp.Page.navigate({url: 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/generate-csp-report.php'});
   for (;;) {
-    const params = (await dp.Network.onceRequestIntercepted()).params;
-    dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
+    const params = (await dp.Fetch.onceRequestPaused()).params;
+    dp.Fetch.continueRequest({requestId: params.requestId});
     if (/save-report.php/.test(params.request.url)) {
       testRunner.log(`Intercepted URL: ${params.request.url} type: ${params.resourceType}`);
       break;

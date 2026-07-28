@@ -5,10 +5,10 @@
   session.protocol.Network.enable();
   session.protocol.Page.enable();
 
-  session.protocol.Network.onRequestIntercepted(event => {
-    session.protocol.Network.continueInterceptedRequest({interceptionId: event.params.interceptionId});
+  session.protocol.Fetch.onRequestPaused(event => {
+    session.protocol.Fetch.continueRequest({requestId: event.params.requestId});
   });
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "*"}]});
+  await session.protocol.Fetch.enable({patterns: [{urlPattern: '*'}]});
 
   await session.evaluateAsync(`(function() {
     var blob = new Blob(['data']);

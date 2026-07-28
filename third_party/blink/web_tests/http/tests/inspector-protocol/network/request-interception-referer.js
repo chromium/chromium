@@ -5,16 +5,19 @@
   session.protocol.Network.enable();
   session.protocol.Page.enable();
   await dp.Network.setExtraHTTPHeaders({headers: {'ReFeReR': 'https://127.0.0.1:8000/'}});
-  await session.protocol.Network.setRequestInterception({patterns: [{urlPattern: "*"}]});
+  await session.protocol.Fetch.enable({patterns: [{urlPattern: '*'}]});
 
   testRunner.log('*Not* overriding referer in interception handler:');
-  var {interceptionId, bodyPromise} = await sendRequestAndIntercept();
-  session.protocol.Network.continueInterceptedRequest({interceptionId: interceptionId});
+  var {requestId, bodyPromise} = await sendRequestAndIntercept();
+  session.protocol.Fetch.continueRequest({requestId: requestId});
   testRunner.log(`response: ${await bodyPromise}`);
 
   testRunner.log('Overriding referer in interception handler:');
-  var {interceptionId, bodyPromise} = await sendRequestAndIntercept();
-  session.protocol.Network.continueInterceptedRequest({interceptionId: interceptionId, headers: {'ReFeReR': 'http://localhost:8000/'}});
+  var {requestId, bodyPromise} = await sendRequestAndIntercept();
+  session.protocol.Fetch.continueRequest({
+    requestId: requestId,
+    headers: [{name: 'ReFeReR', value: 'http://localhost:8000/'}]
+  });
   testRunner.log(`response: ${await bodyPromise}`);
 
   testRunner.completeTest();
@@ -26,10 +29,11 @@
       var response = await fetch(new Request(url));
       return response.text();
     })()`);
-    const interceptedRequest = (await session.protocol.Network.onceRequestIntercepted()).params;
+    const interceptedRequest =
+        (await session.protocol.Fetch.onceRequestPaused()).params;
     const request = (await requestPromise).params;
     testRunner.log(`referer in requestWillBeSent: ${request.request.headers['Referer']}`);
     testRunner.log(`referer in requestIntercepted: ${interceptedRequest.request.headers['Referer']}`);
-    return {interceptionId: interceptedRequest.interceptionId, bodyPromise: evalPromise};
+    return {requestId: interceptedRequest.requestId, bodyPromise: evalPromise};
   }
 })
