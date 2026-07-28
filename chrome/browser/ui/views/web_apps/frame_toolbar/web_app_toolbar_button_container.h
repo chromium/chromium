@@ -78,10 +78,6 @@ class WebAppToolbarButtonContainer : public views::View,
     return content_settings_container_;
   }
 
-  PageActionIconController* page_action_icon_controller() {
-    return page_action_icon_controller_.get();
-  }
-
   page_actions::PageActionContainerView* page_action_container() {
     return page_action_container_.get();
   }
@@ -175,7 +171,6 @@ class WebAppToolbarButtonContainer : public views::View,
   SkColor foreground_color_ = gfx::kPlaceholderColor;
   SkColor background_color_ = gfx::kPlaceholderColor;
 
-  std::unique_ptr<PageActionIconController> page_action_icon_controller_;
   int page_action_insertion_point_ = 0;
   raw_ptr<page_actions::PageActionContainerView> page_action_container_;
 

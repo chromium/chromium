@@ -11,7 +11,6 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
-class PageActionIconController;
 struct PageActionIconParams;
 
 // Class implemented by a container view that holds page action icons.
@@ -34,16 +33,12 @@ class PageActionIconContainerView : public views::BoxLayoutView,
       delete;
   ~PageActionIconContainerView() override;
 
-  PageActionIconController* controller() { return controller_.get(); }
-
   // PageActionIconContainer:
   void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
 
  private:
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
-
-  std::unique_ptr<PageActionIconController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_

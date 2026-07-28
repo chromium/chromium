@@ -83,7 +83,6 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
@@ -1749,11 +1748,7 @@ views::BubbleAnchor ToolbarView::GetDefaultExtensionDialogAnchor() {
 
 PageActionIconView* ToolbarView::GetPageActionIconView(
     PageActionIconType type) {
-  if (!location_bar_view_) {
-    // Only new-style page actions with `webui_location_bar_`.
-    return nullptr;
-  }
-  return location_bar_view()->page_action_icon_controller()->GetIconView(type);
+  return nullptr;
 }
 
 page_actions::PageActionViewInterface* ToolbarView::GetPageActionViewInterface(

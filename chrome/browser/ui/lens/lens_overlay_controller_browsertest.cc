@@ -91,7 +91,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -4719,17 +4718,9 @@ class LensOverlayControllerEntrypointsBrowserTest
     auto* location_bar =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
     location_bar->omnibox_view()->RequestFocus();
-    views::View* omnibox_entrypoint;
-    if (IsPageActionMigrated(PageActionIconType::kLensOverlay)) {
-      omnibox_entrypoint =
-          location_bar->page_action_container()->GetPageActionView(
-              kActionSidePanelShowLensOverlayResults);
-    } else {
-      location_bar->page_action_icon_controller()->UpdateAll();
-      omnibox_entrypoint =
-          location_bar->page_action_icon_controller()->GetIconView(
-              PageActionIconType::kLensOverlay);
-    }
+    views::View* omnibox_entrypoint =
+        location_bar->page_action_container()->GetPageActionView(
+            kActionSidePanelShowLensOverlayResults);
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return omnibox_entrypoint->GetVisible() == expected_visible;
     }));

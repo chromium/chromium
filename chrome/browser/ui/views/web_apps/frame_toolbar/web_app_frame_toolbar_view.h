@@ -30,7 +30,6 @@ class View;
 class BrowserView;
 class ExtensionsContainerViews;
 class ContentSettingImageView;
-class PageActionIconController;
 class WebAppNavigationButtonContainer;
 class WebAppToolbarButtonContainer;
 class WebAppFrameToolbarView;
@@ -109,7 +108,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   WebAppToolbarButtonContainer* get_right_container_for_testing() {
     return right_container_;
   }
-  PageActionIconController* GetPageActionIconControllerForTesting();
 
  protected:
   // views::AccessiblePaneView:

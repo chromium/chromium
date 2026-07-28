@@ -21,8 +21,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
@@ -104,9 +102,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     BrowserView* browser_view,
     ToolbarButtonProvider* toolbar_button_provider)
     : browser_view_(browser_view),
-      toolbar_button_provider_(toolbar_button_provider),
-      page_action_icon_controller_(
-          std::make_unique<PageActionIconController>()) {
+      toolbar_button_provider_(toolbar_button_provider) {
 #if BUILDFLAG(IS_MAC)
   app_shim_registry_observation_ =
       AppShimRegistry::Get()->RegisterAppChangedCallback(
@@ -244,17 +240,6 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   // This is the point where we will be inserting page action icons.
   page_action_insertion_point_ = static_cast<int>(children().size());
 
-  // Insert the default page action icons.
-  PageActionIconParams params;
-  params.types_enabled = app_controller->GetTitleBarPageActionTypes();
-  params.icon_color = gfx::kPlaceholderColor;
-  params.between_icon_spacing = page_action_between_icon_spacing;
-  params.browser = browser_view_->browser();
-  params.command_updater = browser_view_->browser()->command_controller();
-  params.icon_label_bubble_delegate = this;
-  params.page_action_icon_delegate = this;
-  page_action_icon_controller_->Init(params, this);
-
   bool create_extensions_container = true;
   auto display_mode = (base::FeatureList::IsEnabled(
                            features::kDesktopPWAsElidedExtensionsMenu) ||
@@ -341,7 +326,6 @@ void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
   if (content_settings_container_) {
     content_settings_container_->UpdateContentSettingViewsVisibility();
   }
-  page_action_icon_controller_->UpdateAll();
 
   if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
     page_actions::PageActionController* controller = nullptr;
@@ -379,7 +363,6 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   if (uninstall_button_) {
     uninstall_button_->SetEnabledTextColors(foreground_color_);
   }
-  page_action_icon_controller_->SetIconColor(foreground_color_);
 }
 
 views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {

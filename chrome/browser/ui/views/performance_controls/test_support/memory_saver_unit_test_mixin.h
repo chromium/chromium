@@ -64,11 +64,6 @@ class MemorySaverUnitTestMixin : public T {
         ->GetTabFeatures()
         ->memory_saver_chip_helper()
         ->DidStartNavigation(navigation_handle.get());
-
-    T::browser_view()
-        ->GetLocationBarView()
-        ->page_action_icon_controller()
-        ->UpdateAll();
   }
 
   IconLabelBubbleView* GetPageActionIconView() {

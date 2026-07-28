@@ -78,7 +78,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
@@ -493,7 +492,6 @@ void LocationBarView::Init() {
   params.page_action_icon_delegate = this;
   page_action_icon_container_ =
       AddChildView(std::make_unique<PageActionIconContainerView>(params));
-  page_action_icon_controller_ = page_action_icon_container_->controller();
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
@@ -1013,7 +1011,6 @@ void LocationBarView::OnThemeChanged() {
 
   const SkColor icon_color =
       GetColorProvider()->GetColor(kColorOmniboxActionIcon);
-  page_action_icon_controller_->SetIconColor(icon_color);
   for (ContentSettingImageView* image_view : content_setting_views_) {
     image_view->SetIconColor(icon_color);
   }
@@ -1033,9 +1030,6 @@ bool LocationBarView::HasSecurityStateChanged() {
 
 void LocationBarView::Update(WebContents* contents) {
   TRACE_EVENT("omnibox", "LocationBarView::Update");
-  if (contents) {
-    page_action_icon_controller_->UpdateWebContents(contents);
-  }
 
   RefreshContentSettingViews();
   RefreshPageActionIconViews();
@@ -1564,8 +1558,6 @@ void LocationBarView::RefreshPageActionIconViews() {
       browser_view->UpdateWebAppStatusIconsVisiblity();
     }
   }
-
-  page_action_icon_controller_->UpdateAll();
 }
 
 void LocationBarView::RefreshAiModePageAction() {
@@ -2047,7 +2039,6 @@ void LocationBarView::OnTouchUiChanged() {
   for (ContentSettingImageView* view : content_setting_views_) {
     view->SetFontList(font_list);
   }
-  page_action_icon_controller_->SetFontList(font_list);
   location_icon_view_->Update(
       /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
   PreferredSizeChanged();

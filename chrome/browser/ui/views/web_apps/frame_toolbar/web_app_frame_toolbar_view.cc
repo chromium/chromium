@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -288,7 +287,7 @@ views::BubbleAnchor WebAppFrameToolbarView::GetDefaultExtensionDialogAnchor() {
 }
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
     PageActionIconType type) {
-  return right_container_->page_action_icon_controller()->GetIconView(type);
+  return nullptr;
 }
 
 page_actions::PageActionViewInterface*
@@ -440,10 +439,6 @@ void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(
   }
 }
 
-PageActionIconController*
-WebAppFrameToolbarView::GetPageActionIconControllerForTesting() {
-  return right_container_->page_action_icon_controller();
-}
 views::View* WebAppFrameToolbarView::GetDefaultFocusableChild() {
   // If the app is in minimal-ui mode and navigation buttons (like back/reload)
   // are visible, we want focus to start on the leftmost navigation control.

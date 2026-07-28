@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -369,14 +368,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
     EXPECT_EQ(page_action_view->parent(),
               toolbar_right_container->page_action_container());
     page_action_views.push_back(page_action_view);
-  }
-  for (const PageActionIconView* action :
-       helper()
-           ->web_app_frame_toolbar()
-           ->GetPageActionIconControllerForTesting()
-           ->GetPageActionIconViewsForTesting()) {
-    EXPECT_EQ(action->parent(), toolbar_right_container);
-    page_action_views.emplace_back(action);
   }
 
   views::View* const menu_button =

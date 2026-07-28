@@ -75,7 +75,6 @@ class OmniboxPopupFileSelector;
 class OmniboxPopupUI;
 class OmniboxPopupView;
 class OmniboxViewViews;
-class PageActionIconController;
 class PageActionIconContainerView;
 class PermissionChipView;
 class PermissionDashboardView;
@@ -168,10 +167,6 @@ class LocationBarView
 
   // Returns the delegate.
   Delegate* delegate() const { return delegate_; }
-
-  PageActionIconController* page_action_icon_controller() {
-    return page_action_icon_controller_;
-  }
 
   page_actions::PageActionContainerView* page_action_container() {
     return page_action_container_;
@@ -605,9 +600,6 @@ class LocationBarView
 
   // The content setting views.
   ContentSettingViews content_setting_views_;
-
-  // The controller for page action icons.
-  raw_ptr<PageActionIconController> page_action_icon_controller_ = nullptr;
 
   // The container for page action icons.
   raw_ptr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
