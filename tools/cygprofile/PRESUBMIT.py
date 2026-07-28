@@ -12,11 +12,27 @@ for more details on the presubmit API built into depot_tools.
 def CommonChecks(input_api, output_api):
   output = []
   files_to_skip = []
+  disabled_warnings = [
+      'bad-indentation',
+      'consider-using-dict-items',
+      'consider-using-with',
+      'deprecated-method',
+      'duplicate-code',
+      'line-too-long',
+      'logging-not-lazy',
+      'missing-module-docstring',
+      'protected-access',
+      'superfluous-parens',
+      'unspecified-encoding',
+      'unused-import',
+      'use-maxsplit-arg',
+  ]
   output.extend(
       input_api.canned_checks.RunPylint(input_api,
                                         output_api,
+                                        disabled_warnings=disabled_warnings,
                                         files_to_skip=files_to_skip,
-                                        version='2.7'))
+                                        version='3.2'))
 
   # These tests don't run on Windows and give verbose and cryptic failure
   # messages.

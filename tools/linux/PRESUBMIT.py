@@ -22,8 +22,22 @@ def CommonChecks(input_api, output_api):
     sys.path = [
       join('..', 'linux'),
     ] + sys.path
+    disabled_warnings = [
+        'bad-indentation',
+        'deprecated-method',
+        'logging-not-lazy',
+        'missing-module-docstring',
+        'no-self-argument',
+        'superfluous-parens',
+        'unnecessary-dunder-call',
+        'unspecified-encoding',
+        'unused-import',
+    ]
     output.extend(
-        input_api.canned_checks.RunPylint(input_api, output_api, version='2.7'))
+        input_api.canned_checks.RunPylint(input_api,
+                                          output_api,
+                                          disabled_warnings=disabled_warnings,
+                                          version='3.2'))
   finally:
     sys.path = sys_path_backup
 

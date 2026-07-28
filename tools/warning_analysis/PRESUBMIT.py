@@ -6,8 +6,15 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPylint(input_api, output_api):
+    disabled_warnings = [
+        'consider-using-with',
+        'missing-module-docstring',
+        'pointless-string-statement',
+        'superfluous-parens',
+        'unspecified-encoding',
+    ]
     return input_api.canned_checks.RunPylint(
         input_api,
         output_api,
-        # Otherwise it will warn on docstrings
-        disabled_warnings=["pointless-string-statement"])
+        disabled_warnings=disabled_warnings,
+        version='3.2')

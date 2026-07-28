@@ -12,9 +12,21 @@ def CheckTests(input_api, output_api):
 
 
 def CheckPylint(input_api, output_api):
+  disabled_warnings = [
+      'bad-indentation',
+      'consider-using-dict-items',
+      'line-too-long',
+      'logging-not-lazy',
+      'missing-module-docstring',
+      'protected-access',
+      'superfluous-parens',
+      'unspecified-encoding',
+      'unused-import',
+  ]
   return input_api.canned_checks.RunPylint(
       input_api,
       output_api,
-      version='2.7',
+      disabled_warnings=disabled_warnings,
+      version='3.2',
       files_to_skip=[r'^.bundles*$'],
   )

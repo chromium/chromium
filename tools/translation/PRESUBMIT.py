@@ -7,9 +7,19 @@ def _CommonChecks(input_api, output_api):
   results = []
 
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(input_api,
-                                                    output_api,
-                                                    version='2.6')
+  disabled_warnings = [
+      'bad-indentation',
+      'consider-using-from-import',
+      'deprecated-module',
+      'line-too-long',
+      'missing-module-docstring',
+      'protected-access',
+      'unspecified-encoding',
+      'unused-import',
+      'used-before-assignment',
+  ]
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2')
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run unittests.

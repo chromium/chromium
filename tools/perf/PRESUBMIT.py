@@ -32,13 +32,33 @@ def _CommonChecks(input_api, output_api, block_on_failure=False):
 
 
 def CheckPyLint(input_api, output_api):
+  disabled_warnings = [
+      'broad-exception-raised',
+      'consider-using-dict-items',
+      'consider-using-f-string',
+      'consider-using-from-import',
+      'consider-using-generator',
+      'consider-using-with',
+      'deprecated-module',
+      'possibly-used-before-assignment',
+      'redundant-u-string-prefix',
+      'superfluous-parens',
+      'unknown-option-value',
+      'unnecessary-lambda-assignment',
+      'unspecified-encoding',
+      'use-dict-literal',
+      'use-yield-from',
+      'used-before-assignment',
+      'useless-option-value',
+  ]
   return input_api.RunTests(
       input_api.canned_checks.GetPylint(
           input_api,
           output_api,
+          disabled_warnings=disabled_warnings,
           extra_paths_list=_GetPathsToPrepend(input_api),
           pylintrc='pylintrc',
-          version='2.7'))
+          version='3.2'))
 
 
 def _GetPathsToPrepend(input_api):

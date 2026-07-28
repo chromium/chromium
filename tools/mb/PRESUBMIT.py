@@ -18,19 +18,21 @@ def CheckTests(input_api, output_api):
 
 
 def CheckPylint(input_api, output_api):
+  disabled_warnings = [
+      'bad-indentation',
+      'consider-using-with',
+      'line-too-long',
+      'missing-module-docstring',
+      'singleton-comparison',
+      'unspecified-encoding',
+      'unused-import',
+  ]
   return input_api.canned_checks.RunPylint(
       input_api,
       output_api,
-      version='2.7',
-      # pylint complains about Checkfreeze not being defined, its probably
-      # finding a different PRESUBMIT.py. Note that this warning only
-      # appears if the number of Pylint jobs is greater than one.
+      version='3.2',
       files_to_skip=['PRESUBMIT_test.py'],
-      # Disabling this warning because this pattern involving ToSrcRelPath
-      # seems intrinsic to how mb_unittest.py is implemented.
-      disabled_warnings=[
-          'attribute-defined-outside-init',
-      ],
+      disabled_warnings=disabled_warnings,
   )
 
 

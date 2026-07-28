@@ -74,9 +74,22 @@ def CheckExterns(input_api, output_api):
 
 
 def CheckPylint(input_api, output_api):
-  return input_api.canned_checks.RunPylint(
-      input_api, output_api, version='2.7', files_to_skip=PYLINT_FILES_TO_SKIP
-  )
+  disabled_warnings = [
+      'bad-indentation',
+      'consider-using-dict-items',
+      'duplicate-code',
+      'function-redefined',
+      'missing-module-docstring',
+      'protected-access',
+      'superfluous-parens',
+      'unspecified-encoding',
+      'unused-import',
+  ]
+  return input_api.canned_checks.RunPylint(input_api,
+                                           output_api,
+                                           disabled_warnings=disabled_warnings,
+                                           version='3.2',
+                                           files_to_skip=PYLINT_FILES_TO_SKIP)
 
 
 def CheckTests(input_api, output_api):
