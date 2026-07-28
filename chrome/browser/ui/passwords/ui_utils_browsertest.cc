@@ -24,8 +24,7 @@ class ManagePasswordsUiUtilsBrowserTest : public InProcessBrowserTest {
   ManagePasswordsUiUtilsBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {autofill::features::kManagePasswordsPerceptionSurvey,
-         autofill::features::kYourSavedInfoSettingsPage},
+        {autofill::features::kManagePasswordsPerceptionSurvey},
         /*disabled_features=*/{});
   }
 

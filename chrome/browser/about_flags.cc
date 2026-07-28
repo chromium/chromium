@@ -12508,13 +12508,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableTouchToFillReshowForBnpl)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"enable-your-saved-info-settings-page",
-     flag_descriptions::kYourSavedInfoSettingsPageName,
-     flag_descriptions::kYourSavedInfoSettingsPageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kYourSavedInfoSettingsPage)},
-#endif
 
 #if BUILDFLAG(IS_MAC)
     {"enable-accessibility-text-operation",

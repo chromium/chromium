@@ -504,15 +504,12 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_READING_LIST_MENU_SHOW_UI,
                     IDC_SHOW_PASSWORD_MANAGER,
                     IDC_SHOW_PAYMENT_METHODS,
-                    IDC_SHOW_ADDRESSES,
                     IDC_SHOW_CONTACT_INFO,
                     IDC_SHOW_IDENTITY_DOCS,
                     IDC_SHOW_TRAVEL,
                     AppMenuModel::kMinOtherProfileCommandId));
 
 TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kYourSavedInfoSettingsPage);
   AppMenuModel model(this, browser());
   model.Init();
 
@@ -529,28 +526,6 @@ TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
   EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
                   .has_value());
   EXPECT_TRUE(
-      your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
-}
-
-TEST_F(AppMenuModelTest, YourSavedInfoSubmenusDisabled) {
-  feature_list_.InitAndDisableFeature(
-      autofill::features::kYourSavedInfoSettingsPage);
-  AppMenuModel model(this, browser());
-  model.Init();
-
-  const size_t your_saved_info_menu_index =
-      model
-          .GetIndexOfCommandId(
-              AppMenuModel::kPasswordsAndAutofillMenuPlaceholder)
-          .value();
-  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
-      model.GetSubmenuModelAt(your_saved_info_menu_index));
-
-  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO)
-                   .has_value());
-  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
-                   .has_value());
-  EXPECT_FALSE(
       your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
 }
 

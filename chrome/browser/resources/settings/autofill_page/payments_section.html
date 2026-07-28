@@ -22,9 +22,9 @@
     border-top: 1px solid var(--cr-separator-color);
   }
 </style>
-<settings-subpage page-title="[[getPageTitleLabel_(isYourSavedInfoSubpage_)]]"
+<settings-subpage page-title="$i18n{paymentsTitle}"
     learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
-    class$="[[getMultiCardClass_(isYourSavedInfoSubpage_)]]">
+    class="multi-card">
 
 <div class="card settings-card">
 
@@ -116,10 +116,6 @@
 </div>
 
 </div>
-
-<template is="dom-if" if="[[!isYourSavedInfoSubpage_]]">
-  <div class="hr"></div>
-</template>
 <div class="card">
 
 <div class="cr-row continuation">

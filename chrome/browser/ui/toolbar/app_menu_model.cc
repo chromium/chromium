@@ -858,44 +858,32 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
 
-  AddItemWithStringIdAndVectorIcon(
-      this, IDC_SHOW_PAYMENT_METHODS,
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage)
-          ? IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION
-          : IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-      features::IsRoundedIconsEnabled() ? kCreditCardIcon
-                                        : kCreditCardChromeRefreshOldIcon);
+  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_PAYMENT_METHODS,
+                                   IDS_YOUR_SAVED_INFO_PAYMENTS_SUBMENU_OPTION,
+                                   features::IsRoundedIconsEnabled()
+                                       ? kCreditCardIcon
+                                       : kCreditCardChromeRefreshOldIcon);
 
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage)) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kLocationOnIcon
-            : vector_icons::kLocationOnChromeRefreshOldIcon);
-  } else {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_CONTACT_INFO,
-        IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kLocationOnIcon
-            : vector_icons::kLocationOnChromeRefreshOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO).value(),
-                           AppMenuModel::kContactInfoMenuItem);
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_IDENTITY_DOCS, IDS_IDENTITY_DOCS_SUBMENU_OPTION,
-        features::IsRoundedIconsEnabled() ? vector_icons::kIdCardIcon
-                                          : vector_icons::kIdCardOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS).value(),
-                           AppMenuModel::kIdentityDocsMenuItem);
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_TRAVEL, IDS_TRAVEL_SUBMENU_OPTION,
-        features::IsRoundedIconsEnabled() ? vector_icons::kTripIcon
-                                          : vector_icons::kTripOldIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
-                           AppMenuModel::kTravelMenuItem);
-  }
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_SHOW_CONTACT_INFO,
+      IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kLocationOnIcon
+          : vector_icons::kLocationOnChromeRefreshOldIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO).value(),
+                         AppMenuModel::kContactInfoMenuItem);
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_SHOW_IDENTITY_DOCS, IDS_IDENTITY_DOCS_SUBMENU_OPTION,
+      features::IsRoundedIconsEnabled() ? vector_icons::kIdCardIcon
+                                        : vector_icons::kIdCardOldIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS).value(),
+                         AppMenuModel::kIdentityDocsMenuItem);
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_SHOW_TRAVEL, IDS_TRAVEL_SUBMENU_OPTION,
+      features::IsRoundedIconsEnabled() ? vector_icons::kTripIcon
+                                        : vector_icons::kTripOldIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_TRAVEL).value(),
+                         AppMenuModel::kTravelMenuItem);
 }
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {

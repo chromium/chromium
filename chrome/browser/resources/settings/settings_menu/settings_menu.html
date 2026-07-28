@@ -60,9 +60,7 @@
         <a role="menuitem" id="autofill" href="/autofill"
             on-click="onAutofillClick_"
             class="cr-nav-menu-item"
-            hidden="[[!showAutofillMenuItem_(
-                enableYourSavedInfoSettingsPage_,
-                pageVisibility_.yourSavedInfo, pageVisibility_.autofill)]]">
+            hidden="[[!pageVisibility_.yourSavedInfo]]">
           <cr-icon icon="settings:password-manager"></cr-icon>
           $i18n{autofillPageTitle}
           <cr-ripple></cr-ripple>

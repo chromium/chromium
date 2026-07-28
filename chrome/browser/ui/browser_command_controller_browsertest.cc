@@ -692,14 +692,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserCommandControllerNavTest,
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 // Tests for Your saved info submenu.
-class BrowserCommandControllerBrowserTestYourSavedInfo
-    : public BrowserCommandControllerBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kYourSavedInfoSettingsPage};
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestYourSavedInfo,
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        ExecuteShowIdentityDocs) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_IDENTITY_DOCS));
   content::WebContents* web_contents =
@@ -709,8 +702,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestYourSavedInfo,
             "chrome://settings/identityDocs");
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestYourSavedInfo,
-                       ExecuteShowTravel) {
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, ExecuteShowTravel) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_TRAVEL));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

@@ -27,7 +27,6 @@ suite('SettingsMain', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
-          enableYourSavedInfoSettingsPage: false,
           isGuest: false,
           showAiPage: false,
           showResetProfileBanner: false,
@@ -65,7 +64,10 @@ suite('SettingsMain', function() {
       {route: routes.PEOPLE, pluginTag: 'settings-people-page-index'},
       {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
       {route: routes.PRIVACY, pluginTag: 'settings-privacy-page-index'},
-      {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
+      {
+        route: routes.YOUR_SAVED_INFO,
+        pluginTag: 'settings-your-saved-info-page-index',
+      },
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
       {route: routes.SEARCH, pluginTag: 'settings-search-page-index'},
@@ -77,7 +79,10 @@ suite('SettingsMain', function() {
       // </if>
       {route: routes.ON_STARTUP, pluginTag: 'settings-on-startup-page'},
       // <if expr="is_chromeos">
-      {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index-cros'},
+      {
+        route: routes.LANGUAGES,
+        pluginTag: 'settings-languages-page-index-cros',
+      },
       // </if>
       // <if expr="not is_chromeos">
       {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index'},
@@ -200,21 +205,5 @@ suite('SettingsMain', function() {
     createSettingsMain({showResetProfileBanner: true});
     assertTrue(!!settingsMain.shadowRoot!.querySelector(
         'settings-reset-profile-banner'));
-  });
-
-    test('shows either autofill or yourSavedInfo page', function() {
-    // Reset tested element and set yourSavedInfo experiment to false
-    createSettingsMain();
-
-    // Only autofill page should be visible
-    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
-    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
-
-    // Reset tested element and set yourSavedInfo experiment to true
-    createSettingsMain({enableYourSavedInfoSettingsPage: true});
-
-    // Only yourSavedInfo page should be visible
-    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
-    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
   });
 });

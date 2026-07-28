@@ -25,10 +25,7 @@ suite('YourSavedInfoPageIndex', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    // routes.YOUR_SAVED_INFO does not exist if enableYourSavedInfoSettingsPage
-    // is false
     loadTimeData.overrideValues({
-      enableYourSavedInfoSettingsPage: true,
       showSuggestionsFromGeminiSettings: true,
       shoppingIntegrationEnabled: true,
     });
@@ -93,7 +90,6 @@ suite('YourSavedInfoPageIndex', function() {
   test('GeminiRouteDisabled', async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      enableYourSavedInfoSettingsPage: true,
       showSuggestionsFromGeminiSettings: false,
     });
     resetRouterForTesting();
@@ -111,7 +107,6 @@ suite('YourSavedInfoPageIndex', function() {
   test('ShoppingRouteDisabled', async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      enableYourSavedInfoSettingsPage: true,
       shoppingIntegrationEnabled: false,
     });
     resetRouterForTesting();

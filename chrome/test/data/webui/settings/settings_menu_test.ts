@@ -194,34 +194,7 @@ suite('SettingsMenu', function() {
     assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
   });
 
-  test('autofillPageMenuClick', async function() {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
-    resetRouterForTesting();
-    createSettingsMenu();
-    await flushTasks();
-
-    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        'a[href=\'/autofill\']');
-    assertTrue(!!entry);
-    assertTrue(isVisible(entry));
-
-    const selector = settingsMenu.$.menu;
-    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
-        'iron-select', selector);
-    entry.click();
-    const [histogramName, referrer] =
-        await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
-    assertEquals(
-        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
-        histogramName);
-    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
-
-    await whenIronSelect;
-    assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
-  });
-
   test('yourSavedInfoMenuItemClick', async function() {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
     resetRouterForTesting();
     createSettingsMenu();
     await microtasksFinished();
@@ -259,7 +232,6 @@ suite('SettingsMenuAutofill', () => {
   }
 
   test('Update yourSavedInfo visibility', async () => {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
     resetRouterForTesting();
     createSettingsMenu();
     await flushTasks();
@@ -272,29 +244,6 @@ suite('SettingsMenuAutofill', () => {
     // Hide the your saved info page.
     resetPageVisibilityForTesting({
       yourSavedInfo: false,
-    });
-    createSettingsMenu();
-    const newAutofillEntry =
-        settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-            'a[href=\'/autofill\']');
-    assertTrue(!!newAutofillEntry);
-    assertFalse(isVisible(newAutofillEntry));
-  });
-
-  test('Update autofill visibility', async () => {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
-    resetRouterForTesting();
-    createSettingsMenu();
-    await flushTasks();
-
-    const autofillEntry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
-        'a[href=\'/autofill\']');
-    assertTrue(!!autofillEntry);
-    assertTrue(isVisible(autofillEntry));
-
-    // Hide the autofill page.
-    resetPageVisibilityForTesting({
-      autofill: false,
     });
     createSettingsMenu();
     const newAutofillEntry =

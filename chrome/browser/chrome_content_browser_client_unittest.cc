@@ -1257,9 +1257,6 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
     BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectAddressesURL) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      autofill::features::kYourSavedInfoSettingsPage};
-
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL addresses_url("chrome://settings/addresses");
   GURL dest_url = addresses_url;

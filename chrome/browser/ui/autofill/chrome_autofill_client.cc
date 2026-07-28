@@ -759,13 +759,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
       return;
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageEnhancedAutofill:
-      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-        ShowAutofillPersonalContextSettings(
-            web_contents(),
-            AutofillOptionsReferrer::kPersonalContextAtmemoryNotice);
-      } else {
-        autofill::ShowAutofillSettings(web_contents());
-      }
+      ShowAutofillPersonalContextSettings(
+          web_contents(),
+          AutofillOptionsReferrer::kPersonalContextAtmemoryNotice);
       return;
     default:
       break;
@@ -783,15 +779,10 @@ void ChromeAutofillClient::ShowAutofillSettings(
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
       case SuggestionType::kManageAutofillAi:
-        if (base::FeatureList::IsEnabled(
-                features::kYourSavedInfoSettingsPage)) {
-          base::UmaHistogramEnumeration(
-              "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
-              autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
-          chrome::ShowSettingsSubPage(browser, chrome::kAutofillSubPage);
-        } else {
-          chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
-        }
+        base::UmaHistogramEnumeration(
+            "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+            autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown);
+        chrome::ShowSettingsSubPage(browser, chrome::kAutofillSubPage);
         return;
       case SuggestionType::kManageAutofillAiIdentityDocs:
         base::UmaHistogramEnumeration(

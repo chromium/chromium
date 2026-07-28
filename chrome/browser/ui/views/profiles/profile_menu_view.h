@@ -96,7 +96,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnAddNewProfileButtonClicked();
   void OnManageProfilesButtonClicked();
   void OnEditProfileButtonClicked();
-  void OnAutofillSettingsButtonClicked();
   void OnYourSavedInfoSettingsButtonClicked();
   void OnBatchUploadButtonClicked(ActionableItem button_type);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

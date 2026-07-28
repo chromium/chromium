@@ -661,20 +661,7 @@ IN_PROC_BROWSER_TEST_F(UniversalInstallAppMenuModelInteractiveTest,
       EnsurePresent(AppMenuModel::kInstallAppItem));
 }
 
-class YourSavedInfoMenuItemInteractiveTest
-    : public AppMenuModelInteractiveTest {
- public:
-  YourSavedInfoMenuItemInteractiveTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kYourSavedInfoSettingsPage);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
-                       ContactInfoNavigation) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, ContactInfoNavigation) {
   base::HistogramTester histograms;
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
@@ -690,8 +677,7 @@ IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
                                MENU_ACTION_SHOW_CONTACT_INFO, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
-                       IdentityDocsNavigation) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IdentityDocsNavigation) {
   base::HistogramTester histograms;
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
@@ -707,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest,
                                MENU_ACTION_SHOW_IDENTITY_DOCS, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(YourSavedInfoMenuItemInteractiveTest, TravelNavigation) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, TravelNavigation) {
   base::HistogramTester histograms;
   RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
                   PressButton(kToolbarAppMenuButtonElementId),

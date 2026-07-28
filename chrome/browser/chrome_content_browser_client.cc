@@ -7381,9 +7381,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
   // Rewrite chrome://settings/addresses to chrome://settings/contactInfo.
   if (url->SchemeIs(content::kChromeUIScheme) &&
       url->host() == chrome::kChromeUISettingsHost &&
-      (url->path() == chrome::kChromeUIAddressesPath) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage)) {
+      (url->path() == chrome::kChromeUIAddressesPath)) {
     GURL::Replacements replacements;
     replacements.SetPathStr(chrome::kChromeUIContactInfoPath);
     *url = url->ReplaceComponents(replacements);

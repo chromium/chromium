@@ -507,17 +507,6 @@ void ProfileMenuView::OnEditProfileButtonClicked() {
   chrome::ShowSettingsSubPage(&browser(), chrome::kManageProfileSubPage);
 }
 
-void ProfileMenuView::OnAutofillSettingsButtonClicked() {
-  OnActionableItemClicked(ActionableItem::kAutofillSettingsButton);
-  if (!perform_menu_actions()) {
-    return;
-  }
-  base::UmaHistogramEnumeration(
-      "Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer",
-      autofill::autofill_metrics::AutofillSettingsReferrer::kProfileMenu);
-  chrome::ShowSettingsSubPage(&browser(), chrome::kAutofillSubPage);
-}
-
 void ProfileMenuView::OnYourSavedInfoSettingsButtonClicked() {
   OnActionableItemClicked(ActionableItem::kAutofillSettingsButton);
   if (!perform_menu_actions()) {
@@ -964,13 +953,12 @@ void ProfileMenuView::BuildAutofillSettingsButton() {
   const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
                                     ? vector_icons::kPasswordManagerIcon
                                     : vector_icons::kPasswordManagerOldIcon;
-  auto action = base::FeatureList::IsEnabled(
-                    autofill::features::kYourSavedInfoSettingsPage)
-                    ? &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked
-                    : &ProfileMenuView::OnAutofillSettingsButtonClicked;
 
   AddFeatureButton(l10n_util::GetStringUTF16(message_id),
-                   base::BindRepeating(action, base::Unretained(this)), icon);
+                   base::BindRepeating(
+                       &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked,
+                       base::Unretained(this)),
+                   icon);
 }
 
 void ProfileMenuView::BuildCustomizeProfileButton() {

@@ -549,8 +549,6 @@ TEST_F(AtMemoryManagerTest,
 }
 
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
-  base::test::ScopedFeatureList feature_list{
-      features::kYourSavedInfoSettingsPage};
 
   SeeFormAndShowPopup();
 

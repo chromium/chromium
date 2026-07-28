@@ -1888,7 +1888,6 @@ class AutofillAiSuggestionGeneratorSplitManageSuggestionTest
     auto features = GetDefaultEnabledFeatures();
     features.push_back(
         features::kSuggestionManageButtonSplitForEnhancedAutofill);
-    features.push_back(features::kYourSavedInfoSettingsPage);
     features.push_back(features::kAutofillAiOrder);
     features.push_back(features::kAutofillAiShipment);
     return features;

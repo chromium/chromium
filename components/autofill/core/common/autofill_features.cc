@@ -1047,10 +1047,6 @@ BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
 BASE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Defines if the "Your Saved Info" page is eligible to be shown in Chrome
-// settings.
-BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #undef WALLET_SUPPORTED_COUNTRIES
 #undef DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION
 

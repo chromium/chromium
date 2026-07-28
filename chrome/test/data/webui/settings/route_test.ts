@@ -281,7 +281,7 @@ suite('Basic', function() {
   test('pageVisibility affects route availability', function() {
     resetPageVisibilityForTesting({
       appearance: false,
-      autofill: false,
+      yourSavedInfo: false,
       defaultBrowser: false,
       onStartup: false,
       reset: false,
@@ -294,7 +294,7 @@ suite('Basic', function() {
     assertTrue(hasRoute('BASIC'));
 
     assertFalse(hasRoute('APPEARANCE'));
-    assertFalse(hasRoute('AUTOFILL'));
+    assertFalse(hasRoute('YOUR_SAVED_INFO'));
     assertFalse(hasRoute('DEFAULT_BROWSER'));
     assertFalse(hasRoute('ON_STARTUP'));
     assertFalse(hasRoute('RESET'));
@@ -331,41 +331,7 @@ suite('Basic', function() {
     assertEquals(routes, routesLocal2);
   });
 
-  test('autofillAi route defined', function() {
-    resetPageVisibilityForTesting({
-      autofill: true,
-    });
-    loadTimeData.overrideValues({
-      enableYourSavedInfoSettingsPage: false,
-      showAutofillAiControl: true,
-    });
-    resetRouterForTesting();
-    assertTrue(!!routes.AUTOFILL_AI);
-  });
 
-  test('autofillAi route not defined', function() {
-    resetPageVisibilityForTesting({
-      autofill: true,
-    });
-    loadTimeData.overrideValues({
-      showAutofillAiControl: false,
-    });
-    resetRouterForTesting();
-    assertFalse(!!routes.AUTOFILL_AI);
-  });
-
-
-  test('Your saved info route existence', function() {
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    assertFalse(!!routes.YOUR_SAVED_INFO);
-
-    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    assertTrue(!!routes.YOUR_SAVED_INFO);
-  });
 
   // <if expr="not is_chromeos">
   test('account route existence', function() {

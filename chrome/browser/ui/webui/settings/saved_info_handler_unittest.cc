@@ -182,12 +182,8 @@ TEST_F(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount) {
 }
 
 TEST_F(SavedInfoHandlerTest, RequestDataManagementSurvey) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {autofill::features::kManageYourSavedInfoPerceptionSurvey,
-       autofill::features::kYourSavedInfoSettingsPage},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      autofill::features::kManageYourSavedInfoPerceptionSurvey);
 
   auto handler = std::make_unique<SavedInfoHandler>(profile());
   test_api(*handler).set_web_ui(web_ui());

@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../about_page/about_page.js';
 import '../ai_page/ai_page_index.js';
 import '../appearance_page/appearance_page_index.js';
-import '../autofill_page/autofill_page_index.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page_index.js';
 import '../performance_page/performance_page_index.js';
@@ -277,16 +276,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
   private showAiPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
-  }
-
-  private showAutofillPage_(visibility?: boolean): boolean {
-    return !loadTimeData.getBoolean('enableYourSavedInfoSettingsPage') &&
-        this.showPage_(visibility);
-  }
-
-  private showYourSavedInfoPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage') &&
-        this.showPage_(visibility);
   }
 
   private showManagedHeader_(): boolean {

@@ -420,10 +420,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           ->GetPaymentsDataManager()
           .ShouldShowBnplSettings());
 
-  html_source->AddBoolean("enableYourSavedInfoSettingsPage",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kYourSavedInfoSettingsPage));
-
   html_source->AddBoolean("shoppingIntegrationEnabled",
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAmbientAutofill));

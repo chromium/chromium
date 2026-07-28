@@ -212,12 +212,8 @@ std::vector<Suggestion> GetFooterSuggestions(
     suggestions.emplace_back(CreateUndoSuggestion());
   }
 
-  const bool is_split_manage_enabled =
-      base::FeatureList::IsEnabled(
-          features::kSuggestionManageButtonSplitForEnhancedAutofill) &&
-      base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage);
-
-  if (is_split_manage_enabled) {
+  if (base::FeatureList::IsEnabled(
+          features::kSuggestionManageButtonSplitForEnhancedAutofill)) {
     CHECK(!ui_sections.empty());
     if (ui_sections.size() == 1) {
       switch (*ui_sections.begin()) {

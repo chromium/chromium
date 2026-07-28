@@ -121,14 +121,9 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
     case MemoryDataType::kDriversLicenseNumber:
     case MemoryDataType::kDriversLicenseIssueDate:
     case MemoryDataType::kDriversLicenseExpirationDate:
-      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-        return create_suggestion(
-            SuggestionType::kManageAutofillAiIdentityDocs,
-            IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT);
-      } else {
-        return create_suggestion(SuggestionType::kManageAutofillAi,
-                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
-      }
+      return create_suggestion(
+          SuggestionType::kManageAutofillAiIdentityDocs,
+          IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT);
 
     case MemoryDataType::kFlightReservationFull:
     case MemoryDataType::kFlightReservationFlightNumber:
@@ -154,14 +149,9 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
     case MemoryDataType::kVehiclePlateNumber:
     case MemoryDataType::kVehiclePlateState:
     case MemoryDataType::kVehicleVin:
-      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-        return create_suggestion(
-            SuggestionType::kManageAutofillAiTravel,
-            IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT);
-      } else {
-        return create_suggestion(SuggestionType::kManageAutofillAi,
-                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
-      }
+      return create_suggestion(
+          SuggestionType::kManageAutofillAiTravel,
+          IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT);
 
     case MemoryDataType::kOrderFull:
     case MemoryDataType::kOrderId:
@@ -180,14 +170,9 @@ std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
     case MemoryDataType::kShipmentCarrierDomain:
     case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kShipmentShippedDate:
-      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-        return create_suggestion(
-            SuggestionType::kManageAutofillAiShopping,
-            IDS_AUTOFILL_AI_MANAGE_SHOPPING_SUGGESTION_MAIN_TEXT);
-      } else {
-        return create_suggestion(SuggestionType::kManageAutofillAi,
-                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
-      }
+      return create_suggestion(
+          SuggestionType::kManageAutofillAiShopping,
+          IDS_AUTOFILL_AI_MANAGE_SHOPPING_SUGGESTION_MAIN_TEXT);
 
     case MemoryDataType::kUnknown:
       return std::nullopt;

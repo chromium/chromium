@@ -55,7 +55,6 @@ suite('YourSavedInfoPage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     await setupPage({
-      enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
       shoppingIntegrationEnabled: true,
@@ -401,7 +400,6 @@ suite('DataChipsVisibility', function() {
 
   test('AllChipsVisible', async function() {
     const yourSavedInfoPage = await setupPage({
-      enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
       shoppingIntegrationEnabled: true,

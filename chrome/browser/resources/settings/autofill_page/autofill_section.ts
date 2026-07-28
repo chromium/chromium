@@ -136,16 +136,6 @@ export class SettingsAutofillSectionElement extends
       },
 
       /**
-       * Indicates if this element is used as a Your saved info subpage. Causes
-       * slight adjustments like different title, no page shadow, cards being
-       * visible.
-       */
-      isYourSavedInfoSubpage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableYourSavedInfoSettingsPage'),
-      },
-
-      /**
        * Computed field that determines if the Gmail OTP filling toggle should
        * be shown.
        */
@@ -166,7 +156,6 @@ export class SettingsAutofillSectionElement extends
   declare private activeEmailIssuer_: string;
   declare private isGoogleProfileAddress: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
-  declare private isYourSavedInfoSubpage_: boolean;
   declare private emailVerificationAddresses_: string[];
   declare private showGmailOtpFillingToggle_: boolean;
   private emailSharedMenuModel_: string = '';
@@ -219,15 +208,6 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.removePersonalDataManagerListener(
         this.setPersonalDataListener_!);
     this.setPersonalDataListener_ = null;
-  }
-
-  private getMultiCardClass_(): string {
-    return this.isYourSavedInfoSubpage_ ? 'multi-card' : '';
-  }
-
-  private getPageTitleLabel_(): string {
-    return this.i18n(
-        this.isYourSavedInfoSubpage_ ? 'contactInfoTitle' : 'addressesTitle');
   }
 
   /**

@@ -217,8 +217,6 @@ void TriggerManagePasswordsPerceptionSurvey(BrowserWindowInterface* browser,
   Profile* profile = browser->GetProfile();
   if (!base::FeatureList::IsEnabled(
           autofill::features::kManagePasswordsPerceptionSurvey) ||
-      !base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage) ||
       profile->IsOffTheRecord()) {
     return;
   }
