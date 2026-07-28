@@ -9,6 +9,8 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
@@ -740,6 +742,7 @@ void IndigoToolbar::OnExpandButtonInteractionChanged(bool interacting) {
 }
 
 void IndigoToolbar::OnCloseButtonClicked() {
+  base::RecordAction(base::UserMetricsAction("Indigo.Toolbar.Close"));
   Hide();
   if (delegate_) {
     delegate_->OnClose(this);
@@ -747,6 +750,7 @@ void IndigoToolbar::OnCloseButtonClicked() {
 }
 
 void IndigoToolbar::OnExpandButtonClicked() {
+  base::RecordAction(base::UserMetricsAction("Indigo.Toolbar.Expand"));
   views::View* view = view_tracker_.view();
   if (!view) {
     return;
