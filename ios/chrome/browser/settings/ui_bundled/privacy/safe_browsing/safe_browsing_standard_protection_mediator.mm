@@ -205,7 +205,7 @@ const CGFloat kSymbolSize = 20;
 - (SafeBrowsingHeaderItem*)shieldIconHeader {
   if (!_shieldIconHeader) {
     UIImage* shieldIcon;
-    shieldIcon = CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
+    shieldIcon = SymbolWithPointSize(SymbolPrivacy, kSymbolSize);
     SafeBrowsingHeaderItem* shieldIconItem = [self
              detailItemWithType:ItemTypeShieldIcon
                      detailText:
@@ -220,7 +220,7 @@ const CGFloat kSymbolSize = 20;
 - (SafeBrowsingHeaderItem*)metricIconHeader {
   if (!_metricIconHeader) {
     UIImage* metricIcon =
-        DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
+        SymbolWithPointSize(SymbolCheckmarkCircle, kSymbolSize);
     NSInteger detailText = IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -52,8 +52,8 @@
 
     _errorImageView = [[UIImageView alloc] init];
     _errorImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _errorImageView.image = DefaultSymbolWithPointSize(
-        kErrorCircleSymbol, kSymbolAccessoryPointSize);
+    _errorImageView.image =
+        SymbolWithPointSize(SymbolErrorCircle, kSymbolAccessoryPointSize);
     _errorImageView.tintColor = [UIColor colorNamed:kRed600Color];
     [contentView addSubview:_errorImageView];
 

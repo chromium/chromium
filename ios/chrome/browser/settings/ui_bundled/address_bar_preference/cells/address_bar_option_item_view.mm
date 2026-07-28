@@ -45,8 +45,7 @@ const CGFloat kAddressBarSymbolPointSize = 100.0;
   UIImageView* _phoneImageView;
 }
 
-- (instancetype)initWithSymbolName:(NSString*)symbolName
-                         labelText:(NSString*)labelText {
+- (instancetype)initWithSymbol:(Symbol)symbol labelText:(NSString*)labelText {
   self = [super initWithFrame:CGRectZero];
 
   if (self) {
@@ -60,15 +59,15 @@ const CGFloat kAddressBarSymbolPointSize = 100.0;
                             weight:UIImageSymbolWeightUltraLight
                              scale:UIImageSymbolScaleLarge];
 
-    _phoneImage = CustomSymbolWithConfiguration(symbolName, configuration);
+    _phoneImage = SymbolWithConfiguration(symbol, configuration);
 
     _phoneImageView = [[UIImageView alloc]
         initWithImage:[self phoneImageByApplyingSelectedState]];
 
     _checkbox = [[UIImageView alloc]
-        initWithImage:self.selected ? DefaultSettingsRootSymbol(
-                                          kCheckmarkCircleFillSymbol)
-                                    : DefaultSettingsRootSymbol(kCircleSymbol)];
+        initWithImage:self.selected
+                          ? SettingsRootSymbol(SymbolCheckmarkCircleFill)
+                          : SettingsRootSymbol(SymbolCircle)];
     [self updateCheckBoxTintColor];
 
     UIStackView* contentView = [[UIStackView alloc]
@@ -101,9 +100,8 @@ const CGFloat kAddressBarSymbolPointSize = 100.0;
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
   [_phoneImageView setImage:[self phoneImageByApplyingSelectedState]];
-  [_checkbox
-      setImage:selected ? DefaultSettingsRootSymbol(kCheckmarkCircleFillSymbol)
-                        : DefaultSettingsRootSymbol(kCircleSymbol)];
+  [_checkbox setImage:selected ? SettingsRootSymbol(SymbolCheckmarkCircleFill)
+                               : SettingsRootSymbol(SymbolCircle)];
   [self updateCheckBoxTintColor];
 }
 

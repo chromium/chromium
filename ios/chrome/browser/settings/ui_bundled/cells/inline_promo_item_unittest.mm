@@ -22,7 +22,7 @@ UIImage* GetCloseButtonImage() {
       configurationWithPointSize:16
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
-  return DefaultSymbolWithConfiguration(@"xmark", symbolConfiguration);
+  return SymbolWithConfiguration(SymbolXMark, symbolConfiguration);
 }
 
 // Returns the font defined in the configuration of the cell's more info button.

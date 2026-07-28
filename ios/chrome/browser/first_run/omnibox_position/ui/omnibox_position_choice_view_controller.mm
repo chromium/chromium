@@ -56,13 +56,12 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
   self = [super init];
   if (self) {
     _topAddressBar = [[AddressBarOptionView alloc]
-        initWithSymbolName:kTopOmniboxOptionSymbol
-                 labelText:l10n_util::GetNSString(
-                               IDS_IOS_TOP_ADDRESS_BAR_OPTION)];
+        initWithSymbol:SymbolTopOmniboxOption
+             labelText:l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION)];
     _bottomAddressBar = [[AddressBarOptionView alloc]
-        initWithSymbolName:kBottomOmniboxOptionSymbol
-                 labelText:l10n_util::GetNSString(
-                               IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)];
+        initWithSymbol:SymbolBottomOmniboxOption
+             labelText:l10n_util::GetNSString(
+                           IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)];
   }
   return self;
 }

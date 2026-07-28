@@ -178,18 +178,18 @@ NSString* const kDevViewSourceKey = @"DevViewSource";
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
+  return SettingsRootMulticolorSymbol(SymbolGoogleIcon);
 #else
-  return DefaultSettingsRootSymbol(kGearshape2Symbol);
+  return SettingsRootSymbol(SymbolGearshape2);
 #endif
 }
 
 // Returns the branded version of the Gemini symbol.
 UIImage* GetBrandedGeminiSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return CustomSettingsRootSymbol(kGeminiBrandedLogoSymbol);
+  return SettingsRootSymbol(SymbolGeminiBrandedLogo);
 #else
-  return DefaultSettingsRootSymbol(kGeminiNonBrandedLogoSymbol);
+  return SettingsRootSymbol(SymbolGeminiNonBrandedLogo);
 #endif
 }
 
@@ -760,8 +760,8 @@ struct EnhancedSafeBrowsingActivePromoData
       l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SIGNIN_WITH_UNO);
   signInTextItem.detailText =
       l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-  signInTextItem.image = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+  signInTextItem.image = SymbolTemplateWithPointSize(
+      SymbolPersonCropCircle, kAccountProfilePhotoDimension);
   signInTextItem.imageViewTintColor = [UIColor colorNamed:kBlue600Color];
 
   return signInTextItem;
@@ -802,8 +802,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _defaultBrowserCellItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  _defaultBrowserCellItem.iconImage =
-      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  _defaultBrowserCellItem.iconImage = SettingsRootSymbol(SymbolDefaultBrowser);
   _defaultBrowserCellItem.iconBackgroundColor =
       [UIColor colorNamed:kPurple500Color];
   _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
@@ -833,7 +832,7 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
                        detailText:defaultSearchEngineName
-                           symbol:DefaultSettingsRootSymbol(kSearchSymbol)
+                           symbol:SettingsRootSymbol(SymbolSearch)
             symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
           accessibilityIdentifier:kSettingsSearchEngineCellId];
 
@@ -841,18 +840,18 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)addressBarPreferenceItem {
-  _addressBarPreferenceItem = [self
-           detailItemWithType:SettingsItemTypeAddressBar
-                         text:l10n_util::GetNSString(
-                                  IDS_IOS_ADDRESS_BAR_SETTING)
-                   detailText:[_bottomOmniboxEnabled value]
-                                  ? l10n_util::GetNSString(
-                                        IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)
-                                  : l10n_util::GetNSString(
-                                        IDS_IOS_TOP_ADDRESS_BAR_OPTION)
-                       symbol:DefaultSettingsRootSymbol(kGlobeAmericasSymbol)
-        symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
-      accessibilityIdentifier:kSettingsAddressBarCellId];
+  _addressBarPreferenceItem =
+      [self detailItemWithType:SettingsItemTypeAddressBar
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_ADDRESS_BAR_SETTING)
+                       detailText:[_bottomOmniboxEnabled value]
+                                      ? l10n_util::GetNSString(
+                                            IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)
+                                      : l10n_util::GetNSString(
+                                            IDS_IOS_TOP_ADDRESS_BAR_OPTION)
+                           symbol:SettingsRootSymbol(SymbolGlobeAmericas)
+            symbolBackgroundColor:[UIColor colorNamed:kPurple500Color]
+          accessibilityIdentifier:kSettingsAddressBarCellId];
   return _addressBarPreferenceItem;
 }
 
@@ -862,7 +861,7 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
                            status:[self managedSearchEngineDetailText]
-                            image:DefaultSettingsRootSymbol(kSearchSymbol)
+                            image:SettingsRootSymbol(SymbolSearch)
                   imageBackground:[UIColor colorNamed:kPurple500Color]
                 accessibilityHint:
                     l10n_util::GetNSString(
@@ -897,7 +896,7 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_SETTINGS_AUTOFILL_AND_PASSWORDS)
                        detailText:nil
-                           symbol:CustomSettingsRootSymbol(kPasswordSymbol)
+                           symbol:SettingsRootSymbol(SymbolPassword)
             symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
           accessibilityIdentifier:kSettingsAutofillAndPasswordsCellId];
   return _autofillAndPasswordsDetailItem;
@@ -917,7 +916,7 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_VOICE_SEARCH_SETTING_TITLE)
                        detailText:languageName
-                           symbol:DefaultSettingsRootSymbol(kMicrophoneSymbol)
+                           symbol:SettingsRootSymbol(SymbolMicrophone)
             symbolBackgroundColor:[UIColor colorNamed:kGreen500Color]
           accessibilityIdentifier:kSettingsVoiceSearchCellId];
 
@@ -935,7 +934,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _safetyCheckItem.infoButtonHidden = YES;
   _safetyCheckItem.trailingImage = nil;
   _safetyCheckItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  _safetyCheckItem.leadingIcon = CustomSettingsRootSymbol(kSafetyCheckSymbol);
+  _safetyCheckItem.leadingIcon = SettingsRootSymbol(SymbolSafetyCheck);
   _safetyCheckItem.leadingIconBackgroundColor =
       [UIColor colorNamed:kBlue500Color];
   _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
@@ -953,7 +952,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeNotifications
                              text:title
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kBellSymbol)
+                           symbol:SettingsRootSymbol(SymbolBell)
             symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
           accessibilityIdentifier:kSettingsNotificationsId];
 }
@@ -965,7 +964,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypePrivacy
                              text:title
                        detailText:nil
-                           symbol:CustomSettingsRootSymbol(kPrivacySymbol)
+                           symbol:SettingsRootSymbol(SymbolPrivacy)
             symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
           accessibilityIdentifier:kSettingsPrivacyCellId];
 }
@@ -977,7 +976,7 @@ struct EnhancedSafeBrowsingActivePromoData
     _feedSettingsItem =
         [self switchItemWithType:SettingsItemTypeArticlesForYou
                               title:settingTitle
-                             symbol:DefaultSettingsRootSymbol(kDiscoverSymbol)
+                             symbol:SettingsRootSymbol(SymbolDiscover)
               symbolBackgroundColor:[UIColor colorNamed:kOrange500Color]
             accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
     _feedSettingsItem.on = _discoverFeedVisibilityBrowserAgent->IsEnabled();
@@ -993,7 +992,7 @@ struct EnhancedSafeBrowsingActivePromoData
         [self infoButtonWithType:SettingsItemTypeManagedArticlesForYou
                                text:[self feedItemTitle]
                              status:l10n_util::GetNSString(IDS_IOS_SETTING_OFF)
-                              image:DefaultSettingsRootSymbol(kDiscoverSymbol)
+                              image:SettingsRootSymbol(SymbolDiscover)
                     imageBackground:[UIColor colorNamed:kOrange500Color]
                   accessibilityHint:
                       l10n_util::GetNSString(
@@ -1010,20 +1009,19 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_LANGUAGE_SETTINGS_TITLE)
                        detailText:nil
-                           symbol:CustomSettingsRootSymbol(kLanguageSymbol)
+                           symbol:SettingsRootSymbol(SymbolLanguage)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:kSettingsLanguagesCellId];
 }
 
 - (TableViewItem*)contentSettingsDetailItem {
-  return [self
-           detailItemWithType:SettingsItemTypeContentSettings
-                         text:l10n_util::GetNSString(
-                                  IDS_IOS_CONTENT_SETTINGS_TITLE)
-                   detailText:nil
-                       symbol:DefaultSettingsRootSymbol(kSettingsFilledSymbol)
-        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-      accessibilityIdentifier:kSettingsContentSettingsCellId];
+  return [self detailItemWithType:SettingsItemTypeContentSettings
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_CONTENT_SETTINGS_TITLE)
+                       detailText:nil
+                           symbol:SettingsRootSymbol(SymbolSettingsFilled)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:kSettingsContentSettingsCellId];
 }
 
 - (TableViewItem*)downloadsSettingsDetailItem {
@@ -1031,20 +1029,19 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_SETTINGS_DOWNLOADS_TITLE)
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kDownloadSymbol)
+                           symbol:SettingsRootSymbol(SymbolDownload)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:kSettingsDownloadsSettingsCellId];
 }
 
 - (TableViewItem*)safariDataImportSettingsDetailItem {
-  return [self
-           detailItemWithType:SettingsItemTypeSafariDataImport
-                         text:l10n_util::GetNSString(
-                                  IDS_IOS_SETTINGS_SAFARI_IMPORT_TITLE)
-                   detailText:nil
-                       symbol:DefaultSettingsRootSymbol(kSaveImageActionSymbol)
-        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-      accessibilityIdentifier:kSettingsSafariDataImportSettingsCellId];
+  return [self detailItemWithType:SettingsItemTypeSafariDataImport
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SETTINGS_SAFARI_IMPORT_TITLE)
+                       detailText:nil
+                           symbol:SettingsRootSymbol(SymbolSaveImageAction)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:kSettingsSafariDataImportSettingsCellId];
 }
 
 - (TableViewItem*)tabsSettingsDetailItem {
@@ -1053,7 +1050,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeTabs
                              text:title
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kTabsSymbol)
+                           symbol:SettingsRootSymbol(SymbolTabs)
             symbolBackgroundColor:[UIColor colorNamed:kOrange500Color]
           accessibilityIdentifier:kSettingsTabsCellId];
 }
@@ -1063,7 +1060,7 @@ struct EnhancedSafeBrowsingActivePromoData
                              text:l10n_util::GetNSString(
                                       IDS_IOS_BANDWIDTH_MANAGEMENT_SETTINGS)
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kWifiSymbol)
+                           symbol:SettingsRootSymbol(SymbolWifi)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:kSettingsBandwidthCellId];
 }
@@ -1072,7 +1069,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeAboutChrome
                              text:l10n_util::GetNSString(IDS_IOS_PRODUCT_NAME)
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kInfoCircleSymbol)
+                           symbol:SettingsRootSymbol(SymbolInfoCircle)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:kSettingsAboutCellId];
 }
@@ -1136,7 +1133,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeTableCellCatalog
                              text:@"TableView Cell Catalog"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+                           symbol:SettingsRootSymbol(SymbolCart)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }
@@ -1145,7 +1142,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeButtonCatalog
                              text:@"Button Catalog"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+                           symbol:SettingsRootSymbol(SymbolCart)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }
@@ -1154,7 +1151,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeBackendPromoDebugTools
                              text:@"Backend promo debug tools"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+                           symbol:SettingsRootSymbol(SymbolCart)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }
@@ -1163,7 +1160,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeViewControllerCatalog
                              text:@"ViewController Catalog"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+                           symbol:SettingsRootSymbol(SymbolCart)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }
@@ -1172,7 +1169,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeViewCatalog
                              text:@"View Catalog"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+                           symbol:SettingsRootSymbol(SymbolCart)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }

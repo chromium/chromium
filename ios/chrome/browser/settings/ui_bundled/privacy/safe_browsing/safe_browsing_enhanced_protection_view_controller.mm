@@ -96,18 +96,18 @@ const CGFloat kImageCenterMargin = 14;
 
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DATA_ICON_DESCRIPTION
-                        image:DefaultSymbolWithPointSize(kChartBarXAxisSymbol,
-                                                         kSymbolSize)
+                        image:SymbolWithPointSize(SymbolChartBarXAxis,
+                                                  kSymbolSize)
                   toStackView:_stackView];
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_DOWNLOAD_ICON_DESCRIPTION
-                        image:DefaultSymbolWithPointSize(kSaveImageActionSymbol,
-                                                         kSymbolSize)
+                        image:SymbolWithPointSize(SymbolSaveImageAction,
+                                                  kSymbolSize)
                   toStackView:_stackView];
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* gIcon = CustomSymbolWithPointSize(kGoogleShieldSymbol, kSymbolSize);
+  UIImage* gIcon = SymbolWithPointSize(SymbolGoogleShield, kSymbolSize);
 #else
-  UIImage* gIcon = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);
+  UIImage* gIcon = SymbolWithPointSize(SymbolInfoCircle, kSymbolSize);
 #endif
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_G_ICON_DESCRIPTION
@@ -115,13 +115,12 @@ const CGFloat kImageCenterMargin = 14;
                   toStackView:_stackView];
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_GLOBE_ICON_DESCRIPTION
-                        image:DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
-                                                         kSymbolSize)
+                        image:SymbolWithPointSize(SymbolGlobeAmericas,
+                                                  kSymbolSize)
                   toStackView:_stackView];
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_KEY_ICON_DESCRIPTION
-                        image:CustomSymbolWithPointSize(kPasswordSymbol,
-                                                        kSymbolSize)
+                        image:SymbolWithPointSize(SymbolPassword, kSymbolSize)
                   toStackView:_stackView];
 
   // Second section.
@@ -131,19 +130,17 @@ const CGFloat kImageCenterMargin = 14;
 
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_LINK_ICON_DESCRIPTION
-                        image:DefaultSymbolWithPointSize(kLinkActionSymbol,
-                                                         kSymbolSize)
+                        image:SymbolWithPointSize(SymbolLinkAction, kSymbolSize)
                   toStackView:_stackView];
   [self addDetailItemWithText:
             IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_ACCOUNT_ICON_DESCRIPTION
-                        image:DefaultSymbolWithPointSize(
-                                  kPersonCropCircleSymbol, kSymbolSize)
+                        image:SymbolWithPointSize(SymbolPersonCropCircle,
+                                                  kSymbolSize)
                   toStackView:_stackView];
   [self
       addDetailItemWithText:
           IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_PERFORMANCE_ICON_DESCRIPTION
-                      image:DefaultSymbolWithPointSize(kSpeedometerSymbol,
-                                                       kSymbolSize)
+                      image:SymbolWithPointSize(SymbolSpeedometer, kSymbolSize)
                 toStackView:_stackView];
 
   // Footer.

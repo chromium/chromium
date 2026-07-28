@@ -82,8 +82,8 @@ NSAttributedString* SecondaryMessage(BOOL addLearnMoreLink) {
   return
       [super initWithPrimaryAttributedString:PrimaryMessage(message)
                    secondaryAttributedString:SecondaryMessage(addLearnMoreLink)
-                                        icon:CustomSymbolWithPointSize(
-                                                 kFamilylinkSymbol,
+                                        icon:SymbolWithPointSize(
+                                                 SymbolFamilylink,
                                                  kSymbolAccessoryPointSize)
                       isPresentingFromButton:isPresentingFromButton];
 }

@@ -7,14 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 // A custom view Button that displays an address bar preference option.
 // It displays a label, an image and a checkbox aligned vertically.
 @interface AddressBarOptionView : UIButton
 
-// Initialize the view with a symbol name for the image and a label text for the
+// Initialize the view with a symbol for the image and a label text for the
 // label.
-- (instancetype)initWithSymbolName:(NSString*)symbolName
-                         labelText:(NSString*)labelText;
+- (instancetype)initWithSymbol:(Symbol)symbol labelText:(NSString*)labelText;
 
 @end
 
