@@ -86,22 +86,13 @@ ContentIDs WhatsNewContentIDsForAlternative(bool isAlternativeStringEnabled) {
 }
 
 // Returns the title and the body text ids for the sign in promo notification.
-ContentIDs SignInContentIDsForAlternative(
-    TipsNotificationsAlternativeStringVersion alternative) {
-  switch (alternative) {
-    case TipsNotificationsAlternativeStringVersion::kAlternative1:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT1_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative2:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT2_BODY};
-    case TipsNotificationsAlternativeStringVersion::kAlternative3:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT3_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT3_BODY};
-    case TipsNotificationsAlternativeStringVersion::kDefault:
-      return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
-              IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
+ContentIDs SignInContentIDsForAlternative(bool isAlternativeStringEnabled) {
+  if (isAlternativeStringEnabled) {
+    return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
+            IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_ALT1_BODY};
   }
+  return {IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_TITLE,
+          IDS_IOS_NOTIFICATIONS_TIPS_SIGNIN_BODY};
 }
 
 // Returns the title and the body text ids for the setup list promo
@@ -214,7 +205,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kWhatsNew:
       return WhatsNewContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kSignin:
-      return SignInContentIDsForAlternative(alternative);
+      return SignInContentIDsForAlternative(isAlternativeStringEnabled);
     case TipsNotificationType::kSetUpListContinuation:
       return SetupListContentIDsForAlternative(alternative);
     case TipsNotificationType::kDocking:
