@@ -68,6 +68,7 @@ void WebUIPinnedToolbarActions::OnThemeChanged() {
 }
 
 void WebUIPinnedToolbarActions::OnActionsChanged() {
+  const auto& old_states = delegate_->GetState().pinned_toolbar_actions_state;
   std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> states;
   base::flat_set<actions::ActionId> processed_actions;
 
@@ -120,7 +121,16 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     } else {
       image_model = item->GetImage();
     }
-    state->icon = icon_table.RegisterImageModel(std::move(image_model));
+    toolbar_ui_api::IconHandle previous_icon;
+    // Opportunistically try to reuse the icon handle at the same index as
+    // `state` will be at. The reuse won't succeed if the pinned actions are
+    // changed, and that's acceptable as this is just an opportunistic
+    // optimization.
+    if (states.size() < old_states.size()) {
+      previous_icon = old_states[states.size()]->icon;
+    }
+    state->icon = icon_table.RegisterImageModelTryReuse(std::move(image_model),
+                                                        previous_icon);
 
     states.push_back(std::move(state));
     processed_actions.insert(id);

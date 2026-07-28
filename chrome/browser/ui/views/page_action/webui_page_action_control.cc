@@ -85,7 +85,7 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   void OnPageActionModelWillBeDeleted(
       const page_actions::PageActionModelInterface& model) override;
 
-  toolbar_ui_api::mojom::PageActionStatePtr GetState() const;
+  toolbar_ui_api::mojom::PageActionStatePtr GetState();
   void NotifyClick(PageActionTrigger trigger);
   void NotifyChipShowingChanged();
 
@@ -136,6 +136,8 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   // The last state sent to the WebUI. Null if the action was not visible.
   toolbar_ui_api::mojom::PageActionStatePtr old_state_;
   bool was_chip_visible_ = false;
+
+  toolbar_ui_api::IconHandle cached_icon_;
 };
 
 void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
@@ -192,7 +194,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
 }
 
 toolbar_ui_api::mojom::PageActionStatePtr
-WebUIPageActionControl::WebUIPageActionDelegate::GetState() const {
+WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   if (!observation_.IsObserving()) {
     return nullptr;
   }
@@ -206,8 +208,9 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() const {
       webui_toolbar::ActionIdToMojomPageActionId(action_id_);
   state->accessible_name = model->GetAccessibleName();
   state->tooltip_text = model->GetTooltipText();
-  state->icon = owner_->webui_delegate_->GetIconTable().RegisterImageModel(
-      model->GetImage());
+  state->icon = cached_icon_ =
+      owner_->webui_delegate_->GetIconTable().RegisterImageModelTryReuse(
+          model->GetImage(), cached_icon_);
   return state;
 }
 
