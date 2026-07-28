@@ -465,8 +465,7 @@ class SkiaOutputSurfaceImplOnGpu
   // by CreateAndStoreExternalSemaphoreVulkan(). May destroy VkSemaphore that
   // the |semaphore| stores if creation of a release fence fails. In this case,
   // invalid fence handle is returned.
-  gfx::GpuFenceHandle CreateReleaseFenceForVulkan(
-      const GrBackendSemaphore& semaphore);
+  gfx::GpuFenceHandle CreateReleaseFenceForVulkan(VkSemaphore semaphore);
   // Returns true if succeess.
   bool CreateAndStoreExternalSemaphoreVulkan(
       std::vector<GrBackendSemaphore>& end_semaphores);
