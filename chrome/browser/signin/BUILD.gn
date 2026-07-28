@@ -306,6 +306,8 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "account_preview_data_service_android.cc",
+      "account_preview_data_service_android.h",
       "android/cross_device_signin_flow_navigation_throttle.cc",
       "android/signin_bridge.cc",
       "android/signin_bridge_factory.cc",

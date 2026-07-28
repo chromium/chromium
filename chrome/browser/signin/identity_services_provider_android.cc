@@ -4,9 +4,12 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_android.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/android/signin_manager_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -28,6 +31,12 @@ JNI_IdentityServicesProvider_GetSigninManager(JNIEnv* env, Profile* profile) {
   // Ensuring that the pointer is not null here produces unactionable stack
   // traces, so just let the Java side handle possible issues with null.
   return signin_manager ? signin_manager->GetJavaObject() : nullptr;
+}
+
+static signin::AccountPreviewDataService*
+JNI_IdentityServicesProvider_GetAccountPreviewDataService(JNIEnv* env,
+                                                          Profile* profile) {
+  return AccountPreviewDataServiceFactory::GetForProfile(profile);
 }
 
 DEFINE_JNI(IdentityServicesProvider)

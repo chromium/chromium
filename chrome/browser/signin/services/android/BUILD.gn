@@ -7,6 +7,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewDataService.java",
+    "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewPreference.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
@@ -17,6 +19,8 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewDataService.java",
+    "java/src/org/chromium/chrome/browser/signin/services/AccountPreviewPreference.java",
     "java/src/org/chromium/chrome/browser/signin/services/BadgeConfig.java",
     "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
@@ -108,6 +112,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.signin.services"
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLoggerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/AccountPreviewDataServiceUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/BadgeConfigBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/DisplayableProfileDataUnitTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDataCacheUnitTest.java",
@@ -132,6 +137,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
+    "//components/sync/android:sync_java",
     "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",

@@ -25,6 +25,7 @@ public class IdentityServicesProvider {
     private static @Nullable IdentityServicesProvider sIdentityServicesProvider;
     private static @Nullable IdentityManager sIdentityManager;
     private static @Nullable SigninManager sSigninManager;
+    private static @Nullable AccountPreviewDataService sAccountPreviewDataServiceForTesting;
 
     private IdentityServicesProvider() {}
 
@@ -59,6 +60,13 @@ public class IdentityServicesProvider {
         ResettersForTesting.register(() -> sSigninManager = oldValue);
     }
 
+    public static void setAccountPreviewDataServiceForTesting(
+            @Nullable AccountPreviewDataService accountPreviewDataService) {
+        var oldValue = sAccountPreviewDataServiceForTesting;
+        sAccountPreviewDataServiceForTesting = accountPreviewDataService;
+        ResettersForTesting.register(() -> sAccountPreviewDataServiceForTesting = oldValue);
+    }
+
     /**
      * Getter for {@link IdentityManager} instance for given profile.
      *
@@ -91,11 +99,32 @@ public class IdentityServicesProvider {
         return result;
     }
 
+    /**
+     * Getter for {@link AccountPreviewDataService} instance for given profile.
+     *
+     * @param profile The profile to get regarding account preview data service.
+     * @return a {@link AccountPreviewDataService} instance, or null if the incognito Profile is
+     *     supplied.
+     */
+    @MainThread
+    public @Nullable AccountPreviewDataService getAccountPreviewDataService(Profile profile) {
+        ThreadUtils.assertOnUiThread();
+        if (sAccountPreviewDataServiceForTesting != null) {
+            return sAccountPreviewDataServiceForTesting;
+        }
+
+        return IdentityServicesProviderJni.get().getAccountPreviewDataService(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         @JniType("signin::IdentityManager*")
         IdentityManager getIdentityManager(@JniType("Profile*") Profile profile);
 
         SigninManager getSigninManager(@JniType("Profile*") Profile profile);
+
+        @JniType("signin::AccountPreviewDataService*")
+        @Nullable AccountPreviewDataService getAccountPreviewDataService(
+                @JniType("Profile*") Profile profile);
     }
 }
