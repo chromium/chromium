@@ -850,4 +850,55 @@ chrome.test.runTests([
     Ink2Manager.getInstance().resetStackForTesting();
     chrome.test.succeed();
   },
+
+  // Test that announcements are read by screen readers when undoing and redoing
+  // annotations via buttons or keyboard shortcuts.
+  async function testUndoRedoAnnouncements() {
+    mockPlugin.clearMessages();
+    mockMetricsPrivate.reset();
+
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
+
+    // Draw a stroke.
+    startFinishModifiedInkStroke(controller);
+    await microtasksFinished();
+
+    // Undo via button click.
+    let whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    undoButton.click();
+    let event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2AnnotationUndone')));
+
+    // Redo via button click.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    redoButton.click();
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2AnnotationRedone')));
+
+    // Undo via shortcut key.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    sendUndoShortcutKey(viewerToolbar);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2AnnotationUndone')));
+
+    // Redo via shortcut key.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    sendRedoShortcutKey(viewerToolbar);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2AnnotationRedone')));
+
+    Ink2Manager.getInstance().resetStackForTesting();
+    chrome.test.succeed();
+  },
 ]);

@@ -22,6 +22,7 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 // </if>
 // <if expr="enable_pdf_ink2">
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -486,6 +487,8 @@ export class ViewerToolbarElement extends CrLitElement {
     assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 
     Ink2Manager.getInstance().undo();
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('ink2AnnotationUndone'));
     record(UserAction.UNDO_INK2);
   }
 
@@ -504,6 +507,8 @@ export class ViewerToolbarElement extends CrLitElement {
     assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 
     Ink2Manager.getInstance().redo();
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('ink2AnnotationRedone'));
     record(UserAction.REDO_INK2);
   }
 
