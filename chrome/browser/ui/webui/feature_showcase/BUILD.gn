@@ -64,6 +64,7 @@ source_set("feature_showcase") {
     "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
     "//chrome/browser/ui/webui/intro",
     "//chrome/common:constants",
+    "//components/glic:glic_pref_names",
     "//components/lens",
     "//components/lens:enterprise_policy",
     "//components/prefs",
