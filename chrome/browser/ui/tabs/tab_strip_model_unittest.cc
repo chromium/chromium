@@ -2404,6 +2404,70 @@ TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, NewTabInFocusedGroupJoinsFocusedGroup) {
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Add a new tab without specifying a group.
+  tabstrip()->AddWebContents(CreateWebContents(), -1, ui::PAGE_TRANSITION_TYPED,
+                             AddTabTypes::ADD_ACTIVE);
+
+  // The newly created tab should automatically belong to the focused group.
+  EXPECT_EQ(group_id, tabstrip()->GetTabGroupForTab(3));
+}
+
+TEST_F(TabStripModelTest, NewPinnedTabInFocusedGroupDoesNotJoinFocusedGroup) {
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Add a new pinned tab.
+  tabstrip()->AddWebContents(CreateWebContents(), 0, ui::PAGE_TRANSITION_TYPED,
+                             AddTabTypes::ADD_PINNED);
+
+  // Pinned tabs cannot belong to a tab group even when focus mode is active.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(0));
+}
+
+TEST_F(TabStripModelTest, CommandCloseOtherTabsInFocusedGroupOnly) {
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->SetFocusedGroup(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Execute "Close Other Tabs" on tab index 1.
+  tabstrip()->ExecuteContextMenuCommand(
+      1, TabStripModel::ContextMenuCommand::CommandCloseOtherTabs);
+
+  // Tab 2 (in focused group) should be closed, but Tab 0 and Tab 3 (outside
+  // group) remain.
+  EXPECT_EQ(3, tabstrip()->count());
+  EXPECT_EQ(group_id, tabstrip()->GetTabGroupForTab(1));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(2));
+}
+
+TEST_F(TabStripModelTest, CommandCloseTabsToRightInFocusedGroupOnly) {
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
+  tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({3});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  // Execute "Close Tabs to the Right" on tab index 0 inside group_a.
+  tabstrip()->ExecuteContextMenuCommand(
+      0, TabStripModel::ContextMenuCommand::CommandCloseTabsToRight);
+
+  // Tabs 1 and 2 (inside group_a) should be closed, but Tab 3 (group_b)
+  // remains.
+  EXPECT_EQ(2, tabstrip()->count());
+  EXPECT_EQ(group_a, tabstrip()->GetTabGroupForTab(0));
+  EXPECT_EQ(group_b, tabstrip()->GetTabGroupForTab(1));
+}
+
 TEST_F(TabStripModelTest, SplitTabPinning) {
   for (bool split_is_selected : {true, false}) {
     for (bool use_left_tab : {true, false}) {

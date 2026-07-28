@@ -1746,6 +1746,13 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
     }
   }
 
+  // Newly created tabs without an explicit group join the focused group if
+  // focus mode is active.
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      !group.has_value()) {
+    group = GetFocusedGroup();
+  }
+
   // Prevent the tab from being inserted at an index that would make the group
   // non-contiguous. Most commonly, the new-tab button always attempts to insert
   // at the end of the tab strip. Extensions can insert at an arbitrary index,
@@ -3440,7 +3447,12 @@ std::vector<int> TabStripModel::GetIndicesClosedByCommand(
           : gfx::Range(index, index + 1);
 
   // NOTE: callers expect the vector to be sorted in descending order.
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   for (int i = count() - 1; i > last_unclosed_tab; --i) {
+    // Skip tabs that are not part of the focused group.
+    if (focused_group.has_value() && GetTabGroupForTab(i) != focused_group) {
+      continue;
+    }
     if (!indices_to_exclude.Contains(gfx::Range(i, i + 1)) && !IsTabPinned(i) &&
         (!is_selected || !IsTabSelected(i))) {
       indices.push_back(i);
@@ -3468,8 +3480,15 @@ std::vector<tabs::TabInterface*> TabStripModel::GetTabsClosedByCommand(
     start_it = tabs::TabCollection::TabIterator(invoked_tab);
   }
 
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+
   for (auto it = start_it; it != end(); ++it) {
     tabs::TabInterface* tab = *it;
+
+    // Skip tabs unless they are part of the focused group.
+    if (focused_group.has_value() && tab->GetGroup() != focused_group) {
+      continue;
+    }
 
     if (tab == invoked_tab || tab->IsPinned()) {
       continue;
