@@ -65,15 +65,14 @@ namespace l10n_util {
 namespace {
 
 using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagConverter;
 using ::base::i18n::LanguageTagMatcher;
 using ::ui_l10n::GetAcceptLanguageMatcher;
 using ::ui_l10n::GetAcceptLanguageTags;
 
 std::string NormalizeLocaleWithLanguageTag(std::string_view locale) {
-  return LanguageTagConverter::GetInstance()
-      .FromString(locale)
+  return GetLanguageTagFromString(locale)
       .value_or(GetKnownLanguageTag("und"))
       .ToLegacyICUFormat();
 }
@@ -103,7 +102,7 @@ bool IsDuplicateName(std::string_view locale_name) {
   return kDuplicateNames.contains(base::ToLowerASCII(locale_name));
 }
 
-// We added 30+ minimally populated locales with only a few entries
+// 30+ minimally populated locales were added with only a few entries
 // (exemplar character set, script, writing direction and its own
 // lanaguage name). These locales have to be distinguished from the
 // fully populated locales to which Chrome is localized.
@@ -115,23 +114,9 @@ bool IsLocalePartiallyPopulated(const std::string& locale_name) {
   return !l10n_util::IsLocaleNameTranslated("en", locale_name);
 }
 
-// If `perform_io` is false, this will not perform any I/O but may return false
-// positives on Android and iOS. See the `kPlatformLocales` documentation for
-// more information.
-bool HasStringsForLocale(const LanguageTag& language_tag,
-                         l10n_util::CheckLocaleMode mode) {
-  if (mode == l10n_util::CheckLocaleMode::kUseKnownLocalesList) {
-    // Only accept exact matches.
-    return ui_l10n::GetPlatformLanguageMatcher().HasExactMatch(language_tag);
-  }
-
-  // IsLocalePartiallyPopulated() can be called here for an early return w/o
-  // checking the resource availability below. It'd help when Chrome is run
-  // under a system locale Chrome is not localized to (e.g. Farsi on Linux),
-  // but it'd slow down the start up time a little bit for locales Chrome is
-  // localized to. So, we don't call it here.
+bool IsResourceBundleLocale(const LanguageTag& locale) {
   return ui::ResourceBundle::LocaleDataPakExists(
-      language_tag, ui::ResourceBundle::Gender::kDefault);
+      locale, ui::ResourceBundle::Gender::kDefault);
 }
 
 // On Linux, the text layout engine Pango determines paragraph directionality
@@ -161,7 +146,7 @@ struct AvailableLocalesTraits
       // Filter out the names that have aliases.
       if (IsDuplicateName(locale_name))
         continue;
-      // Filter out locales for which we have only partially populated data
+      // Filter out locales for which only partially populated data is present
       // and to which Chrome is not localized.
       if (IsLocalePartiallyPopulated(locale_name))
         continue;
@@ -197,100 +182,31 @@ std::string_view GetCountry(std::string_view locale) {
                                            : locale.substr(hyphen_pos + 1);
 }
 
-// TODO(jshin): revamp this function completely to use a more systematic
-// and generic locale fallback based on ICU/CLDR.
+std::optional<LanguageTag> CheckAndResolveLocale(const LanguageTag& locale,
+                                                 CheckLocaleMode mode) {
+  if (mode == CheckLocaleMode::kVerifyLocalizationDataExists &&
+      IsResourceBundleLocale(locale)) {
+    return locale;
+  }
+
+  std::optional<LanguageTag> matched =
+      ui_l10n::GetPlatformLanguageMatcher().Match(locale);
+  if (!matched || (mode == CheckLocaleMode::kVerifyLocalizationDataExists &&
+                   !IsResourceBundleLocale(*matched))) {
+    return std::nullopt;
+  }
+  return matched;
+}
+
 std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
                                                  CheckLocaleMode mode) {
-  std::optional<LanguageTag> locale_tag =
-      LanguageTagConverter::GetInstance().FromString(locale);
-  if (!locale_tag) {
-    return std::nullopt;
-  }
-  if (HasStringsForLocale(*locale_tag, mode)) {
-    return std::string(locale_tag->tag_string());
-  }
-
-  // If there's a variant, skip over it so we can try without the region
-  // code.  For example, ca_ES@valencia should cause us to try ca@valencia
-  // before ca.
-  if (locale.find('@') != std::string::npos) {
-    return std::nullopt;
-  }
-
-  // If the locale matches language but not country, use that instead.
-  // TODO(jungshik) : Nothing is done about languages that Chrome
-  // does not support but available on Windows. We fall
-  // back to en-US in GetApplicationLocale so that it's a not critical,
-  // but we can do better.
-  const std::string_view lang = GetLanguage(locale);
-  if (lang.size() < locale.size()) {
-    const std::string_view region = locale.substr(lang.size() + 1);
-    std::string tmp_locale(lang);
-    // Map es-RR other than es-ES to es-419 (Chrome's Latin American
-    // Spanish locale).
-    if (base::EqualsCaseInsensitiveASCII(lang, "es") &&
-        !base::EqualsCaseInsensitiveASCII(region, "es")) {
-#if BUILDFLAG(IS_IOS)
-      // iOS uses a different name for es-419 (es-MX).
-      tmp_locale.append("-MX");
-#else
-      tmp_locale.append("-419");
-#endif
-    } else if (base::EqualsCaseInsensitiveASCII(lang, "pt") &&
-               !base::EqualsCaseInsensitiveASCII(region, "br")) {
-      // Map pt-RR other than pt-BR to pt-PT. Note that "pt" by itself maps to
-      // pt-BR (logic below), and we need to explicitly check for pt-BR here as
-      // it is unavailable on iOS.
-      tmp_locale.append("-PT");
-    } else if (base::EqualsCaseInsensitiveASCII(lang, "zh")) {
-      // Map zh-HK and zh-MO to zh-TW. Otherwise, zh-FOO is mapped to zh-CN.
-      if (base::EqualsCaseInsensitiveASCII(region, "hk") ||
-          base::EqualsCaseInsensitiveASCII(region, "mo")) {  // Macao
-        tmp_locale.append("-TW");
-      } else {
-        tmp_locale.append("-CN");
-      }
-    } else if (base::EqualsCaseInsensitiveASCII(lang, "en")) {
-      // Map Liberian and Filipino English to US English, and everything
-      // else to British English.
-      // TODO(jungshik): en-CA may have to change sides once
-      // we have OS locale separate from app locale (Chrome's UI language).
-      if (base::EqualsCaseInsensitiveASCII(region, "lr") ||
-          base::EqualsCaseInsensitiveASCII(region, "ph")) {
-        tmp_locale.append("-US");
-      } else {
-        tmp_locale.append("-GB");
-      }
-    }
-    if (HasStringsForLocale(LanguageTagConverter::GetInstance()
-                                .FromString(tmp_locale)
-                                .value_or(GetKnownLanguageTag("und")),
-                            mode)) {
-      return tmp_locale;
-    }
-  }
-
-  // Google updater uses no, tl, iw and en for our nb, fil, he, and en-US.
-  // Note that pt-RR is mapped to pt-PT above, but we want pt -> pt-BR here.
-  struct {
-    const char* source;
-    const char* dest;
-  } static constexpr kAliasMap[] = {
-      {"en", "en-US"}, {"iw", "he"},  {"no", "nb"},
-      {"pt", "pt-BR"}, {"tl", "fil"}, {"zh", "zh-CN"},
-  };
-  for (const auto& alias : kAliasMap) {
-    if (base::EqualsCaseInsensitiveASCII(lang, alias.source)) {
-      if (HasStringsForLocale(LanguageTagConverter::GetInstance()
-                                  .FromString(alias.dest)
-                                  .value_or(GetKnownLanguageTag("und")),
-                              mode)) {
-        return std::optional<std::string>(alias.dest);
-      }
-    }
-  }
-
-  return std::nullopt;
+  return GetLanguageTagFromString(locale).and_then(
+      [mode](const LanguageTag& language_tag) {
+        return CheckAndResolveLocale(language_tag, mode)
+            .transform([](const LanguageTag& resolved) {
+              return std::string(resolved.tag_string());
+            });
+      });
 }
 
 #if BUILDFLAG(IS_APPLE)
@@ -302,7 +218,7 @@ std::string GetApplicationLocaleInternalMac(std::string_view pref_locale) {
     app_locale = pref_locale;
 
   // The above should handle all of the cases Chrome normally hits, but for some
-  // unit tests, we need something to fall back too.
+  // unit tests, fallback is needed too.
   if (app_locale.empty())
     app_locale = "en-US";
 
@@ -312,41 +228,46 @@ std::string GetApplicationLocaleInternalMac(std::string_view pref_locale) {
 
 #if !BUILDFLAG(IS_APPLE)
 std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
-  std::vector<std::string> candidates;
-
-  // We only use --lang and the app pref on Windows.  On Linux, we only
-  // look at the LC_*/LANG environment variables.  We do, however, pass --lang
-  // to renderer and plugin processes so they know what language the parent
-  // process decided to use.
+  std::vector<std::optional<LanguageTag>> candidates;
+  // The `prefered_tag` is separated from the other candidates.
+  std::optional<LanguageTag> prefered_tag = std::nullopt;
+  // Use --lang and the app pref on Windows.  On Linux, only
+  // look at the LC_*/LANG environment variables.  However, passing --lang
+  // to renderer and plugin processes is common, so they know what language the
+  // parent process decided to use.
 
 #if BUILDFLAG(IS_WIN)
   // First, try the preference value.
-  if (!pref_locale.empty())
-    candidates.push_back(base::i18n::GetCanonicalLocale(pref_locale));
+  if (!pref_locale.empty()) {
+    prefered_tag = GetLanguageTagFromString(pref_locale);
+  }
 
   // Next, try the overridden locale.
   const std::vector<std::string>& languages = l10n_util::GetLocaleOverrides();
   if (!languages.empty()) {
     candidates.reserve(candidates.size() + languages.size());
     std::ranges::transform(languages, std::back_inserter(candidates),
-                           &base::i18n::GetCanonicalLocale);
+                           [](const std::string& language) {
+                             return GetLanguageTagFromString(language);
+                           });
   } else {
     // If no override was set, defer to ICU
-    candidates.push_back(base::i18n::GetConfiguredLocale());
+    candidates.push_back(
+        base::i18n::LanguageTagConverter::GetInstance().FromIcuLocale(
+            icu::Locale::getDefault()));
   }
 #elif BUILDFLAG(IS_ANDROID)
   // Try pref_locale first.
-  if (!pref_locale.empty())
-    candidates.push_back(base::i18n::GetCanonicalLocale(pref_locale));
+  if (!pref_locale.empty()) {
+    prefered_tag = GetLanguageTagFromString(pref_locale);
+  }
 
   // On Android, query java.util.Locale for the default locale.
-  candidates.push_back(base::android::GetDefaultLocaleString());
+  candidates.push_back(
+      GetLanguageTagFromString(base::android::GetDefaultLocaleString()));
 #elif defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS)
   // GLib implements correct environment variable parsing with
   // the precedence order: LANGUAGE, LC_ALL, LC_MESSAGES and LANG.
-  // We used to use our custom parsing code along with ICU for this purpose.
-  // If we have a port that does not depend on GTK, we have to
-  // restore our custom code for that port.
   const char* const* languages = g_get_language_names();
   DCHECK(languages);  // A valid pointer is guaranteed.
   DCHECK(*languages);  // At least one entry, "C", is guaranteed.
@@ -354,30 +275,60 @@ std::string GetApplicationLocaleInternalNonMac(std::string_view pref_locale) {
   // SAFETY: g_get_language_names returns a valid NULL-terminated array.
   // See: https://docs.gtk.org/glib/func.get_language_names.html
   for (; *languages; UNSAFE_BUFFERS(++languages)) {
-    candidates.push_back(base::i18n::GetCanonicalLocale(*languages));
+    if (std::optional<LanguageTag> language_tag =
+            GetLanguageTagFromString(*languages);
+        language_tag) {
+      candidates.push_back(std::move(language_tag));
+    }
   }
 #else
   // By default, use the application locale preference. This applies to ChromeOS
   // and linux systems without glib.
-  if (!pref_locale.empty())
-    candidates.emplace_back(pref_locale);
+  if (!pref_locale.empty()) {
+    prefered_tag = GetLanguageTagFromString(pref_locale);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
-  for (const std::string& candidate : candidates) {
-    if (std::optional<std::string> resolved_locale =
-            CheckAndResolveLocale(candidate)) {
-      return *resolved_locale;
+  // If `prefered_tag`, it is attempt to get a match for it, even if it is not
+  // exact.
+  if (prefered_tag) {
+    if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
+            *prefered_tag, CheckLocaleMode::kVerifyLocalizationDataExists)) {
+      return std::string(resolved->tag_string());
     }
   }
 
-  // Fallback on en-US.
-  const std::string fallback_locale("en-US");
-  if (HasStringsForLocale(GetKnownLanguageTag("en-US"),
-                          CheckLocaleMode::kVerifyLocalizationDataExists)) {
-    return fallback_locale;
+  std::optional<LanguageTag> matched_candidate;
+  for (const std::optional<LanguageTag>& candidate : candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    // If a exact match with a resource-bundle locale on-disk is found, it is
+    // returned.
+    if (IsResourceBundleLocale(*candidate)) {
+      return std::string(candidate->tag_string());
+    }
+
+    if (matched_candidate) {
+      continue;
+    }
+    // If there was a match using `CheckAndResolveLocale`, it is stored but not
+    // returned yet because the priority is to find a candidate that has an
+    // exact match with a `ResourceBundle` locale.
+    if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
+            *candidate, CheckLocaleMode::kVerifyLocalizationDataExists);
+        resolved) {
+      matched_candidate = *resolved;
+    }
   }
 
-  return std::string();
+  if (matched_candidate) {
+    return std::string(matched_candidate->tag_string());
+  }
+
+  // Fallback to "en-US"
+  return IsResourceBundleLocale(GetKnownLanguageTag("en-US")) ? "en-US" : "";
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 
@@ -404,7 +355,7 @@ bool IsLocaleNameTranslated(std::string_view locale,
       l10n_util::GetDisplayNameForLocale(locale, display_locale, false);
   // Because ICU sets the error code to U_USING_DEFAULT_WARNING whether or not
   // uloc_getDisplayName returns the actual translation or the default
-  // value (locale code), we have to rely on this hack to tell whether
+  // value (locale code), it is necessary to rely on this hack to tell whether
   // the translation is available or not.  If ICU doesn't have a translated
   // name for this locale, GetDisplayNameForLocale will just return the
   // locale code.
@@ -427,12 +378,12 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
                                        bool disallow_default) {
   std::string locale_code = std::string(locale);
   std::string display_locale_code = std::string(display_locale);
-  // Internally, we use the language code of zh-CN and zh-TW, but we want the
-  // display names to be Chinese (Simplified) and Chinese (Traditional) instead
-  // of Chinese (China) and Chinese (Taiwan).
-  // Translate uses "tl" (Tagalog) to mean "fil" (Filipino). Until Google
-  // translate is changed to understand "fil", make "tl" alias to "fil".
-  // Translate also uses "gom" (Goan Konkani) for "kok" (Konkani).
+  // Internally, zh-CN and zh-TW are used, but  the display names are supposed
+  // to be Chinese (Simplified) and Chinese (Traditional) instead of Chinese
+  // (China) and Chinese (Taiwan). Translate uses "tl" (Tagalog) to mean "fil"
+  // (Filipino). Until Google translate is changed to understand "fil", make
+  // "tl" alias to "fil". Translate also uses "gom" (Goan Konkani) for "kok"
+  // (Konkani).
   if (locale_code == "gom") {
     locale_code = "kok";
   } else if (locale_code == "mo") {
@@ -461,9 +412,10 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
   display_name = GetDisplayNameForLocale(locale_code, display_locale_code);
 #else
 #if BUILDFLAG(IS_ANDROID)
-  // Use Java API to get locale display name so that we can remove most of
-  // the lang data from icu data to reduce binary size, except for zh-Hans and
-  // zh-Hant because the current Android Java API doesn't support scripts.
+  // Use Java API to get locale display name so it would be possible to remove
+  // most of the lang data from icu data to reduce binary size, except for
+  // zh-Hans and zh-Hant because the current Android Java API doesn't support
+  // scripts.
   // TODO(wangxianzhu): remove the special handling of zh-Hans and zh-Hant once
   // Android Java API supports scripts.
   if (!locale_code.starts_with("zh-Han")) {
@@ -475,7 +427,7 @@ std::u16string GetDisplayNameForLocale(std::string_view locale,
     const int kBufferSize = 1024;
 
     int32_t actual_size;
-    // For Country code in ICU64 we need to call uloc_getDisplayCountry
+    // Country code in ICU64 is obtained by `uloc_getDisplayCountry`.
     if (locale_code[0] == '-' || locale_code[0] == '_') {
       actual_size = uloc_getDisplayCountry(
           locale_code.c_str(), display_locale_code.c_str(),
@@ -541,8 +493,8 @@ std::u16string FormatString(const std::u16string& format_string,
                             const std::vector<std::u16string>& replacements,
                             std::vector<size_t>* offsets) {
 #if DCHECK_IS_ON()
-  // Make sure every replacement string is being used, so we don't just silently
-  // fail to insert one.
+  // Make sure every replacement string is being used, so one is not inserted
+  // silently.
   //
   // $9 is the highest allowed placeholder.
   for (size_t i = 0; i < 9; ++i) {
@@ -573,10 +525,10 @@ std::u16string FormatString(const std::u16string& format_string,
 std::u16string GetStringFUTF16(int message_id,
                                const std::vector<std::u16string>& replacements,
                                std::vector<size_t>* offsets) {
-  // TODO(tc): We could save a string copy if we got the raw string as
-  // a std::string_view and were able to call ReplaceStringPlaceholders with
-  // a std::string_view format string and std::u16string substitution strings.
-  // In practice, the strings should be relatively short.
+  // TODO(tc): saving a string copy here would be possible if the raw string
+  // would be taken as a std::string_view and calling ReplaceStringPlaceholders
+  // with a std::string_view format string and std::u16string substitution
+  // strings was possible. In practice, the strings should be relatively short.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   const std::u16string& format_string = rb.GetLocalizedString(message_id);
   return FormatString(format_string, replacements, offsets);
@@ -765,8 +717,7 @@ void GetAcceptLanguages(std::vector<std::string>* locale_codes) {
 }
 
 bool IsPossibleAcceptLanguage(std::string_view locale) {
-  std::optional<LanguageTag> tag =
-      LanguageTagConverter::GetInstance().FromString(locale);
+  std::optional<LanguageTag> tag = GetLanguageTagFromString(locale);
   if (!tag) {
     return false;
   }

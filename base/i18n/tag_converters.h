@@ -72,7 +72,8 @@ class BASE_I18N_EXPORT LanguageTagConverter {
 // Helper function to obtain a `LanguageTag` from a string. It is just a
 // convenient function to avoid people having to call the `LanguageTagConverter`
 // singleton as it is quite verbose to do it.
-std::optional<LanguageTag> GetLanguageTagFromString(std::string_view tag);
+BASE_I18N_EXPORT std::optional<LanguageTag> GetLanguageTagFromString(
+    std::string_view tag);
 
 // Helper class for converting type-safe BCP 47 `LanguageTag`s to legacy
 // C++ ICU `icu::Locale` objects.

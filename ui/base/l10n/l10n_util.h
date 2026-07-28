@@ -55,12 +55,15 @@ std::optional<std::string> CheckAndResolveLocale(
 // nearly all cases you shouldn't call this, rather use GetApplicationLocale
 // defined on browser_process.
 //
-// Returns the locale used by the Application.  First we use the value from the
-// command line (--lang), second we try the value in the prefs file (passed in
-// as `pref_locale`), finally, we fall back on the system locale. We only return
-// a value if there's a corresponding resource DLL for the locale.  Otherwise,
-// we fall back to en-us. `set_icu_locale` determines whether the resulting
-// locale is set as the default ICU locale before returning it.
+// Returns the locale used by the Application.  The algorithm follows this list
+// of preferences to find a suitable locale:
+// - First the value from the command line (--lang);
+// - Second the value in the prefs file (passed in as `pref_locale`);
+// - Finally, fallback on the system locale.
+//
+// A value is returned if it has a corresponding resource on-disk. Otherwise,
+// "en-US" is used as the last fallback. `set_icu_locale` determines whether
+// the resulting locale is set as the default ICU locale before returning it.
 COMPONENT_EXPORT(UI_BASE)
 std::string GetApplicationLocale(std::string_view pref_locale,
                                  bool set_icu_locale = true);
@@ -245,13 +248,13 @@ void SortStrings16(const std::string& locale,
 COMPONENT_EXPORT(UI_BASE)
 const std::vector<std::string>& GetAvailableICULocales();
 
-// Returns whether we should show a locale to the user as a supported UI locale.
-// This is similar to CheckAndResolveLocale, except that it excludes some
-// languages from being shown.
+// Returns whether a locale shouled be shown to the user as a supported UI
+// locale. This is similar to CheckAndResolveLocale, except that it excludes
+// some languages from being shown.
 COMPONENT_EXPORT(UI_BASE)
 bool IsUserFacingUILocale(std::string_view locale);
 
-// Returns the subset of locales from GetAcceptLanguages which we should show
+// Returns the subset of locales from GetAcceptLanguages which should be shown
 // to the user as a supported UI locale.
 // E.g., a vector containing en-US, en-CA, en-GB, es, fr, pt-PT, pt-BR, etc.
 COMPONENT_EXPORT(UI_BASE)
