@@ -573,6 +573,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Protects |locale_resources_data_|.
   std::unique_ptr<base::Lock> locale_resources_data_lock_;
 
+  // Protects |resource_handles_|.
+  std::unique_ptr<base::Lock> resource_handles_lock_;
+
   // Handles for data sources.
   std::vector<std::unique_ptr<ResourceHandle>> locale_resources_data_;
   std::vector<std::unique_ptr<ResourceHandle>> resource_handles_;

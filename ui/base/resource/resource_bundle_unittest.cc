@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
@@ -26,6 +28,8 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "skia/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -604,6 +608,45 @@ TEST_F(ResourceBundleImageTest, GetRawDataResource) {
             resource_bundle->GetRawDataResourceForScale(6, k100Percent));
   EXPECT_EQ("this is id 6",
             resource_bundle->GetRawDataResourceForScale(6, k200Percent));
+}
+
+// Data resources may be looked up on a worker thread while a data pack is
+// being added on the main thread. Verify that this is supported.
+TEST_F(ResourceBundleImageTest, GetRawDataResourceWhileAddingDataPack) {
+  base::FilePath empty_path = dir_path().Append(FILE_PATH_LITERAL("empty.pak"));
+  constexpr std::array<uint8_t, 15> kEmptyPakData = {
+      0x04, 0x00, 0x00, 0x00,             // header(version
+      0x00, 0x00, 0x00, 0x00,             //        no. entries
+      0x01,                               //        encoding)
+      0x00, 0x00, 0x0f, 0x00, 0x00, 0x00  // extra entry for the size of last
+  };
+  ASSERT_TRUE(base::WriteFile(empty_path, kEmptyPakData));
+
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(empty_path, kScaleFactorNone);
+
+  constexpr int kIterations = 256;
+  constexpr int kMissingResourceId = 42;
+
+  std::atomic<bool> done = false;
+  base::Thread reader_thread("ResourceReader");
+  ASSERT_TRUE(reader_thread.Start());
+  reader_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        while (!done.load()) {
+          EXPECT_FALSE(resource_bundle->HasDataResource(kMissingResourceId));
+          EXPECT_TRUE(
+              resource_bundle->GetRawDataResource(kMissingResourceId).empty());
+        }
+      }));
+
+  for (int i = 0; i < kIterations; ++i) {
+    resource_bundle->AddDataPackFromPath(empty_path, kScaleFactorNone);
+  }
+  done.store(true);
+  reader_thread.Stop();
+
+  EXPECT_FALSE(resource_bundle->HasDataResource(kMissingResourceId));
 }
 
 // Test requesting image reps at various scale factors from the image returned
