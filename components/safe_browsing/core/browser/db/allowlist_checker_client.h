@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "url/gurl.h"
@@ -24,6 +25,23 @@ class V5GetHashProtocolManager;
 class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
  public:
   using BoolCallback = base::OnceCallback<void(bool /* is_allowlisted */)>;
+
+  // LINT.IfChange(AllowlistAsyncMatchResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AllowlistAsyncMatchResult {
+    // The asynchronous full-hash check matched a full hash on the CSD
+    // allowlist.
+    kMatch = 0,
+    // The asynchronous full-hash check did not match any full hash on the CSD
+    // allowlist.
+    kNoMatch = 1,
+    // The asynchronous check timed out before receiving a response from the
+    // database.
+    kTimeout = 2,
+    kMaxValue = kTimeout,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:AllowlistAsyncMatchResult)
 
   // Static method to lookup |url| on the CSD allowlist. |callback| will be
   // called when the lookup result is known, or on time out, or if the
@@ -71,10 +89,16 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
   // Called when the call to CheckCsdAllowlistUrl times out.
   void OnTimeout();
 
+  // Logs check duration and invokes callback_for_result_.
+  void OnCheckCompleted(bool did_match_allowlist);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // For setting up timeout behavior.
   base::OneShotTimer timer_;
+
+  // Whether the call timed out. Used for logs.
+  bool timed_out_ = false;
 
   // The method to call when the match result is known.
   BoolCallback callback_for_result_;
@@ -85,6 +109,9 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
   // a) On timeout, or
   // b) If the list is unavailable.
   bool default_does_match_allowlist_;
+
+  // When the check began. Used for logs.
+  base::TimeTicks start_time_;
 
   base::WeakPtrFactory<AllowlistCheckerClient> weak_factory_{this};
 };

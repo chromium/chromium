@@ -837,6 +837,31 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ClientSidePhishingDetection.AllowlistAsyncMatchResult"
+    enum="AllowlistAsyncMatchResult" expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the result of an asynchronous CSD allowlist lookup in
+    AllowlistCheckerClient. Recorded when an async lookup completes or times
+    out.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ClientSidePhishingDetection.AllowlistCheckDuration"
+    units="ms" expires_after="2026-11-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration of checking a URL against the local client-side
+    phishing detection allowlist in AllowlistCheckerClient. Recorded when the
+    check completes, whether synchronously (immediate match/no match) or after
+    an asynchronous lookup completes.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult"
     enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2026-11-22">
   <owner>thefrog@chromium.org</owner>

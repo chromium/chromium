@@ -46,6 +46,16 @@ chromium-metrics-reviews@google.com.
              is"/>
 </enum>
 
+<!-- LINT.IfChange(AllowlistAsyncMatchResult) -->
+
+<enum name="AllowlistAsyncMatchResult">
+  <int value="0" label="Match"/>
+  <int value="1" label="No match"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/allowlist_checker_client.h:AllowlistAsyncMatchResult) -->
+
 <enum name="AndroidRealTimeIsInAllowlistResult">
   <int value="0" label="NO"/>
   <int value="1" label="YES"/>
