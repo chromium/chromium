@@ -62,6 +62,8 @@ extern const char kCastCoreBitstreamAudioCodecsInfo[];
 extern const char kCastCoreCodecs[];
 extern const char kCastCoreSpatialRendering[];
 
+extern const char kCrashOnStart[];
+
 }  // namespace feature
 }  // namespace chromecast
 

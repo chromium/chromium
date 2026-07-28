@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/immediate_crash.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -169,6 +171,12 @@ void RuntimeApplicationServiceImpl::Load(
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!grpc_server_);
+
+  if (GetFlagEntry(feature::kCrashOnStart,
+                   request.application_config().extra_features())) {
+    LOG(ERROR) << "Triggering intentional runtime crash on startup.";
+    base::ImmediateCrash();
+  }
 
   if (request.runtime_application_service_info().grpc_endpoint().empty()) {
     std::move(callback).Run(
