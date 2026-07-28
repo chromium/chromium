@@ -36,6 +36,8 @@
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
 #endif
 
@@ -125,7 +127,17 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
   if (show_bad_flags_security_warnings) {
 #if BUILDFLAG(CHROME_FOR_TESTING)
     if (!IsGpuTest()) {
-      ChromeForTestingInfoBarDelegate::Create();
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        if (browser_infobar_manager) {
+          browser_infobar_manager->ShowGlobally(
+              infobars::InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE);
+        }
+      } else {
+        ChromeForTestingInfoBarDelegate::Create();
+      }
     }
 #endif
 

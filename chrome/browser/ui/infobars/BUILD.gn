@@ -15,6 +15,7 @@ source_set("infobars") {
     "//chrome/browser/ui/page_info",
     "//components/infobars/core",
     "//components/vector_icons",
+    "//components/version_info",
     "//content/public/browser",
     "//ui/base",
   ]

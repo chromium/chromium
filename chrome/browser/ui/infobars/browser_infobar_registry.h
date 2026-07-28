@@ -5,10 +5,17 @@
 #ifndef CHROME_BROWSER_UI_INFOBARS_BROWSER_INFOBAR_REGISTRY_H_
 #define CHROME_BROWSER_UI_INFOBARS_BROWSER_INFOBAR_REGISTRY_H_
 
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
+
 namespace infobars {
 
 // Registers all infobars supported by the centralized infobar framework.
 void RegisterInfoBars();
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+void RegisterChromeForTestingInfoBar();
+#endif
 
 }  // namespace infobars
 

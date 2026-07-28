@@ -113,6 +113,10 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
     return spec_.should_hide_in_fullscreen();
   }
 
+  bool ShouldAnimate() const override { return spec_.should_animate(); }
+
+  bool IsCloseable() const override { return spec_.is_closeable(); }
+
  private:
   content::WebContents* GetWebContents() {
     if (!infobar()) {

@@ -75,6 +75,8 @@ class InfoBarSpec {
   int icon_id() const { return icon_id_; }
   bool expire_on_navigation() const { return expire_on_navigation_; }
   bool should_hide_in_fullscreen() const { return should_hide_in_fullscreen_; }
+  bool should_animate() const { return should_animate_; }
+  bool is_closeable() const { return is_closeable_; }
 
   const std::u16string& ok_button_label() const { return ok_button_label_; }
   const ActionCallback& ok_button_callback() const {
@@ -106,6 +108,8 @@ class InfoBarSpec {
   int icon_id_ = 0;
   bool expire_on_navigation_ = true;
   bool should_hide_in_fullscreen_ = false;
+  bool should_animate_ = true;
+  bool is_closeable_ = true;
 
   std::u16string ok_button_label_;
   ActionCallback ok_button_callback_;
@@ -134,6 +138,8 @@ class InfoBarSpec::Builder {
   Builder& SetPriority(InfoBarPriority priority);
   Builder& SetExpireOnNavigation(bool expire_on_navigation);
   Builder& SetShouldHideInFullscreen(bool should_hide_in_fullscreen);
+  Builder& SetShouldAnimate(bool should_animate);
+  Builder& SetIsCloseable(bool is_closeable);
 
   Builder& AddOkButton(const std::u16string& label,
                        InfoBarSpec::ActionCallback callback);

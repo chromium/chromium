@@ -89,6 +89,17 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetShouldHideInFullscreen(
   return *this;
 }
 
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetShouldAnimate(
+    bool should_animate) {
+  spec_.should_animate_ = should_animate;
+  return *this;
+}
+
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetIsCloseable(bool is_closeable) {
+  spec_.is_closeable_ = is_closeable;
+  return *this;
+}
+
 InfoBarSpec::Builder& InfoBarSpec::Builder::AddOkButton(
     const std::u16string& label,
     ActionCallback callback) {

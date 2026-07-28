@@ -9,12 +9,14 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/infobars/browser_infobar_registry.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/infobars/browser_infobar_registry.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -114,6 +116,9 @@ void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  infobars::RegisterChromeForTestingInfoBar();
+#endif
   if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ui_devtools::switches::kEnableUiDevTools)) {
     base::FilePath output_dir;

@@ -30,6 +30,11 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, false);
 
+BASE_FEATURE_PARAM(bool,
+                   kMigratedChromeForTesting,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -41,6 +46,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedPageInfo;
     case InfoBarDelegate::PDF_INFOBAR_DELEGATE:
       return &kMigratedPdf;
+    case InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE:
+      return &kMigratedChromeForTesting;
     default:
       return nullptr;
   }
