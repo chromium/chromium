@@ -44,6 +44,8 @@ constexpr char kHarmfulAppsResultHistogramName[] =
     "Enterprise.DeviceSignals.HarmfulApps.Result";
 constexpr char kHarmfulAppsCountHistogramName[] =
     "Enterprise.DeviceSignals.HarmfulApps.Count";
+constexpr char kSafetyNetLatencyHistogramName[] =
+    "Enterprise.DeviceSignals.SafetyNet.Latency";
 
 constexpr int kSampleHarmfulAppsErrorCode = 123;
 
@@ -90,8 +92,10 @@ class AndroidOsSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
     if (expected_harmful_app_result_ == HasHarmfulAppsResultStatus::SUCCESS) {
       histogram_tester_.ExpectUniqueSample(kHarmfulAppsCountHistogramName,
                                            expected_harmful_app_count_, 1);
+      histogram_tester_.ExpectTotalCount(kSafetyNetLatencyHistogramName, 1);
     } else {
       histogram_tester_.ExpectTotalCount(kHarmfulAppsCountHistogramName, 0);
+      histogram_tester_.ExpectTotalCount(kSafetyNetLatencyHistogramName, 0);
     }
   }
 

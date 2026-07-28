@@ -6,6 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_OS_SIGNALS_COLLECTOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/device_signals/core/browser/base_signals_collector.h"
 
 namespace policy {
@@ -44,12 +45,14 @@ class AndroidOsSignalsCollector : public BaseSignalsCollector {
       SignalsAggregationResponse& response,
       std::unique_ptr<OsSignalsResponse> os_signals_response,
       base::OnceClosure done_closure,
+      base::TimeTicks start_time,
       safe_browsing::VerifyAppsEnabledResult result);
 
   void OnHasPotentiallyHarmfulApps(
       SignalsAggregationResponse& response,
       std::unique_ptr<OsSignalsResponse> os_signals_response,
       base::OnceClosure done_closure,
+      base::TimeTicks start_time,
       safe_browsing::HasHarmfulAppsResultStatus result,
       int num_of_apps,
       int status_code);

@@ -1600,6 +1600,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.SafetyNet.Latency" units="ms"
+    expires_after="2027-01-02">
+  <owner>mwalachowski@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Records the latency of the local IPC call to the Google Play Services
+    SafetyNet Verify Apps API. Recorded each time Chrome Signal Sharing requests
+    the verifiedApps and potentiallyHarmfulApps signals on Android. The
+    measurement starts when the JNI call is initiated and ends when the callback
+    is executed in C++.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount"
     units="items" expires_after="2027-01-02">

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
@@ -34,7 +35,9 @@ namespace device_signals {
 
 namespace {
 
-void LogHarmfulAppsResult(HasHarmfulAppsResultStatus result, int num_of_apps) {
+void LogSafetyNetMetrics(HasHarmfulAppsResultStatus result,
+                         int num_of_apps,
+                         base::TimeTicks start_time) {
   static constexpr char kHarmfulAppsResultHistogram[] =
       "Enterprise.DeviceSignals.HarmfulApps.%s";
   // TODO(crbug.com/449183636): Ideally we should log the reason of failure as
@@ -44,6 +47,10 @@ void LogHarmfulAppsResult(HasHarmfulAppsResultStatus result, int num_of_apps) {
   if (result == HasHarmfulAppsResultStatus::SUCCESS) {
     base::UmaHistogramCounts100(
         base::StringPrintf(kHarmfulAppsResultHistogram, "Count"), num_of_apps);
+
+    base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+    base::UmaHistogramTimes("Enterprise.DeviceSignals.SafetyNet.Latency",
+                            latency);
   }
 }
 
@@ -88,17 +95,19 @@ void AndroidOsSignalsCollector::GetOsSignals(
   signal_response->security_patch_ms =
       device_signals::GetSecurityPatchLevelEpoch();
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
   safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-      .StartIsVerifyAppsEnabled(
-          base::BindOnce(&AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
-                         weak_factory_.GetWeakPtr(), std::ref(response),
-                         std::move(signal_response), std::move(done_closure)));
+      .StartIsVerifyAppsEnabled(base::BindOnce(
+          &AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
+          weak_factory_.GetWeakPtr(), std::ref(response),
+          std::move(signal_response), std::move(done_closure), start_time));
 }
 
 void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
     SignalsAggregationResponse& response,
     std::unique_ptr<OsSignalsResponse> os_signals_response,
     base::OnceClosure done_closure,
+    base::TimeTicks start_time,
     VerifyAppsEnabledResult result) {
   os_signals_response->verified_apps_enabled =
       (result == VerifyAppsEnabledResult::SUCCESS_ENABLED ||
@@ -108,13 +117,14 @@ void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
       .StartHasPotentiallyHarmfulApps(base::BindOnce(
           &AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps,
           weak_factory_.GetWeakPtr(), std::ref(response),
-          std::move(os_signals_response), std::move(done_closure)));
+          std::move(os_signals_response), std::move(done_closure), start_time));
 }
 
 void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
     SignalsAggregationResponse& response,
     std::unique_ptr<OsSignalsResponse> os_signals_response,
     base::OnceClosure done_closure,
+    base::TimeTicks start_time,
     HasHarmfulAppsResultStatus result,
     int num_of_apps,
     int status_code) {
@@ -126,7 +136,8 @@ void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
 
   os_signals_response->has_potentially_harmful_apps =
       result == HasHarmfulAppsResultStatus::SUCCESS && num_of_apps != 0;
-  LogHarmfulAppsResult(result, num_of_apps);
+  LogSafetyNetMetrics(result, num_of_apps, start_time);
+
   response.os_signals_response = std::move(*os_signals_response);
 
   std::move(done_closure).Run();
