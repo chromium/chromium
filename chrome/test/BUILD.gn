@@ -4618,8 +4618,6 @@ if (!is_android) {
         "../browser/printing/print_preview_browsertest.cc",
         "../browser/printing/print_preview_browsertest.h",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",
-        "../browser/printing/test_print_view_manager.cc",
-        "../browser/printing/test_print_view_manager.h",
       ]
       deps += [
         "//chrome/browser/printing:test_support",
