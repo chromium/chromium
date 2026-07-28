@@ -1576,8 +1576,11 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
           ? head->bypass_redirect_checks
           : bypass_redirect_checks_;
 
-  if (!bypass_redirect_checks &&
-      !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
+  if (url_.SchemeIsBlob()) {
+    // Loading a blob URL never produces a redirect.
+    error = net::ERR_UNSAFE_REDIRECT;
+  } else if (!bypass_redirect_checks &&
+             !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
     error = net::ERR_UNSAFE_REDIRECT;
   } else if (--redirect_limit_ == 0) {
     error = net::ERR_TOO_MANY_REDIRECTS;

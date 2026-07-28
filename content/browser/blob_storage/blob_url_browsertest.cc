@@ -14,6 +14,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_switches.h"
@@ -23,17 +24,26 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/url_request/redirect_info.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -222,6 +232,108 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   std::string window_location =
       EvalJs(new_contents, "window.location.href;").ExtractString();
   EXPECT_FALSE(base::MatchPattern(window_location, "*spoof*"));
+}
+
+namespace {
+
+// A blink::mojom::Blob implementation that, when Load() is called, responds
+// with a redirect to `redirect_target_` instead of a blob body. This simulates
+// a Blob endpoint that does not behave like a real blob.
+class RedirectingBlob : public blink::mojom::Blob {
+ public:
+  explicit RedirectingBlob(const GURL& redirect_target)
+      : redirect_target_(redirect_target) {}
+
+  mojo::PendingRemote<blink::mojom::Blob> BindNewPipeAndPassRemote() {
+    mojo::PendingRemote<blink::mojom::Blob> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  // blink::mojom::Blob:
+  void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+  void AsDataPipeGetter(
+      mojo::PendingReceiver<network::mojom::DataPipeGetter>) override {
+    NOTREACHED();
+  }
+  void ReadAll(mojo::ScopedDataPipeProducerHandle,
+               mojo::PendingRemote<blink::mojom::BlobReaderClient>) override {
+    NOTREACHED();
+  }
+  void ReadRange(uint64_t,
+                 uint64_t,
+                 mojo::ScopedDataPipeProducerHandle,
+                 mojo::PendingRemote<blink::mojom::BlobReaderClient>) override {
+    NOTREACHED();
+  }
+  void Load(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      const std::string& method,
+      const net::HttpRequestHeaders&,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override {
+    loader_receiver_ = std::move(loader);
+    client_.reset();
+    client_.Bind(std::move(client));
+    net::RedirectInfo redirect_info;
+    redirect_info.status_code = net::HTTP_FOUND;
+    redirect_info.new_method = method;
+    redirect_info.new_url = redirect_target_;
+    redirect_info.new_site_for_cookies =
+        net::SiteForCookies::FromUrl(redirect_target_);
+    auto head = network::mojom::URLResponseHead::New();
+    head->headers = net::HttpResponseHeaders::TryToCreate(
+        "HTTP/1.1 302 Found\r\nLocation: " + redirect_target_.spec() + "\r\n");
+    head->encoded_data_length = 0;
+    head->bypass_redirect_checks = true;
+    client_->OnReceiveRedirect(redirect_info, std::move(head));
+  }
+  void ReadSideData(ReadSideDataCallback) override { NOTREACHED(); }
+  void CaptureSnapshot(CaptureSnapshotCallback callback) override {
+    std::move(callback).Run(0, std::nullopt);
+  }
+  void GetInternalUUID(GetInternalUUIDCallback callback) override {
+    std::move(callback).Run("");
+  }
+
+ private:
+  const GURL redirect_target_;
+  mojo::ReceiverSet<blink::mojom::Blob> receivers_;
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+};
+
+}  // namespace
+
+// A blob never serves a redirect, so a navigation to a blob URL whose
+// underlying Blob endpoint replies with OnReceiveRedirect must not follow the
+// redirect, regardless of any flags carried in the response head.
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
+                       NavigationToBlobUrlDoesNotFollowRedirect) {
+  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  const GURL redirect_target("data:text/html,redirected");
+  RedirectingBlob blob(redirect_target);
+
+  const GURL blob_url("blob:" + origin.Serialize() +
+                      "/33221100-0000-0000-0000-000000000000");
+  static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition())
+      ->GetBlobUrlRegistry()
+      ->AddUrlMapping(blob_url, blob.BindNewPipeAndPassRemote(),
+                      blink::StorageKey::CreateFirstParty(origin), origin,
+                      rfh->GetProcess()->GetDeprecatedID());
+
+  NavigationHandleObserver observer(shell()->web_contents(), blob_url);
+  EXPECT_FALSE(NavigateToURL(shell(), blob_url));
+  EXPECT_TRUE(observer.is_error());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, observer.net_error_code());
+  EXPECT_NE(redirect_target, shell()->web_contents()->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
