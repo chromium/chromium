@@ -224,8 +224,8 @@ bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid = UNSAFE_TODO(
-      base::android::ToJavaByteArray(env, &scheme_uuid[0], scheme_uuid.size()));
+  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
+      base::android::ToJavaByteArray(env, scheme_uuid);
   ScopedJavaLocalRef<jstring> j_container_mime_type =
       ConvertUTF8ToJavaString(env, container_mime_type);
   bool supported = Java_MediaDrmBridge_isCryptoSchemeSupported(
@@ -1032,8 +1032,8 @@ MediaDrmBridge::MediaDrmBridge(
   JNIEnv* env = AttachCurrentThread();
   CHECK(env);
 
-  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid = UNSAFE_TODO(
-      base::android::ToJavaByteArray(env, &scheme_uuid[0], scheme_uuid.size()));
+  ScopedJavaLocalRef<jbyteArray> j_scheme_uuid =
+      base::android::ToJavaByteArray(env, scheme_uuid);
 
   std::string security_level_str = GetSecurityLevelString(security_level);
   ScopedJavaLocalRef<jstring> j_security_level =
