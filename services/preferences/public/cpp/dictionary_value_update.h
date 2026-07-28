@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
@@ -120,9 +120,10 @@ class DictionaryValueUpdate {
       const std::vector<std::string_view>& path);
 
   UpdateCallback report_update_;
-  // `value_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data).
-  RAW_PTR_EXCLUSION base::DictValue* const value_;
+  // `value_` uses UnprotectedInRelease | DanglingUntriaged for performance
+  // reasons (based on analysis of sampling profiler data).
+  const raw_ptr<base::DictValue, UnprotectedInRelease | DanglingUntriaged>
+      value_;
   const std::vector<std::string> path_;
 };
 
