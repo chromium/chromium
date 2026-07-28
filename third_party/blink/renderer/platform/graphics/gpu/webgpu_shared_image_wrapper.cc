@@ -222,7 +222,7 @@ void WebGpuSharedImageWrapper::EndExternalWrite(
   shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
-void WebGpuSharedImageWrapper::DoExternalOverdraw(
+void WebGpuSharedImageWrapper::DrawToBackingSharedImage(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (IsGpuContextLost()) {
     return;

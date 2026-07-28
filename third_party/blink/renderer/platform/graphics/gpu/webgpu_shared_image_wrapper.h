@@ -75,7 +75,7 @@ class PLATFORM_EXPORT WebGpuSharedImageWrapper final
                                   uint32_t src_x,
                                   uint32_t src_y);
 
-  void DoExternalOverdraw(
+  void DrawToBackingSharedImage(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   const gpu::SyncToken& acquire_sync_token() const {
