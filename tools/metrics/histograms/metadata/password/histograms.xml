@@ -3232,7 +3232,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="PasswordManager.PasswordSharingIOS.UserAction"
     enum="PasswordManager.PasswordSharingIOSUserAction"
-    expires_after="2026-09-06">
+    expires_after="2027-06-06">
   <owner>rgod@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
