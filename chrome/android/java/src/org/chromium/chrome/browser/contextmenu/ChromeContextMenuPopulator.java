@@ -518,13 +518,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowAskGeminiForLink() {
-        // Show on the mobile form factor, where Glic is presented in a bottom
-        // sheet.
+        // Enable on desktop if side panel is enabled, and enable on mobile if
+        // bottom sheet is enabled.
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, PARAM_SHOW_ON_LINK, true)
-                && !AndroidSidePanelEnabledFn.isEnabled()
-                && TabBottomSheetUtils.isTabBottomSheetEnabled()
+                && (AndroidSidePanelEnabledFn.isEnabled()
+                        || TabBottomSheetUtils.isTabBottomSheetEnabled())
                 && !DeviceInfo.isAutomotive()
                 && !mItemDelegate.isIncognito()
                 && GlicEnabling.isEnabledForProfile(getProfile());
@@ -626,7 +626,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.NORMAL) {
                     boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(getProfile());
-                    ListItem openInNewTabItem = createManagedListItem(Item.OPEN_IN_NEW_TAB, isIncognitoForced);
+                    ListItem openInNewTabItem =
+                            createManagedListItem(Item.OPEN_IN_NEW_TAB, isIncognitoForced);
                     ListItem openInNewTabInGroupItem =
                             createManagedListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP, isIncognitoForced);
                     linkGroup.add(openInNewTabItem);
@@ -1721,7 +1722,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private ListItem createManagedListItem(@Item int item, boolean isIncognitoForced) {
-        ListItem listItem = createListItem(item, /* showInProductHelp= */ false, /* enabled= */ !isIncognitoForced);
+        ListItem listItem =
+                createListItem(
+                        item, /* showInProductHelp= */ false, /* enabled= */ !isIncognitoForced);
         if (isIncognitoForced) {
             listItem.model.set(ListMenuItemProperties.START_ICON_ID, R.drawable.ic_domain);
         }

@@ -4058,4 +4058,21 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         assertFalse(mPopulator.shouldShowAskGeminiForLink());
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    })
+    public void testAskGeminiForLinkEligibleOnDesktopSidePanel() {
+        // Side panel (desktop Android) presentation.
+        GlicEnabling.setEnabledForTesting(true);
+        ContextMenuParams params = getHttpLinkParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        if (!DeviceInfo.isAutomotive()) {
+            assertTrue(mPopulator.shouldShowAskGeminiForLink());
+        }
+    }
 }
