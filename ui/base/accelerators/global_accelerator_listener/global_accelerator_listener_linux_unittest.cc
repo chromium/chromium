@@ -153,6 +153,22 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
       std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus, kSessionToken);
   auto observer = std::make_unique<MockObserver>();
   scoped_refptr<dbus::MockObjectProxy> session_proxy;
+  const dbus::ObjectPath session_path(
+      base::nix::XdgDesktopPortalSessionPath(kBusName, kSessionToken));
+
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName,
+                             session_path))
+      .WillRepeatedly([&](std::string_view service_name,
+                          const dbus::ObjectPath& object_path) {
+        if (!session_proxy) {
+          session_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+              mock_bus.get(),
+              GlobalAcceleratorListenerLinux::kPortalServiceName, object_path);
+        }
+        return session_proxy.get();
+      });
+
   ui::CommandMap commands;
 
   // MockLinuxUiDelegate subclasses from LinuxUiDelegate which installs itself
@@ -165,16 +181,6 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
     scoped_refptr<dbus::MockObjectProxy> create_session_request_proxy;
     scoped_refptr<dbus::MockObjectProxy> list_shortcuts_request_proxy;
     scoped_refptr<dbus::MockObjectProxy> bind_shortcuts_request_proxy;
-
-    auto get_object_proxy_session =
-        [&](std::string_view service_name,
-            const dbus::ObjectPath& object_path) -> dbus::ObjectProxy* {
-      // The first call in the sequence is for the session proxy.
-      session_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
-          mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
-          object_path);
-      return session_proxy.get();
-    };
 
     auto get_object_proxy_create_session =
         [&](std::string_view service_name,
@@ -203,7 +209,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
                 DbusDictionary dict;
                 dict.emplace("session_handle",
                              dbus_utils::Variant::Wrap<"s">(
-                                 session_proxy->object_path().value()));
+                                 base::nix::XdgDesktopPortalSessionPath(
+                                     kBusName, kSessionToken)));
                 dbus_utils::WriteValue(writer, dict);
                 signal_callback.Run(&signal);
               });
@@ -276,8 +283,8 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
 
     EXPECT_CALL(
         *mock_bus,
-        GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName, _))
-        .WillOnce(get_object_proxy_session)
+        GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName,
+                       testing::Ne(session_path)))
         .WillOnce(get_object_proxy_create_session)
         .WillOnce(get_object_proxy_list_shortcuts)
         .WillOnce(get_object_proxy_bind_shortcuts);
@@ -300,10 +307,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
               ASSERT_NE(it, options->end());
               auto token = std::move(it->second).Take<std::string>();
               ASSERT_TRUE(token);
-              std::string session_path_str =
-                  base::nix::XdgDesktopPortalSessionPath(kBusName, *token);
-              EXPECT_EQ(dbus::ObjectPath(session_path_str),
-                        session_proxy->object_path());
+              EXPECT_EQ(*token, kSessionToken);
 
               auto response = dbus::Response::CreateEmpty();
               dbus::MessageWriter writer(response.get());
@@ -384,6 +388,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
         kExtensionId, kProfileId, commands, widget,
         base::BindRepeating(&MockObserver::ExecuteCommand,
                             base::Unretained(observer.get())));
+    task_environment.RunUntilIdle();
   };
 
   commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,
@@ -395,7 +400,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
 
   EXPECT_CALL(
       *session_proxy,
-      CallMethod(
+      CallMethodWithErrorResponse(
           MatchMethod(GlobalAcceleratorListenerLinux::kSessionInterface,
                       GlobalAcceleratorListenerLinux::kMethodCloseSession),
           _, _));
@@ -422,7 +427,7 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
   // Cleanup
   EXPECT_CALL(
       *session_proxy,
-      CallMethod(
+      CallMethodWithErrorResponse(
           MatchMethod(GlobalAcceleratorListenerLinux::kSessionInterface,
                       GlobalAcceleratorListenerLinux::kMethodCloseSession),
           _, _));

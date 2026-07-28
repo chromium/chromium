@@ -16,8 +16,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/dbus/utils/connect_to_signal.h"
-#include "components/dbus/xdg/request.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
 #include "ui/base/accelerators/command.h"
@@ -26,6 +27,9 @@
 
 namespace dbus_xdg {
 class Request;
+class Session;
+enum class ResponseError;
+using Dictionary = std::map<std::string, dbus_utils::Variant>;
 }  // namespace dbus_xdg
 
 namespace ui {
@@ -48,6 +52,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
+  FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
+                           OnCommandsChangedPendingSessionCreation);
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            PruneStaleCommands);
 
@@ -105,8 +111,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
           execute_command) override;
   void PruneStaleCommands() override;
 
-  void OnCreateSession(
-      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
+  void OnCreateSessionResponse(dbus_xdg::Session* session);
   void OnListShortcuts(
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
   void OnBindShortcuts(
@@ -133,7 +138,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> global_shortcuts_proxy_ = nullptr;
-  raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;
+  std::unique_ptr<dbus_xdg::Session> session_;
   std::optional<bool> service_started_;
   std::unique_ptr<dbus_xdg::Request> request_;
   BindState bind_state_ = BindState::kNotBound;

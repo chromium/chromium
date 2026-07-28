@@ -21,6 +21,7 @@
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/xdg/portal.h"
 #include "components/dbus/xdg/request.h"
+#include "components/dbus/xdg/session.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -124,18 +125,13 @@ void GlobalAcceleratorListenerLinux::OnServiceStarted(uint32_t version) {
 void GlobalAcceleratorListenerLinux::CreateSession() {
   CHECK(!bus_->GetConnectionName().empty());
 
-  std::string session_path_str = base::nix::XdgDesktopPortalSessionPath(
-      bus_->GetConnectionName(), session_token_);
-  dbus::ObjectPath session_path(session_path_str);
-  session_proxy_ = bus_->GetObjectProxy(kPortalServiceName, session_path);
-
   dbus_xdg::Dictionary options;
   options["session_handle_token"] =
       dbus_utils::Variant::Wrap<"s">(session_token_);
-  request_ = std::make_unique<dbus_xdg::Request>(
+  session_ = dbus_xdg::Session::CreateWithRequest(
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
-      kMethodCreateSession, std::move(options),
-      base::BindOnce(&GlobalAcceleratorListenerLinux::OnCreateSession,
+      std::move(options),
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnCreateSessionResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -201,7 +197,7 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
 
   // Only proceed if there is at least one global command.
   if (!HasGlobalShortcuts()) {
-    if (session_proxy_) {
+    if (session_) {
       CloseSession();
     }
     return;
@@ -213,8 +209,13 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
   }
 
   // If there is no session yet, create one.
-  if (!session_proxy_) {
+  if (!session_) {
     CreateSession();
+    return;
+  }
+
+  // If session creation is still in progress, wait for it to complete.
+  if (!session_->path().IsValid()) {
     return;
   }
 
@@ -230,20 +231,11 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
   }
 }
 
-void GlobalAcceleratorListenerLinux::OnCreateSession(
-    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
-  if (!results.has_value()) {
-    VLOG(1) << "Failed to call CreateSession (error code "
-            << static_cast<int>(results.error()) << ").";
-    session_proxy_ = nullptr;
-    return;
-  }
-
-  auto session_handle = TakeFromDict<std::string>(*results, "session_handle");
-  if (!session_handle ||
-      session_proxy_->object_path().value() != *session_handle) {
-    LOG(ERROR) << "Expected session handle does not match.";
-    session_proxy_ = nullptr;
+void GlobalAcceleratorListenerLinux::OnCreateSessionResponse(
+    dbus_xdg::Session* session) {
+  if (!session) {
+    VLOG(1) << "Failed to create portal session.";
+    session_.reset();
     return;
   }
 
@@ -253,7 +245,7 @@ void GlobalAcceleratorListenerLinux::OnCreateSession(
       kMethodListShortcuts, dbus_xdg::Dictionary(),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnListShortcuts,
                      weak_ptr_factory_.GetWeakPtr()),
-      session_proxy_->object_path());
+      session->path());
 }
 
 void GlobalAcceleratorListenerLinux::OnListShortcuts(
@@ -336,18 +328,14 @@ void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
       kMethodBindShortcuts, dbus_xdg::Dictionary(),
       base::BindOnce(&GlobalAcceleratorListenerLinux::OnBindShortcuts,
                      weak_ptr_factory_.GetWeakPtr()),
-      session_proxy_->object_path(), std::move(shortcuts),
-      std::move(parent_handle));
+      session_->path(), std::move(shortcuts), std::move(parent_handle));
 }
 
 void GlobalAcceleratorListenerLinux::CloseSession() {
-  if (!session_proxy_) {
+  if (!session_) {
     return;
   }
-  dbus::MethodCall method_call(kSessionInterface, kMethodCloseSession);
-  session_proxy_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
-  session_proxy_ = nullptr;
+  session_.reset();
   request_.reset();
   bind_state_ = BindState::kNotBound;
 }
@@ -380,7 +368,7 @@ void GlobalAcceleratorListenerLinux::OnActivatedSignal(
       std::move(result.value());
 
   // Only process the signal if it comes from our current session.
-  if (!session_proxy_ || session_proxy_->object_path() != session_handle) {
+  if (!session_ || session_->path() != session_handle) {
     return;
   }
 
