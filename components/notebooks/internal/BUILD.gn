@@ -15,6 +15,9 @@ static_library("internal") {
     "notebook_sync_bridge.h",
     "notebooks_eligibility_service_impl.cc",
     "notebooks_eligibility_service_impl.h",
+    "notebooks_model.cc",
+    "notebooks_model.h",
+    "notebooks_model_observer.h",
     "notebooks_network_service_impl.cc",
     "notebooks_network_service_impl.h",
     "notebooks_service_impl.cc",
@@ -22,15 +25,15 @@ static_library("internal") {
   ]
 
   public_deps = [
+    "//base",
     "//components/endpoint_fetcher",
     "//components/notebooks/public",
     "//services/network/public/cpp",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
-    "//base",
     "//components/keyed_service/core",
-    "//components/notebooks/public",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/model",
@@ -49,6 +52,7 @@ source_set("unit_tests") {
     "empty_notebooks_service_unittest.cc",
     "notebook_sync_bridge_unittest.cc",
     "notebooks_eligibility_service_impl_unittest.cc",
+    "notebooks_model_unittest.cc",
     "notebooks_network_service_impl_unittest.cc",
     "notebooks_service_impl_unittest.cc",
   ]

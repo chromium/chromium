@@ -2,3 +2,5 @@
 *EmptyNotebooksServiceTest*
 *NotebookTest*
 *NotebooksNetworkServiceImplTest*
+*NotebooksModelTest*
+*NotebookSyncBridgeTest*
