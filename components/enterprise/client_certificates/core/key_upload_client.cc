@@ -23,8 +23,12 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
@@ -85,6 +89,28 @@ CreateRequest(scoped_refptr<PrivateKey> private_key, bool create_certificate) {
   return overall_request;
 }
 
+bool VerifySPKI(const net::X509Certificate* cert,
+                const PrivateKey* private_key) {
+  std::string_view extracted_spki;
+  if (!net::asn1::ExtractSPKIFromDERCert(
+          net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
+          &extracted_spki)) {
+    return false;
+  }
+  std::vector<uint8_t> expected_spki = private_key->GetSubjectPublicKeyInfo();
+
+  bssl::UniquePtr<EVP_PKEY> cert_key =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(extracted_spki));
+  bssl::UniquePtr<EVP_PKEY> platform_key =
+      crypto::evp::PublicKeyFromBytes(expected_spki);
+
+  if (!cert_key || !platform_key) {
+    return false;
+  }
+
+  return EVP_PKEY_cmp(cert_key.get(), platform_key.get()) == 1;
+}
+
 }  // namespace
 
 class KeyUploadClientImpl : public KeyUploadClient {
@@ -111,11 +137,13 @@ class KeyUploadClientImpl : public KeyUploadClient {
           callback);
 
   void OnCertificateRequestCreated(
+      scoped_refptr<PrivateKey> private_key,
       CreateCertificateCallback callback,
       UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
           request);
 
-  void OnCertificateResponseReceived(CreateCertificateCallback callback,
+  void OnCertificateResponseReceived(scoped_refptr<PrivateKey> private_key,
+                                     CreateCertificateCallback callback,
                                      policy::DMServerJobResult result);
 
   void OnSyncRequestCreated(
@@ -153,7 +181,8 @@ void KeyUploadClientImpl::CreateCertificate(
     CreateCertificateCallback callback) {
   GetRequest(private_key, /*create_certificate=*/true,
              base::BindOnce(&KeyUploadClientImpl::OnCertificateRequestCreated,
-                            weak_factory_.GetWeakPtr(), std::move(callback)));
+                            weak_factory_.GetWeakPtr(), private_key,
+                            std::move(callback)));
 }
 
 void KeyUploadClientImpl::SyncKey(scoped_refptr<PrivateKey> private_key,
@@ -194,6 +223,7 @@ void KeyUploadClientImpl::GetRequest(
 }
 
 void KeyUploadClientImpl::OnCertificateRequestCreated(
+    scoped_refptr<PrivateKey> private_key,
     CreateCertificateCallback callback,
     UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
         request) {
@@ -205,10 +235,12 @@ void KeyUploadClientImpl::OnCertificateRequestCreated(
   management_delegate_->UploadBrowserPublicKey(
       std::move(request.value()),
       base::BindOnce(&KeyUploadClientImpl::OnCertificateResponseReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), private_key,
+                     std::move(callback)));
 }
 
 void KeyUploadClientImpl::OnCertificateResponseReceived(
+    scoped_refptr<PrivateKey> private_key,
     CreateCertificateCallback callback,
     policy::DMServerJobResult result) {
   scoped_refptr<net::X509Certificate> certificate = nullptr;
@@ -216,7 +248,6 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
       result.response.has_browser_public_key_upload_response() &&
       result.response.browser_public_key_upload_response()
           .has_pem_encoded_certificate()) {
-    // Try to parse the client certificate.
     std::string_view pem_encoded_certificate =
         result.response.browser_public_key_upload_response()
             .pem_encoded_certificate();
@@ -224,7 +255,7 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
         net::X509Certificate::CreateCertificateListFromBytes(
             base::as_byte_span(pem_encoded_certificate),
             net::X509Certificate::FORMAT_AUTO);
-    if (!certs.empty()) {
+    if (!certs.empty() && VerifySPKI(certs[0].get(), private_key.get())) {
       certificate = certs[0];
     }
   }
