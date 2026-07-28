@@ -280,6 +280,35 @@ void LaunchIsolatedWebAppInNewWindow(web_app::WebAppProvider* provider,
                                                   base::DoNothing());
 }
 
+bool IsCrossIwaNavigation(
+    const NavigateParams& params,
+    const webapps::AppId& iwa_id,
+    const std::optional<webapps::AppId>& source_browser_app_id,
+    const std::optional<webapps::AppId>& parent_app_id) {
+  // Service worker `clients.openWindow()` arrives with no source browser and a
+  // non-link transition, so the link-based source check below does not apply.
+  // Use the initiator origin to enforce the same cross-IWA restriction.
+  if (params.is_service_worker_open_window && params.initiator_origin &&
+      !params.initiator_origin->IsSameOriginWith(params.url)) {
+    return true;
+  }
+
+  // Any links: same-IWA or cross-IWA window.open(), same-IWA or cross-IWA
+  // anchor link, cross-IWA meta tag redirect. Cancel navigations that do not
+  // originate from a browser for the target app (or its parent app), regardless
+  // of disposition, before falling through to the disposition-specific handling
+  // below.
+  if (ui::PageTransitionCoreTypeIs(params.transition,
+                                   ui::PAGE_TRANSITION_LINK) &&
+      source_browser_app_id != iwa_id &&
+      (!parent_app_id.has_value() ||
+       source_browser_app_id != parent_app_id.value())) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 NavigationCapturingOverride::~NavigationCapturingOverride() = default;
@@ -893,6 +922,13 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   const webapps::AppId& iwa_id = *first_navigation_app_id_;
   const DisplayMode& app_display_mode = *first_navigation_app_display_mode_;
 
+  if (IsCrossIwaNavigation(params, iwa_id, source_browser_app_id_,
+                           first_navigation_parent_app_id_)) {
+    // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
+    return CancelInitialNavigation(
+        NavigationCapturingInitialResult::kNavigationCanceled);
+  }
+
   // Prefer `params.browser` if it's a compatible IWA browser.
   bool iwa_browser =
       params.browser &&
@@ -934,34 +970,13 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
     return CapturingDisabled();
   }
 
-  // Service worker `clients.openWindow()` arrives with no source browser and a
-  // non-link transition, so the link-based source check below does not apply.
-  // Use the initiator origin to enforce the same cross-IWA restriction.
-  if (params.is_service_worker_open_window && params.initiator_origin &&
-      !params.initiator_origin->IsSameOriginWith(params.url)) {
-    // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
-    return CancelInitialNavigation(
-        NavigationCapturingInitialResult::kNavigationCanceled);
-  }
-
   if (ui::PageTransitionCoreTypeIs(params.transition,
-                                   ui::PAGE_TRANSITION_LINK)) {
-    // Any links: same-IWA or cross-IWA window.open(), same-IWA or cross-IWA
-    // anchor link, cross-IWA meta tag redirect.
-    if (source_browser_app_id_ != iwa_id &&
-        (!first_navigation_parent_app_id_.has_value() ||
-         source_browser_app_id_ != first_navigation_parent_app_id_.value())) {
-      // TODO(crbug.com/424422466): Support cross-IWA navigations to start_url.
-      return CancelInitialNavigation(
-          NavigationCapturingInitialResult::kNavigationCanceled);
-    }
-
-    if (IsAuxiliaryBrowsingContext(params)) {
-      debug_data_.Set("is_auxiliary_browsing_context", true);
-      Browser* aux_window =
-          CreateWebAppWindowFromNavigationParams(iwa_id, params);
-      return AuxiliaryContextInAppWindow(aux_window);
-    }
+                                   ui::PAGE_TRANSITION_LINK) &&
+      IsAuxiliaryBrowsingContext(params)) {
+    debug_data_.Set("is_auxiliary_browsing_context", true);
+    Browser* aux_window =
+        CreateWebAppWindowFromNavigationParams(iwa_id, params);
+    return AuxiliaryContextInAppWindow(aux_window);
   }
 
   // Auxiliary browsing contexts should only be openable via link transitions.

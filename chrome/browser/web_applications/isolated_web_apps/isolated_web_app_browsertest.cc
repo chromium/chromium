@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -72,6 +73,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/test/result_catcher.h"
 #include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1833,6 +1835,51 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
 
   // The cross-origin `clients.openWindow()` must not open or focus a window
   // for the target app.
+  EXPECT_FALSE(AppBrowserController::FindForWebApp(*profile(),
+                                                   target_url_info.app_id()));
+  EXPECT_EQ(browsers_before, GlobalBrowserCollection::GetInstance()->GetSize());
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLaunchHandlingBrowserTest,
+                       CrossOriginWindowOpenPopup) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> source_app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo source_url_info,
+                       source_app->Install(profile()));
+
+  std::unique_ptr<ScopedBundledIsolatedWebApp> target_app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder().SetLaunchHandlerClientMode(GetParam()))
+          .AddHtml("/something/weird.html", "meow")
+          .BuildBundle();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo target_url_info,
+                       target_app->Install(profile()));
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          OpenIsolatedWebApp(profile(), source_url_info.app_id()));
+
+  const size_t browsers_before =
+      GlobalBrowserCollection::GetInstance()->GetSize();
+
+  const GURL target_url =
+      target_url_info.origin().GetURL().Resolve("/something/weird.html");
+
+  std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher;
+  base::CallbackListSubscription creation_subscription =
+      content::RegisterWebContentsCreationCallback(
+          base::BindLambdaForTesting([&](content::WebContents* wc) {
+            destroyed_watcher =
+                std::make_unique<content::WebContentsDestroyedWatcher>(wc);
+          }));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace("window.open($1, '_blank', 'popup')", target_url)));
+  ASSERT_TRUE(destroyed_watcher);
+  destroyed_watcher->Wait();
+
+  // The cross-origin `window.open()` popup must not open a window for the
+  // target app.
   EXPECT_FALSE(AppBrowserController::FindForWebApp(*profile(),
                                                    target_url_info.app_id()));
   EXPECT_EQ(browsers_before, GlobalBrowserCollection::GetInstance()->GetSize());
