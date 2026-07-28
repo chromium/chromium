@@ -700,7 +700,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("windowTrackingEnabled",
            contextual_tasks::GetIsContextualTasksWindowTrackingEnabled());
   dict.Set("supportsLensButtonInComposebox", !BUILDFLAG(IS_ANDROID));
-  dict.Set("isSystemVoiceSearchEnabled", BUILDFLAG(IS_ANDROID));
+  dict.Set("isSystemVoiceSearchEnabled", !!BUILDFLAG(IS_ANDROID));
   dict.Set("isUserFeedbackAllowed", IsUserFeedbackAllowed(profile));
   dict.Set("enableComposeboxJumpFix",
            contextual_tasks::GetEnableComposeboxJumpFix());
