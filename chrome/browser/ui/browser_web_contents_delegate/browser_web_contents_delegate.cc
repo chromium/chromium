@@ -12,6 +12,7 @@
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -48,6 +49,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/headless/console_message_logger/headless_console_message_logger.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -61,6 +63,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -925,4 +928,69 @@ void BrowserWebContentsDelegate::RendererUnresponsive(
     TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
         render_widget_host, std::move(hang_monitor_restarter));
   }
+}
+
+void BrowserWebContentsDelegate::RendererResponsive(
+    content::WebContents* source,
+    content::RenderWidgetHost* render_widget_host) {
+  content::RenderWidgetHostView* view = render_widget_host->GetView();
+  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
+    TabDialogs::FromWebContents(source)->HideHungRendererDialog(
+        render_widget_host);
+  }
+}
+
+content::JavaScriptDialogManager*
+BrowserWebContentsDelegate::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
+}
+
+bool BrowserWebContentsDelegate::GuestSaveFrame(
+    content::WebContents* guest_web_contents) {
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromWebContents(guest_web_contents);
+  return guest_view && guest_view->PluginDoSave();
+}
+
+void BrowserWebContentsDelegate::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
+}
+
+void BrowserWebContentsDelegate::EnumerateDirectory(
+    content::WebContents* web_contents,
+    scoped_refptr<content::FileSelectListener> listener,
+    const base::FilePath& path) {
+  FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
+}
+
+bool BrowserWebContentsDelegate::GetCanResize() {
+  return window_->GetCanResize();
+}
+
+bool BrowserWebContentsDelegate::CanUseWindowingControls(
+    content::RenderFrameHost* requesting_frame) {
+  if (!app_browser_controller_) {
+    requesting_frame->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "API called from something else than a web_app.");
+    return false;
+  }
+  return true;
+}
+
+void BrowserWebContentsDelegate::MinimizeFromWebAPI() {
+  window_->Minimize();
+}
+
+void BrowserWebContentsDelegate::MaximizeFromWebAPI() {
+  window_->Maximize();
+}
+
+void BrowserWebContentsDelegate::RestoreFromWebAPI() {
+  window_->Restore();
 }

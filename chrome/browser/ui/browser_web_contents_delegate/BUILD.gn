@@ -14,6 +14,7 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",
+      "//chrome/browser:file_select_helper",
       "//chrome/browser:repost_form_warning_controller",
       "//chrome/browser/actor",
       "//chrome/browser/background",
@@ -27,6 +28,7 @@ if (!is_android) {
       "//chrome/browser/ui/views:status_bubble",
       "//chrome/browser/ui/web_applications",
       "//components/headless/console_message_logger",
+      "//components/javascript_dialogs",
       "//components/page_load_metrics/browser",
       "//content/public/browser",
       "//ui/base",

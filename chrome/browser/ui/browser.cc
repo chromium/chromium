@@ -1386,22 +1386,19 @@ void Browser::RendererUnresponsive(
 void Browser::RendererResponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host) {
-  RenderWidgetHostView* view = render_widget_host->GetView();
-  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
-    TabDialogs::FromWebContents(source)->HideHungRendererDialog(
-        render_widget_host);
-  }
+  BrowserWebContentsDelegate::From(this)->RendererResponsive(
+      source, render_widget_host);
 }
 
 content::JavaScriptDialogManager* Browser::GetJavaScriptDialogManager(
     WebContents* source) {
-  return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
+  return BrowserWebContentsDelegate::From(this)->GetJavaScriptDialogManager(
+      source);
 }
 
 bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(guest_web_contents);
-  return guest_view && guest_view->PluginDoSave();
+  return BrowserWebContentsDelegate::From(this)->GuestSaveFrame(
+      guest_web_contents);
 }
 
 std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
@@ -1443,43 +1440,39 @@ void Browser::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
-  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
-                                   params);
+  BrowserWebContentsDelegate::From(this)->RunFileChooser(
+      render_frame_host, std::move(listener), params);
 }
 
 void Browser::EnumerateDirectory(
     WebContents* web_contents,
     scoped_refptr<content::FileSelectListener> listener,
     const base::FilePath& path) {
-  FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
+  BrowserWebContentsDelegate::From(this)->EnumerateDirectory(
+      web_contents, std::move(listener), path);
 }
 
 bool Browser::GetCanResize() {
-  return window_->GetCanResize();
+  return BrowserWebContentsDelegate::From(this)->GetCanResize();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 bool Browser::CanUseWindowingControls(
     content::RenderFrameHost* requesting_frame) {
-  if (!web_app::AppBrowserController::From(this)) {
-    requesting_frame->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        "API called from something else than a web_app.");
-    return false;
-  }
-  return true;
+  return BrowserWebContentsDelegate::From(this)->CanUseWindowingControls(
+      requesting_frame);
 }
 
 void Browser::MinimizeFromWebAPI() {
-  window_->Minimize();
+  BrowserWebContentsDelegate::From(this)->MinimizeFromWebAPI();
 }
 
 void Browser::MaximizeFromWebAPI() {
-  window_->Maximize();
+  BrowserWebContentsDelegate::From(this)->MaximizeFromWebAPI();
 }
 
 void Browser::RestoreFromWebAPI() {
-  window_->Restore();
+  BrowserWebContentsDelegate::From(this)->RestoreFromWebAPI();
 }
 
 void Browser::SetResizableFromWebAPI(bool resizable) {

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -183,6 +184,24 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,
       base::RepeatingClosure hang_monitor_restarter) override;
+  void RendererResponsive(
+      content::WebContents* source,
+      content::RenderWidgetHost* render_widget_host) override;
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) override;
+  bool GuestSaveFrame(content::WebContents* guest_web_contents) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
+  void EnumerateDirectory(content::WebContents* web_contents,
+                          scoped_refptr<content::FileSelectListener> listener,
+                          const base::FilePath& path) override;
+  bool GetCanResize() override;
+  bool CanUseWindowingControls(
+      content::RenderFrameHost* requesting_frame) override;
+  void MinimizeFromWebAPI() override;
+  void MaximizeFromWebAPI() override;
+  void RestoreFromWebAPI() override;
 
  private:
   const base::ElapsedTimer creation_timer_;
