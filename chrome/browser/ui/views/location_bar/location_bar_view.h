@@ -293,7 +293,7 @@ class LocationBarView
   static int GetAvailableDecorationTextHeight();
 
   void OnOmniboxFocused();
-  void OpenOmniboxPopup(bool query_zps = true);
+  void OpenOmniboxPopup();
   void OnOmniboxBlurred();
 
   // Called when omnibox view receives mouse notifications relevant to hover.

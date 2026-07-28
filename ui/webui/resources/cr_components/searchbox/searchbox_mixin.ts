@@ -320,7 +320,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
     }
 
-    onInputFocusChanged(e: CustomEvent<{value: string, isOnFocus: boolean}>) {
+    onInputFocusChanged(e: CustomEvent<{value: string}>) {
       if (this.shouldAppendDotComOnCtrlEnter()) {
         this.controlKeyState_ = ControlKeyState.UP;
       }
@@ -328,7 +328,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
       const input = e.detail.value;
-      const isOnFocus = e.detail.isOnFocus;
+      // Empty input is only a partially accurate heuristic for determining if
+      // this is a focus input. E.g.: In the non-NTP omnibox, focus inputs will
+      // be non-empty. That's ok for now, because webUI omnibox focus is still
+      // handled by `OmniboxViewViews` and not searchbox_mixin.
+      const isOnFocus = !input;
       this.queryAutocomplete(
           input, /*preventInlineAutocomplete=*/ false, isOnFocus);
     }

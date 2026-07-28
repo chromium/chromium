@@ -60,8 +60,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      const std::string& full_url,
                      bool is_focused,
                      const std::string& permanent_display_text,
-                     bool show_full_url,
-                     bool query_zps);
+                     bool show_full_url);
   void SetFocus(bool is_focused);
 
   const gfx::Range& latest_selection() const { return latest_selection_; }

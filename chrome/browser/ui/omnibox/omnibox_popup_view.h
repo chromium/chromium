@@ -79,13 +79,13 @@ class OmniboxPopupView {
 
   // Syncs the text and selection state from the native location bar to the
   // WebUI omnibox.
-  virtual void SyncNativeStateToWebUI(bool query_zps) {}
+  virtual void SyncNativeStateToWebUI() {}
 
   // Called when the active tab changes.
   virtual void OnTabChanged(content::WebContents* contents) {}
 
   // Called when the omnibox gains focus.
-  virtual void OnFocus(bool query_zps) {}
+  virtual void OnFocus() {}
 
   // Called when the WebUI omnibox reports a manual blur.
   virtual void OnManualBlur() {}

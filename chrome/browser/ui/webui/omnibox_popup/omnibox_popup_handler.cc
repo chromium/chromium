@@ -90,7 +90,7 @@ void OmniboxPopupHandler::RequestInputState() {
   auto* edit_model = controller_ ? controller_->edit_model() : nullptr;
   auto* popup_view = edit_model ? edit_model->popup_view() : nullptr;
   if (popup_view) {
-    popup_view->SyncNativeStateToWebUI(/*query_zps=*/false);
+    popup_view->SyncNativeStateToWebUI();
   }
 }
 
@@ -109,8 +109,7 @@ void OmniboxPopupHandler::SetInputState(
     const std::string& full_url,
     bool is_focused,
     const std::string& permanent_display_text,
-    bool show_full_url,
-    bool query_zps) {
+    bool show_full_url) {
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
   current_sequence_number_++;
@@ -124,7 +123,6 @@ void OmniboxPopupHandler::SetInputState(
   state->is_focused = is_focused;
   state->permanent_display_text = permanent_display_text;
   state->show_full_url = show_full_url;
-  state->query_zps = query_zps;
   page_->SetInputState(std::move(state));
 }
 
