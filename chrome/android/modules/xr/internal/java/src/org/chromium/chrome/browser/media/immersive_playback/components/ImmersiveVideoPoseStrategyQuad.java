@@ -15,6 +15,7 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 @NullMarked
 class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
     static final XrVector3 DEFAULT_PLAYER_TRANSLATION = XrVector3.create(0f, 0f, 0.5f);
+    static final XrVector3 CONTROL_OFFSET_Z = XrVector3.create(0f, 0f, 0.04f);
     private final ImmersiveVideoPoseManager.Delegate mDelegate;
     private final XrPose mPlayerPose;
 
@@ -49,6 +50,6 @@ class ImmersiveVideoPoseStrategyQuad implements ImmersiveVideoPoseStrategy {
     }
 
     private XrVector3 getOffset() {
-        return XrVector3.create(0f, -mDelegate.getLayoutHeight() / 2f, 0f);
+        return XrVector3.create(0f, -mDelegate.getLayoutHeight() / 2f, 0f).plus(CONTROL_OFFSET_Z);
     }
 }

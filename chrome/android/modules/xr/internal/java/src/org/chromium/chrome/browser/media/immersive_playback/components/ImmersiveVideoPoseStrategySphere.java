@@ -18,7 +18,8 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 class ImmersiveVideoPoseStrategySphere implements ImmersiveVideoPoseStrategy {
     private static final float DRAG_SENSITIVITY = 2.0f;
     private static final XrVector3 CONTROL_OFFSET_Z =
-            ImmersiveVideoPoseStrategyQuad.DEFAULT_PLAYER_TRANSLATION;
+            ImmersiveVideoPoseStrategyQuad.DEFAULT_PLAYER_TRANSLATION.plus(
+                    ImmersiveVideoPoseStrategyQuad.CONTROL_OFFSET_Z);
 
     private final ImmersiveVideoPoseManager.Delegate mDelegate;
     private @Nullable XrPose mControlPose;

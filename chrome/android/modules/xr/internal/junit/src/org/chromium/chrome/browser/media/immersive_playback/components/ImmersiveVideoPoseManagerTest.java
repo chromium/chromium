@@ -125,7 +125,7 @@ public class ImmersiveVideoPoseManagerTest {
         mManager.onControlPanelPoseChanged(controlPose);
 
         XrPose actualPose = mManager.getPlayerPanelPose();
-        assertEquals(0.50f, actualPose.getTranslation().getX(), EPSILON);
+        assertEquals(0.46f, actualPose.getTranslation().getX(), EPSILON);
         assertEquals(2.25f, actualPose.getTranslation().getY(), EPSILON);
         assertEquals(3.00f, actualPose.getTranslation().getZ(), EPSILON);
         assertEquals(controlRot, actualPose.getRotation());
@@ -136,7 +136,7 @@ public class ImmersiveVideoPoseManagerTest {
         mManager.onPlayerPanelPoseChanged(XrPose.create(dragTrans, dragRot));
 
         XrPose endPose = mManager.getPlayerPanelPose();
-        assertEquals(0.49f, endPose.getTranslation().getX(), EPSILON);
+        assertEquals(0.46f, endPose.getTranslation().getX(), EPSILON);
         assertEquals(2.25f, endPose.getTranslation().getY(), EPSILON);
         assertEquals(3.00f, endPose.getTranslation().getZ(), EPSILON);
     }
@@ -153,7 +153,7 @@ public class ImmersiveVideoPoseManagerTest {
 
         XrPose actualPose = mManager.getPlayerPanelPose();
         assertEquals(1.00f, actualPose.getTranslation().getX(), EPSILON);
-        assertEquals(2.50f, actualPose.getTranslation().getY(), EPSILON);
+        assertEquals(2.54f, actualPose.getTranslation().getY(), EPSILON);
         assertEquals(3.25f, actualPose.getTranslation().getZ(), EPSILON);
         assertEquals(controlRot, actualPose.getRotation());
     }
