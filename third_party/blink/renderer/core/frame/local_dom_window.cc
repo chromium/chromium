@@ -526,11 +526,8 @@ bool LocalDOMWindow::AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
 
   // AllowInline below will check the source's hash against CSP, which is why
   // it needs an exact script_source.
-  const int kJavascriptSchemeLength = sizeof("javascript:") - 1;
   String decoded_url = DecodeUrlEscapeSequences(
       url.GetString(), DecodeUrlMode::kUtf8OrIsomorphic);
-  String script_source =
-      decoded_url.DeprecatedSubstring(kJavascriptSchemeLength);
 
   // Check the CSP of the caller (the "source browsing context") if required,
   // as per https://html.spec.whatwg.org/C/#javascript-protocol.
