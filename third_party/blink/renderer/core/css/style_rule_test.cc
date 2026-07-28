@@ -28,19 +28,18 @@ class StyleRuleTest : public PageTestBase {};
 
 namespace {
 
-// Find first occurrence of a simple selector with the given PseudoType,
-// traversing into lists (e.g. :is()).
-const CSSSelector* FindPseudoSelector(const CSSSelector* selector,
-                                      CSSSelector::PseudoType pseudo_type) {
+// Find first occurrence of a simple selector with the given match
+// condition, traversing into lists (e.g. :is()).
+const CSSSelector* FindSelector(const CSSSelector* selector,
+                                bool (*match)(const CSSSelector*)) {
   for (const CSSSelector* s = selector; s; s = s->NextSimpleSelector()) {
-    if (s->GetPseudoType() == pseudo_type) {
+    if (match(s)) {
       return s;
     }
     if (s->SelectorList()) {
       for (const CSSSelector* complex = s->SelectorList()->First(); complex;
            complex = CSSSelectorList::Next(*complex)) {
-        if (const CSSSelector* parent =
-                FindPseudoSelector(complex, pseudo_type)) {
+        if (const CSSSelector* parent = FindSelector(complex, match)) {
           return parent;
         }
       }
@@ -50,19 +49,26 @@ const CSSSelector* FindPseudoSelector(const CSSSelector* selector,
 }
 
 const CSSSelector* FindParentSelector(const CSSSelector* selector) {
-  return FindPseudoSelector(selector, CSSSelector::kPseudoParent);
+  return FindSelector(selector, [](const CSSSelector* s) -> bool {
+    return s->GetPseudoType() == CSSSelector::kPseudoParent;
+  });
 }
 
-const CSSSelector* FindUnparsedSelector(const CSSSelector* selector) {
-  return FindPseudoSelector(selector, CSSSelector::kPseudoUnparsed);
+const CSSSelector* FindUnparsedSelectorContainingNesting(
+    const CSSSelector* selector) {
+  return FindSelector(selector, [](const CSSSelector* s) -> bool {
+    return s->GetPseudoType() == CSSSelector::kPseudoUnparsed &&
+           s->GetNestingType() != CSSNestingType::kNone;
+  });
 }
 
-// Finds the CSSNestingType (as captured by the first kPseudoUnparsed selector)
-// and the parent rule for nesting (as captured by the first kPseudoParent
-// selector).
+// Finds the CSSNestingType (as captured by the first kPseudoUnparsed selector
+// containing nesting) and the parent rule for nesting (as captured by the
+// first kPseudoParent selector).
 std::pair<CSSNestingType, const StyleRule*> FindNestingContext(
     const CSSSelector* selector) {
-  const CSSSelector* unparsed_selector = FindUnparsedSelector(selector);
+  const CSSSelector* unparsed_selector =
+      FindUnparsedSelectorContainingNesting(selector);
   const CSSSelector* parent_selector = FindParentSelector(selector);
   return std::make_pair<CSSNestingType, const StyleRule*>(
       unparsed_selector ? unparsed_selector->GetNestingType()

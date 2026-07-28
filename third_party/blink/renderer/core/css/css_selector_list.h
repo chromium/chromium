@@ -95,10 +95,19 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   }
   bool IsValid() const { return IsValid(*first_selector_); }
   const CSSSelector* First() const {
-    return IsValid() ? first_selector_ : nullptr;
+    if (IsInvalidWithoutUnparsed()) {
+      return nullptr;
+    }
+    return first_selector_->IsUnparsedInvalid() ? Next(*first_selector_)
+                                                : first_selector_;
+  }
+  const CSSSelector* FirstIncludingUnparsedInvalid() const {
+    return IsInvalidWithoutUnparsed() ? nullptr : first_selector_;
   }
   static const CSSSelector* Next(const CSSSelector&);
   static CSSSelector* Next(CSSSelector&);
+  static const CSSSelector* NextIncludingUnparsedInvalid(const CSSSelector&);
+  static CSSSelector* NextIncludingUnparsedInvalid(CSSSelector&);
 
   // Returns true when there is exactly one complex selector in the list,
   // and false otherwise.
@@ -109,12 +118,12 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
     return IsSingleComplexSelector(*first_selector_);
   }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
-    DCHECK(IsValid());
+    DCHECK(!IsInvalidWithoutUnparsed());
     return UNSAFE_BUFFERS(first_selector_[index]);
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
-    DCHECK(IsValid());
+    DCHECK(!IsInvalidWithoutUnparsed());
     return static_cast<wtf_size_t>(&selector - first_selector_);
   }
 
@@ -127,7 +136,9 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
     return SelectorIndex(*next);
   }
 
-  String SelectorsText() const { return SelectorsText(First()); }
+  String SelectorsText() const {
+    return SelectorsText(FirstIncludingUnparsedInvalid());
+  }
   static String SelectorsText(const CSSSelector* first);
 
   // Selector lists don't know their length, computing it is O(n) and should be
@@ -158,6 +169,10 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   void Trace(Visitor* visitor) const;
 
  private:
+  bool IsInvalidWithoutUnparsed() const {
+    return !IsValid() && !first_selector_->IsUnparsedInvalid();
+  }
+
   // All of the remaining CSSSelector objects are allocated on
   // AdditionalBytes, and thus live immediately after this object. The length
   // is not stored explicitly anywhere: End of a multipart selector is
@@ -171,6 +186,22 @@ inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {
 }
 
 inline CSSSelector* CSSSelectorList::Next(CSSSelector& current) {
+  CSSSelector* next = &current;
+  while ((next = NextIncludingUnparsedInvalid(*next))) {
+    if (!next->IsUnparsedInvalid()) {
+      return next;
+    }
+  }
+  return nullptr;
+}
+
+inline const CSSSelector* CSSSelectorList::NextIncludingUnparsedInvalid(
+    const CSSSelector& current) {
+  return NextIncludingUnparsedInvalid(const_cast<CSSSelector&>(current));
+}
+
+inline CSSSelector* CSSSelectorList::NextIncludingUnparsedInvalid(
+    CSSSelector& current) {
   // Skip subparts of compound selectors.
   CSSSelector* last = &current;
   while (!last->IsLastInComplexSelector()) {

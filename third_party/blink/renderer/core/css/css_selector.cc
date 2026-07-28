@@ -1264,9 +1264,11 @@ template <bool expand_pseudo_references>
 void CSSSelector::SerializeSelectorList(const CSSSelectorList* selector_list,
                                         StringBuilder& builder,
                                         uintptr_t scope_id) {
-  const CSSSelector* first_sub_selector = selector_list->First();
+  const CSSSelector* first_sub_selector =
+      selector_list->FirstIncludingUnparsedInvalid();
   for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
-       sub_selector = CSSSelectorList::Next(*sub_selector)) {
+       sub_selector =
+           CSSSelectorList::NextIncludingUnparsedInvalid(*sub_selector)) {
     if (sub_selector != first_sub_selector) {
       builder.Append(", ");
     }
@@ -1301,6 +1303,8 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
   } else if (Match() == kClass) {
     builder.Append('.');
     SerializeIdentifier(SerializingValue(), builder);
+  } else if (Match() == kInvalidList && IsUnparsedInvalid()) {
+    builder.Append(Value());
   } else if (Match() == kPseudoClass || Match() == kPagePseudoClass) {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());

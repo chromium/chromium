@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -245,6 +246,312 @@ TEST(CSSSelector, CopyValidList) {
   CSSSelectorList* list = css_test_helpers::ParseSelectorList(".a");
   EXPECT_TRUE(list->IsValid());
   EXPECT_TRUE(list->Copy()->IsValid());
+}
+
+TEST(CSSSelector, CopyUnparsedInvalidList) {
+  test::TaskEnvironment task_environment;
+  for (bool feature_enabled : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "feature_enabled: " << feature_enabled);
+    ScopedSerializeInvalidSelectorsInForgivingSelectorListForTest
+        scoped_feature(feature_enabled);
+
+    {
+      const CSSSelectorList* empty = CSSSelectorList::Empty();
+      ASSERT_TRUE(empty);
+      const CSSSelectorList* copy = empty->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {empty, copy}) {
+        EXPECT_FALSE(list->IsValid());
+        EXPECT_EQ(0, list->ComputeLength());
+
+        EXPECT_FALSE(list->FirstIncludingUnparsedInvalid());
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(.a)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_TRUE(list->IsValid());
+        EXPECT_EQ(1, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        ASSERT_TRUE(selector);
+        EXPECT_EQ(CSSSelector::kClass, selector->Match());
+        EXPECT_EQ(".a", selector->SelectorText());
+        EXPECT_EQ(selector, &list->SelectorAt(0));
+        EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+        EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(.a, .b, .c)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_TRUE(list->IsValid());
+        EXPECT_EQ(3, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        ASSERT_TRUE(selector);
+        EXPECT_EQ(CSSSelector::kClass, selector->Match());
+        EXPECT_EQ(".a", selector->SelectorText());
+        EXPECT_EQ(selector, &list->SelectorAt(0));
+        EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+        selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+        ASSERT_TRUE(selector);
+        EXPECT_EQ(CSSSelector::kClass, selector->Match());
+        EXPECT_EQ(".b", selector->SelectorText());
+        EXPECT_EQ(selector, &list->SelectorAt(1));
+        EXPECT_EQ(1, list->SelectorIndex(*selector));
+
+        selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+        ASSERT_TRUE(selector);
+        EXPECT_EQ(CSSSelector::kClass, selector->Match());
+        EXPECT_EQ(".c", selector->SelectorText());
+        EXPECT_EQ(selector, &list->SelectorAt(2));
+        EXPECT_EQ(2, list->SelectorIndex(*selector));
+
+        EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(:unknown)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_FALSE(list->IsValid());
+        EXPECT_EQ(feature_enabled ? 1 : 0, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        if (feature_enabled) {
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+          EXPECT_FALSE(
+              CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+        } else {
+          EXPECT_FALSE(selector);
+        }
+      }
+    }
+
+    {
+      const CSSSelectorList* inner = css_test_helpers::ParseSelectorList(
+                                         ":is(:unknown1, :unknown2, :unknown3)")
+                                         ->First()
+                                         ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_FALSE(list->IsValid());
+        EXPECT_EQ(feature_enabled ? 3 : 0, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        if (feature_enabled) {
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown1", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown2", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(1));
+          EXPECT_EQ(1, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown3", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(2));
+          EXPECT_EQ(2, list->SelectorIndex(*selector));
+
+          EXPECT_FALSE(
+              CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+        } else {
+          EXPECT_FALSE(selector);
+        }
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(.a, :unknown1, :unknown2)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_TRUE(list->IsValid());
+        EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        ASSERT_TRUE(selector);
+        EXPECT_EQ(CSSSelector::kClass, selector->Match());
+        EXPECT_EQ(".a", selector->SelectorText());
+        EXPECT_EQ(selector, &list->SelectorAt(0));
+        EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+        if (feature_enabled) {
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown1", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(1));
+          EXPECT_EQ(1, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown2", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(2));
+          EXPECT_EQ(2, list->SelectorIndex(*selector));
+        }
+
+        EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(:unknown1, .a, :unknown2)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_TRUE(list->IsValid());
+        EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        if (feature_enabled) {
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown1", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_EQ(CSSSelector::kClass, selector->Match());
+          EXPECT_EQ(".a", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(1));
+          EXPECT_EQ(1, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown2", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(2));
+          EXPECT_EQ(2, list->SelectorIndex(*selector));
+        } else {
+          ASSERT_TRUE(selector);
+          EXPECT_EQ(CSSSelector::kClass, selector->Match());
+          EXPECT_EQ(".a", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+        }
+
+        EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+      }
+    }
+
+    {
+      const CSSSelectorList* inner =
+          css_test_helpers::ParseSelectorList(":is(:unknown1, :unknown2, .a)")
+              ->First()
+              ->SelectorList();
+      ASSERT_TRUE(inner);
+      const CSSSelectorList* copy = inner->Copy();
+      ASSERT_TRUE(copy);
+
+      for (const CSSSelectorList* list : {inner, copy}) {
+        EXPECT_TRUE(list->IsValid());
+        EXPECT_EQ(feature_enabled ? 3 : 1, list->ComputeLength());
+
+        const CSSSelector* selector = list->FirstIncludingUnparsedInvalid();
+
+        if (feature_enabled) {
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown1", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_TRUE(selector->IsUnparsedInvalid());
+          EXPECT_EQ(":unknown2", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(1));
+          EXPECT_EQ(1, list->SelectorIndex(*selector));
+
+          selector = CSSSelectorList::NextIncludingUnparsedInvalid(*selector);
+
+          ASSERT_TRUE(selector);
+          EXPECT_EQ(CSSSelector::kClass, selector->Match());
+          EXPECT_EQ(".a", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(2));
+          EXPECT_EQ(2, list->SelectorIndex(*selector));
+        } else {
+          ASSERT_TRUE(selector);
+          EXPECT_EQ(CSSSelector::kClass, selector->Match());
+          EXPECT_EQ(".a", selector->SelectorText());
+          EXPECT_EQ(selector, &list->SelectorAt(0));
+          EXPECT_EQ(0, list->SelectorIndex(*selector));
+        }
+
+        EXPECT_FALSE(CSSSelectorList::NextIncludingUnparsedInvalid(*selector));
+      }
+    }
+  }
 }
 
 TEST(CSSSelector, FirstInInvalidList) {

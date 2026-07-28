@@ -246,6 +246,9 @@ class CORE_EXPORT CSSSelectorParser {
 
   void SetInSupportsParsing() { in_supports_parsing_ = true; }
 
+  void PushUnparsedComplexSelector(CSSNestingType nesting_type,
+                                   AtomicString invalid_selector_text);
+
   const CSSParserContext* context_;
   // The parent rule pointed to by the nesting selector (&).
   // https://drafts.csswg.org/css-nesting-1/#nest-selector

@@ -337,9 +337,9 @@ class CORE_EXPORT CSSSelector {
     kPseudoToolFormActive,
     kPseudoToolSubmitActive,
     kPseudoUnknown,
-    // Something that was unparsable, but contained either a nesting
-    // selector (&), or a :scope pseudo-class, and must therefore be kept
-    // for serialization purposes.
+    // Unparsable due to an invalid selector (e.g. :unknown), or contained
+    // either a nesting selector (&) or a :scope pseudo-class. This must be
+    // kept for serialization purposes.
     kPseudoUnparsed,
     kPseudoUserInvalid,
     kPseudoUserValid,
@@ -458,6 +458,10 @@ class CORE_EXPORT CSSSelector {
                         const CSSParserContext&,
                         bool has_arguments,
                         CSSParserMode);
+  bool IsUnparsedInvalid() const {
+    return GetPseudoType() == kPseudoUnparsed &&
+           GetNestingType() == CSSNestingType::kNone;
+  }
   void SetUnparsedPlaceholder(CSSNestingType, const AtomicString&);
   // If this simple selector contains a parent selector (&), returns kNesting.
   // Otherwise, if this simple selector contains a :scope pseudo-class,

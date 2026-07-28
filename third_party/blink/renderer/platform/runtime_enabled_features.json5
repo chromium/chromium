@@ -5726,6 +5726,12 @@
       base_feature: "WebSerialAPI",
     },
     {
+      // Serialize invalid selector text in the forgiving selector list.
+      // https://github.com/w3c/csswg-drafts/issues/8356
+      name: "SerializeInvalidSelectorsInForgivingSelectorList",
+      status: "experimental",
+    },
+    {
       name: "SerializeViewTransitionStateInSPA",
     },
     {

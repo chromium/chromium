@@ -44,7 +44,7 @@ CSSSelectorList* CSSSelectorList::Empty() {
 }
 
 CSSSelectorList* CSSSelectorList::Copy() const {
-  if (!IsValid()) {
+  if (IsInvalidWithoutUnparsed()) {
     return CSSSelectorList::Empty();
   }
 
@@ -96,10 +96,10 @@ CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
 }
 
 unsigned CSSSelectorList::ComputeLength() const {
-  if (!IsValid()) {
+  if (IsInvalidWithoutUnparsed()) {
     return 0;
   }
-  const CSSSelector* current = First();
+  const CSSSelector* current = FirstIncludingUnparsedInvalid();
   while (!current->IsLastInSelectorList()) {
     UNSAFE_BUFFERS(++current);
   }
@@ -149,7 +149,7 @@ const CSSSelectorList* CSSSelectorList::Renest(StyleRule* new_parent) const {
 String CSSSelectorList::SelectorsText(const CSSSelector* first) {
   StringBuilder result;
 
-  for (const CSSSelector* s = first; s; s = Next(*s)) {
+  for (const CSSSelector* s = first; s; s = NextIncludingUnparsedInvalid(*s)) {
     if (s != first) {
       result.Append(", ");
     }
@@ -160,7 +160,7 @@ String CSSSelectorList::SelectorsText(const CSSSelector* first) {
 }
 
 void CSSSelectorList::Trace(Visitor* visitor) const {
-  if (!IsValid()) {
+  if (IsInvalidWithoutUnparsed()) {
     return;
   }
 
