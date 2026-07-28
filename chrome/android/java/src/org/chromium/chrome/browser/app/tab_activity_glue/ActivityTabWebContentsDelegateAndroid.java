@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
-import org.chromium.chrome.browser.media.immersive_playback.ImmersivePlaybackSnackbarController;
+import org.chromium.chrome.browser.media.immersive_playback.ImmersivePlaybackMessageController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
@@ -110,8 +111,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final TabObserver mTabObserver;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
-    private final @Nullable ImmersivePlaybackSnackbarController
-            mImmersivePlaybackSnackbarController;
+    private final @Nullable ImmersivePlaybackMessageController mImmersivePlaybackMessageController;
 
     public ActivityTabWebContentsDelegateAndroid(
             Tab tab,
@@ -137,11 +137,11 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mExclusiveAccessManager = exclusiveAccessManager;
-        mImmersivePlaybackSnackbarController =
+        mImmersivePlaybackMessageController =
                 isImmersivePlaybackEnabled()
-                        ? new ImmersivePlaybackSnackbarController(
+                        ? new ImmersivePlaybackMessageController(
                                 activity,
-                                snackbarManagerSupplier,
+                                () -> MessageDispatcherProvider.from(tab.getWindowAndroid()),
                                 modalDialogManagerSupplier,
                                 tab,
                                 fullscreenManager)
@@ -621,12 +621,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType,
             JniOnceCallback<Integer> callback) {
-        if (!isImmersivePlaybackEnabled() || mImmersivePlaybackSnackbarController == null) {
+        if (!isImmersivePlaybackEnabled() || mImmersivePlaybackMessageController == null) {
             callback.onResult(ImmersivePlaybackConfirmationStatus.FAILED);
             return;
         }
 
-        mImmersivePlaybackSnackbarController.show(
+        mImmersivePlaybackMessageController.show(
                 (status, selectedStereoMode, selectedProjectionType) -> {
                     // Pack the results into a single integer:
                     // status (4 bits) | stereoMode (4 bits) | projectionType (4 bits).
@@ -635,10 +635,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     callback.onResult(packedResult);
                 },
                 stereoMode,
-                projectionType,
-                // TODO(b/512831252): Instead of using a delay, we should properly handle
-                // interference with the ExclusiveAccess feature snackbars.
-                /* delayMs= */ 2000);
+                projectionType);
     }
 
     @Override
@@ -863,8 +860,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void destroy() {
-        if (mImmersivePlaybackSnackbarController != null) {
-            mImmersivePlaybackSnackbarController.dismiss();
+        if (mImmersivePlaybackMessageController != null) {
+            mImmersivePlaybackMessageController.dismiss();
         }
         mTab.removeObserver(mTabObserver);
     }

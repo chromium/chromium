@@ -1520,6 +1520,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="PersonalContextFetchingFailure"/>
   <int value="75" label="PrivateInferenceNotice"/>
   <int value="76" label="ContextualTasksWindowResized"/>
+  <int value="77" label="ImmersivePlaybackConfirmation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->

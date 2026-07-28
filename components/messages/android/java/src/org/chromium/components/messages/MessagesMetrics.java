@@ -232,6 +232,8 @@ public class MessagesMetrics {
                 return "PrivateInferenceNotice";
             case MessageIdentifier.CONTEXTUAL_TASKS_WINDOW_RESIZED:
                 return "ContextualTasksWindowResized";
+            case MessageIdentifier.IMMERSIVE_PLAYBACK_CONFIRMATION:
+                return "ImmersivePlaybackConfirmation";
             default:
                 return "Unknown";
         }

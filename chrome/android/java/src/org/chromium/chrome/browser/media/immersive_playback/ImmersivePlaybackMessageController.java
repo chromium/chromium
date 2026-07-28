@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.media.immersive_playback;
 
 import android.content.Context;
 
-import org.chromium.base.CancelableRunnable;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -16,24 +13,30 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
 
 /**
- * Controller for the immersive playback confirmation snackbar. It handles the snackbar interactions
- * and shows the format selection dialog if the user clicks "Yes".
+ * Controller for the immersive playback confirmation message banner. It handles the message
+ * interactions and shows the format selection dialog if the user clicks "Yes".
  */
 @NullMarked
-public class ImmersivePlaybackSnackbarController implements SnackbarManager.SnackbarController {
+public class ImmersivePlaybackMessageController {
     private final Context mContext;
-    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<@Nullable MessageDispatcher> mMessageDispatcherSupplier;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Tab mTab;
     private final @Nullable FullscreenManager mFullscreenManager;
@@ -58,37 +61,35 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
             };
     private @Nullable ImmersivePlaybackConfirmationCallback mCallback;
     private @Nullable ImmersiveVideoFormatSelectionDialog mDialog;
-    private @Nullable CancelableRunnable mPendingShowTask;
+    private @Nullable PropertyModel mMessageModel;
     private boolean mAreObserversRegistered;
     private int mRecommendedStereoMode = ImmersiveStereoMode.MONO;
     private int mRecommendedProjectionType = ImmersiveProjectionType.QUAD;
 
-    public ImmersivePlaybackSnackbarController(
+    public ImmersivePlaybackMessageController(
             Context context,
-            Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Tab tab,
             @Nullable FullscreenManager fullscreenManager) {
         mContext = context;
-        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mMessageDispatcherSupplier = messageDispatcherSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mTab = tab;
         mFullscreenManager = fullscreenManager;
     }
 
     /**
-     * Shows the snackbar after a delay.
+     * Shows the message banner.
      *
-     * @param callback Callback to be invoked when the snackbar is dismissed.
+     * @param callback Callback to be invoked when the message is dismissed.
      * @param recommendedStereoMode The recommended stereo mode for the video.
      * @param recommendedProjectionType The recommended projection type for the video.
-     * @param delayMs Delay before showing the snackbar.
      */
     public void show(
             ImmersivePlaybackConfirmationCallback callback,
             @ImmersiveStereoMode int recommendedStereoMode,
-            @ImmersiveProjectionType int recommendedProjectionType,
-            long delayMs) {
+            @ImmersiveProjectionType int recommendedProjectionType) {
         dismiss();
         mCallback = callback;
         mRecommendedStereoMode = recommendedStereoMode;
@@ -103,14 +104,20 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
         }
 
         registerObservers();
-        showSnackbarDelayed(delayMs);
+        showMessage();
     }
 
-    /** Dismisses the snackbar and dialog if showing. */
+    /** Dismisses the message and dialog if showing. */
     public void dismiss() {
-        cancelPendingShowTask();
         unregisterObservers();
-        mSnackbarManagerSupplier.get().dismissSnackbars(this);
+        if (mMessageModel != null) {
+            PropertyModel model = mMessageModel;
+            mMessageModel = null;
+            MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
+            if (messageDispatcher != null) {
+                messageDispatcher.dismissMessage(model, DismissReason.DISMISSED_BY_FEATURE);
+            }
+        }
         if (mDialog != null) {
             mDialog.dismiss();
             mDialog = null;
@@ -123,8 +130,7 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
         }
     }
 
-    @Override
-    public void onAction(@Nullable Object actionData) {
+    private @PrimaryActionClickBehavior int handlePrimaryAction() {
         unregisterObservers();
 
         if (mRecommendedStereoMode != ImmersiveStereoMode.MONO
@@ -133,7 +139,7 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
                     ImmersivePlaybackConfirmationStatus.CONFIRMED,
                     mRecommendedStereoMode,
                     mRecommendedProjectionType);
-            return;
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
 
         ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
@@ -142,37 +148,51 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
                     ImmersivePlaybackConfirmationStatus.FAILED,
                     ImmersiveStereoMode.MONO,
                     ImmersiveProjectionType.QUAD);
-            return;
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         }
 
         showDialog(modalDialogManager);
+        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
-    @Override
-    public void onDismissNoAction(@Nullable Object actionData) {
+    private void handleDismissed(@DismissReason int dismissReason) {
+        mMessageModel = null;
         unregisterObservers();
-        reportResultAndReset(
-                ImmersivePlaybackConfirmationStatus.DECLINED,
-                ImmersiveStereoMode.MONO,
-                ImmersiveProjectionType.QUAD);
-    }
-
-    private void showSnackbar() {
-        cancelPendingShowTask();
-        String message = mContext.getString(R.string.immersive_playback_confirmation_message);
-        Snackbar snackbar =
-                Snackbar.make(message, this, Snackbar.TYPE_ACTION, Snackbar.UMA_UNKNOWN);
-        snackbar.setAction(mContext.getString(R.string.immersive_playback_confirmation_yes), null);
-        mSnackbarManagerSupplier.get().showSnackbar(snackbar);
-    }
-
-    private void showSnackbarDelayed(long delayMs) {
-        if (delayMs <= 0) {
-            showSnackbar();
-        } else {
-            mPendingShowTask = new CancelableRunnable(this::showSnackbar);
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mPendingShowTask, delayMs);
+        if (dismissReason != DismissReason.PRIMARY_ACTION) {
+            reportResultAndReset(
+                    ImmersivePlaybackConfirmationStatus.DECLINED,
+                    ImmersiveStereoMode.MONO,
+                    ImmersiveProjectionType.QUAD);
         }
+    }
+
+    private void showMessage() {
+        MessageDispatcher messageDispatcher = mMessageDispatcherSupplier.get();
+        WebContents webContents = mTab.getWebContents();
+        if (messageDispatcher == null || webContents == null) {
+            reportResultAndReset(
+                    ImmersivePlaybackConfirmationStatus.FAILED,
+                    ImmersiveStereoMode.MONO,
+                    ImmersiveProjectionType.QUAD);
+            return;
+        }
+
+        String title = mContext.getString(R.string.immersive_playback_confirmation_message);
+        String buttonText = mContext.getString(R.string.immersive_playback_confirmation_yes);
+
+        mMessageModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.IMMERSIVE_PLAYBACK_CONFIRMATION)
+                        .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handlePrimaryAction)
+                        .with(MessageBannerProperties.ON_DISMISSED, this::handleDismissed)
+                        .build();
+
+        messageDispatcher.enqueueMessage(
+                mMessageModel, webContents, MessageScopeType.NAVIGATION, false);
     }
 
     private void showDialog(ModalDialogManager modalDialogManager) {
@@ -202,18 +222,10 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
         }
     }
 
-    private void cancelPendingShowTask() {
-        if (mPendingShowTask != null) {
-            mPendingShowTask.cancel();
-            mPendingShowTask = null;
-        }
-    }
-
     private void reportResultAndReset(
             @ImmersivePlaybackConfirmationStatus int status,
             @ImmersiveStereoMode int stereoMode,
             @ImmersiveProjectionType int projectionType) {
-        cancelPendingShowTask();
         mDialog = null;
         if (mCallback != null) {
             mCallback.onResult(status, stereoMode, projectionType);

@@ -915,7 +915,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediatorUnitTest.java",
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderViewBinderUnitTest.java",
-      "src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackSnackbarControllerTest.java",
+      "src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackMessageControllerTest.java",
       "src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoFormatRadioGroupTest.java",
       "src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoFormatSelectionDialogTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationActionsUpdatedTest.java",

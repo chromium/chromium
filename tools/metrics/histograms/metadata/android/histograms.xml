@@ -167,6 +167,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".FramebustBlocked"/>
   <variant name=".GeneratedPasswordSaved"/>
   <variant name=".GlicWindowResized"/>
+  <variant name=".ImmersivePlaybackConfirmation"/>
   <variant name=".InstallableAmbientBadge"/>
   <variant name=".KnownInterceptionDisclosure"/>
   <variant name=".MerchantTrust"/>

@@ -806,7 +806,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderProperties.java",
   "java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderViewBinder.java",
   "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackConfirmationCallback.java",
-  "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackSnackbarController.java",
+  "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersivePlaybackMessageController.java",
   "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoFormatRadioGroup.java",
   "java/src/org/chromium/chrome/browser/media/immersive_playback/ImmersiveVideoFormatSelectionDialog.java",
   "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
