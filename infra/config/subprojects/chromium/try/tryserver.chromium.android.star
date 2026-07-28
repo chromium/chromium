@@ -61,8 +61,8 @@ try_.builder(
             "release_try_builder",
         ],
     ),
-    builderless = False,
     cores = 16,
+    ssd = 1,
     contact_team_email = "clank-engprod@google.com",
     cq_settings = try_.cq_settings(
         location_filters = [
