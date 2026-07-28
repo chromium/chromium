@@ -39,7 +39,7 @@ base::ListValue GetPrefsMetadata(
       metadata.Append("managed_by_custodian");
       break;
     case PrefValueStore::PrefStoreType::EXTENSION_STORE:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_controlled");
       metadata.Append("extension_modifiable");
       break;
@@ -48,34 +48,34 @@ base::ListValue GetPrefsMetadata(
 #endif
     case PrefValueStore::PrefStoreType::COMMAND_LINE_STORE:
       metadata.Append("command_line_controlled");
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::USER_STORE:
       metadata.Append("user_controlled");
       metadata.Append("user_modifiable");
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::RECOMMENDED_STORE:
       metadata.Append("recommended");
       metadata.Append("user_modifiable");
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::DEFAULT_STORE:
       metadata.Append("default");
       metadata.Append("user_modifiable");
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::INVALID_STORE:
       metadata.Append("user_modifiable");
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       metadata.Append("extension_modifiable");
 #endif
       break;
