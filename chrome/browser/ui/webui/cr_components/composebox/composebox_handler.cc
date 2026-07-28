@@ -26,6 +26,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/page_navigator.h"
@@ -340,7 +341,8 @@ void ComposeboxHandler::CanShowNextboxAnimation(
       prefs->GetDict(prefs::kContextMenuAnimationState);
 
   int lifetime_count = state_dict.FindInt("nextbox_lifetime_count").value_or(0);
-  if (lifetime_count >= 20) {
+  if (lifetime_count >=
+      omnibox::kContextMenuAnimationLifetimeLimit.Get()) {
     std::move(callback).Run(false);
     return;
   }
@@ -356,7 +358,8 @@ void ComposeboxHandler::CanShowNextboxAnimation(
     daily_count = 0;
   }
 
-  bool can_show = daily_count < 5;
+  bool can_show =
+      daily_count < omnibox::kContextMenuAnimationDailyLimit.Get();
   std::move(callback).Run(can_show);
 }
 
@@ -377,7 +380,9 @@ void ComposeboxHandler::RecordNextboxAnimationImpression() {
     daily_count = 0;
   }
 
-  if (lifetime_count < 20 && daily_count < 5) {
+  if (lifetime_count <
+          omnibox::kContextMenuAnimationLifetimeLimit.Get() &&
+      daily_count < omnibox::kContextMenuAnimationDailyLimit.Get()) {
     daily_count++;
     lifetime_count++;
 

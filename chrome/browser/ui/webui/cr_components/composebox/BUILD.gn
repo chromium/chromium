@@ -25,6 +25,7 @@ source_set("composebox") {
     "//components/metrics",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/common:features",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//net",
