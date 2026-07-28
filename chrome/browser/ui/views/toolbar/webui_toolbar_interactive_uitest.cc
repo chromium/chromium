@@ -239,6 +239,11 @@ class WebUIToolbarPixelInteractiveUiTest : public InteractiveBrowserTest {
     ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
                                        &webui_toolbar_view, &web_view,
                                        browser));
+    // Wait for the WebContents to finish loading before checking `IsLoading()`,
+    // in case a load is triggered, which can happen whenever
+    // `WebUIToolbarWebView::AddedToWidget()` is called if WebUI is not
+    // initialized.
+    ASSERT_TRUE(content::WaitForLoadStop(web_view->GetWebContents()));
 
     // Assert that WebContents is not loading, as it affects the state of the
     // reload button.
