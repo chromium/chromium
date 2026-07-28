@@ -1927,6 +1927,42 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_FALSE(net::GetValueForKeyInQuery(url, kChromeHostParam, &host_value));
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       GetContextualTaskUrlForTask_WithUntrustedHost) {
+  ContextualTasksUiService service(
+      profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
+      /*identity_manager=*/nullptr, aim_eligibility_service_.get(),
+      std::make_unique<ContextualTasksEligibilityManager>(
+          profile_->GetPrefs(), /*identity_manager=*/nullptr,
+          aim_eligibility_service_.get()),
+      /*cookie_synchronizer=*/nullptr);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL intercepted_url(
+      "https://google.com/"
+      "search?udm=50&q=test&chrome_host=malicious.example.com");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  ContextualTask task(task_id);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_, AssociateTabWithTask(_, _))
+      .Times(testing::AnyNumber());
+
+  // Simulate the interception to populate the map.
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
+
+  // Get the URL and verify it does NOT contain the untrusted host parameter.
+  GURL url = service.GetContextualTaskUrlForTask(task_id);
+  std::string host_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, kChromeHostParam, &host_value));
+}
+
 TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kAimTriggeredThreadLinks);
@@ -2281,6 +2317,31 @@ TEST_F(ContextualTasksUiServiceTest, GetAiUrlFromWebUIUrl_HostOverride) {
   EXPECT_EQ(
       GURL("https://gws-prod.corp.google.com/search?param1=1"),
       ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       GetAiUrlFromWebUIUrl_UntrustedHostOverride) {
+  GURL base_url("https://google.com/search");
+  GURL webui_url(
+      "chrome://"
+      "contextual-tasks?param1=1&chrome_host=malicious.example.com");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1"),
+      ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, GetHostFromUrl) {
+  EXPECT_EQ("gws-prod.corp.google.com",
+            ContextualTasksUiService::GetHostFromUrl(GURL(
+                "https://google.com?chrome_host=gws-prod.corp.google.com")));
+  EXPECT_EQ("127.0.0.1", ContextualTasksUiService::GetHostFromUrl(
+                             GURL("https://google.com?chrome_host=127.0.0.1")));
+  EXPECT_EQ(std::nullopt,
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?chrome_host=malicious.example.com")));
+  EXPECT_EQ(std::nullopt, ContextualTasksUiService::GetHostFromUrl(
+                              GURL("https://google.com?other_param=test")));
 }
 
 // If the navigation is to sign the user out, ensure it opens outside the

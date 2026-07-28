@@ -442,8 +442,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // Record the WebUI URL in case one of the events below fires and changes
     // it.
     const webUiUrlOnLoad = new URL(window.location.href);
-    this.host_ = webUiUrlOnLoad.searchParams.get(CHROME_HOST_PARAM_KEY);
-    if (!this.host_ && loadTimeData.valueExists('chrome_host')) {
+    // The browser validates this value before exposing it through
+    // loadTimeData. Do not trust query parameters from the WebUI URL.
+    if (loadTimeData.valueExists('chrome_host')) {
       this.host_ = loadTimeData.getString('chrome_host');
     }
     // Relying on C++ to provide the correct host via getUrlForTask
