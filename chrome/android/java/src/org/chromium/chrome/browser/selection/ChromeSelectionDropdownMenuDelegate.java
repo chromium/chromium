@@ -234,12 +234,10 @@ public class ChromeSelectionDropdownMenuDelegate
                         .with(ListMenuItemProperties.CONTENT_DESCRIPTION, contentDescription)
                         .with(ListMenuItemProperties.GROUP_ID, groupId)
                         .with(ListMenuItemProperties.MENU_ITEM_ID, id)
-                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
+                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, null)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.INTENT, intent)
-                        .with(
-                                ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN,
-                                groupContainsIcon)
+                        .with(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN, false)
                         .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
                                 BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
