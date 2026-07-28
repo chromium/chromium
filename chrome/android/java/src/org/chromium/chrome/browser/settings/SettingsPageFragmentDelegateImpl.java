@@ -182,6 +182,9 @@ public class SettingsPageFragmentDelegateImpl
         appBarLayout.setBackgroundColor(backgroundColor);
         appBarLayout.setElevation(0);
         appBarLayout.setStateListAnimator(null);
+        int topPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.settings_top_padding);
+        appBarLayout.setPaddingRelative(0, topPadding, 0, 0);
 
         // Set the "Settings" label. The icon is updated in OnHeaderLayoutUpdated(), after layout
         // has determined whether settings is one-column or two-column.

@@ -235,6 +235,22 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
+    public void testInitSettings_setsTopPaddingOnAppBarLayout() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView);
+
+        assertNotNull(mInflatedSettingsView);
+        View appBarLayout = mInflatedSettingsView.findViewById(R.id.app_bar_layout);
+        assertNotNull(appBarLayout);
+        int expectedTopPadding =
+                ApplicationProvider.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_top_padding);
+        assertEquals(expectedTopPadding, appBarLayout.getPaddingTop());
+    }
+
+    @Test
     public void testInitSettings_inflatesSettingsViewWithChromiumSettingsTheme() {
         when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
 
