@@ -157,7 +157,14 @@ void StartupPagesHandler::HandleEditStartupPage(const base::ListValue& args) {
 
 void StartupPagesHandler::HandleOnStartupPrefsPageLoad(
     const base::ListValue& args) {
-  AllowJavascript();
+  if (IsJavascriptAllowed()) {
+    // Triggers 'update-startup-pages' event directly.
+    OnModelChanged();
+  } else {
+    // Triggers 'update-startup-pages' event indirectly as a result of the
+    // observers adedd in OnJavascriptAllowed.
+    AllowJavascript();
+  }
 }
 
 void StartupPagesHandler::HandleRemoveStartupPage(const base::ListValue& args) {

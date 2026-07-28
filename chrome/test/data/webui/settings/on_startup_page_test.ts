@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {NtpExtension, OnStartupBrowserProxy, SettingsOnStartupPageElement} from 'chrome://settings/settings.js';
-import {OnStartupBrowserProxyImpl, PrefsBrowserProxy, PrefService, PrefValues} from 'chrome://settings/settings.js';
+import {OnStartupBrowserProxyImpl, PrefsBrowserProxy, PrefService, PrefValues, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -16,6 +16,7 @@ import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 // </if>
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+import {TestStartupUrlsPageBrowserProxy} from './test_startup_urls_page_browser_proxy.js';
 
 // clang-format on
 
@@ -67,6 +68,7 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 suite('OnStartupPage', function() {
   let testElement: SettingsOnStartupPageElement;
   let onStartupBrowserProxy: TestOnStartupBrowserProxy;
+  let startupUrlsBrowserProxy: TestStartupUrlsPageBrowserProxy;
   let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
 
@@ -81,6 +83,7 @@ suite('OnStartupPage', function() {
   async function initPage(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     onStartupBrowserProxy.reset();
+    startupUrlsBrowserProxy.reset();
     testElement = document.createElement('settings-on-startup-page');
     document.body.appendChild(testElement);
     await onStartupBrowserProxy.whenCalled('getNtpExtension');
@@ -102,6 +105,9 @@ suite('OnStartupPage', function() {
 
     onStartupBrowserProxy = new TestOnStartupBrowserProxy();
     OnStartupBrowserProxyImpl.setInstance(onStartupBrowserProxy);
+
+    startupUrlsBrowserProxy = new TestStartupUrlsPageBrowserProxy();
+    StartupUrlsPageBrowserProxyImpl.setInstance(startupUrlsBrowserProxy);
 
     prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
@@ -132,6 +138,21 @@ suite('OnStartupPage', function() {
         'session.restore_on_startup', PrefValues.OPEN_SPECIFIC);
     assertEquals(
         'Open a specific page or set of pages', getSelectedOptionLabel());
+  });
+
+  // Test that loadStartupPages is called every time the "Open a specific page
+  // or set of pages" radio button is selected.
+  test('toggle-startup-urls-visibility', async function() {
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_SPECIFIC);
+    await startupUrlsBrowserProxy.whenCalled('loadStartupPages');
+    startupUrlsBrowserProxy.reset();
+
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_NEW_TAB);
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_SPECIFIC);
+    await startupUrlsBrowserProxy.whenCalled('loadStartupPages');
   });
 
   function extensionControlledIndicatorExists() {
