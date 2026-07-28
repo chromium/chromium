@@ -23139,23 +23139,6 @@
             ]
         }
     ],
-    "SigninPromoOnAvatarPill": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SigninPromoOnAvatarPill"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimdutfBase64Encode": [
         {
             "platforms": [
