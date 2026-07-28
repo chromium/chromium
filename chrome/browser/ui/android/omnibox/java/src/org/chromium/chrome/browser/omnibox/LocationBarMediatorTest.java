@@ -3684,7 +3684,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testStandbyRingShownWhenWindowRegainsFocus() {
+    public void testStandbyRingShownWhenActivityRegainsTopResumedState() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
@@ -3695,18 +3695,18 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout, atLeastOnce()).setShowStandbyRing(true);
         clearInvocations(mLocationBarLayout);
 
-        // Simulate window focus lost. Ring should be removed.
-        mMediator.onWindowFocusChanged(false);
+        // Simulate top resumed activity lost. Ring should be removed.
+        mMediator.onTopResumedActivityChanged(false);
         verify(mLocationBarLayout).setShowStandbyRing(false);
         clearInvocations(mLocationBarLayout);
 
-        // Simulate window focus gain. Ring should be reapplied.
-        mMediator.onWindowFocusChanged(true);
+        // Simulate top resumed activity gain. Ring should be reapplied.
+        mMediator.onTopResumedActivityChanged(true);
         verify(mLocationBarLayout).setShowStandbyRing(true);
     }
 
     @Test
-    public void testStandbyRingTransitionsWithWindowFocus_startEnabled() {
+    public void testStandbyRingTransitionsWithTopResumedActivity_startEnabled() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
@@ -3717,16 +3717,16 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout, never()).setShowStandbyRing(true);
         clearInvocations(mLocationBarLayout);
 
-        // Simulate window focus lost. Ring should be removed, and
+        // Simulate top resumed activity lost. Ring should be removed, and
         // Autocomplete should enter STANDBY mode / stop requesting suggestions.
-        mMediator.onWindowFocusChanged(false);
+        mMediator.onTopResumedActivityChanged(false);
         assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
         verify(mLocationBarLayout, never()).setShowStandbyRing(true);
         clearInvocations(mLocationBarLayout);
 
-        // Simulate window focus gain. Autocomplete stays in STANDBY, and we show the
+        // Simulate top resumed activity gain. Autocomplete stays in STANDBY, and we show the
         // standby ring.
-        mMediator.onWindowFocusChanged(true);
+        mMediator.onTopResumedActivityChanged(true);
         verify(mLocationBarLayout).setShowStandbyRing(true);
         assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
     }
@@ -4313,7 +4313,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnWindowFocusChanged_losesFocus_standby() {
+    public void testOnTopResumedActivityChanged_losesFocus_standby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
@@ -4323,17 +4323,17 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
         assertEquals(AutocompleteState.ENABLED, input.getAutocompleteState());
 
-        mMediator.onWindowFocusChanged(false);
+        mMediator.onTopResumedActivityChanged(false);
         assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
     }
 
     @Test
-    public void testOnWindowFocusChanged_losesFocus_noInput() {
-        mMediator.onWindowFocusChanged(false); // Shouldn't crash
+    public void testOnTopResumedActivityChanged_losesFocus_noInput() {
+        mMediator.onTopResumedActivityChanged(false); // Shouldn't crash
     }
 
     @Test
-    public void testOnWindowFocusChanged_losesFocus_alreadyStandby() {
+    public void testOnTopResumedActivityChanged_losesFocus_alreadyStandby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
@@ -4343,12 +4343,12 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
         assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
 
-        mMediator.onWindowFocusChanged(false);
+        mMediator.onTopResumedActivityChanged(false);
         assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
     }
 
     @Test
-    public void testOnWindowFocusChanged_losesFocus_disabled() {
+    public void testOnTopResumedActivityChanged_losesFocus_disabled() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
@@ -4358,19 +4358,19 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
         assertEquals(AutocompleteState.DISABLED, input.getAutocompleteState());
 
-        mMediator.onWindowFocusChanged(false);
+        mMediator.onTopResumedActivityChanged(false);
         assertEquals(AutocompleteState.DISABLED, input.getAutocompleteState());
     }
 
     @Test
     @DisabledTest(message = "https://crbug.com/532032970")
-    public void testBeginInput_unfocusedWindow_standby() {
+    public void testBeginInput_notTopResumedActivity_standby() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
 
         // Simulate window losing focus before input begins.
-        mMediator.onWindowFocusChanged(false);
+        mMediator.onTopResumedActivityChanged(false);
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.ENABLED);
