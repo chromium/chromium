@@ -9981,9 +9981,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "MigrationAndBackgroundRefreshAndMetricsEnabled_20260727",
                     "enable_features": [
                         "EnableAppBackgroundRefresh",
+                        "IOSBackgroundMetrics",
                         "MigrateIOSKeychainAccessibility"
                     ]
                 }
