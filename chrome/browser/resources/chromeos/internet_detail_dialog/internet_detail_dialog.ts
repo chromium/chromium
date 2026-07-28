@@ -184,7 +184,8 @@ export class InternetDetailDialogElement extends
    */
   private propertiesReceived_: boolean = false;
   private networkConfig_: CrosNetworkConfigInterface;
-  private browserProxy_: InternetDetailDialogBrowserProxy;
+  private browserProxy_: InternetDetailDialogBrowserProxy =
+      InternetDetailDialogBrowserProxyImpl.getInstance();
 
   /** @override */
   constructor() {
@@ -209,7 +210,6 @@ export class InternetDetailDialogElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_ = InternetDetailDialogBrowserProxyImpl.getInstance();
     const dialogArgs = this.browserProxy_.getDialogArguments();
 
     ColorChangeUpdater.forDocument().start();
