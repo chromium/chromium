@@ -20,10 +20,10 @@
 namespace {
 
 static constexpr char kBase64UrlError[] = " must be a base64url encoded string";
-static constexpr char kExtensionsMustBeList[] =
-    "extensions must be a list of strings";
 static constexpr char kDevToolsDidNotReturnExpectedValue[] =
     "DevTools did not return the expected value";
+static constexpr char kExtensionsMustBeList[] =
+    "extensions must be a list of strings";
 static constexpr char kUnrecognizedExtension[] =
     " is not a recognized extension";
 static constexpr char kUnrecognizedProtocol[] =
@@ -82,6 +82,18 @@ void ConvertBase64ToBase64Url(base::DictValue& params,
 
     base::Base64UrlEncode(temp, base::Base64UrlEncodePolicy::OMIT_PADDING,
                           maybe_value);
+  }
+}
+
+// Maps the signCount parameter, handling null as -1.
+void MapSignCount(const base::DictValue& params, base::DictValue& target) {
+  const base::Value* sign_count = params.Find("signCount");
+  if (sign_count) {
+    if (sign_count->is_none()) {
+      target.Set("signCount", -1);
+    } else {
+      target.Set("signCount", sign_count->Clone());
+    }
   }
 }
 
@@ -195,7 +207,6 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.rpId", "rpId"},
           {"credential.privateKey", "privateKey"},
           {"credential.userHandle", "userHandle"},
-          {"credential.signCount", "signCount"},
           {"credential.largeBlob", "largeBlob"},
           {"credential.backupEligibility", "backupEligibility"},
           {"credential.backupState", "backupState"},
@@ -210,6 +221,8 @@ Status ExecuteAddCredential(WebView* web_view,
       *credential, {"credentialId", "privateKey", "userHandle", "largeBlob"});
   if (status.IsError())
     return status;
+
+  MapSignCount(params, *credential);
 
   return web_view->SendCommandAndGetResult("WebAuthn.addCredential",
                                            mapped_params, value);
@@ -233,6 +246,10 @@ Status ExecuteGetCredentials(WebView* web_view,
   for (base::Value& credential : credentials->GetList()) {
     if (!credential.is_dict())
       return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
+    const base::Value* sign_count = credential.GetDict().Find("signCount");
+    if (sign_count && sign_count->is_int() && sign_count->GetInt() == -1) {
+      credential.GetDict().Set("signCount", base::Value());
+    }
     ConvertBase64ToBase64Url(
         credential.GetDict(),
         {"credentialId", "privateKey", "userHandle", "largeBlob"});
@@ -295,6 +312,8 @@ Status ExecuteSetCredentialProperties(WebView* web_view,
   if (status.IsError()) {
     return status;
   }
+
+  MapSignCount(params, mapped_params);
 
   return web_view->SendCommandAndGetResult("WebAuthn.setCredentialProperties",
                                            mapped_params, value);

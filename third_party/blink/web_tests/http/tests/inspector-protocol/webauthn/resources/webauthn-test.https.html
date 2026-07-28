@@ -145,10 +145,9 @@ async function getCredential(credential, options = {}) {
         signature: arrayBufferToBase64(extensions.cmtgKey.signature),
       };
     }
-    result.flags = parseAuthenticatorFlags(
-      new Uint8Array(attestation.response.authenticatorData)[32]);
-    const authData = new Uint8Array(attestation.response.authenticatorData);
-    result.signCount = (authData[33] << 24) | (authData[34] << 16) | (authData[35] << 8) | authData[36];
+    const dataView = new DataView(attestation.response.authenticatorData);
+    result.flags = parseAuthenticatorFlags(dataView.getUint8(32));
+    result.signCount = dataView.getUint32(33, false);
     return result;
   } catch (error) {
     return {status: error.toString()};

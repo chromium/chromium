@@ -4785,6 +4785,49 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual("marisa", credentials[0]["userName"])
     self.assertEqual("Marisa Kirisame", credentials[0]["userDisplayName"])
 
+  def testAddCredentialNullSignCount(self):
+    script = """
+      let done = arguments[0];
+      getCredential({
+        type: "public-key",
+        id: new TextEncoder().encode("cred-1"),
+        transports: ["usb"],
+      }).then(done);
+    """
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = False,
+    )
+
+    # Register a credential with null signCount.
+    self._driver.AddCredential(
+      userHandle = self.URLSafeBase64Encode("marisa"),
+      authenticatorId = authenticatorId,
+      credentialId = self.URLSafeBase64Encode("cred-1"),
+      isResidentCredential=True,
+      rpId="chromedriver.test",
+      privateKey=self.privateKey,
+      signCount=None,
+      userName="marisa",
+      userDisplayName="Marisa Kirisame",
+    )
+
+    # Try authenticating with the credential.
+    # Assertion should return signature counter 0.
+    result = self._driver.ExecuteAsyncScript(script)
+    self.assertEqual('OK', result['status'])
+    self.assertEqual(0, result['signCount'])
+
+    # GetCredentials should return signCount as None.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertEqual(1, len(credentials))
+    self.assertIsNone(credentials[0]["signCount"])
+
   def testAddCredentialLargeBlob(self):
     script = """
       let done = arguments[0];
@@ -5118,6 +5161,66 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         self.assertEqual(credentialId, credentials[0]['credentialId'])
         self.assertEqual(backupEligibility, credentials[0]['backupEligibility'])
         self.assertEqual(backupState, credentials[0]['backupState'])
+
+  def testSetCredentialPropertiesSignCount(self):
+    script = """
+      let done = arguments[0];
+      getCredential({
+        type: "public-key",
+        id: new Uint8Array([0xfb, 0xff, 0xff]),
+        transports: ["usb"],
+      }).then(done);
+    """
+    self._driver.Load(self.GetHttpsUrlForFile(
+        '/chromedriver/webauthn_test.html', 'chromedriver.test'))
+
+    authenticatorId = self._driver.AddVirtualAuthenticator(
+        protocol = 'ctap2',
+        transport = 'usb',
+        hasResidentKey = True,
+        hasUserVerification = True,
+        isUserVerified = True,
+    )
+    raw_credential_id = bytes([0xfb, 0xff, 0xff])
+    credentialId = self.URLSafeBase64Encode(raw_credential_id)
+
+    self._driver.AddCredential(
+      authenticatorId = authenticatorId,
+      credentialId = credentialId,
+      userHandle = self.URLSafeBase64Encode('melia'),
+      isResidentCredential = True,
+      rpId = "chromedriver.test",
+      privateKey = self.privateKey,
+      signCount = 1,
+    )
+
+    # Update signCount to 10.
+    self._driver.SetCredentialProperties(
+        authenticatorId = authenticatorId, credentialId = credentialId,
+        signCount = 10)
+
+    # Next assertion should increment it to 11.
+    result = self._driver.ExecuteAsyncScript(script)
+    self.assertEqual('OK', result['status'])
+    self.assertEqual(11, result['signCount'])
+
+    # GetCredentials should return 11.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertEqual(11, credentials[0]['signCount'])
+
+    # Update signCount to None (null).
+    self._driver.SetCredentialProperties(
+        authenticatorId = authenticatorId, credentialId = credentialId,
+        signCount = None)
+
+    # Next assertion should return 0.
+    result = self._driver.ExecuteAsyncScript(script)
+    self.assertEqual('OK', result['status'])
+    self.assertEqual(0, result['signCount'])
+
+    # GetCredentials should return None.
+    credentials = self._driver.GetCredentials(authenticatorId)
+    self.assertIsNone(credentials[0]['signCount'])
 
   def testCreateVirtualSensorWithInvalidSensorName(self):
     self.assertRaisesRegex(chromedriver.InvalidArgument,
