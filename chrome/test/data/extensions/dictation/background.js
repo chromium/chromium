@@ -6,6 +6,8 @@ const OFFSCREEN_PATH = 'offscreen.html';
 
 const startedStreams = new Map();
 const streamStartWaiters = new Map();
+const endedStreams = new Map();
+const streamEndWaiters = new Map();
 const updatedContexts = new Map();
 const contextUpdateWaiters = new Map();
 
@@ -29,6 +31,29 @@ globalThis.waitForStreamStart = function(streamId) {
       streamStartWaiters.set(streamId, []);
     }
     streamStartWaiters.get(streamId).push(resolve);
+  });
+};
+
+function notifyStreamEnded(streamId, details) {
+  endedStreams.set(streamId, details);
+  const waiters = streamEndWaiters.get(streamId);
+  if (waiters) {
+    for (const resolve of waiters) {
+      resolve(details);
+    }
+    streamEndWaiters.delete(streamId);
+  }
+}
+
+globalThis.waitForStreamEnd = function(streamId) {
+  if (endedStreams.has(streamId)) {
+    return Promise.resolve(endedStreams.get(streamId));
+  }
+  return new Promise((resolve) => {
+    if (!streamEndWaiters.has(streamId)) {
+      streamEndWaiters.set(streamId, []);
+    }
+    streamEndWaiters.get(streamId).push(resolve);
   });
 };
 
@@ -162,6 +187,7 @@ chrome.dictationPrivate.onEndStream.addListener(async (details) => {
   // In a manual test, the test code itself simulates the extension API calls
   // so avoid calling into any of the extension code.
   if (await isManualTest()) {
+    notifyStreamEnded(details.streamId, details);
     return;
   }
 

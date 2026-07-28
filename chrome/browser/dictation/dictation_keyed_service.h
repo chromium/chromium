@@ -74,7 +74,6 @@ class DictationKeyedService : public KeyedService,
                     const TargetDetails& target_details,
                     DictationSessionEntryPoint entry_point);
 
-  // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
 
   // Handles the context menu item click.
@@ -98,7 +97,7 @@ class DictationKeyedService : public KeyedService,
 
   // Returns true if dictation feature is enabled by all flags and policies and
   // the system is fully initialized and ready to use.
-  bool IsEnabled() const;
+  bool IsEnabledAndReady() const;
 
   raw_ptr<Profile> profile_;
 
@@ -116,6 +115,8 @@ class DictationKeyedService : public KeyedService,
     ~SessionState();
 
     SessionController controller_;
+    // TODO(bokan): This is only ever used to get the Tab. Store a WeakPtr to
+    // the TabInterface instead.
     TargetDetails target_details_;
   };
   std::optional<SessionState> session_;

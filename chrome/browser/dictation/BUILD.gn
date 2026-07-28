@@ -138,6 +138,7 @@ source_set("browser_tests") {
     "dictation_interactive_browser_test_base.h",
     "dictation_keyed_service_browsertest.cc",
     "dictation_onboarding_browsertest.cc",
+    "metrics_browsertest.cc",
     "policy_browsertest.cc",
     "session_ui_impl_browsertest.cc",
   ]

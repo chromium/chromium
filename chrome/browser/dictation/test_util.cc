@@ -148,6 +148,27 @@ void ExtensionWaitForStreamStart(Profile* profile,
   CHECK_EQ("success", result.GetString());
 }
 
+void ExtensionWaitForStreamEnd(Profile* profile,
+                               DictationMultiplexer::StreamId stream_id) {
+  std::string script = content::JsReplace(
+      R"JS(
+    (async function() {
+      try {
+        await globalThis.waitForStreamEnd($1);
+        chrome.test.sendScriptResult('success');
+      } catch (e) {
+        chrome.test.sendScriptResult('error: ' + e.message);
+      }
+    })();
+      )JS",
+      stream_id.value());
+
+  base::Value result =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          profile, std::string(kDictationTestExtensionId), script);
+  CHECK_EQ("success", result.GetString());
+}
+
 namespace {
 
 std::optional<DictationContext> ParseDictationContext(

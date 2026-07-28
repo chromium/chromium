@@ -45,6 +45,13 @@ class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
                                     blink::DOMNodeIdType(dom_node_id)};
   }
 
+  void WaitForPostedTasks() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSessionControllerDelegate> mock_delegate_;
@@ -602,7 +609,7 @@ TEST_F(DictationSessionControllerTest, ActiveStreamFailureOnErrorCalled) {
   auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
   MockSessionUi* ui_ptr = mock_ui.get();
   EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
-  controller_->Initialize();
+  controller_->ResetUi();
 
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
@@ -626,7 +633,7 @@ TEST_F(DictationSessionControllerTest, CompletedStreamFailureOnErrorNotCalled) {
   auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
   MockSessionUi* ui_ptr = mock_ui.get();
   EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
-  controller_->Initialize();
+  controller_->ResetUi();
 
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
@@ -656,10 +663,84 @@ TEST_F(DictationSessionControllerTest, UpdateAudioLevelPropagatesToUi) {
   auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
   MockSessionUi* ui_ptr = mock_ui.get();
   EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
-  controller_->Initialize();
+  controller_->ResetUi();
 
   EXPECT_CALL(*ui_ptr, UpdateAudioLevel(0.8f));
   controller_->UpdateAudioLevel(0.8f);
+}
+
+TEST_F(DictationSessionControllerTest,
+       FinalizeAndShutdownSessionEndedAfterFinalization) {
+  controller_->ResetUi();
+
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart);
+  auto* stream_provider = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider, nullptr);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(
+          testing::Return(StreamProvider::StreamState::kTranscribing));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kInitializing);
+  EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
+
+  controller_->FinalizeAndShutdown();
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+
+  // Complete stream finalization and verify EndSession is called on delegate.
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    controller_.reset();
+  });
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kTranscribing);
+  WaitForPostedTasks();
+
+  EXPECT_EQ(controller_, nullptr);
+}
+
+TEST_F(DictationSessionControllerTest,
+       FinalizeAndShutdownNewStreamAbortsEndSession) {
+  controller_->ResetUi();
+
+  controller_->StartDictationStream(EmptyTarget(),
+                                    DictationStreamStartTrigger::kSessionStart);
+  auto* stream_provider1 = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider1, nullptr);
+
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider1), GetState())
+      .WillRepeatedly(
+          testing::Return(StreamProvider::StreamState::kTranscribing));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider1, StreamProvider::StreamState::kInitializing);
+  EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
+
+  // Call FinalizeAndShutdown, placing stream 1 in finalization.
+  controller_->FinalizeAndShutdown();
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+
+  // While stream 1 is finalizing, start a new stream (stream 2).
+  controller_->StartDictationStream(
+      EmptyTarget(), DictationStreamStartTrigger::kContextMenuExistingSession);
+  auto* stream_provider2 = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider2, nullptr);
+  EXPECT_NE(stream_provider1, stream_provider2);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+
+  // Complete finalization on stream 1 and verify EndSession is NOT called.
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider1), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  EXPECT_CALL(mock_delegate_, EndSession()).Times(0);
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider1, StreamProvider::StreamState::kTranscribing);
+  WaitForPostedTasks();
+
+  EXPECT_NE(controller_, nullptr);
+  EXPECT_EQ(controller_->attached_stream_provider(), stream_provider2);
 }
 
 }  // namespace

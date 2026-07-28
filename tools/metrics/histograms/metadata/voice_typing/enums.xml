@@ -29,6 +29,7 @@ this directory.
   <int value="0" label="Session Start"/>
   <int value="1" label="Start Button"/>
   <int value="2" label="Focus Change"/>
+  <int value="3" label="Context Menu (Existing Session)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/dictation/metrics.h:DictationStreamStartTrigger) -->

@@ -11,6 +11,7 @@
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
+#include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
@@ -134,7 +135,7 @@ void DictationKeyedService::StartSession(
     tabs::TabInterface& tab,
     const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
-  CHECK(IsEnabled());
+  CHECK(IsEnabledAndReady());
   CHECK(!session_);
 
   if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_details,
@@ -147,7 +148,7 @@ void DictationKeyedService::StartSession(
 
   session_.emplace(*this, target_details);
 
-  session_->controller_.Initialize();
+  session_->controller_.ResetUi();
 
   session_->controller_.StartDictationStream(
       target_details, DictationStreamStartTrigger::kSessionStart);
@@ -158,16 +159,13 @@ void DictationKeyedService::EndSession() {
 }
 
 bool DictationKeyedService::ShouldShowContextMenuItem() const {
-  if (!IsEnabled()) {
-    return false;
-  }
-  return !session_;
+  return IsEnabledAndReady();
 }
 
 void DictationKeyedService::ContextMenuHandler(
     const TargetDetails& target_details) {
   // Policy could have changed to disabled while the context menu was open.
-  if (!IsEnabled()) {
+  if (!IsEnabledAndReady()) {
     return;
   }
 
@@ -176,10 +174,35 @@ void DictationKeyedService::ContextMenuHandler(
     return;
   }
 
-  StartSession(*tab, target_details, DictationSessionEntryPoint::kContextMenu);
+  if (!session_) {
+    VT_LOG() << "Starting new session";
+    StartSession(*tab, target_details,
+                 DictationSessionEntryPoint::kContextMenu);
+  } else {
+    if (session_->controller_.attached_stream_provider()) {
+      session_->controller_.EndDictationStream();
+    }
+
+    tabs::TabInterface* old_tab =
+        GetTabFromTargetId(session_->target_details_.target_id);
+
+    session_->target_details_ = target_details;
+
+    // If the menu is triggered from a new tab, we need to re-create the UI in
+    // that tab (removing it from the old tab).
+    if (tab != old_tab) {
+      VT_LOG() << "Moving session to new tab: " << tab;
+      session_->controller_.ResetUi();
+    }
+
+    VT_LOG() << "Starting in existing session";
+    session_->controller_.StartDictationStream(
+        target_details,
+        DictationStreamStartTrigger::kContextMenuExistingSession);
+  }
 }
 
-bool DictationKeyedService::IsEnabled() const {
+bool DictationKeyedService::IsEnabledAndReady() const {
   CHECK(profile_);
   bool disabled_by_policy =
       profile_->GetPrefs()->GetInteger(prefs::kVoiceTypingSettings) ==
@@ -190,7 +213,7 @@ bool DictationKeyedService::IsEnabled() const {
 }
 
 void DictationKeyedService::OnPrefChanged() {
-  if (!IsEnabled()) {
+  if (!IsEnabledAndReady()) {
     EndSession();
   }
 }
