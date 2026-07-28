@@ -18,6 +18,10 @@ group("orchestrator_all") {
     ":process_perf_results_py",
     ":standard_gtest_merge_py",
     ":standard_isolated_script_merge_py",
+
+    # Dependencies used by GPU CI testers that opt in to the test_trigger_cas
+    # code path.
+    ":gpu_test_trigger_cas",
   ]
 
   if (is_android) {
@@ -110,5 +114,16 @@ python_library("process_perf_results_py") {
     "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
     "//tools/perf/core/schedule/",
     "//tools/perf/public_builders.json",
+  ]
+}
+
+group("gpu_test_trigger_cas") {
+  data = [
+    "//infra/config/generated/builders/ci/",
+    "//infra/config/generated/builders/gn_args_locations.json",
+
+    # mb
+    "//build/gn_helpers.py",
+    "//tools/mb/",
   ]
 }
