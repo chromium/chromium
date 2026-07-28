@@ -2038,7 +2038,7 @@
     "expiry_milestone": 160
   },
   {
-    "name": "contextual-panel-close-button",
+    "name": "contextual-panel-close-button-on-tablets",
     "owners": ["clhager@google.com", "skavuluru@google.com", "twellington@chromium.org"],
     "expiry_milestone": 165
   },

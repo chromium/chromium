@@ -5630,11 +5630,11 @@ inline constexpr char kCctTabResumptionName[] = "Custom Tabs Tab Resumption";
 inline constexpr char kCctTabResumptionDescription[] =
     "Enables showing tab resumption suggestions within Custom Tabs.";
 
-inline constexpr char kContextualPanelCloseButtonName[] =
-    "Contextual Panel Close Button";
-inline constexpr char kContextualPanelCloseButtonDescription[] =
+inline constexpr char kContextualPanelCloseButtonOnTabletsName[] =
+    "Contextual Panel Close Button on Tablets";
+inline constexpr char kContextualPanelCloseButtonOnTabletsDescription[] =
     "When this is enabled, the contextual search panel will show a close "
-    "button. Its scrim will also be hidden.";
+    "button on tablets. Its scrim will also be hidden on tablets.";
 
 inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
 inline constexpr char kHomeButtonRemovalDescription[] =
