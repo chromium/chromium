@@ -19202,7 +19202,7 @@
             ]
         }
     ],
-    "PasswordSaveUpdateDropdownMenuExperiment": [
+    "PasswordSaveUpdateDropdownMenu": [
         {
             "platforms": [
                 "chromeos",
@@ -19214,7 +19214,12 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "IPH_PasswordsSavePrimingPromo",
+                        "IPH_PasswordsSaveRecoveryPromo",
                         "PasswordSaveUpdateDropdownMenuExperiment"
+                    ],
+                    "disable_features": [
+                        "ThreeButtonPasswordSaveDialog"
                     ]
                 }
             ]
