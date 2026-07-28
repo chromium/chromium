@@ -242,7 +242,7 @@ absl::StatusOr<uint64_t> FileStorage::GetFileSize(
 
 absl::StatusOr<std::unique_ptr<InputStream>> FileStorage::OpenForRead(
   const std::string& filename) const {
-  FILE* file = fopen(filename.c_str(), "r");
+  FILE* file = fopen(filename.c_str(), "rb");
   if (file == nullptr) {
     return IOError(filename);
   }
@@ -251,7 +251,7 @@ absl::StatusOr<std::unique_ptr<InputStream>> FileStorage::OpenForRead(
 
 absl::StatusOr<std::unique_ptr<OutputStream>> FileStorage::OpenForWrite(
   const std::string& filename) const {
-  FILE* file = fopen(filename.c_str(), "w");
+  FILE* file = fopen(filename.c_str(), "wb");
   if (file == nullptr) {
     return IOError(filename);
   }

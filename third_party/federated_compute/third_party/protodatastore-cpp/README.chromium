@@ -12,4 +12,9 @@ Description:
 A simple file-backed proto with an in-memory cache.
 
 Local Modifications:
-None.
+
+- patches/000-win-b-mode.patch
+
+  Uses the binary mode when opening files ("rb"/"wb"), as Windows by default
+  opens files in text mode.  Without this patch, reading opstats.db was failing
+  on Windows and causing EligibilityEvalComputationIOError.

@@ -26,6 +26,18 @@ function check_out() {
   git checkout FETCH_HEAD 2>/dev/null
 }
 
+function apply_patches() {
+  for patch in ../patches/*; do
+    if [[ ! -f "$patch" ]]; then
+      continue
+    fi
+    echo Applying patch $patch...
+    patch -s -p1 < $patch
+  done
+
+  echo Patches applied
+}
+
 pushd "${SCRIPT_DIR}/"
 
 rm -rf .tmp-checkout
@@ -33,6 +45,7 @@ mkdir .tmp-checkout
 pushd .tmp-checkout
 
 check_out
+apply_patches
 
 popd # .tmp-checkout
 
