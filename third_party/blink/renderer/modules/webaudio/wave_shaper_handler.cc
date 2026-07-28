@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/audio/down_sampler.h"
 #include "third_party/blink/renderer/platform/audio/up_sampler.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -226,6 +227,8 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
 }
 
 void WaveShaperHandler::Process(uint32_t frames_to_process) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "WaveShaperHandler::Process");
   AudioBus* destination_bus = Output(0).Bus();
 
   if (!IsInitialized()) {
@@ -411,6 +414,8 @@ void WaveShaperHandler::WaveShaperCurveValues(
     base::span<const float> source,
     uint32_t frames_to_process,
     base::span<const float> curve_data) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "WaveShaperHandler::WaveShaperCurveValues");
   DCHECK_LE(frames_to_process, virtual_index_.size());
   // Index into the array computed from the source value.
   base::span<float> virtual_index_span = virtual_index_.as_span();

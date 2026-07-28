@@ -98,3 +98,35 @@ function createMonoRampBuffer(length, sampleRate) {
     channelData[i] = i / length;
   return buffer;
 }
+
+/**
+ * Creates a pre-calculated Float32Array soft-clipping curve for WaveShaper perf
+ * tests.
+ *
+ * @param {number} size curve length
+ * @returns {Float32Array}
+ */
+function createWaveShaperTestCurve(size) {
+  const curve = new Float32Array(size);
+  for (let i = 0; i < size; ++i) {
+    const x = (i * 2) / size - 1;
+    curve[i] = Math.tanh(x);
+  }
+  return curve;
+}
+
+/**
+ * Creates a pre-calculated Float32Array static sine audio data for WaveShaper
+ * perf tests.
+ *
+ * @param {number} length sample frame length
+ * @param {number} sampleRate sample rate
+ * @returns {Float32Array}
+ */
+function createWaveShaperTestAudioData(length, sampleRate) {
+  const data = new Float32Array(length);
+  for (let i = 0; i < length; ++i) {
+    data[i] = Math.sin((2 * Math.PI * 440 * i) / sampleRate);
+  }
+  return data;
+}

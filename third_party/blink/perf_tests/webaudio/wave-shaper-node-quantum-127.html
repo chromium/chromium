@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test WaveShaperNode performance (renderQuantumSize=127)</title>
+    <script src="../resources/runner.js"></script>
+    <script src="resources/webaudio-perf-utils.js"></script>
+  </head>
+  <body>
+    <script>
+      const sampleRate = 48000;
+      const renderDuration = 2.0;
+      const totalFrames = sampleRate * renderDuration;
+
+      const curve = createWaveShaperTestCurve(1024);
+      const staticAudioData =
+          createWaveShaperTestAudioData(totalFrames, sampleRate);
+
+      function createWaveShaperGraph() {
+        const context = new OfflineAudioContext({
+          numberOfChannels: 2,
+          length: totalFrames,
+          sampleRate,
+          renderQuantumSize: 127,
+        });
+
+        const buffer = context.createBuffer(2, totalFrames, sampleRate);
+        for (let c = 0; c < 2; ++c) {
+          buffer.getChannelData(c).set(staticAudioData);
+        }
+
+        const source = new AudioBufferSourceNode(context, { buffer });
+        const waveShaper = new WaveShaperNode(context, {
+          curve,
+          oversample: '4x',
+        });
+
+        source.connect(waveShaper);
+        waveShaper.connect(context.destination);
+        source.start(0);
+
+        return context;
+      }
+
+      PerfTestRunner.gc();
+
+      RunWebAudioPerfTest({
+        description:
+            'WaveShaperNode performance (oversample=4x, quantum=127)',
+        graphBuilder: createWaveShaperGraph,
+        tracingOptions: {
+          targetCategory: 'disabled-by-default-webaudio.audionode',
+          targetEvents: [
+            'WaveShaperHandler::Process',
+            'UpSampler::Process',
+            'DownSampler::Process',
+          ],
+        },
+      });
+    </script>
+  </body>
+</html>
