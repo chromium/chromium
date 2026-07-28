@@ -14,6 +14,9 @@ BASE_FEATURE(kOnDeviceModelCpuBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnDeviceModelLitertLmBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelConversationBackend,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOnDeviceModelGpuProgramCache, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOnDeviceModelGpuWeightCache, base::FEATURE_DISABLED_BY_DEFAULT);

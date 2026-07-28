@@ -603,8 +603,18 @@ struct ChromeMLAPI {
   ChromeMLASRAPI asr_api;
 };
 
-// Signature of the GetChromeMLAPI() function which the shared library exports.
+enum class ChromeMLBackendMode : uint32_t {
+  kLegacy = 0,
+  kLiteRtLmSession = 1,
+  kLiteRtLmConversation = 2,
+};
+
+// TODO(crbug.com/539590008): Remove GetChromeMLAPI(bool) and rename
+// GetChromeMLAPIV2 to GetChromeMLAPI once transitionary period passes.
 using ChromeMLAPIGetter = const ChromeMLAPI* (*)(bool enable_litert_lm);
+
+// Signature of the new GetChromeMLAPIV2() function.
+using ChromeMLAPIGetterV2 = const ChromeMLAPI* (*)(ChromeMLBackendMode mode);
 
 }  // extern "C"
 
