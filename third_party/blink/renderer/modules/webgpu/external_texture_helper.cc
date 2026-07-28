@@ -446,8 +446,7 @@ ExternalTexture CreateExternalTexture(
     media_flags.setBlendMode(SkBlendMode::kSrc);
 
     media::PaintCanvasVideoRenderer::PaintParams params;
-    params.dest_rect =
-        gfx::RectF(shared_image_wrapper->GetSharedImage()->size());
+    params.dest_rect = gfx::RectF(shared_image_wrapper->Size());
     shared_image_wrapper->DoExternalOverdraw([&](cc::PaintCanvas& canvas) {
       video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
                             params, raster_context_provider);

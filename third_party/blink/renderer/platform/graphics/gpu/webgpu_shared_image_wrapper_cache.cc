@@ -66,8 +66,8 @@ void WebGpuSharedImageWrapperCache::ReturnWebGpuSharedImageWrapper(
     std::unique_ptr<WebGpuSharedImageWrapper> shared_image_wrapper,
     const gpu::SyncToken& completion_sync_token) {
   size_t resource_size =
-      shared_image_wrapper->GetSharedImage()->format().EstimatedSizeInBytes(
-          shared_image_wrapper->GetSharedImage()->size());
+      shared_image_wrapper->GetSharedImageFormat().EstimatedSizeInBytes(
+          shared_image_wrapper->Size());
 
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
@@ -110,11 +110,10 @@ WebGpuSharedImageWrapperCache::AcquireCachedWrapper(
   // Loop from MRU to LRU
   DequeSharedImageWrapper::iterator it;
   for (it = unused_wrappers_.begin(); it != unused_wrappers_.end(); ++it) {
-    gpu::ClientSharedImage* shared_image =
-        it->shared_image_wrapper_->GetSharedImage().get();
-    if (shared_image->size() == size && shared_image->format() == format &&
-        shared_image->alpha_type() == alpha_type &&
-        shared_image->color_space() == color_space) {
+    WebGpuSharedImageWrapper* wrapper = it->shared_image_wrapper_.get();
+    if (wrapper->Size() == size && wrapper->GetSharedImageFormat() == format &&
+        wrapper->GetAlphaType() == alpha_type &&
+        wrapper->GetColorSpace() == color_space) {
       break;
     }
   }
