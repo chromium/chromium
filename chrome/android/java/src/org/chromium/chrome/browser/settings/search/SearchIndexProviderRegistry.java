@@ -35,15 +35,6 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragmen
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
-import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
-import org.chromium.chrome.browser.privacy_sandbox.FledgeAllSitesFragment;
-import org.chromium.chrome.browser.privacy_sandbox.FledgeBlockedSitesFragment;
-import org.chromium.chrome.browser.privacy_sandbox.FledgeFragment;
-import org.chromium.chrome.browser.privacy_sandbox.FledgeLearnMoreFragment;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
-import org.chromium.chrome.browser.privacy_sandbox.TopicsBlockedFragment;
-import org.chromium.chrome.browser.privacy_sandbox.TopicsFragment;
-import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -71,7 +62,6 @@ import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
-import org.chromium.components.page_info.PageInfoAdPersonalizationSettings;
 import org.chromium.components.page_info.PageInfoCookiesSettings;
 
 import java.util.List;
@@ -107,18 +97,8 @@ public final class SearchIndexProviderRegistry {
                     PersonalizeGoogleServicesSettings.SEARCH_INDEX_DATA_PROVIDER,
                     SecureDnsSettings.SEARCH_INDEX_DATA_PROVIDER,
                     TabArchiveSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    AdMeasurementFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    FledgeAllSitesFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    FledgeFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    FledgeLearnMoreFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    FledgeBlockedSitesFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    TopicsFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    TopicsBlockedFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    TopicsManageFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    PrivacySandboxSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     ChosenObjectSettings.SEARCH_INDEX_DATA_PROVIDER,
                     GroupedWebsitesSettings.SEARCH_INDEX_DATA_PROVIDER,
-                    PageInfoAdPersonalizationSettings.SEARCH_INDEX_DATA_PROVIDER,
                     PageInfoCookiesSettings.SEARCH_INDEX_DATA_PROVIDER,
                     CookieSettings.SEARCH_INDEX_DATA_PROVIDER,
                     SingleCategorySettings.SEARCH_INDEX_DATA_PROVIDER,

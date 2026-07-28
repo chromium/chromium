@@ -24,7 +24,6 @@ public interface SettingsNavigation {
     @IntDef({
         SettingsFragment.ABOUT_CHROME,
         SettingsFragment.ACCESSIBILITY,
-        SettingsFragment.AD_MEASUREMENT,
         SettingsFragment.ADAPTIVE_TOOLBAR,
         SettingsFragment.ADDRESS_BAR,
         SettingsFragment.ALL_SITES,
@@ -69,14 +68,6 @@ public interface SettingsNavigation {
         SettingsFragment.PRELOAD_PAGES_STANDARD,
         SettingsFragment.PRICE_NOTIFICATION,
         SettingsFragment.PRIVACY,
-        SettingsFragment.PRIVACY_SANDBOX_FLEDGE,
-        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_ALL_SITES,
-        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_BLOCKED_SITES,
-        SettingsFragment.PRIVACY_SANDBOX_FLEDGE_LEARN_MORE,
-        SettingsFragment.PRIVACY_SANDBOX_SETTINGS,
-        SettingsFragment.PRIVACY_SANDBOX_TOPICS,
-        SettingsFragment.PRIVACY_SANDBOX_TOPICS_BLOCKED,
-        SettingsFragment.PRIVACY_SANDBOX_TOPICS_MANAGE,
         SettingsFragment.SAFE_BROWSING,
         SettingsFragment.SAFE_BROWSING_ENHANCED,
         SettingsFragment.SAFE_BROWSING_STANDARD,
@@ -100,7 +91,7 @@ public interface SettingsNavigation {
     @interface SettingsFragment {
         int ABOUT_CHROME = 0;
         int ACCESSIBILITY = 1;
-        int AD_MEASUREMENT = 2;
+        // int AD_MEASUREMENT = 2; (OBSOLETE)
         int ADAPTIVE_TOOLBAR = 3;
         int ADDRESS_BAR = 4;
         int ALL_SITES = 5;
@@ -145,14 +136,14 @@ public interface SettingsNavigation {
         int PRELOAD_PAGES_STANDARD = 44;
         int PRICE_NOTIFICATION = 45;
         int PRIVACY = 46;
-        int PRIVACY_SANDBOX_FLEDGE = 47;
-        int PRIVACY_SANDBOX_FLEDGE_ALL_SITES = 48;
-        int PRIVACY_SANDBOX_FLEDGE_BLOCKED_SITES = 49;
-        int PRIVACY_SANDBOX_FLEDGE_LEARN_MORE = 50;
-        int PRIVACY_SANDBOX_SETTINGS = 51;
-        int PRIVACY_SANDBOX_TOPICS = 52;
-        int PRIVACY_SANDBOX_TOPICS_BLOCKED = 53;
-        int PRIVACY_SANDBOX_TOPICS_MANAGE = 54;
+        // int PRIVACY_SANDBOX_FLEDGE = 47; (OBSOLETE)
+        // int PRIVACY_SANDBOX_FLEDGE_ALL_SITES = 48; (OBSOLETE)
+        // int PRIVACY_SANDBOX_FLEDGE_BLOCKED_SITES = 49; (OBSOLETE)
+        // int PRIVACY_SANDBOX_FLEDGE_LEARN_MORE = 50; (OBSOLETE)
+        // int PRIVACY_SANDBOX_SETTINGS = 51; (OBSOLETE)
+        // int PRIVACY_SANDBOX_TOPICS = 52; (OBSOLETE)
+        // int PRIVACY_SANDBOX_TOPICS_BLOCKED = 53; (OBSOLETE)
+        // int PRIVACY_SANDBOX_TOPICS_MANAGE = 54; (OBSOLETE)
         int SAFE_BROWSING = 55;
         int SAFE_BROWSING_ENHANCED = 56;
         int SAFE_BROWSING_STANDARD = 57;

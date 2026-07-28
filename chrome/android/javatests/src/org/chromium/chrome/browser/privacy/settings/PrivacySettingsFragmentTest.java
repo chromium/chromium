@@ -65,8 +65,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
-import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -97,8 +95,6 @@ import java.util.concurrent.TimeUnit;
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class PrivacySettingsFragmentTest {
-    // Index of the Privacy Sandbox row entry in the settings list.
-    public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
 
@@ -127,7 +123,6 @@ public class PrivacySettingsFragmentTest {
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
 
-    private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
     @Mock private SettingsNavigation mSettingsNavigation;
 
@@ -185,8 +180,6 @@ public class PrivacySettingsFragmentTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
-        mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
         mActionTester = new UserActionTester();
     }
 
@@ -198,10 +191,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
-    })
+    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -216,10 +206,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
-    })
+    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -240,10 +227,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
-    })
+    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -259,10 +243,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
-    })
+    @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -273,84 +254,6 @@ public class PrivacySettingsFragmentTest {
                         .findViewById(android.R.id.content)
                         .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_privacy_guide_label_with_new");
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
-    public void testPrivacySandboxV4View() throws IOException {
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.ad_privacy_link_row_label));
-        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.ad_privacy_page_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
-    public void testPrivacySandboxV4RestrictedWithRestrictedNoticeEnabled() throws IOException {
-        mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
-        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.ad_privacy_link_row_label));
-        // Verify that the right subtitle is shown.
-        onView(withText(R.string.settings_ad_privacy_restricted_link_row_sub_label))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.settings_ad_measurement_page_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
-    public void testPrivacySandboxV4NotRestrictedWithRestrictedNoticeEnabled() throws IOException {
-        mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
-        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(false);
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open Privacy Sandbox page.
-        scrollToSetting(withText(R.string.ad_privacy_link_row_label));
-        // Verify that the right subtitle is shown.
-        onView(withText(R.string.ad_privacy_link_row_sub_label)).check(matches(isDisplayed()));
-        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
-        // Verify that the right view is shown depending on feature state.
-        onView(withText(R.string.settings_ad_measurement_page_title)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    public void testPrivacySandboxV4ViewRestricted() throws IOException {
-        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
-        mSettingsActivityTestRule.startSettingsActivity();
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        // Scroll down and verify that the Privacy Sandbox is not there.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
-                });
-        onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
-    public void testPrivacySandboxV4ViewHiddenWhenDeprecationFeatureEnabled() throws IOException {
-        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(false);
-        mSettingsActivityTestRule.startSettingsActivity();
-        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        // Scroll down and verify that the Privacy Sandbox is not there.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
-                });
-        onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
     }
 
     @Test

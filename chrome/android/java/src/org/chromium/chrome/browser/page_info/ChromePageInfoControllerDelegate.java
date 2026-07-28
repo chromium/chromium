@@ -41,8 +41,6 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -61,7 +59,6 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -281,24 +278,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public void showAdPersonalizationSettings() {
-        PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
-                mContext, PrivacySandboxReferrer.PAGE_INFO_AD_PRIVACY_SECTION);
-    }
+    public void showAdPersonalizationSettings() {}
 
     @Override
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
-            var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
-            adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
-            rowWrapper.addView(adPersonalizationRow);
-            controllers.add(
-                    new PageInfoAdPersonalizationController(
-                            mainController, adPersonalizationRow, this));
-        }
 
         // Add history row.
         final Tab tab = TabUtils.fromWebContents(mWebContents);
