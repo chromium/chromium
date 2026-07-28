@@ -266,7 +266,6 @@ template("write_build_config") {
     _deps_configs = []
     if (defined(invoker.config_deps)) {
       foreach(_dep, invoker.config_deps) {
-        _dep_label = get_label_info(_dep, "label_no_toolchain")
         _dep_gen_dir = get_label_info(_dep, "target_gen_dir")
         _dep_name = get_label_info(_dep, "name")
         _dep_config = "$_dep_gen_dir/$_dep_name.params.json"
