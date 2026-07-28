@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanelTextViewInflater;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -76,7 +77,9 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
                 container,
                 resourceLoader,
                 R.dimen.contextual_search_end_padding,
-                R.dimen.contextual_search_padded_button_width);
+                ChromeFeatureList.sContextualPanelCloseButton.isEnabled()
+                        ? R.dimen.contextual_search_end_buttons_width
+                        : R.dimen.contextual_search_padded_button_width);
     }
 
     /**
