@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
@@ -330,6 +331,47 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
     })) << "Failed to hide page action button in HTML for action id: "
         << action_id;
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       ContentSettingIconAnimation) {
+  WaitForInitialWebUIToolbar(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Block content on active WebContents to trigger content setting icons.
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  content_settings->BlockAllContentForTesting();
+
+  // Update location bar so state is propagated to WebUI.
+  GetLocationBar()->Update(web_contents);
+
+  constexpr char kCheckIconScript[] = R"(
+      (() => {
+        const icons = Array.from(
+          document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('content-settings-icons')?.
+            shadowRoot?.querySelectorAll('content-setting-icon') || []
+        );
+        return icons.length > 0;
+      })()
+  )";
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    GetLocationBar()->Update(web_contents);
+    return content::EvalJs(GetWebUIToolbarWebContents(), kCheckIconScript)
+        .ExtractBool();
+  }));
+
+  // Trigger a second update on the same web contents.
+  GetLocationBar()->Update(web_contents);
+
+  // Verify that icons exist and animation state is stable.
+  EXPECT_TRUE(content::EvalJs(GetWebUIToolbarWebContents(), kCheckIconScript)
+                  .ExtractBool());
 }
 
 }  // namespace

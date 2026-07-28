@@ -122,7 +122,6 @@ suite('LocationBar', function() {
         tooltip: 'Cookies blocked',
         accessibilityString: '',
         isBubbleVisible: false,
-        shouldRunAnimation: false,
         explanatoryString: '',
       }],
     };

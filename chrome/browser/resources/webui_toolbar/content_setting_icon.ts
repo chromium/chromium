@@ -6,7 +6,6 @@ import './toolbar_chip_button.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContentSettingImageState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {ContentSettingImageType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -39,10 +38,6 @@ export class ContentSettingIconElement extends CrLitElement {
   static override get properties() {
     return {
       state: {type: Object},
-      animating: {
-        type: Boolean,
-        reflect: true,
-      },
     };
   }
 
@@ -52,24 +47,10 @@ export class ContentSettingIconElement extends CrLitElement {
     tooltip: '',
     accessibilityString: '',
     isBubbleVisible: false,
-    shouldRunAnimation: false,
     explanatoryString: '',
   };
 
-  protected accessor animating: boolean = false;
-
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has('state')) {
-      this.animating = this.state.shouldRunAnimation;
-    }
-  }
-
-  protected onLabelAnimationend_() {
-    this.animating = false;
-  }
 
   protected getIconUrl_(): string {
     const iconType = this.state.type;

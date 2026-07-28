@@ -55,7 +55,6 @@ toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
     state->accessibility_string =
         l10n_util::GetStringUTF16(model->AccessibilityAnnouncementStringId());
   }
-  state->should_run_animation = model->ShouldRunAnimation(web_contents);
 
   return state;
 }
@@ -100,8 +99,6 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
     auto image_state = GetImageStateForModel(
         model.get(), setting_view_delegate_.get(), web_contents);
     if (image_state) {
-      state.push_back(std::move(image_state));
-
       // After gathering the state, we need to notify the model that it's been
       // shown / notified so it doesn't repeat itself in the next update.
       if (model->ShouldNotifyAccessibility(web_contents)) {
@@ -122,14 +119,16 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
         model->SetBubbleWasAutoOpened(web_contents);
       }
       if (model->ShouldRunAnimation(web_contents)) {
-        // TODO: crbug.com/489109708 - Investigate why the animation sometimes
-        // re-runs when typing in the location bar post-animation.
         int string_id = model->explanatory_string_id();
         if (string_id && webui_delegate_) {
+          // Mimics IconLabelBubbleView::AnimateIn(), which announces the text
+          // it's animating in addition to standard accessibility announcements.
           webui_delegate_->AnnounceAlert(l10n_util::GetStringUTF16(string_id));
         }
         model->SetAnimationHasRun(web_contents);
       }
+
+      state.push_back(std::move(image_state));
     }
   }
 

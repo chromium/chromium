@@ -11,8 +11,7 @@ export function getHtml(this: ContentSettingIconElement) {
   return html`<!--_html_template_start_-->
 <!-- TODO: crbug.com/489109708 - Fix anchor highlights. -->
 <toolbar-chip-button id="chip"
-    ?animating="${this.animating}"
-    ?has-label="${this.animating && !!this.state.explanatoryString}"
+    ?has-label="${Boolean(this.state.explanatoryString)}"
     .tooltip="${this.state.tooltip}" .ariaLabel="${this.getAriaLabel_()}"
     @click="${this.onClick_}" @auxclick="${this.onAuxclick_}"
     @contextmenu="${this.onContextmenu_}"
@@ -21,9 +20,7 @@ export function getHtml(this: ContentSettingIconElement) {
     @pointercancel="${this.onPointercancel_}">
   <div id="icon" slot="prefix-icon"
       style="mask-image: ${this.getIconUrl_()};"></div>
-  <span id="label" @animationend="${this.onLabelAnimationend_}">
-    ${this.state.explanatoryString}
-  </span>
+  <span id="label">${this.state.explanatoryString}</span>
 </toolbar-chip-button>
 <!--_html_template_end_-->`;
   // clang-format on
