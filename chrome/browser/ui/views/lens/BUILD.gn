@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//chrome/browser/lens/region_search",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/test:test_support",
     "//components/lens",
     "//components/lens:features",

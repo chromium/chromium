@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/toolbar:test_support",
     "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",
     "//chrome/test/views",
@@ -135,7 +136,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = []
-  deps = []
+  deps = [ "//chrome/browser/ui/views/frame:test_with_browser_view" ]
 
   if (!is_android) {
     sources += [

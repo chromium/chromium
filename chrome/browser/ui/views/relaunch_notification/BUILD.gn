@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/prefs",

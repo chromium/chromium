@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 assert(!is_android)
 
 source_set("shadow") {
@@ -44,6 +46,43 @@ if (is_chromeos) {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views",
     ]
+  }
+}
+
+if (toolkit_views) {
+  source_set("test_with_browser_view") {
+    testonly = true
+
+    sources = [
+      "test_with_browser_view.cc",
+      "test_with_browser_view.h",
+    ]
+
+    public_deps = [
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/test:test_support",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/extensions",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views",
+      "//components/omnibox/browser",
+      "//components/omnibox/browser:test_support",
+      "//components/signin/public/base:test_support",
+      "//extensions/browser",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/input_method",
+        "//ui/base/ime/ash",
+      ]
+    }
   }
 }
 
