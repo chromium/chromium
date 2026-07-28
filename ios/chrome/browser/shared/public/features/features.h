@@ -565,6 +565,8 @@ bool IsRunDefaultStatusCheckEnabled();
 // Feature flag to highlight the app's features during the FRE.
 BASE_DECLARE_FEATURE(kBestOfAppFRE);
 
+extern const base::FeatureParam<std::string> kBestOfAppFREVariantParam;
+
 // Whether the feature to highlight the app's features during the FRE is
 // enabled.
 bool IsBestOfAppFREEnabled();

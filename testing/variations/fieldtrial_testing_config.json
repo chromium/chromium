@@ -14057,24 +14057,6 @@
             ]
         }
     ],
-    "IOSBestOfAppFRE": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithInteractiveLensPromo_20260112",
-                    "params": {
-                        "variant": "1"
-                    },
-                    "enable_features": [
-                        "BestOfAppFRE"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSBrowserEditMenuMetrics": [
         {
             "platforms": [
