@@ -7626,20 +7626,24 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testSetTabUnderline() {
-        initializeTest(false, false, 0);
+    public void testStripTabUnderlineManagerObserver() {
+        initializeTest(/* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0);
         int tabId = mModel.getTabAt(0).getId();
 
-        // Test underline addition.
-        mStripLayoutHelper.setTabUnderline(tabId, /* isUnderlined= */ true);
+        StripTabUnderlineManager manager =
+                mStripLayoutHelper.getStripTabUnderlineManagerForTesting();
+        assertNotNull(
+                "StripTabUnderlineManager should be initialized when Glic is enabled", manager);
+
+        // Notify via the manager (simulating native JNI callback).
+        manager.setUnderlineState(tabId, /* isUnderlined= */ true);
         assertTrue(
-                "Tab should be underlined",
+                "Tab should be underlined when StripTabUnderlineManager notifies observer",
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlinedForTesting());
 
-        // Test underline removal.
-        mStripLayoutHelper.setTabUnderline(tabId, /* isUnderlined= */ false);
+        manager.setUnderlineState(tabId, /* isUnderlined= */ false);
         assertFalse(
-                "Tab should not be underlined",
+                "Tab should not be underlined when StripTabUnderlineManager notifies observer",
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0].isUnderlinedForTesting());
     }
 

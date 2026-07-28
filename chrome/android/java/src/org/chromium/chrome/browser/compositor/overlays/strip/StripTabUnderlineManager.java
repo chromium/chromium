@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -18,21 +19,42 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.HashSet;
 import java.util.Set;
 
-/** Manages the native C++ TabUnderlineController objects for the strip. */
+/**
+ * Manages the native C++ TabUnderlineController objects for Android tab UI surfaces.
+ *
+ * <p>TODO(crbug.com/509226293): Consider renaming to GlicTabIndicatorManager since this class
+ * broadcasts Glic indicator state to HTS, Vertical Tabs, and GTS.
+ */
 @JNINamespace("android")
 @NullMarked
 public class StripTabUnderlineManager {
-    private long mNativePtr;
-    private final StripLayoutHelper mStripLayoutHelper;
+    /** An observer for Glic tab indicator state changes across Android UI surfaces. */
+    public interface Observer {
+        /**
+         * Called when the Glic indicator state changes for a tab.
+         *
+         * @param tabId The ID of the tab whose indicator state changed.
+         * @param isUnderlined Whether the Glic indicator should be active/visible.
+         */
+        void onIndicatorStateChanged(int tabId, boolean isUnderlined);
+
+        /**
+         * Called when the Glic indicator animation cycle should be reset for a tab.
+         *
+         * @param tabId The ID of the tab whose animation cycle should be reset.
+         */
+        void onResetAnimationCycle(int tabId);
+    }
+
     private final WindowAndroid mWindowAndroid;
     private final Set<Tab> mTabsPendingContextualTasksBridge = new HashSet<>();
     private final Callback<ContextualTasksBridge> mContextualTasksBridgeObserver;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
+    private long mNativePtr;
     private boolean mContextualTasksBridgeInitialized;
 
-    public StripTabUnderlineManager(
-            StripLayoutHelper stripLayoutHelper, WindowAndroid windowAndroid) {
-        mStripLayoutHelper = stripLayoutHelper;
+    public StripTabUnderlineManager(WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
         mContextualTasksBridgeObserver = this::onContextualTasksBridgeReady;
         mNativePtr = StripTabUnderlineManagerJni.get().init(this);
@@ -45,7 +67,26 @@ public class StripTabUnderlineManager {
         }
     }
 
+    /**
+     * Adds an observer to be notified of tab indicator state changes.
+     *
+     * @param observer The observer to add.
+     */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes a previously registered observer.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
     public void destroy() {
+        mObservers.clear();
         if (ChromeFeatureList.sContextualTasks.isEnabled()) {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
                     .removeObserver(mContextualTasksBridgeObserver);
@@ -87,12 +128,16 @@ public class StripTabUnderlineManager {
 
     @CalledByNative
     void setUnderlineState(int tabId, boolean isUnderlined) {
-        mStripLayoutHelper.setTabUnderline(tabId, isUnderlined);
+        for (Observer observer : mObservers) {
+            observer.onIndicatorStateChanged(tabId, isUnderlined);
+        }
     }
 
     @CalledByNative
     void resetAnimationCycle(int tabId) {
-        mStripLayoutHelper.resetTabUnderlineAnimationCycle(tabId);
+        for (Observer observer : mObservers) {
+            observer.onResetAnimationCycle(tabId);
+        }
     }
 
     @NativeMethods
