@@ -47,6 +47,9 @@ class CORE_EXPORT GridLanesRunningPositions {
     }
 
     Member<GridItemData> item;
+    // Indexes the container builder's children during normal layout. During
+    // fragmentation collection, it indexes either the item or its root spanner
+    // in the item's start lane.
     wtf_size_t item_index{kNotFound};
     // This is only needed for stretch aligned items as they will need to be
     // relaid out once we know the final alignment candidate for a given track
@@ -134,11 +137,13 @@ class CORE_EXPORT GridLanesRunningPositions {
   // not include the size of the item that we are laying out and placing, and is
   // used to determine if a opening will be formed once the item is placed.
   //
-  // `item_index` is the index of the item's fragment in the container
-  // builder, and `layout_subtree` is the item's layout subtree (only
-  // non-null for subgrids). `grid_lanes`, when provided during fragmentation
-  // collection, determines the index at which this item will be added to each
-  // lane so new openings can refer to the spanner below them.
+  // During normal layout, `item_index` indexes the item's fragment in the
+  // container builder. During fragmentation collection, it indexes either the
+  // item or its root spanner in the item's start lane. `layout_subtree` is the
+  // item's layout subtree (only non-null for subgrids). `grid_lanes`, when
+  // provided during fragmentation collection, determines the index at which
+  // this item will be added to each lane so new openings can refer to the
+  // spanner below them.
   //
   // Example of how `max_running_position_for_span` is used when dense-packing
   // is enabled: |Track 1|Track 2|Track 3|
@@ -181,13 +186,14 @@ class CORE_EXPORT GridLanesRunningPositions {
   // than `auto_placement_stacking_axis_offset`, set `grid_lanes_item` to have
   // the updated span location, adjust the track opening as needed (either
   // erasing it or reducing the size), and return the running position at which
-  // the item will be placed. `item_index` is the index of the item's fragment
-  // in the container builder, and is used in the creation a stacking axis
-  // alignment candidate above any new track openings created. This method is
-  // only used when dense-packing is set. In the case where a multi-span item is
-  // densely-packed across the open ending of a track after the current running
-  // position, the running position of that track will be updated in this
-  // method. For an example, see the comment for
+  // the item will be placed. `item_index` identifies the item's fragment in the
+  // container builder. During fragmentation collection, the start-lane index is
+  // determined from the selected openings instead. The index is used when
+  // creating a stacking-axis alignment candidate above any new track openings.
+  // This method is only used when dense-packing is set. In the case where a
+  // multi-span item is densely-packed across the open ending of a track after
+  // the current running position, the running position of that track will be
+  // updated in this method. For an example, see the comment for
   // `AccumulateTrackOpeningsToAccommodateItem`. If provided,
   // `spanner_indices_below_opening` receives the index into each corresponding
   // `GridLaneData::item_data` of the spanner below the selected opening.
@@ -199,6 +205,7 @@ class CORE_EXPORT GridLanesRunningPositions {
       GridItemData& grid_lanes_item,
       wtf_size_t item_index = kNotFound,
       GridLayoutSubtree* layout_subtree = nullptr,
+      const GridLanesDataVector* grid_lanes = nullptr,
       Vector<wtf_size_t>* spanner_indices_below_opening = nullptr);
 
   // If the span of `grid_lanes_item` is indefinite this method will find and

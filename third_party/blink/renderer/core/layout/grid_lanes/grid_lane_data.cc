@@ -8,9 +8,32 @@
 
 namespace blink {
 
+namespace {
+
+void ApplyContentAlignmentToItemData(LayoutUnit offset_adjustment,
+                                     bool is_block_direction,
+                                     GridLanesItemData& item_data) {
+  if (item_data.is_item_start) {
+    auto& item_offset =
+        item_data.grid_lanes_placement_data->placement_data.offset;
+    if (is_block_direction) {
+      item_offset.block_offset += offset_adjustment;
+    } else {
+      item_offset.inline_offset += offset_adjustment;
+    }
+  }
+
+  for (GridLanesItemData* packed_item : item_data.items_packed_above) {
+    ApplyContentAlignmentToItemData(offset_adjustment, is_block_direction,
+                                    *packed_item);
+  }
+}
+
+}  // namespace
+
 void AddItemToGridLanesData(
     GridItemData& grid_lanes_item,
-    const GridItemPlacementData& placement_data,
+    GridLanesItemPlacementData* grid_lanes_placement_data,
     const Vector<wtf_size_t>& spanner_indices_below_opening,
     GridTrackSizingDirection grid_axis_direction,
     GridLanesDataVector& out_grid_lanes) {
@@ -22,7 +45,7 @@ void AddItemToGridLanesData(
   for (wtf_size_t track_index = span.StartLine(); track_index < span.EndLine();
        ++track_index) {
     auto* item_data = MakeGarbageCollected<GridLanesItemData>(
-        &grid_lanes_item, placement_data,
+        &grid_lanes_item, grid_lanes_placement_data,
         /*is_item_start=*/track_index == span.StartLine());
 
     auto& lane_data = out_grid_lanes.at(track_index);
@@ -48,6 +71,51 @@ void AddItemToGridLanesData(
         CHECK_LT(spanner_below_index, lane_data->item_data.size());
         lane_data->item_data[spanner_below_index]->AddPackedItem(item_data);
       }
+    }
+  }
+}
+
+GridLanesItemPlacementData* FindGridLanesItemPlacementData(
+    const GridItemData& item,
+    wtf_size_t item_index,
+    GridTrackSizingDirection grid_axis_direction,
+    const GridLanesDataVector* grid_lanes) {
+  if (!grid_lanes) {
+    return nullptr;
+  }
+
+  const wtf_size_t start_lane = item.StartLine(grid_axis_direction);
+  CHECK_LT(start_lane, grid_lanes->size());
+
+  const GridLaneData* lane_data = grid_lanes->at(start_lane);
+  CHECK(lane_data);
+  CHECK_LT(item_index, lane_data->item_data.size());
+
+  GridLanesItemData* item_data = lane_data->item_data[item_index];
+  if (item_data->item == &item) {
+    return item_data->grid_lanes_placement_data;
+  }
+
+  // If the indexed item does not match, `item` was densely packed above this
+  // spanner. Search for it among the spanner's packed items.
+  for (GridLanesItemData* packed_item : item_data->items_packed_above) {
+    if (packed_item->item == &item) {
+      return packed_item->grid_lanes_placement_data;
+    }
+  }
+  NOTREACHED();
+}
+
+void ApplyContentAlignmentToGridLanesData(LayoutUnit offset_adjustment,
+                                          bool is_block_direction,
+                                          GridLanesDataVector& grid_lanes) {
+  for (GridLaneData* lane_data : grid_lanes) {
+    if (!lane_data) {
+      continue;
+    }
+    for (GridLanesItemData* item_data : lane_data->item_data) {
+      ApplyContentAlignmentToItemData(offset_adjustment, is_block_direction,
+                                      *item_data);
     }
   }
 }

@@ -442,6 +442,7 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     GridItemData& grid_lanes_item,
     wtf_size_t item_index,
     GridLayoutSubtree* layout_subtree,
+    const GridLanesDataVector* grid_lanes,
     Vector<wtf_size_t>* spanner_indices_below_opening) {
   DCHECK(is_dense_packing_);
 
@@ -544,6 +545,29 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
   // recursive nature of `AccumulateTrackOpeningsToAccommodateItem`, so we need
   // to iterate through the tracks in reverse order.
   if (highest_eligible_track_opening_result.IsValid()) {
+    // During fragmentation collection, alignment candidates locate this item
+    // through its start lane. The last opening index corresponds to that lane
+    // because the opening path is stored in reverse track order.
+    if (grid_lanes) {
+      const wtf_size_t start_lane =
+          highest_eligible_track_opening_result.starting_track_index;
+      const wtf_size_t start_lane_opening_index =
+          highest_eligible_track_opening_result.track_opening_indices.back();
+      const wtf_size_t spanner_below_index =
+          track_collection_openings_[start_lane][start_lane_opening_index]
+              .spanner_below_index;
+
+      // A densely packed item nested under a spanner is found through that
+      // spanner's direct-entry index. Otherwise, the item will be appended
+      // directly at the current end of its start lane.
+      if (spanner_below_index == kNotFound) {
+        const GridLaneData* lane_data = grid_lanes->at(start_lane);
+        item_index = lane_data ? lane_data->item_data.size() : 0;
+      } else {
+        item_index = spanner_below_index;
+      }
+    }
+
     // Reaching this block means the item will be densely packed into the
     // selected track openings. If the item spans multiple tracks, each opening
     // may have a different spanner below it. Store one spanner index per track

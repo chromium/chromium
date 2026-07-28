@@ -13,16 +13,42 @@
 
 namespace blink {
 
+// Placement data shared by every lane entry for a single grid-lanes item.
+struct GridLanesItemPlacementData
+    : public GarbageCollected<GridLanesItemPlacementData> {
+  explicit GridLanesItemPlacementData(
+      const GridItemPlacementData& placement_data)
+      : placement_data(placement_data) {}
+
+  void Trace(Visitor*) const {}
+
+  GridItemPlacementData placement_data;
+
+  // Space available for alignment in the stacking axis. Fragmentation may
+  // increase this if the track opening expands.
+  LayoutUnit available_stacking_axis_alignment_space;
+};
+
 // Item and placement data for a single grid lanes item. If the item is a
 // spanner and dense packing is enabled, this will also store any items that
-// were packed above it.
+// were packed above it. Entries for the same spanner share
+// `grid_lanes_placement_data`, while `is_item_start` and `items_packed_above`
+// remain lane-specific.
 struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
   GridLanesItemData(GridItemData* item,
-                    const GridItemPlacementData& placement_data,
+                    GridLanesItemPlacementData* grid_lanes_placement_data,
                     bool is_item_start = true)
       : item(item),
-        placement_data(placement_data),
+        grid_lanes_placement_data(grid_lanes_placement_data),
         is_item_start(is_item_start) {}
+
+  const GridItemPlacementData& PlacementData() const {
+    return grid_lanes_placement_data->placement_data;
+  }
+
+  LayoutUnit AvailableStackingAxisAlignmentSpace() const {
+    return grid_lanes_placement_data->available_stacking_axis_alignment_space;
+  }
 
   void AddPackedItem(GridLanesItemData* packed_item) {
     items_packed_above.push_back(std::move(packed_item));
@@ -30,14 +56,12 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(item);
+    visitor->Trace(grid_lanes_placement_data);
     visitor->Trace(items_packed_above);
   }
 
   Member<GridItemData> item;
-  GridItemPlacementData placement_data;
-
-  // TODO(almaher): Store the available stacking-axis alignment space so the
-  // item's stretched size can be determined during fragmentation.
+  Member<GridLanesItemPlacementData> grid_lanes_placement_data;
 
   // Whether this entry represents the start of a grid item. This will always be
   // true for items that span one track, but for spanners, it will only be true
@@ -71,10 +95,24 @@ using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 // was not densely packed.
 void AddItemToGridLanesData(
     GridItemData& grid_lanes_item,
-    const GridItemPlacementData& placement_data,
+    GridLanesItemPlacementData* grid_lanes_placement_data,
     const Vector<wtf_size_t>& spanner_indices_below_opening,
     GridTrackSizingDirection grid_axis_direction,
     GridLanesDataVector& out_grid_lanes);
+
+// Returns the placement data for `item`. `item_index` identifies either the
+// item itself or the spanner it was densely packed above in the item's start
+// lane. Returns null when `grid_lanes` is not provided.
+GridLanesItemPlacementData* FindGridLanesItemPlacementData(
+    const GridItemData& item,
+    wtf_size_t item_index,
+    GridTrackSizingDirection grid_axis_direction,
+    const GridLanesDataVector* grid_lanes);
+
+// Applies a content-alignment offset once to each shared item placement record.
+void ApplyContentAlignmentToGridLanesData(LayoutUnit offset_adjustment,
+                                          bool is_block_direction,
+                                          GridLanesDataVector& grid_lanes);
 
 }  // namespace blink
 
