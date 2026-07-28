@@ -11,6 +11,10 @@
 #include "chrome/browser/dictation/dictation_context.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace dictation {
 
 class Target;
@@ -28,6 +32,7 @@ class DictationContextFetcher {
 
  private:
   void OnPageContextFetched(
+      base::WeakPtr<content::WebContents> web_contents,
       GetContextCallback callback,
       page_content_annotations::FetchPageContextResultCallbackArg result);
 
