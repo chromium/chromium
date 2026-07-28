@@ -798,7 +798,7 @@ BASE_FEATURE(kSharedWorkerSecureContextDerivationFromBrowser,
 // Storage Access API) will correctly restrict SameSite cookies on WebSocket
 // connections.
 BASE_FEATURE(kRestrictSharedWorkerWebSocketCrossSiteCookies,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
