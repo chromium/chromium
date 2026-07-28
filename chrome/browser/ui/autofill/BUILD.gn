@@ -615,6 +615,7 @@ if (!is_android) {
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/plus_addresses",
       "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",

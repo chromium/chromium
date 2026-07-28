@@ -165,6 +165,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/lifetime",
       "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/webauthn",
       "//chrome/test:test_support",

@@ -431,6 +431,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/batch_upload",
     "//chrome/browser/signin",
+    "//chrome/browser/signin:signin_browser_test_base",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui:chrome_pages",

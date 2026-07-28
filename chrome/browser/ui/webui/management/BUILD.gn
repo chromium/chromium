@@ -155,6 +155,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/web_applications:web_applications_test_support",

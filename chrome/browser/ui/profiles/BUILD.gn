@@ -236,4 +236,8 @@ source_set("browser_tests") {
       ]
     }
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/signin:signin_browser_test_base" ]
+  }
 }

@@ -259,6 +259,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/hid",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//components/record_replay/content/renderer",
       "//components/storage_monitor:test_support",
     ]
@@ -653,7 +654,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/signin/signin_browser_test_base.h",
       "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h",
       "../browser/ui/views/test/split_view_browser_test_mixin.h",
       "../browser/ui/views/test/split_view_interactive_test_mixin.h",
@@ -4718,6 +4718,7 @@ if (!is_android) {
 
     if (!is_android) {
       deps += [
+        "//chrome/browser/signin:signin_browser_test_base",
         "//chrome/browser/ui:breadcrumb_manager_browser_agent",
         "//chrome/browser/ui:browser_instant_controller",
         "//chrome/browser/ui:chrome_pages",
@@ -8645,6 +8646,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/sessions:interactive_ui_tests",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/site_isolation:interactive_ui_tests",

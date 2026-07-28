@@ -69,6 +69,7 @@ if (!is_android) {
       "//chrome/browser/lifetime",
       "//chrome/browser/policy",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support",
       "//components/policy/core/common",

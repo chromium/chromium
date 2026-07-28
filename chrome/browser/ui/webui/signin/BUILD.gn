@@ -639,6 +639,7 @@ if (!is_chromeos) {
       "//chrome/browser",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//components/signin/core/browser",
