@@ -134,9 +134,7 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
     base::TimeTicks result_ready_time,
     bool from_fallback,
     bool success) {
-  if (!from_fallback) {
-    LogResultToContentReadyMetric(result_ready_time, success);
-  }
+  LogResultToContentReadyMetric(result_ready_time);
 
   if (!is_deferred_) {
     return;
@@ -157,6 +155,7 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
   // Fall back to showing the widget even if success == false
   // so the UI state matches the requested visibility.
   ShowWidget(show_request_time);
+  visual_state_weak_factory_.InvalidateWeakPtrs();
 }
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
@@ -210,18 +209,10 @@ void OmniboxPopupPresenterBase::RequestFocus() {
 }
 
 void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
-    base::TimeTicks result_ready_time,
-    bool success) {
+    base::TimeTicks result_ready_time) {
   if (result_ready_time.is_null()) {
     omnibox::LogResultToContentReadyEarlyExitReason(
         omnibox::ResultToContentReadyEarlyExitReason::kNoResultReadyTime,
-        GetPopupMetricPrefix());
-    return;
-  }
-
-  if (!success) {
-    omnibox::LogResultToContentReadyEarlyExitReason(
-        omnibox::ResultToContentReadyEarlyExitReason::kVisualStateNotReady,
         GetPopupMetricPrefix());
     return;
   }

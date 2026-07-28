@@ -48,8 +48,7 @@ class OmniboxPopupAimPresenter
 
  protected:
   // OmniboxPopupPresenterBase overrides:
-  void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
-                                     bool success) override;
+  void LogResultToContentReadyMetric(base::TimeTicks result_ready_time) override;
   void WidgetDestroyed() override;
 
  private:
