@@ -5,6 +5,7 @@
 """Siso configuration for clang/unix."""
 
 load("@builtin//path.star", "path")
+load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
@@ -85,6 +86,8 @@ def __rules(ctx):
     remote_link_timeout = "80m" if use_thin_lto else "10m"
 
     remote_link = config.get(ctx, "remote-link") or config.get(ctx, "default-remote")
+    if runtime.os == "darwin":
+        remote_link = False
 
     rules = []
     if win_sdk.enabled(ctx):

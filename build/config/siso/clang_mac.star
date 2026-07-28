@@ -7,6 +7,7 @@
 load("@builtin//struct.star", "module")
 load("./clang_exception.star", "clang_exception")
 load("./clang_unix.star", "clang_unix")
+load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
@@ -20,6 +21,8 @@ def __filegroups(ctx):
 __handlers = clang_unix.handlers
 
 def __step_config(ctx, step_config):
+    if config.get(ctx, "remote-link"):
+        fail("remote-link is not supported on Mac/iOS yet")
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_mac.cfg"
     if ctx.fs.exists(cfg):
         rewrapper_config = rewrapper_cfg.parse(ctx, cfg)
