@@ -1211,11 +1211,11 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
                           wait_copy_text_js),
         // Note: earlier version used execCommand, but that causes issues
         // the impl uses execCommand, too, and it complains about re-entry.
-        // The key press is asynchronous, however, so we may need to wait a bit
-        // for the text to show up in the clipboard.
-        SendAccelerator(WebUIToolbarId(), accelerator),
+        // Observe state before sending accelerator so the monitor observer is
+        // ready before the clipboard data changes.
         ObserveState(kClipboardText,
                      []() { return ui::ClipboardMonitor::GetInstance(); }),
+        SendAccelerator(WebUIToolbarId(), accelerator),
         WaitForState(kClipboardText, expected_clipboard_text),
         StopObservingState(kClipboardText));
   }
