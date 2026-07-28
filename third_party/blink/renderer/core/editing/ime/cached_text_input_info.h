@@ -64,8 +64,8 @@ class CORE_EXPORT CachedTextInputInfo final {
     // |start_| and |end_| can be disconnected from document.
     mutable Position start_;
     mutable Position end_;
-    mutable unsigned start_offset_ = kNotFound;
-    mutable unsigned end_offset_ = kNotFound;
+    mutable wtf_size_t start_offset_ = kNotFound;
+    mutable wtf_size_t end_offset_ = kNotFound;
   };
 
   static TextIteratorBehavior Behavior();
@@ -74,12 +74,12 @@ class CORE_EXPORT CachedTextInputInfo final {
   PlainTextRange GetPlainTextRangeWithCache(
       const EphemeralRange& range,
       CachedPlainTextRange* text_range) const;
-  unsigned RangeLength(const EphemeralRange& range) const;
+  wtf_size_t RangeLength(const EphemeralRange& range) const;
 
   mutable Member<const ContainerNode> container_;
   mutable WeakMember<const LayoutObject> layout_object_;
   // Records offset of text node from start of |container_|.
-  mutable HeapHashMap<Member<const Text>, unsigned> offset_map_;
+  mutable HeapHashMap<Member<const Text>, wtf_size_t> offset_map_;
   mutable String text_;
   mutable CachedPlainTextRange composition_;
   mutable CachedPlainTextRange selection_;

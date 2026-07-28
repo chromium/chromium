@@ -2790,8 +2790,8 @@ TEST_F(InputMethodControllerTest, ClearImeTextSpansByType) {
       "<div id='sample' contenteditable spellcheck='true'>hello</div>",
       "sample");
   ImeTextSpan::Type type = ImeTextSpan::Type::kAutocorrect;
-  unsigned start = 0;
-  unsigned end = 1;
+  wtf_size_t start = 0;
+  wtf_size_t end = 1;
   Vector<ImeTextSpan> ime_text_spans;
   ime_text_spans.push_back(ImeTextSpan(
       type, start, end, Color::kTransparent, ImeTextSpanThickness::kNone,
