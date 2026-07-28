@@ -59,6 +59,8 @@ class CORE_EXPORT ClipboardCommands {
   FRIEND_TEST_ALL_PREFIXES(ClipboardTest,
                            PasteEventInterruptedReadTextRejected);
   FRIEND_TEST_ALL_PREFIXES(ClipboardTest, PasteEventInterruptedReadRejected);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardTest,
+                           GlobalSelectionPasteEventReadTextRequiresPermission);
 
  public:
   static bool EnabledCopy(LocalFrame&, Event*, EditorCommandSource);

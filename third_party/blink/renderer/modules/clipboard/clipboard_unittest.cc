@@ -1062,4 +1062,62 @@ TEST_F(ClipboardTest, PasteEventInterruptedReadRejected) {
       event_type_names::kPaste, listener, /*use_capture=*/false);
 }
 
+// A paste event dispatched with the selection buffer active (middle-click, as
+// ExecutePasteGlobalSelection does) must not implicitly grant readText(); the
+// request falls through to the permission service.
+TEST_F(ClipboardTest, GlobalSelectionPasteEventReadTextRequiresPermission) {
+  V8TestingScope scope;
+  ExecutionContext* executionContext = GetFrame().DomWindow();
+  WritePlainTextToClipboard("StandardBufferText");
+  GetFrame().GetSystemClipboard()->CommitWrite();
+
+  EXPECT_CALL(permission_service_, RequestPermission)
+      .WillOnce(WithArg<1>(
+          [](mojom::blink::PermissionService::RequestPermissionCallback
+                 callback) {
+            std::move(callback).Run(
+                mojom::blink::PermissionStatusWithDetails::New(
+                    mojom::blink::PermissionStatus::DENIED, nullptr));
+          }));
+  BindMockPermissionService(executionContext);
+
+  SetSecureOrigin(executionContext);
+  SetPageFocus(true);
+
+  bool listener_called = false;
+  auto* listener =
+      MakeGarbageCollected<ClipboardPasteTestListener>(base::BindOnce(
+          [](ExecutionContext* executionContext, ScriptState* script_state,
+             bool* listener_called, Event* event) {
+            *listener_called = true;
+            DummyExceptionStateForTesting exception_state;
+            ScriptPromise<IDLString> promise =
+                ClipboardPromise::CreateForReadText(
+                    executionContext, script_state, exception_state);
+            ScriptPromiseTester promise_tester(script_state, promise);
+            promise_tester.WaitUntilSettled();
+            EXPECT_TRUE(promise_tester.IsRejected());
+            EXPECT_EQ(promise_tester.ValueAsString(),
+                      "NotAllowedError: Read permission denied.");
+          },
+          WrapPersistent(executionContext),
+          WrapPersistent(scope.GetScriptState()),
+          Unretained(&listener_called)));
+
+  GetFrame().GetDocument()->body()->addEventListener(event_type_names::kPaste,
+                                                     listener);
+
+  GetFrame().GetSystemClipboard()->SetSelectionMode(true);
+  ClipboardCommands::DispatchPasteEvent(GetFrame(), PasteMode::kAllMimeTypes,
+                                        EditorCommandSource::kMenuOrKeyBinding);
+  GetFrame().GetSystemClipboard()->SetSelectionMode(false);
+
+  EXPECT_TRUE(listener_called);
+  GetFrame().GetDocument()->body()->removeEventListener(
+      event_type_names::kPaste, listener, /*use_capture=*/false);
+
+  executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::PermissionService::Name_, {});
+}
+
 }  // namespace blink
