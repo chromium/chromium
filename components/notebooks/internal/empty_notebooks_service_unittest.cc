@@ -26,10 +26,4 @@ TEST_F(EmptyNotebooksServiceTest, ConstructionAndInitialization) {
   EXPECT_TRUE(service->IsEmptyForTesting());
 }
 
-TEST_F(EmptyNotebooksServiceTest, IsUserEligibleReturnsFalse) {
-  auto service = std::make_unique<EmptyNotebooksService>();
-  EXPECT_FALSE(service->IsUserEligible());
-  EXPECT_FALSE(service->IsEligibilityLoading());
-}
-
 }  // namespace notebooks

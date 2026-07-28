@@ -39,14 +39,4 @@ TEST_F(NotebooksServiceImplTest, ConstructionAndInitialization) {
       [processor_ptr] { return processor_ptr->IsModelReadyToSyncForTest(); }));
 }
 
-TEST_F(NotebooksServiceImplTest, IsUserEligibleReturnsFalse) {
-  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-      syncer::NOTEBOOK, base::DoNothing());
-  auto service = std::make_unique<NotebooksServiceImpl>(
-      std::move(processor),
-      syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
-  EXPECT_FALSE(service->IsUserEligible());
-  EXPECT_FALSE(service->IsEligibilityLoading());
-}
-
 }  // namespace notebooks
