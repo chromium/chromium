@@ -1372,10 +1372,8 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                             timeout:30],
       @"Photo picker did not launch");
 
-  NSPredicate* imagePredicate =
-      [NSPredicate predicateWithFormat:@"label BEGINSWITH 'Photo'"];
   XCUIElementQuery* images =
-      [photosPickerApp.images matchingPredicate:imagePredicate];
+      [photosPickerApp.images matchingIdentifier:@"PXGGridLayout-Info"];
 
   if (images.count < 2) {
     // Close the picker to add the images.
@@ -1396,7 +1394,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
                               timeout:30],
         @"Photo picker did not launch");
 
-    images = [photosPickerApp.images matchingPredicate:imagePredicate];
+    images = [photosPickerApp.images matchingIdentifier:@"PXGGridLayout-Info"];
   }
 
   // Select multiple photos.
