@@ -569,14 +569,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.CountryFilteringResult" enum="GlicFilteringResult"
+<histogram name="Glic.CountryFilteringResult2" enum="GlicFilteringResult"
     expires_after="2026-11-29">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
     Records the outcome of the country filtering check for Glic enablement.
-    Recorded once per call to GetCountryEnablement, which happens once at
-    browser process startup.
+    Recorded when GetCountryEnablement is called during profile enablement
+    checks. Country enablement results use a custom caching strategy, so there
+    will be less samples recorded than calls to
+    GlicGlobalEnabling::IsCountryEnabled.
   </summary>
 </histogram>
 

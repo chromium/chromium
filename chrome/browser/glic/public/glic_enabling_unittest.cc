@@ -85,13 +85,25 @@ void FlushMessageLoop() {
   run_loop.Run();
 }
 
-class TestDelegate : public GlicGlobalEnabling::Delegate {
+class TestDelegate : public GlicEnablingDelegate {
  public:
-  std::string GetPermanentCountryCode() override {
+  TestDelegate() = default;
+  TestDelegate(const TestDelegate& other)
+      : permanent_country_code_(other.permanent_country_code_),
+        session_country_code_(other.session_country_code_),
+        locale_(other.locale_) {}
+
+  std::unique_ptr<TestDelegate> Clone() const {
+    return std::make_unique<TestDelegate>(*this);
+  }
+
+  std::string GetPermanentCountryCode() const override {
     return permanent_country_code_;
   }
-  std::string GetSessionCountryCode() override { return session_country_code_; }
-  std::string GetLocale() override { return locale_; }
+  std::string GetSessionCountryCode() const override {
+    return session_country_code_;
+  }
+  std::string GetLocale() const override { return locale_; }
   void SetPermanentCountryCode(const std::string& country_code) {
     permanent_country_code_ = country_code;
   }
@@ -152,6 +164,10 @@ class GlicEnablingTest : public testing::Test {
   }
 
  protected:
+  GlicGlobalEnabling CreateGlobalEnabling() {
+    return GlicGlobalEnabling(delegate_.Clone());
+  }
+
   TestDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -160,14 +176,14 @@ class GlicEnablingTest : public testing::Test {
 
 // Test
 TEST_F(GlicEnablingTest, GlicFeatureEnabledTest) {
-  EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria(), true);
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 }
 
 TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   // Turn feature flag off
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures({}, {features::kGlic});
-  EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria(), false);
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 }
 
 TEST_F(GlicEnablingTest, IneligibleProfileDoesNotLogIsConsentedMetrics) {
@@ -190,9 +206,9 @@ TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGlicCountryFiltering);
   delegate_.SetBothCountryCodes("zz");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   histogram_tester_->ExpectUniqueSample(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedFilteringDisabled, 1);
 }
 
@@ -203,19 +219,19 @@ TEST_F(GlicEnablingTest,
                                               {});
   delegate_.SetSessionCountryCode("");
   delegate_.SetPermanentCountryCode("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetPermanentCountryCode("US");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetPermanentCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 3);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 3);
 }
 
 TEST_F(GlicEnablingTest,
@@ -225,19 +241,19 @@ TEST_F(GlicEnablingTest,
                                               {});
   delegate_.SetPermanentCountryCode("");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetSessionCountryCode("US");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 3);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 3);
 }
 
 TEST_F(GlicEnablingTest,
@@ -249,24 +265,24 @@ TEST_F(GlicEnablingTest,
 
   delegate_.SetSessionCountryCode("");
   delegate_.SetPermanentCountryCode("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetPermanentCountryCode("UK");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetPermanentCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetPermanentCountryCode("qq");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 4);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 4);
 }
 
 TEST_F(GlicEnablingTest, CountryFilteringEnabledWithLists_SessionCountryCode) {
@@ -277,24 +293,24 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithLists_SessionCountryCode) {
 
   delegate_.SetPermanentCountryCode("");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetSessionCountryCode("UK");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetSessionCountryCode("qq");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 4);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 4);
 }
 
 TEST_F(GlicEnablingTest,
@@ -306,33 +322,33 @@ TEST_F(GlicEnablingTest,
 
   delegate_.SetPermanentCountryCode("zz");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("us");
   delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("qq");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("us");
   delegate_.SetSessionCountryCode("qq");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetBothCountryCodes("qq");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedInExclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
 }
 
 TEST_F(GlicEnablingTest,
@@ -345,33 +361,33 @@ TEST_F(GlicEnablingTest,
 
   delegate_.SetPermanentCountryCode("zz");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("us");
   delegate_.SetSessionCountryCode("zz");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("qq");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("us");
   delegate_.SetSessionCountryCode("qq");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetBothCountryCodes("qq");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedNotInInclusionList, 2);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
 }
 
 TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
@@ -381,34 +397,34 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
       {{"disabled_countries", "zz"}, {"enabled_countries", "*"}});
 
   delegate_.SetBothCountryCodes("us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetBothCountryCodes("ru");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(GetCountryEnablementForTesting(delegate_));
   delegate_.SetBothCountryCodes("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("zz");
   delegate_.SetSessionCountryCode("us");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   delegate_.SetPermanentCountryCode("us");
   delegate_.SetSessionCountryCode("zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(GetCountryEnablementForTesting(delegate_));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kAllowedWildcardInclusion, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult",
+      "Glic.CountryFilteringResult2",
       GlicFilteringResult::kBlockedInExclusionList, 3);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
 }
 
 TEST_F(GlicEnablingTest, LocaleFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGlicLocaleFiltering);
   delegate_.SetLocale("foobar");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   histogram_tester_->ExpectUniqueSample(
       "Glic.LocaleFilteringResult",
       GlicFilteringResult::kAllowedFilteringDisabled, 1);
@@ -419,11 +435,11 @@ TEST_F(GlicEnablingTest, LocaleFilteringEnabledWithDefaults) {
   features.InitAndEnableFeature(features::kGlicLocaleFiltering);
 
   delegate_.SetLocale("en-us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-uk");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 
   histogram_tester_->ExpectBucketCount(
       "Glic.LocaleFilteringResult",
@@ -442,17 +458,17 @@ TEST_F(GlicEnablingTest, LocaleFilteringEnabledWithLists) {
        {"enabled_locales", "en-us,en-ru,en-zz"}});
 
   delegate_.SetLocale("en-us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-US");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("EN_us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-ru");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-ot");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 
   histogram_tester_->ExpectBucketCount(
       "Glic.LocaleFilteringResult",
@@ -473,11 +489,11 @@ TEST_F(GlicEnablingTest, LocaleFilteringEnabledStar) {
       {{"disabled_locales", "en-zz"}, {"enabled_locales", "*"}});
 
   delegate_.SetLocale("en-us");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-ru");
-  EXPECT_TRUE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_TRUE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
   delegate_.SetLocale("en-zz");
-  EXPECT_FALSE(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria());
+  EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 
   histogram_tester_->ExpectBucketCount(
       "Glic.LocaleFilteringResult",
@@ -2106,6 +2122,188 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
               base::BucketsAre(
                   base::Bucket(Reason::kCountryDisabled, 1),
                   base::Bucket(Reason::kPrimaryAccountNotCapable, 1)))));
+}
+
+class GlicEnablingCountryCheckTest : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingCountryCheckTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kGlic,
+            features::kGlicCountryFiltering,
+            features::kGlicAnchorEntryPointForOnboardedUsers,
+        },
+        /*disabled_features=*/{features::kGlicUserStatusCheck});
+  }
+
+ protected:
+  TestDelegate* SetProfileCountryDelegate(
+      const std::string& permanent_country,
+      const std::string& session_country = "") {
+    auto delegate = std::make_unique<TestDelegate>();
+    TestDelegate* raw_delegate = delegate.get();
+    delegate->SetPermanentCountryCode(permanent_country);
+    delegate->SetSessionCountryCode(session_country);
+    g_browser_process->GetFeatures()
+        ->glic_global_enabling()
+        .UpdateStateForTesting(std::move(delegate));
+    return raw_delegate;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GlicEnablingCountryCheckTest, GlobalEnablingBypassesCountryFilter) {
+  TestDelegate delegate;
+  delegate.SetBothCountryCodes("zz");
+  // Global criteria check does not evaluate country filtering, so it returns
+  // true even for disabled countries.
+  EXPECT_TRUE(GlicGlobalEnabling(delegate.Clone()).IsEnabledByGlobalCriteria());
+}
+
+TEST_F(GlicEnablingCountryCheckTest, NullProfileReturnsFalse) {
+  EXPECT_FALSE(GlicEnabling::IsProfileEligible(nullptr));
+  EXPECT_FALSE(GlicEnabling::EnablementForProfile(nullptr).IsEnabled());
+}
+
+TEST_F(GlicEnablingCountryCheckTest,
+       CountryCheckEvaluationAndEnablementCaching) {
+  auto& global_enabling =
+      g_browser_process->GetFeatures()->glic_global_enabling();
+
+  // 1. Initial check with a disabled country ("zz") returns false.
+  TestDelegate* delegate = SetProfileCountryDelegate("zz");
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+
+  // 2. Update country to an enabled one ("us"). Re-evaluates and returns true.
+  delegate->SetPermanentCountryCode("us");
+  EXPECT_TRUE(global_enabling.IsCountryEnabled());
+
+  // 3. Update country back to "zz". Since true is cached on global_enabling,
+  // it continues to return true without re-querying the delegate.
+  delegate->SetPermanentCountryCode("zz");
+  EXPECT_TRUE(global_enabling.IsCountryEnabled());
+
+  // 4. Reset cache for testing. Evaluates against delegate ("zz") and returns
+  // false.
+  global_enabling.UpdateStateForTesting(delegate->Clone());
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+}
+
+TEST_F(GlicEnablingCountryCheckTest,
+       CountryCheckEvaluationAndCountryCheckResultCaching) {
+  base::HistogramTester histogram_tester;
+
+  auto& global_enabling =
+      g_browser_process->GetFeatures()->glic_global_enabling();
+
+  // 1. Initial check with a disabled country ("zz"). Evaluates to
+  // kBlockedNotInInclusionList and records the sample once.
+  TestDelegate* delegate = SetProfileCountryDelegate("zz", "zz");
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kBlockedNotInInclusionList, 1);
+
+  // 2. Subsequent check with no change in the delegate's country. Enablement
+  // check returns false again, but the histogram should not be recorded a
+  // second time.
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kBlockedNotInInclusionList, 1);
+
+  // 3. Update permanent country to another disabled one ("yy") and checks
+  // country enablement twice. Should re-record kBlockedNotInInclusionList once.
+  delegate->SetPermanentCountryCode("yy");
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectBucketCount(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kBlockedNotInInclusionList, 2);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 2);
+
+  // 4. Update session country to another disabled one ("xx") and checks
+  // country enablement twice. Should re-record kBlockedNotInInclusionList once.
+  delegate->SetSessionCountryCode("xx");
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectBucketCount(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kBlockedNotInInclusionList, 3);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 3);
+
+  // 5. Update country to an enabled one ("us"). Two country checks return true,
+  // but only a single sample is recorded to another bucket of the histogram.
+  delegate->SetPermanentCountryCode("us");
+  EXPECT_TRUE(global_enabling.IsCountryEnabled());
+  EXPECT_TRUE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectBucketCount(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kAllowedInInclusionList, 1);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 4);
+
+  // 6. Reset cache and re-evaluate with "zz" again. Should re-record
+  // kBlockedNotInInclusionList since cache was cleared.
+  delegate->SetPermanentCountryCode("zz");
+  global_enabling.UpdateStateForTesting(delegate->Clone());
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
+  histogram_tester.ExpectBucketCount(
+      "Glic.CountryFilteringResult2",
+      GlicFilteringResult::kBlockedNotInInclusionList, 4);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 5);
+}
+
+TEST_F(GlicEnablingCountryCheckTest,
+       ProfileReadyState_LocationMismatchWhenAnchored) {
+  // The pref change triggers observers, so the country must be set beforehand.
+  SetProfileCountryDelegate("zz");
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kCompleted));
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.allowed_by_country_filter);
+  EXPECT_FALSE(enablement.IsEnabled());
+  EXPECT_TRUE(enablement.ShouldShowGlicButton());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kLocationMismatch);
+}
+
+TEST_F(GlicEnablingCountryCheckTest,
+       ProfileReadyState_IneligibleWhenNotAnchored) {
+  // The pref change triggers observers, so the country must be set beforehand.
+  SetProfileCountryDelegate("zz");
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kIncomplete));
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.allowed_by_country_filter);
+  EXPECT_FALSE(enablement.IsEnabled());
+  EXPECT_FALSE(enablement.ShouldShowGlicButton());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligible);
 }
 
 class GlicEnablingRecoveryMetricsTest
