@@ -188,8 +188,9 @@ class LockMetricsRecorderSupport
     auto* recorder = base::LockMetricsRecorder::GetForCurrentThread();
     if (recorder) {
       recorder->RecordLockAcquisitionTime(
-          Microseconds(sample.InMicroseconds()),
-          base::LockMetricsRecorder::LockType::kPartitionAllocLock);
+          base::LockMetricsRecorder::LockMetricSample{
+              Microseconds(sample.InMicroseconds()),
+              base::LockMetricsRecorder::LockType::kPartitionAllocLock});
     }
   }
 };

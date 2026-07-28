@@ -642,8 +642,9 @@ class LockTrySpinTest : public testing::Test {
     auto* recorder = LockMetricsRecorder::GetForCurrentThread();
     if (recorder) {
       recorder->ForEachSample(
-          LockMetricsRecorder::LockType::kBaseLock,
-          [&sample_recorded](const TimeDelta&) { sample_recorded = true; });
+          [&sample_recorded](const LockMetricsRecorder::LockMetricSample&) {
+            sample_recorded = true;
+          });
     }
     return sample_recorded;
   }
@@ -652,8 +653,8 @@ class LockTrySpinTest : public testing::Test {
     // Clear any samples that may have been recorded.
     auto* recorder = LockMetricsRecorder::GetForCurrentThread();
     if (recorder) {
-      recorder->ForEachSample(LockMetricsRecorder::LockType::kBaseLock,
-                              [](const TimeDelta&) {});
+      recorder->ForEachSample(
+          [](const LockMetricsRecorder::LockMetricSample&) {});
     }
   }
 

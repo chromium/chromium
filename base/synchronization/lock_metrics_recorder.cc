@@ -133,28 +133,26 @@ bool LockMetricsRecorder::ShouldRecordLockAcquisitionTime() const {
   return !iterating_in_progress_ && subsampler_.ShouldSample(kSamplingRatio);
 }
 
-void LockMetricsRecorder::RecordLockAcquisitionTime(TimeDelta sample,
-                                                    LockType type) {
+void LockMetricsRecorder::RecordLockAcquisitionTime(
+    const LockMetricSample& sample) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  sample_buffer_[static_cast<size_t>(type)].SaveToBuffer(sample);
+  unified_sample_buffer_.SaveToBuffer(sample);
 }
 
-void LockMetricsRecorder::ForEachSample(LockType type,
-                                        FunctionRef<void(const TimeDelta&)> f) {
+void LockMetricsRecorder::ForEachSample(
+    FunctionRef<void(const LockMetricSample&)> f) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!iterating_in_progress_);
-  CHECK_LE(type, LockType::kMax);
   // Set the `iterating_in_progress_` flag to true to prevent reentrancy due to
   // any lock contention during the recording of the histogram. This keeps the
   // recording and reporting logic simple at the cost of a tiny blind-spot in
   // our metrics.
   AutoReset<bool> mark_iterating_in_progress(&iterating_in_progress_, true);
 
-  auto& buffer = sample_buffer_[static_cast<size_t>(type)];
-  for (auto it = buffer.Begin(); it; ++it) {
+  for (auto it = unified_sample_buffer_.Begin(); it; ++it) {
     f(**it);
   }
-  buffer.Clear();
+  unified_sample_buffer_.Clear();
 }
 
 void LockMetricsRecorder::ReportLockAcquisitionTimes() {
@@ -172,14 +170,17 @@ void LockMetricsRecorder::ReportLockAcquisitionTimes() {
   base::HistogramBase* partition_alloc_lock_histogram =
       partition_alloc_lock_histogram_;
 
-  ForEachSample(LockType::kBaseLock,
-                [base_lock_histogram](const TimeDelta& sample) {
-                  ReportLockHistogram(sample, base_lock_histogram);
-                });
-  ForEachSample(LockType::kPartitionAllocLock,
-                [partition_alloc_lock_histogram](const TimeDelta& sample) {
-                  ReportLockHistogram(sample, partition_alloc_lock_histogram);
-                });
+  ForEachSample([base_lock_histogram, partition_alloc_lock_histogram](
+                    const LockMetricsRecorder::LockMetricSample& sample) {
+    switch (sample.type) {
+      case LockType::kBaseLock:
+        ReportLockHistogram(sample.wait_time, base_lock_histogram);
+        break;
+      case LockType::kPartitionAllocLock:
+        ReportLockHistogram(sample.wait_time, partition_alloc_lock_histogram);
+        break;
+    }
+  });
 }
 
 // `EnableRecordingOnCurrentThread()` is the only function responsible for
