@@ -3155,7 +3155,7 @@ TEST_F(SymphoniaPipelineIntegrationTest, BasicPlayback_Vorbis_AudioOnly) {
 
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA)
 
-#if BUILDFLAG(ENABLE_IAMF_TOOLS)
+#if BUILDFLAG(ENABLE_IAMF_TOOLS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Iamf_714) {
   base::test::ScopedFeatureList scoped_feature_list(kIamfAudioDecoding);
   TestMediaSource source("iamf_alternating_sine_waves_714.mp4",
@@ -3179,6 +3179,6 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Iamf_Stereo) {
   source.Shutdown();
   Stop();
 }
-#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS)
+#endif  // BUILDFLAG(ENABLE_IAMF_TOOLS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media

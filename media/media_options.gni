@@ -73,8 +73,9 @@ declare_args() {
   }
 
   # Enable usage of iamf_tools within the media library. Used for software
-  # decoding of the IAMF type content.
-  media_use_iamf_tools = false
+  # decoding of the IAMF type content. Actual usage depends on the
+  # `kIamfAudioDecoding` feature flag.
+  media_use_iamf_tools = true
 
   # Override to dynamically link the cras (ChromeOS audio) library.
   use_cras = is_chromeos_device

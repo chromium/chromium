@@ -22,12 +22,12 @@ iamf_tools_sources = [
   "src/iamf/cli/demixing_module.cc",
   "src/iamf/cli/descriptor_obu_parser.cc",
   "src/iamf/cli/global_timing_module.cc",
+  "src/iamf/cli/labeled_frame.cc",
   "src/iamf/cli/loudness_calculator_base.cc",
   "src/iamf/cli/loudness_calculator_factory_base.cc",
   "src/iamf/cli/obu_processor.cc",
   "src/iamf/cli/obu_processor_utils.cc",
   "src/iamf/cli/obu_with_data_generator.cc",
-  "src/iamf/cli/labeled_frame.cc",
   "src/iamf/cli/parameters_manager.cc",
   "src/iamf/cli/profile_filter.cc",
   "src/iamf/cli/recon_gain_generator.cc",
@@ -244,10 +244,17 @@ test("iamf_tools_lib_fuzz_tests") {
   ]
 }
 config("strip_errors_config") {
-  cflags_cc = [
-    "-include",
-    rebase_path("strip_errors.h", root_build_dir),
-  ]
+  if (is_win) {
+    cflags_cc = [
+      "/FI",
+      rebase_path("strip_errors.h", root_build_dir),
+    ]
+  } else {
+    cflags_cc = [
+      "-include",
+      rebase_path("strip_errors.h", root_build_dir),
+    ]
+  }
 }
 
 static_library("iamf_tools_lib") {
