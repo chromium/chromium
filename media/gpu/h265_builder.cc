@@ -6,6 +6,36 @@
 
 namespace media {
 
+namespace {
+
+// SEI payload types (T-REC H.265 Table D.1).
+constexpr int kSEIPayloadTypeMasteringDisplayColourVolume = 137;
+constexpr int kSEIPayloadTypeContentLightLevelInfo = 144;
+
+// SEI payload sizes in bytes.
+// Mastering display colour volume: 3 * 2 * 2 (display primaries) + 2 * 2 (white
+// point) + 4 (max luminance) + 4 (min luminance).
+constexpr int kSEIPayloadSizeMasteringDisplayColourVolume = 24;
+// Content light level: 2 (max content) + 2 (max picture average).
+constexpr int kSEIPayloadSizeContentLightLevelInfo = 4;
+
+// D.2.1 / 7.3.5 sei_message() header: writes the payload type and payload size
+// using the 0xFF continuation form (last byte < 0xFF).
+void BuildPackedH265SEIMessageHeader(H26xAnnexBBitstreamBuilder& builder,
+                                     int payload_type,
+                                     int payload_size) {
+  for (; payload_type >= 0xFF; payload_type -= 0xFF) {
+    builder.AppendBits(8, 0xFF);
+  }
+  builder.AppendBits(8, payload_type);
+  for (; payload_size >= 0xFF; payload_size -= 0xFF) {
+    builder.AppendBits(8, 0xFF);
+  }
+  builder.AppendBits(8, payload_size);
+}
+
+}  // namespace
+
 void BuildPackedH265ProfileTierLevel(
     H26xAnnexBBitstreamBuilder& builder,
     const H265ProfileTierLevel& profile_tier_level,
@@ -146,9 +176,9 @@ void BuildPackedH265SPS(H26xAnnexBBitstreamBuilder& builder,
   builder.AppendBits(1, sps.sps_temporal_mvp_enabled_flag);
   builder.AppendBits(1, sps.strong_intra_smoothing_enabled_flag);
   builder.AppendBits(1, sps.vui_parameters_present_flag);
-  // The assumption here is that for now, only for Rec.601 and Rec.709 that
-  // VEA will set vui_parameters_present_flag & colour_description_present_flag
-  // to true.
+  // The VEA sets vui_parameters_present_flag & colour_description_present_flag
+  // to true whenever it has a specified colour space to signal (SDR Rec.601/709
+  // as well as HDR BT.2020 PQ/HLG for the main10 profile).
   if (sps.vui_parameters_present_flag &&
       sps.vui_parameters.colour_description_present_flag) {
     // E.2.1 VUI parameters syntax
@@ -244,6 +274,44 @@ void BuildPackedH265PPS(H26xAnnexBBitstreamBuilder& builder,
 
   builder.AppendBits(1, pps.pps_extension_present_flag);
   CHECK(!pps.pps_extension_present_flag);
+
+  builder.FinishNALU();
+}
+
+void BuildPackedH265SEI(
+    H26xAnnexBBitstreamBuilder& builder,
+    const std::optional<H26xSEIMasteringDisplayInfo>& mastering_display,
+    const std::optional<H26xSEIContentLightLevelInfo>& content_light_level) {
+  if (!mastering_display.has_value() && !content_light_level.has_value()) {
+    return;
+  }
+
+  builder.BeginNALU(H265NALU::PREFIX_SEI_NUT);
+
+  if (mastering_display.has_value()) {
+    // D.2.28 Mastering display colour volume SEI message syntax.
+    BuildPackedH265SEIMessageHeader(
+        builder, kSEIPayloadTypeMasteringDisplayColourVolume,
+        kSEIPayloadSizeMasteringDisplayColourVolume);
+    for (const auto& primary : mastering_display->display_primaries) {
+      builder.AppendBits(16, primary[0]);  // display_primaries_x[c]
+      builder.AppendBits(16, primary[1]);  // display_primaries_y[c]
+    }
+    builder.AppendBits(16, mastering_display->white_points[0]);
+    builder.AppendBits(16, mastering_display->white_points[1]);
+    builder.AppendBits(32, mastering_display->max_luminance);
+    builder.AppendBits(32, mastering_display->min_luminance);
+  }
+
+  if (content_light_level.has_value()) {
+    // D.2.35 Content light level information SEI message syntax.
+    BuildPackedH265SEIMessageHeader(builder,
+                                    kSEIPayloadTypeContentLightLevelInfo,
+                                    kSEIPayloadSizeContentLightLevelInfo);
+    builder.AppendBits(16, content_light_level->max_content_light_level);
+    builder.AppendBits(16,
+                       content_light_level->max_picture_average_light_level);
+  }
 
   builder.FinishNALU();
 }

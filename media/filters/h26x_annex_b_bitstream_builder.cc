@@ -173,7 +173,7 @@ void H26xAnnexBBitstreamBuilder::BeginNALU(H265NALU::Type nalu_type) {
   DCHECK(!in_nalu_);
   DCHECK_FINISHED();
 
-  DCHECK_LE(nalu_type, H265NALU::Type::EOS_NUT);
+  DCHECK_LE(nalu_type, H265NALU::Type::SUFFIX_SEI_NUT);
 
   AppendBits(32, 0x00000001);
   Flush();

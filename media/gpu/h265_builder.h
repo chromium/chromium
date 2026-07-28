@@ -5,8 +5,11 @@
 #ifndef MEDIA_GPU_H265_BUILDER_H_
 #define MEDIA_GPU_H265_BUILDER_H_
 
+#include <optional>
+
 #include "media/gpu/media_gpu_export.h"
 #include "media/parsers/h265_parser.h"
+#include "media/parsers/h26x_parser.h"
 
 namespace media {
 
@@ -26,6 +29,15 @@ MEDIA_GPU_EXPORT void BuildPackedH265SPS(H26xAnnexBBitstreamBuilder& builder,
 
 MEDIA_GPU_EXPORT void BuildPackedH265PPS(H26xAnnexBBitstreamBuilder& builder,
                                          const H265PPS& pps);
+
+// Build a prefix SEI NALU carrying the HDR static metadata messages, i.e. the
+// mastering display colour volume (payload type 137) and content light level
+// information (payload type 144). Only the messages that are present are
+// emitted; if both are absent, nothing is appended.
+MEDIA_GPU_EXPORT void BuildPackedH265SEI(
+    H26xAnnexBBitstreamBuilder& builder,
+    const std::optional<H26xSEIMasteringDisplayInfo>& mastering_display,
+    const std::optional<H26xSEIContentLightLevelInfo>& content_light_level);
 
 }  // namespace media
 
