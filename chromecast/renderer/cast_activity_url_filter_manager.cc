@@ -74,7 +74,8 @@ CastActivityUrlFilterManager::~CastActivityUrlFilterManager() = default;
 ActivityUrlFilter*
 CastActivityUrlFilterManager::GetActivityUrlFilterForRenderFrameToken(
     const blink::LocalFrameToken& frame_token) {
-  const auto& it = activity_url_filters_.find(frame_token);
+  base::AutoLock lock(filters_lock_);
+  auto it = activity_url_filters_.find(frame_token);
   if (it == activity_url_filters_.end())
     return nullptr;
 
@@ -91,6 +92,7 @@ void CastActivityUrlFilterManager::OnRenderFrameCreated(
       base::BindOnce(&CastActivityUrlFilterManager::OnRenderFrameRemoved,
                      weak_this_, frame_token));
 
+  base::AutoLock lock(filters_lock_);
   auto result = activity_url_filters_.emplace(frame_token, filter_receiver);
 
   if (!result.second)
@@ -101,7 +103,8 @@ void CastActivityUrlFilterManager::OnRenderFrameCreated(
 
 void CastActivityUrlFilterManager::OnRenderFrameRemoved(
     const blink::LocalFrameToken& frame_token) {
-  const auto& it = activity_url_filters_.find(frame_token);
+  base::AutoLock lock(filters_lock_);
+  auto it = activity_url_filters_.find(frame_token);
 
   if (it != activity_url_filters_.end())
     activity_url_filters_.erase(it);

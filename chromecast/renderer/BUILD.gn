@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
 cast_source_set("renderer") {
@@ -79,6 +80,19 @@ cast_source_set("renderer") {
   if (is_android) {
     deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
   }
+}
+
+test("cast_renderer_unittests") {
+  sources = [ "cast_activity_url_filter_manager_unittest.cc" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+  ]
 }
 
 cast_source_set("simple_client") {

@@ -101,6 +101,7 @@ cast_test_group("cast_tests") {
 
   if (!is_fuchsia) {
     tests += [
+      "//chromecast/renderer:cast_renderer_unittests",
       "//chromecast/ui/display_settings:cast_display_settings_unittests",
       "//content/test:content_unittests",
     ]
