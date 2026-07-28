@@ -1031,8 +1031,16 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
                                            kPermissionPolicyNotEnabledError));
   }
 
+  KURL expected_url(NullUrl(), tool->origin());
+  if (!expected_url.IsValid()) {
+    return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                           "The provided origin is invalid."));
+  }
+
   scoped_refptr<SecurityOrigin> expected_target_origin =
-      SecurityOrigin::CreateFromString(tool->origin());
+      SecurityOrigin::Create(expected_url);
   if (expected_target_origin->IsOpaque()) {
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
