@@ -40,6 +40,7 @@ class WebUIContentsWrapper
    public:
     virtual void CloseUI() = 0;
     virtual void ShowUI() = 0;
+    virtual void OnPreHandleEscapeKey() {}
     virtual void ShowCustomContextMenu(
         gfx::Point point,
         std::unique_ptr<ui::MenuModel> menu_model) {}

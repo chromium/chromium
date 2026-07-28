@@ -148,6 +148,12 @@ void OmniboxPopupWebUIBaseContent::CloseUI() {
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 }
 
+void OmniboxPopupWebUIBaseContent::OnPreHandleEscapeKey() {
+  if (popup_presenter_) {
+    popup_presenter_->NotifyEscapeKeyPressed();
+  }
+}
+
 void OmniboxPopupWebUIBaseContent::ShowUI() {
   // This is a signal from the WebUIContentsWrapper::Host. We use this signal to
   // check if the renderer crashes. If the renderer process has crashed, reset
@@ -234,7 +240,12 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
       event.windows_key_code == ui::VKEY_ESCAPE) {
-    return controller_->edit_model()->OnEscapeKeyPressed();
+    if (popup_presenter_) {
+      popup_presenter_->NotifyEscapeKeyPressed();
+    }
+    if (EscClosesUI()) {
+      return controller_->edit_model()->OnEscapeKeyPressed();
+    }
   }
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());

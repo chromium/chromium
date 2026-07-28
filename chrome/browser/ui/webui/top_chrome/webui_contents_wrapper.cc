@@ -164,9 +164,12 @@ WebUIContentsWrapper::PreHandleKeyboardEvent(
   DCHECK_EQ(web_contents(), source);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
-  if (host_ && IsEscapeEvent(event) && esc_closes_ui_) {
-    host_->CloseUI();
-    return content::KeyboardEventProcessingResult::HANDLED;
+  if (host_ && IsEscapeEvent(event)) {
+    host_->OnPreHandleEscapeKey();
+    if (esc_closes_ui_) {
+      host_->CloseUI();
+      return content::KeyboardEventProcessingResult::HANDLED;
+    }
   }
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }

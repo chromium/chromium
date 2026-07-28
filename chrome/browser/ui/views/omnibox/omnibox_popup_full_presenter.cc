@@ -24,14 +24,13 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/permissions/permission_request_manager.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
@@ -196,6 +195,10 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
   GetWidget()->SetBounds(widget_bounds);
 }
 
+void OmniboxPopupFullPresenter::NotifyEscapeKeyPressed() {
+  is_handling_escape_key_ = true;
+}
+
 void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                           bool active) {
   // If omnibox has received focus, it has been told by permission prompt that
@@ -205,6 +208,20 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
   if (active) {
     weak_factory_.InvalidateWeakPtrs();
     OnWidgetActivated();
+    return;
+  }
+
+  const bool is_esc = is_handling_escape_key_;
+  is_handling_escape_key_ = false;
+  const bool is_popup_open =
+      controller()->popup_state_manager()->popup_state() ==
+      OmniboxPopupState::kFull;
+  // If deactivation was triggered by an Escape key press while the popup is
+  // open, re-request focus asynchronously instead of closing the popup.
+  if (is_esc && is_popup_open) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OmniboxPopupFullPresenter::RequestFocus,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -259,6 +276,17 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
 
   controller()->client()->FocusWebContents();
   controller()->edit_model()->OnKillFocus();
+
+  if (GetWebUIContent() && GetWebUIContent()->contents_wrapper()) {
+    if (auto* webui_controller =
+            GetWebUIContent()->contents_wrapper()->GetWebUIController()) {
+      if (auto* popup_ui = static_cast<OmniboxPopupUI*>(webui_controller)) {
+        if (auto* popup_handler = popup_ui->popup_handler()) {
+          popup_handler->SetFocus(false);
+        }
+      }
+    }
+  }
 
   // If the user is currently typing do not close the popup.
   if (!user_input_in_progress || user_text.empty()) {
