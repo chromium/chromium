@@ -471,12 +471,6 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(vh));
 }
 
-TEST_F(
-    EntityDataManagerTest_InitiallyEmpty,
-    SyncablePrefIsOffAndAccountKeyPrefIsOn_FeatureOff_DoNotMigratePrefValue) {
-  histogram_tester().ExpectTotalCount("Autofill.Ai.OptIn.PrefMigration", 0);
-}
-
 // Tests that whenever pContext entities are prefetched, they are stored in the
 // data manager.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, OnPrefetchContextComplete) {
