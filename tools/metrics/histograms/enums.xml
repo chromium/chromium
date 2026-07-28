@@ -10762,6 +10762,7 @@ from previous Chrome versions.
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1190171773" label="NtpHistoryClustersModuleTextOnly:enabled"/>
   <int value="-1189429241" label="AndroidBottomBar:disabled"/>
+  <int value="-1188087884" label="OpenDownloadInPreferredApp:enabled"/>
   <int value="-1188066168" label="Mahi:disabled"/>
   <int value="-1188052495" label="MediaAppImageMantisExpandBackground:enabled"/>
   <int value="-1188042082" label="ZeroSuggestPrefetchingOnSRP:enabled"/>
@@ -13719,6 +13720,7 @@ from previous Chrome versions.
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
+  <int value="-254375567" label="OpenDownloadInPreferredApp:disabled"/>
   <int value="-254183580" label="AccessibilityLabeledBy:disabled"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253685023" label="PrivacyGuideAndroid3:enabled"/>

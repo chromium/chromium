@@ -5653,6 +5653,12 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kOpenDownloadInPreferredAppName[] =
+    "Open downloads in preferred app";
+inline constexpr char kOpenDownloadInPreferredAppDescription[] =
+    "When enabled, downloaded items in Chrome will open in the user's "
+    "preferred app for that file type.";
+
 inline constexpr char kTextHighlightFullLinkName[] = "Text Highlight Full Link";
 inline constexpr char kTextHighlightFullLinkDescription[] =
     "In the share sheet, use the full URL instead of canonical URL for "

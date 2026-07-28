@@ -13575,6 +13575,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidFreLayoutUpdateName,
      flag_descriptions::kAndroidFreLayoutUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidFreLayoutUpdate)},
+    {"open-download-in-preferred-app",
+     flag_descriptions::kOpenDownloadInPreferredAppName,
+     flag_descriptions::kOpenDownloadInPreferredAppDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOpenDownloadInPreferredApp)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -7810,6 +7810,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "open-download-in-preferred-app",
+    "owners": ["jhimawan@google.com", "qinmin@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "open-edit-group-view-by-tapping-title",
     "owners": [ "achara@google.com", "bling-meridian@google.com" ],
     "expiry_milestone": 153
