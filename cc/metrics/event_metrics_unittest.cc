@@ -4,6 +4,8 @@
 
 #include "cc/metrics/event_metrics.h"
 
+#include <vector>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -332,6 +334,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCoalesceWith) {
   older_scroll_event_metric->set_predicted_delta(333);
   older_scroll_event_metric->set_caused_frame_update(false);
   older_scroll_event_metric->set_did_scroll(false);
+  older_scroll_event_metric->AddAppliedScrollObservation(ElementId(1));
   std::unique_ptr<ScrollUpdateEventMetrics> newer_scroll_event_metric =
       ScrollUpdateEventMetrics::Create(
           ui::EventType::kGestureScrollUpdate,
@@ -347,6 +350,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCoalesceWith) {
   newer_scroll_event_metric->set_predicted_delta(11);
   newer_scroll_event_metric->set_caused_frame_update(true);
   newer_scroll_event_metric->set_did_scroll(true);
+  newer_scroll_event_metric->AddAppliedScrollObservation(ElementId(2));
+  newer_scroll_event_metric->AddAppliedScrollObservation(ElementId(3));
 
   // Act
   older_scroll_event_metric->CoalesceWith(*newer_scroll_event_metric);
@@ -361,6 +366,53 @@ TEST_F(EventMetricsTest, ScrollUpdateCoalesceWith) {
   EXPECT_TRUE(older_scroll_event_metric->did_scroll());
   EXPECT_EQ(older_scroll_event_metric->scroll_begin_arrival_timestamp(),
             now - base::Microseconds(100));
+  // Each observation carries the `kGenerated` timestamp of the event it was
+  // recorded on.
+  EXPECT_EQ(older_scroll_event_metric->applied_scroll_observations(),
+            (std::vector<ScrollUpdateEventMetrics::AppliedScrollObservation>{
+                {.update_input_timestamp = now - base::Microseconds(100),
+                 .element_id = ElementId(1)},
+                {.update_input_timestamp = now - base::Microseconds(50),
+                 .element_id = ElementId(2)},
+                {.update_input_timestamp = now - base::Microseconds(50),
+                 .element_id = ElementId(3)}}));
+}
+
+TEST_F(EventMetricsTest, ScrollUpdateCloneAppliedScrollObservations) {
+  // Arrange
+  base::TimeTicks now = base::TimeTicks::Now();
+  std::unique_ptr<ScrollUpdateEventMetrics> scroll_event_metric =
+      ScrollUpdateEventMetrics::Create(
+          ui::EventType::kGestureScrollUpdate,
+          ui::ScrollInputType::kTouchscreen,
+          /*is_inertial=*/false,
+          ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/444,
+          /*timestamp=*/now - base::Microseconds(100),
+          /*arrived_in_browser_main_timestamp=*/now - base::Microseconds(80),
+          /*blocking_touch_dispatched_to_renderer=*/now -
+              base::Microseconds(90),
+          TraceId(123),
+          /*scroll_begin_arrival_timestamp=*/now - base::Microseconds(100));
+  ASSERT_TRUE(scroll_event_metric->applied_scroll_observations().empty());
+  scroll_event_metric->AddAppliedScrollObservation(ElementId(1));
+  scroll_event_metric->AddAppliedScrollObservation(ElementId(2));
+
+  // Act
+  std::unique_ptr<EventMetrics> clone = scroll_event_metric->Clone();
+
+  // Assert
+  ASSERT_NE(clone->AsScrollUpdate(), nullptr);
+  const std::vector<ScrollUpdateEventMetrics::AppliedScrollObservation>
+      expected = {{.update_input_timestamp = now - base::Microseconds(100),
+                   .element_id = ElementId(1)},
+                  {.update_input_timestamp = now - base::Microseconds(100),
+                   .element_id = ElementId(2)}};
+  EXPECT_EQ(clone->AsScrollUpdate()->applied_scroll_observations(), expected);
+
+  // The clone owns its observations, so mutating the original must not reach
+  // it.
+  scroll_event_metric->AddAppliedScrollObservation(ElementId(3));
+  EXPECT_EQ(clone->AsScrollUpdate()->applied_scroll_observations(), expected);
 }
 
 TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {

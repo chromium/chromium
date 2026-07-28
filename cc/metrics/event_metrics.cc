@@ -844,6 +844,13 @@ void ScrollUpdateEventMetrics::CoalesceWith(
   predicted_delta_ += newer_scroll_update.predicted_delta_;
   coalesced_event_count_ += newer_scroll_update.coalesced_event_count_;
   did_scroll_ |= newer_scroll_update.did_scroll_;
+  // Queue coalescing runs before an update is dispatched to the handler that
+  // applies the scroll, so in practice both vectors are empty here; appending
+  // keeps observations oldest-first.
+  applied_scroll_observations_.insert(
+      applied_scroll_observations_.end(),
+      newer_scroll_update.applied_scroll_observations_.begin(),
+      newer_scroll_update.applied_scroll_observations_.end());
 }
 
 ScrollUpdateEventMetrics* ScrollUpdateEventMetrics::AsScrollUpdate() {
@@ -852,6 +859,15 @@ ScrollUpdateEventMetrics* ScrollUpdateEventMetrics::AsScrollUpdate() {
 
 std::unique_ptr<EventMetrics> ScrollUpdateEventMetrics::Clone() const {
   return base::WrapUnique(new ScrollUpdateEventMetrics(*this));
+}
+
+void ScrollUpdateEventMetrics::AddAppliedScrollObservation(
+    ElementId element_id) {
+  DCHECK(element_id);
+  applied_scroll_observations_.push_back(
+      {.update_input_timestamp =
+           GetDispatchStageTimestamp(DispatchStage::kGenerated),
+       .element_id = element_id});
 }
 
 // PinchEventMetrics
