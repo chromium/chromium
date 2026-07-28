@@ -505,7 +505,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // future, errors will not result in DCHECKs.
   //
   // The callback will be called on the sequence used for database operations.
-  // The callback will never be called after the Database instance is destroyed.
+  // The callback will never be called after the `Database` instance is
+  // destroyed. The callback must never destroy the `Database` instance.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(ErrorCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1304,13 +1305,8 @@ class COMPONENT_EXPORT(SQL) Database {
   base::RepeatingCallback<void(SqliteResultCode)> open_error_reporting_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Weak factory for tracking lifetime of `this` (as opposed to
-  // `weak_factory_`, which will also invalidate pointers if the database is
-  // closed).
-  base::WeakPtrFactory<Database> weak_factory_lifetime_tracker_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  // Vends WeakPtr<Database> for internal scoping helpers.
+  // Vends WeakPtr<Database> for internal scoping helpers, invalidated when the
+  // database is closed.
   base::WeakPtrFactory<Database> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

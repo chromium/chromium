@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -550,6 +551,10 @@ Database::Database(DatabaseOptions options, Database::Tag tag)
 }
 
 Database::~Database() {
+  // The error callback is not allowed to destroy `this`, or else, using the
+  // `Database` after any `Statement` execution would risk a use-after-free.
+  CHECK(!executing_error_callback_);
+
   Close();
 }
 
@@ -2575,23 +2580,13 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
   std::ignore = IsExpectedSqliteError(static_cast<int>(sqlite_error_code));
 
   if (!executing_error_callback_ && !error_callback_.is_null()) {
-    executing_error_callback_ = true;
-
-    base::WeakPtr<Database> weak_this =
-        weak_factory_lifetime_tracker_.GetWeakPtr();
-
     // Create an additional reference to the state in `error_callback_`, so the
     // state doesn't go away if the callback changes `error_callback_` by
     // calling set_error_callback() or reset_error_callback(). This avoids a
     // subtle source of use-after-frees. See https://crbug.com/254584.
     ErrorCallback error_callback_copy = error_callback_;
+    base::AutoReset auto_reset(&executing_error_callback_, true);
     error_callback_copy.Run(static_cast<int>(sqlite_error_code), statement);
-
-    // Abort if `error_callback_` deleted this `Database` object.
-    if (!weak_this) {
-      return;
-    }
-    executing_error_callback_ = false;
   }
 }
 
