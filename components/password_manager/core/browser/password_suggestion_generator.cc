@@ -380,7 +380,6 @@ PasswordSuggestionGenerator::PasswordSuggestionGenerator(
       autofill_client_(autofill_client) {}
 
 void PasswordSuggestionGenerator::AppendOptionalFooterSection(
-    bool is_manual_fallback,
     std::vector<autofill::Suggestion>* suggestions) const {
   bool has_webauthn_credential = std::ranges::any_of(
       *suggestions,
@@ -402,7 +401,7 @@ void PasswordSuggestionGenerator::AppendOptionalFooterSection(
   std::optional<autofill::Suggestion> inline_qr_suggestion =
       GetWebauthnInlineQrCodeSuggestion();
   std::optional<autofill::Suggestion> hybrid_suggestion =
-      GetWebauthnSignInWithAnotherDeviceSuggestion(is_manual_fallback);
+      GetWebauthnSignInWithAnotherDeviceSuggestion();
 
   if (has_no_fillable_suggestions && !inline_qr_suggestion &&
       !hybrid_suggestion) {
@@ -543,7 +542,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #endif
 
   // Add "Manage all passwords" link to settings.
-  AppendOptionalFooterSection(/*is_manual_fallback=*/false, &suggestions);
+  AppendOptionalFooterSection(&suggestions);
 
   return suggestions;
 }
@@ -677,20 +676,14 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
       [](const Suggestion& suggestion) { return suggestion.main_text.value; });
 
   // Add "Manage all passwords" link to settings.
-  AppendOptionalFooterSection(/*is_manual_fallback=*/true, &suggestions);
+  AppendOptionalFooterSection(&suggestions);
 
   return suggestions;
 }
 
 std::optional<autofill::Suggestion>
-PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion(
-    bool is_manual_fallback) const {
-  if (is_manual_fallback &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::
-              kWebAuthnUsePasskeyFromAnotherDeviceInManualFallback)) {
-    return std::nullopt;
-  }
+PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion()
+    const {
 #if BUILDFLAG(IS_ANDROID)
   return std::nullopt;
 #else   // BUILDFLAG(IS_ANDROID)

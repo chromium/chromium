@@ -217,7 +217,5 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
 
 BASE_FEATURE(kUseDetachedWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInManualFallback,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace password_manager::features
