@@ -16,6 +16,8 @@ struct PrivateVerificationTokensParameters {
   int min_batch_size = 0;
   // Maximum acceptable batch size.
   int max_batch_size = 0;
+  // Limit for maximum number of redeemers.
+  int max_number_of_redeemers = 0;
 };
 
 // Returns the parameters for a given version, or nullopt if the version is not

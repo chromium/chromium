@@ -13,6 +13,7 @@ TEST(PrivateVerificationTokensParametersTest, GetParametersForVersion1) {
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(params->min_batch_size, 2);
   EXPECT_EQ(params->max_batch_size, 20);
+  EXPECT_EQ(params->max_number_of_redeemers, 2);
 }
 
 TEST(PrivateVerificationTokensParametersTest, GetParametersForUnknownVersion) {

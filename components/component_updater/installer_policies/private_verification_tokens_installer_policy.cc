@@ -32,9 +32,6 @@ constexpr uint8_t kPrivateVerificationTokensPublicKeySHA256[32] = {
 constexpr char kPrivateVerificationTokensManifestName[] =
     "Private Verification Token";
 
-constexpr base::FilePath::CharType kPvtConfigFileName[] =
-    FILE_PATH_LITERAL("pvt_issuers.json");
-
 }  // namespace
 
 namespace component_updater {

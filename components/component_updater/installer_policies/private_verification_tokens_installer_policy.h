@@ -19,6 +19,9 @@
 
 namespace component_updater {
 
+inline constexpr base::FilePath::CharType kPvtConfigFileName[] =
+    FILE_PATH_LITERAL("pvt_config.json");
+
 // Policy for installing the Private Verification Tokens component.
 class PrivateVerificationTokensInstallerPolicy
     : public ComponentInstallerPolicy {

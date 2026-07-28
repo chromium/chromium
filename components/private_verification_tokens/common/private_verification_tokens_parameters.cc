@@ -15,6 +15,7 @@ std::optional<PrivateVerificationTokensParameters> GetParametersForVersion(
     return PrivateVerificationTokensParameters{
         .min_batch_size = 2,
         .max_batch_size = 20,
+        .max_number_of_redeemers = 2,
     };
   }
   return std::nullopt;

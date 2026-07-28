@@ -23,20 +23,11 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace private_verification_tokens {
 
 namespace internal {
-
-bool IsRegistrableDomain(std::string_view domain) {
-  if (domain.empty()) {
-    return false;
-  }
-  const std::string domain_and_registry =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          domain, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  return (domain == domain_and_registry);
-}
 
 std::optional<int> GetValidVersion(const base::DictValue& dict) {
   std::optional<int> version = dict.FindInt(kVersionKey);
@@ -53,17 +44,6 @@ std::optional<std::vector<uint8_t>> GetDecodedPublicKey(
     return std::nullopt;
   }
   return base::Base64Decode(*public_key_base64);
-}
-
-std::optional<uint32_t> GetValidKeyId(const base::DictValue& dict) {
-  std::optional<int> maybe_key_id = dict.FindInt(kKeyIdKey);
-  if (!maybe_key_id.has_value()) {
-    return std::nullopt;
-  }
-  if (base::IsValueInRangeForNumericType<uint32_t>(maybe_key_id.value())) {
-    return static_cast<uint32_t>(maybe_key_id.value());
-  }
-  return std::nullopt;
 }
 
 std::optional<int> GetValidBatchSize(
@@ -94,9 +74,59 @@ std::optional<int64_t> GetValidExpiration(const base::DictValue& dict) {
   return expiration;
 }
 
+std::optional<std::vector<url::Origin>> GetValidRedeemers(
+    const base::DictValue& dict,
+    std::string_view issuer_etld_plus_one,
+    const PrivateVerificationTokensParameters& params) {
+  const base::ListValue* redeemers_list = dict.FindList(kRedeemersKey);
+  if (!redeemers_list) {
+    return std::nullopt;
+  }
+  if (redeemers_list->size() >
+      static_cast<size_t>(params.max_number_of_redeemers)) {
+    return std::nullopt;
+  }
+
+  std::vector<url::Origin> redeemers;
+  redeemers.reserve(redeemers_list->size());
+
+  for (const base::Value& item : *redeemers_list) {
+    if (!item.is_string()) {
+      return std::nullopt;
+    }
+    url::Origin redeemer_origin = url::Origin::Create(GURL(item.GetString()));
+    if (redeemer_origin.scheme() != url::kHttpsScheme) {
+      return std::nullopt;
+    }
+    const std::string redeemer_etld_plus_one =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            redeemer_origin,
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+    if (redeemer_etld_plus_one.empty() ||
+        redeemer_etld_plus_one != issuer_etld_plus_one) {
+      return std::nullopt;
+    }
+    redeemers.push_back(std::move(redeemer_origin));
+  }
+
+  return redeemers;
+}
+
 std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
-  const std::string* domain = dict.FindString(kDomainKey);
-  if (!domain || !internal::IsRegistrableDomain(*domain)) {
+  const std::string* origin_str = dict.FindString(kOriginKey);
+  if (!origin_str) {
+    return std::nullopt;
+  }
+
+  url::Origin origin = url::Origin::Create(GURL(*origin_str));
+  if (origin.scheme() != url::kHttpsScheme) {
+    return std::nullopt;
+  }
+
+  const std::string issuer_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  if (issuer_etld_plus_one.empty()) {
     return std::nullopt;
   }
 
@@ -117,11 +147,6 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
     return std::nullopt;
   }
 
-  std::optional<uint32_t> key_id = internal::GetValidKeyId(dict);
-  if (!key_id) {
-    return std::nullopt;
-  }
-
   std::optional<int> batch_size = internal::GetValidBatchSize(dict, *params);
   if (!batch_size) {
     return std::nullopt;
@@ -132,18 +157,26 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
     return std::nullopt;
   }
 
+  std::optional<std::vector<url::Origin>> redeemers =
+      internal::GetValidRedeemers(dict, issuer_etld_plus_one, *params);
+  if (!redeemers) {
+    return std::nullopt;
+  }
+
   PrivateVerificationTokensPublicKey pk(
-      url::Origin::Create(GURL("https://" + *domain)),
-      std::move(*decoded_public_key),
+      std::move(origin), std::move(*decoded_public_key),
       base::Time::UnixEpoch() + base::Seconds(*expiration), *version);
-  return IssuerConfig(*batch_size, std::move(pk));
+  return IssuerConfig(*batch_size, std::move(pk), std::move(*redeemers));
 }
 
 }  // namespace internal
 
 IssuerConfig::IssuerConfig(int32_t batch_size,
-                           PrivateVerificationTokensPublicKey public_key)
-    : batch_size(batch_size), public_key(std::move(public_key)) {}
+                           PrivateVerificationTokensPublicKey public_key,
+                           std::vector<url::Origin> redeemers)
+    : batch_size(batch_size),
+      public_key(std::move(public_key)),
+      redeemers(std::move(redeemers)) {}
 
 IssuerConfig::IssuerConfig(const IssuerConfig&) = default;
 IssuerConfig& IssuerConfig::operator=(const IssuerConfig&) = default;
@@ -196,7 +229,11 @@ PrivateVerificationTokensIssuerConfig::LoadFromFile(
   if (!value || !value->is_dict()) {
     return nullptr;
   }
-  return Create(std::move(*value).TakeDict());
+  base::DictValue* config_v1 = value->GetDict().FindDict(kConfigVersionKey);
+  if (!config_v1) {
+    return nullptr;
+  }
+  return Create(std::move(*config_v1));
 }
 
 const std::map<url::Origin, IssuerConfig>&

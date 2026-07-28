@@ -49,8 +49,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, VerifyInstallation) {
   EXPECT_FALSE(policy->VerifyInstallation(base::DictValue(),
                                           component_install_dir_.GetPath()));
 
-  base::FilePath file_path = component_install_dir_.GetPath().Append(
-      FILE_PATH_LITERAL("pvt_issuers.json"));
+  base::FilePath file_path =
+      component_install_dir_.GetPath().Append(kPvtConfigFileName);
   ASSERT_TRUE(base::WriteFile(file_path, "{}"));
   EXPECT_TRUE(policy->VerifyInstallation(base::DictValue(),
                                          component_install_dir_.GetPath()));
@@ -97,24 +97,26 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
   base::RunLoop run_loop;
   std::string json_content = R"(
     {
-      "issuers": [
-        {
-          "domain": "a.example",
-          "version": 1,
-          "public_key": "cHZ0LWtleQ==",
-          "key_id": 2,
-          "batch_size": 4,
-          "expiration": "12"
-        },
-        {
-          "domain": "b.example",
-          "version": 1,
-          "public_key": "YW5vdGhlci1hd2Vzb21lLWtleQ==",
-          "key_id": 4,
-          "batch_size": 3,
-          "expiration": "24"
-        }
-      ]
+      "1": {
+        "issuers": [
+          {
+            "origin": "https://a.example",
+            "version": 1,
+            "publicKey": "cHZ0LWtleQ==",
+            "batchSize": 4,
+            "expiration": "12",
+            "redeemers": ["https://s1.a.example", "https://s2.a.example"]
+          },
+          {
+            "origin": "https://b.example",
+            "version": 1,
+            "publicKey": "YW5vdGhlci1hd2Vzb21lLWtleQ==",
+            "batchSize": 3,
+            "expiration": "24",
+            "redeemers": ["https://sub1.b.example", "https://sub2.b.example"]
+          }
+        ]
+      }
     }
   )";
 
@@ -142,6 +144,10 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             got->config().at(origin_a);
         EXPECT_EQ(config_a.batch_size, 4);
         EXPECT_EQ(config_a.public_key, expected_pk_a);
+        EXPECT_THAT(config_a.redeemers,
+                    testing::ElementsAre(
+                        url::Origin::Create(GURL("https://s1.a.example")),
+                        url::Origin::Create(GURL("https://s2.a.example"))));
 
         std::string decoded_key_b;
         ASSERT_TRUE(
@@ -159,6 +165,10 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
             got->config().at(origin_b);
         EXPECT_EQ(config_b.batch_size, 3);
         EXPECT_EQ(config_b.public_key, expected_pk_b);
+        EXPECT_THAT(config_b.redeemers,
+                    testing::ElementsAre(
+                        url::Origin::Create(GURL("https://sub1.b.example")),
+                        url::Origin::Create(GURL("https://sub2.b.example"))));
 
         run_loop.Quit();
       };
@@ -166,8 +176,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
   auto policy = std::make_unique<PrivateVerificationTokensInstallerPolicy>(
       base::BindLambdaForTesting(callback));
 
-  base::FilePath file_path = component_install_dir_.GetPath().Append(
-      FILE_PATH_LITERAL("pvt_issuers.json"));
+  base::FilePath file_path =
+      component_install_dir_.GetPath().Append(kPvtConfigFileName);
 
   ASSERT_TRUE(base::WriteFile(file_path, json_content));
 
@@ -193,8 +203,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, IgnoresInvalidJson) {
   auto policy = std::make_unique<PrivateVerificationTokensInstallerPolicy>(
       base::BindLambdaForTesting(callback));
 
-  base::FilePath file_path = component_install_dir_.GetPath().Append(
-      FILE_PATH_LITERAL("pvt_issuers.json"));
+  base::FilePath file_path =
+      component_install_dir_.GetPath().Append(kPvtConfigFileName);
 
   ASSERT_TRUE(base::WriteFile(file_path, "invalid json"));
 
