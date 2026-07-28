@@ -102,6 +102,16 @@ SqlSharedCacheIsolatedDatabase::DatabaseAssets::ShareConnection() {
       vfs_file_set_, /*read_write=*/false);
 }
 
+void SqlSharedCacheIsolatedDatabase::DatabaseAssets::AbandonAndDeleteFiles() {
+  db_.Close();
+  vfs_file_set_.Abandon();
+  base::FilePath base_name = base::FilePath::FromASCII(
+      base::StrCat({kSqlBackendSharedCacheIsolatedFileNamePrefix,
+                    base::NumberToString(shared_cache_db_id_.value())}));
+  sqlite_vfs::DeleteFiles(sqlite_vfs::Client::kSharedCacheIsolated, directory_,
+                          base_name);
+}
+
 SqlSharedCacheIsolatedDatabase::SqlSharedCacheIsolatedDatabase(
     std::string nik_string,
     const base::FilePath& directory,
@@ -442,6 +452,19 @@ SqlSharedCacheIsolatedDatabase::DeleteEntries(
 }
 
 void SqlSharedCacheIsolatedDatabase::Cleanup() {
+  if (db_assets_ && db_assets_->db().is_open()) {
+    bool has_entries = false;
+    {
+      sql::Statement count_statement(db_assets_->db().GetCachedStatement(
+          SQL_FROM_HERE,
+          GetSharedCacheIsolatedDatabaseQuery(
+              SharedCacheIsolatedDatabaseQuery::kSelectRowidLimit1)));
+      has_entries = count_statement.Step();
+    }
+    if (!has_entries) {
+      db_assets_->AbandonAndDeleteFiles();
+    }
+  }
   db_assets_.reset();
 }
 

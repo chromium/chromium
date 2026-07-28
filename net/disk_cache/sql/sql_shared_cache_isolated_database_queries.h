@@ -41,6 +41,9 @@ inline constexpr char kSharedCacheIsolatedReaderSelectResource[] =
 inline constexpr char kSharedCacheIsolatedDeleteResourceByRowId[] =
     "DELETE FROM resources WHERE rowid = ?";
 
+inline constexpr char kSharedCacheIsolatedSelectRowidLimit1[] =
+    "SELECT rowid FROM resources LIMIT 1";
+
 }  // namespace internal
 
 enum class SharedCacheIsolatedDatabaseQuery {
@@ -51,7 +54,8 @@ enum class SharedCacheIsolatedDatabaseQuery {
   kSelectUrlAndReadyByRowId = 4,
   kReaderSelectResource = 5,
   kDeleteResourceByRowId = 6,
-  kMaxValue = kDeleteResourceByRowId,
+  kSelectRowidLimit1 = 7,
+  kMaxValue = kSelectRowidLimit1,
 };
 
 inline constexpr base::cstring_view GetSharedCacheIsolatedDatabaseQuery(
@@ -71,6 +75,8 @@ inline constexpr base::cstring_view GetSharedCacheIsolatedDatabaseQuery(
       return internal::kSharedCacheIsolatedReaderSelectResource;
     case SharedCacheIsolatedDatabaseQuery::kDeleteResourceByRowId:
       return internal::kSharedCacheIsolatedDeleteResourceByRowId;
+    case SharedCacheIsolatedDatabaseQuery::kSelectRowidLimit1:
+      return internal::kSharedCacheIsolatedSelectRowidLimit1;
   }
 }
 

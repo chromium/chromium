@@ -466,4 +466,70 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesEmptyVectorDeath) {
   EXPECT_CHECK_DEATH(std::ignore = db.DeleteEntries({}));
 }
 
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, CleanupDeletesDatabaseFileIfEmpty) {
+  SqlSharedCacheDbId db_id(1);
+  base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
+
+  {
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    ASSERT_TRUE(db.Init().has_value());
+    EXPECT_TRUE(base::PathExists(db_file));
+    db.Cleanup();
+  }
+
+  EXPECT_FALSE(base::PathExists(db_file));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
+       CleanupPreservesDatabaseFileIfNotEmpty) {
+  SqlSharedCacheDbId db_id(1);
+  base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
+
+  {
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    ASSERT_TRUE(db.Init().has_value());
+
+    CacheEntryKey key("0/0/https://example.com/1");
+    auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+    headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+    auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+    body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+    auto row = db.Insert(key, headers, 3, body);
+    ASSERT_TRUE(row.has_value());
+
+    EXPECT_TRUE(base::PathExists(db_file));
+    db.Cleanup();
+  }
+
+  EXPECT_TRUE(base::PathExists(db_file));
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest,
+       CleanupDeletesFileAfterDeletingAllEntries) {
+  SqlSharedCacheDbId db_id(1);
+  base::FilePath db_file = temp_dir_.GetPath().AppendASCII("shared_1.db");
+
+  {
+    SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+    ASSERT_TRUE(db.Init().has_value());
+
+    CacheEntryKey key("0/0/https://example.com/1");
+    auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+    headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+    auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+    body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+    auto row = db.Insert(key, headers, 3, body);
+    ASSERT_TRUE(row.has_value());
+
+    EXPECT_TRUE(db.DeleteEntries({*row}).has_value());
+
+    EXPECT_TRUE(base::PathExists(db_file));
+    db.Cleanup();
+  }
+
+  EXPECT_FALSE(base::PathExists(db_file));
+}
+
 }  // namespace disk_cache

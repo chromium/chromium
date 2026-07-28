@@ -157,6 +157,7 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
     base::FilePath GetDbVirtualFilePath() const;
     base::expected<sqlite_vfs::PendingFileSet, sqlite_vfs::FileSetError>
     ShareConnection();
+    void AbandonAndDeleteFiles();
 
    private:
     const base::FilePath directory_;
