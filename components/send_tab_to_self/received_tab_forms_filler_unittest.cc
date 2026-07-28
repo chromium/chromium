@@ -137,6 +137,44 @@ class ReceivedTabFormsFillerTest
     return info;
   }
 
+  // Helper to create a FormData with multiple fields, reducing boilerplate.
+  FormData CreateTestForm(
+      std::vector<autofill::test::FieldDescription> fields,
+      std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
+      std::optional<autofill::LocalFrameToken> host_frame = std::nullopt) {
+    uint32_t renderer_id = 0;
+    for (autofill::test::FieldDescription& field : fields) {
+      if (!field.renderer_id) {
+        field.renderer_id = autofill::FieldRendererId(++renderer_id);
+      }
+      if (!field.label) {
+        field.label = u"label";
+      }
+      if (!field.origin) {
+        field.origin = origin_;
+      }
+    }
+
+    autofill::test::FormDescription form_desc{.url = origin_.Serialize()};
+    form_desc.fields = std::move(fields);
+    if (form_renderer_id) {
+      form_desc.renderer_id = *form_renderer_id;
+    }
+    if (host_frame) {
+      form_desc.host_frame = *host_frame;
+    }
+
+    return autofill::test::GetFormData(form_desc);
+  }
+
+  // Helper to create a FormData with a single field, reducing boilerplate.
+  FormData CreateSingleFieldForm(
+      autofill::test::FieldDescription field,
+      std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
+      std::optional<autofill::LocalFrameToken> host_frame = std::nullopt) {
+    return CreateTestForm({std::move(field)}, form_renderer_id, host_frame);
+  }
+
   const url::Origin origin_ = url::Origin::Create(GURL("https://example.com"));
   const url::Origin other_origin_ =
       url::Origin::Create(GURL("https://other.com"));
@@ -166,16 +204,11 @@ TEST_P(ReceivedTabFormsFillerFillTriggerTest, ShouldConditionallyFill) {
       {MakeFormField(u"id1", u"name1", autofill::FormControlType::kInputText,
                      u"shared_value")});
 
-  const FormData form = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .label = u"label1",
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .value = test_case.receiver_field_value,
-                   .origin = origin_,
-                   .properties_mask =
-                       test_case.receiver_field_properties_mask}},
-       .url = "https://example.com"});
+  const FormData form = CreateSingleFieldForm(
+      {.name_attribute = u"name1",
+       .id_attribute = u"id1",
+       .value = test_case.receiver_field_value,
+       .properties_mask = test_case.receiver_field_properties_mask});
   const autofill::FieldGlobalId field_id = form.fields()[0].global_id();
 
   if (test_case.expect_fill) {
@@ -227,32 +260,21 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillUserClearedPrefilledField) {
   const autofill::FormRendererId form_renderer_id = autofill::FormRendererId(1);
 
   // 1. Simulate a form that was previously seen with a pre-filled value.
-  const FormData initial_form = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .label = u"label1",
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .value = u"prefilled_value",
-                   .origin = origin_}},
-       .host_frame = frame_token,
-       .renderer_id = form_renderer_id,
-       .url = "https://example.com"});
+  const FormData initial_form =
+      CreateSingleFieldForm({.name_attribute = u"name1",
+                             .id_attribute = u"id1",
+                             .value = u"prefilled_value"},
+                            form_renderer_id, frame_token);
   autofill_manager().OnFormsSeen({initial_form}, {},
                                  autofill::AutofillManagerTestApi::pass_key());
 
   // 2. Simulate user clearing the field (value is empty, properties_mask has
   // autofill::kUserTyped).
-  const FormData form = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .label = u"label1",
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .value = u"",
-                   .origin = origin_,
-                   .properties_mask = autofill::kUserTyped}},
-       .host_frame = frame_token,
-       .renderer_id = form_renderer_id,
-       .url = "https://example.com"});
+  const FormData form =
+      CreateSingleFieldForm({.name_attribute = u"name1",
+                             .id_attribute = u"id1",
+                             .properties_mask = autofill::kUserTyped},
+                            form_renderer_id, frame_token);
   autofill_manager().OnFormsSeen({form}, {},
                                  autofill::AutofillManagerTestApi::pass_key());
 
@@ -276,16 +298,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillIncomingSensitiveField) {
           u"id1", u"name1", autofill::FormControlType::kInputPassword,
           u"shared_value")});
 
-  const FormData form = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .label = u"label1",
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .value = u"",
-                   .form_control_type =
-                       autofill::FormControlType::kInputPassword,
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form = CreateSingleFieldForm(
+      {.name_attribute = u"name1",
+       .id_attribute = u"id1",
+       .form_control_type = autofill::FormControlType::kInputPassword});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -299,12 +315,8 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillIncomingSensitiveField) {
 TEST_F(ReceivedTabFormsFillerTest,
        ShouldNotMatchSignatureFallbackWithDifferentControlTypes) {
   // Create a sender form (control type "text").
-  const FormData form_sender = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .name_attribute = u"name_123",
-                   .form_control_type = autofill::FormControlType::kInputText,
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_sender =
+      CreateSingleFieldForm({.name_attribute = u"name_123"});
   PageContext::FormFieldInfo form_field_info;
   form_field_info.fields.push_back(
       MakeFormField(u"id1", u"name_123", autofill::FormControlType::kInputText,
@@ -312,15 +324,10 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   // Create a receiver form with same signature but different control type
   // ("password").
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .label = u"label1",
-                   .name_attribute = u"name_124",
-                   .id_attribute = u"id2",
-                   .form_control_type =
-                       autofill::FormControlType::kInputPassword,
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateSingleFieldForm(
+      {.name_attribute = u"name_124",
+       .id_attribute = u"id2",
+       .form_control_type = autofill::FormControlType::kInputPassword});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -352,14 +359,10 @@ TEST_F(ReceivedTabFormsFillerTest,
       CreateFormFieldInfo({pending_field});
 
   // Receiver field is "password" with USERNAME type.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff",
-                   .id_attribute = u"id_diff",
-                   .form_control_type =
-                       autofill::FormControlType::kInputPassword,
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateSingleFieldForm(
+      {.name_attribute = u"name_diff",
+       .id_attribute = u"id_diff",
+       .form_control_type = autofill::FormControlType::kInputPassword});
 
   // The *autofill* type of the local field is USERNAME. Even though it matches
   // the pending field's type, they should not match because the control types
@@ -386,23 +389,15 @@ TEST_F(ReceivedTabFormsFillerTest,
 // but the signature is unique.
 TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
   // Create a sender form to generate a signature for the pending field.
-  const FormData form_sender = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .name_attribute = u"name_123",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_sender =
+      CreateSingleFieldForm({.name_attribute = u"name_123"});
   PageContext::FormFieldInfo form_field_info = CreateFormFieldInfo(
       {MakeFormField(u"id1", u"name_123", autofill::FormControlType::kInputText,
                      u"shared_value", GetSignature(form_sender, 0))});
 
   // Create a receiver form with a different name/ID but same signature.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .label = u"label1",
-                   .name_attribute = u"name_124",
-                   .id_attribute = u"id2",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateSingleFieldForm(
+      {.name_attribute = u"name_124", .id_attribute = u"id2"});
 
   const autofill::FieldGlobalId field_id =
       form_receiver.fields()[0].global_id();
@@ -423,29 +418,17 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
 TEST_F(ReceivedTabFormsFillerTest,
        ShouldNotFillFieldsByNonUniqueReceiverSignatureFallback) {
   // Create a sender form to generate a signature for the pending field.
-  const FormData form_sender = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .name_attribute = u"name_123",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_sender =
+      CreateSingleFieldForm({.name_attribute = u"name_123"});
   PageContext::FormFieldInfo form_field_info = CreateFormFieldInfo(
       {MakeFormField(u"id1", u"name_123", autofill::FormControlType::kInputText,
                      u"shared_value", GetSignature(form_sender, 0))});
 
   // Create a receiver form with TWO fields that have the SAME signature.
   // Using the same name ensures they generate the same signature in tests.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .label = u"label1",
-                   .name_attribute = u"name_123",
-                   .id_attribute = u"id2",
-                   .origin = origin_},
-                  {.renderer_id = autofill::FieldRendererId(3),
-                   .label = u"label2",
-                   .name_attribute = u"name_123",
-                   .id_attribute = u"id3",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateTestForm({{.name_attribute = u"name_123", .id_attribute = u"id2"},
+                      {.name_attribute = u"name_123", .id_attribute = u"id3"}});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -462,14 +445,9 @@ TEST_F(ReceivedTabFormsFillerTest,
   // Create a sender form to generate a signature for the pending field.
   // The sender form mirrors the receiver form's structure (one same-origin
   // and one cross-origin field) to ensure the computed FormSignature matches.
-  const FormData form_sender = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .name_attribute = u"name_123",
-                   .origin = origin_},
-                  {.renderer_id = autofill::FieldRendererId(4),
-                   .name_attribute = u"name_123",
-                   .origin = other_origin_}},
-       .url = "https://example.com"});
+  const FormData form_sender = CreateTestForm(
+      {{.name_attribute = u"name_123", .origin = origin_},
+       {.name_attribute = u"name_123", .origin = other_origin_}});
   PageContext::FormFieldInfo form_field_info = CreateFormFieldInfo(
       {MakeFormField(u"id1", u"name_123", autofill::FormControlType::kInputText,
                      u"shared_value", GetSignature(form_sender, 0))});
@@ -477,18 +455,12 @@ TEST_F(ReceivedTabFormsFillerTest,
   // Create a receiver form with TWO fields that have the SAME signature.
   // But one is same-origin (origin_) and the other is cross-origin
   // (other_origin_).
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .label = u"label1",
-                   .name_attribute = u"name_123",
-                   .id_attribute = u"id2",
-                   .origin = origin_},
-                  {.renderer_id = autofill::FieldRendererId(3),
-                   .label = u"label2",
-                   .name_attribute = u"name_123",
-                   .id_attribute = u"id3",
-                   .origin = other_origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateTestForm({{.name_attribute = u"name_123",
+                                                  .id_attribute = u"id2",
+                                                  .origin = origin_},
+                                                 {.name_attribute = u"name_123",
+                                                  .id_attribute = u"id3",
+                                                  .origin = other_origin_}});
 
   const autofill::FieldGlobalId field_id =
       form_receiver.fields()[0].global_id();
@@ -511,11 +483,8 @@ TEST_F(ReceivedTabFormsFillerTest,
 TEST_F(ReceivedTabFormsFillerTest,
        ShouldNotFillFieldsByNonUniquePendingSignatureFallback) {
   // Create a sender form to generate a signature for the pending field.
-  const FormData form_sender = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .name_attribute = u"name_123",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_sender =
+      CreateSingleFieldForm({.name_attribute = u"name_123"});
   const PageContext::FormFieldAutofillSignature sig =
       GetSignature(form_sender, 0);
 
@@ -528,13 +497,8 @@ TEST_F(ReceivedTabFormsFillerTest,
                      u"value2", sig)});
 
   // Create a receiver form with a field that has the same signature.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .label = u"label1",
-                   .name_attribute = u"name_123",
-                   .id_attribute = u"id3",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateSingleFieldForm(
+      {.name_attribute = u"name_123", .id_attribute = u"id3"});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -553,13 +517,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsBySemanticMatchFallback) {
   PageContext::FormFieldInfo form_field_info =
       CreateFormFieldInfo({pending_field});
 
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff",
-                   .id_attribute = u"id_diff",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateSingleFieldForm({.role = autofill::FieldType::EMAIL_ADDRESS,
+                             .name_attribute = u"name_diff",
+                             .id_attribute = u"id_diff"});
 
   const autofill::FieldGlobalId field_id =
       form_receiver.fields()[0].global_id();
@@ -589,13 +550,10 @@ TEST_F(ReceivedTabFormsFillerTest,
   PageContext::FormFieldInfo form_field_info =
       CreateFormFieldInfo({pending_field1, pending_field2});
 
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff",
-                   .id_attribute = u"id_diff",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateSingleFieldForm({.role = autofill::FieldType::EMAIL_ADDRESS,
+                             .name_attribute = u"name_diff",
+                             .id_attribute = u"id_diff"});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -616,18 +574,13 @@ TEST_F(ReceivedTabFormsFillerTest,
   PageContext::FormFieldInfo form_field_info =
       CreateFormFieldInfo({pending_field});
 
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff1",
-                   .id_attribute = u"id_diff1",
-                   .origin = origin_},
-                  {.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(3),
-                   .name_attribute = u"name_diff2",
-                   .id_attribute = u"id_diff2",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateTestForm({{.role = autofill::FieldType::EMAIL_ADDRESS,
+                       .name_attribute = u"name_diff1",
+                       .id_attribute = u"id_diff1"},
+                      {.role = autofill::FieldType::EMAIL_ADDRESS,
+                       .name_attribute = u"name_diff2",
+                       .id_attribute = u"id_diff2"}});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -649,12 +602,8 @@ TEST_F(ReceivedTabFormsFillerTest,
   PageContext::FormFieldInfo form_field_info =
       CreateFormFieldInfo({pending_field});
 
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff",
-                   .id_attribute = u"id_diff",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver = CreateSingleFieldForm(
+      {.name_attribute = u"name_diff", .id_attribute = u"id_diff"});
 
   auto form_structure =
       std::make_unique<autofill::FormStructure>(form_receiver);
@@ -700,18 +649,13 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   // The receiver form has two distinct fields, both matching the EMAIL_ADDRESS
   // type.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name_diff1",
-                   .id_attribute = u"id_diff1",
-                   .origin = origin_},
-                  {.role = autofill::FieldType::EMAIL_ADDRESS,
-                   .renderer_id = autofill::FieldRendererId(3),
-                   .name_attribute = u"name_diff2",
-                   .id_attribute = u"id_diff2",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateTestForm({{.role = autofill::FieldType::EMAIL_ADDRESS,
+                       .name_attribute = u"name_diff1",
+                       .id_attribute = u"id_diff1"},
+                      {.role = autofill::FieldType::EMAIL_ADDRESS,
+                       .name_attribute = u"name_diff2",
+                       .id_attribute = u"id_diff2"}});
 
   // Since the type is not unique in incoming fields, no autofill action should
   // be applied.
@@ -732,16 +676,9 @@ TEST_F(ReceivedTabFormsFillerTest,
                      u"shared_value")});
 
   // Create a receiver form with TWO identical fields.
-  const FormData form_receiver = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .origin = origin_},
-                  {.renderer_id = autofill::FieldRendererId(3),
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .origin = origin_}},
-       .url = "https://example.com"});
+  const FormData form_receiver =
+      CreateTestForm({{.name_attribute = u"name1", .id_attribute = u"id1"},
+                      {.name_attribute = u"name1", .id_attribute = u"id1"}});
 
   const autofill::FieldGlobalId first_field_id =
       form_receiver.fields()[0].global_id();
@@ -809,13 +746,9 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
       {MakeFormField(u"id1", u"name1", autofill::FormControlType::kInputText,
                      u"shared_value")});
 
-  const FormData form = autofill::test::GetFormData(
-      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
-                   .label = u"label1",
-                   .name_attribute = u"name1",
-                   .id_attribute = u"id1",
-                   .origin = other_origin_}},
-       .url = "https://example.com"});
+  const FormData form = CreateSingleFieldForm({.name_attribute = u"name1",
+                                               .id_attribute = u"id1",
+                                               .origin = other_origin_});
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
