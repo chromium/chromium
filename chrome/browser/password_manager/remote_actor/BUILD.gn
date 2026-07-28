@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("remote_actor") {
+  sources = [
+    "remote_actor_credential_sharing_service.h",
+    "remote_actor_credential_sharing_service_impl.cc",
+    "remote_actor_credential_sharing_service_impl.h",
+    "remote_actor_credential_sharing_service_factory.cc",
+    "remote_actor_credential_sharing_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/common:chrome_features",
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "remote_actor_credential_sharing_service_impl_unittest.cc" ]
+  deps = [
+    ":remote_actor",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
