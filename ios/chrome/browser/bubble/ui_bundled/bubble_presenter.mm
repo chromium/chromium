@@ -976,9 +976,12 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
           base::RecordAction(
               base::UserMetricsAction("MobileGeminiImageRemixIPHTapped"));
           [geminiHandler
-              startGeminiFlowWithStartupState:
+              startGeminiEntryFlowWithStartupState:
                   [[GeminiStartupState alloc]
-                      initWithEntryPoint:gemini::EntryPoint::ImageRemixIPH]];
+                      initWithEntryPoint:gemini::EntryPoint::ImageRemixIPH]
+                                baseViewController:self.rootViewController
+                          showSnackbarOnCompletion:YES
+                                        completion:nil];
         }
       }];
 
