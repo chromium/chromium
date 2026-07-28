@@ -9,12 +9,4 @@ group("unit_tests") {
     "//components/notebooks/internal:unit_tests",
     "//components/notebooks/public:unit_tests",
   ]
-
-  data_deps = [ ":components_unittests_gtest_filter" ]
-}
-
-source_set("components_unittests_gtest_filter") {
-  testonly = true
-
-  data = [ "components_unittests.filter" ]
 }
