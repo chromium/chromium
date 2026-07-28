@@ -406,6 +406,7 @@ if (use_fuzzing_engine_with_lpm) {
     deps = [
       ":first_party_set_parser_fuzzer_support",
       ":related_website_sets_proto",
+      ":related_website_sets_proto_fuzzable",
       "//third_party/libprotobuf-mutator",
     ]
 
@@ -416,6 +417,7 @@ if (use_fuzzing_engine_with_lpm) {
   fuzzable_proto_library("related_website_sets_proto") {
     sources =
         [ "../../browser/first_party_sets/test/related_website_sets.proto" ]
+    use_experimental_fuzzable_proto = true
   }
 }
 

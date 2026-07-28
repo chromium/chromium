@@ -6,11 +6,13 @@
 
 #include <iostream>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/test/related_website_sets.pb.h"
+#include "content/browser/first_party_sets/test/related_website_sets_fuzzable.pb.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -126,7 +128,13 @@ NativeInputs ConvertProto(const related_website_sets::proto::AllInputs& input) {
 
 }  // namespace
 
-DEFINE_PROTO_FUZZER(const related_website_sets::proto::AllInputs& input) {
+DEFINE_PROTO_FUZZER(
+    const fuzzable::related_website_sets::proto::AllInputs& fuzzable_input) {
+  std::string serialized;
+  CHECK(fuzzable_input.SerializeToString(&serialized));
+  related_website_sets::proto::AllInputs input;
+  CHECK(input.ParseFromString(serialized));
+
   NativeInputs native_inputs = ConvertProto(input);
 
   if (getenv("LPM_DUMP_NATIVE_INPUT")) {
