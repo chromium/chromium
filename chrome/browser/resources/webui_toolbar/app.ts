@@ -380,7 +380,6 @@ export class ToolbarAppElement extends AppElementBase {
       locationBarFlags: {
         userInputInProgress: false,
         popupOpen: false,
-        forceAimButtonFocusRing: false,
       },
       selectedKeyword: null,
       contentSettingImageStates: [],

@@ -35,8 +35,7 @@ ${this.locationBarState.selectedKeyword ? html`
   </selected-keyword>
 ` : nothing}
 <readonly-omnibox id="omnibox"
-  .browserOmniboxState="${this.locationBarState.omniboxViewState}"
-  .isPopupOpen="${this.isPopupOpen}">
+  .browserOmniboxState="${this.locationBarState.omniboxViewState}">
 </readonly-omnibox>
 <content-settings-icons id="contentSettings"
     .contentSettingImageStates=

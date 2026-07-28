@@ -49,8 +49,6 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
     state_ = std::move(update);
   }
 
-  void PropagateApplyFocusRingToAimButton(bool force_focus) override {}
-
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override {}
 
