@@ -65,11 +65,10 @@ class GlicActorAttemptOtpFillingBrowserTest
   ~GlicActorAttemptOtpFillingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "components/test/data");
     GlicActorFunctionalBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    // Serve test files from chrome/test/data (needed for OTP page).
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "chrome/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     // Allow default calls to Subscribe (e.g. from Autofill OtpManager on

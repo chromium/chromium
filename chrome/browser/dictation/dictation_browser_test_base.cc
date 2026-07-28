@@ -35,6 +35,8 @@ void DictationBrowserTestBase::SetUpCommandLine(
 
 void DictationBrowserTestBase::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "components/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
   profile()->GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);

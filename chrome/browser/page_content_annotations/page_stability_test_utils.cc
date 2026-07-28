@@ -46,6 +46,10 @@ void PageStabilityBrowserTestBase::SetUpOnMainThread() {
           embedded_test_server(), kFetchPath);
 
   host_resolver()->AddRule("*", "127.0.0.1");
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "components/test/data");
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "components/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(embedded_https_test_server().Start());
 }

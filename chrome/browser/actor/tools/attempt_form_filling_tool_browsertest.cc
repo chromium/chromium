@@ -214,8 +214,6 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "chrome/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     ON_CALL(mock_execution_engine(), GetActorFormFillingService())

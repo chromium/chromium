@@ -104,6 +104,9 @@ GlicActorUiTest::GlicActorUiTest() {
 GlicActorUiTest::~GlicActorUiTest() = default;
 
 void GlicActorUiTest::SetUpOnMainThread() {
+  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "components/test/data");
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");

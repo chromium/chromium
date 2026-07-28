@@ -127,10 +127,7 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     observer_ = std::make_unique<TestJournalObserver>(
         &actor_keyed_service().GetJournal());
 
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        "chrome/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

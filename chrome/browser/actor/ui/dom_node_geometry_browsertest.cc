@@ -110,6 +110,8 @@ class ActorUiDomNodeGeometryBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

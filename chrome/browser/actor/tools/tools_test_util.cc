@@ -215,6 +215,9 @@ ActorToolsTest::~ActorToolsTest() = default;
 void ActorToolsTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
+  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "components/test/data");
 
   task_id_ =
       ActorKeyedService::Get(GetProfile())

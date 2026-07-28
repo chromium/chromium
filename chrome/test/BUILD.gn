@@ -1652,6 +1652,7 @@ if (is_android) {
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
       "$root_out_dir/browser_tests.pak",
+      "//components/test/data/actor/",
       "//components/test/data/ads_observer/",
       "//components/test/data/payments/",
       "//chrome/test/data/android/customtabs/",
@@ -2933,6 +2934,7 @@ if (!is_android) {
       "//components/test/data/ad_tagging/",
       "//components/test/data/ads_observer/",
       "//components/test/data/autofill/",
+      "//components/test/data/actor/",
       "//components/test/data/contextual_tasks/",
       "//components/test/data/custom_handlers/",
       "//components/test/data/optimization_guide/",
@@ -8540,6 +8542,7 @@ if (!is_android && !is_chromeos_device) {
     data = [
       "data/",
       "//components/test/data/autofill/",
+      "//components/test/data/actor/",
       "//content/test/data/",
       "//net/tools/testserver/",
       "//third_party/node/node_modules/mocha/mocha.js",

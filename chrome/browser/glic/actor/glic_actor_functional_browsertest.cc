@@ -76,6 +76,10 @@ GlicActorFunctionalBrowserTestBase::actor_keyed_service() {
 }
 
 void GlicActorFunctionalBrowserTestBase::SetUpOnMainThread() {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "components/test/data");
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "components/test/data");
   GlicFunctionalBrowserTestBase::SetUpOnMainThread();
   RunTestSequence(OpenGlic());
 }

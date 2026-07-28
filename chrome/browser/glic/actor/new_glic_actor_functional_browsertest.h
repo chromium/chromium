@@ -49,6 +49,10 @@ class GlicActorFunctionalBrowserTestMixin : public T {
   ~GlicActorFunctionalBrowserTestMixin() override = default;
 
   void SetUpOnMainThread() override {
+    T::embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data");
+    T::embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "components/test/data");
     T::SetUpOnMainThread();
     ASSERT_OK(T::OpenGlicForActiveTab());
   }
