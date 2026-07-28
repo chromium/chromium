@@ -23,7 +23,6 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui.h"
-#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/features.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
@@ -292,13 +291,8 @@ std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // The javascript content setting should show up if it is blocked globally
     // to give users an easy way to create exceptions.
     return permission.default_setting;
-  } else if (permission.type == ContentSettingsType::NOTIFICATIONS &&
-             (base::FeatureList::IsEnabled(
-                  permissions::kPermissionsAndroidClapperLoud) ||
-              base::FeatureList::IsEnabled(
-                  permissions::kPermissionsAndroidClapperQuiet))) {
-    // For the Clapper experiment, Notifications permission should be
-    // displayed while it is being requested.
+  } else if (permission.type == ContentSettingsType::NOTIFICATIONS) {
+    // Notifications permission should be displayed while it is being requested.
     return permission.default_setting;
   } else if (permission.type == ContentSettingsType::SOUND) {
     // The sound content setting should always show up when the tab has played

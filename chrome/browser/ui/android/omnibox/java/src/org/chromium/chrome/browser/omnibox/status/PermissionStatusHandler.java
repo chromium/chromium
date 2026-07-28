@@ -141,8 +141,8 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
     public void showPermissionClapperQuietIcon(WindowAndroid window) {
         // Post the UI update to the message queue. This is critical for the Tab Switcher
         // transition.
-        // When returning to a tab with a pending Clapper request, the native side calls this method
-        // relatively early in the process. However, the Java UI triggers a couple of status icon
+        // When returning to a tab with a pending quiet notification request, the native side calls
+        // this method relatively early in the process. However, the Java UI triggers a couple of
         // updates, which clear the local UI state. If we show the icon synchronously, this
         // subsequent reset wipes out the freshly created icon.
         // By posting, we allow the icon to be shown after the StatusMediator has finished its
@@ -317,8 +317,8 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
 
     /**
      * Resets the internal state of the handler, clearing the permission icon UI state. If this is
-     * called with shouldDismissNativePrompt=true, it also dismisses the clapper quiet prompt (if
-     * one is active) by notifying the native side.
+     * called with shouldDismissNativePrompt=true, it also dismisses the quiet notification prompt
+     * (if one is active) by notifying the native side.
      *
      * @param shouldDismissNativePrompt True if we should attempt to dismiss the native prompt (e.g.
      *     user interference). False if the prompt is being handled externally (e.g. tab switch or

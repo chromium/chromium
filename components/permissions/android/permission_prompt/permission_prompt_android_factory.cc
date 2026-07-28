@@ -8,7 +8,6 @@
 #include "components/permissions/android/permission_prompt/permission_clapper_quiet_icon.h"
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_message.h"
-#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
@@ -38,12 +37,10 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
     delegate->PreIgnoreQuietPrompt();
   }
 
-  // For Quiet Clapper (e.g. abusive, embargoed), show the silent Omnibox
-  // icon.
+  // For quiet notification prompts (e.g. abusive, embargoed), show the silent
+  // Omnibox icon.
   if (delegate->ShouldCurrentRequestUseQuietUI() &&
-      delegate->Requests()[0]->request_type() == RequestType::kNotifications &&
-      base::FeatureList::IsEnabled(
-          permissions::kPermissionsAndroidClapperQuiet)) {
+      delegate->Requests()[0]->request_type() == RequestType::kNotifications) {
     return std::make_unique<PermissionClapperQuietIcon>(web_contents, delegate);
   }
 

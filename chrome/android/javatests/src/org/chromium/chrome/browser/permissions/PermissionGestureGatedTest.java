@@ -67,7 +67,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @EnableFeatures({
     PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION,
     PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_LOUD,
-    PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_QUIET,
     PermissionsAndroidFeatureList.PERMISSIONS_GESTURE_GATED_PROMPTS
 })
 @Batch(Batch.PER_CLASS)

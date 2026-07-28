@@ -61,7 +61,6 @@ import org.chromium.content_public.common.ContentSwitches;
 })
 @DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 @EnableFeatures({
-    PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_QUIET,
     PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_LOUD
 })
 @Batch(Batch.PER_CLASS)
@@ -310,17 +309,6 @@ public class PermissionClapperQuietTest {
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
     }
 
-    @Test
-    @MediumTest
-    @Feature({"Permissions"})
-    @DisableFeatures({PermissionsAndroidFeatureList.PERMISSIONS_ANDROID_CLAPPER_QUIET})
-    public void testStandardQuietUiShowsMessage() throws Exception {
-
-        mPermissionRule.setupPageAndTriggerNotificationPermissionRequest(PAGE_URL);
-
-        // With Clapper disabled, the standard Quiet UI (Message) should be shown.
-        mPermissionRule.waitForMessageShownState(true);
-    }
 
     @Test
     @MediumTest
