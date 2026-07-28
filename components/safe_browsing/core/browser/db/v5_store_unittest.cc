@@ -341,6 +341,9 @@ class V5StoreTest : public PlatformTest {
     histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result",
         expected_conversion_result, 1);
+    histogram_tester_.ExpectTotalCount(
+        "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5.ChecksumDuration",
+        (expect_success && override_checksum != "") ? 1 : 0);
   }
 
   void ExpectChecksumHistograms(V5ApplyUpdateResult expected_result) {

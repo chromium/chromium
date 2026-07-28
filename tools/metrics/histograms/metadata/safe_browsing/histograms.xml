@@ -4388,6 +4388,19 @@ parsed correctly. -->
   <token key="Store" variants="SafeBrowsing_SBStore_Metrics"/>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5.ChecksumDuration"
+    units="ms" expires_after="2027-05-05">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it took to verify and compute the checksum when converting
+    the extensions blocklist hash file from v4 to v5 format. Logged only when
+    checksum verification is performed and the hash file conversion completes
+    without error.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result"
     enum="ConvertExtensionBlocklistV4ToV5Result" expires_after="2027-05-05">
   <owner>thefrog@chromium.org</owner>
