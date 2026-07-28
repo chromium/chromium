@@ -2797,36 +2797,42 @@ WebFrameWidgetImpl::GetOrCreateUnboundedSurfaceState(
   return unbounded_surface_state_.Get();
 }
 
-void WebFrameWidgetImpl::UnboundedContextDestroyed() {
+void WebFrameWidgetImpl::DismissUnboundedSurfaceState(bool is_teardown) {
   CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   if (!unbounded_surface_state_) {
     return;
   }
-  if (auto* resolver =
-          unbounded_surface_state_->unbounded_element_resolver_.Get()) {
-    if (auto* context = resolver->GetExecutionContext()) {
+  auto state = unbounded_surface_state_;
+  unbounded_surface_state_ = nullptr;
+  state->host_.reset();
+  state->client_receiver_.reset();
+  if (auto* resolver = state->unbounded_element_resolver_.Get()) {
+    auto reject_promise = [](ScriptPromiseResolver<IDLUndefined>* resolver) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "The unbounded element was dismissed."));
+    };
+    if (!is_teardown) {
+      reject_promise(resolver);
+    } else if (auto* context = resolver->GetExecutionContext()) {
       context->GetTaskRunner(TaskType::kInternalDefault)
           ->PostTask(FROM_HERE,
-                     BindOnce(
-                         [](ScriptPromiseResolver<IDLUndefined>* resolver) {
-                           resolver->Reject(MakeGarbageCollected<DOMException>(
-                               DOMExceptionCode::kAbortError,
-                               "The unbounded element context was destroyed."));
-                         },
-                         WrapPersistent(resolver)));
+                     BindOnce(reject_promise, WrapPersistent(resolver)));
     }
-    unbounded_surface_state_->unbounded_element_resolver_ = nullptr;
+    state->unbounded_element_resolver_ = nullptr;
   }
-  if (unbounded_surface_state_->active_element_) {
-    // The context is being destroyed, so we should suppress event dispatch
-    // to avoid executing script during teardown.
-    unbounded_surface_state_->active_element_->SetUnboundedElementActive(
-        false, UnboundedEvents::kSuppress);
+  if (state->active_element_) {
+    state->active_element_->SetUnboundedElementActive(
+        false,
+        is_teardown ? UnboundedEvents::kSuppress : UnboundedEvents::kFire);
   }
-  unbounded_surface_state_ = nullptr;
   if (auto* host = LayerTreeHost()) {
     host->DismissUnboundedFrameSink();
   }
+}
+
+void WebFrameWidgetImpl::UnboundedContextDestroyed() {
+  DismissUnboundedSurfaceState(/*is_teardown=*/true);
 }
 
 HTMLElement* WebFrameWidgetImpl::GetActiveUnboundedElement() const {
@@ -2934,23 +2940,7 @@ void WebFrameWidgetImpl::OnSurfaceAllocated(
 }
 
 void WebFrameWidgetImpl::OnDismissed() {
-  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
-  if (!unbounded_surface_state_) {
-    return;
-  }
-  if (unbounded_surface_state_->unbounded_element_resolver_) {
-    unbounded_surface_state_->unbounded_element_resolver_->Reject(
-        MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError,
-            "The unbounded element was dismissed."));
-  }
-  if (unbounded_surface_state_->active_element_) {
-    unbounded_surface_state_->active_element_->SetUnboundedElementActive(false);
-  }
-  unbounded_surface_state_ = nullptr;
-  if (auto* host = LayerTreeHost()) {
-    host->DismissUnboundedFrameSink();
-  }
+  DismissUnboundedSurfaceState(/*is_teardown=*/false);
 }
 
 void WebFrameWidgetImpl::UpdateUnboundedElementBounds(const gfx::Rect& bounds) {

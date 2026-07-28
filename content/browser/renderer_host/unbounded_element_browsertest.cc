@@ -929,6 +929,49 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
             EvalJs(primary_main_frame_host(), script).ExtractString());
 }
 
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       DisplayNoneDismissesSurface) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="wrapper" unbounded
+           style="display:flex; gap:20px; width:max-content;">
+        <div id="m1" style="width:100px; height:100px; background:red;">
+          Menu1
+        </div>
+        <div id="m2" style="width:100px; height:100px; background:blue;">
+          Menu2
+        </div>
+      </div>
+    `;
+    const wrapper = document.getElementById('wrapper');
+    wrapper.showUnboundedElement().then(() => "OK", e => e.name);
+  )";
+  EXPECT_EQ("OK", EvalJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindow();
+  ASSERT_TRUE(window);
+  auto tracker = CreateDestructionTracker(*window);
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), R"(
+    const wrapper = document.getElementById('wrapper');
+    wrapper.style.display = 'none';
+    document.body.offsetHeight;
+  )"));
+
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_FALSE(primary_main_frame_host()->GetUnboundedSurfaceWindow());
+  EXPECT_EQ(false,
+            EvalJs(primary_main_frame_host(),
+                   "document.getElementById('wrapper').matches(':unbounded')"));
+  WaitForDestruction(std::move(tracker));
+}
+
 class UnboundedElementOnTheOpenWebDisabledBrowserTest
     : public UnboundedElementBrowserTest {
  public:

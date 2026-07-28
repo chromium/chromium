@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -1738,20 +1739,24 @@ void HTMLElement::SetUnboundedElementActive(bool active,
       widget->DecrementActiveUnboundedElementCount();
     }
   }
-  PseudoStateChanged(CSSSelector::kPseudoUnbounded);
-  // An active unbounded element is treated as stacked (gets its own PaintLayer)
-  // by default, which is managed via LayoutObject::IsStacked. Since this state
-  // is not a CSS property, we must explicitly trigger a local style recalc on
-  // the element itself to ensure its LayoutObject is updated. A local style
-  // change is sufficient because the unbounded state does not affect the style
-  // of the subtree (any CSS rules matching descendants via the :unbounded
-  // pseudo-class are already handled by PseudoStateChanged above).
-  SetNeedsStyleRecalc(
-      kLocalStyleChange,
-      StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
-  if (auto* layout_object = GetLayoutObject()) {
-    layout_object->AddSubtreePaintPropertyUpdateReason(
-        SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
+  if (!GetDocument().GetStyleEngine().InDetachLayoutTree() &&
+      !GetDocument().InStyleRecalc()) {
+    PseudoStateChanged(CSSSelector::kPseudoUnbounded);
+    // An active unbounded element is treated as stacked (gets its own
+    // PaintLayer) by default, which is managed via LayoutObject::IsStacked.
+    // Since this state is not a CSS property, we must explicitly trigger a
+    // local style recalc on the element itself to ensure its LayoutObject is
+    // updated. A local style change is sufficient because the unbounded state
+    // does not affect the style of the subtree (any CSS rules matching
+    // descendants via the :unbounded pseudo-class are already handled by
+    // PseudoStateChanged above).
+    SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
+    if (auto* layout_object = GetLayoutObject()) {
+      layout_object->AddSubtreePaintPropertyUpdateReason(
+          SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
+    }
   }
   if (fire_events == UnboundedEvents::kFire) {
     auto& event_data = EnsureUnboundedEventData();
@@ -1781,6 +1786,25 @@ void HTMLElement::SetUnboundedElementActive(bool active,
     DCHECK_EQ(fire_events, UnboundedEvents::kSuppress);
     if (auto* event_data = GetUnboundedEventData()) {
       event_data->cancelPendingEventTask();
+    }
+  }
+}
+
+void HTMLElement::AttachLayoutTree(AttachContext& context) {
+  Element::AttachLayoutTree(context);
+  if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+      IsUnboundedElementActive() && !GetLayoutObject()) {
+    if (auto* frame = GetDocument().GetFrame()) {
+      if (auto* web_frame =
+              WebLocalFrameImpl::FromFrame(&frame->LocalFrameRoot())) {
+        if (auto* widget = web_frame->FrameWidgetImpl()) {
+          // When an active unbounded element loses its layout object (e.g. via
+          // display: none), explicitly dismiss the surface so the browser
+          // process tears down the Viz plumbing and closes the native OS
+          // window.
+          widget->OnDismissed();
+        }
+      }
     }
   }
 }

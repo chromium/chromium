@@ -421,6 +421,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsUnboundedElementActive() const;
   void SetUnboundedElementActive(bool active,
                                  UnboundedEvents = UnboundedEvents::kFire);
+  void AttachLayoutTree(AttachContext& context) override;
   gfx::Rect LastSentUnboundedBounds() const;
   void SetLastSentUnboundedBounds(const gfx::Rect& bounds);
 
