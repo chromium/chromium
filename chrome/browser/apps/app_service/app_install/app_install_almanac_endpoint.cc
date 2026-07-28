@@ -87,7 +87,7 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
         .mime_type = instance.icon().mime_type(),
         .is_masking_allowed = instance.icon().is_masking_allowed()};
     // SVG icons have 0 width.
-    if (icon.url.is_valid() && icon.width_in_pixels >= 0) {
+    if (icon.url.SchemeIsHTTPOrHTTPS() && icon.width_in_pixels >= 0) {
       result.icon = std::move(icon);
     }
   }
@@ -100,7 +100,7 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
         .width_in_pixels = instance_screenshot.width_in_pixels(),
         .height_in_pixels = instance_screenshot.height_in_pixels(),
     };
-    if (screenshot.url.is_valid()) {
+    if (screenshot.url.SchemeIsHTTPOrHTTPS()) {
       result.screenshots.push_back(std::move(screenshot));
     }
   }
