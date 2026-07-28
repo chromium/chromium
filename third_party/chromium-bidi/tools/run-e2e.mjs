@@ -151,12 +151,15 @@ await matchLine(serverProcess).catch((error) => {
 });
 
 const e2eArgs = [];
-const pythonCommand = argv['python-bin'] || 'pipenv';
-if (pythonCommand === 'pipenv') {
-  e2eArgs.push('run', 'pytest');
-} else {
-  e2eArgs.push('-m', 'pytest');
+const pythonBin = argv['python-bin'] || 'pipenv run python';
+const pythonBinArgs = pythonBin.split(' ');
+const pythonCommand = pythonBinArgs[0];
+e2eArgs.push(...pythonBinArgs.slice(1));
+const pythonSpec = argv['python-spec'];
+if (pythonSpec) {
+  e2eArgs.push('-vpython-spec', pythonSpec);
 }
+e2eArgs.push('-m', 'pytest');
 e2eArgs.push(
   '--verbose',
   '-vv',

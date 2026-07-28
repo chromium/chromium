@@ -83,6 +83,9 @@ export function parseCommandLineArgs() {
       'python-bin': {
         type: 'string',
       },
+      'python-spec': {
+        type: 'string',
+      },
     },
     allowPositionals: true,
     strict: false,
@@ -98,6 +101,7 @@ export function parseCommandLineArgs() {
     'this-chunk': Number(values['this-chunk']),
     'gen-dir': values['gen-dir'],
     'python-bin': values['python-bin'],
+    'python-spec': values['python-spec'],
   };
 }
 

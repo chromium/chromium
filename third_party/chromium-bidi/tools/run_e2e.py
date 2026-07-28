@@ -65,8 +65,11 @@ def main():
         "--gen-dir",
         dst_dir,
         "--python-bin",
-        "vpython3",
-    ] + node_args
+        os.environ.get("TESTING_PYTHON_BIN", "vpython3"),
+    ]
+    if os.environ.get("TESTING_PYTHON_BIN", "vpython3") == "vpython3":
+        cmd.extend(["--python-spec", os.path.join(src_dir, ".vpython3")])
+    cmd.extend(node_args)
     return subprocess.call(cmd, env=env)
 
 
