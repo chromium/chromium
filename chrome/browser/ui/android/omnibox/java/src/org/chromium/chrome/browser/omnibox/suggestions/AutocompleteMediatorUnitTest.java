@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -138,6 +139,7 @@ public class AutocompleteMediatorUnitTest {
     private static final GURL PAGE_URL = new GURL("https://www.site.com/page.html");
     private static final String PAGE_TITLE = "Page Title";
     private static final String TABS_STARTER_PACK_KEYWORD = "@tabs";
+    private static final String SAMPLE_QUERY = "sample query";
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -338,6 +340,34 @@ public class AutocompleteMediatorUnitTest {
         var session = createSession(PAGE_URL, PAGE_TITLE, PageClassification.OTHER_VALUE);
         session.getAutocompleteInput().setRequestType(requestType);
         return session;
+    }
+
+    private FuseboxSessionState createSession(
+            @AutocompleteRequestType int requestType, String userText) {
+        var session = createSession(requestType);
+        session.getAutocompleteInput().setUserText(userText);
+        return session;
+    }
+
+    private AutocompleteMatch createSearchSuggestMatch() {
+        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                .setDisplayText(SAMPLE_QUERY)
+                .setIsSearch(true)
+                .setAllowedToBeDefaultMatch(true)
+                .build();
+    }
+
+    private AutocompleteMatch createExactUrlMatch(GURL url) {
+        return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                .setDisplayText(SAMPLE_QUERY)
+                .setIsSearch(false)
+                .setAllowedToBeDefaultMatch(true)
+                .setUrl(url)
+                .build();
+    }
+
+    private AutocompleteResult createAutocompleteResult(AutocompleteMatch... matches) {
+        return AutocompleteResult.fromCache(List.of(matches), /* groupsInfo= */ null);
     }
 
     private void loadUrlForOmniboxMatch(GURL url) {
@@ -876,6 +906,47 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
         assertEquals("inline_autocomplete2", session.getAutocompleteInput().getPreviewText());
         verify(mAutocompleteDelegate).onSuggestionsChanged(defaultMatch, false);
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionsReceived_searchMatch_nullPreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult =
+                createAutocompleteResult(createSearchSuggestMatch());
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionsReceived_urlMatch_setPreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult =
+                createAutocompleteResult(createExactUrlMatch(PAGE_URL));
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertEquals(
+                PAGE_URL,
+                session.getAutocompleteInput().getPreviewMatchUrl());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionsReceived_aiModeMatch_nullPreviewUrl() {
+        FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE, SAMPLE_QUERY);
+        mMediator.beginInput(session);
+        AutocompleteResult autocompleteResult =
+                createAutocompleteResult(createExactUrlMatch(PAGE_URL));
+
+        mMediator.onSuggestionsReceived(autocompleteResult, /* isFinal= */ true);
+
+        assertNull(session.getAutocompleteInput().getPreviewMatchUrl());
     }
 
     @Test

@@ -921,21 +921,6 @@ class LocationBarMediator
         mLocationBarLayout.onSuggestionsListScrollOffsetChanged(scrollOffset);
     }
 
-    private @Nullable GURL getPreviewMatchUrl(@Nullable AutocompleteMatch defaultMatch) {
-        if (mCurrentInput == null) return null;
-
-        // Non-conventional modes will not have site favicons.
-        if (!mCurrentInput.isConventionalRequestType()) return null;
-
-        // Zero suggest is always considered Search, there may be a match, but we shouldn't show it.
-        if (TextUtils.isEmpty(mCurrentInput.getUserText())) return null;
-
-        // Search suggestions will not have site favicons.
-        if (defaultMatch == null || defaultMatch.isSearchSuggestion()) return null;
-
-        return defaultMatch.getUrl();
-    }
-
     /* package */ void onSuggestionsChanged(
             @Nullable AutocompleteMatch defaultMatch, boolean hasSuggestions) {
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
@@ -948,7 +933,6 @@ class LocationBarMediator
             mScrimHandler.setVisibility(
                     mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED);
         }
-        mCurrentInput.setPreviewMatchUrl(getPreviewMatchUrl(defaultMatch));
 
         if (mUrlCoordinator.shouldAutocomplete()) {
             String siteSearchLabel = null;
