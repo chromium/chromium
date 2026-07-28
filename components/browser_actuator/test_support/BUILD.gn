@@ -12,6 +12,7 @@ source_set("test_support") {
     "mock_transport_channel.h",
     "mock_transport_handler_factory.cc",
     "mock_transport_handler_factory.h",
+    "test_constants.h",
   ]
 
   public_deps = [

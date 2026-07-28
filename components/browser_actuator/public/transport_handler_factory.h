@@ -21,6 +21,10 @@ class TransportHandlerFactory {
  public:
   virtual ~TransportHandlerFactory() = default;
 
+  // Enum ID for the factory, used to ensure we do not re-register factories of
+  // the same type
+  virtual FactoryId GetFactoryId() const = 0;
+
   // Self-reports the payload types handled by this feature.
   virtual std::vector<PayloadType> GetSupportedPayloadTypes() const = 0;
 

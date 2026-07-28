@@ -15,6 +15,12 @@ enum class PayloadType {
   kUnspecified = 0,
 };
 
+// Identifies the feature factory instance, to ensure we do not re-register
+// factories of the same type.
+enum class FactoryId {
+  kUnset = 0,
+};
+
 }  // namespace browser_actuator
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_PUBLIC_COMMON_H_
