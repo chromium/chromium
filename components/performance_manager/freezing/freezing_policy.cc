@@ -32,6 +32,7 @@
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "content/public/common/url_constants.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -627,13 +628,6 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
 void FreezingPolicy::OnTypeChanged(const PageNode* page_node,
                                    PageType previous_type) {
   CHECK_EQ(previous_type, PageType::kUnknown, base::NotFatalUntil::M140);
-  if (page_node->GetType() == PageType::kNonTabWebUI) {
-    // This Page is marked as a Non Tab WebUI, opt it out of freezing.
-    OnCannotFreezeReasonChange(page_node, /*add=*/true,
-                               CannotFreezeReason::kNonTabWebUI);
-    return;
-  }
-
   if (page_node->GetType() != PageType::kTab) {
     return;
   }
@@ -795,6 +789,16 @@ void FreezingPolicy::OnMainFrameUrlChanged(const PageNode* page_node) {
   if (was_opted_out != is_opted_out) {
     OnCannotFreezeReasonChange(page_node, /*add=*/is_opted_out,
                                CannotFreezeReason::kOptedOut);
+  }
+
+  const bool was_webui = GetFreezingState(page_node).cannot_freeze_reasons.Has(
+      CannotFreezeReason::kWebUI);
+  const GURL& url = page_node->GetMainFrameUrl();
+  const bool is_webui = url.SchemeIs(content::kChromeUIScheme) ||
+                        url.SchemeIs(content::kChromeUIUntrustedScheme);
+  if (was_webui != is_webui) {
+    OnCannotFreezeReasonChange(page_node, /*add=*/is_webui,
+                               CannotFreezeReason::kWebUI);
   }
 }
 
