@@ -134,6 +134,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   // the insertion target, or discard the element. Returns the adjusted
   // insertion target, or null if the element is to be discarded.
   // This is used for streaming.
+  bool IsElementAllowed(const QualifiedName& name) const;
   Action SanitizeSingleNode(Node* node, Mode safe) const;
   bool ShouldReplaceNodeWithChildren(Node* node) const;
   void ProcessElement(Element* element, Mode safe) const;
@@ -213,6 +214,10 @@ class StreamingSanitizer : public GarbageCollected<StreamingSanitizer> {
   // element QName. The parser wants to know this before creating the element.
   bool AllowIsAttribute(const QualifiedName& element_name) const {
     return sanitizer_->AllowIsAttribute(element_name);
+  }
+
+  bool IsElementAllowed(const QualifiedName& element_name) const {
+    return sanitizer_->IsElementAllowed(element_name);
   }
 
   void DidParseDocument(Document* document);

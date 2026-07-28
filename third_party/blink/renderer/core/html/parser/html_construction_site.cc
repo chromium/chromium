@@ -1414,8 +1414,11 @@ Element* HTMLConstructionSite::CreateElement(
   }
   // 8. Let definition be the result of looking up a custom element definition
   // given registry, given namespace, local name and is.
-  auto* definition =
-      LookUpCustomElementDefinition(document, tag_name, is, registry);
+  CustomElementDefinition* definition = nullptr;
+  if (!sanitizer_ || sanitizer_->IsElementAllowed(tag_name)) {
+    definition =
+        LookUpCustomElementDefinition(document, tag_name, is, registry);
+  }
   // "5. If definition is non-null and the parser was not originally created
   // for the HTML fragment parsing algorithm, then let will execute script
   // be true."

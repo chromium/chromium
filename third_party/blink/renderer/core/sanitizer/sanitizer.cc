@@ -132,6 +132,19 @@ Sanitizer::Sanitizer(std::unique_ptr<SanitizerNameSet> allow_elements,
   DCHECK(isValid());
 }
 
+bool Sanitizer::IsElementAllowed(const QualifiedName& name) const {
+  if (remove_elements_ && remove_elements_->Contains(name)) {
+    return false;
+  }
+  if (replace_elements_ && replace_elements_->Contains(name)) {
+    return false;
+  }
+  if (allow_elements_ && !allow_elements_->Contains(name)) {
+    return false;
+  }
+  return true;
+}
+
 bool Sanitizer::allowElement(
     const V8UnionSanitizerElementNamespaceWithAttributesOrString* element) {
   const QualifiedName name = getFrom(element);
