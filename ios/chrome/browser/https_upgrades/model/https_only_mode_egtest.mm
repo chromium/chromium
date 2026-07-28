@@ -402,6 +402,23 @@ enum class TestType {
   [self assertFailedUpgrade:1];
 }
 
+// Navigate to an HTTPS URL that redirects to an HTTP URL. The HTTP redirect
+// target should be upgraded to HTTPS before the request is sent so that the
+// HTTP server never receives a cleartext request.
+- (void)test_HTTPSRedirectsToHTTP_ShouldUpgradeRedirectTarget {
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                      useFakeHTTPS:true];
+
+  GURL targetURL = self.testServer->GetURL("/");
+  GURL testURL = self.goodHTTPSServer->GetURL("/?redirect=" + targetURL.spec());
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
+  [self assertSuccessfulUpgrade];
+
+  GREYAssertEqual(0, _HTTPResponseCounter,
+                  @"The HTTP server should not have been reached");
+}
+
 // Tests that prerendered navigations that should be upgraded are cancelled.
 // This test is adapted from testTapPrerenderSuggestions() in
 // prerender_egtest.mm.

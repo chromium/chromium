@@ -141,6 +141,75 @@ void HttpsOnlyModeUpgradeTabHelper::ResetState() {
 }
 
 // web::WebStatePolicyDecider
+void HttpsOnlyModeUpgradeTabHelper::ShouldAllowRequest(
+    NSURLRequest* request,
+    WebStatePolicyDecider::RequestInfo request_info,
+    base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
+        callback) {
+  GURL url = net::GURLWithNSURL(request.URL);
+  // Only handle main frame redirects to HTTP within an in-progress navigation.
+  // The initial request of a navigation is handled in ShouldAllowResponse(),
+  // because cancelling it here does not produce the DidFinishNavigation()
+  // callback that drives the upgrade state machine.
+  if (!was_navigation_started_ || !request_info.target_frame_is_main ||
+      !url.SchemeIs(url::kHttpScheme) || service_->IsFakeHTTPSForTesting(url) ||
+      IsHttpAllowedForUrl(url) || state_ == State::kFallbackStarted) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  if ((!base::FeatureList::IsEnabled(
+           security_interstitials::features::kHttpsUpgrades) &&
+       !(prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled))) ||
+      service_->IsLocalhost(url) || navigation_is_post_) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  web::NavigationItem* item_pending =
+      web_state()->GetNavigationManager()->GetPendingItem();
+  web::HttpsUpgradeType upgrade_type = item_pending
+                                           ? item_pending->GetHttpsUpgradeType()
+                                           : web::HttpsUpgradeType::kNone;
+
+  // Omnibox upgrade failures are handled in TypedNavigationUpgradeTabHelper.
+  // Ignore them here.
+  if (upgrade_type != web::HttpsUpgradeType::kNone &&
+      upgrade_type != web::HttpsUpgradeType::kHttpsOnlyMode) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  // If the tab is being prerendered, cancel the prerender instead of upgrading.
+  if (PrerenderTabHelper::FromWebState(web_state())) {
+    RecordUMA(Event::kPrerenderCancelled);
+    ResetState();
+    return std::move(callback)
+        .Then(base::BindOnce(&CancelPrerender, web_state()->GetWeakPtr()))
+        .Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  }
+
+  if (upgrade_type == web::HttpsUpgradeType::kHttpsOnlyMode) {
+    // The previously upgraded navigation has redirected to HTTP. Stop it and
+    // let DidFinishNavigation() trigger the fallback navigation.
+    timer_.Stop();
+    state_ = State::kStoppedToFallback;
+    http_url_ = url;
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    return;
+  }
+
+  // The navigation has redirected to an HTTP URL. Cancel the request before it
+  // is sent and let DidFinishNavigation() start the upgraded navigation.
+  StopToUpgrade(url,
+                item_pending ? item_pending->GetReferrer() : web::Referrer(),
+                std::move(callback));
+}
+
 void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
     WebStatePolicyDecider::ResponseInfo response_info,
@@ -263,15 +332,9 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   }
 
   // The navigation was already upgraded but landed on an HTTP URL, possibly
-  // through redirects (e.g. upgraded HTTPS -> HTTP). In this case, show the
-  // interstitial.
-  // Note that this doesn't handle HTTP URLs in the middle of redirects such as
-  // HTTPS -> HTTP -> HTTPS. The alternative is to do this check in
-  // ShouldAllowRequest(), but we don't have enough information there to ensure
-  // whether the HTTP URL is part of the redirect chain or a completely new
-  // navigation.
-  // This is a divergence from the desktop implementation of this feature which
-  // relies on a redirect loop triggering a net error.
+  // through redirects (e.g. upgraded HTTPS -> HTTP). HTTP redirect targets are
+  // normally cancelled in ShouldAllowRequest() before being sent, but this can
+  // still be reached when the navigation uses POST. Show the interstitial.
   DCHECK(state_ == State::kUpgraded || state_ == State::kNone);
   timer_.Stop();
   state_ = State::kDone;
@@ -297,6 +360,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
+  was_navigation_started_ = true;
   if (state_ == State::kUpgraded) {
     DCHECK(!timer_.IsRunning());
     // `timer_` is deleted when the tab helper is deleted, so it's safe to use
@@ -323,6 +387,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
   navigation_is_post_ = false;
+  was_navigation_started_ = false;
   if (state_ == State::kNone) {
     return;
   }

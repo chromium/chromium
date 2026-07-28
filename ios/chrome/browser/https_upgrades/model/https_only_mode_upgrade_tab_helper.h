@@ -86,6 +86,10 @@ class HttpsOnlyModeUpgradeTabHelper
   void ResetState();
 
   // web::WebStatePolicyDecider implementation:
+  void ShouldAllowRequest(
+      NSURLRequest* request,
+      WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void ShouldAllowResponse(
       NSURLResponse* response,
       WebStatePolicyDecider::ResponseInfo response_info,
@@ -115,6 +119,11 @@ class HttpsOnlyModeUpgradeTabHelper
   // Used to check if the navigation should be upgraded when a response is
   // received. Cleared when the current navigation finishes.
   bool navigation_is_post_ = false;
+  // Set to true when a main frame navigation has started but not yet finished.
+  // Used to distinguish ShouldAllowRequest calls for redirects within an
+  // in-progress navigation from those for the initial request of a new
+  // navigation.
+  bool was_navigation_started_ = false;
 
   base::OneShotTimer timer_;
 
