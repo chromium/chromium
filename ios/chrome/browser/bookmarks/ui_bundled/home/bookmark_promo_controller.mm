@@ -46,6 +46,7 @@
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  BOOL _isShutdown;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -96,10 +97,14 @@
 }
 
 - (void)dealloc {
-  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M152);
+  [self shutdown];
 }
 
 - (void)shutdown {
+  if (_isShutdown) {
+    return;
+  }
+  _isShutdown = YES;
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
   _browser = nullptr;
