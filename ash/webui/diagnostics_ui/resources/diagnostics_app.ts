@@ -38,10 +38,14 @@ export interface DiagnosticsAppElement {
 }
 
 export type ShowToastEvent = CustomEvent<{message: string}>;
+export const SHOW_TOAST_EVENT_NAME = 'show-toast' as const;
 
 declare global {
+  interface WindowEventMap {
+    [SHOW_TOAST_EVENT_NAME]: ShowToastEvent;
+  }
   interface HTMLElementEventMap {
-    'show-toast': ShowToastEvent;
+    [SHOW_TOAST_EVENT_NAME]: ShowToastEvent;
   }
 }
 
@@ -187,14 +191,12 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     ColorChangeUpdater.forDocument().start();
 
     this.createNavigationPanel();
-    window.addEventListener(
-        'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));
+    window.addEventListener(SHOW_TOAST_EVENT_NAME, this.showToastHandler);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener(
-        'show-toast', (e) => this.showToastHandler((e as ShowToastEvent)));
+    window.removeEventListener(SHOW_TOAST_EVENT_NAME, this.showToastHandler);
   }
 
   protected onSessionLogClick(): void {
