@@ -225,8 +225,8 @@ const char kStartedFromContextMenu[] = ".ContextMenu";
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
-const char kHistogramPrerenderPrewarmNavigationStatus[] =
-    HISTOGRAM_PREFIX "Prerender.PrewarmNavigationStatus";
+const char kHistogramPrerenderPrewarmNavigationStatus2[] =
+    HISTOGRAM_PREFIX "Prerender.PrewarmNavigationStatus2";
 const char kHistogramGWSPrerenderNavigationToActivation[] =
     HISTOGRAM_PREFIX "Prerender.NavigationToActivation";
 const char kHistogramGWSActivationToFirstContentfulPaint[] =
@@ -234,10 +234,10 @@ const char kHistogramGWSActivationToFirstContentfulPaint[] =
 const char kHistogramGWSActivationToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
 
-const char kHistogramGWSHadPriorPrewarmCommitStatus[] =
-    HISTOGRAM_PREFIX "HadPriorPrewarmCommitStatus";
-const char kHistogramSiteInstanceProcessAssignment[] =
-    HISTOGRAM_PREFIX "SiteInstanceProcessAssignment";
+const char kHistogramGWSHadPriorPrewarmCommitStatus2[] =
+    HISTOGRAM_PREFIX "HadPriorPrewarmCommitStatus2";
+const char kHistogramSiteInstanceProcessAssignment2[] =
+    HISTOGRAM_PREFIX "SiteInstanceProcessAssignment2";
 
 const char kHistogramBrowserInitiatedSuffix[] = ".BrowserInitiated";
 const char kHistogramRendererInitiatedSuffix[] = ".RendererInitiated";
@@ -590,10 +590,10 @@ GWSPageLoadMetricsObserver::OnCommit(
   // in the process on subsequent navigations.
   auto* prewarm_data =
       page_load_metrics::PrerenderPrewarmNavigationData::Get(navigation_handle);
+  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
   if (prewarm_data && prewarm_data->prewarm_committed()) {
     page_load_metrics::PrerenderPrewarmNavigationData::GetOrCreate(
-        GetDelegate().GetWebContents()->GetPrimaryMainFrame()->GetProcess(),
-        prewarm_data->prewarm_committed());
+        rfh->GetProcess(), prewarm_data->prewarm_committed());
   }
   if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
     RecordHttpStatusCode(response_headers->response_code(),
@@ -657,39 +657,50 @@ GWSPageLoadMetricsObserver::OnCommit(
     RecordPreCommitHistograms();
   }
 
-  auto render_process_assignment = GetDelegate()
-                                       .GetWebContents()
-                                       ->GetPrimaryMainFrame()
-                                       ->GetSiteInstance()
-                                       ->GetLastProcessAssignmentOutcome();
-  const auto* suffix = navigation_handle->IsRendererInitiated()
-                           ? internal::kHistogramRendererInitiatedSuffix
-                           : internal::kHistogramBrowserInitiatedSuffix;
+  auto render_process_assignment =
+      rfh->GetSiteInstance()->GetLastProcessAssignmentOutcome();
+  const auto* initiator_suffix =
+      navigation_handle->IsRendererInitiated()
+          ? internal::kHistogramRendererInitiatedSuffix
+          : internal::kHistogramBrowserInitiatedSuffix;
+  const auto* prerender_suffix = is_prerendered_
+                                     ? internal::kHistogramPrerenderSuffix
+                                     : internal::kHistogramNonPrerenderSuffix;
   // We determine the impact of the Prewarm-Prerender optimization.
   if (auto* navigation_data =
           page_load_metrics::PrerenderPrewarmNavigationData::Get(
-              GetDelegate()
-                  .GetWebContents()
-                  ->GetPrimaryMainFrame()
-                  ->GetProcess())) {
+              rfh->GetProcess())) {
     base::UmaHistogramEnumeration(
-        base::StrCat(
-            {internal::kHistogramPrerenderPrewarmNavigationStatus, suffix}),
+        base::StrCat({internal::kHistogramPrerenderPrewarmNavigationStatus2,
+                      initiator_suffix}),
+        navigation_data->GetNavigationStatus(
+            render_process_assignment ==
+            content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS));
+    base::UmaHistogramEnumeration(
+        base::StrCat({internal::kHistogramPrerenderPrewarmNavigationStatus2,
+                      initiator_suffix, prerender_suffix}),
         navigation_data->GetNavigationStatus(
             render_process_assignment ==
             content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS));
   }
 
   base::UmaHistogramEnumeration(
-      base::StrCat(
-          {internal::kHistogramGWSHadPriorPrewarmCommitStatus, suffix}),
+      base::StrCat({internal::kHistogramGWSHadPriorPrewarmCommitStatus2,
+                    initiator_suffix}),
       page_load_metrics::PrerenderPrewarmNavigationData::
-          GetPriorPrewarmCommitStatus(GetDelegate()
-                                          .GetWebContents()
-                                          ->GetPrimaryMainFrame()
-                                          ->GetProcess()));
+          GetPriorPrewarmCommitStatus(rfh->GetProcess()));
   base::UmaHistogramEnumeration(
-      base::StrCat({internal::kHistogramSiteInstanceProcessAssignment, suffix}),
+      base::StrCat({internal::kHistogramGWSHadPriorPrewarmCommitStatus2,
+                    initiator_suffix, prerender_suffix}),
+      page_load_metrics::PrerenderPrewarmNavigationData::
+          GetPriorPrewarmCommitStatus(rfh->GetProcess()));
+  base::UmaHistogramEnumeration(
+      base::StrCat({internal::kHistogramSiteInstanceProcessAssignment2,
+                    initiator_suffix}),
+      render_process_assignment);
+  base::UmaHistogramEnumeration(
+      base::StrCat({internal::kHistogramSiteInstanceProcessAssignment2,
+                    initiator_suffix, prerender_suffix}),
       render_process_assignment);
 
   if (!navigation_handle->IsSameDocument() &&

@@ -301,6 +301,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType) -->
 
+<variants name="PrerenderStatus">
+  <variant name="" summary="prerender and non-prerender navigations"/>
+  <variant name=".NonPrerender" summary="non-prerender navigations"/>
+  <variant name=".Prerender" summary="prerender navigations"/>
+</variants>
+
 <variants name="PrivacySandboxAdsApi">
   <variant name="FencedFrames"/>
   <variant name="PrivateAggregation"/>
@@ -2077,16 +2083,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.HadPriorPrewarmCommitStatus{InitiatorOfNavigation}"
+    name="PageLoad.Clients.GoogleSearch.HadPriorPrewarmCommitStatus2{InitiatorOfNavigation}{PrerenderStatus}"
     enum="PriorPrewarmCommitStatus" expires_after="2026-11-29">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The status of whether the DSEPrewarm feature was ever triggered on the same
     renderer process host. This is recorded once, when a Google search page is
-    committed for {InitiatorOfNavigation}.
+    committed for {InitiatorOfNavigation} and {PrerenderStatus}.
   </summary>
   <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
+  <token key="PrerenderStatus" variants="PrerenderStatus"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.HttpNetworkSessionQuicEnabled"
@@ -2824,16 +2831,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.Prerender.PrewarmNavigationStatus{InitiatorOfNavigation}"
+    name="PageLoad.Clients.GoogleSearch.Prerender.PrewarmNavigationStatus2{InitiatorOfNavigation}{PrerenderStatus}"
     enum="PrerenderPrewarmNavigationStatus" expires_after="2026-11-29">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The status of whether the DSEPrewarm feature was triggered before the
     prerender host reuse happened. This is recorded once, when a prerendered
-    page is activated for Google search page loads for {InitiatorOfNavigation}.
+    page is activated for Google search page loads for {InitiatorOfNavigation}
+    and {PrerenderStatus}.
   </summary>
   <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
+  <token key="PrerenderStatus" variants="PrerenderStatus"/>
 </histogram>
 
 <histogram
@@ -2851,15 +2860,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.SiteInstanceProcessAssignment{InitiatorOfNavigation}"
+    name="PageLoad.Clients.GoogleSearch.SiteInstanceProcessAssignment2{InitiatorOfNavigation}{PrerenderStatus}"
     enum="SiteInstanceProcessAssignment" expires_after="2026-11-29">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Records how the main frame's SiteInstance was assigned a renderer process.
-    This is recorded once, when a Google search page is committed.
+    This is recorded once, when a Google search page is committed for
+    {InitiatorOfNavigation} and {PrerenderStatus}.
   </summary>
   <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
+  <token key="PrerenderStatus" variants="PrerenderStatus"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.WarmUpType" enum="GwsWarmUpType"

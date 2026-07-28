@@ -101,10 +101,12 @@ extern const char kNonRestoreNavigation[];
 extern const char kStartedFromContextMenu[];
 
 extern const char kHistogramPrerenderHostReused[];
-extern const char kHistogramPrerenderPrewarmNavigationStatus[];
+extern const char kHistogramPrerenderPrewarmNavigationStatus2[];
 extern const char kHistogramGWSPrerenderNavigationToActivation[];
 extern const char kHistogramGWSActivationToFirstContentfulPaint[];
 extern const char kHistogramGWSActivationToLargestContentfulPaint[];
+extern const char kHistogramGWSHadPriorPrewarmCommitStatus2[];
+extern const char kHistogramSiteInstanceProcessAssignment2[];
 
 extern const char kHistogramPrerenderSuffix[];
 extern const char kHistogramNonPrerenderSuffix[];
