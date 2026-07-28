@@ -1393,6 +1393,28 @@ character or string.
 [Migration bug](https://crbug.com/1414647)
 ***
 
+### std::views::reverse <sup>[allowed]</sup>
+
+```c++
+// Before:
+for (const auto& item : base::Reversed(container)) { ... }
+
+// After:
+for (const auto& item : std::views::reverse(container)) { ... }
+```
+
+**Description:** A view adapter that iterates over a bidirectional range in
+reverse order.
+
+**Documentation:**
+[`std::views::reverse`](https://en.cppreference.com/w/cpp/ranges/reverse_view)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/rfMV-DxJ4Cg).
+Note that other range factories/adaptors and `operator|` remain banned.
+***
+
 ## C++20 Banned Language Features {#core-blocklist-20}
 
 The following C++20 language features are not allowed in the Chromium codebase.
@@ -1620,9 +1642,14 @@ pipelines.
 **Notes:**
 *** promo
 Banned in Chrome due to questions about the design, impact on build time, and
-runtime performance.
+runtime performance. Note that `std::views::reverse`, `std::views::zip`, and
+`std::views::as_rvalue` (along with their `std::ranges::*_view` types) are
+explicitly allowed exceptions. Because `std::ranges::views` is an alias for
+`std::views`, the exact same exceptions apply when using the
+`std::ranges::views::` namespace.
 
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw),
+[allowed thread](https://groups.google.com/a/chromium.org/g/cxx/c/rfMV-DxJ4Cg)
 ***
 
 ### std::ranges::operator| <sup>[banned]</sup>
@@ -1641,9 +1668,17 @@ static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
 **Notes:**
 *** promo
 Banned in Chromium since range factories and adapters are banned. Explicitly
-enforced by the Chromium style clang-plugin.
+enforced by the Chromium style clang-plugin. Note that `std::views::reverse`,
+`std::views::zip`, and `std::views::as_rvalue` (along with their
+`std::ranges::*_view` types) are explicitly allowed exceptions. However, pipe
+chaining remains banned even for allowed adaptors; because `std::ranges::views`
+is an alias for `std::views`, the exact same exceptions and pipe-chaining
+prohibitions apply when using the `std::ranges::views::` namespace
+(function call syntax must be used).
 
-[Discussion](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw) [threads](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ)
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw),
+[allowed thread](https://groups.google.com/a/chromium.org/g/cxx/c/rfMV-DxJ4Cg),
+[operator| thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ)
 ***
 
 ### std::ranges::view_interface <sup>[banned]</sup>
@@ -1925,6 +1960,53 @@ auto u = std::ranges::to<std::vector>(s);
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ).
 NOTE: `std::ranges::to` could also be used as a range adaptor, but those are
 banned in Chromium, see [here](#range-factories-and-range-adaptors-banned).
+Furthermore, `operator|` chaining is banned even when combining with allowed
+adaptors like `std::views::as_rvalue` (always use function call syntax:
+`std::ranges::to<std::vector>(std::views::as_rvalue(range))`).
+***
+
+### std::views::as_rvalue <sup>[allowed]</sup>
+
+```c++
+// Before:
+for (auto&& item : base::RangeAsRvalues(source)) { ... }
+
+// After:
+for (auto&& item : std::views::as_rvalue(source)) { ... }
+```
+
+**Description:** A view adapter that presents each element of a range as an
+rvalue reference, moving elements out of the underlying sequence.
+
+**Documentation:**
+[`std::views::as_rvalue`](https://en.cppreference.com/w/cpp/ranges/as_rvalue_view)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/rfMV-DxJ4Cg).
+***
+
+### std::views::zip <sup>[allowed]</sup>
+
+```c++
+// Before:
+for (auto [a, b] : base::zip(vec_a, vec_b)) { ... }
+// or:
+for (auto [a, b] : base::Zip(vec_a, vec_b)) { ... }
+
+// After:
+for (auto [a, b] : std::views::zip(vec_a, vec_b)) { ... }
+```
+
+**Description:** A view adapter that iterates over multiple ranges in parallel,
+producing a tuple of references to the elements of the underlying sequences.
+
+**Documentation:**
+[`std::views::zip`](https://en.cppreference.com/w/cpp/ranges/zip_view)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/rfMV-DxJ4Cg).
 ***
 
 ### std::to_underlying <sup>[allowed]</sup>

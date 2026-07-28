@@ -3154,7 +3154,20 @@ class BannedTypeCheckTest(unittest.TestCase):
                     'std::ranges::subrange(first, last);',
                     # std::ranges::view is a concept and allowed, but the views
                     # library itself is not (see below)
-                    'static_assert(std::ranges::view<SomeType>);'
+                    'static_assert(std::ranges::view<SomeType>);',
+                    'std::ranges::reverse_view rv(vec);',
+                    'std::ranges::zip_view zv(vec1, vec2);',
+                    'std::ranges::as_rvalue_view arv(vec);',
+                    'std::ranges::views::reverse(vec);',
+                    'std::ranges::views::zip(vec1, vec2);',
+                    'std::ranges::views::as_rvalue(vec);',
+                ]),
+            MockFile(
+                'allowed_views_usage.cc',
+                [
+                    'std::views::reverse(vec);',
+                    'std::views::zip(vec1, vec2);',
+                    'std::views::as_rvalue(vec);',
                 ]),
             MockFile(
                 'banned_ranges_usage.cc',
@@ -3162,9 +3175,18 @@ class BannedTypeCheckTest(unittest.TestCase):
                     'std::ranges::borrowed_subrange_t(subrange);',
                     # Edge case: make sure std::ranges::views is disallowed,
                     # even though std::ranges::view is allowed.
-                    'std::ranges::views::take(first, count);'
+                    'std::ranges::views::take(first, count);',
+                    'std::ranges::views::transform(vec, fn);',
+                    'std::ranges::transform_view tv;',
                 ]),
-            MockFile('views_usage.cc', ['std::views::all(vec)']),
+            MockFile(
+                'views_usage.cc',
+                [
+                    'std::views::all(vec);',
+                    'std::views::filter(vec, fn);',
+                    'namespace views = std::views;',
+                    'using std::views::all;',
+                ]),
             MockFile('content/desktop_android.cc', [
                 '// some first line',
                 '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
@@ -3191,7 +3213,7 @@ class BannedTypeCheckTest(unittest.TestCase):
 
         # Each entry in results corresponds to a BanRule with a violation, in
         # the order they were encountered.
-        self.assertEqual(11, len(results))
+        self.assertEqual(16, len(results))
         self.assertIn('some/cpp/problematic/file.cc', results[0].message)
         self.assertIn('third_party/blink/problematic/file.cc',
                       results[1].message)
@@ -3206,16 +3228,23 @@ class BannedTypeCheckTest(unittest.TestCase):
             all('some/cpp/comment/file.cc' not in r.message for r in results))
         self.assertTrue(
             all('allowed_ranges_usage.cc' not in r.message for r in results))
+        self.assertTrue(
+            all('allowed_views_usage.cc' not in r.message for r in results))
         self.assertIn('banned_ranges_usage.cc', results[5].message)
         self.assertIn('banned_ranges_usage.cc', results[6].message)
-        self.assertIn('views_usage.cc', results[7].message)
-        self.assertIn('content/desktop_android.cc', results[8].message)
+        self.assertIn('banned_ranges_usage.cc', results[7].message)
+        self.assertIn('banned_ranges_usage.cc', results[8].message)
+        self.assertIn('views_usage.cc', results[9].message)
+        self.assertIn('views_usage.cc', results[10].message)
+        self.assertIn('views_usage.cc', results[11].message)
+        self.assertIn('views_usage.cc', results[12].message)
+        self.assertIn('content/desktop_android.cc', results[13].message)
         self.assertTrue(
             all('content/desktop_android_test.cc' not in r.message
                 for r in results))
-        self.assertIn('some/cpp/problematic/json_parse.cc', results[9].message)
+        self.assertIn('some/cpp/problematic/json_parse.cc', results[14].message)
         self.assertIn('some/cpp/problematic/json_parse_no_namespace.cc',
-                      results[10].message)
+                      results[15].message)
         self.assertTrue(
             all('third_party/json/ok/json_parse.cc' not in r.message
                 for r in results))
@@ -3225,10 +3254,10 @@ class BannedTypeCheckTest(unittest.TestCase):
             all('v8/ok/v8_json_parse.cc' not in r.message for r in results))
 
         # Check ResultLocation data. Line nums start at 1.
-        self.assertEqual(results[8].locations[0].file_path,
+        self.assertEqual(results[13].locations[0].file_path,
                          'content/desktop_android.cc')
-        self.assertEqual(results[8].locations[0].start_line, 2)
-        self.assertEqual(results[8].locations[0].end_line, 2)
+        self.assertEqual(results[13].locations[0].start_line, 2)
+        self.assertEqual(results[13].locations[0].end_line, 2)
 
     def testBannedMemoryPressureListener(self):
         input_api = MockInputApi()

@@ -1314,9 +1314,12 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
-        pattern='std::views',
-        explanation=('Use of std::views is banned in Chrome. If you need this '
-                     'functionality, please contact cxx@chromium.org.', ),
+        pattern=r'/std::views::(?!(?:reverse|zip|as_rvalue)\b)\w+|std::views(?!\s*::)',
+        explanation=(
+            'Use of std::views is banned in Chrome (except std::views::reverse, '
+            'std::views::zip, and std::views::as_rvalue). If you need this '
+            'functionality, please contact cxx@chromium.org.',
+        ),
         treat_as_error=True,
         excluded_paths=[
             # Don't warn in third_party folders.
@@ -1474,6 +1477,12 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Views
             'subrange',
             'subrange_kind',
+            'reverse_view',
+            'zip_view',
+            'as_rvalue_view',
+            'views::reverse',
+            'views::zip',
+            'views::as_rvalue',
             # Banned: Range factories
             # Banned: Range adaptors
             # Incidentally listed on
@@ -1632,8 +1641,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # disallowed (and matches the regex).
         )) + r')\b)\w+',
         explanation=(
-            'Use of range views and associated helpers is banned in Chrome. '
-            'If you need this functionality, please contact cxx@chromium.org.',
+            'Use of range views and associated helpers is banned in Chrome '
+            '(except reverse_view, zip_view, as_rvalue_view, and views:: '
+            'helpers reverse, zip, as_rvalue). If you need this '
+            'functionality, please contact cxx@chromium.org.',
         ),
         treat_as_error=True,
         excluded_paths=[
