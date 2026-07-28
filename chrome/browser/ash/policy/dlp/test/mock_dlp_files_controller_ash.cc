@@ -18,6 +18,24 @@ MockDlpFilesControllerAsh::MockDlpFilesControllerAsh(
                         CheckIfDlpAllowedCallback result_callback) {
         std::move(result_callback).Run(true);
       });
+  ON_CALL(*this, GetDlpMetadata)
+      .WillByDefault([](const std::vector<storage::FileSystemURL>& files,
+                        std::optional<DlpFileDestination> destination,
+                        GetDlpMetadataCallback result_callback) {
+        std::move(result_callback).Run(std::vector<DlpFileMetadata>());
+      });
+  ON_CALL(*this, FilterDisallowedUploads)
+      .WillByDefault([](std::vector<ui::SelectedFileInfo> selected_files,
+                        const DlpFileDestination& destination,
+                        FilterDisallowedUploadsCallback result_callback) {
+        std::move(result_callback).Run(std::move(selected_files));
+      });
+  ON_CALL(*this, CheckIfDownloadAllowed)
+      .WillByDefault([](const DlpFileDestination& download_src,
+                        const base::FilePath& file_path,
+                        CheckIfDlpAllowedCallback result_callback) {
+        std::move(result_callback).Run(true);
+      });
 }
 
 MockDlpFilesControllerAsh::~MockDlpFilesControllerAsh() = default;
