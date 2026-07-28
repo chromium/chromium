@@ -1185,7 +1185,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   GeminiStartupState* state = [[GeminiStartupState alloc]
       initWithEntryPoint:gemini::EntryPoint::ImageContextMenu];
   state.imageAttachment = image;
-  [handler startGeminiFlowWithStartupState:state];
+  [handler startGeminiEntryFlowWithStartupState:state
+                             baseViewController:self.baseViewController
+                       showSnackbarOnCompletion:YES
+                                     completion:nil];
 }
 
 @end
