@@ -52,7 +52,6 @@ export class NetworkConfigInputElement extends NetworkConfigInputElementBase {
   }
 
   label: string;
-  override hidden: boolean;
   invalid: boolean;
   readonly: boolean;
   value: string;
