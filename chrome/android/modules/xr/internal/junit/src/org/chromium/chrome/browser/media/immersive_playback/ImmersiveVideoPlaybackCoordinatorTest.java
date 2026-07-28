@@ -53,6 +53,7 @@ import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
@@ -82,6 +83,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
     @Mock private XrPanelEntityHolder mMainPanelEntity;
     @Mock private XrPanelEntityHolder mControlPanelHolder;
     @Mock private XrInteractableComponent mInteractableComponent;
+    @Mock private XrEntityHolder mActivitySpaceEntity;
 
     private ImmersiveVideoPlaybackCoordinator mCoordinator;
     private Activity mActivity;
@@ -99,7 +101,9 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         when(mSurfaceEntityHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
         when(mControlPanelHolder.getMovableComponent()).thenReturn(mControlPanelMovableComponent);
         when(mControlPanelHolder.getEntitySize()).thenReturn(new SizeF(1f, 1f));
+        when(mControlPanelHolder.getParent()).thenReturn(mActivitySpaceEntity);
         when(mXrSceneCoreSessionManager.getMainPanelEntity()).thenReturn(mMainPanelEntity);
+        when(mXrSceneCoreSessionManager.getActivitySpaceEntity()).thenReturn(mActivitySpaceEntity);
         when(mXrSceneCoreSessionManager.createPanelEntity(any(), any()))
                 .thenReturn(mControlPanelHolder);
         when(mCompositorView.getView()).thenReturn(mSurfaceEntityView);
@@ -209,6 +213,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         verify(mSurfaceEntityHolder).setSurfaceStereoMode(XrSurfaceEntityStereoMode.TOP_BOTTOM);
 
         verify(mSurfaceMovableComponent).setMovable(false, false);
+        verify(mControlPanelMovableComponent).setMovable(false, false);
 
         clearInvocations(mSurfaceMovableComponent);
         clearInvocations(mControlPanelMovableComponent);
@@ -222,7 +227,7 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
         verify(mSurfaceEntityHolder).setSurfaceStereoMode(XrSurfaceEntityStereoMode.MONO);
 
         verify(mSurfaceMovableComponent).setMovable(true, false);
-        verify(mControlPanelMovableComponent).setMovable(false, false);
+        verify(mControlPanelMovableComponent, never()).setMovable(anyBoolean(), anyBoolean());
     }
 
     /** Tests that the control panel is automatically hidden after a period of inactivity. */
@@ -304,8 +309,6 @@ public class ImmersiveVideoPlaybackCoordinatorTest {
                 assumeNonNull(
                         mCoordinator.getControlCoordinatorForTesting().getControlPanelForTesting());
 
-        // Toggle open format panel (stub getParent() to return non-null so isShowing() is true)
-        when(mControlPanelHolder.getParent()).thenReturn(mControlPanelHolder);
         mCoordinator.onFormatClicked();
         ShadowLooper.idleMainLooper(); // Flush binder updates
 

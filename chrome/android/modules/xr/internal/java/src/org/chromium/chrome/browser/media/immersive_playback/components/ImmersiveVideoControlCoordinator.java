@@ -68,7 +68,9 @@ public class ImmersiveVideoControlCoordinator {
                 }
 
                 @Override
-                public void onMoveUpdate(XrPose pose, float scale) {}
+                public void onMoveUpdate(XrPose pose, float scale) {
+                    mVideoControlDelegate.onControlPanelPoseChanged(pose);
+                }
 
                 @Override
                 public void onMoveEnd(XrPose pose, float scale) {
@@ -126,14 +128,25 @@ public class ImmersiveVideoControlCoordinator {
      */
     public void show(XrEntityHolder<?> parent) {
         ensureInitialized();
+        setParent(parent);
 
         if (mHolder != null) {
-            mHolder.setParent(parent);
             mHolder.setEntityEnabled(true);
         }
         if (mView != null) {
             mView.setVisibility(View.VISIBLE);
             mView.setHoverListener(mVideoControlDelegate::onControlPanelHoverChanged);
+        }
+    }
+
+    /**
+     * Sets the parent entity for the control panel.
+     *
+     * @param parent The parent entity to attach to.
+     */
+    public void setParent(XrEntityHolder<?> parent) {
+        if (mHolder != null) {
+            mHolder.setParent(parent);
         }
     }
 

@@ -25,9 +25,13 @@ import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Coordinator for the XR immersive video player. */
 @NullMarked
@@ -36,6 +40,7 @@ public class ImmersiveVideoPlaybackCoordinator
                 ImmersiveVideoFormatCoordinator.Delegate,
                 ImmersiveVideoPlayerCoordinator.Delegate,
                 ImmersiveVideoPoseManager.Delegate {
+    private final XrEntityHolder mActivitySpaceEntity;
     private final ImmersiveVideoPlaybackDelegate mPlaybackDelegate;
     private final ImmersiveVideoPlayerCoordinator mPlayerCoordinator;
     private final ImmersiveVideoControlCoordinator mControlCoordinator;
@@ -72,8 +77,10 @@ public class ImmersiveVideoPlaybackCoordinator
             WindowAndroid windowAndroid,
             ImmersiveVideoPlaybackDelegate playbackDelegate,
             XrSceneCoreSessionManager xrSessionManager) {
+        mActivitySpaceEntity = xrSessionManager.getActivitySpaceEntity();
         mPlayerCoordinator = createPlayerCoordinator(activity, windowAndroid, xrSessionManager);
         mPoseManager = new ImmersiveVideoPoseManager(this);
+        mPoseManager.updateStrategy(mapProjectionType(mProjectionType));
         mControlCoordinator =
                 new ImmersiveVideoControlCoordinator(activity, xrSessionManager, this);
         mFormatCoordinator = new ImmersiveVideoFormatCoordinator(activity, xrSessionManager, this);
@@ -165,7 +172,30 @@ public class ImmersiveVideoPlaybackCoordinator
 
     @Override
     public void onPlayerPanelPoseChanged(XrPose pose) {
-        mPoseManager.onPlayerPanelPoseChanged(pose, mProjectionType);
+        mPoseManager.onPlayerPanelPoseChanged(pose);
+        updatePose();
+    }
+
+    @Override
+    public void onPlayerPanelDragStart(XrVector3 origin, XrVector3 direction) {
+        mPoseManager.onPlayerPanelDragStart(origin, direction);
+    }
+
+    @Override
+    public void onPlayerPanelDragUpdate(XrVector3 origin, XrVector3 direction) {
+        mPoseManager.onPlayerPanelDragUpdate(origin, direction);
+        updatePose();
+    }
+
+    @Override
+    public void onPlayerPanelDragEnd(XrVector3 origin, XrVector3 direction) {
+        mPoseManager.onPlayerPanelDragEnd(origin, direction);
+        updatePose();
+    }
+
+    private void updatePose() {
+        mPlayerCoordinator.updatePose(mPoseManager.getPlayerPanelPose());
+        updateControlPanel();
     }
 
     @Override
@@ -178,6 +208,11 @@ public class ImmersiveVideoPlaybackCoordinator
         return mPlayerCoordinator.getLayoutHeight();
     }
 
+    @Override
+    public float getCurveRadius() {
+        return mPlayerCoordinator.getCurveRadius();
+    }
+
     // ImmersiveVideoControlCoordinator.Delegate
 
     @Override
@@ -187,7 +222,8 @@ public class ImmersiveVideoPlaybackCoordinator
 
     @Override
     public void onControlPanelPoseChanged(XrPose pose) {
-        mPoseManager.onControlPanelPoseChanged(pose, mProjectionType);
+        mPoseManager.onControlPanelPoseChanged(pose);
+        updatePose();
     }
 
     @Override
@@ -249,12 +285,15 @@ public class ImmersiveVideoPlaybackCoordinator
     private void updateVideoLayout(
             @ImmersiveStereoMode int stereoMode, @ImmersiveProjectionType int projectionType) {
         mStereoMode = stereoMode;
-        mProjectionType = projectionType;
+        @XrSurfaceEntityShape int shape = mapProjectionType(projectionType);
+        @XrSurfaceEntityStereoMode int mode = mapStereoMode(stereoMode);
 
-        mPlayerCoordinator.updateVideoLayout(
-                mapStereoMode(stereoMode), mapProjectionType(projectionType));
-        mPlayerCoordinator.updatePose(mPoseManager.getPlayerPanelPose(projectionType));
-        updateControlPanel();
+        if (mProjectionType != projectionType) {
+            mProjectionType = projectionType;
+            mPoseManager.updateStrategy(shape);
+        }
+        mPlayerCoordinator.updateVideoLayout(mode, shape);
+        updatePose();
     }
 
     private void toggleControlPanel() {
@@ -266,7 +305,7 @@ public class ImmersiveVideoPlaybackCoordinator
     }
 
     private void showControlPanel() {
-        mControlCoordinator.show(assumeNonNull(mPlayerCoordinator.getHolder()));
+        mControlCoordinator.show(getControlPanelParent());
         updateControlPanel();
         mAutoHideManager.startTimer();
     }
@@ -279,11 +318,18 @@ public class ImmersiveVideoPlaybackCoordinator
     }
 
     private void updateControlPanel() {
+        mControlCoordinator.setMovable(shouldControlPanelBeMovable());
+        mControlCoordinator.setParent(getControlPanelParent());
+        mControlCoordinator.updatePose(mPoseManager.getControlPanelPose());
+    }
+
+    private boolean shouldControlPanelBeMovable() {
+        return mProjectionType == ImmersiveProjectionType.HEMISPHERE;
+    }
+
+    private XrEntityHolder getControlPanelParent() {
         boolean isQuad = mProjectionType == ImmersiveProjectionType.QUAD;
-        mControlCoordinator.setMovable(!isQuad);
-        if (mControlCoordinator.isShowing()) {
-            mControlCoordinator.updatePose(mPoseManager.getControlPanelPose(mProjectionType));
-        }
+        return isQuad ? assumeNonNull(mPlayerCoordinator.getHolder()) : mActivitySpaceEntity;
     }
 
     private void showFormatSelectionPanel() {
