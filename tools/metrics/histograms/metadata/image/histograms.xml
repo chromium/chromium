@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}.AccessibilityV1.Status"
-    enum="GoogleRpcCode" expires_after="2026-08-01">
+    enum="GoogleRpcCode" expires_after="2027-06-20">
   <owner>dtseng@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
