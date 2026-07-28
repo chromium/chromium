@@ -31,6 +31,10 @@
 #include "ui/aura/window_tracker.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace content {
 
 class UnboundedElementBrowserTest : public ContentBrowserTest {
@@ -40,9 +44,6 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
   void SetUp() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // TODO(crbug.com/508672616): Not yet implemented on Android/iOS.
-    GTEST_SKIP();
-#elif BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/525899641): Flaky/failing on Linux Aura/Wayland.
     GTEST_SKIP();
 #else
     feature_list_.InitWithFeatures(
@@ -77,13 +78,16 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
       UnboundedSurfaceWindow& window) {
     auto tracker = std::make_unique<aura::WindowTracker>();
     gfx::NativeWindow native_window = window.GetNativeWindow();
-    CHECK(native_window);
+    if (!native_window) {
+      return tracker;
+    }
     tracker->Add(native_window);
 #if BUILDFLAG(IS_WIN)
     // Explicitly wait for the top-level window to be destroyed on windows, to
     // avoid the test runner's leak detection check from failing.
-    CHECK(native_window->parent());
-    tracker->Add(native_window->parent());
+    if (native_window->parent()) {
+      tracker->Add(native_window->parent());
+    }
 #endif
     return tracker;
   }
@@ -375,6 +379,13 @@ class UnboundedElementHighDPIBrowserTest : public UnboundedElementBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
                        CompositorPopupAllocationHighDPI) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/523970924): Some Wayland compositors (such as Mutter)
+    // configure native popup bounds in physical pixels under high-DPI scaling.
+    GTEST_SKIP();
+  }
+#endif
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -440,19 +451,20 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_GE(popup_bounds.height(), 90);
 }
 
-// TODO(crbug.com/523970924): Re-enable the test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PopupInputEventRouting DISABLED_PopupInputEventRouting
-#else
-#define MAYBE_PopupInputEventRouting PopupInputEventRouting
-#endif
-IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
-                       MAYBE_PopupInputEventRouting) {
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
-#else
+#elif BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/523970924): Not yet working on Wayland due to
+    // Ozone/Wayland popup container positioning and coordinate conversion
+    // issues.
+    GTEST_SKIP();
+  }
+#endif
+#if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -498,21 +510,21 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
 #endif
 }
 
-// TODO(crbug.com/523970924): Re-enable the test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PopupOutsideViewportInputEventRouting \
-  DISABLED_PopupOutsideViewportInputEventRouting
-#else
-#define MAYBE_PopupOutsideViewportInputEventRouting \
-  PopupOutsideViewportInputEventRouting
-#endif
 IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
-                       MAYBE_PopupOutsideViewportInputEventRouting) {
+                       PopupOutsideViewportInputEventRouting) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
   // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
-#else
+#elif BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/523970924): Not yet working on Wayland due to
+    // Ozone/Wayland popup container positioning and coordinate conversion
+    // issues.
+    GTEST_SKIP();
+  }
+#endif
+#if !BUILDFLAG(IS_CHROMEOS)
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

@@ -158,7 +158,7 @@ viz::LocalSurfaceId UnboundedSurfaceWindowAura::GetLocalSurfaceId() const {
 }
 
 gfx::Rect UnboundedSurfaceWindowAura::GetBounds() const {
-  return window_ ? window_->GetBoundsInScreen() : gfx::Rect();
+  return window_ ? window_->GetBoundsInScreenWithoutTransform() : gfx::Rect();
 }
 
 void UnboundedSurfaceWindowAura::CopyFromSurface(
@@ -391,28 +391,23 @@ void UnboundedSurfaceWindowAura::RouteMouseEvent(
       !parent_view_->host()->delegate()->GetInputEventRouter()) {
     return;
   }
-  input::RenderWidgetHostInputEventRouter* router =
-      parent_view_->host()->delegate()->GetInputEventRouter();
-
-  aura::Window* parent_window = parent_view_->GetNativeView();
-  if (!parent_window || !parent_window->GetRootWindow()) {
+  RenderWidgetHostViewBase* root_view =
+      static_cast<RenderWidgetHostViewBase*>(parent_view_->GetRootView());
+  if (!root_view) {
     return;
   }
 
   blink::WebMouseEvent web_event = event;
-  gfx::PointF parent_local_point = web_event.PositionInScreen();
-  if (auto* screen_position_client = aura::client::GetScreenPositionClient(
-          parent_window->GetRootWindow())) {
-    // Since the input coordinate is in screen space and both windows share a
-    // root, ConvertPointToTarget would bypass the ScreenPositionClient and fail
-    // to apply the screen-to-root offset. We must explicitly use
-    // ConvertPointFromScreen to convert from screen coordinates.
-    screen_position_client->ConvertPointFromScreen(parent_window,
-                                                   &parent_local_point);
-  }
+  gfx::PointF screen_point(web_event.PositionInScreen());
+  gfx::Point root_origin = root_view->GetViewBounds().origin();
+  gfx::PointF root_point =
+      screen_point - gfx::Vector2dF(root_origin.x(), root_origin.y());
+  gfx::PointF parent_local_point =
+      parent_view_->TransformRootPointToViewCoordSpace(root_point);
   web_event.SetPositionInWidget(parent_local_point.x(), parent_local_point.y());
 
-  router->RouteMouseEvent(parent_view_, &web_event, ui::LatencyInfo());
+  parent_view_->host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
+      parent_view_, &web_event, ui::LatencyInfo());
 }
 
 void UnboundedSurfaceWindowAura::OnKeyEvent(ui::KeyEvent* event) {
