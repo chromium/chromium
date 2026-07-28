@@ -43,6 +43,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -119,6 +120,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
+    private final Callback<Integer> mVerticalTabsWidthObserver =
+            width -> updateSystemGestureExclusions();
+    private NonNullObservableSupplier<Integer> mVerticalTabsContainerWidthSupplier =
+            ObservableSuppliers.createNonNull(0);
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable SettableNonNullObservableSupplier<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
@@ -349,6 +354,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
+
+        mVerticalTabsContainerWidthSupplier.removeObserver(mVerticalTabsWidthObserver);
+        mVerticalTabsContainerWidthSupplier = ObservableSuppliers.createNonNull(0);
     }
 
     @Override
@@ -1337,6 +1345,19 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
     }
 
+    /**
+     * Sets the supplier for the vertical tabs container width used to define system gesture
+     * exclusion bounds.
+     */
+    public void setVerticalTabsContainerWidthSupplier(
+            @Nullable NonNullObservableSupplier<Integer> supplier) {
+        mVerticalTabsContainerWidthSupplier.removeObserver(mVerticalTabsWidthObserver);
+        mVerticalTabsContainerWidthSupplier =
+                supplier != null ? supplier : ObservableSuppliers.createNonNull(0);
+        mVerticalTabsContainerWidthSupplier.addSyncObserver(mVerticalTabsWidthObserver);
+        updateSystemGestureExclusions();
+    }
+
     @Override
     public void setSystemGestureExclusionRects(List<Rect> rects) {
         AppHeaderState appHeaderState = getAppHeaderState();
@@ -1344,10 +1365,16 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 && appHeaderState.isInDesktopWindow()
                 && mTabStripHeight == 0
                 && getWidth() > 0) {
+            // The left edge of the exclusion rectangle dictates where the draggable desktop window
+            // space ends. When vertical tabs are active, this equals the width of the vertical tabs
+            // container rail. When vertical tabs are disabled or hidden,
+            // mVerticalTabsContainerWidthSupplier holds 0, keeping left at 0.
+            int left = mVerticalTabsContainerWidthSupplier.get();
             int right = getWidth() - appHeaderState.getRightPadding();
             int top = appHeaderState.getCaptionControlsTopOffset();
             int bottom = top + appHeaderState.getCaptionControlsHeight();
-            Rect exclusionRect = new Rect(/* left= */ 0, top, right, bottom);
+
+            Rect exclusionRect = new Rect(left, top, right, bottom);
             super.setSystemGestureExclusionRects(List.of(exclusionRect));
         } else {
             super.setSystemGestureExclusionRects(rects);
