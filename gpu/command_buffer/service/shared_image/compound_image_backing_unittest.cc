@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include <cstdint>
+#include <limits>
+
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
@@ -141,6 +144,15 @@ class CompoundImageBackingTest : public testing::Test {
       }
     }
     return false;
+  }
+
+  // Advances the latest content id, keeping the shared memory element as the
+  // one holding the latest content. Used to exercise content id values that
+  // would otherwise require many Update() calls to reach.
+  void AdvanceShmContentId(CompoundImageBacking* backing,
+                           uint64_t content_id) NO_THREAD_SAFETY_ANALYSIS {
+    backing->latest_content_id_ = content_id;
+    backing->GetShmElement().content_id_ = content_id;
   }
 
   // Construct a CompoundImageBacking via the WrapExternalBacking constructor
@@ -358,6 +370,49 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   compound_backing->Update(nullptr);
   skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+}
+
+TEST_F(CompoundImageBackingTest, UploadOnFirstAccessAfterManyUpdates) {
+  auto backing = CreateCompoundBacking(
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_DISPLAY_READ});
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  // Simulate the state reached after a very large number of shared memory
+  // updates before any GPU access has occurred.
+  AdvanceShmContentId(compound_backing,
+                      std::numeric_limits<uint32_t>::max() - 1);
+
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
+  // A further update should keep the shared memory element as the sole holder
+  // of the latest content and never mark the untouched GPU element as current.
+  compound_backing->Update(nullptr);
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
+  compound_backing->Update(nullptr);
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
+  // The first GPU read access must still trigger an upload from shared memory.
+  auto gl_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  {
+    auto access = gl_rep->BeginScopedAccess(
+        GLTextureImageRepresentationBase::kReadAccessMode,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    EXPECT_TRUE(access);
+  }
+
+  ASSERT_TRUE(HasGpuBacking(compound_backing));
+  auto* gpu_backing = GetGpuBacking(compound_backing);
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
 TEST_F(CompoundImageBackingTest, ReadbackToMemory) {

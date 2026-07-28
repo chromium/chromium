@@ -333,7 +333,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
     SharedImageBacking* GetBacking();
 
     AccessStreamSet access_streams;
-    uint32_t content_id_ = 0;
+    uint64_t content_id_ = 0;
 
     CreateBackingCallback create_callback;
     std::unique_ptr<SharedImageBacking> backing;
@@ -458,7 +458,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // factory from any thread.
   scoped_refptr<SharedImageFactoryRef> shared_image_factory_;
 
-  uint32_t latest_content_id_ GUARDED_BY(lock_) = 1;
+  // 64-bit so it never wraps back to a stale element's content id in practice.
+  uint64_t latest_content_id_ GUARDED_BY(lock_) = 1;
 
   // Holds all of the "element" backings that make up this compound backing. For
   // each there is a backing, set of streams and tracking for latest content.
