@@ -3550,7 +3550,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
-        assert mLayoutType == TabListLayoutType.FLAT && !isTabInTabGroup(tab);
+        assert mLayoutType == TabListLayoutType.FLAT;
         int index = mModelList.indexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
 

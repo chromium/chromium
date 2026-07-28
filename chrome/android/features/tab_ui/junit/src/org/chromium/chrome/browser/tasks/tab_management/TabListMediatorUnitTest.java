@@ -6147,6 +6147,36 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testSetThumbnailSpinnerVisibility_TabInGroup() {
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        createTabGroup(List.of(mTab1), TAB_GROUP_ID);
+
+        PropertyModel model = mModelList.get(0).model;
+        model.addObserver(mPropertyObserver);
+
+        mMediator.setThumbnailSpinnerVisibility(mTab1, true);
+        verify(mPropertyObserver)
+                .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        assertTrue(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+
+        mMediator.setThumbnailSpinnerVisibility(mTab1, false);
+        verify(mPropertyObserver, times(2))
+                .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        assertFalse(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        verify(mPropertyObserver).onPropertyChanged(eq(model), eq(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSetThumbnailSpinnerVisibility_NotFlatLayout_Asserts() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        mMediator.setThumbnailSpinnerVisibility(mTab1, true);
+    }
+
+    @Test
     public void indexFromTabId_NestedLayout_PrioritizesChildOverHeader() {
         setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
