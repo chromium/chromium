@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    tools:ignore="UnusedResources"
+    android:paddingStart="24dp"
+    android:paddingEnd="16dp"
+    android:paddingVertical="16dp"
+    android:background="@drawable/bookmark_desktop_navigation_item_bg"
+    android:clickable="true"
+    android:focusable="true"
+    android:baselineAligned="false">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:importantForAccessibility="no"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance=
+            "@style/TextAppearance.TextMedium.Primary"/>
+</LinearLayout>

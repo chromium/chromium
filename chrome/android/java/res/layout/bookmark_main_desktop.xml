@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    tools:ignore="UnusedResources">
+
+    <!-- Left Navigation Pane -->
+    <LinearLayout
+        android:id="@+id/navigation_pane"
+        android:layout_width="@dimen/bookmark_desktop_navigation_pane_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@macro/bookmark_desktop_navigation_pane_bg">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"
+            android:layout_marginStart="@dimen/bookmark_desktop_navigation_header_start_margin"
+            android:layout_marginEnd="@dimen/bookmark_desktop_navigation_header_end_margin"
+            android:layout_marginBottom="@dimen/bookmark_desktop_navigation_header_bottom_margin"
+            android:gravity="center_vertical"
+            android:text="@string/bookmarks"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:drawableStart="@drawable/chrome_logo_24dp"
+            android:drawablePadding="16dp"
+            android:accessibilityHeading="true"/>
+
+        <!-- Folder List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/navigation_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="@dimen/bookmark_desktop_navigation_list_horizontal_padding"
+            android:clipToPadding="false"
+            android:overScrollMode="ifContentScrolls"/>
+    </LinearLayout>
+
+    <!-- Right Main Content Pane -->
+    <org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
+        android:id="@+id/selectable_list"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@macro/bookmark_desktop_content_pane_bg"
+        android:focusable="false" />
+</LinearLayout>

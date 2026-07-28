@@ -581,7 +581,7 @@ found in the LICENSE file.
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
     </style>
-        <style name="TextAppearance.RegularFolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
+    <style name="TextAppearance.RegularFolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
         <!-- The same as the regular style, but using dp instead of sp. -->
         <item name="android:textSize">16dp</item>
     </style>

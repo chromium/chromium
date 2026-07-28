@@ -44,6 +44,12 @@ found in the LICENSE file.
     <!-- App Background Colors -->
     <color name="window_background_color">@color/default_bg_color_baseline</color>
 
+    <!-- Bookmarks Desktop Layout Colors -->
+    <macro name="bookmark_desktop_navigation_pane_bg"
+        tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>
+    <macro name="bookmark_desktop_content_pane_bg"
+        tools:ignore="UnusedResources">?attr/colorSurfaceContainerLowest</macro>
+
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
 
