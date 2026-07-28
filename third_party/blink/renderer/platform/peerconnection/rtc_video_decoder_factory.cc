@@ -390,6 +390,12 @@ RTCVideoDecoderFactory::QueryCodecSupport(
     return {false, false};
   }
 
+  // If WebRtcHwAv1Decoding is not enabled, report AV1 as unsupported.
+  if (codec == media::VideoCodec::kAV1 &&
+      !base::FeatureList::IsEnabled(kWebRtcHwAv1Decoding)) {
+    return {false, false};
+  }
+
   if (reference_scaling) {
     // Check that the configuration is valid (e.g., H264 doesn't support SVC at
     // all and VP8 doesn't support spatial layers).
