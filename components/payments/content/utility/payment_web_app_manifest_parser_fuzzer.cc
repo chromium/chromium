@@ -17,9 +17,9 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string json_data(reinterpret_cast<const char*>(data), size);
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  if (!value) {
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!dict) {
     return 0;
   }
 
@@ -28,7 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   payments::ErrorLogger log;
   log.DisableInTest();
   std::vector<payments::WebAppManifestSection> output;
-  payments::PaymentManifestParser::ParseWebAppManifestIntoVector(
-      std::move(*value), log, &output);
+  payments::PaymentManifestParser::ParseWebAppManifestIntoVector(*dict, log,
+                                                                 &output);
   return 0;
 }

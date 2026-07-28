@@ -20,11 +20,10 @@ void ExpectUnableToParsePaymentMethodManifest(const std::string& input) {
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
 
-  base::Value value = base::test::ParseJson(input);
-
-  PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
-      &actual_web_app_urls, &actual_supported_origins);
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  parser.ParsePaymentMethodManifest(GURL("https://bobpay.test/pmm.json"), input,
+                                    &actual_web_app_urls,
+                                    &actual_supported_origins);
 
   EXPECT_TRUE(actual_web_app_urls.empty()) << actual_web_app_urls.front();
   EXPECT_TRUE(actual_supported_origins.empty())
@@ -38,11 +37,10 @@ void ExpectParsedPaymentMethodManifest(
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
 
-  base::Value value = base::test::ParseJson(input);
-
-  PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
-      &actual_web_app_urls, &actual_supported_origins);
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  EXPECT_TRUE(parser.ParsePaymentMethodManifest(
+      GURL("https://bobpay.test/pmm.json"), input, &actual_web_app_urls,
+      &actual_supported_origins));
 
   EXPECT_EQ(expected_web_app_urls, actual_web_app_urls);
   EXPECT_EQ(expected_supported_origins, actual_supported_origins);
@@ -240,10 +238,9 @@ TEST(PaymentManifestParserTest,
 
 // Expect that input is valid JSON but not a valid web app manifest.
 void ExpectUnableToParseWebAppManifest(const std::string& input) {
-  base::Value value = base::test::ParseJson(input);
-  std::vector<WebAppManifestSection> sections;
-  PaymentManifestParser::ParseWebAppManifestIntoVector(
-      std::move(value), ErrorLogger(), &sections);
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  std::vector<WebAppManifestSection> sections =
+      parser.ParseWebAppManifest(input);
   EXPECT_TRUE(sections.empty());
 }
 
@@ -252,10 +249,9 @@ void ExpectParsedWebAppManifest(
     const std::string& expected_id,
     int64_t expected_min_version,
     const std::vector<std::vector<uint8_t>>& expected_fingerprints) {
-  base::Value value = base::test::ParseJson(input);
-  std::vector<WebAppManifestSection> sections;
-  EXPECT_TRUE(PaymentManifestParser::ParseWebAppManifestIntoVector(
-      std::move(value), ErrorLogger(), &sections));
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  std::vector<WebAppManifestSection> sections =
+      parser.ParseWebAppManifest(input);
   ASSERT_EQ(1U, sections.size());
   EXPECT_EQ(expected_id, sections.front().id);
   EXPECT_EQ(expected_min_version, sections.front().min_version);
@@ -565,7 +561,8 @@ TEST(PaymentManifestParserTest, TwoDifferentSignaturesWellFormed) {
 }
 
 TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
-  base::Value value = base::test::ParseJson(
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  std::vector<WebAppManifestSection> sections = parser.ParseWebAppManifest(
       "{"
       "  \"related_applications\": [{"
       "    \"platform\": \"play\", "
@@ -589,10 +586,6 @@ TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
       "    }]"
       "  }]"
       "}");
-
-  std::vector<WebAppManifestSection> sections;
-  EXPECT_TRUE(PaymentManifestParser::ParseWebAppManifestIntoVector(
-      std::move(value), ErrorLogger(), &sections));
 
   ASSERT_EQ(2U, sections.size());
 
@@ -618,24 +611,28 @@ TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
 // Web app installation information parsing:
 
 void ExpectUnableToParseInstallInfo(const std::string& input) {
-  auto value = base::test::ParseJson(input);
-  auto installation_info = std::make_unique<WebAppInstallationInfo>();
-  auto icons =
-      std::make_unique<std::vector<PaymentManifestParser::WebAppIcon>>();
-  EXPECT_FALSE(PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
-      std::move(value), ErrorLogger(), installation_info.get(), icons.get()));
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  PaymentManifestParser::WebAppInstallationInfoResult result =
+      parser.ParseWebAppInstallationInfo(input);
+  EXPECT_TRUE(result.installation_info == nullptr);
+  EXPECT_TRUE(result.icons == nullptr);
 }
 
 void ExpectParsedInstallInfo(
     const std::string& input,
     const WebAppInstallationInfo& expected_installation_info,
     const std::vector<PaymentManifestParser::WebAppIcon>& expected_icons) {
-  auto value = base::test::ParseJson(input);
-  WebAppInstallationInfo actual_installation_info;
-  std::vector<PaymentManifestParser::WebAppIcon> actual_icons;
-  EXPECT_TRUE(PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
-      std::move(value), ErrorLogger(), &actual_installation_info,
-      &actual_icons));
+  PaymentManifestParser parser(std::make_unique<ErrorLogger>());
+  PaymentManifestParser::WebAppInstallationInfoResult result =
+      parser.ParseWebAppInstallationInfo(input);
+  ASSERT_TRUE(result.installation_info != nullptr);
+  ASSERT_TRUE(result.icons != nullptr);
+
+  const WebAppInstallationInfo& actual_installation_info =
+      *result.installation_info;
+  const std::vector<PaymentManifestParser::WebAppIcon>& actual_icons =
+      *result.icons;
+
   EXPECT_EQ(expected_installation_info.icon == nullptr,
             actual_installation_info.icon == nullptr);
   EXPECT_EQ(expected_installation_info.name, actual_installation_info.name);

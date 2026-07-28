@@ -71,13 +71,12 @@ class WebPaymentsWebDataServiceAndroid {
       const base::android::JavaRef<jobject>& jcallback);
 
  private:
-  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
-                                   std::unique_ptr<WDTypedResult> result);
-  void OnWebAppManifestRequestDone(JNIEnv* env,
-                                   WebDataServiceBase::Handle h,
-                                   std::unique_ptr<WDTypedResult> result);
+  void OnWebAppManifestRequestDone(
+      base::android::ScopedJavaGlobalRef<jobject> jcallback,
+      WebDataServiceBase::Handle h,
+      std::unique_ptr<WDTypedResult> result);
   void OnPaymentMethodManifestRequestDone(
-      JNIEnv* env,
+      base::android::ScopedJavaGlobalRef<jobject> jcallback,
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result);
   scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService();
@@ -86,11 +85,6 @@ class WebPaymentsWebDataServiceAndroid {
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;
-
-  // Map of request handle and its correspond callback.
-  std::map<WebDataServiceBase::Handle,
-           std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>>
-      web_data_service_requests_;
 
   base::WeakPtrFactory<WebPaymentsWebDataServiceAndroid> weak_ptr_factory_{
       this};

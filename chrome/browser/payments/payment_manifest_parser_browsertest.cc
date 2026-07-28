@@ -57,27 +57,16 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
 
   ~PaymentManifestParserTest() override = default;
 
-  // Sends the |content| to the utility process to parse as a web app manifest
-  // and waits until the utility process responds.
+  // Parses the |content| as a web app manifest.
   void ParseWebAppManifest(const std::string& content) {
-    base::RunLoop run_loop;
-    parser_.ParseWebAppManifest(
-        content,
-        base::BindOnce(&PaymentManifestParserTest::OnWebAppManifestParsed,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
+    web_app_manifest_ = parser_.ParseWebAppManifest(content);
   }
 
-  // Sends the |content| to the utility process to parse as a payment method
-  // manifest and waits until the utility process responds.
+  // Parses the |content| as a payment method manifest.
   void ParsePaymentMethodManifest(const std::string& content) {
-    base::RunLoop run_loop;
-    parser_.ParsePaymentMethodManifest(
-        GURL("https://alicepay.test/"), content,
-        base::BindOnce(
-            &PaymentManifestParserTest::OnPaymentMethodManifestParsed,
-            base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
+    parser_.ParsePaymentMethodManifest(GURL("https://alicepay.test/"), content,
+                                       &web_app_manifest_urls_,
+                                       &supported_origins_);
   }
 
   // The parsed web app manifest.
@@ -96,26 +85,6 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
   }
 
  private:
-  // Called after the utility process has parsed the web app manifest.
-  void OnWebAppManifestParsed(
-      base::OnceClosure resume_test,
-      const std::vector<WebAppManifestSection>& web_app_manifest) {
-    web_app_manifest_ = std::move(web_app_manifest);
-    DCHECK(!resume_test.is_null());
-    std::move(resume_test).Run();
-  }
-
-  // Called after the utility process has parsed the payment method manifest.
-  void OnPaymentMethodManifestParsed(
-      base::OnceClosure resume_test,
-      const std::vector<GURL>& web_app_manifest_urls,
-      const std::vector<url::Origin>& supported_origins) {
-    web_app_manifest_urls_ = web_app_manifest_urls;
-    supported_origins_ = supported_origins;
-    DCHECK(!resume_test.is_null());
-    std::move(resume_test).Run();
-  }
-
   PaymentManifestParser parser_;
   std::vector<WebAppManifestSection> web_app_manifest_;
   std::vector<GURL> web_app_manifest_urls_;

@@ -102,23 +102,12 @@ class InstallablePaymentAppCrawler {
       const GURL& method_manifest_url_after_redirects,
       const std::string& content,
       const std::string& error_message);
-  void OnPaymentMethodManifestParsed(
-      const GURL& method_manifest_url,
-      const GURL& method_manifest_url_after_redirects,
-      const std::string& content,
-      const std::vector<GURL>& default_applications,
-      const std::vector<url::Origin>& supported_origins);
   void OnPaymentWebAppManifestDownloaded(
       const GURL& method_manifest_url,
       const GURL& web_app_manifest_url,
       const GURL& web_app_manifest_url_after_redirects,
       const std::string& content,
       const std::string& error_message);
-  void OnPaymentWebAppInstallationInfo(
-      const GURL& method_manifest_url,
-      const GURL& web_app_manifest_url,
-      std::unique_ptr<WebAppInstallationInfo> app_info,
-      std::unique_ptr<std::vector<PaymentManifestParser::WebAppIcon>> icons);
   bool CompleteAndStorePaymentWebAppInfoIfValid(
       const GURL& method_manifest_url,
       const GURL& web_app_manifest_url,
@@ -145,9 +134,7 @@ class InstallablePaymentAppCrawler {
   base::OnceClosure finished_using_resources_;
 
   size_t number_of_payment_method_manifest_to_download_;
-  size_t number_of_payment_method_manifest_to_parse_;
   size_t number_of_web_app_manifest_to_download_;
-  size_t number_of_web_app_manifest_to_parse_;
   size_t number_of_web_app_icons_to_download_and_decode_;
   std::set<GURL> downloaded_web_app_manifests_;
   std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> installable_apps_;

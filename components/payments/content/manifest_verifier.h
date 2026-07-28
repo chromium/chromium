@@ -102,12 +102,6 @@ class ManifestVerifier final {
       const std::string& content,
       const std::string& error_message);
 
-  // Called when a manifest is parsed.
-  void OnPaymentMethodManifestParsed(
-      const GURL& method_manifest_url,
-      const std::vector<GURL>& default_applications,
-      const std::vector<url::Origin>& supported_origins);
-
   // Called immediately preceding the verification callback invocation.
   void RemoveInvalidPaymentApps();
 

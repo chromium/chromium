@@ -14,7 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
-import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
+import org.chromium.components.payments.PaymentManifestParser.PaymentMethodManifest;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -41,7 +41,6 @@ import java.util.Set;
 @NullMarked
 public class PaymentManifestVerifier
         implements ManifestDownloadCallback,
-                ManifestParseCallback,
                 WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback {
     /** Interface for the callback to invoke when finished verification. */
     public interface ManifestVerifyCallback {
@@ -375,22 +374,26 @@ public class PaymentManifestVerifier
         assert mPaymentMethodManifestOrigin == null
                 : "Each verifier downloads exactly one payment method manifest file";
         mPaymentMethodManifestOrigin = paymentMethodManifestOrigin;
-        mParser.parsePaymentMethodManifest(paymentMethodManifestUrl, content, this);
+        PaymentMethodManifest manifest =
+                mParser.parsePaymentMethodManifest(paymentMethodManifestUrl, content);
+        if (manifest == null) {
+            onManifestParseFailure();
+        } else {
+            onPaymentMethodManifestParseSuccess(manifest);
+        }
     }
 
-    @Override
-    public void onPaymentMethodManifestParseSuccess(
-            GURL[] webAppManifestUris, GURL[] supportedOrigins) {
-        assert webAppManifestUris != null;
-        assert supportedOrigins != null;
-        assert webAppManifestUris.length > 0 || supportedOrigins.length > 0;
+    private void onPaymentMethodManifestParseSuccess(PaymentMethodManifest manifest) {
+        assert manifest.webAppManifestUris != null;
+        assert manifest.supportedOrigins != null;
+        assert manifest.webAppManifestUris.length > 0 || manifest.supportedOrigins.length > 0;
         assert !mAtLeastOneManifestFailedToDownloadOrParse;
         assert mPendingWebAppManifestsCount == 0;
 
         Set<GURL> downloadedSupportedOrigins = new HashSet<>();
-        for (int i = 0; i < supportedOrigins.length; i++) {
-            downloadedSupportedOrigins.add(supportedOrigins[i]);
-            mAppIdentifiersToCache.add(supportedOrigins[i].getSpec());
+        for (int i = 0; i < manifest.supportedOrigins.length; i++) {
+            downloadedSupportedOrigins.add(manifest.supportedOrigins[i]);
+            mAppIdentifiersToCache.add(manifest.supportedOrigins[i].getSpec());
         }
         if (mIsManifestCacheStaleOrUnusable) {
             downloadedSupportedOrigins.retainAll(mSupportedOrigins);
@@ -399,7 +402,7 @@ public class PaymentManifestVerifier
             }
         }
 
-        if (webAppManifestUris.length == 0) {
+        if (manifest.webAppManifestUris.length == 0) {
             Log.e(TAG, "No default_applications value in payment method manfest.");
             if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
             // Cache supported package names and origins as well as possibly "*".
@@ -410,24 +413,28 @@ public class PaymentManifestVerifier
             return;
         }
 
-        mPendingWebAppManifestsCount = webAppManifestUris.length;
-        for (int i = 0; i < webAppManifestUris.length; i++) {
+        mPendingWebAppManifestsCount = manifest.webAppManifestUris.length;
+        for (int i = 0; i < manifest.webAppManifestUris.length; i++) {
             if (mAtLeastOneManifestFailedToDownloadOrParse) return;
-            assert webAppManifestUris[i] != null;
+            assert manifest.webAppManifestUris[i] != null;
             assumeNonNull(mPaymentMethodManifestOrigin);
             mDownloader.downloadWebAppManifest(
-                    mPaymentMethodManifestOrigin, webAppManifestUris[i], this);
+                    mPaymentMethodManifestOrigin, manifest.webAppManifestUris[i], this);
         }
     }
 
     @Override
     public void onWebAppManifestDownloadSuccess(String content) {
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
-        mParser.parseWebAppManifest(content, this);
+        WebAppManifestSection[] manifest = mParser.parseWebAppManifest(content);
+        if (manifest == null) {
+            onManifestParseFailure();
+        } else {
+            onWebAppManifestParseSuccess(manifest);
+        }
     }
 
-    @Override
-    public void onWebAppManifestParseSuccess(WebAppManifestSection[] manifest) {
+    private void onWebAppManifestParseSuccess(WebAppManifestSection[] manifest) {
         assert manifest != null;
         assert manifest.length > 0;
 
@@ -583,7 +590,6 @@ public class PaymentManifestVerifier
         mCallback.onFinishedUsingResources();
     }
 
-    @Override
     public void onManifestParseFailure() {
         Log.e(TAG, "Failed to parse manifest.");
 

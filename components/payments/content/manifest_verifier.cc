@@ -212,17 +212,10 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
     return;
   }
 
+  std::vector<GURL> web_app_manifest_urls;
+  std::vector<url::Origin> supported_origins;
   parser_->ParsePaymentMethodManifest(
-      method_manifest_url, content,
-      base::BindOnce(&ManifestVerifier::OnPaymentMethodManifestParsed,
-                     weak_ptr_factory_.GetWeakPtr(), method_manifest_url));
-}
-
-void ManifestVerifier::OnPaymentMethodManifestParsed(
-    const GURL& method_manifest_url,
-    const std::vector<GURL>& default_applications,
-    const std::vector<url::Origin>& supported_origins) {
-  DCHECK_LT(0U, number_of_manifests_to_download_);
+      method_manifest_url, content, &web_app_manifest_urls, &supported_origins);
 
   std::vector<std::string> supported_origin_strings(supported_origins.size());
   std::ranges::transform(supported_origins, supported_origin_strings.begin(),

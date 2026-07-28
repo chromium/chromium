@@ -11,16 +11,17 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/payments/content/utility/fingerprint_parser.h"
 #include "components/payments/core/error_logger.h"
 #include "components/payments/core/url_util.h"
 #include "net/base/url_util.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/url_constants.h"
 
 namespace payments {
@@ -337,6 +338,16 @@ PaymentManifestParser::WebAppIcon::WebAppIcon() = default;
 
 PaymentManifestParser::WebAppIcon::~WebAppIcon() = default;
 
+PaymentManifestParser::WebAppInstallationInfoResult::
+    WebAppInstallationInfoResult() = default;
+PaymentManifestParser::WebAppInstallationInfoResult::
+    ~WebAppInstallationInfoResult() = default;
+PaymentManifestParser::WebAppInstallationInfoResult::
+    WebAppInstallationInfoResult(WebAppInstallationInfoResult&&) = default;
+PaymentManifestParser::WebAppInstallationInfoResult&
+PaymentManifestParser::WebAppInstallationInfoResult::operator=(
+    WebAppInstallationInfoResult&&) = default;
+
 PaymentManifestParser::PaymentManifestParser(std::unique_ptr<ErrorLogger> log)
     : log_(std::move(log)) {
   DCHECK(log_);
@@ -344,78 +355,109 @@ PaymentManifestParser::PaymentManifestParser(std::unique_ptr<ErrorLogger> log)
 
 PaymentManifestParser::~PaymentManifestParser() = default;
 
-void PaymentManifestParser::ParsePaymentMethodManifest(
+bool PaymentManifestParser::ParsePaymentMethodManifest(
     const GURL& manifest_url,
     const std::string& content,
-    PaymentMethodCallback callback) {
-  parse_payment_callback_counter_++;
-  DCHECK_GE(10U, parse_payment_callback_counter_);
+    std::vector<GURL>* web_app_manifest_urls,
+    std::vector<url::Origin>* supported_origins) {
+  DCHECK(web_app_manifest_urls);
+  DCHECK(supported_origins);
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      content, base::BindOnce(&PaymentManifestParser::OnPaymentMethodParse,
-                              weak_factory_.GetWeakPtr(), manifest_url,
-                              std::move(callback)));
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(content,
+                                                    base::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    log_->Error(result.error().message);
+    return false;
+  }
+
+  const base::DictValue* dict = result->GetIfDict();
+  if (!dict) {
+    log_->Error("Payment method manifest must be a JSON dictionary.");
+    return false;
+  }
+
+  ParsePaymentMethodManifestIntoVectors(
+      manifest_url, *dict, *log_, web_app_manifest_urls, supported_origins);
+  return true;
 }
 
-void PaymentManifestParser::ParseWebAppManifest(const std::string& content,
-                                                WebAppCallback callback) {
-  parse_webapp_callback_counter_++;
-  DCHECK_GE(10U, parse_webapp_callback_counter_);
+std::vector<WebAppManifestSection> PaymentManifestParser::ParseWebAppManifest(
+    const std::string& content) {
+  std::vector<WebAppManifestSection> manifest;
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(content,
+                                                    base::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    log_->Error(result.error().message);
+    return manifest;
+  }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      content, base::BindOnce(&PaymentManifestParser::OnWebAppParse,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+  const base::DictValue* dict = result->GetIfDict();
+  if (!dict) {
+    log_->Error("Web app manifest must be a JSON dictionary.");
+    return manifest;
+  }
+
+  ParseWebAppManifestIntoVector(*dict, *log_, &manifest);
+  return manifest;
 }
 
-void PaymentManifestParser::ParseWebAppInstallationInfo(
-    const std::string& content,
-    WebAppInstallationInfoCallback callback) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      content,
-      base::BindOnce(&PaymentManifestParser::OnWebAppParseInstallationInfo,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+PaymentManifestParser::WebAppInstallationInfoResult
+PaymentManifestParser::ParseWebAppInstallationInfo(const std::string& content) {
+  WebAppInstallationInfoResult result;
+  base::JSONReader::Result json_result =
+      base::JSONReader::ReadAndReturnValueWithError(content,
+                                                    base::JSON_PARSE_RFC);
+  if (!json_result.has_value()) {
+    log_->Error(json_result.error().message);
+    return result;
+  }
+
+  const base::DictValue* dict = json_result->GetIfDict();
+  if (!dict) {
+    log_->Error("Web app manifest must be a JSON dictionary.");
+    return result;
+  }
+
+  result.installation_info = std::make_unique<WebAppInstallationInfo>();
+  result.icons = std::make_unique<std::vector<WebAppIcon>>();
+  if (!ParseWebAppInstallationInfoIntoStructs(
+          *dict, *log_, result.installation_info.get(), result.icons.get())) {
+    result.installation_info.reset();
+    result.icons.reset();
+  }
+  return result;
 }
 
 // static
 void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
     const GURL& manifest_url,
-    base::Value value,
+    const base::DictValue& dict,
     const ErrorLogger& log,
     std::vector<GURL>* web_app_manifest_urls,
     std::vector<url::Origin>* supported_origins) {
   DCHECK(web_app_manifest_urls);
   DCHECK(supported_origins);
 
-  const base::DictValue* dict = value.GetIfDict();
-  if (!dict) {
-    log.Error("Payment method manifest must be a JSON dictionary.");
-    return;
-  }
-
-  if (dict->Find(kDefaultApplications) &&
-      !ParseDefaultApplications(manifest_url, dict, web_app_manifest_urls,
+  if (dict.Find(kDefaultApplications) &&
+      !ParseDefaultApplications(manifest_url, &dict, web_app_manifest_urls,
                                 log)) {
     return;
   }
 
-  if (dict->Find(kSupportedOrigins) &&
-      !ParseSupportedOrigins(dict, supported_origins, log)) {
+  if (dict.Find(kSupportedOrigins) &&
+      !ParseSupportedOrigins(&dict, supported_origins, log)) {
     web_app_manifest_urls->clear();
   }
 }
 
 // static
 bool PaymentManifestParser::ParseWebAppManifestIntoVector(
-    base::Value value,
+    const base::DictValue& dict,
     const ErrorLogger& log,
     std::vector<WebAppManifestSection>* output) {
-  const base::DictValue* dict = value.GetIfDict();
-  if (!dict) {
-    log.Error("Web app manifest must be a JSON dictionary.");
-    return false;
-  }
-
-  const base::ListValue* list = dict->FindList(kRelatedApplications);
+  const base::ListValue* list = dict.FindList(kRelatedApplications);
   if (!list) {
     log.Error(
         base::StringPrintf("\"%s\" must be a list.", kRelatedApplications));
@@ -528,18 +570,14 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
 
 // static
 bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
-    base::Value value,
+    const base::DictValue& dict_ref,
     const ErrorLogger& log,
     WebAppInstallationInfo* installation_info,
     std::vector<WebAppIcon>* icons) {
   DCHECK(installation_info);
   DCHECK(icons);
 
-  const base::DictValue* dict = value.GetIfDict();
-  if (!dict) {
-    log.Error("Web app manifest must be a JSON dictionary.");
-    return false;
-  }
+  const base::DictValue* dict = &dict_ref;
 
   {
     const base::DictValue* service_worker_dict = dict->FindDict(kServiceWorker);
@@ -636,68 +674,6 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   }
 
   return true;
-}
-
-void PaymentManifestParser::OnPaymentMethodParse(
-    const GURL& manifest_url,
-    PaymentMethodCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  parse_payment_callback_counter_--;
-
-  std::vector<GURL> web_app_manifest_urls;
-  std::vector<url::Origin> supported_origins;
-
-  if (result.has_value()) {
-    ParsePaymentMethodManifestIntoVectors(manifest_url, std::move(*result),
-                                          *log_, &web_app_manifest_urls,
-                                          &supported_origins);
-  } else {
-    log_->Error(result.error());
-  }
-
-  // Can trigger synchronous deletion of this object, so can't access any of
-  // the member variables after this statement.
-  std::move(callback).Run(web_app_manifest_urls, supported_origins);
-}
-
-void PaymentManifestParser::OnWebAppParse(
-    WebAppCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  parse_webapp_callback_counter_--;
-
-  std::vector<WebAppManifestSection> manifest;
-  if (result.has_value()) {
-    ParseWebAppManifestIntoVector(std::move(*result), *log_, &manifest);
-  } else {
-    log_->Error(result.error());
-  }
-
-  // Can trigger synchronous deletion of this object, so can't access any of
-  // the member variables after this statement.
-  std::move(callback).Run(manifest);
-}
-
-void PaymentManifestParser::OnWebAppParseInstallationInfo(
-    WebAppInstallationInfoCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  std::unique_ptr<WebAppInstallationInfo> installation_info;
-  std::unique_ptr<std::vector<WebAppIcon>> icons;
-
-  if (result.has_value()) {
-    installation_info = std::make_unique<WebAppInstallationInfo>();
-    icons = std::make_unique<std::vector<WebAppIcon>>();
-    if (!ParseWebAppInstallationInfoIntoStructs(
-            std::move(*result), *log_, installation_info.get(), icons.get())) {
-      installation_info.reset();
-      icons.reset();
-    }
-  } else {
-    log_->Error(result.error());
-  }
-
-  // Can trigger synchronous deletion of this object, so can't access any of
-  // the member variables after this statement.
-  std::move(callback).Run(std::move(installation_info), std::move(icons));
 }
 
 }  // namespace payments

@@ -11,13 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/payments/content/web_app_manifest.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace base {
+class DictValue;
+}
 
 namespace payments {
 
@@ -73,9 +73,6 @@ class ErrorLogger;
 // https://w3c.github.io/payment-method-manifest/
 // https://w3c.github.io/manifest/
 //
-// Note the JSON parsing is done using the DataDecoder (either OOP or in a safe
-// environment).
-//
 // The command line must be initialized to use this class in tests, because it
 // checks for --unsafely-treat-insecure-origin-as-secure=<origin> flag. For
 // example:
@@ -94,21 +91,15 @@ class PaymentManifestParser {
 
   // TODO(crbug.com/40681786): Return manifest parser errors to caller.
 
-  // Called on successful parsing of a payment method manifest. Parse failure
-  // results in empty vectors and "false".
-  using PaymentMethodCallback =
-      base::OnceCallback<void(const std::vector<GURL>&,
-                              const std::vector<url::Origin>&)>;
-  // Called on successful parsing of a web app manifest. Parse failure results
-  // in an empty vector.
-  using WebAppCallback =
-      base::OnceCallback<void(const std::vector<WebAppManifestSection>&)>;
-  // Called on successful parsing of the installation info (name, icons,
-  // and serviceworker) in the web app manifest. Parse failure results in a
-  // nullptr.
-  using WebAppInstallationInfoCallback =
-      base::OnceCallback<void(std::unique_ptr<WebAppInstallationInfo>,
-                              std::unique_ptr<std::vector<WebAppIcon>>)>;
+  struct WebAppInstallationInfoResult {
+    WebAppInstallationInfoResult();
+    ~WebAppInstallationInfoResult();
+    WebAppInstallationInfoResult(WebAppInstallationInfoResult&&);
+    WebAppInstallationInfoResult& operator=(WebAppInstallationInfoResult&&);
+
+    std::unique_ptr<WebAppInstallationInfo> installation_info;
+    std::unique_ptr<std::vector<WebAppIcon>> icons;
+  };
 
   explicit PaymentManifestParser(std::unique_ptr<ErrorLogger> log);
 
@@ -117,52 +108,43 @@ class PaymentManifestParser {
 
   ~PaymentManifestParser();
 
-  void ParsePaymentMethodManifest(const GURL& manifest_url,
+  // Parses the payment method manifest. Returns true if the content was valid
+  // JSON and a dictionary. Output parameters are populated on success.
+  bool ParsePaymentMethodManifest(const GURL& manifest_url,
                                   const std::string& content,
-                                  PaymentMethodCallback callback);
-  void ParseWebAppManifest(const std::string& content, WebAppCallback callback);
+                                  std::vector<GURL>* web_app_manifest_urls,
+                                  std::vector<url::Origin>* supported_origins);
 
-  // Parses the installation info in the web app manifest |content|. Sends the
-  // result back through callback.
-  // Refer to:
-  // https://www.w3.org/TR/appmanifest/#webappmanifest-dictionary
-  void ParseWebAppInstallationInfo(const std::string& content,
-                                   WebAppInstallationInfoCallback callback);
+  // Parses the web app manifest. Returns parsed sections, or empty vector on
+  // failure.
+  std::vector<WebAppManifestSection> ParseWebAppManifest(
+      const std::string& content);
+
+  // Parses the installation info in the web app manifest.
+  WebAppInstallationInfoResult ParseWebAppInstallationInfo(
+      const std::string& content);
 
   // Visible for tests.
   static void ParsePaymentMethodManifestIntoVectors(
       const GURL& manifest_url,
-      base::Value value,
+      const base::DictValue& dict,
       const ErrorLogger& log,
       std::vector<GURL>* web_app_manifest_urls,
       std::vector<url::Origin>* supported_origins);
 
   static bool ParseWebAppManifestIntoVector(
-      base::Value value,
+      const base::DictValue& dict,
       const ErrorLogger& log,
       std::vector<WebAppManifestSection>* output);
 
   static bool ParseWebAppInstallationInfoIntoStructs(
-      base::Value value,
+      const base::DictValue& dict,
       const ErrorLogger& log,
       WebAppInstallationInfo* installation_info,
       std::vector<WebAppIcon>* icons);
 
  private:
-  void OnPaymentMethodParse(const GURL& manifest_url,
-                            PaymentMethodCallback callback,
-                            data_decoder::DataDecoder::ValueOrError result);
-  void OnWebAppParse(WebAppCallback callback,
-                     data_decoder::DataDecoder::ValueOrError result);
-  void OnWebAppParseInstallationInfo(
-      WebAppInstallationInfoCallback callback,
-      data_decoder::DataDecoder::ValueOrError result);
-
-  int64_t parse_payment_callback_counter_ = 0;
-  int64_t parse_webapp_callback_counter_ = 0;
-
   std::unique_ptr<ErrorLogger> log_;
-  base::WeakPtrFactory<PaymentManifestParser> weak_factory_{this};
 };
 
 }  // namespace payments
