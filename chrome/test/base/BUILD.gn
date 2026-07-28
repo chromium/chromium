@@ -43,6 +43,23 @@ source_set("tracing") {
   ]
 }
 
+source_set("web_feature_histogram_tester") {
+  testonly = true
+  sources = [
+    "web_feature_histogram_tester.cc",
+    "web_feature_histogram_tester.h",
+  ]
+  public_deps = [
+    "//base",
+    "//base/test:test_support",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+  ]
+  deps = [
+    "//components/metrics:content",
+    "//content/test:test_support",
+  ]
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [
