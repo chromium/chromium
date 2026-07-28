@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/grit/generated_resources.h"
@@ -319,6 +320,64 @@ TEST_F(ChromePermissionMessageProviderUnittest, BluetoothSocketEscalation) {
                                       URLPatternSet(), URLPatternSet());
 
   // This will fail before the fix because IsPrivilegeIncrease returns false
+  EXPECT_TRUE(message_provider()->IsPrivilegeIncrease(
+      granted_permissions, requested_permissions,
+      Manifest::Type::kPlatformApp));
+}
+
+TEST_F(ChromePermissionMessageProviderUnittest,
+       BluetoothSubCapabilityCoalesceBypass) {
+  // V1: uuids + low_energy
+  base::Value v1_value = base::test::ParseJson(R"(
+    {
+      "uuids": ["180D"],
+      "low_energy": true
+    }
+  )");
+  std::u16string error;
+  std::unique_ptr<BluetoothManifestPermission> v1_permission =
+      BluetoothManifestPermission::FromValue(v1_value, &error);
+  ASSERT_TRUE(v1_permission);
+
+  // V2: uuids + low_energy + socket + peripheral
+  base::Value v2_value = base::test::ParseJson(R"(
+    {
+      "uuids": ["180D"],
+      "low_energy": true,
+      "socket": true,
+      "peripheral": true
+    }
+  )");
+  std::unique_ptr<BluetoothManifestPermission> v2_permission =
+      BluetoothManifestPermission::FromValue(v2_value, &error);
+  ASSERT_TRUE(v2_permission);
+
+  ManifestPermissionSet granted_manifest_permissions;
+  granted_manifest_permissions.insert(std::move(v1_permission));
+  PermissionSet granted_permissions(APIPermissionSet(),
+                                    std::move(granted_manifest_permissions),
+                                    URLPatternSet(), URLPatternSet());
+
+  ManifestPermissionSet requested_manifest_permissions;
+  requested_manifest_permissions.insert(std::move(v2_permission));
+  PermissionSet requested_permissions(APIPermissionSet(),
+                                      std::move(requested_manifest_permissions),
+                                      URLPatternSet(), URLPatternSet());
+
+  // Assert preconditions:
+  // 1. granted_ids does not include requested_ids (so we don't early return
+  // false)
+  // 2. requested_ids has new IDs (kBluetoothSocket, kBluetoothPeripheral)
+  PermissionIDSet granted_ids = message_provider()->GetAllPermissionIDs(
+      granted_permissions, Manifest::Type::kPlatformApp);
+  PermissionIDSet requested_ids = message_provider()->GetAllPermissionIDs(
+      requested_permissions, Manifest::Type::kPlatformApp);
+  EXPECT_FALSE(granted_ids.Includes(requested_ids));
+  EXPECT_TRUE(requested_ids.ContainsID(APIPermissionID::kBluetoothSocket));
+  EXPECT_TRUE(requested_ids.ContainsID(APIPermissionID::kBluetoothPeripheral));
+
+  // Regression test for crbug.com/533474257: IsPrivilegeIncrease should return
+  // true because we added socket and peripheral.
   EXPECT_TRUE(message_provider()->IsPrivilegeIncrease(
       granted_permissions, requested_permissions,
       Manifest::Type::kPlatformApp));

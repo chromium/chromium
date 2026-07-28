@@ -5291,6 +5291,15 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_DEVICES" desc="Permission string for implementing Bluetooth profiles.">
           Send messages to and receive messages from Bluetooth devices.
         </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_DEVICES_SOCKET" desc="Permission string for accessing Bluetooth devices via sockets.">
+          Send messages to and receive messages from Bluetooth devices using sockets.
+        </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_DEVICES_LOW_ENERGY" desc="Permission string for accessing Bluetooth devices via Low Energy.">
+          Send messages to and receive messages from Bluetooth devices using Low Energy.
+        </message>
+        <message name="IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_DEVICES_PERIPHERAL" desc="Permission string for allowing nearby Bluetooth devices to discover and connect.">
+          Allow nearby Bluetooth devices to discover and connect to this device.
+        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_PRIVATE" desc="Permission string for Bluetooth Private API.">
           Control Bluetooth adapter state and pairing
         </message>
