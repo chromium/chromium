@@ -1065,11 +1065,12 @@ suite('TabSearchAppTest', () => {
     assertEquals(TabGroupColor.kBlue, splitViewRow.tabGroup.color);
 
     const newGroupToken = sampleToken(3n, 3n);
-    tabSearchPage['tabGroupsMap_'].set(tokenToString(newGroupToken), {
-      id: newGroupToken,
-      color: TabGroupColor.kRed,
-      title: 'Personal Group',
-    });
+    tabSearchPage.getTabGroupsMapForTesting().set(
+        tokenToString(newGroupToken), {
+          id: newGroupToken,
+          color: TabGroupColor.kRed,
+          title: 'Personal Group',
+        });
 
     const updatedTab = createTab({
       tabId: 10,

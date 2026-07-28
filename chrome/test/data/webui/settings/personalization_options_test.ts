@@ -530,9 +530,9 @@ suite('OfficialBuild', function() {
     assertTrue(isChildVisible(testElement, '#metricsReportingLink'));
 
     let targetUrl: string = '';
-    testElement['navigateTo_'] = (url: string) => {
+    testElement.setNavigateToForTesting((url: string) => {
       targetUrl = url;
-    };
+    });
 
     testElement.shadowRoot!.querySelector<HTMLElement>(
                                '#metricsReportingLink')!.click();

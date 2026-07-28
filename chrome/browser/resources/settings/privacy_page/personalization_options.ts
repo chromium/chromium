@@ -282,7 +282,17 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   // <if expr="is_chromeos">
+  private navigateToForTesting_?: (url: string) => void;
+
+  setNavigateToForTesting(navigateTo: (url: string) => void): void {
+    this.navigateToForTesting_ = navigateTo;
+  }
+
   private navigateTo_(url: string): void {
+    if (this.navigateToForTesting_) {
+      this.navigateToForTesting_(url);
+      return;
+    }
     window.location.href = url;
   }
 

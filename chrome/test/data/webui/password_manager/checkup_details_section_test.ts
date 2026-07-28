@@ -935,14 +935,14 @@ suite('CheckupDetailsSectionTest', function() {
     await flushTasks();
 
     // Verify it is connected.
-    assertTrue(section['listenerId_'] !== null);
+    assertTrue(section.getListenerIdForTesting() !== null);
 
     // Remove section from DOM (disconnectedCallback is called).
     section.remove();
     await flushTasks();
 
     // Verify listener ID is cleared.
-    assertEquals(null, section['listenerId_']);
+    assertEquals(null, section.getListenerIdForTesting());
   });
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]

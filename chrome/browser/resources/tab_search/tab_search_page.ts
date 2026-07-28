@@ -1098,6 +1098,10 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     return this.searchText_;
   }
 
+  getTabGroupsMapForTesting(): Map<string, TabGroup> {
+    return this.tabGroupsMap_;
+  }
+
   protected onSelectedChange_(
       e: CustomEvent<
           {item: (TabSearchItemElement | TabSearchGroupItemElement | null)}>) {
