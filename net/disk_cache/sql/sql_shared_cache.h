@@ -97,6 +97,14 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
       base::OnceCallback<void(
           base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback);
 
+  // Deletes entries specified by `shared_cache_row_ids` from the isolated
+  // database.
+  void DeleteEntries(
+      const std::vector<SqlSharedCacheRowId>& shared_cache_row_ids,
+      base::OnceCallback<
+          void(base::expected<void, SqlSharedCacheIsolatedDatabase::Error>)>
+          callback);
+
  private:
   // Entry Copying Call Flow Overview:
   //

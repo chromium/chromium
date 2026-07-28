@@ -299,4 +299,19 @@ void SqlSharedCache::FinishCopy() {
   std::move(callback).Run(std::move(unprocessed_entries));
 }
 
+void SqlSharedCache::DeleteEntries(
+    const std::vector<SqlSharedCacheRowId>& shared_cache_row_ids,
+    base::OnceCallback<
+        void(base::expected<void, SqlSharedCacheIsolatedDatabase::Error>)>
+        callback) {
+  if (!isolated_database_) {
+    std::move(callback).Run(base::unexpected(
+        SqlSharedCacheIsolatedDatabase::Error::kIsolatedDatabaseNotAvailable));
+    return;
+  }
+  isolated_database_.AsyncCall(&SqlSharedCacheIsolatedDatabase::DeleteEntries)
+      .WithArgs(shared_cache_row_ids)
+      .Then(std::move(callback));
+}
+
 }  // namespace disk_cache

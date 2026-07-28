@@ -8,6 +8,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -402,6 +403,42 @@ void SqlSharedCacheIsolatedDatabase::DeleteEntry(
           SharedCacheIsolatedDatabaseQuery::kDeleteResourceByRowId)));
   statement.BindInt64(0, shared_cache_row_id.value());
   statement.Run();
+}
+
+base::expected<void, SqlSharedCacheIsolatedDatabase::Error>
+SqlSharedCacheIsolatedDatabase::DeleteEntries(
+    const std::vector<SqlSharedCacheRowId>& shared_cache_row_ids) {
+  CHECK(!shared_cache_row_ids.empty());
+  if (ShouldSimulateFailure(OperationForTesting::kDeleteEntries)) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
+  if (!db_assets_ || !db_assets_->db().is_open()) {
+    return base::unexpected(Error::kDatabaseNotOpen);
+  }
+  sql::Database& db = db_assets_->db();
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return base::unexpected(Error::kFailedToStartTransaction);
+  }
+
+  for (auto row_id : shared_cache_row_ids) {
+    sql::Statement statement(db.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetSharedCacheIsolatedDatabaseQuery(
+            SharedCacheIsolatedDatabaseQuery::kDeleteResourceByRowId)));
+    statement.BindInt64(0, row_id.value());
+    statement.Run();
+  }
+
+  if (!transaction.Commit()) {
+    return base::unexpected(Error::kFailedToCommitTransaction);
+  }
+
+  // TODO(crbug.com/473666511): Autovacuum is disabled on Desktop, so we need
+  // to run VACUUM manually at some point. However, running it here might
+  // cause performance issues. Figure out a better timing/strategy to run it.
+
+  return base::ok();
 }
 
 void SqlSharedCacheIsolatedDatabase::Cleanup() {

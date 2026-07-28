@@ -738,4 +738,163 @@ TEST_P(SqlSharedCacheTest, CopyEntriesWriteBodyFailureCleansUpPartialEntry) {
   EXPECT_FALSE(has_row_future.Get());
 }
 
+TEST_P(SqlSharedCacheTest, DeleteEntries) {
+  auto cache = CreateAndInitStoreAndCache();
+
+  const CacheEntryKey kKey1("credential_key/post_key/https://example.com/1");
+  const CacheEntryKey kKey2("credential_key/post_key/https://example.com/2");
+  std::string kData = "test_data";
+  auto response_info = CreateTestHttpResponseInfo();
+
+  PopulateStoreEntry(kKey1, response_info, kData);
+  PopulateStoreEntry(kKey2, response_info, kData);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(
+      CreateEligibleEntry(kKey1, GURL("https://example.com/1"), response_info));
+  entries.push(
+      CreateEligibleEntry(kKey2, GURL("https://example.com/2"), response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(copy_future.Take().empty());
+
+  // Verify row 1 and row 2 exist in isolated database.
+  VerifyIsolatedDatabaseEntryData(*cache, kKey1, SqlSharedCacheRowId(1), kData);
+  VerifyIsolatedDatabaseEntryData(*cache, kKey2, SqlSharedCacheRowId(2), kData);
+
+  // Delete row 1.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future1;
+  cache->DeleteEntries({SqlSharedCacheRowId(1)}, delete_future1.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future1.Get().has_value());
+
+  // Delete row 2.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future2;
+  cache->DeleteEntries({SqlSharedCacheRowId(2)}, delete_future2.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future2.Get().has_value());
+}
+
+TEST_P(SqlSharedCacheTest, DeleteMultipleEntriesAtOnce) {
+  auto cache = CreateAndInitStoreAndCache();
+
+  const CacheEntryKey kKey1("credential_key/post_key/https://example.com/1");
+  const CacheEntryKey kKey2("credential_key/post_key/https://example.com/2");
+  const CacheEntryKey kKey3("credential_key/post_key/https://example.com/3");
+  std::string kData = "test_data";
+  auto response_info = CreateTestHttpResponseInfo();
+
+  PopulateStoreEntry(kKey1, response_info, kData);
+  PopulateStoreEntry(kKey2, response_info, kData);
+  PopulateStoreEntry(kKey3, response_info, kData);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(
+      CreateEligibleEntry(kKey1, GURL("https://example.com/1"), response_info));
+  entries.push(
+      CreateEligibleEntry(kKey2, GURL("https://example.com/2"), response_info));
+  entries.push(
+      CreateEligibleEntry(kKey3, GURL("https://example.com/3"), response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(copy_future.Take().empty());
+
+  // Delete row 1 and row 2 simultaneously.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future1;
+  cache->DeleteEntries({SqlSharedCacheRowId(1), SqlSharedCacheRowId(2)},
+                       delete_future1.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future1.Get().has_value());
+
+  // Delete remaining row 3.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future2;
+  cache->DeleteEntries({SqlSharedCacheRowId(3)}, delete_future2.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future2.Get().has_value());
+}
+
+TEST_P(SqlSharedCacheTest, DeleteNonExistentEntries) {
+  auto cache = CreateAndInitStoreAndCache();
+
+  const CacheEntryKey kKey1("credential_key/post_key/https://example.com/1");
+  std::string kData = "test_data";
+  auto response_info = CreateTestHttpResponseInfo();
+
+  PopulateStoreEntry(kKey1, response_info, kData);
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries;
+  entries.push(
+      CreateEligibleEntry(kKey1, GURL("https://example.com/1"), response_info));
+
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>>
+      copy_future;
+  cache->CopyEntries(std::move(entries), abort_flag, copy_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(copy_future.Take().empty());
+
+  // Delete non-existent row 999.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future1;
+  cache->DeleteEntries({SqlSharedCacheRowId(999)},
+                       delete_future1.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future1.Get().has_value());
+
+  // Delete existing row 1 and non-existent row 999 together.
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future2;
+  cache->DeleteEntries({SqlSharedCacheRowId(1), SqlSharedCacheRowId(999)},
+                       delete_future2.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  EXPECT_TRUE(delete_future2.Get().has_value());
+}
+
+TEST_P(SqlSharedCacheTest, DeleteEntriesWithoutIsolatedDatabase) {
+  auto cache = std::make_unique<SqlSharedCache>(
+      "test_nik", *store_, temp_dir_.GetPath(), base::DoNothing(),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      cleanup_tracker_);
+
+  base::test::TestFuture<
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error>>
+      delete_future;
+  cache->DeleteEntries({SqlSharedCacheRowId(1)}, delete_future.GetCallback());
+  async_task_manager_.RunUntilAllTasksCompleteForTest();
+  auto result = delete_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error(),
+      SqlSharedCacheIsolatedDatabase::Error::kIsolatedDatabaseNotAvailable);
+}
+
 }  // namespace disk_cache

@@ -63,6 +63,7 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
     kInvalidReadRange = 20,
     kFailedToReadBlob = 21,
     kFailedToShareConnection = 22,
+    kIsolatedDatabaseNotAvailable = 23,
   };
 
   using ReadResult = SqlPersistentStore::ReadResult;
@@ -114,6 +115,10 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
   // Deletes an entry by its row ID. Used for cleaning up partial entries.
   void DeleteEntry(SqlSharedCacheRowId shared_cache_row_id);
 
+  // Deletes entries specified by `shared_cache_row_ids` from the database.
+  base::expected<void, Error> DeleteEntries(
+      const std::vector<SqlSharedCacheRowId>& shared_cache_row_ids);
+
   // Releases `db_assets_`.
   void Cleanup();
 
@@ -123,6 +128,7 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
     kWriteBody,
     kRead,
     kDeleteEntry,
+    kDeleteEntries,
   };
 
   using SimFailedCallback =

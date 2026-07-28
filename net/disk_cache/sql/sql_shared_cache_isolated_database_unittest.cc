@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -344,6 +345,125 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, ReadBeyondWrittenBody) {
   EXPECT_EQ(db.Read(key, *row_id_or_error, /*offset=*/2, read_buffer_overflow)
                 .error(),
             SqlSharedCacheIsolatedDatabase::Error::kFailedToReadBlob);
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesSuccess) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key1("0/0/https://example.com/1");
+  CacheEntryKey key2("0/0/https://example.com/2");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  auto row1 = db.Insert(key1, headers, 3, body);
+  ASSERT_TRUE(row1.has_value());
+  auto row2 = db.Insert(key2, headers, 3, body);
+  ASSERT_TRUE(row2.has_value());
+
+  // Delete row 1.
+  EXPECT_TRUE(db.DeleteEntries({*row1}).has_value());
+
+  // Verify row 1 cannot be read.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  EXPECT_EQ(db.Read(key1, *row1, /*offset=*/0, read_buf).error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+
+  // Verify row 2 can still be read.
+  EXPECT_TRUE(db.Read(key2, *row2, /*offset=*/0, read_buf).has_value());
+
+  // Delete row 2.
+  EXPECT_TRUE(db.DeleteEntries({*row2}).has_value());
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesFailureForTesting) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
+      [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
+        return op == SqlSharedCacheIsolatedDatabase::OperationForTesting::
+                         kDeleteEntries;
+      }));
+
+  EXPECT_EQ(db.DeleteEntries({SqlSharedCacheRowId(1)}).error(),
+            SqlSharedCacheIsolatedDatabase::Error::kFailedForTesting);
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteMultipleEntriesAtOnce) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key1("0/0/https://example.com/1");
+  CacheEntryKey key2("0/0/https://example.com/2");
+  CacheEntryKey key3("0/0/https://example.com/3");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  auto row1 = db.Insert(key1, headers, 3, body);
+  ASSERT_TRUE(row1.has_value());
+  auto row2 = db.Insert(key2, headers, 3, body);
+  ASSERT_TRUE(row2.has_value());
+  auto row3 = db.Insert(key3, headers, 3, body);
+  ASSERT_TRUE(row3.has_value());
+
+  // Delete row 1 and row 2 simultaneously.
+  EXPECT_TRUE(db.DeleteEntries({*row1, *row2}).has_value());
+
+  // Verify row 1 and row 2 cannot be read.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  EXPECT_EQ(db.Read(key1, *row1, /*offset=*/0, read_buf).error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+  EXPECT_EQ(db.Read(key2, *row2, /*offset=*/0, read_buf).error(),
+            SqlSharedCacheIsolatedDatabase::Error::kEntryNotFound);
+
+  // Verify row 3 can still be read.
+  EXPECT_TRUE(db.Read(key3, *row3, /*offset=*/0, read_buf).has_value());
+
+  // Delete remaining row 3.
+  EXPECT_TRUE(db.DeleteEntries({*row3}).has_value());
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteNonExistentEntries) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  CacheEntryKey key1("0/0/https://example.com/1");
+  auto headers = base::MakeRefCounted<net::IOBufferWithSize>(4);
+  headers->span().copy_from(base::span<const uint8_t>({1, 2, 3, 4}));
+  auto body = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  body->span().copy_from(base::span<const uint8_t>({5, 6, 7}));
+
+  auto row1 = db.Insert(key1, headers, 3, body);
+  ASSERT_TRUE(row1.has_value());
+
+  const SqlSharedCacheRowId non_existent_row(9999);
+
+  // Delete non-existent row.
+  EXPECT_TRUE(db.DeleteEntries({non_existent_row}).has_value());
+
+  // Verify row 1 can still be read.
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(3);
+  EXPECT_TRUE(db.Read(key1, *row1, /*offset=*/0, read_buf).has_value());
+
+  // Delete existing row 1 and non-existent row together.
+  EXPECT_TRUE(db.DeleteEntries({*row1, non_existent_row}).has_value());
+}
+
+TEST_P(SqlSharedCacheIsolatedDatabaseTest, DeleteEntriesEmptyVectorDeath) {
+  SqlSharedCacheDbId db_id(1);
+  SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
+  ASSERT_TRUE(db.Init().has_value());
+
+  EXPECT_CHECK_DEATH(std::ignore = db.DeleteEntries({}));
 }
 
 }  // namespace disk_cache
