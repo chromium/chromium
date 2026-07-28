@@ -710,6 +710,7 @@ mojom("mojo_bindings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "experimental_triggering/glic_experimental_triggering_coordinator_unittest.cc",
     "glic_settings_util_unittest.cc",
     "host/context/glic_sharing_utils_unittest.cc",
     "host/glic_web_contents_warming_pool_unittest.cc",
