@@ -267,6 +267,71 @@ TEST_P(PaymentRequestValidationTest,
   EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
+class MockObserverForTest : public PaymentRequest::ObserverForTest {
+ public:
+  MOCK_METHOD(void, OnErrorDisplayed, (), (override));
+
+  void OnCanMakePaymentCalled() override {}
+  void OnCanMakePaymentReturned() override {}
+  void OnHasEnrolledInstrumentCalled() override {}
+  void OnHasEnrolledInstrumentReturned() override {}
+  void OnNotSupportedError() override {}
+  void OnConnectionTerminated() override {}
+  void OnPayCalled() override {}
+  void OnAbortCalled() override {}
+  void OnInternalError() override {}
+
+  base::WeakPtr<MockObserverForTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockObserverForTest> weak_ptr_factory_{this};
+};
+
+// Tests that PaymentRequest handles the case where showing the error message
+// synchronously destroys the hosting WebContents (and therefore the
+// PaymentRequest itself), which can happen when closing the dialog widget
+// shifts activation to an observer that closes the payment window.
+TEST_P(PaymentRequestValidationTest,
+       CompleteFailWithSynchronousWebContentsDestruction) {
+  auto delegate = CreateMockDelegate();
+  auto* delegate_ptr = delegate.get();
+
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  PaymentRequest* request = new PaymentRequest(
+      std::move(delegate), payment_request.BindNewPipeAndPassReceiver());
+  base::WeakPtr<PaymentRequest> weak_request = request->GetWeakPtr();
+
+  MockObserverForTest mock_observer;
+  request->set_observer_for_test(mock_observer.GetWeakPtr());
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  method_data.push_back(CreateSpcMethodData());
+
+  payment_request->Init(std::move(client_remote), std::move(method_data),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request->Show(/*wait_for_updated_details=*/false,
+                        /*had_user_activation=*/true);
+
+  // Due to the observer local copy trick, the observer still gets notified
+  // even if the PaymentRequest is synchronously destroyed.
+  EXPECT_CALL(mock_observer, OnErrorDisplayed()).Times(1);
+
+  EXPECT_CALL(*delegate_ptr, ShowErrorMessage()).WillOnce([this] {
+    DeleteContents();
+  });
+
+  payment_request->Complete(mojom::PaymentComplete::FAIL);
+  payment_request.FlushForTesting();
+
+  // The PaymentRequest was safely destroyed without triggering the UAF.
+  EXPECT_FALSE(weak_request);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PaymentRequestValidationTest, testing::Bool());
 
 }  // namespace
