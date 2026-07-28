@@ -29,6 +29,20 @@ if (toolkit_views) {
   }
 }
 
+source_set("tracing") {
+  testonly = true
+  sources = [
+    "tracing.cc",
+    "tracing.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/tracing/public/mojom",
+  ]
+}
+
 source_set("in_process_browser_test_mixin") {
   testonly = true
   sources = [

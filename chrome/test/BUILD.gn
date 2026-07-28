@@ -199,6 +199,7 @@ static_library("test_support") {
     "//chrome/test/base:test_switches",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile_impl",
+    "//chrome/test/base:tracing",
   ]
 
   sources = [
@@ -217,8 +218,6 @@ static_library("test_support") {
     "base/chrome_unit_test_suite.h",
     "base/scoped_metrics_service_for_synthetic_trials.cc",
     "base/scoped_metrics_service_for_synthetic_trials.h",
-    "base/tracing.cc",
-    "base/tracing.h",
     "base/web_feature_histogram_tester.cc",
     "base/web_feature_histogram_tester.h",
     "base/web_ui_mocha_browser_test.cc",
