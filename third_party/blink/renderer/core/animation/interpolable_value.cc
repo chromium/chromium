@@ -231,7 +231,7 @@ void InterpolableNumber::Add(const InterpolableValue& other) {
 
 void InterpolableList::Add(const InterpolableValue& other) {
   const auto& other_list = To<InterpolableList>(other);
-  DCHECK_EQ(other_list.length(), length());
+  CHECK_EQ(other_list.length(), length());
   for (wtf_size_t i = 0; i < length(); i++)
     values_[i]->Add(*other_list.values_[i]);
 }
@@ -239,7 +239,7 @@ void InterpolableList::Add(const InterpolableValue& other) {
 void InterpolableList::ScaleAndAdd(double scale,
                                    const InterpolableValue& other) {
   const auto& other_list = To<InterpolableList>(other);
-  DCHECK_EQ(other_list.length(), length());
+  CHECK_EQ(other_list.length(), length());
   for (wtf_size_t i = 0; i < length(); i++)
     values_[i]->ScaleAndAdd(scale, *other_list.values_[i]);
 }
