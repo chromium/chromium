@@ -35,7 +35,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -115,17 +114,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
        .session_allows_drag_and_drop = session_allows_drag_and_drop}));
 
   source->AddBoolean("isTopChromeSearchbox", false);
-  source->AddBoolean("isTouchUi", ui::TouchUiController::Get()->touch_ui());
-  source->AddBoolean("omniboxAimPopupEnabled",
-                     omnibox::IsAimPopupFeatureEnabled());
-  source->AddBoolean("omniboxShowContextButtonSuggestionLabel",
-                     omnibox::kContextButtonShowSuggestionLabel.Get());
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
-  source->AddBoolean("webuiOmniboxPopupSelectionControlEnabled",
-                     base::FeatureList::IsEnabled(
-                         omnibox::kWebUIOmniboxPopupSelectionControl));
 
   source->AddBoolean("reportMetrics", true);
   source->AddString("charTypedToPaintMetricName",
@@ -162,9 +153,6 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                      omnibox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
-  source->AddBoolean("composeboxShowLensSearchChip",
-                     omnibox::IsAimPopupEnabled(profile_) &&
-                         omnibox::kShowLensSearchChip.Get());
 
   source->AddBoolean("searchboxShowComposeEntrypoint", IsAimEligible(profile_));
   source->AddBoolean("ntpRealboxNextEnabled", IsFuseboxEligible(profile_));
@@ -175,13 +163,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxSmartComposeEnabled",
                      omnibox::kShowSmartCompose.Get());
-  source->AddBoolean("contextButtonHasBackground",
-                     omnibox::kContextButtonHasBackground.Get());
   source->AddBoolean("webuiOmniboxSimplificationEnabled",
                      base::FeatureList::IsEnabled(
                          omnibox::internal::kWebUIOmniboxSimplification));
-  source->AddBoolean("hideClassicContextButton",
-                     omnibox::kHideClassicContextButton.Get());
   source->AddBoolean(
       "contextManagementInComposeboxEnabled",
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
