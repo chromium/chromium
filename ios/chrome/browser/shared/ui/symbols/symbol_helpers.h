@@ -20,6 +20,9 @@ extern "C" {
 // Returns a SF Symbol to be used in a toolbar to symbolize "close".
 UIImage* DefaultCloseButtonForToolbar();
 
+// Returns a SF Symbol to be used in a toolbar to symbolize "done".
+UIImage* DefaultDoneButtonForToolbar();
+
 // Returns a SF symbol named `symbol_name` configured with the given
 // `configuration`.
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
