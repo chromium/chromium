@@ -103,7 +103,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_state.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -2934,17 +2933,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
       return CheckPseudoActiveNavigation(context, result);
     case CSSSelector::kPseudoNavSource:
-      DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
+      DCHECK(RuntimeEnabledFeatures::NavigationStateEnabled());
       if (const auto* state = NavigationState::Get(&element.GetDocument())) {
         if (&element == state->GetSourceElement()) {
           return true;
         }
       }
-
-      // TODO(crbug.com/436805487) Find a better solution. For now we need a
-      // RouteMap instance in order to trigger style recalc of source elements
-      // for :nav-source, when navigation starts and ends.
-      RouteMap::Ensure(element.GetDocument()).SetNeedsStyleUpdateOnNavigation();
       return false;
     case CSSSelector::kPseudoLang: {
       auto* vtt_element = DynamicTo<VTTElement>(element);

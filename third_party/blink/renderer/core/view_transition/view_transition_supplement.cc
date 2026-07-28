@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -342,11 +344,11 @@ void ViewTransitionSupplement::OnTransitionFinished(
     }
   }
 
-  if (RouteMap* route_map = RouteMap::Get(document_)) {
+  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
     // This view transition, which is now finished, may be the one reason why
-    // there's still a "current navigation state". Therefore, notify the route
-    // map, so that the current navigation (if any) can finish.
-    route_map->OnNavigationDone();
+    // there's still a "current navigation state". Therefore, attempt finish any
+    // current navigation.
+    NavigationState::AttemptFinishNavigationAndDestroy(document_);
   }
 }
 

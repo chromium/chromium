@@ -21,7 +21,6 @@
 namespace blink {
 
 class Document;
-class Element;
 class Route;
 class URLPattern;
 
@@ -72,8 +71,8 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   const Route* FindAnonymousRoute(const AtomicString& url_pattern_string) const;
 
   // Re-match all routes. Schedule for re-evaluation of CSS rules if something
-  // changed.
-  void UpdateActiveRoutes();
+  // changed. NavigationState may be nullptr.
+  void UpdateActiveRoutes(NavigationState*);
 
   // TODO(crbug.com/436805487): We probably don't need to keep this.
   void GetActiveRoutesForTesting(NavigationPreposition, MatchCollection*) const;
@@ -84,31 +83,29 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   // Navigation API.
   void EstablishNavigationStateFromActivation();
 
-  // Set the URLs that we're navigating between at the start of navigation. This
-  // is used to match @route "from" (and "to") rules. This will establish a
-  // NavigationState object. If one already exists, it will be overwritten.
-  void OnNavigationStart(const KURL& previous_url,
-                         const KURL& next_url,
-                         Element* source_element);
+  // Set the navigation as started, based on the current NavigationState. This
+  // is used to match @route "from" (and "to") rules.
+  void SetNavigationStarted();
 
-  void OnNavigationTraverse(NavigationState::HistoryTraverseType type);
+  void SetTraverseType(NavigationState::HistoryTraverseType type);
 
   // The current URL has changed. This is used to match @route "at" and "with"
   // rules. What was "at" is now "with", and vice versa.
-  void OnNavigationCommitted();
+  void SetCommitted();
 
-  // Clear the URL that we're navigating between when the navigation is
-  // complete. Calling this if there's no active navigation is allowed, and has
-  // no effect.
-  void OnNavigationDone();
+  // Finish the navigation if allowed, and update routes. Calling this if
+  // there's no active navigation is allowed, and has no effect.
+  //
+  // Returns false if we cannot finish yet, e.g. due to an active view
+  // transition.
+  bool AttemptSetNavigationFinished();
 
   void OnPreviewStart();
   void OnPreviewFinished();
 
-  const NavigationState* GetNavigationState() const {
-    return navigation_state_;
+  bool IsActiveNavigation() const {
+    return !!NavigationState::Get(&GetDocument());
   }
-  bool IsActiveNavigation() const { return !!navigation_state_; }
 
   // Get the "active navigation URL", given the specified preposition.
   //
@@ -120,8 +117,6 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
 
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
-
-  Member<NavigationState> navigation_state_;
 
   bool has_history_rules_ = false;
 

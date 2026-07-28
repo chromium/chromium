@@ -4290,6 +4290,12 @@
       implied_by: ["SoftNavigationHeuristics"],
     },
     {
+      // NavigationState class and the :nav-source CSS pseudo-class.
+      name: "NavigationState",
+      status: "experimental",
+      implied_by: ["RouteMatching"],
+    },
+    {
       // Exposes navigation redirect timing (redirectCount, redirectStart and
       // redirectEnd) for cross-origin redirect chains when every redirect opts
       // in to the navigation's destination origin via Timing-Allow-Origin and

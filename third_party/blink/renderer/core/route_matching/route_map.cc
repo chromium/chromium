@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_activation.h"
@@ -35,7 +34,6 @@ RouteMap::RouteMap() : Supplement<Document>(nullptr) {
 void RouteMap::Trace(Visitor* v) const {
   v->Trace(routes_);
   v->Trace(anonymous_routes_);
-  v->Trace(navigation_state_);
   Supplement<Document>::Trace(v);
 }
 
@@ -80,7 +78,7 @@ void RouteMap::AddRouteFromRule(const String& dashed_ident,
   route->AddPattern(url_pattern);
   routes_.insert(dashed_ident, route);
   SetNeedsStyleUpdateOnNavigation();
-  route->UpdateMatchStatus(navigation_state_);
+  route->UpdateMatchStatus(NavigationState::Get(&GetDocument()));
 }
 
 void RouteMap::AddAnonymousRoute(const AtomicString& url_pattern_string) {
@@ -100,7 +98,7 @@ void RouteMap::AddAnonymousRoute(const AtomicString& url_pattern_string) {
   route = MakeGarbageCollected<Route>(GetDocument());
   route->AddPattern(url_pattern);
   SetNeedsStyleUpdateOnNavigation();
-  route->UpdateMatchStatus(navigation_state_);
+  route->UpdateMatchStatus(NavigationState::Get(&GetDocument()));
 }
 
 const Route* RouteMap::FindRoute(const AtomicString& route_name) const {
@@ -114,7 +112,7 @@ const Route* RouteMap::FindAnonymousRoute(
   return it == anonymous_routes_.end() ? nullptr : it->value;
 }
 
-void RouteMap::UpdateActiveRoutes() {
+void RouteMap::UpdateActiveRoutes(NavigationState* navigation_state) {
 #if DCHECK_IS_ON()
   DCHECK(!is_updating_active_routes_);
   base::AutoReset<bool> is_updating(&is_updating_active_routes_, true);
@@ -122,11 +120,11 @@ void RouteMap::UpdateActiveRoutes() {
 
   for (const auto& entry : routes_) {
     Route& route = *entry.value;
-    route.UpdateMatchStatus(navigation_state_);
+    route.UpdateMatchStatus(navigation_state);
   }
   for (const auto& entry : anonymous_routes_) {
     Route& route = *entry.value;
-    route.UpdateMatchStatus(navigation_state_);
+    route.UpdateMatchStatus(navigation_state);
   }
 }
 
@@ -158,71 +156,68 @@ void RouteMap::EstablishNavigationStateFromActivation() {
   if (!to || !from) {
     return;
   }
-  OnNavigationStart(from->url(), to->url(), /*source_element=*/nullptr);
+  NavigationState::Create(GetDocument(), from->url(), to->url(),
+                          /*source_element=*/nullptr);
+  SetNavigationStarted();
 }
 
-void RouteMap::OnNavigationStart(const KURL& previous_url,
-                                 const KURL& next_url,
-                                 Element* source_element) {
-  navigation_state_ = MakeGarbageCollected<NavigationState>(
-      previous_url, next_url, source_element);
-  UpdateActiveRoutes();
+void RouteMap::SetNavigationStarted() {
+  auto* navigation_state = NavigationState::Get(&GetDocument());
+  DCHECK(navigation_state);
+  UpdateActiveRoutes(navigation_state);
 
   // Need to update active style right away, or view transitions might glitch.
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
   style_engine.SetNeedsActiveStyleUpdate(GetDocument());
   style_engine.UpdateActiveStyle();
-
-  if (source_element) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
-  }
 }
 
-void RouteMap::OnNavigationTraverse(NavigationState::HistoryTraverseType type) {
-  DCHECK(navigation_state_);
-  navigation_state_->SetTraverseType(type);
+void RouteMap::SetTraverseType(NavigationState::HistoryTraverseType type) {
+  auto* navigation_state = NavigationState::Get(&GetDocument());
+  DCHECK(navigation_state);
+  navigation_state->SetTraverseType(type);
   NotifyStyleEngineIfNeeded();
 }
 
-void RouteMap::OnNavigationCommitted() {
-  DCHECK(navigation_state_);
-  navigation_state_->SetPhase(NavigationPhase::kCommitted);
-  UpdateActiveRoutes();
+void RouteMap::SetCommitted() {
+  auto* navigation_state = NavigationState::Get(&GetDocument());
+  DCHECK(navigation_state);
+  navigation_state->SetPhase(NavigationPhase::kCommitted);
+  UpdateActiveRoutes(navigation_state);
   NotifyStyleEngineIfNeeded();
 }
 
-void RouteMap::OnNavigationDone() {
-  if (!navigation_state_) {
-    return;
+bool RouteMap::AttemptSetNavigationFinished() {
+  if (!NavigationState::Get(&GetDocument())) {
+    return true;
   }
   if (ViewTransitionUtils::GetTransition(GetDocument())) {
     // Even if the document has finished loading, the navigation needs to remain
     // active, since there are ongoing view transitions. When view transitions
     // are done, this function will be called again.
-    return;
+    return false;
   }
-  if (Element* source_element = navigation_state_->GetSourceElement()) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
-  }
-  navigation_state_ = nullptr;
-  UpdateActiveRoutes();
+  UpdateActiveRoutes(/*navigation_state=*/nullptr);
   NotifyStyleEngineIfNeeded();
+  return true;
 }
 
 void RouteMap::OnPreviewStart() {
-  CHECK(navigation_state_);
-  CHECK(!navigation_state_->IsInPreview());
+  auto* navigation_state = NavigationState::Get(&GetDocument());
+  CHECK(navigation_state);
+  CHECK(!navigation_state->IsInPreview());
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-  navigation_state_->SetIsInPreview(true);
+  navigation_state->SetIsInPreview(true);
   NotifyStyleEngineIfNeeded();
 }
 
 void RouteMap::OnPreviewFinished() {
-  if (!navigation_state_ || !navigation_state_->IsInPreview()) {
+  auto* navigation_state = NavigationState::Get(&GetDocument());
+  if (!navigation_state || !navigation_state->IsInPreview()) {
     return;
   }
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-  navigation_state_->SetIsInPreview(false);
+  navigation_state->SetIsInPreview(false);
   NotifyStyleEngineIfNeeded();
 }
 
@@ -230,26 +225,26 @@ void RouteMap::OnPreviewFinished() {
 //
 // https://drafts.csswg.org/css-navigation-1/#active-navigation-url
 KURL RouteMap::GetActiveNavigationURL(NavigationPreposition preposition) const {
-  if (!navigation_state_) {
+  auto* state = NavigationState::Get(&GetDocument());
+  if (!state) {
     return KURL();
   }
-  const NavigationState& state = *navigation_state_;
-  DCHECK(GetDocument().Url() == state.GetOldURL() ||
-         GetDocument().Url() == state.GetNewURL());
+  DCHECK(GetDocument().Url() == state->GetOldURL() ||
+         GetDocument().Url() == state->GetNewURL());
 
   auto at_old_url = [&] {
-    return state.GetPhase() == NavigationPhase::kLoading;
+    return state->GetPhase() == NavigationPhase::kLoading;
   };
 
   switch (preposition) {
     case NavigationPreposition::kAt:
-      return at_old_url() ? state.GetOldURL() : state.GetNewURL();
+      return at_old_url() ? state->GetOldURL() : state->GetNewURL();
     case NavigationPreposition::kFrom:
-      return state.GetOldURL();
+      return state->GetOldURL();
     case NavigationPreposition::kTo:
-      return state.GetNewURL();
+      return state->GetNewURL();
     case NavigationPreposition::kWith:
-      return !at_old_url() ? state.GetOldURL() : state.GetNewURL();
+      return !at_old_url() ? state->GetOldURL() : state->GetNewURL();
   }
 }
 

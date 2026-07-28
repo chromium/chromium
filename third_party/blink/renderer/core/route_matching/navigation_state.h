@@ -5,9 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_NAVIGATION_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_NAVIGATION_STATE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_phase.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -17,22 +20,55 @@ class Element;
 
 // Based on "navigation state":
 // https://drafts.csswg.org/css-navigation-1/#processing-model
-class NavigationState : public GarbageCollected<NavigationState> {
+class CORE_EXPORT NavigationState final
+    : public GarbageCollected<NavigationState>,
+      public Supplement<Document> {
  public:
+  static const char kSupplementName[];
+
   enum HistoryTraverseType {
     kNotTraversing,
     kBack,
     kForward,
   };
 
-  NavigationState(const KURL& old_url,
+  NavigationState(Document& document,
+                  const KURL& old_url,
                   const KURL& new_url,
                   Element* source_element)
-      : old_url_(old_url), new_url_(new_url), source_element_(source_element) {}
+      : Supplement<Document>(document),
+        old_url_(old_url),
+        new_url_(new_url),
+        source_element_(source_element) {
+    DCHECK(RuntimeEnabledFeatures::NavigationStateEnabled());
+  }
 
-  static const NavigationState* Get(const Document*);
+  static const NavigationState* Get(const Document* document) {
+    if (!document) {
+      return nullptr;
+    }
+    return Supplement<Document>::From<NavigationState>(*document);
+  }
+  static NavigationState* Get(Document* document) {
+    if (!document) {
+      return nullptr;
+    }
+    return Supplement<Document>::From<NavigationState>(*document);
+  }
 
-  void Trace(Visitor*) const;
+  // Create a new NavigationState object and associate with the specified
+  // Document.
+  static NavigationState& Create(Document&,
+                                 const KURL& old_url,
+                                 const KURL& new_url,
+                                 Element* source_element);
+
+  // Attempt to finish any ongoing navigation, based on the current
+  // NavigationState associated (if any) with the specified Document. Will
+  // destroy that NavigationState if it was possible to finish the navigation.
+  static void AttemptFinishNavigationAndDestroy(Document*);
+
+  void Trace(Visitor*) const final;
 
   bool Equal(const NavigationState& other) const {
     return old_url_ == other.old_url_ && new_url_ == other.new_url_ &&

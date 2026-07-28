@@ -1330,18 +1330,16 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
                 kRuleHasNoSpecialState, nullptr /* container_queries */,
                 cascade_layer, style_scope, apply_mixins_stack);
 
-  if (const auto* route_map = RouteMap::Get(medium.GetDocument())) {
-    // Need to do this for every style sheet, since each may add their own
-    // anonymous routes.
-    //
-    // TODO(crbug.com/436805487): See if we can find a better place for this.
-    // Maybe RuleSet isn't the right place. DidRoutesChange() was modeled after
-    // DidMediaQueryResultsChange(), but maybe there's a better way.
-    if (const NavigationState* new_state = route_map->GetNavigationState()) {
-      navigation_state_ = MakeGarbageCollected<NavigationState>(*new_state);
-    } else {
-      navigation_state_ = nullptr;
-    }
+  // Need to do this for every style sheet, since each may add their own
+  // anonymous routes.
+  //
+  // TODO(crbug.com/436805487): See if we can find a better place for this.
+  // Maybe RuleSet isn't the right place. DidRoutesChange() was modeled after
+  // DidMediaQueryResultsChange(), but maybe there's a better way.
+  if (const auto* new_state = NavigationState::Get(medium.GetDocument())) {
+    navigation_state_ = MakeGarbageCollected<NavigationState>(*new_state);
+  } else {
+    navigation_state_ = nullptr;
   }
 }
 
