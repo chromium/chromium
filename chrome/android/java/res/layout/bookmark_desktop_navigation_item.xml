@@ -8,13 +8,11 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="56dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    tools:ignore="UnusedResources"
     android:paddingStart="24dp"
     android:paddingEnd="16dp"
     android:paddingVertical="16dp"
