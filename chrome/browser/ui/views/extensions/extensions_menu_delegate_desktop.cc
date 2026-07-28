@@ -270,6 +270,9 @@ void ExtensionsMenuDelegateDesktop::OnActionRemoved(
   auto* main_page = GetMainPage(current_page_.view());
   CHECK(main_page);
   main_page->RemoveMenuEntry(index);
+  if (main_page->GetMenuEntries().empty()) {
+    CloseBubble();
+  }
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionUpdated(
@@ -406,6 +409,10 @@ void ExtensionsMenuDelegateDesktop::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get());
   PopulateMainPage(main_page.get());
+  if (main_page->GetMenuEntries().empty()) {
+    CloseBubble();
+    return;
+  }
 
   SwitchToPage(std::move(main_page));
 }

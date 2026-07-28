@@ -116,7 +116,10 @@ void ExtensionsSitePermissionsPageViewUnitTest::NavigateAndCommit(
 }
 
 void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
-  menu_coordinator()->GetExtensionsMenuWidget()->LayoutRootViewIfNecessary();
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    menu_widget->LayoutRootViewIfNecessary();
+  }
 }
 
 ExtensionsMenuMainPageView*
@@ -161,6 +164,10 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   // extension A.
   auto extensionB =
       InstallExtensionWithHostPermissions("B Extension", {"<all_urls>"});
+  // Add another extension to the menu, so that the menu doesn't close when
+  // both extension A and B are removed.
+  auto extensionC =
+      InstallExtensionWithHostPermissions("C Extension", {"<all_urls>"});
   EXPECT_TRUE(IsSitePermissionsPageOpened(extensionA->id()));
 
   // Removing extension B doesn't affect the opened site permissions page for
@@ -173,6 +180,23 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   UninstallExtension(extensionA->id());
   EXPECT_FALSE(IsSitePermissionsPageOpened(extensionA->id()));
   EXPECT_TRUE(IsMainPageOpened());
+}
+
+// Tests that removing the last extension while its site permissions page is
+// open closes the menu bubble.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       RemoveLastExtensionWhenSitePermissionsPageIsOpen) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit("http://www.url.com");
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  UninstallExtension(extension->id());
+  EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
+  EXPECT_FALSE(IsMainPageOpened());
+  EXPECT_FALSE(menu_coordinator()->IsShowing());
 }
 
 // Tests that the extension name is elided if it is too long.
@@ -197,6 +221,9 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, LongExtensionNameIsElided) {
 TEST_F(ExtensionsSitePermissionsPageViewUnitTest, DisableAndEnableExtension) {
   auto extension =
       InstallExtensionWithHostPermissions("Test Extension", {"<all_urls>"});
+  // Add another extension to the menu, so that the menu doesn't close when the
+  // only extension is disabled.
+  InstallExtensionWithHostPermissions("Other Extension", {"<all_urls>"});
 
   NavigateAndCommit("http://www.url.com");
   ShowSitePermissionsPage(extension->id());
@@ -213,6 +240,10 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, DisableAndEnableExtension) {
 // Tests that menu navigates back to the main page when an extension, whose site
 // permissions page is open, is reloaded.
 TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ReloadExtension) {
+  // Add another extension to the menu, so that the menu doesn't close when the
+  // only extension is reloaded.
+  InstallExtensionWithHostPermissions("Other Extension", {"<all_urls>"});
+
   // The extension must have a manifest to be reloaded.
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({

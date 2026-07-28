@@ -144,7 +144,10 @@ ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessButton() {
 }
 
 void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
-  menu_coordinator()->GetExtensionsMenuWidget()->LayoutRootViewIfNecessary();
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    menu_widget->LayoutRootViewIfNecessary();
+  }
 }
 
 void ExtensionsMenuMainPageViewUnitTest::ClickSitePermissionsButton(
@@ -923,6 +926,20 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   }
 }
 
+// Tests that removing the last extension while the main page is open closes the
+// menu bubble.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       CloseMenuWhenLastExtensionIsRemoved) {
+  auto extension = InstallExtension("Extension");
+
+  ShowMenu();
+  EXPECT_EQ(menu_entries().size(), 1u);
+  EXPECT_TRUE(menu_coordinator()->IsShowing());
+
+  UninstallExtension(extension->id());
+  EXPECT_FALSE(menu_coordinator()->IsShowing());
+}
+
 // Tests that the extensions menu is dynamically updated when there is a
 // navigation while the menu is opened.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
@@ -1126,7 +1143,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
   ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
   LayoutMenuIfNecessary();
 
-  // Verify the extension is visible in the menu.
+  // Re-open the menu (because it was closed when the only extension was
+  // unloaded) to show the reloaded extension.
+  ShowMenu();
   EXPECT_EQ(menu_entries().size(), 1u);
 }
 
@@ -1161,8 +1180,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   base::RunLoop().RunUntilIdle();
   LayoutMenuIfNecessary();
 
-  // Verify the extension is no longer visible in the menu.
-  EXPECT_EQ(menu_entries().size(), 0u);
+  // Verify the menu is no longer showing because the only extension was
+  // removed.
+  EXPECT_FALSE(menu_coordinator()->IsShowing());
 }
 
 // Test that user controls in the menu are hidden on restricted sites, since
