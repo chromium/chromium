@@ -1263,12 +1263,9 @@ public class TabListMediator implements TabListNotificationHandler {
                         }
 
                         onTabClosedFrom(tabId, mComponentId);
-                        Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
-                        Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
                         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
                         TabClosureParams closureParams =
                                 TabClosureParams.closeTab(closingTab)
-                                        .recommendedNextTab(nextTab)
                                         .allowUndo(allowUndo)
                                         .tabClosingSource(tabClosingSource)
                                         .build();
@@ -1317,32 +1314,6 @@ public class TabListMediator implements TabListNotificationHandler {
                                         tabGroup.savedTabs.size());
                             }
                         }
-                    }
-
-                    private @Nullable Tab getNextTab(int closingTabId) {
-                        int closingTabIndex = mModelList.indexFromTabId(closingTabId);
-
-                        if (closingTabIndex == TabModel.INVALID_TAB_INDEX) {
-                            assert false;
-                            return null;
-                        }
-
-                        int nextTabId = Tab.INVALID_TAB_ID;
-                        if (mModelList.size() > 1) {
-                            int nextTabIndex =
-                                    closingTabIndex == 0
-                                            ? mModelList.getTabIndexAfter(closingTabIndex)
-                                            : mModelList.getTabIndexBefore(closingTabIndex);
-                            nextTabId =
-                                    nextTabIndex == TabModel.INVALID_TAB_INDEX
-                                            ? Tab.INVALID_TAB_ID
-                                            : mModelList
-                                                    .get(nextTabIndex)
-                                                    .model
-                                                    .get(TabProperties.TAB_ID);
-                        }
-
-                        return getCurrentTabModelChecked().getTabById(nextTabId);
                     }
                 };
 
