@@ -374,6 +374,8 @@ personal_context::proto::Entity ToPersonalContextEntity(
         // single comma-separated string. Splitting by comma here may not
         // reconstruct the original list perfectly if any product name itself
         // contained commas.
+        // TODO(crbug.com/539796966): Pass through the StringList value and
+        // use that instead.
         for (std::string_view name : base::SplitStringPiece(
                  val, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
           entity.mutable_order()->add_product_names(std::string(name));
