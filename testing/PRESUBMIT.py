@@ -99,7 +99,7 @@ def CheckPylint(input_api, output_api):
       # TODO(crbug.com/355016915): Remove this directory-specific pylintrc
       # file as the default one gets its disable list cleaned up.
       pylintrc='pylintrc',
-      version='2.7')
+      version='3.2')
   return input_api.RunTests(pylint_checks)
 
 
