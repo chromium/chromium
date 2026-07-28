@@ -15,6 +15,9 @@
 #include <initguid.h>
 #include <windows.h>
 
+#include <shlobj.h>
+
+#include "base/base_paths_win.h"
 #include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -107,6 +110,26 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(
 std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope) {
   return GetInstallDirectory(scope).transform(
       [](const base::FilePath& path) { return path.AppendUTF8("crx_cache"); });
+}
+
+std::optional<base::FilePath> GetUpdaterTempDir() {
+  base::FilePath temp_dir;
+#if BUILDFLAG(IS_WIN)
+  if (::IsUserAnAdmin()) {
+    if (!base::PathService::Get(base::DIR_SYSTEM_TEMP, &temp_dir)) {
+      return std::nullopt;
+    }
+  } else {
+    if (!base::GetTempDir(&temp_dir)) {
+      return std::nullopt;
+    }
+  }
+#else
+  if (!base::GetTempDir(&temp_dir)) {
+    return std::nullopt;
+  }
+#endif
+  return temp_dir;
 }
 
 std::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {

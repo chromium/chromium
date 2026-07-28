@@ -896,20 +896,15 @@ std::optional<base::ScopedTempDir> CreateSecureTempDir() {
   // instead of just `base::ScopedTempDir::CreateUniqueTempDir`, because the
   // former allows setting a more recognizable prefix of
   // `COMPANY_SHORTNAME_STRING` on the temp directory.
-  base::FilePath parent_dir;
-  if (::IsUserAnAdmin()) {
-    if (!base::PathService::Get(base::DIR_SYSTEM_TEMP, &parent_dir)) {
-      return std::nullopt;
-    }
-  } else {
-    if (!base::GetTempDir(&parent_dir)) {
-      return std::nullopt;
-    }
+  std::optional<base::FilePath> parent_dir = GetUpdaterTempDir();
+  if (!parent_dir) {
+    return std::nullopt;
   }
 
   base::FilePath temp_dir;
   if (!base::CreateTemporaryDirInDir(
-          parent_dir, FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING), &temp_dir)) {
+          *parent_dir, FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING),
+          &temp_dir)) {
     return std::nullopt;
   }
 

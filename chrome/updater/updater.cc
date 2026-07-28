@@ -299,18 +299,6 @@ std::string OperatingSystemVersion() {
 #endif
 }
 
-std::optional<base::FilePath> GetUpdaterTempDir() {
-  base::FilePath temp_dir;
-#if BUILDFLAG(IS_WIN)
-  const bool get_temp_success = base::GetSecureTempDirectory(&temp_dir);
-#else
-  const bool get_temp_success = base::GetTempDir(&temp_dir);
-#endif
-  if (!get_temp_success) {
-    return std::nullopt;
-  }
-  return temp_dir;
-}
 
 base::CommandLine::StringType GetCommandLineString() {
 #if BUILDFLAG(IS_WIN)
