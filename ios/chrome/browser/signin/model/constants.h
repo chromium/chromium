@@ -70,6 +70,23 @@ enum class IdentityAvatarSize {
   Large,          // 48 pt.
 };
 
+// How to draw the AI Ring.
+enum class AITierRingSize {
+  // There are no rings.
+  kNoRing,
+  // Always keep the avatar image size the same, the avatar view can become
+  // bigger if the ring is added.
+  kImageSize,
+  // Always keep the avatar view the same, the avatar image can become smaller
+  // if the ring is added
+  kViewSize,
+};
+
+// The width of the AI tier ring.
+inline constexpr CGFloat kAiTierRingWidth = 3.0;
+// The margin between the identity disc and the AI tier ring.
+inline constexpr CGFloat kAiTierAndAvatarDistance = 2.0;
+
 namespace signin_ui {
 
 // Completion callback for a sign-in operation.
@@ -82,5 +99,8 @@ using SignoutCompletionCallback = void (^)(BOOL success,
                                            SceneState* scene_state);
 
 }  // namespace signin_ui
+
+// Accessibility identifier for the premium avatar ring.
+extern NSString* const kPremiumAvatarRingAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CONSTANTS_H_

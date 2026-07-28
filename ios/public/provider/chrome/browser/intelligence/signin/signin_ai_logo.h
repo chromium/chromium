@@ -13,7 +13,9 @@ namespace ios::provider {
 // unknown.
 NSString* GetAITierName(int ai_tier);
 
-// Returns the premium ring image.
+// TODO(crbug.com/522144942): Rename this to GetPremiumDiskImage because it
+// returns a disk and not a ring.
+// Returns the disk image to be used for the AI tier ring.
 UIImage* GetPremiumRingImage();
 
 }  // namespace ios::provider
