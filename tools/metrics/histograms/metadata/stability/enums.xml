@@ -501,6 +501,23 @@ Called by update_bad_message_reasons.py.-->
   <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
   <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
   <int value="339" label="DT_DUPLICATE_CHILD_TARGET_CREATED"/>
+  <int value="340" label="RWH_POINTER_LOCK_FROM_SANDBOXED_FRAME"/>
+  <int value="341" label="SWSI_CROSS_ORIGIN_SCRIPT_URL"/>
+  <int value="342" label="RFH_INVALID_NAVIGATION_HEADERS"/>
+  <int value="343" label="RFHI_WEBMCP_NOT_ENABLED"/>
+  <int value="344" label="RFHI_WEBMCP_UNKNOWN_TOOL_NAME"/>
+  <int value="345" label="RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME"/>
+  <int value="346" label="RFHI_WEBMCP_DUPLICATE_BIND"/>
+  <int value="347" label="RFHI_WEBMCP_DUPLICATE_SET_RECEIVER"/>
+  <int value="348" label="RFHI_WEBMCP_EXPOSED_UNTRUSTWORTHY_ORIGIN"/>
+  <int value="349" label="RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH"/>
+  <int value="350" label="RFHI_WEBMCP_INVALID_TOOL_OWNER"/>
+  <int value="351" label="NR_BAD_ORIGIN_HEADER"/>
+  <int value="352"
+      label="BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="353"
+      label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="354" label="RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
