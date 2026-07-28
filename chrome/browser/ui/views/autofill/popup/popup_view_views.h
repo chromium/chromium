@@ -43,6 +43,7 @@ namespace autofill {
 
 class AutofillPopupController;
 class PopupBnplFootnoteView;
+class PopupCenteredTextView;
 class PopupSeparatorView;
 class PopupTitleView;
 class PopupWarningView;
@@ -96,6 +97,7 @@ class PopupViewViews : public PopupBaseView,
                                   PopupTitleView*,
                                   PopupWarningView*,
                                   PopupLoadingView*,
+                                  PopupCenteredTextView*,
                                   PopupBnplFootnoteView*>;
 
   // The maximum width of the popup.

@@ -1242,6 +1242,12 @@ void PopupViewViews::CreateSuggestionViews() {
                       .expected_number_of_suggestions.value_or(1))));
           break;
         }
+        case SuggestionType::kAtMemoryFetching: {
+          rows_.push_back(body_container->AddChildView(
+              std::make_unique<PopupCenteredTextView>(
+                  suggestions[current_line_number].main_text.value)));
+          break;
+        }
         case SuggestionType::kPersonalContextNotice: {
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupPersonalContextNoticeView>(

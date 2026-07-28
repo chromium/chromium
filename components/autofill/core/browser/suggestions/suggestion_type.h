@@ -237,9 +237,12 @@ enum class SuggestionType {
   // Suggestion displaying source attribution for AtMemory search results.
   kAtMemorySourceAttribution = 96,
 
-  // Next ID: 97
+  // Suggestion shown in the fetching state of AtMemory.
+  kAtMemoryFetching = 97,
 
-  kMaxValue = kAtMemorySourceAttribution
+  // Next ID: 98
+
+  kMaxValue = kAtMemoryFetching
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

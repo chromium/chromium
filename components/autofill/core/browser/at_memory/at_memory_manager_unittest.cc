@@ -213,6 +213,11 @@ class AtMemoryManagerTest : public Test,
       MemorySearchStatus status,
       std::vector<MemorySearchResult> entries,
       std::vector<Suggestion>& final_suggestions) {
+    InSequence s;
+    EXPECT_CALL(update_callback_,
+                Run(ElementsAre(Field("type", &Suggestion::type,
+                                      SuggestionType::kAtMemoryFetching)),
+                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
     EXPECT_CALL(mock_query_service(), Query(query, _, _, _))
         .WillOnce([status, entries = std::move(entries)](
                       std::u16string_view query, const GURL& url,
@@ -221,10 +226,6 @@ class AtMemoryManagerTest : public Test,
                           callback) mutable {
           callback.Run(MemorySearchResults(status, std::move(entries)));
         });
-    InSequence s;
-    EXPECT_CALL(update_callback_,
-                Run(IsEmpty(),
-                    AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
     EXPECT_CALL(update_callback_,
                 Run(_, AutofillSuggestionTriggerSource::kAtMemoryTriggerString))
         .WillOnce(SaveArg<0>(&final_suggestions));
@@ -439,8 +440,8 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
   manager().OnFilterChanged(u"");
 }
 
-// Tests that OnSearchSubmitted triggers full search, clears currently shown
-// suggestions, and successfully updates suggestions with the results once they
+// Tests that OnSearchSubmitted triggers full search, shows the fetching
+// suggestion, and successfully updates suggestions with the results once they
 // arrive.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
@@ -451,10 +452,11 @@ TEST_F(AtMemoryManagerTest,
               Query(std::u16string_view(u"query"), _, _, _))
       .WillOnce(SaveArg<3>(&search_callback));
 
-  // Expect that executing the query immediately clears suggestions.
-  EXPECT_CALL(
-      update_callback_,
-      Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  // Expect that executing the query immediately shows the fetching suggestion.
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
 
   manager().OnSearchSubmitted(u"query");
 
@@ -1266,11 +1268,12 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
       .WillOnce(RunOnceCallback<3>(std::move(results)));
 
   InSequence s;
-  // Executing the query immediately clears existing suggestions before
+  // Executing the query immediately shows the fetching suggestion before
   // returning search results.
-  EXPECT_CALL(
-      update_callback_,
-      Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   EXPECT_CALL(update_callback_,
               Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
                                   MemoryDataType::kAddressFull),
@@ -1303,11 +1306,12 @@ TEST_F(AtMemoryManagerTest,
       .WillOnce(RunOnceCallback<3>(std::move(results)));
 
   InSequence s;
-  // Executing the query immediately clears existing suggestions before
+  // Executing the query immediately shows the fetching suggestion before
   // returning search results.
-  EXPECT_CALL(
-      update_callback_,
-      Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
   EXPECT_CALL(update_callback_,
               Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
                       MemoryDataType::kIban)),
@@ -1738,12 +1742,44 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[1].type);
 }
 
-// Tests that the personal context notice is not appended when the user does not
-// need to see the notice.
-TEST_F(AtMemoryManagerTest, PersonalContext_DoesNotAppendNoticeSuggestion) {
+// Tests that during the fetching state (while search is in progress), the UI
+// receives the `kAtMemoryFetching` meta-suggestion followed by a separator and
+// the notice card if active.
+TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
+  autofill_client().set_should_show_personal_context_at_memory_notice(true);
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(
+      form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
+      /*is_context_secure=*/true, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(
+              Field(&Suggestion::type, SuggestionType::kAtMemoryFetching),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              Field(&Suggestion::type, SuggestionType::kPersonalContextNotice)),
+          AutofillSuggestionTriggerSource::kAtMemoryTriggerString));
+
+  // Trigger query without completing it immediately to observe fetching state.
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _));
+
+  manager().OnSearchSubmitted(u"query");
+}
+
+// Tests that during the fetching state when the notice has been accepted,
+// the UI receives only `kAtMemoryFetching` meta-suggestion.
+TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
   autofill_client().set_should_show_personal_context_at_memory_notice(false);
 
-  SeeFormAndShowPopup();
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(
+      form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
+      /*is_context_secure=*/true, update_callback_.Get(),
+      ukm::kInvalidSourceId);
 
   std::vector<Suggestion> suggestions;
   EXPECT_CALL(update_callback_,

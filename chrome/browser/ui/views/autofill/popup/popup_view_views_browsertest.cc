@@ -216,6 +216,14 @@ Suggestion CreateBnplFootnoteSuggestion() {
   return bnpl_footnote;
 }
 
+Suggestion CreateAtMemoryFetchingSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
+      SuggestionType::kAtMemoryFetching);
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  return suggestion;
+}
+
 class PopupViewViewsBrowsertestBase
     : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
  public:
@@ -538,6 +546,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                   AutofillPopupView::TabbedPaneConfig(
                       {{TabbedPaneTabType::kPayNow, u"Pay now"},
                        {TabbedPaneTabType::kPayLater, u"Pay later"}}));
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AtMemoryFetching) {
+  PrepareSuggestions({CreateAtMemoryFetchingSuggestion()});
+  ShowAndVerifyUi(
+      /*popup_has_parent=*/false,
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Find and fill",
+                                         .no_results_message = u""});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

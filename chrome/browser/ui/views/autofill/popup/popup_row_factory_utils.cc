@@ -807,6 +807,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     }
     // AtMemory suggestions do not apply filter match bolding to the main text.
     case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:

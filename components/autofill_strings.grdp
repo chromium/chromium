@@ -828,6 +828,9 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE" desc="Descriptor under the query for enhanced autofill. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
     Find and fill with Gemini
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_FETCHING" desc="Descriptor for the loading state when enhanced autofill is fetching results. 'Gemini' is a brand name and should match standard branding guidelines across languages.">
+    Find and fill with Gemini
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE" desc="This error message is to help users understand that enhanced autofill wasn't able to find and fill relevant info. The technical reason is that the query is not supported by enhanced autofill. It appears on the query results empty state.">
     Couldn't find this info
   </message>

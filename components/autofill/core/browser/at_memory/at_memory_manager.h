@@ -140,6 +140,9 @@ class AtMemoryManager {
   // Sends the given suggestions to the UI.
   void SendSuggestions(std::vector<Suggestion> suggestions);
 
+  // Shows the fetching suggestion in the UI.
+  void ShowFetchingSuggestion();
+
   // Clears all currently shown suggestions in the UI.
   void ClearSuggestions();
 

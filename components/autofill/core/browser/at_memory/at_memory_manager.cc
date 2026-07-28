@@ -66,6 +66,14 @@ namespace autofill {
 
 namespace {
 
+Suggestion CreateFetchingSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_FETCHING),
+      SuggestionType::kAtMemoryFetching);
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
+}
 
 std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
   auto create_suggestion = [](SuggestionType suggestion_type, int string_id) {
@@ -1019,7 +1027,8 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
   notice.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
   if (suggestions.size() == 1u &&
-      suggestions[0].type == SuggestionType::kAtMemorySearchAffordance) {
+      (suggestions[0].type == SuggestionType::kAtMemorySearchAffordance ||
+       suggestions[0].type == SuggestionType::kAtMemoryFetching)) {
     suggestions.emplace_back(SuggestionType::kSeparator);
     suggestions.back().filtration_policy =
         Suggestion::FiltrationPolicy::kStatic;
@@ -1050,7 +1059,7 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
 
   is_searching_ = true;
   // Notify the UI that search has started.
-  ClearSuggestions();
+  ShowFetchingSuggestion();
   query_service->Query(
       filter, owner_->client().GetLastCommittedPrimaryMainFrameURL(),
       owner_->client().GetPageTitle(),
@@ -1102,6 +1111,12 @@ void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
   if (update_callback_) {
     update_callback_.Run(std::move(suggestions), trigger_source_);
   }
+}
+
+void AtMemoryManager::ShowFetchingSuggestion() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(CreateFetchingSuggestion());
+  SendSuggestions(std::move(suggestions));
 }
 
 void AtMemoryManager::ClearSuggestions() {

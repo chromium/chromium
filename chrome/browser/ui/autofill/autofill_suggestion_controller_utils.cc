@@ -69,6 +69,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
