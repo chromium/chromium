@@ -2238,7 +2238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.RawInputChangeEventDelay" units="microseconds"
-    expires_after="2026-09-09">
+    expires_after="2027-03-09">
   <owner>mattreynolds@google.com</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
@@ -2252,7 +2252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.RawInputChangeEventTimeToHandle" units="microseconds"
-    expires_after="2026-09-09">
+    expires_after="2027-03-09">
   <owner>mattreynolds@google.com</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
