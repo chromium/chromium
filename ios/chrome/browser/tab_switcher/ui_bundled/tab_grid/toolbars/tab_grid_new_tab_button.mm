@@ -95,17 +95,13 @@ UIButtonConfigurationUpdateHandler ConfigurationUpdateHandler() {
       buttonSize = kSmallSize;
     }
 
-    _symbol = SymbolWithPointSize(SymbolPlusCircleFill, symbolSize);
-
-    if (@available(iOS 18, *)) {
-      self.configuration = [UIButtonConfiguration filledButtonConfiguration];
-      _symbol = SymbolWithPointSize(SymbolPlus, symbolSize);
-      self.tintColor = UIColor.blackColor;
-      if (@available(iOS 26, *)) {
-        self.configuration = [UIButtonConfiguration glassButtonConfiguration];
-      }
-      self.configurationUpdateHandler = ConfigurationUpdateHandler();
+    self.configuration = [UIButtonConfiguration filledButtonConfiguration];
+    _symbol = SymbolWithPointSize(SymbolPlus, symbolSize);
+    self.tintColor = UIColor.blackColor;
+    if (@available(iOS 26, *)) {
+      self.configuration = [UIButtonConfiguration glassButtonConfiguration];
     }
+    self.configurationUpdateHandler = ConfigurationUpdateHandler();
 
     _imageContainer = [[UIImageView alloc] initWithImage:_symbol];
     _imageContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -150,30 +146,14 @@ UIButtonConfigurationUpdateHandler ConfigurationUpdateHandler() {
     case TabGridPageIncognitoTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-
-      if (!@available(iOS 18, *)) {
-        _imageContainer.image = SymbolWithPalette(
-            _symbol, @[ UIColor.blackColor, UIColor.whiteColor ]);
-      }
       break;
     case TabGridPageRegularTabs:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-
-      if (!@available(iOS 18, *)) {
-        _imageContainer.image =
-            SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
-      }
       break;
     case TabGridPageTabGroups:
       self.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
-
-      if (!@available(iOS 18, *)) {
-        _imageContainer.image =
-            SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
-      }
-
       break;
   }
   _page = page;
