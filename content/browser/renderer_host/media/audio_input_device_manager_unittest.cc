@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
+using testing::_;
 using testing::InSequence;
 
 namespace content {
@@ -376,6 +377,47 @@ TEST_F(AudioInputDeviceManagerNoDevicesTest,
 
     base::RunLoop().RunUntilIdle();
   }
+}
+
+// Closes a session while its asynchronous open is still pending. The pending
+// open should be aborted and the session should never be registered.
+TEST_F(AudioInputDeviceManagerNoDevicesTest, CloseWhileOpenIsPending) {
+  ASSERT_FALSE(devices_.empty());
+
+  base::UnguessableToken session_id = manager_->Open(devices_.front());
+  manager_->Close(session_id);
+
+  EXPECT_CALL(*audio_input_listener_, Opened(_, session_id)).Times(0);
+  WaitForOpenCompletion();
+
+  EXPECT_EQ(nullptr, manager_->GetOpenedDeviceById(session_id));
+}
+
+// Closes one of two pending sessions. The other session should still open
+// normally.
+TEST_F(AudioInputDeviceManagerNoDevicesTest,
+       CloseOneOfMultiplePendingSessions) {
+  ASSERT_GE(devices_.size(), 2u);
+
+  base::UnguessableToken first_session_id = manager_->Open(devices_[0]);
+  base::UnguessableToken second_session_id = manager_->Open(devices_[1]);
+  manager_->Close(first_session_id);
+
+  EXPECT_CALL(*audio_input_listener_, Opened(_, first_session_id)).Times(0);
+  EXPECT_CALL(*audio_input_listener_,
+              Opened(devices_[1].type, second_session_id))
+      .Times(1);
+  WaitForOpenCompletion();
+
+  EXPECT_EQ(nullptr, manager_->GetOpenedDeviceById(first_session_id));
+  EXPECT_NE(nullptr, manager_->GetOpenedDeviceById(second_session_id));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*audio_input_listener_,
+              Closed(devices_[1].type, second_session_id))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  manager_->Close(second_session_id);
+  run_loop.Run();
 }
 
 }  // namespace content
