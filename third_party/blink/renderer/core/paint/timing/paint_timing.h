@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 
-#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -28,7 +27,6 @@ struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
 class ImageElementTiming;
 class LocalFrame;
-class PaintTimingClient;
 class PaintTimingDetector;
 class TextElementTiming;
 
@@ -217,18 +215,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   ImageElementTiming* GetImageElementTiming() { return image_element_timing_; }
 
-  // Adds a `PaintTimingClient` to observe contentful paints. The client must
-  // not have been previously added.
-  void AddClient(PaintTimingClient*);
-
-  // Removes a previously added `PaintTimingClient`. The client must have been
-  // previously added.
-  void RemoveClient(PaintTimingClient*);
-
-  // Iterates over the `PaintTimingClient`s invoking the given function. Must
-  // not add or remove clients.
-  void ForEachClient(base::FunctionRef<void(PaintTimingClient*)>);
-
  private:
   friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
 
@@ -315,13 +301,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   // Set in some unit tests.
   Member<CallbackManager> callback_manager_;
-
-  // List of `PaintTimingClient` observers. We could use HeapObserverList for
-  // this, but in practice the list should be small (3-4 observers at most), so
-  // we don't need to optimize for removal.
-  HeapVector<Member<PaintTimingClient>> clients_;
-  // Used to enforce `clients_` is not modified during iteration.
-  bool allow_client_modifications_ = true;
 };
 
 }  // namespace blink

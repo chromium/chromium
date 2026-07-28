@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,7 +26,6 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
@@ -361,7 +359,7 @@ void PaintTiming::MarkPaintTimingInternal() {
               .Run(raw_presentation_timestamp, paint_timing_info);
         }
         if (text_element_timing && !text_records.empty()) {
-          text_element_timing->OnFramePresented(image_records, text_records);
+          text_element_timing->OnFramePresented(text_records);
         }
 
         if (soft_navigation_heuristics && may_have_lcp) {
@@ -480,7 +478,6 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(text_element_timing_);
   visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
-  visitor->Trace(clients_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -497,8 +494,6 @@ PaintTiming::PaintTiming(Document& document)
     largest_contentful_paint_manager_ =
         MakeGarbageCollected<LargestContentfulPaintManager>(
             document.domWindow());
-    AddClient(largest_contentful_paint_manager_);
-    AddClient(text_element_timing_);
   }
 }
 
@@ -785,30 +780,28 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
 }
 
 void PaintTiming::NotifyPaintFinished() {
-  DOMWindowPerformance::performance(CHECK_DEREF(GetDocument()->domWindow()))
-      ->OnPaintFinished();
   paint_timing_detector_->NotifyPaintFinished();
-
-  ForEachClient([](PaintTimingClient* client) { client->OnPaintFinished(); });
+  // We should never be painting detached frames.
+  CHECK(GetFrame());
+  LocalDOMWindow* window = GetFrame()->DomWindow();
+  CHECK(window);
+  DOMWindowPerformance::performance(*window)->OnPaintFinished();
+  if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
+    heuristics->OnPaintFinished();
+  }
 
   MarkPaintTimingInternal();
 }
 
 void PaintTiming::OnInputOrScroll() {
-  ForEachClient([](PaintTimingClient* client) { client->OnInputOrScroll(); });
-
   // `largest_contentful_paint_manager_` will be non-null as long as first input
   // has not occurred and this object wasn't created while detached (in which
   // case the associated frame cannot be targeted for input).
-  //
-  // TODO(crbug.com/503691215): Remove `largest_contentful_paint_manager_` if
-  // possible, but note we'd need to remove `largest_contentful_paint_manager_`
-  // from `clients_` during iteration.
   if (!largest_contentful_paint_manager_) {
     return;
   }
-
-  RemoveClient(largest_contentful_paint_manager_);
+  // LCP stops recording on first input or scroll.
+  largest_contentful_paint_manager_->OnFirstInputOrScroll();
   largest_contentful_paint_manager_ = nullptr;
 
   // Notify the metrics layer of the timestamp so it can determine which records
@@ -818,27 +811,6 @@ void PaintTiming::OnInputOrScroll() {
       ->timingForReporting()
       ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
   paint_timing::NotifyLoaderPerformanceTimingChanged(GetSupplementable());
-}
-
-void PaintTiming::AddClient(PaintTimingClient* client) {
-  CHECK(allow_client_modifications_);
-  DCHECK(!clients_.Contains(client));
-  clients_.push_back(client);
-}
-
-void PaintTiming::RemoveClient(PaintTimingClient* client) {
-  CHECK(allow_client_modifications_);
-  wtf_size_t count =
-      EraseIf(clients_, [&](const auto& c) { return c == client; });
-  CHECK_EQ(count, 1u);
-}
-
-void PaintTiming::ForEachClient(
-    base::FunctionRef<void(PaintTimingClient*)> callback) {
-  base::AutoReset<bool> scope(&allow_client_modifications_, false);
-  for (PaintTimingClient* client : clients_) {
-    callback(client);
-  }
 }
 
 }  // namespace blink
