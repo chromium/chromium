@@ -87,18 +87,6 @@
 namespace content {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define DISABLED_CHROMEOS(x) DISABLED_##x
-#else
-#define DISABLED_CHROMEOS(x) x
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
-#define DISABLED_CHROMEOS_AND_CASTOS(x) DISABLED_##x
-#else
-#define DISABLED_CHROMEOS_AND_CASTOS(x) x
-#endif
-
 // Represents the duration between prefetch is added and its URLRequest is
 // started (`URLResponseHead.LoadTimingInfo.request_start`).
 constexpr int kAddedToURLRequestStartLatency = 123;
@@ -2353,9 +2341,7 @@ TEST_P(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(FailedCookiesChangedAfterPrefetchStarted)) {
+TEST_P(PrefetchServiceTest, FailedCookiesChangedAfterPrefetchStarted) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -2392,9 +2378,7 @@ TEST_P(PrefetchServiceTest,
       PrefetchStatus::kPrefetchNotUsedCookiesChanged, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(SameOriginPrefetchIgnoresProxyRequirement)) {
+TEST_P(PrefetchServiceTest, SameOriginPrefetchIgnoresProxyRequirement) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -2419,9 +2403,8 @@ TEST_P(PrefetchServiceTest,
   ExpectServingReaderSuccess(GetPrefetchToServe(GURL("https://example.com")));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(NotEligibleSameSiteCrossOriginPrefetchRequiresProxy)) {
+       NotEligibleSameSiteCrossOriginPrefetchRequiresProxy) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -2794,9 +2777,7 @@ TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest,
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest,
-       DISABLED_CHROMEOS(RedirectDecoyRequest)) {
+TEST_P(PrefetchServiceAlwaysMakeDecoyRequestTest, RedirectDecoyRequest) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -2890,8 +2871,7 @@ TEST_P(PrefetchServiceTest, NonDefaultStoragePartition) {
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
+TEST_P(PrefetchServiceTest, StreamingURLLoaderSuccessCase) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -2941,8 +2921,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
   ExpectServingReaderSuccess(serving_handle);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(NoVarySearchSuccessCase)) {
+TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3037,8 +3016,7 @@ TEST_P(PrefetchServicePrePrefetchTest,
             GURL("https://example.com/?a=1"));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(PrefetchEligibleRedirect)) {
+TEST_P(PrefetchServiceTest, PrefetchEligibleRedirect) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3071,8 +3049,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(PrefetchEligibleRedirect)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
+TEST_P(PrefetchServiceTest, IneligibleRedirectCookies) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3115,9 +3092,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(IneligibleRedirectServiceWorker)) {
+TEST_P(PrefetchServiceTest, IneligibleRedirectServiceWorker) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3156,8 +3131,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(InvalidRedirect)) {
+TEST_P(PrefetchServiceTest, InvalidRedirect) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3187,9 +3161,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(InvalidRedirect)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(PrefetchSameOriginEligibleRedirect)) {
+TEST_P(PrefetchServiceTest, PrefetchSameOriginEligibleRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3228,11 +3200,10 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 // TODO(crbug.com/40265797): This test is testing the current
 // functionality, and should be removed while fixing this bug.
 TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(IneligibleSameSiteCrossOriginRequiresProxyRedirect)) {
+       IneligibleSameSiteCrossOriginRequiresProxyRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3269,9 +3240,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(RedirectDefaultToIsolatedNetworkContextTransition)) {
+TEST_P(PrefetchServiceTest, RedirectDefaultToIsolatedNetworkContextTransition) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3316,10 +3285,9 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(
-           RedirectDefaultToIsolatedNetworkContextTransitionWithProxy)) {
+
+       RedirectDefaultToIsolatedNetworkContextTransitionWithProxy) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3363,9 +3331,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(RedirectIsolatedToDefaultNetworkContextTransition)) {
+TEST_P(PrefetchServiceTest, RedirectIsolatedToDefaultNetworkContextTransition) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3412,9 +3378,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(RedirectNetworkContextTransitionBlockUntilHead)) {
+TEST_P(PrefetchServiceTest, RedirectNetworkContextTransitionBlockUntilHead) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
 
@@ -3471,9 +3435,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(RedirectInsufficientReferrerPolicy)) {
+TEST_P(PrefetchServiceTest, RedirectInsufficientReferrerPolicy) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://referrer.com"));
 
@@ -3563,9 +3525,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(blink::mojom::SpeculationEagerness::kModerate,
                         blink::mojom::SpeculationEagerness::kConservative)));
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(BlockUntilHeadReceived)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, BlockUntilHeadReceived) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3627,9 +3587,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(NVSBlockUntilHeadReceived)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, NVSBlockUntilHeadReceived) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3706,9 +3664,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(NVSBlockUntilHeadReceivedNoMatchNoNVSHeader)) {
+       NVSBlockUntilHeadReceivedNoMatchNoNVSHeader) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3786,9 +3743,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(NVSBlockUntilHeadReceivedNoMatchByNVSHeader)) {
+       NVSBlockUntilHeadReceivedNoMatchByNVSHeader) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -3868,9 +3824,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(FailedCookiesChangedWhileBlockUntilHead)) {
+       FailedCookiesChangedWhileBlockUntilHead) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
   const PrefetchType prefetch_type =
@@ -3943,9 +3898,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchPotentialCandidateServingResult::kNotServedCookiesChanged, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(FailedTimeoutWhileBlockUntilHead)) {
+       FailedTimeoutWhileBlockUntilHead) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -4005,9 +3959,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(FailedTimeoutWhileBlockUntilHeadForOlderNavigation)) {
+       FailedTimeoutWhileBlockUntilHeadForOlderNavigation) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
   const PrefetchType prefetch_type =
@@ -4100,9 +4053,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 2);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(FailedNetErrorWhileBlockUntilHead)) {
+       FailedNetErrorWhileBlockUntilHead) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
   const PrefetchType prefetch_type =
@@ -4165,10 +4117,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 // FailedCookiesChangedAfterPrefetchStartedNVSHintPrefetch and
 // NVSBlockUntilHeadReceivedMultipleMatchesByNVSHint, consider only keeping one
 // of them and removing the remaining, as they almost test the same logic.
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(
-    PrefetchServiceAlwaysBlockUntilHeadTest,
-    DISABLED_CHROMEOS_AND_CASTOS(NVSBlockUntilHeadReceivedOneMatchOneTimeout)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
+       NVSBlockUntilHeadReceivedOneMatchOneTimeout) {
   // The scenario is:
   // * Prefetch https://example.com/index.html?a=5 with NVS hint to
   //   ignore "a" and send request.
@@ -4268,10 +4218,9 @@ TEST_P(
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS_AND_CASTOS(
-           FailedCookiesChangedAfterPrefetchStartedTimedoutNVSHintPrefetch)) {
+
+       FailedCookiesChangedAfterPrefetchStartedTimedoutNVSHintPrefetch) {
   // The scenario is:
   // * Prefetch https://example.com/index.html.
   // * Queue a prefetch for https://example.com/index.html?a=1 with NVS hint to
@@ -4330,10 +4279,9 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com/index.html")));
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS_AND_CASTOS(
-           FailedCookiesChangedAfterPrefetchStartedNVSHintPrefetch)) {
+
+       FailedCookiesChangedAfterPrefetchStartedNVSHintPrefetch) {
   // The scenario is:
   // * Start prefetching https://example.com/index.html but send no head/body.
   // * Queue a prefetch for https://example.com/index.html?a=1 with NVS hint to
@@ -4415,10 +4363,9 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   // completion.
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS_AND_CASTOS(
-           NVSBlockUntilHeadReceivedMultipleMatchesByNVSHint)) {
+
+       NVSBlockUntilHeadReceivedMultipleMatchesByNVSHint) {
   // The scenario is:
   // * Prefetch https://example.com/index.html?a=5 with NVS hint to ignore "a"
   //   but mismatched NVS header and send head/body.
@@ -4524,8 +4471,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(BlockUntilHeadTimedout)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, BlockUntilHeadTimedout) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -4590,8 +4536,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       1);
 }
 
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(HeadReceivedBeforeTimeout)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, HeadReceivedBeforeTimeout) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -4655,9 +4600,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
-       DISABLED_CHROMEOS(MultipleGetPrefetchToServe)) {
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MultipleGetPrefetchToServe) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -4759,7 +4702,7 @@ INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
 // Tests that the default `BlockUntilHeadTimeout` is used if
 // `should_disable_block_until_head_timeout` is false.
 TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
-       DISABLED_CHROMEOS(DisableBlockUntilHeadTimeoutFalse)) {
+       DisableBlockUntilHeadTimeoutFalse) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
@@ -4812,7 +4755,7 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
 // Tests that the default `BlockUntilHeadTimeout` is ignored if
 // `should_disable_block_until_head_timeout` is true.
 TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
-       DISABLED_CHROMEOS(DisableBlockUntilHeadTimeoutTrue)) {
+       DisableBlockUntilHeadTimeoutTrue) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
@@ -6987,9 +6930,8 @@ INSTANTIATE_TEST_SUITE_P(
 // `PrefetchService` calls `PrefetchStreamingURLLoader::HandleRedirect`) causes
 // no crash, and the corresponding prefetch should not be served.
 // A regression test for crbug.com/396133768.
-TEST_P(
-    PrefetchServiceTest,
-    DISABLED_CHROMEOS(URLLoaderDisconnectedWhileHandlingRedirectEligibilty)) {
+TEST_P(PrefetchServiceTest,
+       URLLoaderDisconnectedWhileHandlingRedirectEligibilty) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7043,10 +6985,9 @@ TEST_P(
 // unblocks the navigation that potentially matches the corresponding
 // prefetch and thus was blocked in the match resolver (BlockUntilHead).
 // A regression test for crbug.com/396133768.√
-TEST_P(
-    PrefetchServiceTest,
-    DISABLED_CHROMEOS(
-        URLLoaderDisconnectedWhileHandlingRedirectEligibilty_BlockUntilHead)) {
+TEST_P(PrefetchServiceTest,
+
+       URLLoaderDisconnectedWhileHandlingRedirectEligibilty_BlockUntilHead) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7108,9 +7049,8 @@ TEST_P(
 //   success.
 // - Navigation Y started, which matches to A. Unblocked synchronously as
 //   success.
-TEST_P(
-    PrefetchServiceTest,
-    DISABLED_CHROMEOS(MultipleConcurrentNavigationSuccessBeforeNavigations)) {
+TEST_P(PrefetchServiceTest,
+       MultipleConcurrentNavigationSuccessBeforeNavigations) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7156,9 +7096,8 @@ TEST_P(
 // - Navigation X started, which matches to A. Blocked by A.
 // - Navigation Y started, which matches to A. Blocked by A.
 // - A received non-redirect header. Unblocks them as success.
-TEST_P(
-    PrefetchServiceTest,
-    DISABLED_CHROMEOS(MultipleConcurrentNavigationBlockUntilHeadThenSuccess)) {
+TEST_P(PrefetchServiceTest,
+       MultipleConcurrentNavigationBlockUntilHeadThenSuccess) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7215,8 +7154,7 @@ TEST_P(
 //   matches to A. Blocked by A.
 // - A received non-redirect header. Unblocks them as success/fail.
 TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(
-           MultipleConcurrentNavigationBlockUntilHeadThenSuccessFail)) {
+       MultipleConcurrentNavigationBlockUntilHeadThenSuccessFail) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7288,8 +7226,8 @@ TEST_P(PrefetchServiceTest,
 // This test checks that it is safe to call
 // `PrefetchContainer::OnDetectedCookiesChange()` multiple times.
 TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(
-           MultipleConcurrentNavigationBlockUntilHeadThenCookiesChanged)) {
+
+       MultipleConcurrentNavigationBlockUntilHeadThenCookiesChanged) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
@@ -7342,8 +7280,7 @@ TEST_P(PrefetchServiceTest,
 //   this test actually.)
 // - The eligibility check of A scceeds. Matching process proceeds and ends as
 //   success.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(PrefetchAheadOfPrerenderSuccess)) {
+TEST_P(PrefetchServiceTest, PrefetchAheadOfPrerenderSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::kPrerender2FallbackPrefetchSpecRules}, {});
@@ -7415,8 +7352,7 @@ TEST_P(PrefetchServiceTest,
 //   (Regard X as prerender, while we don't assume that in this test actually.)
 // - The eligibility check of A failed (due to non https). Matching process ends
 //   with no prefetch.
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(PrefetchAheadOfPrerenderIneligible)) {
+TEST_P(PrefetchServiceTest, PrefetchAheadOfPrerenderIneligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::kPrerender2FallbackPrefetchSpecRules}, {});
@@ -7459,8 +7395,7 @@ TEST_P(PrefetchServiceTest,
   // `PrefetchContainer::UpdateServingPageMetrics()`.
 }
 
-TEST_P(PrefetchServiceTest,
-       DISABLED_CHROMEOS(IsPrefetchDuplicateSameNoVarySearchHint)) {
+TEST_P(PrefetchServiceTest, IsPrefetchDuplicateSameNoVarySearchHint) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/std::nullopt));
