@@ -19,6 +19,8 @@
 #include "chrome/common/url_constants.h"
 #include "components/os_crypt/common/os_crypt_switches.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/common/content_switches.h"
 #include "ui/display/display_switches.h"
 
@@ -75,6 +77,14 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
   // tests as it is a security mitigation.
   command_line->AppendSwitchASCII(switches::kChangeStackGuardOnFork,
                                   switches::kChangeStackGuardOnForkDisabled);
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Adding this argument allows to bypass the sign-in promo that expands the
+  // avatar pill for signed out profiles on startup. This is needed for most
+  // tests not to be impacted by this feature.
+  command_line->AppendSwitch(
+      switches::kDisableSigninPromoOnAvatarPillForTesting);
 #endif
 }
 

@@ -2557,6 +2557,13 @@ class MAYBE_AvatarToolbarButtonSignedOutPromoBrowserTest
         /*disabled_features=*/{});
   }
 
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest::
+        SetUpDefaultCommandLine(command_line);
+    command_line->RemoveSwitch(
+        switches::kDisableSigninPromoOnAvatarPillForTesting);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2598,6 +2605,12 @@ class
         /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
                               switches::kSigninPromoOnAvatarPill},
         /*disabled_features=*/{});
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->RemoveSwitch(
+        switches::kDisableSigninPromoOnAvatarPillForTesting);
   }
 
   // AvatarToolbarButtonInterfaceBaseBrowserTest

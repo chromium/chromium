@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -912,6 +913,11 @@ class PromoStateProviderCoordinator
   void MaybeStartSignedOutTriggerTimer() {
     CHECK(base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill));
     CHECK(identity_manager_->AreRefreshTokensLoaded());
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableSigninPromoOnAvatarPillForTesting)) {
+      return;
+    }
 
     // Start a delayed timer to trigger the promo for signed out profiles.
     if (!IsSignedIn() && !signed_out_trigger_delay_timer_.IsRunning()) {

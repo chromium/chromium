@@ -30,6 +30,9 @@ extern const char kClearTokenService[];
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kDisableSigninPromoOnAvatarPillForTesting[];
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceFreDefaultBrowserStep[];
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

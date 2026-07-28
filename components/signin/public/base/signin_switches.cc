@@ -24,6 +24,12 @@ namespace switches {
 const char kClearTokenService[] = "clear-token-service";
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Disables the sign-in promo on the avatar pill for tests by default, as it has
+// impact on the startup behavior. Tests that need to test this specific
+// behavior needs to explicitly enable it.
+const char kDisableSigninPromoOnAvatarPillForTesting[] =
+    "disable-signin-promo-on-avatar-pill-for-testing";
+
 // Force enable the default browser step in the first run experience on Desktop.
 const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
 
@@ -751,7 +757,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kSigninPromoOnAvatarPillStartupDelayForPromoShow,
                    &kSigninPromoOnAvatarPill,
                    "startup_delay_for_promo_show",
-                   base::Seconds(30));
+                   base::Seconds(0));
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kSigninPromoOnAvatarPillDelayForNextPromoAllowed,
                    &kSigninPromoOnAvatarPill,
