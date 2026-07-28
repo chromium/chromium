@@ -5156,7 +5156,7 @@ TEST_P(PartitionAllocDeathTest, AcquireAfterQuarantined) {
   // Make the object in-freelist or MO-quarantined.
   allocator.root()->Free(ptr);
   EXPECT_FALSE(in_slot_metadata->IsAlive());
-  EXPECT_FALSE(in_slot_metadata->HasNonZeroRefsForTesting());
+  EXPECT_FALSE(in_slot_metadata->HasNonZeroRefs());
 
   // Because of PA_CHECK, expect Acquire() always crash if death test is
   // supported.
@@ -5589,7 +5589,7 @@ TEST_P(PartitionAllocDeathTest, AcquireUnprotectedAfterQuarantined) {
   // Make the object in-freelist or MO-quarantined.
   allocator.root()->Free(ptr);
   EXPECT_FALSE(in_slot_metadata->IsAlive());
-  EXPECT_FALSE(in_slot_metadata->HasNonZeroRefsForTesting());
+  EXPECT_FALSE(in_slot_metadata->HasNonZeroRefs());
 
   // Because of PA_CHECK, expect AcquireFromProtectedPtr() always crash
   // if death test is supported.
