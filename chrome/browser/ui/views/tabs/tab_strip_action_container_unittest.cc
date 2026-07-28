@@ -13,19 +13,14 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
-#include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -52,46 +47,9 @@
 #define MAYBE(test_name) test_name
 #endif
 
-using ::testing::NiceMock;
-
 namespace {
 using testing::SizeIs;
 }  // namespace
-
-class FakeGlicTabStripController : public FakeBaseTabStripController {
- public:
-  // `profile` must be non-null and must outlive `this`.
-  explicit FakeGlicTabStripController(bool use_otr_profile,
-                                      TestingProfile* profile)
-      : profile_(CHECK_DEREF(profile)) {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params(GetProfile(use_otr_profile),
-                                 /*user_gesture*/ true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
-  }
-
-  BrowserWindowInterface* GetBrowserWindowInterface() override {
-    return browser_.get();
-  }
-
- private:
-  Profile* GetProfile(bool use_otr_profile) const {
-    if (use_otr_profile) {
-      TestingProfile* otr_profile = TestingProfile::Builder().BuildOffTheRecord(
-          &profile_.get(), Profile::OTRProfileID::CreateUniqueForTesting());
-
-      return otr_profile;
-    }
-
-    return &profile_.get();
-  }
-
- private:
-  const raw_ref<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
-};
 
 class TabStripActionContainerTest : public ChromeViewsTestBase {
  public:
@@ -136,7 +94,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_list_bridge_.reset();
     raw_web_contents_ = nullptr;
     tab_strip_model_.reset();
-    tab_strip_.reset();
 
     web_contents_.reset();
     profile_ = nullptr;
@@ -149,17 +106,19 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
+  Profile* GetProfile(bool use_otr_profile) {
+    if (use_otr_profile) {
+      return TestingProfile::Builder().BuildOffTheRecord(
+          profile_.get(), Profile::OTRProfileID::CreateUniqueForTesting());
+    }
+    return profile_.get();
+  }
+
   void BuildGlicContainer(bool use_otr_profile) {
-    auto controller = std::make_unique<FakeGlicTabStripController>(
-        use_otr_profile, profile_.get());
+    Profile* profile = GetProfile(use_otr_profile);
 
-    tab_strip_ = std::make_unique<TabStrip>(
-        std::move(controller),
-        std::unique_ptr<NiceMock<TabHoverCardController>>());
-
-    tab_strip_model_ = std::make_unique<TabStripModel>(
-        &tab_strip_model_delegate_,
-        tab_strip_->GetBrowserWindowInterface()->GetProfile());
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, profile);
 
     tab_list_bridge_ =
         std::make_unique<TabListBridge>(*tab_strip_model_, data_host_);
@@ -170,8 +129,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
     ON_CALL(*browser_window_interface_, GetProfile())
-        .WillByDefault(::testing::Return(
-            tab_strip_->GetBrowserWindowInterface()->GetProfile()));
+        .WillByDefault(::testing::Return(profile));
     ON_CALL(*browser_window_interface_, GetActiveTabInterface)
         .WillByDefault(::testing::Return(tab_interface_.get()));
     ON_CALL(*browser_window_interface_, GetUnownedUserDataHost())
@@ -187,7 +145,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_strip_model_->AppendWebContents(std::move(web_contents_),
                                         /*foreground=*/true);
 
-    Profile* profile = tab_strip_->GetBrowserWindowInterface()->GetProfile();
     if (auto* glic_service = glic::GlicKeyedService::Get(profile)) {
       glic_split_button_controller_ =
           std::make_unique<glic::GlicSplitButtonController>(
@@ -200,7 +157,6 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
  protected:
   glic::GlicUnitTestEnvironment glic_test_environment_;
-  std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TabListBridge> tab_list_bridge_;
   std::unique_ptr<glic::GlicSplitButtonController>

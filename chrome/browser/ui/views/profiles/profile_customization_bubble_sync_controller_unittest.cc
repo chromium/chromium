@@ -16,9 +16,8 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_test_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/extensions/extension_test_util.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -84,10 +83,12 @@ class ProfileCustomizationBubbleSyncControllerTest
                       ->enabled_extensions()
                       .size());
 
-    Browser::CreateParams params(profile(), /*user_gesture=*/true);
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+    mock_browser_window_interface_ =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+    ON_CALL(*mock_browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    controller_ = std::make_unique<ProfileCustomizationBubbleSyncController>(
+        mock_browser_window_interface_.get(), profile());
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
     ntp_custom_background_service_ =
@@ -97,7 +98,8 @@ class ProfileCustomizationBubbleSyncControllerTest
   void TearDown() override {
     ntp_custom_background_service_ = nullptr;
     theme_service_ = nullptr;
-    browser_.reset();
+    controller_.reset();
+    mock_browser_window_interface_.reset();
     theme_extension_.reset();
     extensions::ExtensionServiceTestBase::TearDown();
   }
@@ -105,12 +107,9 @@ class ProfileCustomizationBubbleSyncControllerTest
   void ApplyColorAndShowBubbleWhenNoValueSynced(
       ProfileCustomizationBubbleSyncController::ShowBubbleCallback
           show_bubble_callback) {
-    browser_->GetFeatures()
-        .profile_customization_bubble_sync_controller()
-        ->ShowOnSyncFailedOrDefaultThemeForTesting(
-            kNewProfileColor, std::move(show_bubble_callback),
-            &test_sync_service_, theme_service_,
-            ntp_custom_background_service_);
+    controller_->ShowOnSyncFailedOrDefaultThemeForTesting(
+        kNewProfileColor, std::move(show_bubble_callback), &test_sync_service_,
+        theme_service_, ntp_custom_background_service_);
   }
 
   void SetSyncedProfileTheme() {
@@ -122,7 +121,7 @@ class ProfileCustomizationBubbleSyncControllerTest
     ASSERT_TRUE(theme_service_->UsingExtensionTheme());
   }
 
-  void CloseBrowser() { browser_.reset(); }
+  void DestroyController() { controller_.reset(); }
 
   void NotifyOnSyncStarted(bool waiting_for_extension_installation = false) {
     theme_service_->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
@@ -133,7 +132,8 @@ class ProfileCustomizationBubbleSyncControllerTest
   }
 
  protected:
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
+  std::unique_ptr<ProfileCustomizationBubbleSyncController> controller_;
   syncer::TestSyncService test_sync_service_;
   raw_ptr<ThemeService> theme_service_ = nullptr;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_ = nullptr;
@@ -261,12 +261,12 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest, ShouldNotShowOnTimeout) {
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
-       ShouldNotShowWhenProfileGetsDeleted) {
+       ShouldNotShowWhenControllerDestroyed) {
   base::MockCallback<base::OnceCallback<void(Outcome)>> show_bubble;
   EXPECT_CALL(show_bubble, Run(Outcome::kAbort));
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
-  CloseBrowser();
+  DestroyController();
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest, ShouldAbortIfCalledAgain) {
