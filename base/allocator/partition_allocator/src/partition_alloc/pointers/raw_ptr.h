@@ -208,7 +208,7 @@ struct IsSupportedType {
 #endif  // __OBJC__
 
       // Specific disallowed types.
-      !partition_alloc::internal::base::kSameAsAny<
+      !partition_alloc::internal::base::SameAsAny<
           T,
 #if PA_BUILDFLAG(IS_WIN)
 // raw_ptr<HWND__> is unsafe at runtime - if the handle happens to also

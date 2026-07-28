@@ -5,14 +5,13 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_TYPES_SAME_AS_ANY_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_TYPES_SAME_AS_ANY_H_
 
-#include <type_traits>
+#include <concepts>
 
 namespace partition_alloc::internal::base {
 
-// True when `T` is any of the subsequent types.
-// TODO(crbug.com/344963951): Switch to a concept when C++20 is allowed.
+// A concept that is true when `T` is any of the subsequent types.
 template <typename T, typename... Ts>
-inline constexpr bool kSameAsAny = (std::is_same_v<T, Ts> || ...);
+concept SameAsAny = (std::same_as<T, Ts> || ...);
 
 }  // namespace partition_alloc::internal::base
 
