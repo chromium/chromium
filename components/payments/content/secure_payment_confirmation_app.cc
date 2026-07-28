@@ -308,8 +308,7 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
 
 void SecurePaymentConfirmationApp::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (content::RenderFrameHost::FromID(authenticator_frame_routing_id_) ==
-      render_frame_host) {
+  if (render_frame_host->GetGlobalId() == authenticator_frame_routing_id_) {
     // The authenticator requires to be deleted before the render frame.
     authenticator_.reset();
   }

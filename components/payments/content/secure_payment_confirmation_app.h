@@ -106,6 +106,9 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   bool IsErrorDialog() const { return is_error_dialog_; }
 
   PasskeyBrowserBinder* GetPasskeyBrowserBinderForTesting();
+  webauthn::InternalAuthenticator* authenticator_for_testing() {
+    return authenticator_.get();
+  }
   void SetWaitForGetBrowserBoundKeyForTesting(
       base::OnceClosure wait_for_get_bbk) {
     wait_for_get_bbk_for_tests_ = std::move(wait_for_get_bbk);
@@ -123,8 +126,10 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
-  // Used only for comparison with the RenderFrameHost pointer in
-  // RenderFrameDeleted() method.
+  // The GlobalRenderFrameHostId of the authenticator's RenderFrameHost. Used in
+  // RenderFrameDeleted() to reset `authenticator_` once its RenderFrameHost is
+  // deleted, so that the authenticator does not outlive the frame it
+  // references.
   content::GlobalRenderFrameHostId authenticator_frame_routing_id_;
 
   const std::string effective_relying_party_identity_;

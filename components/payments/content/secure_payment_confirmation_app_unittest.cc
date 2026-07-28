@@ -28,6 +28,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -189,6 +190,43 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
   EXPECT_TRUE(on_instrument_details_ready_called_);
   EXPECT_FALSE(on_instrument_details_error_called_);
+}
+
+// Regression test for crbug.com/508976221: when the authenticator's
+// RenderFrameHost is deleted, the app must reset `authenticator_` so it does
+// not outlive the frame it references. RenderFrameDeleted() previously compared
+// using RenderFrameHost::FromID(), which returns null because the
+// RenderFrameHost is removed from the routing-id map before observers are
+// notified, so the reset was skipped and left a dangling raw_ptr.
+TEST_F(SecurePaymentConfirmationAppTest,
+       ResetsAuthenticatorOnRenderFrameDeleted) {
+  web_contents_ = web_contents_factory_.CreateWebContents(&context_);
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+
+  auto authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  content::RenderFrameHost* authenticator_frame =
+      authenticator->GetRenderFrameHost();
+
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      payment_instrument_details_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
+      /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), std::move(authenticator),
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
+
+  ASSERT_NE(nullptr, app.authenticator_for_testing());
+
+  // Deleting the authenticator's RenderFrameHost must reset the authenticator.
+  app.RenderFrameDeleted(authenticator_frame);
+
+  EXPECT_EQ(nullptr, app.authenticator_for_testing());
 }
 
 struct BrowserBoundKeyTestParams {
