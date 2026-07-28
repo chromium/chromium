@@ -1926,7 +1926,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction"
+<histogram
+    name="Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction{EntityType}"
     enum="AutofillAiPersonalContextCacheReadinessOnFirstInteraction"
     expires_after="2026-12-12">
   <owner>vidhanj@google.com</owner>
@@ -1937,6 +1938,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     focuses/clicks an Ambient Autofill supported field. Recorded at most once
     per page load.
   </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Ai.PersonalContext.NonEligibilityReason"

@@ -342,6 +342,7 @@ void AutofillAiManager::OnFormInteracted(const FormStructure& form,
           client_->GetAutofillAiPersonalContextAccessManager();
       if (access_manager) {
         LogPersonalContextCacheReadinessOnFirstInteraction(
+            *supported_type,
             GetCacheReadinessState(*access_manager,
                                    client_->GetEntityDataManager(),
                                    *supported_type));

@@ -2466,12 +2466,18 @@ TEST_F(AutofillAiManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction",
       PersonalContextCacheReadinessOnFirstInteraction::kResolvedWithData, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction.Passport",
+      PersonalContextCacheReadinessOnFirstInteraction::kResolvedWithData, 1);
 
   // Second interaction on same page DOES NOT log.
   manager().OnFormInteracted(form_structure, *form_structure.field(0),
                              ukm_source_id);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction.Passport",
+      1);
 }
 
 // Tests that the update callback is run with new suggestions when prefetch
@@ -2652,6 +2658,9 @@ TEST_P(AutofillAiManagerCacheReadinessTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction",
+      test_case.expected_readiness, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PersonalContext.Cache.ReadinessOnFirstInteraction.Passport",
       test_case.expected_readiness, 1);
 }
 
