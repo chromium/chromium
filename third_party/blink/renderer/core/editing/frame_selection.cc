@@ -146,9 +146,15 @@ const SelectionInDOMTree& FrameSelection::GetSelectionInDOMTree() const {
 }
 
 Element* FrameSelection::RootEditableElementOrDocumentElement() const {
+  if (!IsAvailable()) {
+    return nullptr;
+  }
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+  if (!IsAvailable()) {
+    return nullptr;
+  }
 
   Element* selection_root =
       ComputeVisibleSelectionInDOMTree().RootEditableElement();
