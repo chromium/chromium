@@ -440,8 +440,6 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceFormFactor.ONLY_TABLET})
-    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
     public void testToggleTabStripMetrics() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =

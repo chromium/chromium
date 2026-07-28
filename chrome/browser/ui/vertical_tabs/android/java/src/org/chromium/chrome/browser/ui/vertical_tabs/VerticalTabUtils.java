@@ -28,18 +28,6 @@ public class VerticalTabUtils {
      */
     public static final int MIN_EXPAND_WINDOW_WIDTH_DP = 652;
 
-    /** Feature parameter name for enabling Vertical Tabs by default. */
-    public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
-
-    /**
-     * Returns whether Vertical Tabs should be enabled by default for eligible users who have not
-     * explicitly set their preference.
-     */
-    public static boolean isVerticalTabsEnabledByDefault() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS, ENABLE_BY_DEFAULT_PARAM, false);
-    }
-
     /**
      * Returns whether the current device is eligible for Vertical Tabs. Vertical Tabs require the
      * AndroidVerticalTabs feature flag to be enabled and the device to be a tablet form factor.
@@ -49,30 +37,13 @@ public class VerticalTabUtils {
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    /**
-     * Returns whether Vertical Tabs are enabled.
-     *
-     * <p>VT is enabled if the device is eligible, and either: 1. The user has explicitly enabled it
-     * (preference is true). 2. The user has not set a preference, and VT is enabled by default via
-     * the "enable_by_default" feature parameter.
-     */
+    /** Returns whether Vertical Tabs are enabled by both eligibility and user preference. */
     public static boolean isVerticalTabsEnabled(Context context) {
         if (!isVerticalTabsEligible(context)) {
             return false;
         }
-        boolean defaultValue = isVerticalTabsEnabledByDefault();
         return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, defaultValue);
-    }
-
-    /**
-     * Sets whether Vertical Tabs are enabled in shared preferences.
-     *
-     * @param enabled Whether Vertical Tabs should be enabled.
-     */
-    public static void setVerticalTabsEnabled(boolean enabled) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, enabled);
+                .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
     }
 
     /** Loads a float resource value (e.g. for alpha) from the given dimen resource id. */
