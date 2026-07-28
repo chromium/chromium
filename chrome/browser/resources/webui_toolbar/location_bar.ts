@@ -18,11 +18,13 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './location_bar.css.js';
 import {getHtml} from './location_bar.html.js';
+import type {PageActionIconsElement} from './page_action_icons.js';
 import type {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 
 export interface LocationBarElement {
   $: {
     omnibox: ReadonlyOmniboxElement,
+    pageActions: PageActionIconsElement,
   };
 }
 
@@ -42,6 +44,7 @@ export class LocationBarElement extends CrLitElement {
   static override get properties() {
     return {
       locationBarState: {type: Object},
+      isPopupOpen: {type: Boolean},
     };
   }
 
@@ -61,6 +64,7 @@ export class LocationBarElement extends CrLitElement {
     locationBarFlags: {
       userInputInProgress: false,
       popupOpen: false,
+      forceAimButtonFocusRing: false,
     },
     selectedKeyword: null,
     lhsChipsState: {
@@ -82,6 +86,8 @@ export class LocationBarElement extends CrLitElement {
     contentSettingImageStates: [],
     pageActionStates: [],
   };
+
+  accessor isPopupOpen: boolean = false;
 
   private trackedElementManager_: TrackedElementManager;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -109,6 +115,13 @@ export class LocationBarElement extends CrLitElement {
     this.trackedElementManager_.stopTracking(this.$.omnibox);
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('locationBarState')) {
+      this.isPopupOpen = this.locationBarState.locationBarFlags.popupOpen;
+    }
+  }
+
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('locationBarState')) {
@@ -117,6 +130,15 @@ export class LocationBarElement extends CrLitElement {
       this.classList.toggle(
           'input-in-progress',
           this.locationBarState.locationBarFlags.userInputInProgress);
+      this.classList.toggle(
+          'no-focus-ring',
+          this.locationBarState.locationBarFlags.popupOpen ||
+              this.locationBarState.locationBarFlags.forceAimButtonFocusRing);
+      const aimButton = this.$.pageActions.aiModePageAction();
+      if (aimButton) {
+        aimButton.forceFocusRing =
+            this.locationBarState.locationBarFlags.forceAimButtonFocusRing;
+      }
     }
   }
 

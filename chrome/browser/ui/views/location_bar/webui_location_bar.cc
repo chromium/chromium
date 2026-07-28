@@ -168,6 +168,11 @@ void WebUILocationBar::PropagateOmniboxUpdate(
   }
 }
 
+void WebUILocationBar::PropagateApplyFocusRingToAimButton(bool force_focus) {
+  force_aim_button_focus_ring_ = force_focus;
+  UpdateLocationBarFlagsState();
+}
+
 void WebUILocationBar::PropagateFocusRequest(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
   // TODO(crbug.com/503784990): Handle immersive lock; this is tricky since
@@ -439,8 +444,6 @@ gfx::Size WebUILocationBar::PreferredSize() const {
 }
 
 void WebUILocationBar::Update(content::WebContents* contents) {
-  NOTIMPLEMENTED();  // Or rather needs a bunch more
-
   if (contents) {
     omnibox_view_->OnTabChanged(contents);
   } else {
@@ -454,6 +457,7 @@ void WebUILocationBar::Update(content::WebContents* contents) {
     active_contents = browser_->tab_strip_model()->GetActiveWebContents();
   }
   page_action_control_.UpdateController(active_contents);
+  page_action_control_.SetShouldHidePageActions(ShouldHideRHSIcons());
 
   OnChanged();
 }
@@ -763,10 +767,7 @@ void WebUILocationBar::AnnounceAlert(const std::u16string& announcement) {
 }
 
 bool WebUILocationBar::ShouldHideContentSettingImage() {
-  if (omnibox_controller_->edit_model()->user_input_in_progress()) {
-    return true;
-  }
-  return omnibox_controller_->IsPopupOpen();
+  return ShouldHideRHSIcons();
 }
 
 content::WebContents* WebUILocationBar::GetContentSettingWebContents() {
@@ -796,6 +797,18 @@ OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
   return permission_dashboard_->GetIndicatorChip()->GetVisible() ||
          permission_dashboard_->GetRequestChip()->GetVisible();
+}
+
+bool WebUILocationBar::ShouldHideRHSIcons() {
+  // When the user is typing in the omnibox, the page action icons are no longer
+  // associated with the current omnibox text, so hide them.
+  if (omnibox_controller_->edit_model()->user_input_in_progress()) {
+    return true;
+  }
+
+  // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
+  // The page action icons are not relevant to the displayed suggestions.
+  return omnibox_controller_->IsPopupOpen();
 }
 
 void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {
@@ -895,6 +908,8 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
   location_bar_flags->user_input_in_progress =
       omnibox_controller_->edit_model()->user_input_in_progress();
   location_bar_flags->popup_open = omnibox_controller_->IsPopupOpen();
+  location_bar_flags->force_aim_button_focus_ring =
+      force_aim_button_focus_ring_;
   toolbar_delegate_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
 }
 

@@ -38,3 +38,16 @@
 .icon-placeholder {
   --cr-icon-image: url(shared/rhs_icons/insert_drive_file_outline.svg);
 }
+
+:host(.force-focus-ring) cr-icon-button {
+  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
+      var(--cr-focus-outline-color));
+}
+
+@media (forced-colors: active) {
+  :host(.force-focus-ring) cr-icon-button {
+    /* Use outline instead of box-shadow (which does not work) in Windows
+       HCM. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+}

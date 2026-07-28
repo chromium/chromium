@@ -53,6 +53,9 @@ class WebUIPageActionControl {
   // Updates the active controller based on the active tab of the browser.
   void UpdateController(content::WebContents* web_contents);
 
+  // Asks the active controller to update visibility of page actions.
+  void SetShouldHidePageActions(bool should_hide_page_actions);
+
   // Returns the current state of all visible page actions for WebUI.
   std::vector<toolbar_ui_api::mojom::PageActionStatePtr> GetPageActionStates();
 

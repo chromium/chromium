@@ -487,6 +487,9 @@ struct LocationBarFlags {
 
   // Whether the omnibox popup is open
   bool popup_open = false;
+
+  // Whether to render the AIM button as focused even when it's not.
+  bool force_aim_button_focus_ring = false;
 };
 
 // Search keyword chip, which shows up when the user enters things like
