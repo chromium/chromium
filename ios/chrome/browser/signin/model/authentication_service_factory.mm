@@ -21,24 +21,15 @@
 
 namespace {
 
-using DelegateFactory =
-    AuthenticationServiceFactory::AuthenticationServiceDelegateFactory;
-
-std::unique_ptr<AuthenticationServiceDelegate>
-BuildAuthenticationServiceDelegate(ProfileIOS* profile) {
-  return std::make_unique<AuthenticationServiceDelegateImpl>(
-      BrowsingDataRemoverFactory::GetForProfile(profile), profile->GetPrefs());
-}
-
 std::unique_ptr<KeyedService> BuildAuthenticationService(
-    DelegateFactory delegate_factory,
+    std::unique_ptr<AuthenticationServiceDelegate> delegate,
     ProfileIOS* profile) {
   auto service = std::make_unique<AuthenticationService>(
       profile, profile->GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
-  service->Initialize(std::move(delegate_factory).Run(profile));
+  service->Initialize(std::move(delegate));
   DCHECK(service->initialized());
   return service;
 }
@@ -62,16 +53,7 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegate(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  return GetFactoryWithDelegateFactory(base::IgnoreArgs<ProfileIOS*>(
-      base::ReturnValueOnce(std::move(delegate))));
-}
-
-// static
-AuthenticationServiceFactory::TestingFactory
-AuthenticationServiceFactory::GetFactoryWithDelegateFactory(
-    AuthenticationServiceDelegateFactory delegate_factory) {
-  return base::BindOnce(&BuildAuthenticationService,
-                        std::move(delegate_factory));
+  return base::BindOnce(&BuildAuthenticationService, std::move(delegate));
 }
 
 AuthenticationServiceFactory::AuthenticationServiceFactory()
@@ -90,7 +72,10 @@ std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return BuildAuthenticationService(
-      base::BindOnce(&BuildAuthenticationServiceDelegate), profile);
+      std::make_unique<AuthenticationServiceDelegateImpl>(
+          BrowsingDataRemoverFactory::GetForProfile(profile),
+          profile->GetPrefs()),
+      profile);
 }
 
 void AuthenticationServiceFactory::RegisterProfilePrefs(

@@ -81,12 +81,8 @@ class PageActionMenuMediatorTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegateFactory(
-            base::BindOnce(
-                [](ProfileIOS* profile)
-                    -> std::unique_ptr<AuthenticationServiceDelegate> {
-                  return std::make_unique<FakeAuthenticationServiceDelegate>();
-                })));
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
