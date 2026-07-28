@@ -33675,6 +33675,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarNewIncognitoTabShortcut">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed the NewTab shortcut on the toolbar while in incognito mode. iOS
+    only.
+  </description>
+</action>
+
+<action name="MobileToolbarNewIncognitoTabShortcutFullscreen">
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed the NewTab shortcut on the AppBar on an iPhone while in
+    portrait mode with Fullscreen active in incognito mode. Logged in addition
+    to the general metric.
+  </description>
+</action>
+
 <action name="MobileToolbarNewTab">
   <owner>clank-app-team@google.com</owner>
   <owner>twellington@chromium.org</owner>

@@ -575,7 +575,13 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       base::RecordAction(
           base::UserMetricsAction("MobileToolbarNewTabShortcutOnNTP"));
     }
-    base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
+    if (self.buttonFactory.style == ToolbarStyle::kIncognito) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarNewIncognitoTabShortcut"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarNewTabShortcut"));
+    }
     base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   } else {
     NOTREACHED();

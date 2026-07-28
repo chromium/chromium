@@ -609,6 +609,9 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetrics) {
   EXPECT_EQ(user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"),
             1);
   EXPECT_EQ(
+      user_action_tester.GetActionCount("MobileToolbarNewIncognitoTabShortcut"),
+      0);
+  EXPECT_EQ(
       user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 
@@ -622,7 +625,31 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetrics) {
   EXPECT_EQ(user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"),
             1);
   EXPECT_EQ(
+      user_action_tester.GetActionCount("MobileToolbarNewIncognitoTabShortcut"),
+      0);
+  EXPECT_EQ(
       user_action_tester.GetActionCount("MobileToolbarNewTabShortcutOnNTP"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
+}
+
+// Tests that the open new tab button logs incognito shortcut metrics in
+// incognito mode.
+TEST_F(AppBarViewControllerTest, TestNewTabButtonMetricsIncognito) {
+  base::UserActionTester user_action_tester;
+
+  // Set tab grid not visible (browsing mode) and incognito mode.
+  [view_controller_ setTabGridVisible:NO];
+  [view_controller_ setIncognito:YES];
+
+  // Trigger tap.
+  UIButton* button = openNewTabButton();
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  EXPECT_EQ(user_action_tester.GetActionCount("MobileToolbarNewTabShortcut"),
+            0);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("MobileToolbarNewIncognitoTabShortcut"),
+      1);
   EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 }
 
