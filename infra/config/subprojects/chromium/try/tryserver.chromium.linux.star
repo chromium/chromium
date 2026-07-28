@@ -1170,7 +1170,7 @@ gpu.try_.optional_tests_builder(
         location_filters = gpu.try_.optional_trybot_location_filters.LINUX,
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 3,
+        "luci.buildbucket.run_in_turboci": 50,
     },
     main_list_view = "try",
     max_concurrent_builds = 7,
@@ -1221,6 +1221,9 @@ try_.builder(
             cq.location_filter(path_regexp = r".*\.(js|ts)"),
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
     main_list_view = "try",
     use_javascript_coverage = True,
 )

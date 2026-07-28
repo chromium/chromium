@@ -73,6 +73,9 @@ try_.builder(
             "media/.+",
         ],
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 25,
+    },
     main_list_view = "try",
 )
 
@@ -136,6 +139,7 @@ try_.builder(
     experiments = {
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        "luci.buildbucket.run_in_turboci": 2,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
     },

@@ -286,7 +286,7 @@ try_.builder(
         on_default_cq = True,
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 2,
+        "luci.buildbucket.run_in_turboci": 50,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -383,9 +383,6 @@ try_.builder(
             "sandbox/policy/win/.+",
         ],
     ),
-    experiments = {
-        "luci.buildbucket.run_in_turboci": 25,
-    },
     # The size of the testing pool is limited.
     max_concurrent_builds = 3,
     use_clang_coverage = True,
@@ -455,7 +452,7 @@ try_.builder(
         on_default_cq = True,
     ),
     experiments = {
-        "luci.buildbucket.run_in_turboci": 2,
+        "luci.buildbucket.run_in_turboci": 50,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
