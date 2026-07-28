@@ -284,6 +284,7 @@ public class AutocompleteMediatorUnitTest {
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
         mMediator.setOmniboxSuggestionsVisualStateObserver(mVisualStateObserver);
+        mMediator.onWindowFocusChanged(true);
     }
 
     /**
@@ -1735,7 +1736,8 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void autocompleteStateChanged_nonZeroSuggest() {
+    public void onWindowFocusChanged_nonZeroSuggest() {
+
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
         var session = createSession(url, url.getSpec(), pageClassification);
@@ -1749,19 +1751,20 @@ public class AutocompleteMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
 
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.onWindowFocusChanged(false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mAutocompleteController, never()).start(any(), any(), anyInt(), anyBoolean());
 
         session.getAutocompleteInput().setUserText("test");
 
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.onWindowFocusChanged(true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
     }
 
     @Test
-    public void autocompleteStateChanged_zeroSuggest() {
+    public void onWindowFocusChanged_zeroSuggest() {
+
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -1770,10 +1773,10 @@ public class AutocompleteMediatorUnitTest {
 
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
 
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.onWindowFocusChanged(false);
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any());
 
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.onWindowFocusChanged(true);
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -1916,6 +1919,20 @@ public class AutocompleteMediatorUnitTest {
                 createSession(new GURL("https://abc.xyz"), "title", PageClassification.BLANK_VALUE);
         mMediator.beginInput(session2);
         assertFalse(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
+    }
+
+    @Test
+    public void onWindowFocusChanged_hubSearchContainerVisible() {
+        var session =
+                createSession(
+                        new GURL("https://abc.xyz"), "title", PageClassification.ANDROID_HUB_VALUE);
+
+        mMediator.beginInput(session);
+        mMediator.onWindowFocusChanged(true);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
+
+        mMediator.onWindowFocusChanged(false);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
     }
 
     @Test
@@ -2397,7 +2414,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void autocompleteStateChanged_managesObservers() {
+    public void onWindowFocusChanged_managesObservers() {
         var session = createEmptySession();
         mMediator.beginInput(session);
 
@@ -2406,16 +2423,34 @@ public class AutocompleteMediatorUnitTest {
 
         // Deactivate: should remove observers and stop autocomplete.
         clearInvocations(mAutocompleteController);
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.onWindowFocusChanged(false);
         verify(mAutocompleteController).stop(AutocompleteStopReason.CLOBBERED);
         verify(mAutocompleteController).removeOnSuggestionsReceivedListener(mMediator);
 
         // Re-activate: should install observers and trigger suggestions.
         clearInvocations(mAutocompleteController);
-        session.getAutocompleteInput().setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.onWindowFocusChanged(true);
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
         // This will trigger startZeroSuggest because it's a new tab page in setup.
         verify(mAutocompleteController).startZeroSuggest(any(), any());
+    }
+
+    @Test
+    public void isInInputSession_ignoresWindowFocus() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.onWindowFocusChanged(false);
+        // Previously this would return false. Now it should still be true.
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.onWindowFocusChanged(true);
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.endInput();
+        assertFalse(mMediator.isInInputSession());
     }
 
     private void setUpSiteSearchSpaceTrigger(
@@ -2677,6 +2712,41 @@ public class AutocompleteMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
+
+    @Test
+    public void installAutocompleteObservers_failsWhenActivityNotFocused() {
+        // Create a new mediator with activity focus set to false.
+        doReturn(false).when(mActivity).hasWindowFocus();
+        AutocompleteMediator mediator =
+                new AutocompleteMediator(
+                        mContext,
+                        mResourceProvider,
+                        mAutocompleteDelegate,
+                        mTextStateProvider,
+                        mListModel,
+                        new Handler(),
+                        () -> mModalDialogManager,
+                        null,
+                        null,
+                        mLocationBarDataProvider,
+                        tabGroupId -> {},
+                        url -> false,
+                        mOmniboxActionDelegate,
+                        mActivityLifecycleDispatcher,
+                        mEmbedder,
+                        mWindowAndroid,
+                        mDeferredImeCallback,
+                        mFuseboxCoordinator,
+                        mUiOverrides);
+        mediator.getDropdownItemViewInfoListBuilderForTest()
+                .registerSuggestionProcessor(mMockProcessor);
+
+        var session = createEmptySession();
+        mediator.beginInput(session);
+
+        // Verify that observers are NOT installed because activity is not focused.
+        verify(mAutocompleteController, never()).addOnSuggestionsReceivedListener(any());
     }
 
     @Test

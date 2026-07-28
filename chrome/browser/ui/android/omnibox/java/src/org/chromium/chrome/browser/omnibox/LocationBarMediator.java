@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
@@ -170,7 +169,6 @@ class LocationBarMediator
                 TemplateUrlServiceObserver,
                 BackPressHandler,
                 PauseResumeWithNativeObserver,
-                WindowFocusChangedObserver,
                 AppBannerManager.Observer,
                 OmniboxSuggestionsDropdownScrollListener {
 
@@ -3193,16 +3191,6 @@ class LocationBarMediator
         OmniboxFeatures.updateLastExitTimestamp();
         if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()) {
             GeolocationHeader.stopListeningForLocationUpdates();
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus) {
-            if (mCurrentInput != null
-                    && mCurrentInput.getAutocompleteState() == AutocompleteState.ENABLED) {
-                mCurrentInput.setAutocompleteState(AutocompleteState.STANDBY);
-            }
         }
     }
 
