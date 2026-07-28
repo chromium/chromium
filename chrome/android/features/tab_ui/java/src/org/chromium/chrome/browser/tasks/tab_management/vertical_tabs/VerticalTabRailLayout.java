@@ -149,7 +149,18 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent event) {
         expandOrCollapseOnHover(event);
-        return super.dispatchGenericMotionEvent(event);
+        if (super.dispatchGenericMotionEvent(event)) return true;
+        // Prevent mouse button presses/releases from falling back to the window's
+        // focused view (ContentView), which would send out-of-bounds mouse events to Blink and
+        // blur the active webpage document.
+        if (event != null && event.isFromSource(InputDevice.SOURCE_MOUSE)) {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_BUTTON_PRESS
+                    || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void expandOrCollapseOnHover(@Nullable MotionEvent event) {
