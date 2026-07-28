@@ -712,19 +712,18 @@ const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyMap::UpdateStoredComputedMetapolicies() {
+  const base::Value* cloud_policy_overrides_platform_policy = GetValue(
+      key::kCloudPolicyOverridesPlatformPolicy, base::Value::Type::BOOLEAN);
   cloud_policy_overrides_platform_policy_ =
-      GetValue(key::kCloudPolicyOverridesPlatformPolicy,
-               base::Value::Type::BOOLEAN) &&
-      GetValue(key::kCloudPolicyOverridesPlatformPolicy,
-               base::Value::Type::BOOLEAN)
-          ->GetBool();
+      cloud_policy_overrides_platform_policy &&
+      cloud_policy_overrides_platform_policy->GetBool();
 
+  const base::Value* cloud_user_policy_overrides_cloud_machine_policy =
+      GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+               base::Value::Type::BOOLEAN);
   cloud_user_policy_overrides_cloud_machine_policy_ =
-      GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
-               base::Value::Type::BOOLEAN) &&
-      GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy,
-               base::Value::Type::BOOLEAN)
-          ->GetBool();
+      cloud_user_policy_overrides_cloud_machine_policy &&
+      cloud_user_policy_overrides_cloud_machine_policy->GetBool();
 }
 #endif
 
