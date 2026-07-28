@@ -1,19 +1,29 @@
-cpp-httplib
-===========
+# cpp-httplib
 
 [![](https://github.com/yhirose/cpp-httplib/workflows/test/badge.svg)](https://github.com/yhirose/cpp-httplib/actions)
 
-A C++11 single-file header-only cross platform HTTP/HTTPS library.
+A C++11 single-file header-only cross platform HTTP/HTTPS library.<br>
+It's extremely easy to set up. Just include the **[httplib.h](https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h)** file in your code!
 
-It's extremely easy to set up. Just include the **httplib.h** file in your code!
+Learn more in the [official documentation](https://yhirose.github.io/cpp-httplib/) (built with [docs-gen](https://github.com/yhirose/docs-gen)).
 
 > [!IMPORTANT]
-> This library uses 'blocking' socket I/O. If you are looking for a library with 'non-blocking' socket I/O, this is not the one that you want.
+> This library uses 'blocking' socket I/O. If you are looking for a library with 'non-blocking' socket I/O, this is not the one that you want. Only **HTTP/1.1** is supported — HTTP/2 and HTTP/3 are not implemented.
 
-Simple examples
----------------
+> [!WARNING]
+> 32-bit platforms are **NOT supported**. Use at your own risk. The library may compile on 32-bit targets, but no security review has been conducted for 32-bit environments. Integer truncation and other 32-bit-specific issues may exist. **Security reports that only affect 32-bit platforms will be closed without action.** The maintainer does not have access to 32-bit environments for testing or fixing issues. CI includes basic compile checks only, not functional or security testing.
 
-#### Server (Multi-threaded)
+## Main Features
+
+- HTTP Server/Client
+- SSL/TLS support (OpenSSL, MbedTLS, wolfSSL)
+- [Stream API](README-stream.md)
+- [Server-Sent Events](README-sse.md)
+- [WebSocket](README-websocket.md)
+
+## Simple examples
+
+### Server
 
 ```c++
 #define CPPHTTPLIB_OPENSSL_SUPPORT
@@ -32,7 +42,7 @@ svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
 svr.listen("0.0.0.0", 8080);
 ```
 
-#### Client
+### Client
 
 ```c++
 #define CPPHTTPLIB_OPENSSL_SUPPORT
@@ -44,24 +54,31 @@ httplib::Client cli("http://yhirose.github.io");
 // HTTPS
 httplib::Client cli("https://yhirose.github.io");
 
-auto res = cli.Get("/hi");
-res->status;
-res->body;
+if (auto res = cli.Get("/hi")) {
+  res->status;
+  res->body;
+}
 ```
 
-SSL Support
------------
+## SSL/TLS Support
 
-SSL support is available with `CPPHTTPLIB_OPENSSL_SUPPORT`. `libssl` and `libcrypto` should be linked.
+cpp-httplib supports multiple TLS backends through an abstraction layer:
+
+| Backend | Define | Libraries | Notes |
+| :------ | :----- | :-------- | :---- |
+| OpenSSL | `CPPHTTPLIB_OPENSSL_SUPPORT` | `libssl`, `libcrypto` | [3.0 or later](https://www.openssl.org/policies/releasestrat.html) required |
+| Mbed TLS | `CPPHTTPLIB_MBEDTLS_SUPPORT` | `libmbedtls`, `libmbedx509`, `libmbedcrypto` | 2.x, 3.x, and 4.x supported (auto-detected); 4.x renames `libmbedcrypto` to `libtfpsacrypto` |
+| wolfSSL | `CPPHTTPLIB_WOLFSSL_SUPPORT` | `libwolfssl` | 5.x supported; must build with `--enable-opensslall` |
 
 > [!NOTE]
-> cpp-httplib currently supports only version 3.0 or later. Please see [this page](https://www.openssl.org/policies/releasestrat.html) to get more information.
+> **Mbed TLS / wolfSSL limitation:** `get_ca_certs()` and `get_ca_names()` only reflect CA certificates loaded via `load_ca_cert_store()`. Certificates loaded through `set_ca_cert_path()` or system certificates (`load_system_certs`) are not enumerable.
 
-> [!TIP]
-> For macOS: cpp-httplib now can use system certs with `CPPHTTPLIB_USE_CERTS_FROM_MACOSX_KEYCHAIN`. `CoreFoundation` and `Security` should be linked with `-framework`.
+> [!NOTE]
+> **BoringSSL (best-effort):** BoringSSL builds under `CPPHTTPLIB_OPENSSL_SUPPORT` and is exercised by CI against current upstream. Because BoringSSL does not guarantee API stability, support is best-effort — breakage may occasionally land. Two known behavioral differences vs OpenSSL: (1) BoringSSL's public headers require C++14 or later, so consumers must compile accordingly; (2) hostname verification is SAN-only per RFC 6125 §6.4.4 (no CN fallback).
 
 ```c++
-#define CPPHTTPLIB_OPENSSL_SUPPORT
+// Use either OpenSSL, Mbed TLS, or wolfSSL
+#define CPPHTTPLIB_OPENSSL_SUPPORT   // or CPPHTTPLIB_MBEDTLS_SUPPORT or CPPHTTPLIB_WOLFSSL_SUPPORT
 #include "path/to/httplib.h"
 
 // Server
@@ -82,15 +99,15 @@ cli.enable_server_certificate_verification(false);
 cli.enable_server_hostname_verification(false);
 ```
 
-> [!NOTE]
-> When using SSL, it seems impossible to avoid SIGPIPE in all cases, since on some operating systems, SIGPIPE can only be suppressed on a per-message basis, but there is no way to make the OpenSSL library do so for its internal communications. If your program needs to avoid being terminated on SIGPIPE, the only fully general way might be to set up a signal handler for SIGPIPE to handle or ignore it yourself.
-
 ### SSL Error Handling
 
-When SSL operations fail, cpp-httplib provides detailed error information through two separate error fields:
+When SSL operations fail, cpp-httplib provides detailed error information through `ssl_error()` and `ssl_backend_error()`:
+
+- `ssl_error()` - Returns the TLS-level error code (e.g., `SSL_ERROR_SSL` for OpenSSL)
+- `ssl_backend_error()` - Returns the backend-specific error code (e.g., `ERR_get_error()` for OpenSSL/wolfSSL, return value for Mbed TLS)
 
 ```c++
-#define CPPHTTPLIB_OPENSSL_SUPPORT
+#define CPPHTTPLIB_OPENSSL_SUPPORT  // or CPPHTTPLIB_MBEDTLS_SUPPORT or CPPHTTPLIB_WOLFSSL_SUPPORT
 #include "path/to/httplib.h"
 
 httplib::Client cli("https://example.com");
@@ -107,18 +124,18 @@ if (!res) {
       break;
 
     case httplib::Error::SSLLoadingCerts:
-      std::cout << "SSL cert loading failed, OpenSSL error: "
-                << std::hex << res.ssl_openssl_error() << std::endl;
+      std::cout << "SSL cert loading failed, backend error: "
+                << std::hex << res.ssl_backend_error() << std::endl;
       break;
 
     case httplib::Error::SSLServerVerification:
-      std::cout << "SSL verification failed, X509 error: "
-                << res.ssl_openssl_error() << std::endl;
+      std::cout << "SSL verification failed, verify error: "
+                << res.ssl_backend_error() << std::endl;
       break;
 
     case httplib::Error::SSLServerHostnameVerification:
-      std::cout << "SSL hostname verification failed, X509 error: "
-                << res.ssl_openssl_error() << std::endl;
+      std::cout << "SSL hostname verification failed, verify error: "
+                << res.ssl_backend_error() << std::endl;
       break;
 
     default:
@@ -127,8 +144,69 @@ if (!res) {
 }
 ```
 
-Server
-------
+### Custom Certificate Verification
+
+You can set a custom verification callback using `tls::VerifyCallback`:
+
+```c++
+httplib::Client cli("https://example.com");
+
+cli.set_server_certificate_verifier(
+    [](const httplib::tls::VerifyContext &ctx) -> bool {
+      std::cout << "Subject CN: " << ctx.subject_cn() << std::endl;
+      std::cout << "Issuer: " << ctx.issuer_name() << std::endl;
+      std::cout << "Depth: " << ctx.depth << std::endl;
+      std::cout << "Pre-verified: " << ctx.preverify_ok << std::endl;
+
+      // Inspect SANs (Subject Alternative Names)
+      for (const auto &san : ctx.sans()) {
+        std::cout << "SAN: " << san.value << std::endl;
+      }
+
+      // Return true to accept, false to reject
+      return ctx.preverify_ok;
+    });
+```
+
+### Peer Certificate Inspection
+
+On the server side, you can inspect the client's peer certificate from a request handler:
+
+```c++
+httplib::SSLServer svr("./cert.pem", "./key.pem",
+                       "./client-ca-cert.pem");
+
+svr.Get("/", [](const httplib::Request &req, httplib::Response &res) {
+  auto cert = req.peer_cert();
+  if (cert) {
+    std::cout << "Client CN: " << cert.subject_cn() << std::endl;
+    std::cout << "Serial: " << cert.serial() << std::endl;
+  }
+
+  auto sni = req.sni();
+  std::cout << "SNI: " << sni << std::endl;
+});
+```
+
+### Platform-specific Certificate Handling
+
+cpp-httplib automatically integrates with the OS certificate store on macOS and Windows. This works with all TLS backends.
+
+| Platform | Behavior | Disable (compile time) |
+| :------- | :------- | :--------------------- |
+| macOS | Loads system certs from Keychain (link `CoreFoundation` and `Security` with `-framework`). Requires Apple Clang; GCC is not supported for this feature. | `CPPHTTPLIB_DISABLE_MACOSX_AUTOMATIC_ROOT_CERTIFICATES` |
+| Windows | Verifies certs via CryptoAPI (`CertGetCertificateChain` / `CertVerifyCertificateChainPolicy`) with revocation checking | `CPPHTTPLIB_DISABLE_WINDOWS_AUTOMATIC_ROOT_CERTIFICATES_UPDATE` |
+
+On Windows, verification can also be disabled at runtime:
+
+```c++
+cli.enable_windows_certificate_verification(false);
+```
+
+> [!NOTE]
+> When using SSL, it seems impossible to avoid SIGPIPE in all cases, since on some operating systems, SIGPIPE can only be suppressed on a per-message basis, but there is no way to make the OpenSSL library do so for its internal communications. If your program needs to avoid being terminated on SIGPIPE, the only fully general way might be to set up a signal handler for SIGPIPE to handle or ignore it yourself.
+
+## Server
 
 ```c++
 #include <httplib.h>
@@ -164,6 +242,8 @@ int main(void)
     if (req.has_param("key")) {
       auto val = req.get_param_value("key");
     }
+    // Get all values for a given key (e.g., ?tag=a&tag=b)
+    auto values = req.get_param_values("tag");
     res.set_content(req.body, "text/plain");
   });
 
@@ -190,7 +270,7 @@ int main(void)
 }
 ```
 
-`Post`, `Put`, `Delete` and `Options` methods are also supported.
+`Post`, `Put`, `Patch`, `Delete` and `Options` methods are also supported.
 
 ### Bind a socket to multiple interfaces and any available port
 
@@ -256,6 +336,11 @@ The following are built-in mappings:
 
 > [!WARNING]
 > These static file server methods are not thread-safe.
+
+<!-- -->
+
+> [!NOTE]
+> On POSIX systems, the static file server rejects requests that resolve (via symlinks) to a path outside the mounted base directory. Ensure that the served directory has appropriate permissions, as managing access to the served directory is the application developer's responsibility.
 
 ### File request handler
 
@@ -365,6 +450,8 @@ svr.set_post_routing_handler([](const auto& req, auto& res) {
 
 ### Pre request handler
 
+The pre-request handler runs after the route has been matched (so `req.matched_route` and `req.path_params` are available) but **before the request body is read**. This means you can reject a request — for example on a failed authentication or authorization check — without forcing the server to buffer a potentially large body.
+
 ```cpp
 svr.set_pre_request_handler([](const auto& req, auto& res) {
   if (req.matched_route == "/user/:user") {
@@ -376,6 +463,64 @@ svr.set_pre_request_handler([](const auto& req, auto& res) {
     }
   }
   return Server::HandlerResponse::Unhandled;
+});
+```
+
+> [!NOTE]
+> Because the body has not been read yet, `req.body` and form fields parsed from the body are not available in the pre-request handler. Inspect headers, the path, query parameters, or `req.matched_route` instead.
+
+### Handler execution order
+
+`set_start_handler` runs once when the server starts. For each request, handlers run in the following order:
+
+```
+Request received
+  │
+  ├─ pre_routing_handler          route not matched yet, body not read
+  │     └─ returns Handled → stop here
+  │
+  ├─ file_request_handler         (GET/HEAD, static file serving)
+  │
+  ├─ expect_100_continue_handler  (when the request has "Expect: 100-continue")
+  │
+  ├─ route matching → req.matched_route is set
+  │
+  ├─ pre_request_handler          route matched, body NOT read yet
+  │     └─ returns Handled → stop here (route handler is skipped)
+  │
+  ├─ route handler                Get/Post/...; the request body is read first
+  │
+  └─ post_routing_handler         after routing completes
+
+  On a thrown exception → exception_handler
+  On an error status (4xx/5xx) → error_handler
+```
+
+Use `pre_routing_handler` to reject a request as early as possible, before the route is known. Use `pre_request_handler` for route-specific checks, since `req.matched_route` is available and the body has not been read yet.
+
+### Response user data
+
+`res.user_data` is a type-safe key-value store that lets pre-routing or pre-request handlers pass arbitrary data to route handlers.
+
+```cpp
+struct AuthContext {
+  std::string user_id;
+  std::string role;
+};
+
+svr.set_pre_routing_handler([](const auto& req, auto& res) {
+  auto token = req.get_header_value("Authorization");
+  res.user_data.set("auth", AuthContext{decode_token(token)});
+  return Server::HandlerResponse::Unhandled;
+});
+
+svr.Get("/me", [](const auto& /*req*/, auto& res) {
+  auto* ctx = res.user_data.get<AuthContext>("auth");
+  if (!ctx) {
+    res.status = StatusCode::Unauthorized_401;
+    return;
+  }
+  res.set_content("Hello " + ctx->user_id, "text/plain");
 });
 ```
 
@@ -419,8 +564,17 @@ svr.Post("/multipart", [&](const Request& req, Response& res) {
       std::cout << "Header: " << header.first << " = " << header.second << std::endl;
     }
 
+    // IMPORTANT: file.filename is an untrusted value from the client.
+    // Always sanitize to prevent path traversal attacks.
+    auto safe_name = httplib::sanitize_filename(file.filename);
+    if (safe_name.empty()) {
+      res.status = StatusCode::BadRequest_400;
+      res.set_content("Invalid filename", "text/plain");
+      return;
+    }
+
     // Save to disk
-    std::ofstream ofs(file.filename, std::ios::binary);
+    std::ofstream ofs(upload_dir + "/" + safe_name, std::ios::binary);
     ofs << file.content;
   }
 
@@ -455,6 +609,16 @@ svr.Post("/multipart", [&](const Request& req, Response& res) {
   res.set_content("Upload successful", "text/plain");
 });
 ```
+
+#### Filename Sanitization
+
+`file.filename` in multipart uploads is an untrusted value from the client. Always sanitize before using it in file paths:
+
+```cpp
+auto safe = httplib::sanitize_filename(file.filename);
+```
+
+This function strips path separators (`/`, `\`), null bytes, leading/trailing whitespace, and rejects `.` and `..`. Returns an empty string if the filename is unsafe.
 
 ### Receive content with a content receiver
 
@@ -616,6 +780,10 @@ svr.set_keep_alive_timeout(10);  // Default is 5
 svr.set_read_timeout(5, 0); // 5 seconds
 svr.set_write_timeout(5, 0); // 5 seconds
 svr.set_idle_interval(0, 100000); // 100 milliseconds
+
+// std::chrono is also supported
+svr.set_read_timeout(std::chrono::seconds(5));
+svr.set_keep_alive_timeout(std::chrono::seconds(10));
 ```
 
 ### Set maximum payload length for reading a request body
@@ -633,24 +801,37 @@ Please see [Server example](https://github.com/yhirose/cpp-httplib/blob/master/e
 
 ### Default thread pool support
 
-`ThreadPool` is used as the **default** task queue, with a default thread count of 8 or `std::thread::hardware_concurrency() - 1`, whichever is greater. You can change it with `CPPHTTPLIB_THREAD_POOL_COUNT`.
+`ThreadPool` is used as the **default** task queue, with dynamic scaling support. By default, it maintains a base thread count of 8 or `std::thread::hardware_concurrency() - 1` (whichever is greater), and can scale up to 4x that count under load. You can change these with `CPPHTTPLIB_THREAD_POOL_COUNT` and `CPPHTTPLIB_THREAD_POOL_MAX_COUNT`.
 
-If you want to set the thread count at runtime, there is no convenient way... But here is how.
+When all threads are busy and a new task arrives, a temporary thread is spawned (up to the maximum). When a dynamic thread finishes its task and the queue is empty, or after an idle timeout, it exits automatically. The idle timeout defaults to 3 seconds, configurable via `CPPHTTPLIB_THREAD_POOL_IDLE_TIMEOUT`.
+
+If you want to set the thread counts at runtime:
 
 ```cpp
-svr.new_task_queue = [] { return new ThreadPool(12); };
+svr.new_task_queue = [] { return new ThreadPool(/*base_threads=*/8, /*max_threads=*/64); };
 ```
+
+#### Max queued requests
 
 You can also provide an optional parameter to limit the maximum number
 of pending requests, i.e. requests `accept()`ed by the listener but
 still waiting to be serviced by worker threads.
 
 ```cpp
-svr.new_task_queue = [] { return new ThreadPool(/*num_threads=*/12, /*max_queued_requests=*/18); };
+svr.new_task_queue = [] { return new ThreadPool(/*base_threads=*/12, /*max_threads=*/0, /*max_queued_requests=*/18); };
 ```
 
 Default limit is 0 (unlimited). Once the limit is reached, the listener
 will shutdown the client connection.
+
+#### Idle timeout for dynamic threads
+
+The idle timeout for dynamic threads can also be set at runtime via the
+fourth parameter (in seconds):
+
+```cpp
+svr.new_task_queue = [] { return new ThreadPool(/*base_threads=*/8, /*max_threads=*/64, /*max_queued_requests=*/0, /*idle_timeout_sec=*/10); };
+```
 
 ### Override the default thread pool with yours
 
@@ -682,8 +863,7 @@ svr.new_task_queue = [] {
 };
 ```
 
-Client
-------
+## Client
 
 ```c++
 #include <httplib.h>
@@ -721,7 +901,7 @@ httplib::SSLClient cli("localhost");
 Here is the list of errors from `Result::error()`.
 
 ```c++
-enum Error {
+enum class Error {
   Success = 0,
   Unknown,
   Connection,
@@ -738,6 +918,24 @@ enum Error {
   Compression,
   ConnectionTimeout,
   ProxyConnection,
+  ConnectionClosed,
+  Timeout,
+  ResourceExhaustion,
+  TooManyFormDataFiles,
+  ExceedMaxPayloadSize,
+  ExceedUriMaxLength,
+  ExceedMaxSocketDescriptorCount,
+  InvalidRequestLine,
+  InvalidHTTPMethod,
+  InvalidHTTPVersion,
+  InvalidHeaders,
+  MultipartParsing,
+  OpenFile,
+  Listen,
+  GetSockName,
+  UnsupportedAddressFamily,
+  HTTPParsing,
+  InvalidRangeHeader,
 };
 ```
 
@@ -794,11 +992,15 @@ httplib::Headers headers = {
 };
 auto res = cli.Get("/hi", headers);
 ```
+
 or
+
 ```c++
-auto res = cli.Get("/hi", {{"Hello", "World!"}});
+auto res = cli.Get("/hi", httplib::Headers{{"Hello", "World!"}});
 ```
+
 or
+
 ```c++
 cli.set_default_headers({
   { "Hello", "World!" }
@@ -847,10 +1049,36 @@ httplib::UploadFormDataItems items = {
 auto res = cli.Post("/multipart", items);
 ```
 
+To upload files from disk without loading them entirely into memory, use `make_file_provider`. The file is sent with chunked transfer encoding.
+
+```cpp
+httplib::FormDataProviderItems providers = {
+  httplib::make_file_provider("file1", "/path/to/large.bin", "large.bin", "application/octet-stream"),
+  httplib::make_file_provider("avatar", "/path/to/photo.jpg", "photo.jpg", "image/jpeg"),
+};
+
+auto res = cli.Post("/upload", {}, {}, providers);
+```
+
+### POST with a file body
+
+To POST a file as a raw binary body with `Content-Length`, use `make_file_body`.
+
+```cpp
+auto [size, provider] = httplib::make_file_body("/path/to/data.bin");
+auto res = cli.Post("/upload", size, provider, "application/octet-stream");
+```
+
 ### PUT
 
 ```c++
 res = cli.Put("/resource/foo", "text", "text/plain");
+```
+
+### PATCH
+
+```c++
+res = cli.Patch("/resource/foo", "text", "text/plain");
 ```
 
 ### DELETE
@@ -875,6 +1103,18 @@ cli.set_write_timeout(5, 0); // 5 seconds
 
 // This method works the same as curl's `--max-time` option
 cli.set_max_timeout(5000); // 5 seconds
+
+// std::chrono is also supported
+cli.set_connection_timeout(std::chrono::milliseconds(300));
+cli.set_read_timeout(std::chrono::seconds(5));
+cli.set_write_timeout(std::chrono::seconds(5));
+cli.set_max_timeout(std::chrono::seconds(5));
+```
+
+### Set maximum payload length for reading a response body
+
+```c++
+cli.set_payload_max_length(1024 * 1024 * 512); // 512MB
 ```
 
 ### Receive content with a content receiver
@@ -984,12 +1224,23 @@ cli.set_proxy_bearer_token_auth("pass");
 > [!NOTE]
 > OpenSSL is required for Digest Authentication.
 
+#### Bypass the proxy for specific hosts (`NO_PROXY`)
+
+```cpp
+cli.set_no_proxy({"internal.corp", "10.0.0.0/8", "*.dev.local"});
+```
+
+Each pattern is `*`, a hostname suffix, an IP literal, or a CIDR block.
+Hostname matching is case-insensitive with a dot-boundary rule. See the
+[NO_PROXY cookbook](https://yhirose.github.io/cpp-httplib/en/cookbook/c16-proxy)
+for details and for reading the variable from the environment.
+
 ### Range
 
 ```cpp
-httplib::Client cli("httpbin.org");
+httplib::Client cli("httpcan.org");
 
-auto res = cli.Get("/range/32", {
+auto res = cli.Get("/range/32", httplib::Headers{
   httplib::make_range_header({{1, 10}}) // 'Range: bytes=1-10'
 });
 // res->status should be 206.
@@ -1077,18 +1328,21 @@ httplib::Server svr;
 svr.listen("127.0.0.1", 8080);
 ```
 
-Compression
------------
+## Payload Limit
+
+The maximum payload body size is limited to 100MB by default for both server and client. You can change it with `set_payload_max_length()` or by defining `CPPHTTPLIB_PAYLOAD_MAX_LENGTH` at compile time. Setting it to `0` disables the limit entirely.
+
+## Compression
 
 The server can apply compression to the following MIME type contents:
 
-  * all text types except text/event-stream
-  * image/svg+xml
-  * application/javascript
-  * application/json
-  * application/xml
-  * application/protobuf
-  * application/xhtml+xml
+- all text types except text/event-stream
+- image/svg+xml
+- application/javascript
+- application/json
+- application/xml
+- application/protobuf
+- application/xhtml+xml
 
 ### Zlib Support
 
@@ -1110,13 +1364,13 @@ The default `Accept-Encoding` value contains all possible compression types. So,
 
 ```c++
 res = cli.Get("/resource/foo");
-res = cli.Get("/resource/foo", {{"Accept-Encoding", "br, gzip, deflate, zstd"}});
+res = cli.Get("/resource/foo", httplib::Headers{{"Accept-Encoding", "br, gzip, deflate, zstd"}});
 ```
 
 If we don't want a response without compression, we have to set `Accept-Encoding` to an empty string. This behavior is similar to curl.
 
 ```c++
-res = cli.Get("/resource/foo", {{"Accept-Encoding", ""}});
+res = cli.Get("/resource/foo", httplib::Headers{{"Accept-Encoding", ""}});
 ```
 
 ### Compress request body on client
@@ -1181,9 +1435,109 @@ std::string decoded_component = httplib::decode_uri_component(encoded_component)
 
 Use `encode_uri()` for full URLs and `encode_uri_component()` for individual query parameters or path segments.
 
+## Stream API
 
-Split httplib.h into .h and .cc
--------------------------------
+Process large responses without loading everything into memory.
+
+```c++
+httplib::Client cli("localhost", 8080);
+cli.set_follow_location(true);
+...
+
+auto result = httplib::stream::Get(cli, "/large-file");
+if (result) {
+  while (result.next()) {
+    process(result.data(), result.size());  // Process each chunk as it arrives
+  }
+}
+
+// Or read the entire body at once
+auto result2 = httplib::stream::Get(cli, "/file");
+if (result2) {
+  std::string body = result2.read_all();
+}
+```
+
+All HTTP methods are supported: `stream::Get`, `Post`, `Put`, `Patch`, `Delete`, `Head`, `Options`.
+
+See [README-stream.md](README-stream.md) for more details.
+
+## SSE Client
+
+```cpp
+#include <httplib.h>
+
+int main() {
+    httplib::Client cli("http://localhost:8080");
+    httplib::sse::SSEClient sse(cli, "/events");
+
+    sse.on_message([](const httplib::sse::SSEMessage &msg) {
+        std::cout << "Event: " << msg.event << std::endl;
+        std::cout << "Data: " << msg.data << std::endl;
+    });
+
+    sse.start();  // Blocking, with auto-reconnect
+    return 0;
+}
+```
+
+See [README-sse.md](README-sse.md) for more details.
+
+## WebSocket
+
+```cpp
+// Server
+httplib::Server svr;
+
+svr.WebSocket("/ws", [](const httplib::Request &req, httplib::ws::WebSocket &ws) {
+    std::string msg;
+    while (ws.read(msg)) {
+        ws.send("Echo: " + msg);
+    }
+});
+
+svr.listen("localhost", 8080);
+```
+
+```cpp
+// Client
+httplib::ws::WebSocketClient ws("ws://localhost:8080/ws");
+
+if (ws.connect()) {
+    ws.send("Hello, WebSocket!");
+
+    std::string msg;
+    if (ws.read(msg)) {
+        std::cout << "Received: " << msg << std::endl;
+    }
+
+    ws.close();
+}
+```
+
+SSL is also supported via `wss://` scheme (e.g. `WebSocketClient("wss://example.com/ws")`). Subprotocol negotiation (`Sec-WebSocket-Protocol`) is supported via `SubProtocolSelector` callback.
+
+> **Note:** WebSocket connections occupy a thread for their entire lifetime (plus an additional thread per connection for heartbeat pings). This thread-per-connection model is intended for small- to mid-scale workloads; large numbers of simultaneous WebSocket connections are outside the design target of this library. If you expect many concurrent WebSocket clients, configure a dynamic thread pool (`svr.new_task_queue = [] { return new ThreadPool(8, 64); };`) and measure carefully.
+
+> **WebSocket extensions are not supported.** `permessage-deflate` and other RFC 6455 extensions are not implemented. If a client proposes them via `Sec-WebSocket-Extensions`, the server silently declines them in its handshake response.
+
+> **Unresponsive-peer detection.** Heartbeat pings also serve as a liveness probe when `set_websocket_max_missed_pongs(n)` is set: if the client sends `n` consecutive pings without receiving a pong, it will close the connection. Disabled by default (`0`).
+
+See [README-websocket.md](README-websocket.md) for more details.
+
+## Socket Option Utility
+
+`set_socket_opt` is a convenience wrapper around `setsockopt` for setting integer socket options:
+
+```cpp
+auto sock = svr.socket();
+httplib::set_socket_opt(sock, IPPROTO_TCP, TCP_NODELAY, 1);
+```
+
+> [!TIP]
+> For most use cases, prefer `set_tcp_nodelay(true)` or `set_socket_options(callback)` on the Server/Client instead of calling `set_socket_opt` directly.
+
+## Split httplib.h into .h and .cc
 
 ```console
 $ ./split.py -h
@@ -1201,8 +1555,7 @@ $ ./split.py
 Wrote out/httplib.h and out/httplib.cc
 ```
 
-Dockerfile for Static HTTP Server
----------------------------------
+## Dockerfile for Static HTTP Server
 
 Dockerfile for static HTTP server is available. Port number of this HTTP server is 80, and it serves static files from `/html` directory in the container.
 
@@ -1273,12 +1626,10 @@ Include `httplib.h` before `Windows.h` or include `Windows.h` by defining `WIN32
 > [!NOTE]
 > Windows 8 or lower, Visual Studio 2015 or lower, and Cygwin and MSYS2 including MinGW are neither supported nor tested.
 
-License
--------
+## License
 
-MIT license (© 2025 Yuji Hirose)
+MIT license (© 2026 Yuji Hirose)
 
-Special Thanks To
------------------
+## Special Thanks To
 
 [These folks](https://github.com/yhirose/cpp-httplib/graphs/contributors) made great contributions to polish this library to totally another level from a simple toy!
