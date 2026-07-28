@@ -21,6 +21,7 @@ _CONVERTED_SCHEMAS = [
     ('app_current_window_internal.idl', 'app_current_window_internal.webidl'),
     ('bluetooth.idl', 'bluetooth.webidl'),
     ('dns.idl', 'dns.webidl'),
+    ('language_settings_private.idl', 'language_settings_private.webidl'),
     ('audio.idl', 'audio.webidl'),
     ('cec_private.idl', 'cec_private.webidl'),
     ('diagnostics.idl', 'diagnostics.webidl'),

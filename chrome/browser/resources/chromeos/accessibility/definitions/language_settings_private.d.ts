@@ -1,13 +1,13 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.languageSettingsPrivate API
- * Generated from: chrome/common/extensions/api/language_settings_private.idl
+ * Generated from: chrome/common/extensions/api/language_settings_private.webidl
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/language_settings_private.idl -g ts_definitions`
- * to regenerate.
+ * chrome/common/extensions/api/language_settings_private.webidl -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
@@ -56,8 +56,7 @@ declare global {
         thirdPartyExtensionImes: InputMethod[];
       }
 
-      export function getLanguageList(
-          callback: (languages: Language[]) => void): void;
+      export function getLanguageList(): Promise<Language[]>;
 
       export function enableLanguage(languageCode: string): void;
 
@@ -69,32 +68,27 @@ declare global {
       export function moveLanguage(languageCode: string, moveType: MoveType):
           void;
 
-      export function getAlwaysTranslateLanguages(
-          callback: (languages: string[]) => void): void;
+      export function getAlwaysTranslateLanguages(): Promise<string[]>;
 
       export function setLanguageAlwaysTranslateState(
           languageCode: string, alwaysTranslate: boolean): void;
 
-      export function getNeverTranslateLanguages(
-          callback: (languages: string[]) => void): void;
+      export function getNeverTranslateLanguages(): Promise<string[]>;
 
-      export function getSpellcheckDictionaryStatuses(
-          callback: (status: SpellcheckDictionaryStatus[]) => void): void;
+      export function getSpellcheckDictionaryStatuses():
+          Promise<SpellcheckDictionaryStatus[]>;
 
-      export function getSpellcheckWords(callback: (words: string[]) => void):
-          void;
+      export function getSpellcheckWords(): Promise<string[]>;
 
       export function addSpellcheckWord(word: string): void;
 
       export function removeSpellcheckWord(word: string): void;
 
-      export function getTranslateTargetLanguage(
-          callback: (language: string) => void): void;
+      export function getTranslateTargetLanguage(): Promise<string>;
 
       export function setTranslateTargetLanguage(languageCode: string): void;
 
-      export function getInputMethodLists(
-          callback: (methods: InputMethodLists) => void): void;
+      export function getInputMethodLists(): Promise<InputMethodLists>;
 
       export function addInputMethod(inputMethodId: string): void;
 

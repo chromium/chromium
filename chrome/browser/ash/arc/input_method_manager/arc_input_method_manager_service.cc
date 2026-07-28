@@ -750,7 +750,7 @@ void ArcInputMethodManagerService::NotifyInputMethodManagerObservers(
   // TODO(yhanada): This is a temporary workaround for supporting ARC IMEs
   // and supports neither Chrome OS extensions nor state changes enforced by
   // the policy. The better way to do this is to add a dedicated event to
-  // language_settings_private.idl and send the new event to the JS side
+  // language_settings_private.webidl and send the new event to the JS side
   // instead.
   auto* manager = ash::input_method::InputMethodManager::Get();
   if (!manager)

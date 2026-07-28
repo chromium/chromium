@@ -9,7 +9,7 @@ command_line_private.json
 crash_report_private.webidl
 file_system_provider.webidl
 input_method_private.json
-language_settings_private.idl
+language_settings_private.webidl
 login_state.idl
 quick_unlock_private.idl
 settings_private.idl
