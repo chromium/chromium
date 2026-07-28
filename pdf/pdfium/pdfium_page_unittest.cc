@@ -5,6 +5,7 @@
 #include "pdf/pdfium/pdfium_page.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
@@ -27,6 +29,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -701,7 +704,28 @@ TEST_P(PDFiumPageImageForOcrTest, NonImage) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageForOcrTest, testing::Bool());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-using PDFiumPageTextTest = PDFiumTestBase;
+class PDFiumPageTextTest : public PDFiumTestBase {
+ protected:
+  std::optional<AccessibilityTextRunInfo> GetFirstPageTextRunInfo(
+      const base::FilePath::CharType* pdf_name) {
+    TestClient client(/*use_skia_renderer=*/GetParam());
+    std::unique_ptr<PDFiumEngine> engine = InitializeEngine(&client, pdf_name);
+    if (!engine) {
+      return std::nullopt;
+    }
+    PDFiumPage& page = GetPDFiumPage(*engine, 0);
+    if (page.GetCharCount() <= 0) {
+      return std::nullopt;
+    }
+    return page.GetTextRunInfoAt(0);
+  }
+
+  float GetFontMatrixPDFFontSize() {
+    std::optional<AccessibilityTextRunInfo> text_run_info =
+        GetFirstPageTextRunInfo(FILE_PATH_LITERAL("font_matrix.pdf"));
+    return text_run_info.has_value() ? text_run_info->style.font_size : 0.0f;
+  }
+};
 
 TEST_P(PDFiumPageTextTest, TextRunBounds) {
   TestClient client(/*use_skia_renderer=*/GetParam());
@@ -920,6 +944,37 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
     CompareTextRuns(expected_text_run, actual_text_run);
     current_char_index += actual_text_run.len;
   }
+}
+
+TEST_P(PDFiumPageTextTest, GetTextRunInfoAtWithHeuristicEnhancements) {
+  float font_size_disabled;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        ::features::kPdfAccessibilityHeuristicEnhancements);
+    font_size_disabled = GetFontMatrixPDFFontSize();
+  }
+
+  float font_size_enabled;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        ::features::kPdfAccessibilityHeuristicEnhancements);
+    font_size_enabled = GetFontMatrixPDFFontSize();
+  }
+
+  // For "A1", the base font size is 1.0, and the vertical scale of the matrix
+  // is 10.0.
+  // - With heuristic enhancements disabled, the nominal font size is 1.0. Since
+  //   this is <= 1.0, it triggers the fallback to the estimated character box
+  //   size, yielding ~10.667 with test fonts on Linux/ChromeOS and 12.0 with
+  //   native fonts on Mac/Windows.
+  // - With heuristic enhancements enabled, the font size is scaled by 10.0 to
+  //   equal 10.0. Since this is > 1.0, it bypasses the fallback on all
+  //   platforms.
+  float expected_font_size_disabled = UsingTestFonts() ? 10.667f : 12.0f;
+  EXPECT_NEAR(font_size_disabled, expected_font_size_disabled, 0.001f);
+  EXPECT_NEAR(font_size_enabled, 10.0f, 0.001f);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageTextTest, testing::Bool());

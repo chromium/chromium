@@ -75,6 +75,8 @@ constexpr float k360DegreesInRadians = base::DegToRad(360.0f);
 constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
                                   static_cast<float>(printing::kPointsPerInch);
 
+constexpr float kFontSizeMinimumFactor = 3.0f;
+
 gfx::SizeF GetPageSizeInPoints(FPDF_PAGE page) {
   return gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
 }
@@ -230,15 +232,24 @@ bool CompareTextRuns(const T& a, const T& b) {
   return a.text_range.index < b.text_range.index;
 }
 
-// Set text run style information based on the `text_object` associated with a
-// character of the text run.
-AccessibilityTextStyleInfo CalculateTextRunStyleInfo(
-    FPDF_PAGEOBJECT text_object) {
+// Set text run style information based on the text_object associated with the
+// given `text_page` at the given `char_index` of the text run.
+AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
+                                                     int char_index) {
   AccessibilityTextStyleInfo style_info;
-
   float font_size;
+  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
   if (FPDFTextObj_GetFontSize(text_object, &font_size)) {
-    style_info.font_size = font_size;
+    FS_MATRIX matrix;
+    if (::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+        FPDFText_GetMatrix(text_page, char_index, &matrix)) {
+      // Scale the font size with the font matrix to get a more accurate size.
+      // Font size is based only on the vertical height, which corresponds to
+      // c & d in the matrix.
+      style_info.font_size = font_size * std::hypot(matrix.c, matrix.d);
+    } else {
+      style_info.font_size = font_size;
+    }
   }
 
   FPDF_FONT font = FPDFTextObj_GetFont(text_object);
@@ -299,14 +310,15 @@ AccessibilityTextStyleInfo CalculateTextRunStyleInfo(
   return style_info;
 }
 
-// Returns true if the `text_object` associated with a given character has the
-// same text style as the text run. `is_searchified` indicates that the text
-// and style are from searchify.
-bool AreTextStyleEqual(FPDF_PAGEOBJECT text_object,
+// Returns true if the text_object on the given `text_page` at the given
+// `char_index` has the same text style as the text run. `is_searchified`
+// indicates that the text and style are from searchify.
+bool AreTextStyleEqual(FPDF_TEXTPAGE text_page,
+                       int char_index,
                        const AccessibilityTextStyleInfo& style,
                        bool is_searchified) {
   AccessibilityTextStyleInfo char_style =
-      CalculateTextRunStyleInfo(text_object);
+      CalculateTextRunStyleInfo(text_page, char_index);
 
   // Font size of the searchify text is set based on the height of the bounding
   // box around each word. Therefore the font size depends on whether that word
@@ -1322,9 +1334,7 @@ AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
 
   uint32_t char_index = actual_start_char_index;
 
-  // Set text run's style info from the first character of the text run.
-  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
-  info.style = CalculateTextRunStyleInfo(text_object);
+  info.style = CalculateTextRunStyleInfo(text_page, char_index);
 
   gfx::RectF start_char_rect =
       GetFloatCharRectInPixels(page, text_page, char_index);
@@ -1335,12 +1345,7 @@ AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
   // Without it, if a text run starts with a '.', its small bounding box could
   // lead to a break in the text run after only one space. Ex: ". Hello World"
   // would be split in two runs: "." and "Hello World".
-  float font_size_minimum;
-  if (FPDFTextObj_GetFontSize(text_object, &font_size_minimum)) {
-    font_size_minimum /= 3.0f;
-  } else {
-    font_size_minimum = 0.0f;
-  }
+  float font_size_minimum = info.style.font_size / kFontSizeMinimumFactor;
   gfx::SizeF avg_char_size(font_size_minimum, font_size_minimum);
   int non_whitespace_chars_count = 1;
   AddCharSizeToAverageCharSize(start_char_rect.size(), &avg_char_size,
@@ -1376,6 +1381,9 @@ AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
   float character_distance_break_threshold_ratio =
       info.is_searchified ? 5.0f : 2.5f;
 
+  FPDF_PAGEOBJECT text_object =
+      FPDFText_GetTextObject(text_page, actual_start_char_index);
+
   // Continue adding characters until heuristics indicate we should end the text
   // run.
   while (char_index < chars_count) {
@@ -1397,7 +1405,7 @@ AccessibilityTextRunInfo PDFiumPage::CalculateTextRunInfoAt(
       FPDF_PAGEOBJECT current_text_object =
           FPDFText_GetTextObject(text_page, char_index);
       if (current_text_object != text_object &&
-          !AreTextStyleEqual(current_text_object, info.style,
+          !AreTextStyleEqual(text_page, char_index, info.style,
                              info.is_searchified)) {
         break;
       }
