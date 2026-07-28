@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+  <path
+      android:pathData="M37.374,19.999C40.395,25.631 38.112,30.73 32.285,32.284
+          C30.73,38.112 25.631,40.395 19.999,37.374C14.366,40.395
+          9.267,38.112 7.713,32.285C1.885,30.73 -0.398,25.631 2.624,19.999
+          C-0.398,14.366 1.885,9.267 7.713,7.713C9.267,1.885 14.366,-0.398
+          19.999,2.624C25.631,-0.398 30.73,1.885 32.284,7.713C38.112,9.267
+          40.395,14.366 37.374,19.999Z"
+      android:fillColor="?attr/colorPrimaryContainer"/>
+  <group>
+    <clip-path
+        android:pathData="M8,8h24v24h-24z"/>
+    <group
+        android:translateX="8"
+        android:translateY="8">
+      <path
+          android:pathData="M12,22C9.68333,21.4167 7.76667,20.0917 6.25,18.025
+              C4.75,15.9417 4,13.6333 4,11.1V5L12,2L20,5V11.1C20,13.6333
+              19.2417,15.9417 17.725,18.025C16.225,20.0917 14.3167,21.4167
+              12,22ZM12,19.9C13.6167,19.4 14.9667,18.4167 16.05,16.95
+              C17.1333,15.4667 17.7667,13.8167 17.95,12H12V4.125L6,6.375V11.1
+              C6,11.2833 6,11.4333 6,11.55C6,11.6667 6.01667,11.8167 6.05,12
+              H12V19.9Z"
+          android:fillColor="?attr/colorPrimary"/>
+    </group>
+  </group>
+</vector>

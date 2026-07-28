@@ -3599,6 +3599,30 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SAFETY_FRE_PROMO_START_BROWSING_BUTTON" desc="Text on the button to start browsing from the Safety Promo screen of the First Run Experience.">
         Start browsing
       </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_TITLE" desc="Title of the Google Password Manager card on the Safety Promo screen of the First Run Experience.">
+        Google Password Manager
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_SUBTITLE" desc="Subtitle of the Google Password Manager card on the Safety Promo screen of the First Run Experience.">
+        Create, save, and autofill strong passwords
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_TITLE" desc="Title of the Quick Delete History card on the Safety Promo screen of the First Run Experience.">
+        Quickly delete your history
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_SUBTITLE" desc="Subtitle of the Quick Delete History card on the Safety Promo screen of the First Run Experience.">
+        Delete your browsing history with one tap
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_ENHANCED_SAFE_BROWSING_TITLE" desc="Title of the Enhanced Safe Browsing card on the Safety Promo screen of the First Run Experience.">
+        Enhanced Safe Browsing
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_ENHANCED_SAFE_BROWSING_SUBTITLE" desc="Subtitle of the Enhanced Safe Browsing card on the Safety Promo screen of the First Run Experience.">
+        Google’s highest level of protection against online threats
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_TITLE" desc="Title of the Locked Incognito card on the Safety Promo screen of the First Run Experience.">
+        Locked Incognito mode
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_SUBTITLE" desc="Subtitle of the Locked Incognito card on the Safety Promo screen of the First Run Experience.">
+        Keep your private tabs locked
+      </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>
