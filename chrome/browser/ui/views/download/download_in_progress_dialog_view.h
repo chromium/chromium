@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_IN_PROGRESS_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_IN_PROGRESS_DIALOG_VIEW_H_
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/unload_controller.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // Dialog shown when the user tries to exit the browser or all incognito windows
@@ -18,12 +19,12 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
   DownloadInProgressDialogView& operator=(const DownloadInProgressDialogView&) =
       delete;
 
-  // |dialog_type| should be either DOWNLOAD_CLOSE_BROWSER_SHUTDOWN to indicate
+  // |dialog_type| should be either kBrowserShutdown to indicate
   // the user is closing the browser or
-  // DOWNLOAD_CLOSE_LAST_WINDOW_IN_INCOGNITO_PROFILE to indicate the user is
+  // kLastWindowInIncognitoProfile to indicate the user is
   // closing the last incognito window. |callback| will be called with true if
   // the download should be canceled, or false if the download should proceed.
-  static void Show(gfx::NativeWindow parent_window,
+  static void Show(gfx::NativeWindow parent,
                    int download_count,
                    UnloadController::DownloadCloseType dialog_type,
                    base::OnceCallback<void(bool)> callback);
