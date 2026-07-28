@@ -1063,6 +1063,7 @@ source_set("core") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs/tab_group_home:constants",
     "//chrome/browser/ui/webid",
+    "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/browser/ui/webui/actor_internals",

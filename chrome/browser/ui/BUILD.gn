@@ -412,8 +412,6 @@ static_library("ui") {
     "tab_ui_helper.h",
     "views/frame/glass_frame_service.cc",
     "views/frame/glass_frame_service.h",
-    "webui/chrome_web_ui_controller_factory.cc",
-    "webui/chrome_web_ui_controller_factory.h",
   ]
 
   defines = []

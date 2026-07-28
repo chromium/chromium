@@ -1846,6 +1846,7 @@ source_set("chrome_extensions_browser_client") {
     "//chrome/browser/task_manager",
     "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/browser/usb",
     "//components/content_settings/core/browser",
     "//components/embedder_support:user_agent",

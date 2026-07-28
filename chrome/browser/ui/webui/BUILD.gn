@@ -7,6 +7,7 @@ import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
+import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 import("//ui/webui/webui_features.gni")
@@ -563,6 +564,125 @@ source_set("metrics_handler") {
     "//base",
     "//chrome/browser/ui/tab_contents",
   ]
+}
+
+source_set("chrome_web_ui_controller_factory") {
+  sources = [ "chrome_web_ui_controller_factory.cc" ]
+  public = [ "chrome_web_ui_controller_factory.h" ]
+  public_deps = [
+    "//base",
+    "//components/favicon_base",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+  deps = [
+    "//chrome/browser:flags",
+    "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/components",
+    "//chrome/browser/ui/webui/crashes",
+    "//chrome/browser/ui/webui/download_internals",
+    "//chrome/browser/ui/webui/flags",
+    "//chrome/browser/ui/webui/version",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//components/commerce/core:commerce_constants",
+    "//components/favicon/core",
+    "//components/feed:feature_list",
+    "//components/history/core/browser",
+    "//components/password_manager/content/common",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//ui/accessibility",
+    "//ui/base:features",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/ui/webui/bookmarks:bookmarks_android",
+      "//chrome/browser/ui/webui/history",
+      "//chrome/browser/ui/webui/management",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/webui/app_service_internals",
+      "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/downloads",
+      "//chrome/browser/ui/webui/history",
+      "//chrome/browser/ui/webui/password_manager:password_manager_ui",
+      "//chrome/browser/ui/webui/settings",
+      "//chrome/browser/web_applications",
+      "//ui/web_dialogs",
+    ]
+  }
+
+  if (enable_devtools_frontend) {
+    deps += [
+      "//chrome/browser/devtools",
+      "//chrome/browser/ui/webui/devtools",
+    ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    deps += [ "//chrome/browser/ui/webui/app_home" ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/browser/ui/webui/conflicts" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
+
+  if (is_win || is_linux || is_chromeos || is_android) {
+    deps += [ "//chrome/browser/ui/webui/sandbox" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/webui/whats_new" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/webui/extensions",
+      "//extensions/common:common_constants",
+    ]
+  }
+
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/webui/new_tab_page" ]
+  }
+
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/webui/management" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/webui/camera_app_ui",
+      "//ash/webui/file_manager:constants",
+      "//ash/webui/files_internals",
+      "//ash/webui/growth_internals",
+      "//ash/webui/help_app_ui",
+      "//ash/webui/mall:url_constants",
+      "//ash/webui/multidevice_debug",
+      "//ash/webui/print_preview_cros:url_constants",
+      "//ash/webui/recorder_app_ui",
+      "//ash/webui/vc_background_ui",
+    ]
+  }
 }
 
 if (enable_extensions_core) {
