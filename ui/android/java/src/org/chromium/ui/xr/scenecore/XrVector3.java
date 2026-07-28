@@ -27,6 +27,9 @@ public interface XrVector3 {
     /** Adds two vectors and returns the result as a new XrVector3. */
     XrVector3 plus(XrVector3 other);
 
+    /** Subtracts another vector from this vector and returns the result as a new XrVector3. */
+    XrVector3 minus(XrVector3 other);
+
     /** Multiplies the vector by a scalar and returns the result as a new XrVector3. */
     XrVector3 times(float scale);
 

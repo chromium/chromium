@@ -64,6 +64,11 @@ public final class XrVector3Impl implements XrVector3 {
     }
 
     @Override
+    public XrVector3 minus(XrVector3 other) {
+        return toXrVector3(mVector.minus(toVector3(other)));
+    }
+
+    @Override
     public XrVector3 times(float scale) {
         return toXrVector3(mVector.times(scale));
     }

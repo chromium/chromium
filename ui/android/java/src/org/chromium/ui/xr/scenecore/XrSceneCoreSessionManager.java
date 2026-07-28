@@ -76,6 +76,9 @@ public interface XrSceneCoreSessionManager extends Destroyable {
     /** Returns the {@link XrPanelEntityHolder} for the main panel of the session. */
     XrPanelEntityHolder getMainPanelEntity();
 
+    /** Returns the {@link XrEntityHolder} for the Activity Space. */
+    XrEntityHolder getActivitySpaceEntity();
+
     /**
      * Sets the key entity for the session. This is typically used to identify the entity that is
      * the primary focus of the user's interaction.

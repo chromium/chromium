@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.xr.scenecore;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import android.view.View;
 
 import androidx.activity.ComponentActivity;
 import androidx.xr.runtime.Session;
@@ -16,8 +19,12 @@ import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
 import androidx.xr.runtime.internal.JxrRuntime;
 import androidx.xr.scenecore.ActivitySpace;
+import androidx.xr.scenecore.PanelEntity;
 import androidx.xr.scenecore.Scene;
 import androidx.xr.scenecore.SessionExt;
+import androidx.xr.scenecore.SurfaceEntity;
+import androidx.xr.scenecore.SurfaceEntity.Shape;
+import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 import androidx.xr.scenecore.testing.FakeSceneRuntime;
 
 import org.junit.Before;
@@ -30,14 +37,22 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
 /** Tests for {@link XrSceneCoreSessionManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class XrSceneCoreSessionManagerImplTest {
+    static {
+        XrModuleProviderImpl.initialize();
+    }
 
     private ComponentActivity mActivity;
     private ActivityController<ComponentActivity> mActivityController;
     @Mock private Runnable mCallback;
+    @Mock private View mView;
 
     private Session mSessionDelegate;
     private Scene mScene;
@@ -133,5 +148,47 @@ public class XrSceneCoreSessionManagerImplTest {
 
         assertTrue(result);
         assertFalse(mManager.isXrFullSpaceMode());
+    }
+
+    @Test
+    public void testCreateSurfaceEntity_Quad() {
+        XrSurfaceEntityHolder holder = mManager.createSurfaceEntity(XrSurfaceEntityShape.QUAD);
+        assertNotNull(holder);
+
+        SurfaceEntity surfaceEntity = (SurfaceEntity) holder.getEntity();
+        assertEquals(StereoMode.MONO, surfaceEntity.getStereoMode());
+        assertTrue(surfaceEntity.getShape() instanceof Shape.Quad);
+    }
+
+    @Test
+    public void testCreateSurfaceEntity_Sphere() {
+        XrSurfaceEntityHolder holder = mManager.createSurfaceEntity(XrSurfaceEntityShape.SPHERE);
+        assertNotNull(holder);
+        assertTrue(holder instanceof XrCurvedSurfaceEntityHolder);
+
+        SurfaceEntity surfaceEntity = (SurfaceEntity) holder.getEntity();
+        assertEquals(StereoMode.MONO, surfaceEntity.getStereoMode());
+        assertTrue(surfaceEntity.getShape() instanceof Shape.Sphere);
+    }
+
+    @Test
+    public void testCreateSurfaceEntity_Hemisphere() {
+        XrSurfaceEntityHolder holder =
+                mManager.createSurfaceEntity(XrSurfaceEntityShape.HEMISPHERE);
+        assertNotNull(holder);
+        assertTrue(holder instanceof XrCurvedSurfaceEntityHolder);
+
+        SurfaceEntity surfaceEntity = (SurfaceEntity) holder.getEntity();
+        assertEquals(StereoMode.MONO, surfaceEntity.getStereoMode());
+        assertTrue(surfaceEntity.getShape() instanceof Shape.Hemisphere);
+    }
+
+    @Test
+    public void testCreatePanelEntity() {
+        XrPanelEntityHolder holder = mManager.createPanelEntity(mView, "test-panel");
+        assertNotNull(holder);
+
+        PanelEntity panelEntity = (PanelEntity) holder.getEntity();
+        assertNotNull(panelEntity);
     }
 }

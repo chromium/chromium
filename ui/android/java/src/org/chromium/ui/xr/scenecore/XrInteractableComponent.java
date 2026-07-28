@@ -16,6 +16,18 @@ public interface XrInteractableComponent {
         void onClick();
     }
 
+    /** Interface for listening to drag events. */
+    interface OnDragListener {
+        /** Called when a drag gesture starts. */
+        void onDragStart(XrVector3 origin, XrVector3 direction);
+
+        /** Called when a drag gesture is updated. */
+        void onDragUpdate(XrVector3 origin, XrVector3 direction);
+
+        /** Called when a drag gesture ends. */
+        void onDragEnd(XrVector3 origin, XrVector3 direction);
+    }
+
     /**
      * Sets whether the entity is interactable.
      *
@@ -36,4 +48,18 @@ public interface XrInteractableComponent {
      * @param listener The listener to remove.
      */
     void removeOnClickListener(OnClickListener listener);
+
+    /**
+     * Adds a listener for drag events.
+     *
+     * @param listener The listener to add.
+     */
+    void addOnDragListener(OnDragListener listener);
+
+    /**
+     * Removes a previously added drag listener.
+     *
+     * @param listener The listener to remove.
+     */
+    void removeOnDragListener(OnDragListener listener);
 }

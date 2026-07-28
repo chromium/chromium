@@ -73,6 +73,17 @@ public class XrFactoryImplTest {
     }
 
     @Test
+    public void testCreateQuaternionFromYaw() {
+        float yaw = (float) Math.PI / 2.0f; // 90 degrees yaw
+        XrQuaternion quaternion = mFactory.createQuaternionFromYaw(yaw);
+        assertNotNull(quaternion);
+        assertEquals(0.0f, quaternion.getX(), DELTA);
+        assertEquals((float) Math.sin(Math.PI / 4.0f), quaternion.getY(), DELTA);
+        assertEquals(0.0f, quaternion.getZ(), DELTA);
+        assertEquals((float) Math.cos(Math.PI / 4.0f), quaternion.getW(), DELTA);
+    }
+
+    @Test
     public void testCreatePose() {
         XrVector3 trans = mFactory.createVector3(1.0f, 2.0f, 3.0f);
         XrQuaternion rot = mFactory.createQuaternion(0.0f, 0.0f, 0.0f, 1.0f);

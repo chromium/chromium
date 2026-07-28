@@ -189,6 +189,11 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
     }
 
     @Override
+    public XrEntityHolder getActivitySpaceEntity() {
+        return new XrEntityHolderImpl<ActivitySpace>(mXrSession, mActivitySpace) {};
+    }
+
+    @Override
     public void setKeyEntity(@Nullable XrEntityHolder entityHolder) {
         Scene scene = getScene();
         if (entityHolder != null && entityHolder.getEntity() instanceof BaseEntity entity) {

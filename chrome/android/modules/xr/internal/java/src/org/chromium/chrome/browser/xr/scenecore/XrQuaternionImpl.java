@@ -66,6 +66,14 @@ public final class XrQuaternionImpl implements XrQuaternion {
         return mQuaternion.getW();
     }
 
+    @Override
+    public float getYaw() {
+        return (float)
+                Math.atan2(
+                        2f * (getW() * getY() + getZ() * getX()),
+                        1f - 2f * (getY() * getY() + getZ() * getZ()));
+    }
+
     public Quaternion getQuaternion() {
         return mQuaternion;
     }

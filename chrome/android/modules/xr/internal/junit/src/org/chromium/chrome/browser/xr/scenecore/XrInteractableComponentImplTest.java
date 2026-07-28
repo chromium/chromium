@@ -35,7 +35,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent.OnClickListener;
+import org.chromium.ui.xr.scenecore.XrVector3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +46,13 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link XrInteractableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class XrInteractableComponentImplTest {
+    static {
+        XrModuleProviderImpl.initialize();
+    }
 
     @Mock private OnClickListener mListener1;
     @Mock private OnClickListener mListener2;
+    @Mock private XrInteractableComponent.OnDragListener mDragListener;
     @Mock private View mView;
 
     private Session mSession;
@@ -123,13 +129,33 @@ public class XrInteractableComponentImplTest {
         assertFalse(mInteractableComponent.hasOnClickListenerForTesting(mListener1));
     }
 
+    @Test
+    public void testAddDragListener() {
+        mInteractableComponent.addOnDragListener(mDragListener);
+        assertTrue(mInteractableComponent.hasOnDragListenerForTesting(mDragListener));
+    }
+
+    @Test
+    public void testRemoveDragListener() {
+        mInteractableComponent.addOnDragListener(mDragListener);
+        assertTrue(mInteractableComponent.hasOnDragListenerForTesting(mDragListener));
+
+        mInteractableComponent.removeOnDragListener(mDragListener);
+        assertFalse(mInteractableComponent.hasOnDragListenerForTesting(mDragListener));
+    }
+
     private InputEvent createInputEvent(InputEvent.Action action) {
+        return createInputEvent(action, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -1f));
+    }
+
+    private InputEvent createInputEvent(
+            InputEvent.Action action, Vector3 origin, Vector3 direction) {
         return new InputEvent(
                 InputEvent.Source.HANDS,
                 InputEvent.Pointer.RIGHT,
                 /* timestamp= */ 0L,
-                /* origin= */ new Vector3(0f, 0f, 0f),
-                /* direction= */ new Vector3(0f, 0f, -1f),
+                origin,
+                direction,
                 action,
                 /* hitInfoList= */ new ArrayList<>());
     }
@@ -184,5 +210,161 @@ public class XrInteractableComponentImplTest {
 
         // Click was cancelled, listener not called
         verify(mListener1, never()).onClick();
+    }
+
+    @Test
+    public void testClickNotSuppressedOnSmallMove() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.DOWN, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -1f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.MOVE,
+                        new Vector3(0.01f, 0f, 0f),
+                        new Vector3(0.01f, 0f, -0.9999f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.UP,
+                        new Vector3(0.01f, 0f, 0f),
+                        new Vector3(0.01f, 0f, -0.9999f)));
+
+        verify(mListener1, times(1)).onClick();
+    }
+
+    @Test
+    public void testClickSuppressedOnLargeMove() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.DOWN, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -1f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.MOVE,
+                        new Vector3(0.12f, 0f, 0f),
+                        new Vector3(0f, 0f, -1f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.UP,
+                        new Vector3(0.12f, 0f, 0f),
+                        new Vector3(0f, 0f, -1f)));
+
+        verify(mListener1, never()).onClick();
+    }
+
+    @Test
+    public void testClickSuppressedOnLargeDirectionChange() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.DOWN, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -1f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.MOVE,
+                        new Vector3(0f, 0f, 0f),
+                        new Vector3(0.08f, 0f, -0.9968f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.UP,
+                        new Vector3(0f, 0f, 0f),
+                        new Vector3(0.08f, 0f, -0.9968f)));
+
+        verify(mListener1, never()).onClick();
+    }
+
+    @Test
+    public void testDragNotStartedOnSmallMove() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+        mInteractableComponent.addOnDragListener(mDragListener);
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.DOWN, new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, -1f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.MOVE,
+                        new Vector3(0.01f, 0f, 0f),
+                        new Vector3(0.01f, 0f, -0.9999f)));
+
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.UP,
+                        new Vector3(0.01f, 0f, 0f),
+                        new Vector3(0.01f, 0f, -0.9999f)));
+
+        verify(mListener1, times(1)).onClick();
+
+        verify(mDragListener, never())
+                .onDragStart(
+                        org.mockito.ArgumentMatchers.any(XrVector3.class),
+                        org.mockito.ArgumentMatchers.any(XrVector3.class));
+        verify(mDragListener, never())
+                .onDragUpdate(
+                        org.mockito.ArgumentMatchers.any(XrVector3.class),
+                        org.mockito.ArgumentMatchers.any(XrVector3.class));
+        verify(mDragListener, never())
+                .onDragEnd(
+                        org.mockito.ArgumentMatchers.any(XrVector3.class),
+                        org.mockito.ArgumentMatchers.any(XrVector3.class));
+    }
+
+    @Test
+    public void testDragStartedOnLargeMove() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+        mInteractableComponent.addOnDragListener(mDragListener);
+
+        float[] downOrigin = new float[] {0f, 0f, 0f};
+        float[] downDir = new float[] {0f, 0f, -1f};
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.DOWN,
+                        new Vector3(downOrigin[0], downOrigin[1], downOrigin[2]),
+                        new Vector3(downDir[0], downDir[1], downDir[2])));
+
+        float[] moveOrigin = new float[] {0.12f, 0f, 0f};
+        float[] moveDir = new float[] {0f, 0f, -1f};
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.MOVE,
+                        new Vector3(moveOrigin[0], moveOrigin[1], moveOrigin[2]),
+                        new Vector3(moveDir[0], moveDir[1], moveDir[2])));
+
+        float[] upOrigin = new float[] {0.13f, 0f, 0f};
+        float[] upDir = new float[] {0f, 0f, -1f};
+        mInteractableComponent.onInputEvent(
+                createInputEvent(
+                        InputEvent.Action.UP,
+                        new Vector3(upOrigin[0], upOrigin[1], upOrigin[2]),
+                        new Vector3(upDir[0], upDir[1], upDir[2])));
+
+        verify(mListener1, never()).onClick();
+
+        verify(mDragListener, times(1))
+                .onDragStart(
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0.12f, 0f, 0f)),
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0f, 0f, -1f)));
+        verify(mDragListener, times(1))
+                .onDragUpdate(
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0.12f, 0f, 0f)),
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0f, 0f, -1f)));
+        verify(mDragListener, times(1))
+                .onDragEnd(
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0.13f, 0f, 0f)),
+                        org.mockito.ArgumentMatchers.eq(XrVector3.create(0f, 0f, -1f)));
     }
 }

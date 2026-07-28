@@ -40,6 +40,11 @@ public class XrFactoryImpl implements XrFactory {
     }
 
     @Override
+    public XrQuaternion createQuaternionFromYaw(float yaw) {
+        return XrQuaternionImpl.fromYaw(yaw);
+    }
+
+    @Override
     public XrPose createPose(XrVector3 translation, XrQuaternion rotation) {
         return XrPoseImpl.create(translation, rotation);
     }

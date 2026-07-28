@@ -30,9 +30,17 @@ public interface XrQuaternion {
     /** Rotates a 3D vector by this quaternion and returns the result as a new XrVector3. */
     XrVector3 rotate(XrVector3 v);
 
+    /** Returns the yaw angle (rotation around the Y axis) of this quaternion in radians. */
+    float getYaw();
+
     /** Creates a new XrQuaternion with the specified components. */
     static XrQuaternion create(float x, float y, float z, float w) {
         return XrFactory.Holder.get().createQuaternion(x, y, z, w);
+    }
+
+    /** Creates a quaternion from a yaw angle (rotation around the Y axis). */
+    static XrQuaternion fromYaw(float yaw) {
+        return XrFactory.Holder.get().createQuaternionFromYaw(yaw);
     }
 
     /** Returns the identity quaternion representing no rotation. */

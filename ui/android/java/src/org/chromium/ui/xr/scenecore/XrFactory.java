@@ -18,6 +18,9 @@ public interface XrFactory {
     /** Creates a new XrQuaternion with the specified components. */
     XrQuaternion createQuaternion(float x, float y, float z, float w);
 
+    /** Creates a new XrQuaternion from a yaw angle (rotation around the Y axis). */
+    XrQuaternion createQuaternionFromYaw(float yaw);
+
     /** Creates a new XrPose with the specified translation and rotation. */
     XrPose createPose(XrVector3 translation, XrQuaternion rotation);
 
