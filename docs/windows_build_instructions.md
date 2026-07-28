@@ -414,7 +414,7 @@ You can get a list of all of the other build targets from GN by running
 the GN label with no preceding "//" (so for `//chrome/test:unit_tests`
 use `autoninja -C out\Default chrome/test:unit_tests`).
 
-Tips: See [Siso tips](../siso_tips.md).
+Tips: See [Siso tips](siso_tips.md).
 
 ## Run Chromium
 
