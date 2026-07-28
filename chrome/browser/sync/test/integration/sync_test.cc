@@ -994,8 +994,10 @@ void SyncTest::OnProfileWillBeDestroyed(Profile* profile) {
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
     CHECK(profile_to_fake_gcm_driver_.contains(profile));
-    fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
-        profile_to_fake_gcm_driver_[profile]);
+    if (fake_server_sync_invalidation_sender_) {
+      fake_server_sync_invalidation_sender_->RemoveFakeGCMDriver(
+          profile_to_fake_gcm_driver_[profile]);
+    }
     profile_to_fake_gcm_driver_.erase(profile);
   }
 
@@ -1381,12 +1383,14 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(IS_CHROMEOS)
     if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos))
-#endif
-    {
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
       allowed_types.Put(syncer::EXTENSIONS);
       allowed_types.Put(syncer::EXTENSION_SETTINGS);
     }
+#else
+    allowed_types.Put(syncer::EXTENSIONS);
+    allowed_types.Put(syncer::EXTENSION_SETTINGS);
+#endif
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   }
   allowed_types.Put(syncer::AUTOFILL_VALUABLE);

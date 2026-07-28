@@ -52,6 +52,8 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   // GCMDriver will not connect until the given |app_id| is added.
   void WaitForAppIdBeforeConnection(const std::string& app_id);
 
+  base::WeakPtr<FakeGCMDriverForInstanceID> GetWeakPtr();
+
   const std::string& last_gettoken_app_id() const {
     return last_gettoken_app_id_;
   }

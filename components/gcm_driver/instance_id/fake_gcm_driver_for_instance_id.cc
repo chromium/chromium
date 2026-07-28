@@ -69,6 +69,11 @@ FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
 
 FakeGCMDriverForInstanceID::~FakeGCMDriverForInstanceID() = default;
 
+base::WeakPtr<FakeGCMDriverForInstanceID>
+FakeGCMDriverForInstanceID::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 gcm::InstanceIDHandler*
 FakeGCMDriverForInstanceID::GetInstanceIDHandlerInternal() {
   return this;

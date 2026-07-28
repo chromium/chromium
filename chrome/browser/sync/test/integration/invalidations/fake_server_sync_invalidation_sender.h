@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_INVALIDATIONS_FAKE_SERVER_SYNC_INVALIDATION_SENDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
@@ -76,7 +77,9 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   // invalidations to a corresponding client.
   std::map<std::string, syncer::DataTypeSet> token_to_interested_data_types_;
 
-  std::vector<raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
+  // TODO(crbug.com/539790080): Remove base::WeakPtr usage once it is figured
+  // out why the invalidation sender doesn't remove Fake GCM server in tests.
+  std::vector<base::WeakPtr<instance_id::FakeGCMDriverForInstanceID>>
       fake_gcm_drivers_;
 };
 
